@@ -1,4 +1,5 @@
 #include "s7_extensions.h"
+#include "neural_core/security/cryptographic_random_generator.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,7 +34,12 @@ static uint32_t hash_djb2(const uint8_t* data, size_t len) {
  */
 int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
     if (!tuf) return -1; memset(tuf, 0, sizeof(*tuf));
-    for (int i = 0; i < 32; i++) { tuf->root_key[i] = (uint8_t)(rand() % 256); tuf->targets_key[i] = (uint8_t)(rand() % 256); tuf->snapshot_key[i] = (uint8_t)(rand() % 256); tuf->timestamp_key[i] = (uint8_t)(rand() % 256); }
+    for (int i = 0; i < 32; i++) {
+        SNEPPX_random_bytes(&tuf->root_key[i], 1);
+        SNEPPX_random_bytes(&tuf->targets_key[i], 1);
+        SNEPPX_random_bytes(&tuf->snapshot_key[i], 1);
+        SNEPPX_random_bytes(&tuf->timestamp_key[i], 1);
+    }
     tuf->initialized = 1; return 0;
 }
 
@@ -333,7 +339,9 @@ int SNEPPX_dep_resolver_resolve(SNEPPXDepResolver* dr) {
  */
 int SNEPPX_tuf_generate_keypair(int key_type) {
     if (key_type < 0 || key_type >= SNEPPX_TUF_MAX_KEYS) return -1;
-    return key_type * 100 + (rand() % 100);
+    uint8_t rb = 0;
+    SNEPPX_random_bytes(&rb, 1);
+    return key_type * 100 + (rb % 100);
 }
 
 /**
@@ -756,7 +764,7 @@ int SNEPPX_tuf_snapshot(uint8_t* snapshot_out, size_t* snapshot_len) {
     snapshot_out[4] = 0x53;
     snapshot_out[5] = 0x4E;
     snapshot_out[6] = 0x50;
-    for (int i = 0; i < 4; i++) snapshot_out[7 + i] = (uint8_t)(rand() % 256);
+    SNEPPX_random_bytes(&snapshot_out[7], 4);
     *snapshot_len = 64;
     return 0;
 }
@@ -1002,7 +1010,7 @@ int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size
  */
 int SNEPPX_tpm_get_random(uint8_t* bytes, int count) {
     if (!bytes || count <= 0) return -1;
-    for (int i = 0; i < count; i++) bytes[i] = (uint8_t)(rand() % 256);
+    SNEPPX_random_bytes(bytes, (size_t)count);
     return 0;
 }
 
