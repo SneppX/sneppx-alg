@@ -639,6 +639,18 @@ class Tensor:
 
         return MarginRankingLoss.apply(self, other, y, margin)
 
+    def ctc_loss(
+        self,
+        targets,
+        blank=0,
+        input_lengths=None,
+        target_lengths=None,
+        reduction="mean",
+    ):
+        from .autograd_ops import CTCLoss
+
+        return CTCLoss.apply(self, targets, blank, input_lengths, target_lengths, reduction)
+
     def conv1d(self, kernel, stride=1, padding=0):
         from .autograd_ops import Conv1d
 

@@ -1173,6 +1173,23 @@ class MarginRankingLoss(_Loss):
         return input.margin_ranking_loss(other, y, self.margin)
 
 
+class CTCLoss(_Loss):
+    def __init__(self, blank: int = 0, reduction: str = "mean"):
+        super().__init__(reduction)
+        self.blank = blank
+
+    def forward(
+        self,
+        log_probs: Tensor,
+        targets: Tensor,
+        input_lengths: Optional[List[int]] = None,
+        target_lengths: Optional[List[int]] = None,
+    ) -> Tensor:
+        return log_probs.ctc_loss(
+            targets, self.blank, input_lengths, target_lengths, self.reduction
+        )
+
+
 class CosineEmbeddingLoss(_Loss):
     def __init__(self, margin: float = 0.0, reduction: str = "mean"):
         super().__init__(reduction)

@@ -1300,6 +1300,128 @@ class MarginRankingLoss(Function):
         return [Tensor(grad_a, dtype=x1.dtype), Tensor(grad_b, dtype=x1.dtype), None]
 
 
+def _ctc_logsumexp(a):
+    a = list(a)
+    m = max(a)
+    if m <= -1e29:
+        return -1e30
+    return m + np.log(sum(np.exp(x - m) for x in a))
+
+
+class CTCLoss(Function):
+    """Connectionist Temporal Classification loss.
+
+    Input ``log_probs`` is log-softmax output of shape ``(T, N, C)`` where T is
+    the time dimension, N the batch, C the number of classes (index 0 is the
+    blank).  ``targets`` is integer class indices of shape ``(N, S)`` (no blanks,
+    no repeated adjacent labels).  ``input_lengths``/``target_lengths`` give the
+    valid lengths per sample.  Forward/backward use the log-domain alpha/beta
+    recursions; the gradient w.r.t. log-probabilities is ``-posterior``.
+    """
+
+    @staticmethod
+    def forward(
+        ctx, log_probs, targets, blank=0, input_lengths=None, target_lengths=None, reduction="mean"
+    ):
+        lp = log_probs.data
+        T, N, C = lp.shape
+        tgt = targets.data if isinstance(targets, Tensor) else np.asarray(targets)
+        if input_lengths is None:
+            input_lengths = [T] * N
+        if target_lengths is None:
+            target_lengths = [tgt.shape[1]] * N
+
+        losses = np.zeros(N)
+        alphas = []
+        exts = []
+        for n in range(N):
+            tg = tgt[n, : target_lengths[n]].astype(np.int64)
+            L = 2 * len(tg) + 1
+            ext = np.empty(L, dtype=np.int64)
+            ext[0::2] = blank
+            ext[1::2] = tg
+            Ti = int(input_lengths[n])
+            alpha = np.full((Ti, L), -1e30)
+            alpha[0, 0] = lp[0, n, ext[0]]
+            if L > 1:
+                alpha[0, 1] = lp[0, n, ext[1]]
+            for t in range(1, Ti):
+                for s in range(L):
+                    a = alpha[t - 1, s]
+                    b = alpha[t - 1, s - 1] if s - 1 >= 0 else -1e30
+                    c = (
+                        alpha[t - 1, s - 2]
+                        if (s - 2 >= 0 and ext[s - 2] != ext[s])
+                        else -1e30
+                    )
+                    alpha[t, s] = _ctc_logsumexp([a, b, c]) + lp[t, n, ext[s]]
+            z = _ctc_logsumexp(
+                [alpha[Ti - 1, L - 1], alpha[Ti - 1, L - 2] if L >= 2 else -1e30]
+            )
+            losses[n] = -z
+            alphas.append(alpha)
+            exts.append(ext)
+
+        loss = float(np.mean(losses)) if reduction == "mean" else float(np.sum(losses))
+        ctx.save_for_backward(log_probs=log_probs)
+        ctx.save_attr(
+            alphas=alphas, exts=exts, N=N, T=T, C=C, blank=blank,
+            input_lengths=input_lengths, target_lengths=target_lengths,
+            reduction=reduction, lp=lp,
+        )
+        return Tensor(np.array([loss], dtype=lp.dtype), dtype=log_probs.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        lp = ctx.get_attr("lp")
+        alphas = ctx.get_attr("alphas")
+        exts = ctx.get_attr("exts")
+        N = ctx.get_attr("N")
+        T = ctx.get_attr("T")
+        C = ctx.get_attr("C")
+        blank = ctx.get_attr("blank")
+        il = ctx.get_attr("input_lengths")
+        tl = ctx.get_attr("target_lengths")
+        reduction = ctx.get_attr("reduction")
+        g = grad_output.data.flat[0]
+
+        grad = np.zeros((T, N, C))
+        for n in range(N):
+            ext = exts[n]
+            L = len(ext)
+            Ti = int(il[n])
+            beta = np.full((Ti, L), -1e30)
+            beta[Ti - 1, L - 1] = 0.0
+            if L >= 2:
+                beta[Ti - 1, L - 2] = 0.0
+            for t in range(Ti - 2, -1, -1):
+                for s in range(L):
+                    a = beta[t + 1, s] + lp[t + 1, n, ext[s]]
+                    b = (
+                        beta[t + 1, s + 1] + lp[t + 1, n, ext[s + 1]]
+                        if s + 1 < L
+                        else -1e30
+                    )
+                    c = (
+                        beta[t + 1, s + 2] + lp[t + 1, n, ext[s + 2]]
+                        if (s + 2 < L and ext[s + 2] != ext[s])
+                        else -1e30
+                    )
+                    beta[t, s] = _ctc_logsumexp([a, b, c])
+            z = _ctc_logsumexp(
+                [alphas[n][Ti - 1, L - 1], alphas[n][Ti - 1, L - 2] if L >= 2 else -1e30]
+            )
+            for t in range(Ti):
+                for s in range(L):
+                    prob = np.exp(alphas[n][t, s] + beta[t, s] - z)
+                    grad[t, n, ext[s]] += prob
+            grad[:Ti, n, :] = -grad[:Ti, n, :]
+
+        scale = (g / N) if reduction == "mean" else g
+        grad = grad * scale
+        return [Tensor(grad, dtype=ctx.get_saved_tensor("log_probs").dtype), None]
+
+
 __all__ = [
     "Add",
     "Stack",
@@ -1350,4 +1472,5 @@ __all__ = [
     "TripletMarginLoss",
     "ContrastiveLoss",
     "MarginRankingLoss",
+    "CTCLoss",
 ]
