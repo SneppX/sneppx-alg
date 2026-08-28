@@ -1,5 +1,6 @@
 #ifdef SNEPPX_HAS_CUDA
 #include "../../include/neural_core/architecture/distributed.h"
+#include "../../net/distributed/nccl.h"
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <stdlib.h>
@@ -30,6 +31,7 @@ struct SNEPPX_TensorParallel {
     int tp_size;
     int tp_rank;
     int use_nccl;
+    SNEPPX_ProcessGroup* pg;
 };
 
 // Forward declarations for NCCL
@@ -47,7 +49,10 @@ int sneppx_tp_init(SNEPPX_TensorParallel** tp,
     t->tp_size = config->tensor_parallel_size;
     t->tp_rank = config->rank % config->tensor_parallel_size;
     t->use_nccl = 1;
-    
+
+    sneppx_nccl_initialize();
+    sneppx_pg_create(&t->pg, t->tp_size, t->tp_rank);
+
     *tp = t;
     return 0;
 }
@@ -79,18 +84,26 @@ int sneppx_tp_linear_forward(SNEPPX_TensorParallel* tp,
                 output, n_local);    // [m, n_local] partial output
     
     // All-reduce to get full output
-    // (in a real implementation, this would use NCCL)
-    // For now, copy to contiguous buffer
     float* full_output;
     cudaMalloc(&full_output, m * n * sizeof(float));
-    cudaMemcpy(full_output + rank_offset * m, output,
-               n_local * m * sizeof(float), cudaMemcpyDeviceToDevice);
-    
-    // Simulate all-reduce by copying full output back
+    cudaMemcpy(full_output + (size_t)rank_offset * m, output,
+               (size_t)n_local * m * sizeof(float), cudaMemcpyDeviceToDevice);
+
+    // Real tensor-parallel all-reduce (sum) across TP ranks via NCCL
+    if (tp->pg) {
+        int ret = sneppx_pg_all_reduce(tp->pg, full_output, (size_t)m * n,
+                                       SNEPPX_NCCL_FLOAT, SNEPPX_NCCL_SUM, stream);
+        if (ret != 0) {
+            cudaFree(full_output);
+            cublasDestroy(handle);
+            return ret;
+        }
+    }
+
     cudaMemcpy(output, full_output, m * n * sizeof(float),
                cudaMemcpyDeviceToDevice);
     cudaFree(full_output);
-    
+
     cublasDestroy(handle);
     return 0;
 }
@@ -100,15 +113,19 @@ int sneppx_tp_all_reduce(SNEPPX_TensorParallel* tp,
                           float* data, int size,
                           cudaStream_t stream) {
     if (!tp || !data) return -1;
-    
-    // Use NCCL all-reduce if available
-    // (placeholder - actual NCCL call would go here)
-    
+
+    // Real tensor-parallel all-reduce via NCCL
+    if (tp->pg) {
+        return sneppx_pg_all_reduce(tp->pg, data, size,
+                                    SNEPPX_NCCL_FLOAT, SNEPPX_NCCL_SUM, stream);
+    }
+
     return 0;
 }
 
 int sneppx_tp_destroy(SNEPPX_TensorParallel* tp) {
     if (!tp) return -1;
+    if (tp->pg) sneppx_pg_destroy(tp->pg);
     free(tp);
     return 0;
 }
