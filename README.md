@@ -18,27 +18,11 @@
 **⭐ Star this repo** to support the project and help us reach 1,000 stars!
 
 ## 📑 Table of Contents
-- [Why SneppX-Alg?](#why-sneppx-alg)
 - [Features](#features)
 - [Quickstart](#quick-build)
 - [Documentation](#documentation)
 - [Layout](#layout)
 - [License](#license)
-
-## Why SneppX-Alg? 🆚
-
-| Capability | SNEPPX-Alg | PyTorch | JAX | TensorFlow |
-|------------|-----------|---------|-----|------------|
-| Core language | C11 / C++20 / CUDA | C++ / Python | C++ / Python | C++ / Python |
-| Tensor + Autograd | ✅ built-in | ✅ | ✅ | ✅ |
-| MoE / SSM / Transformer | ✅ | ✅ | ✅ | partial |
-| LLM Model Zoo (LLaMA/Mistral/Qwen/DeepSeek) | ✅ `from_pretrained` | ✅ | ✅ | ✅ |
-| Quantization (INT8/4, FP8, AWQ, GPTQ) | ✅ | ✅ | partial | partial |
-| Distributed (ZeRO 1/2/3, TP/PP/EP) | ✅ | ✅ | ✅ | ✅ |
-| 10-layer AI Security (S0–S9) | ✅ native | ❌ | ❌ | partial |
-| Air-gapped / signed updates | ✅ | ❌ | ❌ | ❌ |
-
-For complete documentation, start at [`docs/index.md`](docs/index.md) or see [`QUICKSTART.md`](QUICKSTART.md).
 
 ## Features
 
