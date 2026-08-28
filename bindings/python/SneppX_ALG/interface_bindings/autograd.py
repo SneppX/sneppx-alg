@@ -13,6 +13,43 @@ import numpy as np
 from .tensor import Tensor
 
 # ---------------------------------------------------------------------------
+# Grad-enabled flag — controls whether operations build a backward graph.
+# ---------------------------------------------------------------------------
+
+_GRAD_ENABLED = [True]
+
+
+def is_grad_enabled() -> bool:
+    return _GRAD_ENABLED[0]
+
+
+def set_grad_enabled(mode: bool):
+    """Enable or disable gradient tracking. Returns a context manager that
+    restores the previous state on exit."""
+    _GRAD_ENABLED[0] = bool(mode)
+    return enable_grad() if mode else no_grad()
+
+
+class enable_grad:
+    def __enter__(self):
+        self._prev = _GRAD_ENABLED[0]
+        _GRAD_ENABLED[0] = True
+        return self
+
+    def __exit__(self, *exc):
+        _GRAD_ENABLED[0] = self._prev
+
+
+class no_grad:
+    def __enter__(self):
+        self._prev = _GRAD_ENABLED[0]
+        _GRAD_ENABLED[0] = False
+        return self
+
+    def __exit__(self, *exc):
+        _GRAD_ENABLED[0] = self._prev
+
+# ---------------------------------------------------------------------------
 # Context — saved state between forward and backward
 # ---------------------------------------------------------------------------
 
@@ -71,7 +108,7 @@ class Function:
 
         output = cls.forward(ctx, *args, **kwargs)
 
-        if needs_grad and isinstance(output, Tensor):
+        if needs_grad and _GRAD_ENABLED[0] and isinstance(output, Tensor):
             output.requires_grad = True
             fn = _GradFn(cls, ctx, _tensor_inputs(args))
             output._attach_grad_fn(fn)
