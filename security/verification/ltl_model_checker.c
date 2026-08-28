@@ -39,8 +39,17 @@ int SNEPPX_fv_model_init(void) {
  */
 int SNEPPX_fv_model_check_property(const char* property) {
     if (!property || !g_fv_initialized) return -1;
-    (void)property;
-    return 0;
+    /* Minimal real LTL: only assert properties that are actually verified
+       against the loaded model. Previously this was a no-op returning 0 for
+       ANY input (false assurance). Unsupported/unknown properties are reported
+       as NOT verified (non-zero) rather than falsely claimed to hold. */
+    if (strcmp(property, "G !deadlock") == 0 || strcmp(property, "G not deadlock") == 0) {
+        return SNEPPX_fv_get_deadlock_count() == 0 ? 0 : -1;
+    }
+    if (strcmp(property, "G reachable") == 0 || strcmp(property, "G reachable>0") == 0) {
+        return SNEPPX_fv_get_reachable_count() > 0 ? 0 : -1;
+    }
+    return -1;
 }
 
 int SNEPPX_fv_verify_invariant(int (*invariant)(uint32_t)) {
