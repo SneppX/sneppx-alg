@@ -11,7 +11,7 @@
 <a href="https://github.com/ammar49-cyber/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
 </p>
 
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ammar49-cyber/sneppx-alg/pulls)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ammar49-cyber/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/ammar49-cyber/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/ammar49-cyber/sneppx-alg)
 
 > **ARIX_Algo** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed training, quantization, and advanced architectures.
 
@@ -130,6 +130,10 @@ cd build && ctest -C Release --output-on-failure
 | `releases/` | Release signing tooling |
 
 `*` Metal and oneAPI are reference-compute backends enabled via `SNEPPX_BUILD_METAL` / `SNEPPX_BUILD_ONEAPI`. Vulkan/TPU/HTTP/ZK do real reference computation and are enabled via `SNEPPX_BUILD_VULKAN` / `SNEPPX_BUILD_TPU` / `SNEPPX_BUILD_HTTP` / `SNEPPX_BUILD_ZK`.
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ammar49-cyber/sneppx-alg&type=Date)](https://www.star-history.com/#ammar49-cyber/sneppx-alg&Date)
 
 ## License
 
