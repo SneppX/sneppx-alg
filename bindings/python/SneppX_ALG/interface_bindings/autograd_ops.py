@@ -733,60 +733,74 @@ class EmbeddingFn(Function):
 class Conv1d(Function):
     @staticmethod
     def forward(ctx, inp, kernel, stride=1, padding=0):
-        from scipy import signal
+        from numpy.lib.stride_tricks import sliding_window_view
 
         arr = inp.data
         k = kernel.data if isinstance(kernel, Tensor) else kernel
-        ctx.save_attr(stride=stride, padding=padding, k_shape=k.shape)
+        batched = arr.ndim == 3
+        if not batched:
+            arr = arr[None]
+        N, C_in, L = arr.shape
+        C_out, C_in_k, K = k.shape
+        Lp = L + 2 * padding
+        padded = np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
+        win = sliding_window_view(padded, K, axis=2)[:, :, ::stride, :]
+        Lout = win.shape[2]
+        out = np.einsum("nclk,ock->nol", win, k)
         ctx.save_for_backward(
             inp=inp, kernel=kernel if isinstance(kernel, Tensor) else Tensor(kernel)
         )
-        if padding > 0:
-            arr = np.pad(
-                arr, [(0, 0), (padding,), (0,)] if arr.ndim == 3 else [(padding,)]
-            )
-        out = signal.correlate(arr, k, mode="valid")[..., ::stride]
-        return Tensor(out, dtype=inp.dtype)
+        ctx.save_attr(
+            stride=stride,
+            padding=padding,
+            L=L,
+            K=K,
+            C_in=C_in,
+            C_out=C_out,
+            Lout=Lout,
+            Lp=Lp,
+            batched=batched,
+        )
+        return Tensor(out if batched else out[0], dtype=inp.dtype)
 
     @staticmethod
     def backward(ctx, grad_output):
-        from scipy import signal
+        from numpy.lib.stride_tricks import sliding_window_view
 
         inp = ctx.get_saved_tensor("inp")
         kernel = ctx.get_saved_tensor("kernel")
         stride = ctx.get_attr("stride")
         padding = ctx.get_attr("padding")
+        L = ctx.get_attr("L")
+        K = ctx.get_attr("K")
+        Lout = ctx.get_attr("Lout")
+        Lp = ctx.get_attr("Lp")
+        C_in = ctx.get_attr("C_in")
+        batched = ctx.get_attr("batched")
         k = kernel.data
         g = grad_output.data
+        garr = g if g.ndim == 3 else g[None]
+        N = garr.shape[0]
 
-        if stride > 1:
-            if g.ndim == 3:
-                g_dil = np.zeros(
-                    (g.shape[0], 1 + (g.shape[1] - 1) * stride, g.shape[2])
-                )
-                g_dil[:, ::stride, :] = g
-            else:
-                g_dil = np.zeros((1 + (g.shape[0] - 1) * stride,))
-                g_dil[::stride] = g
-            g = g_dil
+        # grad w.r.t input: scatter-add einsum('nol,ock->nclk') at l*stride+k
+        padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
+        contrib = np.einsum("nol,ock->nclk", garr, k)
+        for l in range(Lout):
+            for kk in range(K):
+                padded[:, :, l * stride + kk] += contrib[:, :, l, kk]
+        grad_inp_full = padded[:, :, padding : L + padding] if padding > 0 else padded
+        grad_inp = grad_inp_full if batched else grad_inp_full[0]
 
-        if padding > 0:
-            grad_pad = np.pad(
-                g, [(0, 0), (padding,), (0,)] if g.ndim == 3 else [(padding,)]
-            )
-        else:
-            grad_pad = g
-        k_rot = k[..., ::-1, :] if k.ndim == 3 else k[::-1]
-        grad_inp = signal.correlate(grad_pad, k_rot, mode="full")
-        slices = tuple(slice(0, s) for s in inp.shape)
-        grad_inp = grad_inp[slices]
-
-        inp_pad = np.pad(
-            inp.data, [(0, 0), (padding,), (0,)] if inp.ndim == 3 else [(padding,)]
+        # grad w.r.t kernel: einsum over batch/spatial of g * window
+        arr = inp.data
+        arrb = arr if arr.ndim == 3 else arr[None]
+        padded_in = (
+            np.pad(arrb, [(0, 0), (0, 0), (padding, padding)])
+            if padding > 0
+            else arrb
         )
-        g_flip = g[..., ::-1, :] if g.ndim == 3 else g[::-1]
-        grad_k = signal.correlate(inp_pad, g_flip, mode="valid")
-        grad_k = grad_k.reshape(k.shape)
+        win = sliding_window_view(padded_in, K, axis=2)[:, :, ::stride, :]
+        grad_k = np.einsum("nol,nclk->ock", garr, win)
 
         return [Tensor(grad_inp, dtype=inp.dtype), Tensor(grad_k, dtype=kernel.dtype)]
 
