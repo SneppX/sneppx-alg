@@ -1,7 +1,7 @@
 # SNEPPX-Alg 🤖 — The Universal Open-Source AI Algorithm Framework
 
 <p align="center">
-<b>A universal, open-source AI algorithm framework in C/C++ &amp; CUDA</b> — tensor engine, autograd, MoE/SSM transformers, LLM model zoo, quantization, distributed training &amp; 10-layer AI security. A high-performance alternative to PyTorch / JAX / TensorFlow.
+<b>A universal, open-source AI algorithm framework in C/C++ &amp; CUDA</b> — tensor engine, autograd, MoE/SSM transformers, LLM model zoo, quantization, distributed training &amp; 10-layer AI security.
 </p>
 
 <p align="center">
