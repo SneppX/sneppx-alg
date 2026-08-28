@@ -1,6 +1,7 @@
 #include "signed_update.h"
 #include "cryptographic_hashing_blake3.h"
 #include "constant_time_operations.h"
+#include "neural_core/security/ed25519_signature_verification.h"
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -235,19 +236,22 @@ int SNEPPX_update_verifier_get_update_history(SNEPPXUpdateVerifier* uv, uint32_t
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t* signing_key, size_t key_len) {
-    if (!update || !signing_key) return -1;
+    if (!update || !signing_key || key_len < SNEPPX_ED25519_SEED_LEN) return -1;
     SNEPPXBlake3State ctx;
     uint8_t hash[SNEPPX_UPDATE_HASH_LEN];
     SNEPPX_blake3_init(&ctx);
     SNEPPX_blake3_update(&ctx, (const uint8_t*)&update->version_major, sizeof(uint32_t) * 3);
     SNEPPX_blake3_update(&ctx, (const uint8_t*)&update->chunk_count, sizeof(int));
     SNEPPX_blake3_update(&ctx, (const uint8_t*)&update->timestamp, sizeof(uint64_t));
-    SNEPPX_blake3_update(&ctx, signing_key, key_len);
     SNEPPX_blake3_finish(&ctx, hash);
     memcpy(update->update_hash, hash, SNEPPX_UPDATE_HASH_LEN);
-    memset(update->signature, 0, SNEPPX_UPDATE_SIG_LEN);
-    for (size_t i = 0; i < SNEPPX_UPDATE_SIG_LEN && i < SNEPPX_UPDATE_HASH_LEN; i++)
-        update->signature[i] = hash[i] ^ 0xAA;
+    /* Real Ed25519 signature over the update hash. signing_key is the 32-byte seed. */
+    SNEPPXEd25519Keypair kp;
+    if (SNEPPX_ed25519_secret_key_expand(kp.private_key, signing_key) != 0) return -1;
+    if (SNEPPX_ed25519_publickey_from_seed(signing_key, kp.public_key) != 0) return -1;
+    SNEPPXEd25519Signature sig;
+    if (SNEPPX_ed25519_sign(&kp, hash, SNEPPX_UPDATE_HASH_LEN, &sig) != 0) return -1;
+    memcpy(update->signature, sig.data, SNEPPX_UPDATE_SIG_LEN);
     return 0;
 }
 
@@ -260,14 +264,12 @@ int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len) {
-    (void)public_key; (void)key_len;
-    if (!update) return -1;
-    uint8_t expected_hash[SNEPPX_UPDATE_HASH_LEN];
-    for (size_t i = 0; i < SNEPPX_UPDATE_HASH_LEN && i < SNEPPX_UPDATE_SIG_LEN; i++)
-        expected_hash[i] = update->signature[i] ^ 0xAA;
-    for (size_t i = SNEPPX_UPDATE_HASH_LEN; i < SNEPPX_UPDATE_SIG_LEN; i++)
-        expected_hash[i] = 0;
-    return (memcmp(expected_hash, update->update_hash, SNEPPX_UPDATE_HASH_LEN) == 0) ? 0 : -1;
+    (void)key_len;
+    if (!update || !public_key) return -1;
+    SNEPPXEd25519Signature sig;
+    memcpy(sig.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
+    int rc = SNEPPX_ed25519_verify(public_key, update->update_hash, SNEPPX_UPDATE_HASH_LEN, &sig);
+    return (rc == 1) ? 0 : -1;
 }
 
 /**
@@ -611,15 +613,15 @@ int SNEPPX_update_verifier_compute_hash(const uint8_t* data, size_t len, uint8_t
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint8_t* data, size_t len, const uint8_t* signature, size_t sig_len) {
-    (void)uv;
-    if (!data || !signature) return -1;
+int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint8_t* data, size_t len, const uint8_t* signature, size_t sig_len, const uint8_t* public_key, size_t key_len) {
+    (void)uv; (void)key_len;
+    if (!data || !signature || !public_key || sig_len < SNEPPX_ED25519_SIGNATURE_LEN) return -1;
     uint8_t hash[SNEPPX_UPDATE_HASH_LEN];
     SNEPPX_update_verifier_compute_hash(data, len, hash);
-    for (size_t i = 0; i < sig_len && i < SNEPPX_UPDATE_HASH_LEN; i++) {
-        if ((signature[i] ^ 0xAA) != hash[i]) return -1;
-    }
-    return 0;
+    SNEPPXEd25519Signature sig;
+    memcpy(sig.data, signature, SNEPPX_ED25519_SIGNATURE_LEN);
+    int rc = SNEPPX_ed25519_verify(public_key, hash, SNEPPX_UPDATE_HASH_LEN, &sig);
+    return (rc == 1) ? 0 : -1;
 }
 
 /**
