@@ -57,6 +57,15 @@ int SNEPPX_ed25519_keypair_generate(SNEPPXEd25519Keypair* kp);
  */
 int SNEPPX_ed25519_secret_key_expand(uint8_t* expanded_sk, const uint8_t* seed);
 /**
+ * @brief Derive the Ed25519 public key from a 32-byte seed.
+ *
+ * @param seed [in] 32-byte seed (the Ed25519 secret seed).
+ * @param public_key [out] 32-byte public key (little-endian Y with sign bit).
+ *
+ * @return 0 on success, -1 on error.
+ */
+int SNEPPX_ed25519_publickey_from_seed(const uint8_t* seed, uint8_t* public_key);
+/**
  * @brief Sign a message with Ed25519.
  * @param uint8_t *sig
  * @param size_t *siglen
