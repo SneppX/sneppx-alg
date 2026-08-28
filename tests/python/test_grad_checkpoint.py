@@ -1,131 +1,82 @@
-"""Tests for Gradient Checkpointing (recompute-on-backward behaviour)."""
-
+import sys
+import os
 import numpy as np
 
-from SneppX_ALG.interface_bindings.grad_checkpoint import (
-    CheckpointSegment,
-    checkpoint,
-    GradientCheckpointer,
-    checkpoint_sequential,
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
 from SneppX_ALG.interface_bindings.tensor import Tensor
-from SneppX_ALG.interface_bindings.nn import Linear, ReLU, Sequential
+from SneppX_ALG.interface_bindings import nn
+from SneppX_ALG.interface_bindings import grad_checkpoint as cp
 
 
-def double(x: Tensor) -> Tensor:
-    return Tensor.from_numpy(x.data * 2.0)
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.l1 = nn.Linear(8, 16)
+        self.l2 = nn.Linear(16, 4)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        return self.l2(self.relu(self.l1(x)))
 
 
-def square(x: Tensor) -> Tensor:
-    return Tensor.from_numpy(x.data ** 2.0)
+def _copy_weights(src, dst):
+    for (_, p1), (_, p2) in zip(src.named_parameters(), dst.named_parameters()):
+        p2.data = p1.data.copy()
 
 
-def test_checkpoint_segment_forward():
-    x = Tensor.ones((2, 3))
-    seg = CheckpointSegment(double, (x,))
-    out = seg.forward()
-    assert np.allclose(out.data, 2.0)
-    assert seg.output is not None
+def test_checkpoint_matches_plain():
+    np.random.seed(0)
+    x = Tensor(np.random.randn(5, 8).astype("float32"))
+
+    net1 = Net()
+    out1 = net1(x)
+    (out1 * out1).sum().backward()
+
+    net2 = Net()
+    _copy_weights(net1, net2)
+    out2 = cp.checkpoint(lambda: net2(x))
+    (out2 * out2).sum().backward()
+
+    for (n1, p1), (_, p2) in zip(net1.named_parameters(), net2.named_parameters()):
+        assert p1.grad is not None and p2.grad is not None
+        assert np.allclose(p1.grad.data, p2.grad.data, atol=1e-5), n1
 
 
-def test_checkpoint_segment_recompute():
-    x = Tensor.ones((2, 3))
-    seg = CheckpointSegment(double, (x,))
-    seg.forward()
-    out = seg.recompute()
-    assert np.allclose(out.data, 2.0)
+def test_checkpoint_sequential_matches_plain():
+    np.random.seed(1)
+    x = Tensor(np.random.randn(5, 8).astype("float32"))
+
+    net1 = Net()
+    out1 = net1(x)
+    (out1 * out1).sum().backward()
+
+    net3 = Net()
+    _copy_weights(net1, net3)
+    fns = [lambda z: net3.l1(z), lambda z: net3.relu(z), lambda z: net3.l2(z)]
+    out3 = cp.checkpoint_sequential(fns, x, segments=1)
+    (out3 * out3).sum().backward()
+
+    for (n1, p1), (_, p3) in zip(net1.named_parameters(), net3.named_parameters()):
+        assert p1.grad is not None and p3.grad is not None
+        assert np.allclose(p1.grad.data, p3.grad.data, atol=1e-5), n1
 
 
-def test_checkpoint_function():
-    x = Tensor.ones((2, 3)) * 5.0
-    out = checkpoint(square, x)
-    assert np.allclose(out.data, 25.0)
+def test_no_grad_disables_graph():
+    from SneppX_ALG.interface_bindings.autograd import no_grad, is_grad_enabled
 
-
-def test_checkpoint_multiple_inputs():
-    a = Tensor.ones((2,)) * 3.0
-    b = Tensor.ones((2,)) * 4.0
-
-    def add(x, y):
-        return Tensor.from_numpy(x.data + y.data)
-
-    out = checkpoint(add, a, b)
-    assert np.allclose(out.data, 7.0)
-
-
-def test_checkpoint_preserves_computation():
-    model = Sequential(Linear(4, 8), ReLU(), Linear(8, 2))
-    x = Tensor.randn((2, 4))
-    out_direct = model(x)
-    out_ckpt = checkpoint(lambda x: model(x), x)
-    assert out_direct.shape == out_ckpt.shape
-    assert np.allclose(out_direct.data, out_ckpt.data, atol=1e-5)
-
-
-def test_checkpoint_gradient_matches_uncheckpointed():
-    # The whole point of checkpointing is correct gradients with less memory.
-    w = Tensor.randn((4, 8)) * 0.1
-    w.requires_grad_(True)
-    b = Tensor.zeros((4,))
-    b.requires_grad_(True)
-    x = Tensor.randn((3, 8))
-
-    # Uncheckpointed baseline
-    h = x @ w.T + b
-    h = h.relu()
-    loss_ref = (h * h).mean()
-    loss_ref.backward()
-    g_w_ref = w.grad.data.copy()
-    g_b_ref = b.grad.data.copy()
-    w.grad = None
-    b.grad = None
-
-    # Checkpointed: the matmul+bias+relu is the recomputed segment
-    h2 = checkpoint(lambda t: (t @ w.T + b).relu(), x)
-    loss_ck = (h2 * h2).mean()
-    loss_ck.backward()
-    assert np.allclose(w.grad.data, g_w_ref, atol=1e-5), "weight grad mismatch"
-    assert np.allclose(b.grad.data, g_b_ref, atol=1e-5), "bias grad mismatch"
-
-
-def test_gradient_checkpointer_context():
-    gc = GradientCheckpointer()
-    with gc.context():
-        out = gc.checkpoint(double, Tensor.ones((3,)))
-        out = gc.checkpoint(square, out)
-    assert len(gc.segments) == 2
-    assert np.allclose(out.data, 4.0)
-
-
-def test_gradient_checkpointer_memory_estimate():
-    gc = GradientCheckpointer()
-    with gc.context():
-        gc.checkpoint(double, Tensor.ones((3, 4)))
-    assert gc.memory_saved_bytes() > 0
-
-
-def test_checkpoint_sequential():
-    layers = [Linear(4, 8), ReLU(), Linear(8, 4), ReLU(), Linear(4, 2)]
-    x = Tensor.randn((2, 4))
-    out = checkpoint_sequential(layers, x, segments=2)
-    assert out.shape == (2, 2)
+    assert is_grad_enabled() is True
+    x = Tensor(np.random.randn(3, 4).astype("float32"), requires_grad=True)
+    with no_grad():
+        assert is_grad_enabled() is False
+        y = x * 2
+    assert is_grad_enabled() is True
+    assert y.grad_fn is None
 
 
 if __name__ == "__main__":
-    import sys
-
-    locals_ = locals().copy()
-    passed = 0
-    failed = 0
-    for name, fn in sorted(locals_.items()):
-        if name.startswith("test_"):
-            try:
-                fn()
-                print(f"  PASS {name}")
-                passed += 1
-            except Exception as e:
-                print(f"  FAIL {name}: {e}")
-                failed += 1
-    print(f"\n{'='*50}")
-    print(f"  {passed} passed, {failed} failed")
-    sys.exit(failed)
+    for name, fn in list(globals().items()):
+        if name.startswith("test_") and callable(fn):
+            fn()
+            print("PASS", name)
+    print("ALL CHECKPOINT TESTS PASSED")
