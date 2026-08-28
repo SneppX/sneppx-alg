@@ -646,8 +646,8 @@ class RMSNorm(Function):
 
         dgamma = (g * x_norm).sum(axis=tuple(range(g.ndim - 1)), keepdims=False)
         dx_norm = g * gamma_val
-        drms = -(dx_norm * x_norm / rms).sum(axis=-1, keepdims=True)
-        dx = dx_norm / rms + drms * x_norm / (n * rms)
+        inner = (dx_norm * a.data).sum(axis=-1, keepdims=True)
+        dx = dx_norm / rms - inner * a.data / (n * rms * rms * rms)
         return [Tensor(dx, dtype=a.dtype), Tensor(dgamma, dtype=a.dtype)]
 
 
@@ -1024,7 +1024,8 @@ class Cat(Function):
     def backward(ctx, grad_output):
         dim = ctx.get_attr("dim")
         sizes = ctx.get_attr("sizes")
-        grads = np.split(grad_output.data, sizes, axis=dim)
+        split_pts = np.cumsum(sizes)[:-1]
+        grads = np.split(grad_output.data, split_pts, axis=dim)
         return [Tensor(g.copy(), dtype=grad_output.dtype) for g in grads]
 
 
