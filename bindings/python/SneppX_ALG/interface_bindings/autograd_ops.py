@@ -1046,7 +1046,7 @@ class Conv1d(Function):
         return Tensor(out if batched else out[0], dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         from numpy.lib.stride_tricks import sliding_window_view
 
         inp = ctx.get_saved_tensor("inp")
@@ -1062,29 +1062,84 @@ class Conv1d(Function):
         k = kernel.data
         g = grad_output.data
         garr = g if g.ndim == 3 else g[None]
+
+        if not create_graph:
+            # grad w.r.t input: scatter-add einsum('nol,ock->nclk') at l*stride+k
+            N = garr.shape[0]
+            padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
+            contrib = np.einsum("nol,ock->nclk", garr, k)
+            for l in range(Lout):
+                for kk in range(K):
+                    padded[:, :, l * stride + kk] += contrib[:, :, l, kk]
+            grad_inp_full = padded[:, :, padding : L + padding] if padding > 0 else padded
+            grad_inp = grad_inp_full if batched else grad_inp_full[0]
+
+            # grad w.r.t kernel: einsum over batch/spatial of g * window
+            arr = inp.data
+            arrb = arr if arr.ndim == 3 else arr[None]
+            padded_in = (
+                np.pad(arrb, [(0, 0), (0, 0), (padding, padding)])
+                if padding > 0
+                else arrb
+            )
+            win = sliding_window_view(padded_in, K, axis=2)[:, :, ::stride, :]
+            grad_k = np.einsum("nol,nclk->ock", garr, win)
+            return [Tensor(grad_inp, dtype=inp.dtype), Tensor(grad_k, dtype=kernel.dtype)]
+
+        # ---- graph-aware backward (higher-order differentiation) ----
+        dt = grad_output.dtype
         N = garr.shape[0]
+        # build batched graph tensors
+        g_graph = grad_output if g.ndim == 3 else Unsqueeze.apply(grad_output, 0)
+        if batched:
+            inp_graph = inp
+        else:
+            inp_graph = Unsqueeze.apply(inp, 0)
+        if padding > 0:
+            zfront = _as_const(
+                np.zeros((N, C_in, padding), dtype=_numpy_dtype(dt)), dt
+            )
+            zback = _as_const(
+                np.zeros((N, C_in, padding), dtype=_numpy_dtype(dt)), dt
+            )
+            inp_padded = Cat.apply(zfront, inp_graph, zback, 2)
+        else:
+            inp_padded = inp_graph
 
-        # grad w.r.t input: scatter-add einsum('nol,ock->nclk') at l*stride+k
-        padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
-        contrib = np.einsum("nol,ock->nclk", garr, k)
+        # grad w.r.t kernel: windows = inp_padded (N,C_in,Lout,K)
+        wins = []
         for l in range(Lout):
+            cols = [
+                GetItem.apply(inp_padded, (slice(None), slice(None), l * stride + kk))
+                for kk in range(K)
+            ]
+            wins.append(Stack.apply(*cols, -1))  # (N,C_in,K)
+        windows = Stack.apply(*wins, 2)  # (N,C_in,Lout,K)
+        g_e = Unsqueeze.apply(Unsqueeze.apply(g_graph, 2), -1)  # (N,C_out,1,Lout,1)
+        w_e = Unsqueeze.apply(windows, 1)  # (N,1,C_in,Lout,K)
+        prod = Mul.apply(g_e, w_e)  # (N,C_out,C_in,Lout,K)
+        grad_k = Sum.apply(prod, (0, 3))  # (C_out,C_in,K)
+
+        # grad w.r.t input: scatter-add via constant position masks
+        acc = _as_const(np.zeros((N, C_in, Lp), dtype=_numpy_dtype(dt)), dt)
+        pos = np.arange(Lp)
+        for l in range(Lout):
+            gl = GetItem.apply(g_graph, (slice(None), slice(None), l))  # (N,C_out)
             for kk in range(K):
-                padded[:, :, l * stride + kk] += contrib[:, :, l, kk]
-        grad_inp_full = padded[:, :, padding : L + padding] if padding > 0 else padded
-        grad_inp = grad_inp_full if batched else grad_inp_full[0]
-
-        # grad w.r.t kernel: einsum over batch/spatial of g * window
-        arr = inp.data
-        arrb = arr if arr.ndim == 3 else arr[None]
-        padded_in = (
-            np.pad(arrb, [(0, 0), (0, 0), (padding, padding)])
-            if padding > 0
-            else arrb
-        )
-        win = sliding_window_view(padded_in, K, axis=2)[:, :, ::stride, :]
-        grad_k = np.einsum("nol,nclk->ock", garr, win)
-
-        return [Tensor(grad_inp, dtype=inp.dtype), Tensor(grad_k, dtype=kernel.dtype)]
+                p = l * stride + kk
+                kk_t = GetItem.apply(kernel, (slice(None), slice(None), kk))  # (C_out,C_in)
+                Tlk = MatMul.apply(gl, kk_t)  # (N,C_in)
+                mask_t = _as_const((pos == p).astype(np.float64), dt)  # (Lp,)
+                full_p = Mul.apply(Unsqueeze.apply(Tlk, -1), mask_t)  # (N,C_in,Lp)
+                acc = Add.apply(acc, full_p)
+        grad_inp_full = acc
+        if padding > 0:
+            grad_inp_full = GetItem.apply(
+                grad_inp_full,
+                (slice(None), slice(None), slice(padding, L + padding)),
+            )
+        grad_inp = grad_inp_full if batched else Squeeze.apply(grad_inp_full, 0)
+        return [grad_inp, grad_k]
 
 
 class MaxPool2d(Function):
