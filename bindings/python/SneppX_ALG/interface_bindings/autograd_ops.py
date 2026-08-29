@@ -269,7 +269,9 @@ class Neg(Function):
         return Tensor(-a.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            return [Mul.apply(grad_output, _as_const(-1.0, grad_output.dtype))]
         return [-grad_output]
 
 
@@ -1400,11 +1402,25 @@ class SmoothL1Loss(Function):
         return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         target = ctx.get_saved_tensor("target")
         beta = ctx.get_attr("beta")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            x = Sub.apply(inp, target)
+            absx = Abs.apply(x)
+            mask = absx.data < beta  # constant w.r.t. x for 2nd-order
+            sgn = np.sign(x.data)
+            x_scaled = Mul.apply(x, _as_const(1.0 / beta, dt))
+            term_smooth = Mul.apply(_as_const(mask.astype(np.float64), dt), x_scaled)
+            term_linear = _as_const((~mask).astype(np.float64) * sgn, dt)
+            grad_x = Mul.apply(
+                Add.apply(term_smooth, term_linear),
+                Div.apply(grad_output, _as_const(n, dt)),
+            )
+            return [grad_x, Neg.apply(grad_x)]
         g = grad_output.data.flat[0]
         x = inp.data - target.data
         absx = np.abs(x)
@@ -1423,11 +1439,24 @@ class HuberLoss(Function):
         return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         target = ctx.get_saved_tensor("target")
         delta = ctx.get_attr("delta")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            x = Sub.apply(inp, target)
+            absx = Abs.apply(x)
+            mask = absx.data <= delta  # constant w.r.t. x for 2nd-order
+            sgn = np.sign(x.data)
+            term_quad = Mul.apply(_as_const(mask.astype(np.float64), dt), x)
+            term_lin = _as_const((~mask).astype(np.float64) * delta * sgn, dt)
+            grad_x = Mul.apply(
+                Add.apply(term_quad, term_lin),
+                Div.apply(grad_output, _as_const(n, dt)),
+            )
+            return [grad_x, Neg.apply(grad_x)]
         g = grad_output.data.flat[0]
         x = inp.data - target.data
         absx = np.abs(x)
