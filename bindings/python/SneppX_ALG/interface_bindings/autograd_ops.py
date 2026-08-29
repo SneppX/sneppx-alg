@@ -1733,7 +1733,7 @@ class MarginRankingLoss(Function):
     def forward(ctx, x1, x2, y, margin=0.0):
         a = x1.data
         b = x2.data
-        yy = y.data.ravel().astype(np.float64)
+        yy = y.data.ravel().astype(np.float64).reshape(-1, 1)
         loss = np.maximum(0.0, -yy * (a - b) + margin)
         ctx.save_for_backward(x1=x1, x2=x2, y=y)
         ctx.save_attr(margin=margin, n=a.size)
@@ -1748,7 +1748,7 @@ class MarginRankingLoss(Function):
         g = grad_output.data.flat[0]
         a = x1.data
         b = x2.data
-        yy = y.data.ravel().astype(np.float64)
+        yy = y.data.ravel().astype(np.float64).reshape(-1, 1)
         hinge = -yy * (a - b) + ctx.get_attr("margin")
         active = (hinge > 0).astype(np.float64)
         grad_a = (active * (-yy)) / n * g
