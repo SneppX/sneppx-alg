@@ -391,4 +391,9 @@ __all__ = [
     "set_grad_enabled",
     "no_grad",
     "enable_grad",
+    "jvp",
+    "vjp",
+    "forward_jvp",
 ]
+
+from .forward_ad import forward_jvp  # noqa: E402,F401
