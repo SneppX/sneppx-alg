@@ -276,9 +276,10 @@ class Neg(Function):
 class Pow(Function):
     @staticmethod
     def forward(ctx, a, b):
+        b_val = b.data if isinstance(b, Tensor) else b
         ctx.save_for_backward(a=a)
-        ctx.save_attr(b_val=b)
-        return Tensor(a.data**b, dtype=a.dtype)
+        ctx.save_attr(b_val=b_val)
+        return Tensor(a.data**b_val, dtype=a.dtype)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
@@ -308,9 +309,29 @@ class MatMul(Function):
         b_data = b.data
         g = grad_output
         if create_graph and a_data.ndim <= 2 and b_data.ndim <= 2:
-            # grad_a = g @ b^T ; grad_b = a^T @ g  (graph-aware)
-            grad_a = MatMul.apply(g, Transpose.apply(b, -1, -2))
-            grad_b = MatMul.apply(Transpose.apply(a, -1, -2), g)
+            # grad_a = g @ b^T ; grad_b = a^T @ g  (graph-aware, 1-D safe)
+            g_nd = grad_output.data.ndim
+            b_nd = b_data.ndim
+            a_nd = a_data.ndim
+            # grad_b = a^T @ g
+            if a_nd == 1:
+                a_mat = Unsqueeze.apply(a, -1)  # (D,1)
+                g_col = Unsqueeze.apply(g, -1) if g_nd == 1 else g
+                grad_b = MatMul.apply(a_mat, g_col)
+                if g_nd == 1:
+                    grad_b = Squeeze.apply(grad_b, -1)
+            else:
+                grad_b = MatMul.apply(Transpose.apply(a, -1, -2), g)
+            # grad_a = g @ b^T
+            if b_nd == 1:
+                g_col = Unsqueeze.apply(g, -1) if g_nd == 1 else g  # (N,1)
+                b_row = Unsqueeze.apply(b, 0)  # (1,D)
+                grad_a = MatMul.apply(g_col, b_row)
+            else:
+                g_row = Unsqueeze.apply(g, 0) if g_nd == 1 else g
+                grad_a = MatMul.apply(g_row, Transpose.apply(b, -1, -2))
+                if g_nd == 1:
+                    grad_a = Squeeze.apply(grad_a, 0)
             return [grad_a, grad_b]
         gnp = grad_output.data
         if a_data.ndim == 1:
@@ -1242,11 +1263,24 @@ class NLLLoss(Function):
         return Tensor(np.array([loss], dtype=x.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         t = ctx.get_attr("t")
         one_hot = ctx.get_attr("one_hot")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            if one_hot:
+                t_np = t.data if isinstance(t, Tensor) else t
+                denom = Add.apply(inp, _as_const(1e-12, dt))
+                grad_in = Neg.apply(Div.apply(_as_const(t_np, dt), denom))
+                grad_in = Div.apply(Mul.apply(grad_in, grad_output), _as_const(n, dt))
+            else:
+                t_idx = t.astype(np.int64)
+                oh = np.zeros_like(inp.data)
+                oh[np.arange(oh.shape[0]), t_idx] = -1.0 / n
+                grad_in = Mul.apply(grad_output, _as_const(oh, dt))
+            return [grad_in, None]
         g = grad_output.data.flat[0]
         x = inp.data
         grad_inp = np.zeros_like(x)
@@ -1275,10 +1309,22 @@ class KLDivLoss(Function):
         return Tensor(np.array([float(np.mean(kl))], dtype=x.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         t = ctx.get_attr("t")
         n = ctx.get_attr("n")
+        if create_graph:
+            t_np = t.data if isinstance(t, Tensor) else t
+            return [
+                Mul.apply(
+                    grad_output,
+                    _as_const(
+                        -np.asarray(t_np, dtype=_numpy_dtype(grad_output.dtype)) / n,
+                        grad_output.dtype,
+                    ),
+                ),
+                None,
+            ]
         g = grad_output.data.flat[0]
         # kl = t*(log t - x)  =>  d kl/d x = -t ; target is a probability (not diff)
         grad_inp = Tensor(-(t) * (g / n), dtype=inp.dtype)
@@ -1401,10 +1447,19 @@ class BCELoss(Function):
         return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         target = ctx.get_saved_tensor("target")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            denom = Add.apply(
+                Mul.apply(inp, Sub.apply(_as_const(1.0, dt), inp)),
+                _as_const(1e-10, dt),
+            )
+            inner = Div.apply(Sub.apply(inp, target), denom)
+            grad_in = Div.apply(Mul.apply(grad_output, inner), _as_const(n, dt))
+            return [grad_in, None]
         g = grad_output.data.flat[0]
         x = inp.data
         t = target.data
@@ -1427,10 +1482,17 @@ class BCEWithLogitsLoss(Function):
         return Tensor(np.array([float(np.mean(loss))], dtype=z.dtype), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         target = ctx.get_saved_tensor("target")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            sig = Sigmoid.apply(inp)
+            grad_in = Div.apply(
+                Mul.apply(Sub.apply(sig, target), grad_output), _as_const(n, dt)
+            )
+            return [grad_in, None]
         g = grad_output.data.flat[0]
         z = np.clip(inp.data, -30, 30)
         sig = 1.0 / (1.0 + np.exp(-z))
