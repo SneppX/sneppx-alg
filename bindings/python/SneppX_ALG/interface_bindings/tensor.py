@@ -546,10 +546,10 @@ class Tensor:
 
         return Expand.apply(self, shape)
 
-    def backward(self, grad_output=None):
+    def backward(self, grad_output=None, create_graph=False):
         from .autograd import _wrap_tensor_backward
 
-        _wrap_tensor_backward(self, grad_output)
+        _wrap_tensor_backward(self, grad_output, create_graph=create_graph)
 
     def detach(self):
         t = Tensor(self)
