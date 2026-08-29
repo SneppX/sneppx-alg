@@ -308,6 +308,52 @@ def grad(outputs, inputs, create_graph=False, allow_unused=False):
     return result
 
 
+def vjp(func, inputs, cotangent):
+    """Vector-Jacobian product (reverse mode).
+
+    Returns ``(output, [vjp_i])`` where ``vjp_i`` is the gradient of
+    ``dot(cotangent, func(*inputs))`` w.r.t. input ``i``. This is the
+    standard reverse-mode VJP.
+    """
+    if not isinstance(inputs, (list, tuple)):
+        inputs = [inputs]
+    outputs = func(*inputs)
+    inner = (outputs * cotangent).sum()
+    grads = grad(inner, inputs)
+    return outputs, grads
+
+
+def jvp(func, inputs, tangents):
+    """Jacobian-vector product ``J @ tangent`` (forward mode).
+
+    Implemented via reverse-of-reverse: for each output element ``i`` we compute
+    the VJP w.r.t. the inputs using cotangent ``e_i`` (a column of ``J``), then
+    contract those VJPs with the input tangents to obtain ``(Jv)_i``. This is
+    correct for arbitrary differentiable functions (cost is O(numel(output))
+    reverse passes).
+    """
+    if not isinstance(inputs, (list, tuple)):
+        inputs = [inputs]
+    if not isinstance(tangents, (list, tuple)):
+        tangents = [tangents]
+    outputs = func(*inputs)
+    shape = tuple(outputs.shape)
+    out_dtype = np.asarray(outputs.data).dtype
+    jv = np.zeros(shape, dtype=out_dtype)
+    for idx in np.ndindex(*shape):
+        ei = np.zeros(shape, dtype=out_dtype)
+        ei[idx] = 1.0
+        cot = Tensor(ei)
+        g = grad((outputs * cot).sum(), inputs)
+        acc = 0.0
+        for gi, ti in zip(g, tangents):
+            if gi is None:
+                continue
+            acc = acc + float((np.asarray(gi.data) * np.asarray(ti.data)).sum())
+        jv[idx] = acc
+    return outputs, Tensor(jv)
+
+
 def _tensor_inputs(args):
     """Extract only the Tensor objects from an argument list."""
     result = []
