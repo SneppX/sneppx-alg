@@ -81,6 +81,28 @@ def test_forward_jvp_fallback():
     print("  PASS forward_jvp_fallback (CrossEntropyLoss)")
 
 
+def test_forward_jvp_norm_chain():
+    # Exercises the newly-added LayerNorm + LinearFn tangent rules end-to-end
+    # through a single forward pass; validated against the exact jvp.
+    np.random.seed(76)
+    x = Tensor(np.random.randn(3, 4).astype("float64")); x.requires_grad_(True)
+    g = Tensor(np.ones(4).astype("float64")); g.requires_grad_(True)
+    b = Tensor(np.zeros(4).astype("float64")); b.requires_grad_(True)
+    W = Tensor(np.random.randn(4, 2).astype("float64")); W.requires_grad_(True)
+    vx = Tensor(np.random.randn(3, 4).astype("float64"))
+    vg = Tensor(np.random.randn(4).astype("float64"))
+    vb = Tensor(np.random.randn(4).astype("float64"))
+    vW = Tensor(np.random.randn(4, 2).astype("float64"))
+
+    def f(a, ga, be, w):
+        return ops.MatMul.apply(ops.LayerNorm.apply(a, ga, be), w)
+
+    out_f, jv_f = forward_jvp(f, [x, g, b, W], [vx, vg, vb, vW])
+    out_e, jv_e = exact_jvp(f, [x, g, b, W], [vx, vg, vb, vW])
+    assert np.allclose(jv_f.data.astype(np.float64), jv_e.data.astype(np.float64), atol=1e-6), "norm chain fwd vs exact"
+    print("  PASS forward_jvp_norm_chain")
+
+
 def test_forward_jvp_softmax_chain():
     np.random.seed(75)
     x = Tensor(np.random.randn(2, 3).astype("float64")); x.requires_grad_(True)
@@ -105,5 +127,6 @@ if __name__ == "__main__":
     test_forward_jvp_elementwise()
     test_forward_jvp_composite()
     test_forward_jvp_fallback()
+    test_forward_jvp_norm_chain()
     test_forward_jvp_softmax_chain()
     print("ALL FORWARD_AD TESTS PASSED")

@@ -175,6 +175,36 @@ def _r_dropoutfn(ctx, v, t, kw):
     return t[0] * mask / (1.0 - rate)
 
 
+def _r_layernorm(ctx, v, t, kw):
+    eps = kw.get("eps", 1e-5)
+    x = v[0]; g = v[1]; b = v[2]
+    axis = -1
+    mean = x.mean(axis=axis, keepdims=True)
+    xc = x - mean
+    var = (xc ** 2).mean(axis=axis, keepdims=True)
+    std = np.sqrt(var + eps)
+    xhat = xc / std
+    dx = t[0]
+    dmean = dx.mean(axis=axis, keepdims=True)
+    dxc = dx - dmean
+    dvar = (2.0 * xc * dx).mean(axis=axis, keepdims=True)
+    dxhat = dxc / std - 0.5 * xhat * dvar / (var + eps)
+    return dxhat * g + xhat * t[1] + t[2]
+
+
+def _r_rmsnorm(ctx, v, t, kw):
+    eps = kw.get("eps", 1e-6)
+    x = v[0]; g = v[1]
+    axis = -1
+    ms = (x ** 2).mean(axis=axis, keepdims=True)
+    rms = np.sqrt(ms + eps)
+    xnorm = x / rms
+    dx = t[0]
+    dms = (2.0 * x * dx).mean(axis=axis, keepdims=True)
+    dxnorm = dx / rms - 0.5 * xnorm * dms / (ms + eps)
+    return dxnorm * g + xnorm * t[1]
+
+
 _JVP_RULES = {
     ops.Add: _r_add,
     ops.Sub: _r_sub,
@@ -203,6 +233,8 @@ _JVP_RULES = {
     ops.MSELoss: _r_mse,
     ops.LinearFn: _r_linearfn,
     ops.DropoutFn: _r_dropoutfn,
+    ops.LayerNorm: _r_layernorm,
+    ops.RMSNorm: _r_rmsnorm,
 }
 
 
