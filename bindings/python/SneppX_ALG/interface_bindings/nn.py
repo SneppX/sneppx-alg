@@ -334,6 +334,58 @@ class Conv2d(Module):
         )
 
 
+class Conv1d(Module):
+    """1D convolution layer."""
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size,
+        stride=1,
+        padding=0,
+        dilation=1,
+        groups: int = 1,
+        bias: bool = True,
+        dtype="float32",
+    ):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size,)
+        if isinstance(stride, int):
+            stride = (stride,)
+        if isinstance(padding, int):
+            padding = (padding,)
+        if isinstance(dilation, int):
+            dilation = (dilation,)
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
+        self.groups = groups
+        kL = kernel_size[0]
+        scale = math.sqrt(1.0 / (in_channels * kL))
+        self.weight = Tensor.randn(
+            (out_channels, in_channels // groups, kL), dtype=dtype
+        ) * scale
+        self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .advanced_ops import conv1d as _conv1d
+
+        return _conv1d(
+            x,
+            self.weight,
+            self.bias,
+            stride=self.stride[0] if isinstance(self.stride, (list, tuple)) else self.stride,
+            padding=self.padding[0] if isinstance(self.padding, (list, tuple)) else self.padding,
+            dilation=self.dilation[0] if isinstance(self.dilation, (list, tuple)) else self.dilation,
+            groups=self.groups,
+        )
+
+
 class RMSNorm(Module):
     def __init__(self, dim: int, eps: float = 1e-6, dtype="float32"):
         super().__init__()
@@ -1044,6 +1096,10 @@ class BatchNorm2d(_BatchNorm):
     pass
 
 
+class BatchNorm3d(_BatchNorm):
+    pass
+
+
 class GroupNorm(Module):
     def __init__(self, num_groups, num_channels, eps=1e-5, affine=True):
         super().__init__()
@@ -1064,6 +1120,125 @@ class GroupNorm(Module):
             w = Tensor.ones((self.num_channels,))
             b = Tensor.zeros((self.num_channels,))
         return GroupNormFn.apply(x, w, b, self.num_groups, self.eps)
+
+
+class InstanceNormFn(Function):
+    @staticmethod
+    def forward(ctx, x, weight, bias, running_mean, running_var, eps):
+        xd = x.data
+        axes = tuple(range(2, xd.ndim))  # spatial dims, per (n, c)
+        mean = xd.mean(axis=axes, keepdims=True)
+        var = xd.var(axis=axes, keepdims=True)
+        xhat = (xd - mean) / np.sqrt(var + eps)
+        keep = (1, xd.shape[1]) + (1,) * (xd.ndim - 2)
+        y = xhat * weight.data.reshape(keep) + bias.data.reshape(keep)
+        ctx.save_attr(inv=1.0 / np.sqrt(var + eps), xhat=xhat, w=weight.data.reshape(keep), axes=axes)
+        return Tensor(y, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        g = grad_output.data
+        inv = ctx.get_attr("inv")
+        xhat = ctx.get_attr("xhat")
+        w = ctx.get_attr("w")
+        axes = ctx.get_attr("axes")
+        N = int(np.prod([g.shape[a] for a in axes]))
+        grad_w = (g * xhat).sum(axis=axes)
+        grad_b = g.sum(axis=axes)
+        grad_xhat = g * w
+        dx = N * grad_xhat - grad_xhat.sum(axis=axes, keepdims=True) - xhat * (grad_xhat * xhat).sum(axis=axes, keepdims=True)
+        dx = dx / N * inv
+        return [
+            Tensor(dx, dtype=grad_output.dtype),
+            Tensor(grad_w, dtype=grad_output.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype),
+            None,
+            None,
+        ]
+
+
+class _InstanceNorm(Module):
+    def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True, track_running_stats=False):
+        super().__init__()
+        self.num_features = num_features
+        self.eps = eps
+        self.momentum = momentum
+        self.affine = affine
+        self.track_running_stats = track_running_stats
+        if affine:
+            self.weight = Tensor.ones((num_features,))
+            self.weight.requires_grad_(True)
+            self.bias = Tensor.zeros((num_features,))
+            self.bias.requires_grad_(True)
+        if track_running_stats:
+            self.register_buffer("running_mean", Tensor.zeros((num_features,)))
+            self.register_buffer("running_var", Tensor.ones((num_features,)))
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.affine:
+            w, b = self.weight, self.bias
+        else:
+            w = Tensor.ones((self.num_features,))
+            b = Tensor.zeros((self.num_features,))
+        if self.track_running_stats:
+            rm, rv = self.running_mean, self.running_var
+        else:
+            rm = Tensor.zeros((self.num_features,))
+            rv = Tensor.ones((self.num_features,))
+        return InstanceNormFn.apply(x, w, b, rm, rv, self.eps)
+
+
+class InstanceNorm1d(_InstanceNorm):
+    pass
+
+
+class InstanceNorm2d(_InstanceNorm):
+    pass
+
+
+class InstanceNorm3d(_InstanceNorm):
+    pass
+
+
+class Flatten(Module):
+    def __init__(self, start_dim: int = 1, end_dim: int = -1):
+        super().__init__()
+        self.start_dim = start_dim
+        self.end_dim = end_dim
+
+    def forward(self, x: Tensor) -> Tensor:
+        shape = list(x.shape)
+        start_dim = self.start_dim if self.start_dim >= 0 else len(shape) + self.start_dim
+        end_dim = self.end_dim if self.end_dim >= 0 else len(shape) + self.end_dim
+        flat = 1
+        for s in shape[start_dim:end_dim + 1]:
+            flat *= s
+        new_shape = shape[:start_dim] + [flat] + shape[end_dim + 1:]
+        return x.reshape(new_shape)
+
+
+class Identity(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x
+
+
+class Bilinear(Module):
+    def __init__(self, in1_features, in2_features, out_features, bias=True, dtype="float32"):
+        super().__init__()
+        self.in1_features = in1_features
+        self.in2_features = in2_features
+        self.out_features = out_features
+        self.weight = Tensor.randn((out_features, in1_features, in2_features), dtype=dtype) * 0.1
+        self.bias = Tensor.zeros((out_features,), dtype=dtype) if bias else None
+
+    def forward(self, input1: Tensor, input2: Tensor) -> Tensor:
+        x1 = input1.data
+        x2 = input2.data
+        w = self.weight.data
+        out = np.einsum("bi,bj,kij->bk", x1, x2, w)
+        if self.bias is not None:
+            out = out + self.bias.data
+        return Tensor(out, dtype=input1.dtype_name, device=input1.device)
 
 
 # ===========================================================================
@@ -1188,6 +1363,784 @@ class CTCLoss(_Loss):
         return log_probs.ctc_loss(
             targets, self.blank, input_lengths, target_lengths, self.reduction
         )
+
+
+class GaussianNLLLoss(_Loss):
+    def __init__(
+        self,
+        full: bool = False,
+        eps: float = 1e-6,
+        reduction: str = "mean",
+    ):
+        super().__init__(reduction)
+        self.full = full
+        self.eps = eps
+
+    def forward(self, input: Tensor, target: Tensor, var: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        v = var.data
+        eps = self.eps
+        loss = 0.5 * (
+            np.log(2 * np.pi) + np.log(v + eps) + (x - y) ** 2 / (v + eps)
+        )
+        if self.full:
+            loss = 0.5 * (np.log(2 * np.pi * v + eps) + (x - y) ** 2 / (v + eps))
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class HingeEmbeddingLoss(_Loss):
+    def __init__(self, margin: float = 1.0, reduction: str = "mean"):
+        super().__init__(reduction)
+        self.margin = margin
+
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        # y in {-1, +1}
+        loss = np.where(y >= 0, x, np.maximum(0.0, self.margin - x))
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class PoissonNLLLoss(_Loss):
+    def __init__(
+        self,
+        full: bool = False,
+        eps: float = 1e-8,
+        reduction: str = "mean",
+    ):
+        super().__init__(reduction)
+        self.full = full
+        self.eps = eps
+
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        loss = np.exp(x) - y * x
+        if self.full:
+            loss = loss + y * np.log(y + self.eps) - y + y * np.log(2 * np.pi) / 2
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class SoftMarginLoss(_Loss):
+    def __init__(self, reduction: str = "mean"):
+        super().__init__(reduction)
+
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        loss = np.log1p(np.exp(-y * x))
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class MultiMarginLoss(_Loss):
+    def __init__(self, p: int = 1, margin: float = 1.0, weight=None, reduction: str = "mean"):
+        super().__init__(reduction)
+        self.p = p
+        self.margin = margin
+        self.weight = weight
+
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data.astype(np.int64)
+        n = x.shape[0]
+        c = x.shape[1]
+        target_scores = x[np.arange(n), y]
+        mask = np.arange(c) != y[:, None]
+        margin_diff = self.margin - (x - target_scores[:, None])
+        margin_diff = np.where(mask, margin_diff, 0)  # zero out the target class
+        losses = np.maximum(0, np.power(np.maximum(margin_diff, 0), self.p))
+        if self.weight is not None:
+            w = self.weight.data if hasattr(self.weight, "data") else self.weight
+            losses = losses * w[None, :]
+        loss = losses.sum(axis=1)
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class MultiLabelMarginLoss(_Loss):
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        n, c = x.shape
+        loss_sum = 0.0
+        for i in range(n):
+            targets_i = [int(t) for t in y[i] if t >= 0]
+            for tn in targets_i:
+                for k in range(c):
+                    if k not in targets_i:
+                        loss_sum += float(np.maximum(0, 1 - x[i, tn] + x[i, k]))
+        loss = loss_sum / float(n * c)
+        if self.reduction == "sum":
+            loss = np.array(loss_sum)
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class MultiLabelSoftMarginLoss(_Loss):
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        x = input.data
+        y = target.data
+        # per-element BCE (multi-label, many-hot targets)
+        loss = -(y * np.log(np.clip(x, 1e-7, 1.0)) + (1 - y) * np.log(np.clip(1 - x, 1e-7, 1.0)))
+        if self.reduction == "mean":
+            loss = loss.mean()
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        return Tensor(np.array(loss, dtype=np.float32))
+
+
+class Pooling1d(Module):
+    """1D pooling layer."""
+
+    def __init__(
+        self,
+        kernel_size: int,
+        stride: Optional[int] = None,
+        padding: int = 0,
+        dilation: int = 1,
+        pool_type: str = "max",
+    ):
+        super().__init__()
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.pool_type = pool_type
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, l = x.shape
+        k = self.kernel_size
+        s = self.stride
+        p = self.padding
+        d = self.dilation
+        if p > 0:
+            x_data = np.pad(x.data, ((0, 0), (0, 0), (p, p)), mode="constant")
+            l = l + 2 * p
+        else:
+            x_data = x.data
+        l_out = (l - d * (k - 1) - 1) // s + 1
+        out = np.zeros((n, c, l_out), dtype=np.float32)
+        for i in range(l_out):
+            start = i * s
+            end = start + d * k
+            window = x_data[:, :, start:end]
+            if self.pool_type == "max":
+                out[:, :, i] = window.max(axis=2).astype(np.float32)
+            else:
+                out[:, :, i] = window.mean(axis=2).astype(np.float32)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class Pooling2d(Module):
+    """2D pooling layer."""
+
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        dilation=1,
+        pool_type="max",
+    ):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride)
+        if isinstance(padding, int):
+            padding = (padding, padding)
+        if isinstance(dilation, int):
+            dilation = (dilation, dilation)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.pool_type = pool_type
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .advanced_ops import max_pool2d as _max_pool2d
+        from .advanced_ops import avg_pool2d as _avg_pool2d
+
+        if self.pool_type == "max":
+            return _max_pool2d(
+                x, self.kernel_size, self.stride, self.padding, self.dilation
+            )
+        return _avg_pool2d(
+            x, self.kernel_size, self.stride, self.padding, self.dilation
+        )
+
+
+class Pooling3d(Module):
+    """3D pooling layer."""
+
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        dilation=1,
+        pool_type="max",
+    ):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride, stride)
+        if isinstance(padding, int):
+            padding = (padding, padding, padding)
+        if isinstance(dilation, int):
+            dilation = (dilation, dilation, dilation)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.pool_type = pool_type
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, dep, h, w = x.shape
+        kd, kh, kw = self.kernel_size
+        sD, sH, sW = self.stride
+        pD, pH, pW = self.padding
+        dD, dH, dW = self.dilation
+        if pD > 0 or pH > 0 or pW > 0:
+            x_data = np.pad(
+                x.data,
+                ((0, 0), (0, 0), (pD, pD), (pH, pH), (pW, pW)),
+                mode="constant",
+            )
+            dep = dep + 2 * pD
+            h = h + 2 * pH
+            w = w + 2 * pW
+        else:
+            x_data = x.data
+        out_d = (dep - dD * (kd - 1) - 1) // sD + 1
+        out_h = (h - dH * (kh - 1) - 1) // sH + 1
+        out_w = (w - dW * (kw - 1) - 1) // sW + 1
+        out = np.zeros((n, c, out_d, out_h, out_w), dtype=np.float32)
+        for i in range(out_d):
+            for j in range(out_h):
+                for k in range(out_w):
+                    d_start = i * sD
+                    d_end = d_start + dD * kd
+                    h_start = j * sH
+                    h_end = h_start + dH * kh
+                    w_start = k * sW
+                    w_end = w_start + dW * kw
+                    window = x_data[:, :, d_start:d_end, h_start:h_end, w_start:w_end]
+                    if self.pool_type == "max":
+                        out[:, :, i, j, k] = window.max(axis=(2, 3, 4))
+                    else:
+                        out[:, :, i, j, k] = window.mean(axis=(2, 3, 4))
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class AdaptiveAvgPool1d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size,)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, l = x.shape
+        out_l = self.output_size[0]
+        out = np.zeros((n, c, out_l), dtype=np.float32)
+        for i in range(out_l):
+            start = int(np.floor(i * l / out_l))
+            end = int(np.ceil((i + 1) * l / out_l))
+            if end > start:
+                out[:, :, i] = x.data[:, :, start:end].mean(axis=2).astype(np.float32)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class AdaptiveAvgPool2d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size, output_size)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .advanced_ops import adaptive_avg_pool2d as _aap2d
+
+        return _aap2d(x, self.output_size)
+
+
+class AdaptiveAvgPool3d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size, output_size, output_size)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, d, h, w = x.shape
+        od, oh, ow = self.output_size
+        out = np.zeros((n, c, od, oh, ow), dtype=np.float32)
+        for i in range(od):
+            d0 = int(np.floor(i * d / od))
+            d1 = int(np.ceil((i + 1) * d / od))
+            for j in range(oh):
+                h0 = int(np.floor(j * h / oh))
+                h1 = int(np.ceil((j + 1) * h / oh))
+                for k in range(ow):
+                    w0 = int(np.floor(k * w / ow))
+                    w1 = int(np.ceil((k + 1) * w / ow))
+                    win = x.data[:, :, d0:max(d1, d0 + 1), h0:max(h1, h0 + 1), w0:max(w1, w0 + 1)]
+                    out[:, :, i, j, k] = win.mean(axis=(2, 3, 4)).astype(np.float32)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class AdaptiveMaxPool1d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size,)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, l = x.shape
+        out_l = self.output_size[0]
+        out = np.zeros((n, c, out_l), dtype=np.float32)
+        for i in range(out_l):
+            start = int(np.floor(i * l / out_l))
+            end = int(np.ceil((i + 1) * l / out_l))
+            if end > start:
+                out[:, :, i] = x.data[:, :, start:end].max(axis=2).astype(np.float32)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class AdaptiveMaxPool2d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size, output_size)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .advanced_ops import adaptive_max_pool2d as _amp2d
+
+        return _amp2d(x, self.output_size)
+
+
+class AdaptiveMaxPool3d(Module):
+    def __init__(self, output_size):
+        super().__init__()
+        if isinstance(output_size, int):
+            output_size = (output_size, output_size, output_size)
+        self.output_size = output_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        n, c, d, h, w = x.shape
+        od, oh, ow = self.output_size
+        out = np.zeros((n, c, od, oh, ow), dtype=np.float32)
+        for i in range(od):
+            d0 = int(np.floor(i * d / od))
+            d1 = int(np.ceil((i + 1) * d / od))
+            for j in range(oh):
+                h0 = int(np.floor(j * h / oh))
+                h1 = int(np.ceil((j + 1) * h / oh))
+                for k in range(ow):
+                    w0 = int(np.floor(k * w / ow))
+                    w1 = int(np.ceil((k + 1) * w / ow))
+                    win = x.data[:, :, d0:max(d1, d0 + 1), h0:max(h1, h0 + 1), w0:max(w1, w0 + 1)]
+                    out[:, :, i, j, k] = win.max(axis=(2, 3, 4)).astype(np.float32)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class _ConstantPadNd(Module):
+    def __init__(self, padding, value: float = 0.0):
+        super().__init__()
+        if isinstance(padding, int):
+            padding = tuple([padding] * (2 * self.pad_ndim))
+        self.padding = tuple(padding)
+        self.value = value
+
+    def forward(self, x: Tensor) -> Tensor:
+        pad = self.padding
+        ndim = x.ndim
+        npads = len(pad) // 2
+        pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
+        pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
+        x_data = np.pad(
+            x.data, pad_width, mode="constant", constant_values=self.value
+        )
+        return Tensor(x_data, dtype=x.dtype, device=x.device)
+
+
+class ConstantPad1d(_ConstantPadNd):
+    pad_ndim = 1
+
+
+class ConstantPad2d(_ConstantPadNd):
+    pad_ndim = 2
+
+
+class ConstantPad3d(_ConstantPadNd):
+    pad_ndim = 3
+
+
+class ZeroPad1d(ConstantPad1d):
+    def __init__(self, padding):
+        super().__init__(padding, 0.0)
+
+
+class ZeroPad2d(ConstantPad2d):
+    def __init__(self, padding):
+        super().__init__(padding, 0.0)
+
+
+class ZeroPad3d(ConstantPad3d):
+    def __init__(self, padding):
+        super().__init__(padding, 0.0)
+
+
+class _ReflectionPadNd(Module):
+    def __init__(self, padding):
+        super().__init__()
+        if isinstance(padding, int):
+            padding = tuple([padding] * (2 * self.pad_ndim))
+        self.padding = tuple(padding)
+
+    def forward(self, x: Tensor) -> Tensor:
+        pad = self.padding
+        ndim = x.ndim
+        npads = len(pad) // 2
+        pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
+        pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
+        x_data = np.pad(x.data, pad_width, mode="reflect")
+        return Tensor(x_data, dtype=x.dtype, device=x.device)
+
+
+class ReflectionPad1d(_ReflectionPadNd):
+    pad_ndim = 1
+
+
+class ReflectionPad2d(_ReflectionPadNd):
+    pad_ndim = 2
+
+
+class ReflectionPad3d(_ReflectionPadNd):
+    pad_ndim = 3
+
+
+class _ReplicationPadNd(Module):
+    def __init__(self, padding):
+        super().__init__()
+        if isinstance(padding, int):
+            padding = tuple([padding] * (2 * self.pad_ndim))
+        self.padding = tuple(padding)
+
+    def forward(self, x: Tensor) -> Tensor:
+        pad = self.padding
+        ndim = x.ndim
+        npads = len(pad) // 2
+        pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
+        pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
+        x_data = np.pad(x.data, pad_width, mode="edge")
+        return Tensor(x_data, dtype=x.dtype, device=x.device)
+
+
+class ReplicationPad1d(_ReplicationPadNd):
+    pad_ndim = 1
+
+
+class ReplicationPad2d(_ReplicationPadNd):
+    pad_ndim = 2
+
+
+class ReplicationPad3d(_ReplicationPadNd):
+    pad_ndim = 3
+
+
+class ParameterList(Module):
+    def __init__(self, parameters=None):
+        super().__init__()
+        self._list = []
+        if parameters is not None:
+            for p in parameters:
+                self.append(p)
+
+    def append(self, parameter):
+        self._list.append(parameter)
+        return parameter
+
+    def extend(self, parameters):
+        for p in parameters:
+            self.append(p)
+        return self
+
+    def __getitem__(self, i):
+        return self._list[i]
+
+    def __setitem__(self, i, parameter):
+        self._list[i] = parameter
+
+    def __len__(self):
+        return len(self._list)
+
+    def __iter__(self):
+        return iter(self._list)
+
+    def parameters(self):
+        return [p for p in self._list if isinstance(p, Tensor)]
+
+    def named_parameters(self, prefix=""):
+        named = []
+        for i, p in enumerate(self._list):
+            if isinstance(p, Tensor):
+                named.append((f"{prefix}.{i}" if prefix else str(i), p))
+            elif hasattr(p, "named_parameters"):
+                named.extend(p.named_parameters(f"{prefix}.{i}" if prefix else str(i)))
+        return named
+
+    def state_dict(self) -> dict:
+        return {name: p.data.copy() for name, p in self.named_parameters()}
+
+
+class ParameterDict(Module):
+    def __init__(self, parameters=None):
+        super().__init__()
+        self._dict = {}
+        if parameters is not None:
+            self._dict.update(parameters)
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __setitem__(self, key, value):
+        self._dict[key] = value
+
+    def __delitem__(self, key):
+        del self._dict[key]
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def keys(self):
+        return self._dict.keys()
+
+    def values(self):
+        return self._dict.values()
+
+    def items(self):
+        return self._dict.items()
+
+    def parameters(self):
+        return [p for p in self._dict.values() if isinstance(p, Tensor)]
+
+    def named_parameters(self, prefix=""):
+        named = []
+        for k, p in self._dict.items():
+            if isinstance(p, Tensor):
+                named.append((f"{prefix}.{k}" if prefix else str(k), p))
+            elif hasattr(p, "named_parameters"):
+                named.extend(p.named_parameters(f"{prefix}.{k}" if prefix else str(k)))
+        return named
+
+
+# ===========================================================================
+#  Activation functions (nn.Module wrappers)
+# ===========================================================================
+
+
+class LeakyReLU(Module):
+    def __init__(self, negative_slope: float = 0.01, inplace: bool = False):
+        super().__init__()
+        self.negative_slope = negative_slope
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            x.data = np.maximum(x.data * self.negative_slope, x.data)
+            return x
+        return Tensor(np.maximum(x.data * self.negative_slope, x.data), dtype=x.dtype_name, device=x.device)
+
+
+class PReLU(Module):
+    def __init__(self, num_parameters: int = 1, init: float = 0.25):
+        super().__init__()
+        self.weight = Tensor.full((num_parameters,), init)
+
+    def forward(self, x: Tensor) -> Tensor:
+        return Tensor(np.maximum(x.data, self.weight.data * x.data), dtype=x.dtype_name, device=x.device)
+
+
+class ELU(Module):
+    def __init__(self, alpha: float = 1.0):
+        super().__init__()
+        self.alpha = alpha
+
+    def forward(self, x: Tensor) -> Tensor:
+        return Tensor(np.where(x.data > 0, x.data, self.alpha * (np.exp(x.data) - 1)), dtype=x.dtype_name, device=x.device)
+
+
+class Softmax(Module):
+    def __init__(self, dim: int = -1):
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.softmax(dim=self.dim)
+
+
+class LogSoftmax(Module):
+    def __init__(self, dim: int = -1):
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.log_softmax(dim=self.dim)
+
+
+class SELU(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.selu()
+
+
+class Softplus(Module):
+    def __init__(self, beta: float = 1.0, threshold: float = 20.0):
+        super().__init__()
+        self.beta = beta
+        self.threshold = threshold
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.softplus(beta=self.beta, threshold=self.threshold)
+
+
+class Softsign(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.softsign()
+
+
+class Hardswish(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.hardswish()
+
+
+class Hardtanh(Module):
+    def __init__(self, min_val: float = -1.0, max_val: float = 1.0, inplace: bool = False):
+        super().__init__()
+        self.min_val = min_val
+        self.max_val = max_val
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.hardtanh(self.min_val, self.max_val)
+
+
+class ReLU6(Hardtanh):
+    def __init__(self, inplace: bool = False):
+        super().__init__(0.0, 6.0, inplace)
+
+
+class Mish(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.mish()
+
+
+class Hardsigmoid(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.hardsigmoid()
+
+
+class Hardshrink(Module):
+    def __init__(self, lambd: float = 0.5):
+        super().__init__()
+        self.lambd = lambd
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.hardshrink(self.lambd)
+
+
+class Softshrink(Module):
+    def __init__(self, lambd: float = 0.5):
+        super().__init__()
+        self.lambd = lambd
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.softshrink(self.lambd)
+
+
+class Tanhshrink(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        return x.tanhshrink()
+
+
+class Threshold(Module):
+    def __init__(self, threshold: float, value: float, inplace: bool = False):
+        super().__init__()
+        self.threshold = threshold
+        self.value = value
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.threshold(self.threshold, self.value)
+
+
+class GLU(Module):
+    def __init__(self, dim: int = -1):
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.glu(self.dim)
+
+
+class CELU(Module):
+    def __init__(self, alpha: float = 1.0, inplace: bool = False):
+        super().__init__()
+        self.alpha = alpha
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x.elu(self.alpha)
+
+
+class RReLU(Module):
+    def __init__(self, lower: float = 0.125, upper: float = 0.3333333333333333, inplace: bool = False):
+        super().__init__()
+        self.lower = lower
+        self.upper = upper
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        if not self._training:
+            slope = (self.lower + self.upper) / 2.0
+            return x.leaky_relu(slope)
+        xd = x.data
+        mask = (np.random.uniform(self.lower, self.upper, xd.shape).astype(xd.dtype)) * (xd < 0).astype(xd.dtype)
+        out = xd * (xd >= 0).astype(xd.dtype) + mask * xd
+        return Tensor(out, dtype=x.dtype_name, device=x.device)
+
+
+class LogSigmoid(Module):
+    def forward(self, x: Tensor) -> Tensor:
+        xd = x.data
+        out = -np.log1p(np.exp(-np.abs(xd))) + np.minimum(xd, 0)
+        return Tensor(out, dtype=x.dtype_name, device=x.device)
 
 
 class CosineEmbeddingLoss(_Loss):

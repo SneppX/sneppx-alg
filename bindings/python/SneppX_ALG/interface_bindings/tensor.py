@@ -511,6 +511,76 @@ class Tensor:
 
         return Silu.apply(self)
 
+    def leaky_relu(self, negative_slope=0.01):
+        from .autograd_ops import LeakyRelu
+
+        return LeakyRelu.apply(self, negative_slope)
+
+    def elu(self, alpha=1.0):
+        from .autograd_ops import Elu
+
+        return Elu.apply(self, alpha)
+
+    def selu(self):
+        from .autograd_ops import SELU
+
+        return SELU.apply(self)
+
+    def softplus(self, beta=1.0, threshold=20.0):
+        from .autograd_ops import Softplus
+
+        return Softplus.apply(self, beta, threshold)
+
+    def softsign(self):
+        from .autograd_ops import Softsign
+
+        return Softsign.apply(self)
+
+    def hardswish(self):
+        from .autograd_ops import Hardswish
+
+        return Hardswish.apply(self)
+
+    def hardtanh(self, min_val=-1.0, max_val=1.0):
+        from .autograd_ops import Hardtanh
+
+        return Hardtanh.apply(self, min_val, max_val)
+
+    def mish(self):
+        from .autograd_ops import Mish
+
+        return Mish.apply(self)
+
+    def hardsigmoid(self):
+        from .autograd_ops import Hardsigmoid
+
+        return Hardsigmoid.apply(self)
+
+    def hardshrink(self, lambd=0.5):
+        from .autograd_ops import Hardshrink
+
+        return Hardshrink.apply(self, lambd)
+
+    def softshrink(self, lambd=0.5):
+        from .autograd_ops import Softshrink
+
+        return Softshrink.apply(self, lambd)
+
+    def tanhshrink(self):
+        from .autograd_ops import Tanhshrink
+
+        return Tanhshrink.apply(self)
+
+    def threshold(self, threshold=0.0, value=0.0):
+        from .autograd_ops import Threshold
+
+        return Threshold.apply(self, threshold, value)
+
+    def glu(self, dim=-1):
+        from .autograd_ops import GLU
+
+        return GLU.apply(self, dim)
+
     def softmax(self, dim=-1):
         from .autograd_ops import Softmax
 

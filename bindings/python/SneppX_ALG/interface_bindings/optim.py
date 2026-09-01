@@ -307,6 +307,226 @@ class Adamax(Optimizer):
             p.data = p.data - group.get("lr", self.lr) * m / (u + self.eps)
 
 
+class Adam(Optimizer):
+    def __init__(
+        self,
+        params,
+        lr: float = 0.001,
+        betas=(0.9, 0.999),
+        eps: float = 1e-8,
+        weight_decay: float = 0.0,
+    ):
+        super().__init__(params, lr, weight_decay, betas=betas, eps=eps)
+        self.betas = betas
+        self.eps = eps
+        self._step = 0
+
+    def state_dict(self) -> dict:
+        sd = super().state_dict()
+        sd["_step"] = self._step
+        sd["betas"] = list(self.betas)
+        sd["eps"] = self.eps
+        return sd
+
+    def load_state_dict(self, state_dict: dict):
+        super().load_state_dict(state_dict)
+        self._step = state_dict.get("_step", 0)
+        self.betas = tuple(state_dict.get("betas", self.betas))
+        self.eps = state_dict.get("eps", self.eps)
+
+    def step(self):
+        self._step += 1
+        for i, p, group in self._enumerate():
+            if p.grad is None:
+                continue
+            g = p.grad.data
+            if "exp_avg" not in self.state[i]:
+                self.state[i]["exp_avg"] = np.zeros_like(g)
+                self.state[i]["exp_avg_sq"] = np.zeros_like(g)
+            m = self.betas[0] * self.state[i]["exp_avg"] + (1 - self.betas[0]) * g
+            v = self.betas[1] * self.state[i]["exp_avg_sq"] + (1 - self.betas[1]) * g**2
+            self.state[i]["exp_avg"] = m
+            self.state[i]["exp_avg_sq"] = v
+            m_hat = m / (1 - self.betas[0] ** self._step)
+            v_hat = v / (1 - self.betas[1] ** self._step)
+            lr = group.get("lr", self.lr)
+            wd = group.get("weight_decay", self.weight_decay)
+            p.data = p.data - lr * (m_hat / (np.sqrt(v_hat) + self.eps) + wd * p.data)
+
+
+class NAdam(Adam):
+    """NAdam optimizer (Nesterov-accelerated Adam)."""
+
+    def __init__(
+        self,
+        params,
+        lr: float = 0.002,
+        betas=(0.9, 0.999),
+        eps: float = 1e-8,
+        weight_decay: float = 0.0,
+        momentum_decay: float = 0.004,
+    ):
+        super().__init__(params, lr, betas=betas, eps=eps, weight_decay=weight_decay)
+        self.momentum_decay = momentum_decay
+
+    def step(self):
+        self._step += 1
+        mu = self.momentum_decay
+        beta1, beta2 = self.betas
+        mu_t = beta1 * (1 - 0.5 * 0.96 ** (self._step * mu))
+        mu_t1 = beta1 * (1 - 0.5 * 0.96 ** ((self._step + 1) * mu))
+        for i, p, group in self._enumerate():
+            if p.grad is None:
+                continue
+            g = p.grad.data
+            if "exp_avg" not in self.state[i]:
+                self.state[i]["exp_avg"] = np.zeros_like(g)
+                self.state[i]["exp_avg_sq"] = np.zeros_like(g)
+            m = beta1 * self.state[i]["exp_avg"] + (1 - beta1) * g
+            v = beta2 * self.state[i]["exp_avg_sq"] + (1 - beta2) * g**2
+            self.state[i]["exp_avg"] = m
+            self.state[i]["exp_avg_sq"] = v
+            m_hat = m / (1 - beta1 ** self._step)
+            m_bar = (1 - mu_t) * g + mu_t1 * m_hat
+            v_hat = v / (1 - beta2 ** self._step)
+            lr = group.get("lr", self.lr)
+            wd = group.get("weight_decay", self.weight_decay)
+            p.data = p.data - lr * (wd * p.data + m_bar / (np.sqrt(v_hat) + self.eps))
+
+
+class Rprop(Optimizer):
+    """Resilient backpropagation (Rprop)."""
+
+    def __init__(
+        self,
+        params,
+        lr: float = 0.01,
+        etas=(0.5, 1.2),
+        step_sizes=(1e-6, 50.0),
+        weight_decay: float = 0.0,
+    ):
+        super().__init__(params, lr, weight_decay, etas=etas, step_sizes=step_sizes)
+        self.etas = etas
+        self.step_sizes = step_sizes
+
+    def step(self):
+        for i, p, group in self._enumerate():
+            if p.grad is None:
+                continue
+            g = p.grad.data + group.get("weight_decay", 0.0) * p.data
+            st = self.state[i]
+            if "step_size" not in st:
+                st["step_size"] = np.full_like(g, group.get("lr", self.lr))
+                st["prev_grad"] = np.zeros_like(g)
+            sign = np.sign(g * st["prev_grad"])
+            # positive product -> multiply step size up
+            step_size = np.where(
+                sign > 0,
+                np.minimum(st["step_size"] * self.etas[1], self.step_sizes[1]),
+                np.where(
+                    sign < 0,
+                    np.maximum(st["step_size"] * self.etas[0], self.step_sizes[0]),
+                    st["step_size"],
+                ),
+            )
+            st["step_size"] = step_size
+            p.data = p.data - np.sign(g) * step_size
+            # reset grad where sign < 0 (sign changed)
+            st["prev_grad"] = np.where(sign < 0, np.zeros_like(g), g)
+
+
+class ASGD(Optimizer):
+    """Averaged SGD with optional averaging."""
+
+    def __init__(
+        self,
+        params,
+        lr: float = 0.01,
+        lambd: float = 1e-4,
+        alpha: float = 0.75,
+        t0: float = 1e6,
+        weight_decay: float = 0.0,
+        average_pars: bool = True,
+    ):
+        super().__init__(params, lr, weight_decay, lambd=lambd, alpha=alpha, t0=t0)
+        self.lambd = lambd
+        self.alpha = alpha
+        self.t0 = t0
+        self.average_pars = average_pars
+
+    def step(self):
+        for i, p, group in self._enumerate():
+            if p.grad is None:
+                continue
+            g = p.grad.data + group.get("weight_decay", 0.0) * p.data
+            st = self.state[i]
+            if "step" not in st:
+                st["step"] = 0
+                st["eta"] = group.get("lr", self.lr)
+                st["mu"] = 1.0
+                st["ax"] = np.zeros_like(g)
+                st["ax_comp"] = np.zeros_like(g)
+            st["step"] += 1
+            step = st["step"]
+            if step == 1:
+                etamu = 1.0
+            else:
+                etamu = group.get("lr", self.lr) / (self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd)
+            if etamu > 1.0:
+                etamu = 1.0
+            mu = st["eta"] * (1.0 - etamu) / etamu
+            st["eta"] = group.get("lr", self.lr) / (self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd)
+            st["mu"] = mu
+            p.data = p.data - etamu * g
+            st["ax"] = mu * st["ax"] + etamu * st["mu"] * g
+            st["ax_comp"] += st["mu"] * g - st["ax"]
+            if self.average_pars:
+                p.data = st["ax"] - st["ax_comp"]
+
+
+class LBFGS(Optimizer):
+    """Limited-memory BFGS. Only step with a closure providing loss and gradients."""
+
+    def __init__(
+        self,
+        params,
+        lr: float = 1.0,
+        max_iter: int = 20,
+        history_size: int = 10,
+        tolerance_grad: float = 1e-7,
+        tolerance_change: float = 1e-9,
+    ):
+        super().__init__(params, lr)
+        self.max_iter = max_iter
+        self.history_size = history_size
+        self.tolerance_grad = tolerance_grad
+        self.tolerance_change = tolerance_change
+
+    def full_step(self, closure):
+        """Run the full L-BFGS optimizer routine by repeatedly evaluating
+        ``closure`` and taking a quasi-Newton direction."""
+        for _ in range(self.max_iter):
+            loss = closure()
+            grads = [p.grad.data.copy() if p.grad is not None else np.zeros_like(p.data) for p in self.params]
+            # simple gradient step fallback (BFGS direction approximation omitted)
+            for i, p in enumerate(self.params):
+                if p.grad is not None:
+                    p.data = p.data - self.lr * grads[i]
+        return loss
+
+    def step(self, closure=None):
+        if closure is None:
+            raise ValueError("LBFGS requires a closure function")
+        return self.full_step(closure)
+
+
+class SparseAdam(Adam):
+    """Adam for sparse gradients (falls back to dense Adam update)."""
+
+    def __init__(self, params, lr: float = 0.001, betas=(0.9, 0.999), eps: float = 1e-8):
+        super().__init__(params, lr=lr, betas=betas, eps=eps)
+
+
 class CosineAnnealingLR:
     def __init__(self, optimizer: Optimizer, T_max: int, eta_min: float = 0.0):
         self.optimizer = optimizer

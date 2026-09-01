@@ -565,6 +565,347 @@ class Silu(Function):
         ]
 
 
+class LeakyRelu(Function):
+    @staticmethod
+    def forward(ctx, a, negative_slope=0.01):
+        x = a.data
+        ctx.save_attr(slope=negative_slope)
+        ctx.save_for_backward(a=a)
+        return Tensor(np.where(x > 0, x, negative_slope * x), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        slope = ctx.get_attr("slope")
+        if create_graph:
+            mask = _as_const((a.data > 0).astype(grad_output.data.dtype), grad_output.dtype)
+            neg_mask = _as_const((a.data <= 0).astype(grad_output.data.dtype) * slope, grad_output.dtype)
+            grad_x = Add.apply(Mul.apply(mask, _as_const(1.0, grad_output.dtype)),
+                               Mul.apply(neg_mask, _as_const(1.0, grad_output.dtype)))
+            return [Mul.apply(grad_output, grad_x)]
+        grad = np.where(a.data > 0, 1.0, slope).astype(grad_output.data.dtype)
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Elu(Function):
+    @staticmethod
+    def forward(ctx, a, alpha=1.0):
+        x = a.data
+        out = np.where(x > 0, x, alpha * (np.exp(x) - 1.0))
+        ctx.save_attr(alpha=alpha, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        alpha = ctx.get_attr("alpha")
+        if create_graph:
+            dt = grad_output.dtype
+            exp_ax = Exp.apply(a)
+            term = Mul.apply(_as_const(alpha, dt), exp_ax)
+            grad = np.where(a.data > 0, 1.0, 0.0).astype(grad_output.data.dtype)
+            grad_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, Add.apply(grad_t, Mul.apply(term, Sub.apply(_as_const(1.0, dt), grad_t))))]
+        out = ctx.get_attr("out")
+        grad = np.where(a.data > 0, 1.0, out + alpha).astype(grad_output.data.dtype)
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softplus(Function):
+    @staticmethod
+    def forward(ctx, a, beta=1.0, threshold=20.0):
+        x = a.data
+        bx = beta * x
+        out = np.where(bx > threshold, bx, np.log1p(np.exp(bx))) / beta
+        ctx.save_attr(beta=beta, threshold=threshold)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        beta = ctx.get_attr("beta")
+        threshold = ctx.get_attr("threshold")
+        sig_input = a.data * beta
+        mask = sig_input > threshold
+        sig = 1.0 / (1.0 + np.exp(-sig_input))
+        grad = np.where(mask, 1.0, sig).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softsign(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = x / (1.0 + np.abs(x))
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = (1.0 / (1.0 + np.abs(x)) ** 2).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardswish(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = np.where(x <= -3.0, 0.0, np.where(x >= 3.0, x, x * (x + 3.0) / 6.0))
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = np.where(x <= -3.0, 0.0, np.where(x >= 3.0, 1.0, (x + 1.5) / 3.0)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardtanh(Function):
+    @staticmethod
+    def forward(ctx, a, min_val=-1.0, max_val=1.0):
+        x = a.data
+        out = np.clip(x, min_val, max_val)
+        ctx.save_attr(min_val=min_val, max_val=max_val)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        min_val = ctx.get_attr("min_val")
+        max_val = ctx.get_attr("max_val")
+        mask = ((a.data >= min_val) & (a.data <= max_val)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Mish(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        sp = np.log1p(np.exp(x))
+        out = x * np.tanh(sp)
+        ctx.save_attr(sp=sp, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        sp = ctx.get_attr("sp")
+        # d/dx [x * tanh(softplus(x))] = tanh(sp) + x * (1 - tanh(sp)^2) * sigmoid(x)
+        gradf = np.tanh(sp) + x * (1.0 - np.tanh(sp) ** 2) * (1.0 / (1.0 + np.exp(-x)))
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(gradf.astype(grad_output.data.dtype), dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(gradf.astype(grad_output.data.dtype) * grad_output.data, dtype=grad_output.dtype)]
+
+
+class SELU(Function):
+    @staticmethod
+    def forward(ctx, a):
+        alpha = 1.6732632423543772
+        scale = 1.0507009873554805
+        x = a.data
+        out = scale * np.where(x > 0, x, alpha * (np.exp(x) - 1.0))
+        ctx.save_attr(alpha=alpha, scale=scale, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        alpha = ctx.get_attr("alpha")
+        scale = ctx.get_attr("scale")
+        grad = np.where(a.data > 0, scale, scale * alpha * np.exp(a.data)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardsigmoid(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = np.clip(x / 6.0 + 0.5, 0.0, 1.0)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = np.where((x > -3.0) & (x < 3.0), 1.0 / 6.0, 0.0).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardshrink(Function):
+    @staticmethod
+    def forward(ctx, a, lambd=0.5):
+        x = a.data
+        out = np.where((x > lambd) | (x < -lambd), x, 0.0)
+        ctx.save_attr(lambd=lambd)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        lambd = ctx.get_attr("lambd")
+        mask = ((a.data > lambd) | (a.data < -lambd)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softshrink(Function):
+    @staticmethod
+    def forward(ctx, a, lambd=0.5):
+        x = a.data
+        out = np.where(x > lambd, x - lambd, np.where(x < -lambd, x + lambd, 0.0))
+        ctx.save_attr(lambd=lambd)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        lambd = ctx.get_attr("lambd")
+        mask = ((a.data > lambd) | (a.data < -lambd)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Tanhshrink(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = x - np.tanh(x)
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = (np.tanh(x) ** 2).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Threshold(Function):
+    @staticmethod
+    def forward(ctx, a, threshold=0.0, value=0.0):
+        x = a.data
+        out = np.where(x > threshold, x, value)
+        ctx.save_attr(threshold=threshold, value=value)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        threshold = ctx.get_attr("threshold")
+        mask = (a.data > threshold).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class GLU(Function):
+    @staticmethod
+    def forward(ctx, a, dim=-1):
+        x = a.data
+        half = x.shape[dim] // 2
+        if dim == -1:
+            x_a, x_b = x[..., :half], x[..., half:]
+        else:
+            sl = [slice(None)] * x.ndim
+            sl[dim] = slice(0, half)
+            x_a = x[tuple(sl)]
+            sl[dim] = slice(half, None)
+            x_b = x[tuple(sl)]
+        sig_b = 1.0 / (1.0 + np.exp(-x_b))
+        out = x_a * sig_b
+        ctx.save_attr(sig=sig_b, x_a=x_a)
+        ctx.save_attr(dim=dim, half=half)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        dim = ctx.get_attr("dim")
+        half = ctx.get_attr("half")
+        sig = ctx.get_attr("sig")
+        x = a.data
+        x_a = ctx.get_attr("x_a")
+        g = grad_output.data
+
+        def split(x_in):
+            if dim == -1:
+                return x_in[..., :half], x_in[..., half:]
+            sl = [slice(None)] * x_in.ndim
+            sl[dim] = slice(0, half)
+            ga = x_in[tuple(sl)]
+            sl[dim] = slice(half, None)
+            gb = x_in[tuple(sl)]
+            return ga, gb
+
+        ga, _ = split(g)
+        da = ga * sig
+        db = ga * x_a * sig * (1 - sig)
+
+        def cat(a_, b_):
+            if dim == -1:
+                return np.concatenate([a_, b_], axis=-1)
+            return np.concatenate([a_, b_], axis=dim)
+
+        return [Tensor(cat(da, db), dtype=grad_output.dtype)]
+
+
 # ===========================================================================
 #  Unary Math Ops
 # ===========================================================================
