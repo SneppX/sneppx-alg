@@ -1261,3 +1261,109 @@ def topk(input: Tensor, k: int, dim: int = -1):
         Tensor.from_numpy(values.astype(np.float32)),
         Tensor.from_numpy(idx.astype(np.int64)),
     )
+def conv3d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int, int] = (1, 1, 1),
+    padding: Tuple[int, int, int] = (0, 0, 0),
+    dilation: Tuple[int, int, int] = (1, 1, 1),
+    groups: int = 1,
+) -> Tensor:
+    """3D convolution (NCDHW layout) via im2col GEMM.
+
+    input: [N, C_in, D, H, W]
+    weight: [C_out, C_in // groups, kD, kH, kW]
+    """
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    N, C_in, D, H, W = x.shape
+    C_out, C_in_g, kD, kH, kW = w.shape
+    assert C_in == C_in_g * groups
+    pad_d, pad_h, pad_w = padding
+    dil_d, dil_h, dil_w = dilation
+    str_d, str_h, str_w = stride
+    D_out = (D + 2 * pad_d - dil_d * (kD - 1) - 1) // str_d + 1
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // str_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // str_w + 1
+    if pad_d or pad_h or pad_w:
+        x = np.pad(x, ((0, 0), (0, 0), (pad_d, pad_d), (pad_h, pad_h), (pad_w, pad_w)), mode="constant")
+    col = np.zeros((N, C_in * kD * kH * kW, D_out * H_out * W_out), dtype=np.float64)
+    o = 0
+    for i in range(D_out):
+        d_start = i * str_d
+        for j in range(H_out):
+            h_start = j * str_h
+            for k in range(W_out):
+                w_start = k * str_w
+                col[:, :, o] = x[
+                    :,
+                    :,
+                    d_start : d_start + kD * dil_d : dil_d,
+                    h_start : h_start + kH * dil_h : dil_h,
+                    w_start : w_start + kW * dil_w : dil_w,
+                ].reshape(N, -1)
+                o += 1
+    w_mat = w.reshape(C_out, -1)
+    out = w_mat @ col
+    out = out.reshape(C_out, N, D_out, H_out, W_out).transpose(1, 0, 2, 3, 4)
+    if bias is not None:
+        out += np.asarray(bias.data, dtype=np.float64).reshape(1, -1, 1, 1, 1)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+
+def _conv_transpose2d_impl(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor],
+    stride: Tuple[int, int],
+    padding: Tuple[int, int],
+    output_padding: Tuple[int, int],
+    groups: int,
+) -> Tensor:
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    C_in_g, C_out, kH, kW = w.shape
+    str_h, str_w = stride
+    pad_h, pad_w = padding
+    op_h, op_w = output_padding
+    H_out = (H - 1) * str_h - 2 * pad_h + kH + op_h
+    W_out = (W - 1) * str_w - 2 * pad_w + kW + op_w
+    out = np.zeros((N, C_out * groups, H_out, W_out), dtype=np.float64)
+    g = groups
+    ng = C_in // g
+    oc_g = C_out  # output channels per group
+    for ci in range(C_in):
+        gi = ci // ng
+        for co in range(C_out):
+            co_global = gi * oc_g + co
+            wv = w[ci % ng, co]
+            for i in range(H):
+                for j in range(W):
+                    th = i * str_h - pad_h
+                    tw = j * str_w - pad_w
+                    for kh in range(kH):
+                        ah = th + kh
+                        if ah < 0 or ah >= H_out:
+                            continue
+                        for kw in range(kW):
+                            aw = tw + kw
+                            if aw < 0 or aw >= W_out:
+                                continue
+                            out[:, co_global, ah, aw] += x[:, ci, i, j] * wv[kh, kw]
+    if bias is not None:
+        out += np.asarray(bias.data, dtype=np.float64).reshape(1, -1, 1, 1)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+
+def conv_transpose2d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int] = (1, 1),
+    padding: Tuple[int, int] = (0, 0),
+    output_padding: Tuple[int, int] = (0, 0),
+    groups: int = 1,
+) -> Tensor:
+    return _conv_transpose2d_impl(input, weight, bias, stride, padding, output_padding, groups)

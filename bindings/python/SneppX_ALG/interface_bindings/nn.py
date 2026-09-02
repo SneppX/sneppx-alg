@@ -386,6 +386,132 @@ class Conv1d(Module):
         )
 
 
+class Conv3d(Module):
+    """3D convolution layer (NCDHW layout)."""
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size,
+        stride=1,
+        padding=0,
+        dilation=1,
+        groups: int = 1,
+        bias: bool = True,
+        dtype="float32",
+    ):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride, stride)
+        if isinstance(padding, int):
+            padding = (padding, padding, padding)
+        if isinstance(dilation, int):
+            dilation = (dilation, dilation, dilation)
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
+        self.groups = groups
+        kD, kH, kW = kernel_size
+        scale = math.sqrt(1.0 / (in_channels * kD * kH * kW))
+        self.weight = Tensor.randn(
+            (out_channels, in_channels // groups, kD, kH, kW), dtype=dtype
+        ) * scale
+        self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .advanced_ops import conv3d as _conv3d
+
+        return _conv3d(
+            x,
+            self.weight,
+            self.bias,
+            stride=self.stride,
+            padding=self.padding,
+            dilation=self.dilation,
+            groups=self.groups,
+        )
+
+
+class _ConvTransposeNd(Module):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size,
+        stride=1,
+        padding=0,
+        output_padding=0,
+        groups: int = 1,
+        bias: bool = True,
+        dilation: int = 1,
+        dtype="float32",
+    ):
+        super().__init__()
+        ndim = self.conv_ndim
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size,) * ndim
+        if isinstance(stride, int):
+            stride = (stride,) * ndim
+        if isinstance(padding, int):
+            padding = (padding,) * ndim
+        if isinstance(output_padding, int):
+            output_padding = (output_padding,) * ndim
+        if isinstance(dilation, int):
+            dilation = (dilation,) * ndim
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.output_padding = output_padding
+        self.groups = groups
+        self.dilation = dilation
+        k = 1
+        for kk in kernel_size:
+            k *= kk
+        scale = math.sqrt(1.0 / (in_channels * k))
+        # transposed weight layout: [C_in//groups, C_out, k...]
+        self.weight = Tensor.randn(
+            (in_channels // groups, out_channels) + tuple(kernel_size), dtype=dtype
+        ) * scale
+        self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.conv_ndim != 2:
+            raise NotImplementedError(
+                f"ConvTranspose{self.conv_ndim}d backward/forward only supported for 2d in this sim"
+            )
+        from .advanced_ops import conv_transpose2d as _ct2d
+
+        return _ct2d(
+            x,
+            self.weight,
+            self.bias,
+            stride=self.stride,
+            padding=self.padding,
+            output_padding=self.output_padding,
+            groups=self.groups,
+        )
+
+
+class ConvTranspose1d(_ConvTransposeNd):
+    conv_ndim = 1
+
+
+class ConvTranspose2d(_ConvTransposeNd):
+    conv_ndim = 2
+
+
+class ConvTranspose3d(_ConvTransposeNd):
+    conv_ndim = 3
+
+
 class RMSNorm(Module):
     def __init__(self, dim: int, eps: float = 1e-6, dtype="float32"):
         super().__init__()
@@ -2150,6 +2276,207 @@ class CosineEmbeddingLoss(_Loss):
 
     def forward(self, input: Tensor, other: Tensor, y: Tensor) -> Tensor:
         return input.cosine_embedding_loss(other, y, self.margin)
+
+
+class EmbeddingBag(Module):
+    """Sum or mean of the embeddings of the entries indexed by `input`.
+
+    Mirrors ``torch.nn.EmbeddingBag`` (mode="sum"/"mean"/"max").
+    """
+
+    def __init__(
+        self,
+        num_embeddings: int,
+        embedding_dim: int,
+        mode: str = "mean",
+        include_last_offset: bool = False,
+        dtype="float32",
+    ):
+        super().__init__()
+        self.weight = Tensor.randn((num_embeddings, embedding_dim), dtype=dtype) * 0.01
+        self.mode = mode
+        self.include_last_offset = include_last_offset
+
+    def forward(
+        self,
+        input: Tensor,
+        offsets: Optional[Tensor] = None,
+        per_sample_weights: Optional[Tensor] = None,
+    ) -> Tensor:
+        idx = input.data.astype(np.int64).reshape(-1)
+        w = self.weight.data
+        emb = w[idx]
+        if per_sample_weights is not None:
+            psw = per_sample_weights.data.astype(np.float64).reshape(-1)
+            emb = emb * psw[:, None]
+        if offsets is None:
+            if self.mode == "sum":
+                agg = emb.sum(axis=0, keepdims=True)
+            elif self.mode == "mean":
+                agg = emb.mean(axis=0, keepdims=True)
+            else:  # max
+                agg = emb.max(axis=0, keepdims=True)
+            return Tensor(agg, dtype=self.weight.dtype, device=self.weight.device)
+        off = offsets.data.astype(np.int64)
+        off = np.clip(off, 0, idx.size)
+        n = off.size - 1
+        bags = []
+        for i in range(n):
+            seg = emb[off[i]:off[i + 1]]
+            if seg.shape[0] == 0:
+                bags.append(np.zeros(emb.shape[1], dtype=np.float32))
+            elif self.mode == "sum":
+                bags.append(seg.sum(axis=0))
+            elif self.mode == "mean":
+                bags.append(seg.mean(axis=0))
+            else:
+                bags.append(seg.max(axis=0))
+        return Tensor(np.stack(bags), dtype=self.weight.dtype, device=self.weight.device)
+
+
+class CosineSimilarity(Module):
+    """Computes cosine similarity between x1 and x2 along `dim`."""
+
+    def __init__(self, dim: int = 1, eps: float = 1e-8):
+        super().__init__()
+        self.dim = dim
+        self.eps = eps
+
+    def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
+        a = x1.data.astype(np.float64)
+        b = x2.data.astype(np.float64)
+        dim = self.dim % a.ndim
+        num = (a * b).sum(axis=dim)
+        den = (
+            np.sqrt((a * a).sum(axis=dim) + self.eps)
+            * np.sqrt((b * b).sum(axis=dim) + self.eps)
+        )
+        out = num / np.maximum(den, self.eps)
+        return Tensor(out.astype(np.float32), dtype=x1.dtype, device=x1.device)
+
+
+class PairwiseDistance(Module):
+    """Computes the pairwise distance between x1 and x2 using `p`-norm."""
+
+    def __init__(self, p: float = 2.0, eps: float = 1e-6, keepdim: bool = False):
+        super().__init__()
+        self.p = p
+        self.eps = eps
+        self.keepdim = keepdim
+
+    def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
+        a = x1.data.astype(np.float64)
+        b = x2.data.astype(np.float64)
+        d = a - b
+        if self.p == 2.0:
+            out = np.sqrt((d * d).sum(axis=-1) + self.eps)
+        elif self.p == 1.0:
+            out = np.abs(d).sum(axis=-1)
+        else:
+            out = np.power(np.abs(d).sum(axis=-1) + self.eps, 1.0 / self.p)
+        if self.keepdim:
+            out = out[..., None]
+        return Tensor(out.astype(np.float32), dtype=x1.dtype, device=x1.device)
+
+
+class ChannelShuffle(Module):
+    """Divides channels into `groups` groups and rearranges them."""
+
+    def __init__(self, groups: int):
+        super().__init__()
+        self.groups = groups
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = x.data
+        n, c, *spatial = xd.shape
+        cgh = c // self.groups
+        out = xd.reshape(n, self.groups, cgh, *spatial).transpose(0, 2, 1, *range(3, 3 + len(spatial)))
+        out = out.reshape(n, c, *spatial)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class PixelShuffle(Module):
+    """Rearranges (C*r^2, H, W) to (C, H*r, W*r)."""
+
+    def __init__(self, upscale_factor: int):
+        super().__init__()
+        self.upscale_factor = upscale_factor
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = x.data
+        r = self.upscale_factor
+        n, c, h, w = xd.shape
+        c_out = c // (r * r)
+        out = xd.reshape(n, c_out, r, r, h, w).transpose(0, 1, 4, 2, 5, 3).reshape(n, c_out, h * r, w * r)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class PixelUnshuffle(Module):
+    """Inverse of PixelShuffle."""
+
+    def __init__(self, downscale_factor: int):
+        super().__init__()
+        self.downscale_factor = downscale_factor
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = x.data
+        r = self.downscale_factor
+        n, c, h, w = xd.shape
+        c_out = c * r * r
+        out = xd.reshape(n, c, h // r, r, w // r, r).transpose(0, 1, 3, 5, 2, 4).reshape(n, c_out, h // r, w // r)
+        return Tensor(out, dtype=x.dtype, device=x.device)
+
+
+class Upsample(Module):
+    """Upsamples a given multi-channel 1D/2D/3D input (nearest or bilinear)."""
+
+    def __init__(self, size=None, scale_factor=None, mode: str = "nearest", align_corners=None):
+        super().__init__()
+        self.size = size
+        self.scale_factor = scale_factor
+        self.mode = mode
+        self.align_corners = align_corners
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = np.asarray(x.data, dtype=np.float64)
+        ndim = xd.ndim - 2
+        spatial = xd.shape[-ndim:]
+        if self.scale_factor is not None:
+            target = tuple(int(round(s * self.scale_factor)) for s in spatial)
+        elif self.size is not None:
+            target = tuple(int(s) for s in (self.size if isinstance(self.size, (tuple, list)) else (self.size,) * ndim))
+        else:
+            target = spatial
+        scales = tuple(t / s for s, t in zip(spatial, target))
+        if self.mode == "bilinear":
+            from scipy.ndimage import zoom
+
+            out = zoom(xd, (1.0, 1.0) + scales, order=1, mode="nearest")
+        else:  # nearest
+            out = _zoom_nn(xd, target)
+        return Tensor(out.astype(xd.dtype), dtype=x.dtype, device=x.device)
+
+
+def _zoom_nn(xd, target):
+    """Nearest-neighbor upsampling for a batch x channel x spatial tensor."""
+    out = np.asarray(xd, dtype=np.float64)
+    ndim = out.ndim - 2
+    spatial = out.shape[-ndim:]
+    for i, (s, t) in enumerate(zip(spatial, target)):
+        axis = out.ndim - ndim + i
+        idx = np.repeat(np.arange(s, dtype=np.int64), int(np.ceil(t / s)))[:t]
+        out = np.take(out, idx, axis=axis)
+    return out
+
+
+class UpsamplingNearest2d(Upsample):
+    def __init__(self, size=None, scale_factor=None):
+        super().__init__(size=size, scale_factor=scale_factor, mode="nearest")
+
+
+class UpsamplingBilinear2d(Upsample):
+    def __init__(self, size=None, scale_factor=None):
+        super().__init__(size=size, scale_factor=scale_factor, mode="bilinear")
 
 
 # Parameter initialization namespace (torch.nn.init-compatible).

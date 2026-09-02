@@ -355,3 +355,99 @@ def test_multi_label_soft_margin_loss():
     x = Tensor(np.random.randn(4, 5).astype("float32"))
     y = Tensor((np.random.rand(4, 5) > 0.5).astype("float32"))
     assert np.isfinite(loss(x, y).data)
+
+
+def test_embedding_bag_mean():
+    bag = nn.EmbeddingBag(10, 4, mode="mean")
+    idx = Tensor(np.array([0, 1, 2, 0], dtype=np.int64))
+    off = Tensor(np.array([0, 2, 4], dtype=np.int64))
+    out = bag(idx, off)
+    assert out.shape == (2, 4)
+    assert np.allclose(
+        out.data[0], bag.weight.data[[0, 1]].mean(axis=0)
+    )
+
+
+def test_embedding_bag_sum():
+    bag = nn.EmbeddingBag(10, 3, mode="sum")
+    idx = Tensor(np.array([0, 1, 2, 0], dtype=np.int64))
+    off = Tensor(np.array([0, 2, 4], dtype=np.int64))
+    out = bag(idx, off)
+    assert np.allclose(out.data[0], bag.weight.data[[0, 1]].sum(axis=0))
+
+
+def test_cosine_similarity():
+    cs = nn.CosineSimilarity(dim=1)
+    x1 = Tensor(np.random.randn(4, 8).astype("float32"))
+    x2 = Tensor(np.random.randn(4, 8).astype("float32"))
+    out = cs(x1, x2)
+    assert out.shape == (4,)
+    a = x1.data.astype("float64")
+    b = x2.data.astype("float64")
+    expected = (a * b).sum(1) / (np.linalg.norm(a, axis=1) * np.linalg.norm(b, axis=1))
+    assert np.allclose(out.data, expected, atol=1e-4)
+
+
+def test_pairwise_distance():
+    pd = nn.PairwiseDistance()
+    x1 = Tensor(np.random.randn(4, 8).astype("float32"))
+    x2 = Tensor(np.random.randn(4, 8).astype("float32"))
+    out = pd(x1, x2)
+    assert out.shape == (4,)
+    expected = np.linalg.norm(x1.data - x2.data, axis=1)
+    assert np.allclose(out.data, expected, atol=1e-4)
+
+
+def test_channel_shuffle():
+    cs = nn.ChannelShuffle(2)
+    x = Tensor(np.random.randn(2, 4, 6, 6).astype("float32"))
+    out = cs(x)
+    assert out.shape == (2, 4, 6, 6)
+    # channel shuffle is a permutation of whole channel planes
+    ox = np.sort(x.data.reshape(2, 4, -1), axis=1)
+    oo = np.sort(out.data.reshape(2, 4, -1), axis=1)
+    assert np.allclose(oo, ox)
+    # torch semantics with groups=2, 4 channels -> ordering [c0,c2,c1,c3]
+    expected = x.data[:, [0, 2, 1, 3]]
+    assert np.allclose(out.data, expected)
+
+
+def test_pixel_shuffle_roundtrip():
+    ps = nn.PixelShuffle(2)
+    x = Tensor(np.random.randn(1, 8, 4, 4).astype("float32"))
+    out = ps(x)
+    assert out.shape == (1, 2, 8, 8)
+    pus = nn.PixelUnshuffle(2)
+    back = pus(out)
+    assert np.allclose(back.data, x.data)
+
+
+def test_upsample_nearest_2d():
+    us = nn.Upsample(scale_factor=2, mode="nearest")
+    x = Tensor(np.random.randn(1, 2, 3, 4).astype("float32"))
+    out = us(x)
+    assert out.shape == (1, 2, 6, 8)
+    assert np.allclose(out.data[:, :, ::2, ::2], x.data)
+
+
+def test_upsample_bilinear_2d():
+    us = nn.Upsample(size=(6, 8), mode="bilinear")
+    x = Tensor(np.random.randn(1, 2, 3, 4).astype("float32"))
+    out = us(x)
+    assert out.shape == (1, 2, 6, 8)
+    assert np.isfinite(out.data).all()
+
+
+def test_conv3d_shape():
+    m = nn.Conv3d(2, 3, 3, padding=1)
+    x = Tensor(np.random.randn(1, 2, 5, 6, 7).astype("float32"))
+    out = m(x)
+    assert out.shape == (1, 3, 5, 6, 7)
+
+
+def test_conv_transpose2d_shape():
+    m = nn.ConvTranspose2d(2, 3, 3, stride=2, padding=1, output_padding=1)
+    x = Tensor(np.random.randn(1, 2, 4, 4).astype("float32"))
+    out = m(x)
+    # (H-1)*stride - 2*pad + (k-1) + output_padding + 1 = 3*2 -2 +2 +1 +1 = 8
+    assert out.shape[2] == 8 and out.shape[3] == 8
