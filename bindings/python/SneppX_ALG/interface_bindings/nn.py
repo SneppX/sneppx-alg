@@ -2664,3 +2664,6 @@ from .nn_init import (  # noqa: E402,F401
 
 from . import nn_init as init  # noqa: E402,F401
 
+from . import nn_functional as functional  # noqa: E402,F401
+from . import nn_functional as F  # noqa: E402,F401
+
