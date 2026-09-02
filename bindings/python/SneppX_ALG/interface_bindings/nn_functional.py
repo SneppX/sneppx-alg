@@ -362,37 +362,71 @@ def adaptive_max_pool3d(input: Tensor, output_size, return_indices=False) -> Ten
 
 
 def layer_norm(input: Tensor, normalized_shape, weight=None, bias=None, eps=1e-5) -> Tensor:
+    if isinstance(normalized_shape, int):
+        normalized_shape = (normalized_shape,)
+    if weight is None:
+        weight = Tensor.ones(normalized_shape, dtype=input.dtype)
+    if bias is None:
+        bias = Tensor.zeros(normalized_shape, dtype=input.dtype)
     return input.layer_norm(weight, bias, eps)
 
 
 def rms_norm(input: Tensor, normalized_shape, weight=None, eps=1e-6) -> Tensor:
-    return input.layer_norm(weight, None, eps)
+    if isinstance(normalized_shape, int):
+        normalized_shape = (normalized_shape,)
+    if weight is None:
+        weight = Tensor.ones(normalized_shape, dtype=input.dtype)
+    bias = Tensor.zeros(normalized_shape, dtype=input.dtype)
+    return input.layer_norm(weight, bias, eps)
 
 
 def batch_norm(input, running_mean, running_var, weight=None, bias=None, training=False,
                momentum=0.1, eps=1e-5):
-    return input.batch_norm(weight, bias, running_mean, running_var, eps)
+    from .nn import BatchNormFn
+    if weight is None:
+        C = input.shape[1]
+        weight = Tensor.ones((C,), dtype=input.dtype)
+    if bias is None:
+        C = input.shape[1]
+        bias = Tensor.zeros((C,), dtype=input.dtype)
+    training = training and running_mean is None and running_var is None
+    if running_mean is None:
+        C = input.shape[1]
+        running_mean = Tensor.zeros((C,))
+    if running_var is None:
+        C = input.shape[1]
+        running_var = Tensor.ones((C,))
+    return BatchNormFn.apply(input, weight, bias, running_mean, running_var, training,
+                             momentum, eps)
 
 
 def group_norm(input, num_groups, weight=None, bias=None, eps=1e-5):
-    return input.group_norm(weight, bias, num_groups, eps)
+    from .nn import GroupNormFn
+    if weight is None:
+        C = input.shape[1]
+        weight = Tensor.ones((C,), dtype=input.dtype)
+    if bias is None:
+        C = input.shape[1]
+        bias = Tensor.zeros((C,), dtype=input.dtype)
+    return GroupNormFn.apply(input, weight, bias, num_groups, eps)
 
 
 def instance_norm(input, running_mean=None, running_var=None, weight=None, bias=None,
                   use_input_stats=True, momentum=0.1, eps=1e-5) -> Tensor:
-    x = np.asarray(input.data, dtype=np.float64)
-    shape = x.shape
-    n, c = shape[:2]
-    sp = shape[2:] or (1,)
-    xr = x.reshape(n, c, -1)
-    mean = xr.mean(axis=2, keepdims=True)
-    var = xr.var(axis=2, keepdims=True)
-    xn = (xr - mean) / np.sqrt(var + eps)
-    if weight is not None:
-        xn = xn * np.asarray(weight.data).reshape(1, c, 1)
-    if bias is not None:
-        xn = xn + np.asarray(bias.data).reshape(1, c, 1)
-    return Tensor.from_numpy(xn.reshape(shape).astype(np.float32))
+    from .nn import InstanceNormFn
+    if weight is None:
+        C = input.shape[1]
+        weight = Tensor.ones((C,), dtype=input.dtype)
+    if bias is None:
+        C = input.shape[1]
+        bias = Tensor.zeros((C,), dtype=input.dtype)
+    if running_mean is None:
+        C = input.shape[1]
+        running_mean = Tensor.zeros((C,))
+    if running_var is None:
+        C = input.shape[1]
+        running_var = Tensor.ones((C,))
+    return InstanceNormFn.apply(input, weight, bias, running_mean, running_var, eps)
 
 
 def dropout(input: Tensor, p: float = 0.5, training: bool = True, inplace: bool = False) -> Tensor:

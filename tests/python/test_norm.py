@@ -101,6 +101,88 @@ def test_batchnorm_eval_grad():
     print("BatchNorm eval grad: OK")
 
 
+def test_functional_norm_grads():
+    from SneppX_ALG.interface_bindings import nn_functional as F
+
+    # F.batch_norm (training) input grad
+    x = Tensor(np.random.randn(4, 3), dtype="float64")
+
+    def bn_loss(i):
+        o = F.batch_norm(i, None, None, training=True, momentum=0.1)
+        return (o * o).mean()
+
+    check("F.batch_norm x grad", x, bn_loss)
+
+    # F.batch_norm weight/bias grads
+    w = Tensor(np.random.randn(3), dtype="float64")
+    w.requires_grad_(True)
+
+    def bn_w(i):
+        wf = i
+        wf.requires_grad_(True)
+        o = F.batch_norm(x, None, None, weight=wf, training=True, momentum=0.1)
+        return (o * o).mean()
+    check("F.batch_norm weight grad", w, bn_w)
+
+    # F.group_norm input grad + weight grad
+    xg = Tensor(np.random.randn(2, 6, 4, 4), dtype="float64")
+
+    def gn_loss(i):
+        o = F.group_norm(i, 3)
+        return (o * o).mean()
+
+    check("F.group_norm x grad", xg, gn_loss)
+    wg = Tensor(np.random.randn(6), dtype="float64")
+    wg.requires_grad_(True)
+
+    def gn_w(i):
+        o = F.group_norm(xg, 3, weight=i)
+        return (o * o).mean()
+    check("F.group_norm weight grad", wg, gn_w)
+
+    # F.instance_norm input grad (4D) — covers InstanceNorm backward
+    xi = Tensor(np.random.randn(2, 3, 4, 4), dtype="float64")
+
+    def inst_loss(i):
+        o = F.instance_norm(i)
+        return (o * o).mean()
+
+    check("F.instance_norm x grad", xi, inst_loss)
+
+    # F.layer_norm input grad (differentiable path)
+    xl = Tensor(np.random.randn(2, 4), dtype="float64")
+
+    def ln_loss(i):
+        o = F.layer_norm(i, (4,))
+        return (o * o).mean()
+
+    check("F.layer_norm x grad", xl, ln_loss)
+
+
+def test_batchnorm3d_and_instancenorm_backward_fd():
+    from SneppX_ALG.interface_bindings.nn import BatchNorm3d, InstanceNorm3d
+
+    # BatchNorm3d backward via FD (x grad)
+    x = Tensor(np.random.randn(2, 3, 4, 4, 4), dtype="float64")
+
+    def bn3_loss(i):
+        m = BatchNorm3d(3)
+        m.train()
+        return (m(i) * m(i)).mean()
+
+    check("BatchNorm3d x grad", x, bn3_loss)
+
+    # InstanceNorm3d backward via FD (x grad)
+    xi = Tensor(np.random.randn(2, 3, 4, 4, 4), dtype="float64")
+
+    def inst3_loss(i):
+        m = InstanceNorm3d(3)
+        m.train()
+        return (m(i) * m(i)).mean()
+
+    check("InstanceNorm3d x grad", xi, inst3_loss)
+
+
 if __name__ == "__main__":
     test_batchnorm1d()
     test_batchnorm2d()
