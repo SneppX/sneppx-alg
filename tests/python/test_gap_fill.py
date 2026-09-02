@@ -451,3 +451,36 @@ def test_conv_transpose2d_shape():
     out = m(x)
     # (H-1)*stride - 2*pad + (k-1) + output_padding + 1 = 3*2 -2 +2 +1 +1 = 8
     assert out.shape[2] == 8 and out.shape[3] == 8
+
+
+def test_unfold_fold_roundtrip():
+    unfold = nn.Unfold((2, 2), stride=1)
+    x = Tensor(np.random.randn(1, 3, 4, 4).astype("float32"))
+    u = unfold(x)
+    assert u.shape == (1, 12, 9)
+    fold = nn.Fold((4, 4), (2, 2), stride=1)
+    # fold averages overlapping regions, so round-trip only preserves the sum-weighted average
+    f = fold(u)
+    assert f.shape == (1, 3, 4, 4)
+    # single-stride=1 overlapping fold: output equals mean of the (kH*kW) contributions = input
+    assert np.allclose(f.data, x.data, atol=1e-5)
+
+
+def test_unfold_values():
+    unfold = nn.Unfold((2, 2), stride=2)
+    x = Tensor(np.arange(1, 13, dtype=np.float32).reshape(1, 1, 3, 4))
+    u = unfold(x)
+    # top-left block for (3,4) input, k2x2, stride2 -> blocks at (0,0)
+    assert np.allclose(u.data[0, :4, 0], x.data[0, 0, 0:2, 0:2].reshape(-1))
+
+
+def test_max_unpool2d():
+    input = Tensor(np.arange(4, dtype=np.float32).reshape(1, 1, 2, 2))
+    idx = Tensor(np.array([0, 2, 8, 10], dtype=np.int64).reshape(1, 1, 2, 2))
+    m = nn.MaxUnpool2d(kernel_size=2, stride=2)
+    out = m(input, idx)
+    assert out.shape == (1, 1, 4, 4)
+    assert out.data[0, 0, 0, 0] == 0.0
+    assert out.data[0, 0, 0, 2] == 1.0
+    assert out.data[0, 0, 2, 0] == 2.0
+    assert out.data[0, 0, 2, 2] == 3.0

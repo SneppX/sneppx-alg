@@ -2479,6 +2479,174 @@ class UpsamplingBilinear2d(Upsample):
         super().__init__(size=size, scale_factor=scale_factor, mode="bilinear")
 
 
+class Unfold(Module):
+    """Extracts sliding local blocks from a batched tensor.
+
+    Mirrors ``torch.nn.Unfold`` (output ``(N, C*prod(kernel_size), L)``).
+    """
+
+    def __init__(self, kernel_size, dilation=1, padding=0, stride=1):
+        super().__init__()
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.padding = padding
+        self.stride = stride
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = np.asarray(x.data, dtype=np.float64)
+        k = self.kernel_size
+        if isinstance(k, int):
+            k = (k, k)
+        dil = self.dilation
+        if isinstance(dil, int):
+            dil = (dil, dil)
+        pad = self.padding
+        if isinstance(pad, int):
+            pad = (pad, pad)
+        st = self.stride
+        if isinstance(st, int):
+            st = (st, st)
+        N, C, H, W = xd.shape
+        kH, kW = k
+        dilH, dilW = dil
+        padH, padW = pad
+        sH, sW = st
+        H_out = (H + 2 * padH - dilH * (kH - 1) - 1) // sH + 1
+        W_out = (W + 2 * padW - dilW * (kW - 1) - 1) // sW + 1
+        if padH or padW:
+            xp = np.pad(xd, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant")
+        else:
+            xp = xd
+        cols = np.zeros((N, C * kH * kW, H_out * W_out), dtype=np.float64)
+        o = 0
+        for i in range(H_out):
+            for j in range(W_out):
+                win = xp[
+                    :,
+                    :,
+                    i * sH : i * sH + kH * dilH : dilH,
+                    j * sW : j * sW + kW * dilW : dilW,
+                ]
+                cols[:, :, o] = win.reshape(N, -1)
+                o += 1
+        return Tensor(cols.astype(xd.dtype), dtype=x.dtype, device=x.device)
+
+
+class Fold(Module):
+    """Combines an array of sliding local blocks into a larger tensor.
+
+    Mirrors ``torch.nn.Fold`` (input ``(N, C*prod(kernel_size), L)``).
+    """
+
+    def __init__(self, output_size, kernel_size, dilation=1, padding=0, stride=1):
+        super().__init__()
+        self.output_size = output_size
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.padding = padding
+        self.stride = stride
+
+    def forward(self, x: Tensor) -> Tensor:
+        xd = np.asarray(x.data, dtype=np.float64)
+        k = self.kernel_size
+        if isinstance(k, int):
+            k = (k, k)
+        dil = self.dilation
+        if isinstance(dil, int):
+            dil = (dil, dil)
+        pad = self.padding
+        if isinstance(pad, int):
+            pad = (pad, pad)
+        st = self.stride
+        if isinstance(st, int):
+            st = (st, st)
+        od = self.output_size
+        if isinstance(od, int):
+            od = (od, od)
+        N, CL, L = xd.shape
+        C = CL // (k[0] * k[1])
+        H, W = od
+        kH, kW = k
+        dilH, dilW = dil
+        padH, padW = pad
+        sH, sW = st
+        H_out = (H + 2 * padH - dilH * (kH - 1) - 1) // sH + 1
+        W_out = (W + 2 * padW - dilW * (kW - 1) - 1) // sW + 1
+        acc = np.zeros((N, C, H + 2 * padH, W + 2 * padW), dtype=np.float64)
+        cnt = np.zeros((N, C, H + 2 * padH, W + 2 * padW), dtype=np.float64)
+        o = 0
+        for i in range(H_out):
+            for j in range(W_out):
+                col = xd[:, :, o].reshape(N, C, kH * kW)
+                for kh in range(kH):
+                    for kw in range(kW):
+                        hi = i * sH + kh * dilH
+                        wi = j * sW + kw * dilW
+                        gain = col[:, :, kh * kW + kw]
+                        acc[:, :, hi, wi] += gain
+                        cnt[:, :, hi, wi] += 1.0
+                o += 1
+        acc = acc / np.maximum(cnt, 1.0)
+        if padH or padW:
+            acc = acc[:, :, padH : padH + H, padW : padW + W]
+        return Tensor(acc.astype(xd.dtype), dtype=x.dtype, device=x.device)
+
+
+class _MaxUnpoolNd(Module):
+    def __init__(self, kernel_size, stride=None, padding=0):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size,) * self.pool_ndim
+        self.kernel_size = kernel_size
+        stride = stride or kernel_size
+        if isinstance(stride, int):
+            stride = (stride,) * self.pool_ndim
+        self.stride = stride
+        if isinstance(padding, int):
+            padding = (padding,) * self.pool_ndim
+        self.padding = padding
+
+    def forward(self, input, indices, output_size=None):
+        xd = np.asarray(input.data)
+        idx = indices.data
+        ndim = self.pool_ndim
+        N, C = xd.shape[:2]
+        in_sp = xd.shape[2:]
+        if output_size:
+            out_sp = tuple(int(s) for s in np.atleast_1d(output_size))
+        else:
+            out_sp = tuple(
+                (s - 1) * st + k
+                for s, st, k in zip(in_sp, self.stride, self.kernel_size)
+            )
+        out = np.zeros((N, C) + tuple(out_sp), dtype=np.float32)
+        # coordinate of every input cell expanded to (N,C,outmap...) then flatten per channel
+        idxf = idx.reshape(N, C, -1).astype(np.int64)
+        n_out = 1
+        for d in out_sp:
+            n_out *= d
+        for n in range(N):
+            for c in range(C):
+                flat = np.zeros(n_out, dtype=np.float32)
+                vals = xd[n, c].reshape(-1)
+                pos = idxf[n, c]
+                flat[pos] = vals
+                out[n, c] = flat.reshape(out_sp)
+        return Tensor(out, dtype=input.dtype, device=input.device)
+
+
+class MaxUnpool1d(_MaxUnpoolNd):
+    pool_ndim = 1
+
+
+class MaxUnpool2d(_MaxUnpoolNd):
+    pool_ndim = 2
+
+
+class MaxUnpool3d(_MaxUnpoolNd):
+    pool_ndim = 3
+
+
 # Parameter initialization namespace (torch.nn.init-compatible).
 from .nn_init import (  # noqa: E402,F401
     zeros_ as _zeros_,
