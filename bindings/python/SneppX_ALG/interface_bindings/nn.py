@@ -1,6 +1,7 @@
 """Neural Network Module — layers, activations, containers with CUDA kernel support."""
 
 from typing import Callable, List, Optional, Tuple, Union
+from collections import namedtuple
 from .tensor import Tensor, Dtype
 from .autograd import Function
 import numpy as np
@@ -31,11 +32,22 @@ def _is_cuda_tensor(x: Tensor) -> bool:
     return _HAS_CUDA_KERNELS and x.device.startswith("cuda")
 
 
+def _state_value_to_array(v):
+    """Normalize a state_dict value (ndarray, _TensorData or Tensor) to ndarray."""
+    if isinstance(v, Tensor):
+        return np.asarray(v.data)
+    return np.asarray(v)
+
+
+IncompatibleKeys = namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
+
+
 class Module:
     def __init__(self):
         self._parameters = {}
         self._modules = {}
         self._buffers = {}
+        self._persistent_buffers = {}
         self._training = True
         self._name = self.__class__.__name__
         self._forward_hooks = {}
@@ -73,18 +85,36 @@ class Module:
                 named.append((n, p))
         return named
 
-    def register_buffer(self, name: str, tensor) -> None:
+    def register_buffer(self, name: str, tensor, persistent: bool = True) -> None:
         object.__setattr__(self, name, tensor)
         self._buffers[name] = tensor
+        self._persistent_buffers[name] = persistent
 
-    def named_buffers(self):
+    def get_buffer(self, name: str):
+        for n, b in self.named_buffers():
+            if n == name:
+                return b
+        raise KeyError(f"buffer with name {name!r} does not exist")
+
+    def get_parameter(self, name: str):
+        for n, p in self.named_parameters():
+            if n == name:
+                return p
+        raise KeyError(f"parameter with name {name!r} does not exist")
+
+    def named_buffers(self, prefix="", remove_duplicate: bool = True, persistent=None):
         named = []
         for name, b in self._buffers.items():
-            if isinstance(b, Tensor):
-                named.append((name, b))
+            if not isinstance(b, Tensor):
+                continue
+            is_persistent = self._persistent_buffers.get(name, True)
+            if persistent is not None and is_persistent != persistent:
+                continue
+            named.append((f"{prefix}.{name}" if prefix else name, b))
         for name, m in self._modules.items():
-            for n, b in m.named_buffers():
-                named.append((f"{name}.{n}", b))
+            child_prefix = f"{prefix}.{name}" if prefix else name
+            for n, b in m.named_buffers(child_prefix, remove_duplicate, persistent):
+                named.append((n, b))
         return named
 
     def buffers(self):
@@ -117,17 +147,37 @@ class Module:
         sd = {}
         for name, p in self.named_parameters():
             sd[name] = p.data.copy()
-        for name, b in self.named_buffers():
+        for name, b in self.named_buffers(persistent=True):
             sd[name] = b.data.copy()
         return sd
 
-    def load_state_dict(self, state_dict: dict):
-        for name, p in self.named_parameters():
-            if name in state_dict:
-                p.data = state_dict[name]
-        for name, b in self.named_buffers():
-            if name in state_dict:
-                b.data = state_dict[name]
+    def load_state_dict(self, state_dict: dict, strict: bool = True):
+        params = {n: p for n, p in self.named_parameters()}
+        buffers = {n: b for n, b in self.named_buffers()}
+        expected = set(params) | set(buffers)
+        missing = list(expected - set(state_dict))
+        unexpected = list(set(state_dict) - expected)
+        if not strict and unexpected:
+            unexpected = []
+        for name, arr in state_dict.items():
+            target = params.get(name, buffers.get(name))
+            if target is None:
+                continue
+            arr = _state_value_to_array(arr)
+            if tuple(arr.shape) != tuple(target.shape):
+                err = (
+                    f"size mismatch for {name}: copying a param with shape "
+                    f"{tuple(arr.shape)} from checkpoint, the shape in current model "
+                    f"is {tuple(target.shape)}."
+                )
+                if strict:
+                    raise RuntimeError(err)
+                continue
+            target.data = arr
+        if strict and (missing or unexpected):
+            err = f"Missing key(s) in state_dict: {missing}. Unexpected key(s) in state_dict: {unexpected}."
+            raise RuntimeError(err)
+        return IncompatibleKeys(missing_keys=missing, unexpected_keys=unexpected)
 
     def to(self, device: str):
         for p in self.parameters():
@@ -742,12 +792,13 @@ class ModuleList(Module):
                 named.append((p, m))
         return named
 
-    def named_buffers(self):
+    def named_buffers(self, prefix="", remove_duplicate: bool = True, persistent=None):
         named = []
         for i, m in enumerate(self._list):
+            item_prefix = f"{prefix}.{i}" if prefix else str(i)
             if hasattr(m, "named_buffers"):
-                for n, b in m.named_buffers():
-                    named.append((f"{i}.{n}", b))
+                for n, b in m.named_buffers(item_prefix, remove_duplicate, persistent):
+                    named.append((n, b))
         return named
 
     def state_dict(self) -> dict:
@@ -823,12 +874,13 @@ class ModuleDict(Module):
                 named.append((p, m))
         return named
 
-    def named_buffers(self):
+    def named_buffers(self, prefix="", remove_duplicate: bool = True, persistent=None):
         named = []
         for k, m in self._dict.items():
+            item_prefix = f"{prefix}.{k}" if prefix else str(k)
             if hasattr(m, "named_buffers"):
-                for n, b in m.named_buffers():
-                    named.append((f"{k}.{n}", b))
+                for n, b in m.named_buffers(item_prefix, remove_duplicate, persistent):
+                    named.append((n, b))
         return named
 
     def state_dict(self) -> dict:
