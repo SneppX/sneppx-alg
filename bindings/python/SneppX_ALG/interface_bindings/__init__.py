@@ -265,6 +265,23 @@ from .nn_functional import (  # torch.nn.functional-compatible namespace
 )
 from . import nn_functional as F  # torch.nn.functional alias
 from . import nn_functional as nn_functional
+from . import sparse
+from .sparse import (
+    SparseTensor,
+    Strided,
+    SparseCOO,
+    SparseCSR,
+    SparseCSC,
+    SparseBSR,
+    sparse_coo_tensor,
+    sparse_csr_tensor,
+    sparse_csc_tensor,
+    sparse_bsr_tensor,
+    sparse_mm,
+    sparse_addmm,
+    sparse_sum,
+    sparse_softmax,
+)
 from .optim import (
     Optimizer,
     SGD,
@@ -1128,6 +1145,22 @@ __all__ = [
     "Layout",
     "Tensorable",
     "_HAS_C_BACKEND",
+    # sparse
+    "sparse",
+    "SparseTensor",
+    "Strided",
+    "SparseCOO",
+    "SparseCSR",
+    "SparseCSC",
+    "SparseBSR",
+    "sparse_coo_tensor",
+    "sparse_csr_tensor",
+    "sparse_csc_tensor",
+    "sparse_bsr_tensor",
+    "sparse_mm",
+    "sparse_addmm",
+    "sparse_sum",
+    "sparse_softmax",
     # nn
     "Module",
     "Linear",
