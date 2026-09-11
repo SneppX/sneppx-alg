@@ -2461,3 +2461,267 @@ class AvgPool(Function):
             seg += gb / kvol
             it.iternext()
         return [Tensor(grad, dtype=inp.dtype)]
+
+
+# ---------------------------------------------------------------------------
+# Elementwise math + reductions (Phase 2 gap fill, additive-only)
+# ---------------------------------------------------------------------------
+
+
+class Square(Function):
+    @staticmethod
+    def forward(ctx, x):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(np.asarray(x.data) * np.asarray(x.data), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        if x is None:
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
+        if create_graph:
+            return [Mul.apply(Mul.apply(grad_output, _as_const(2.0, grad_output.dtype)), x)]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * (2.0 * np.asarray(x.data)), dtype=grad_output.dtype)]
+
+
+class Reciprocal(Function):
+    @staticmethod
+    def forward(ctx, x):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(1.0 / np.asarray(x.data), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        if x is None:
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
+        xd = np.asarray(x.data)
+        if create_graph:
+            neg_one = _as_const(-1.0, grad_output.dtype)
+            return [Mul.apply(grad_output, Div.apply(neg_one, Mul.apply(x, x)))]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * (-1.0 / (xd * xd)), dtype=grad_output.dtype)]
+
+
+class Sign(Function):
+    @staticmethod
+    def forward(ctx, x):
+        return Tensor(np.sign(np.asarray(x.data)), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
+
+
+class Clamp(Function):
+    @staticmethod
+    def forward(ctx, x, min_val, max_val):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, min_val=min_val, max_val=max_val)
+        return Tensor(np.clip(np.asarray(x.data), min_val, max_val), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        min_val = _get_attr(ctx, "min_val")
+        max_val = _get_attr(ctx, "max_val")
+        if x is None:
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
+        xd = np.asarray(x.data)
+        mask = np.logical_and(xd >= min_val, xd <= max_val)
+        if create_graph:
+            return [Mul.apply(grad_output, _as_const(mask.astype(np.float64), grad_output.dtype))]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * mask, dtype=grad_output.dtype)]
+
+
+class Remainder(Function):
+    @staticmethod
+    def forward(ctx, a, divisor):
+        if isinstance(divisor, (int, float)):
+            _save_attr(ctx, divisor_val=divisor, a_shape=tuple(a.shape))
+            return Tensor(np.mod(np.asarray(a.data), divisor), dtype=a.dtype)
+        if ctx is not None:
+            ctx.save_for_backward(a=a)
+        _save_attr(ctx, a_shape=tuple(a.shape))
+        return Tensor(np.mod(np.asarray(a.data), np.asarray(divisor.data)), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a_shape = _get_attr(ctx, "a_shape")
+        divisor_val = _get_attr(ctx, "divisor_val")
+        a = _get_saved_tensor(ctx, "a")
+        if divisor_val is not None:
+            if create_graph:
+                return [_cg_broadcast(grad_output, a_shape)]
+            return [Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)]
+        # Tensor divisor: grad flows to a unchanged (d remainder/d a == 1 a.e.)
+        if create_graph:
+            ga = _cg_broadcast(grad_output, a_shape)
+        else:
+            ga = Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)
+        return [ga, None]
+
+
+class Prod(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data)
+        if dim is None:
+            axes = tuple(range(xd.ndim))
+        elif isinstance(dim, (tuple, list)):
+            axes = tuple(dim)
+        else:
+            axes = (dim,)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, axes=axes, keepdim=keepdim)
+        out = np.asarray(np.prod(xd, axis=axes, keepdims=keepdim))
+        return Tensor(np.asarray(out), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        axes = ctx.get_attr("axes")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        prod_all = np.prod(xd, axis=axes, keepdims=True)
+        prod_excl = prod_all / xd
+        if not keepdim:
+            g = np.expand_dims(g, axis=axes)
+        return [Tensor(g * prod_excl, dtype=grad_output.dtype)]
+
+
+class LogSumExp(Function):
+    @staticmethod
+    def forward(ctx, x, dim, keepdim=False):
+        xd = np.asarray(x.data)
+        axes = (dim,) if isinstance(dim, int) else tuple(dim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, axes=axes, keepdim=keepdim)
+        m = np.max(xd, axis=axes, keepdims=True)
+        shifted = np.exp(xd - m)
+        s = np.sum(shifted, axis=axes, keepdims=keepdim)
+        m_out = m if keepdim else np.squeeze(m, axis=axes)
+        return Tensor(np.asarray(np.log(s) + m_out), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        axes = ctx.get_attr("axes")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        m = np.max(xd, axis=axes, keepdims=True)
+        soft = np.exp(xd - m)
+        soft = soft / np.sum(soft, axis=axes, keepdims=True)
+        if not keepdim:
+            g = np.expand_dims(g, axis=axes)
+        return [Tensor(g * soft, dtype=grad_output.dtype)]
+
+
+class Trace(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data)
+        assert xd.ndim == 2, "trace requires a 2-D tensor"
+        _save_attr(ctx, in_shape=tuple(xd.shape))
+        return Tensor(np.array(np.trace(xd)), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        shape = ctx.get_attr("in_shape")
+        g = float(np.asarray(grad_output.data).sum())
+        grad = np.zeros(shape, dtype=np.float64)
+        np.fill_diagonal(grad, g)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Diagonal(Function):
+    @staticmethod
+    def forward(ctx, x, offset=0, dim1=0, dim2=1):
+        xd = np.asarray(x.data)
+        assert xd.ndim == 2, "diagonal currently supports 2-D tensors"
+        _save_attr(ctx, offset=offset, in_shape=tuple(xd.shape))
+        return Tensor(np.diagonal(xd, offset=offset, axis1=dim1, axis2=dim2).copy(),
+                      dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        offset = ctx.get_attr("offset")
+        shape = ctx.get_attr("in_shape")
+        g = np.asarray(grad_output.data)
+        grad = np.zeros(shape, dtype=np.float64)
+        n = len(g) if not np.isscalar(g) else 1
+        rows = np.arange(n)
+        if offset >= 0:
+            grad[rows, rows + offset] = g
+        else:
+            grad[rows - offset, rows] = g
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class MinDim(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data, dtype=np.float64)
+        if dim is None:
+            out = np.asarray(np.min(xd))
+        else:
+            out = np.min(xd, axis=dim, keepdims=keepdim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, dim=dim, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        dim = ctx.get_attr("dim")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = np.zeros_like(xd)
+        if dim is None:
+            grad.flat[np.argmin(xd)] = float(np.asarray(grad_output.data).sum())
+        else:
+            idx = np.argmin(xd, axis=dim)
+            g_exp = g if keepdim else np.expand_dims(g, axis=dim)
+            np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class MaxDim(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data, dtype=np.float64)
+        if dim is None:
+            out = np.asarray(np.max(xd))
+        else:
+            out = np.max(xd, axis=dim, keepdims=keepdim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, dim=dim, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        dim = ctx.get_attr("dim")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = np.zeros_like(xd)
+        if dim is None:
+            grad.flat[np.argmax(xd)] = float(np.asarray(grad_output.data).sum())
+        else:
+            idx = np.argmax(xd, axis=dim)
+            g_exp = g if keepdim else np.expand_dims(g, axis=dim)
+            np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
+        return [Tensor(grad, dtype=grad_output.dtype)]
