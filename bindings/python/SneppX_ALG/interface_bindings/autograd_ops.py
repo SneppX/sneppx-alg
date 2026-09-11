@@ -2256,6 +2256,8 @@ __all__ = [
     "Conv1d",
     "MaxPool2d",
     "AvgPool2d",
+    "MaxPool",
+    "AvgPool",
     "MSELoss",
     "CrossEntropyLoss",
     "NLLLoss",
@@ -2271,3 +2273,191 @@ __all__ = [
     "MarginRankingLoss",
     "CTCLoss",
 ]
+
+# ============================================================================
+#  Generalized N-d Pooling (1d/2d/3d, padding + dilation, differentiable)
+# ============================================================================
+
+
+class MaxPool(Function):
+    """Differentiable N-d max pool over trailing spatial dims with
+    padding (padded with -inf so pad never wins) and dilation."""
+
+    @staticmethod
+    def forward(ctx, inp, kernel, stride=None, padding=0, dilation=1):
+        arr = np.asarray(inp.data, dtype=np.float64)
+        ndim = len(kernel)
+        if stride is None:
+            stride = kernel
+        if isinstance(stride, int):
+            stride = (stride,) * ndim
+        if isinstance(padding, int):
+            padding = (padding,) * ndim
+        if isinstance(dilation, int):
+            dilation = (dilation,) * ndim
+        kernel = tuple(int(k) for k in kernel)
+        stride = tuple(int(s) for s in stride)
+        padding = tuple(int(p) for p in padding)
+        dilation = tuple(int(d) for d in dilation)
+
+        pad = [(0, 0)] * (arr.ndim - ndim) + [(p, p) for p in padding]
+        padded = np.pad(arr, pad, mode="constant", constant_values=-np.inf)
+        spatial_axes = list(range(arr.ndim - ndim, arr.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = arr.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        out_shape = arr.shape[: arr.ndim - ndim] + tuple(out_shape_sp)
+        out = np.full(out_shape, -np.inf, dtype=np.float64)
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
+            window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
+            red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
+            out[(slice(None),) * (arr.ndim - ndim) + oi] = window.max(axis=red_axes)
+            it.iternext()
+        ctx.save_attr(arr_shape=arr.shape, kernel=kernel, stride=stride,
+                      padding=padding, dilation=dilation, ndim=ndim)
+        ctx.save_for_backward(inp=inp)
+        return Tensor(out, dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        arr_shape = ctx.get_attr("arr_shape")
+        kernel = ctx.get_attr("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        ndim = ctx.get_attr("ndim")
+        inp = ctx.get_saved_tensor("inp")
+        x = np.asarray(inp.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        grad = np.zeros_like(x)
+        spatial_axes = list(range(x.ndim - ndim, x.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = x.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
+            sl_orig = []
+            for d in range(ndim):
+                st_orig = sl[d].start - padding[d]
+                stop_orig = sl[d].stop - padding[d]
+                sl_orig.append(slice(max(st_orig, 0), min(stop_orig, x.shape[spatial_axes[d]]),
+                                     sl[d].step))
+            window_orig = x[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            max_val = window_orig.max(axis=tuple(range(x.ndim - ndim, x.ndim)), keepdims=True)
+            mask = (window_orig == max_val).astype(g.dtype)
+            g_val = g[(slice(None),) * (x.ndim - ndim) + oi]
+            gb = g_val
+            for _ in range(ndim):
+                gb = gb[..., np.newaxis]
+            seg = grad[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            seg += mask * gb
+            it.iternext()
+        return [Tensor(grad, dtype=inp.dtype)]
+
+
+class AvgPool(Function):
+    """Differentiable N-d average pool with padding (count_include_pad=True)
+    and dilation."""
+
+    @staticmethod
+    def forward(ctx, inp, kernel, stride=None, padding=0, dilation=1):
+        arr = np.asarray(inp.data, dtype=np.float64)
+        ndim = len(kernel)
+        if stride is None:
+            stride = kernel
+        if isinstance(stride, int):
+            stride = (stride,) * ndim
+        if isinstance(padding, int):
+            padding = (padding,) * ndim
+        if isinstance(dilation, int):
+            dilation = (dilation,) * ndim
+        kernel = tuple(int(k) for k in kernel)
+        stride = tuple(int(s) for s in stride)
+        padding = tuple(int(p) for p in padding)
+        dilation = tuple(int(d) for d in dilation)
+
+        pad = [(0, 0)] * (arr.ndim - ndim) + [(p, p) for p in padding]
+        padded = np.pad(arr, pad, mode="constant", constant_values=0.0)
+        spatial_axes = list(range(arr.ndim - ndim, arr.ndim))
+        kvol = int(np.prod(kernel))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = arr.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        out_shape = arr.shape[: arr.ndim - ndim] + tuple(out_shape_sp)
+        out = np.zeros(out_shape, dtype=np.float64)
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
+            window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
+            red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
+            out[(slice(None),) * (arr.ndim - ndim) + oi] = window.sum(axis=red_axes) / kvol
+            it.iternext()
+        ctx.save_attr(arr_shape=arr.shape, kernel=kernel, stride=stride,
+                      padding=padding, dilation=dilation, ndim=ndim, kvol=kvol)
+        ctx.save_for_backward(inp=inp)
+        return Tensor(out, dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        arr_shape = ctx.get_attr("arr_shape")
+        kernel = ctx.get_attr("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        ndim = ctx.get_attr("ndim")
+        kvol = ctx.get_attr("kvol")
+        inp = ctx.get_saved_tensor("inp")
+        x = np.asarray(inp.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        grad = np.zeros_like(x)
+        spatial_axes = list(range(x.ndim - ndim, x.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = x.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
+            sl_orig = []
+            for d in range(ndim):
+                st_orig = sl[d].start - padding[d]
+                stop_orig = sl[d].stop - padding[d]
+                sl_orig.append(slice(max(st_orig, 0), min(stop_orig, x.shape[spatial_axes[d]]),
+                                     sl[d].step))
+            seg = grad[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            gb = g[(slice(None),) * (x.ndim - ndim) + oi]
+            for _ in range(ndim):
+                gb = gb[..., np.newaxis]
+            seg += gb / kvol
+            it.iternext()
+        return [Tensor(grad, dtype=inp.dtype)]
