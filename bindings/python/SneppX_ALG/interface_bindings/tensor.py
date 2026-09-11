@@ -484,6 +484,56 @@ class Tensor:
             return Tensor(float(self.data.std()), dtype=self.dtype)
         return Tensor(self.data.std(axis=dim), dtype=self.dtype)
 
+    def prod(self, dim=None, keepdim=False):
+        from .autograd_ops import Prod
+
+        return Prod.apply(self, dim, keepdim)
+
+    def logsumexp(self, dim, keepdim=False):
+        from .autograd_ops import LogSumExp
+
+        return LogSumExp.apply(self, dim, keepdim)
+
+    def amin(self, dim=None, keepdim=False):
+        from .autograd_ops import MinDim
+
+        return MinDim.apply(self, dim, keepdim)
+
+    def amax(self, dim=None, keepdim=False):
+        from .autograd_ops import MaxDim
+
+        return MaxDim.apply(self, dim, keepdim)
+
+    def argmin(self, dim=None, keepdim=False):
+        xd = np.asarray(self.data)
+        if dim is None:
+            idx = np.asarray(np.argmin(xd), dtype=np.int64)
+            return Tensor(idx, dtype="int64")
+        idx = np.asarray(np.argmin(xd, axis=dim), dtype=np.int64)
+        if keepdim:
+            idx = np.expand_dims(idx, axis=dim)
+        return Tensor(idx, dtype="int64")
+
+    def argmax(self, dim=None, keepdim=False):
+        xd = np.asarray(self.data)
+        if dim is None:
+            idx = np.asarray(np.argmax(xd), dtype=np.int64)
+            return Tensor(idx, dtype="int64")
+        idx = np.asarray(np.argmax(xd, axis=dim), dtype=np.int64)
+        if keepdim:
+            idx = np.expand_dims(idx, axis=dim)
+        return Tensor(idx, dtype="int64")
+
+    def trace(self):
+        from .autograd_ops import Trace
+
+        return Trace.apply(self)
+
+    def diagonal(self, offset=0, dim1=0, dim2=1):
+        from .autograd_ops import Diagonal
+
+        return Diagonal.apply(self, offset, dim1, dim2)
+
     def min(self):
         return float(self.data.min())
 
@@ -509,6 +559,46 @@ class Tensor:
         from .autograd_ops import Abs
 
         return Abs.apply(self)
+
+    def square(self):
+        from .autograd_ops import Square
+
+        return Square.apply(self)
+
+    def reciprocal(self):
+        from .autograd_ops import Reciprocal
+
+        return Reciprocal.apply(self)
+
+    def sign(self):
+        from .autograd_ops import Sign
+
+        return Sign.apply(self)
+
+    def clamp(self, min_val=None, max_val=None):
+        from .autograd_ops import Clamp
+
+        lo = -np.inf if min_val is None else min_val
+        hi = np.inf if max_val is None else max_val
+        return Clamp.apply(self, lo, hi)
+
+    def clamp_min(self, min_val):
+        from .autograd_ops import Clamp
+
+        return Clamp.apply(self, min_val, np.inf)
+
+    def clamp_max(self, max_val):
+        from .autograd_ops import Clamp
+
+        return Clamp.apply(self, -np.inf, max_val)
+
+    def remainder(self, divisor):
+        from .autograd_ops import Remainder
+
+        return Remainder.apply(self, divisor)
+
+    def mod(self, divisor):
+        return self.remainder(divisor)
 
     def relu(self):
         from .autograd_ops import Relu
