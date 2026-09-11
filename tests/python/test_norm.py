@@ -172,6 +172,28 @@ def test_batchnorm3d_and_instancenorm_backward_fd():
 
     check("BatchNorm3d x grad", x, bn3_loss)
 
+    # BatchNorm3d weight AND bias grads via FD (shared module, perturbed params)
+    m = BatchNorm3d(3)
+    m.train()
+    x = Tensor(np.random.randn(2, 3, 4, 4, 4), dtype="float64")
+    w = Tensor(np.random.randn(3), dtype="float64")
+    w.requires_grad_(True)
+    b = Tensor(np.random.randn(3), dtype="float64")
+    b.requires_grad_(True)
+
+    def bn3_w(i):
+        m.weight = i
+        m.bias = b
+        return (m(x) * m(x)).mean()
+
+    def bn3_b(i):
+        m.weight = w
+        m.bias = i
+        return (m(x) * m(x)).mean()
+
+    check("BatchNorm3d weight grad", w, bn3_w)
+    check("BatchNorm3d bias grad", b, bn3_b)
+
     # InstanceNorm3d backward via FD (x grad)
     xi = Tensor(np.random.randn(2, 3, 4, 4, 4), dtype="float64")
 

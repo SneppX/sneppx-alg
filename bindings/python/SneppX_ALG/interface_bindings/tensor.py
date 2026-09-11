@@ -303,6 +303,22 @@ class Tensor:
         lconst = _S_TO_LAYOUT.get(layout, 1)
         return SparseTensor.from_tensor(self, layout=lconst)
 
+    def to_sparse_coo(self, k=None):
+        return self.to_sparse("sparse_coo", k)
+
+    def to_sparse_csr(self, k=None):
+        return self.to_sparse("sparse_csr", k).to_sparse_csr()
+
+    def to_sparse_csc(self, k=None):
+        return self.to_sparse("sparse_csc", k).to_sparse_csc()
+
+    def to_sparse_bsr(self, blocksize, k=None):
+        if k is not None:
+            raise ValueError("top-k sparse conversion is not supported; use k=None")
+        from .sparse import SparseTensor
+        sp = SparseTensor.from_tensor(self, layout=4)
+        return sp.to_sparse_bsr(blocksize)
+
     def to_dense(self):
         """Dense tensors are already dense; returns a copy."""
         return Tensor(np.asarray(self.data), dtype=self.dtype, device=self.device)
