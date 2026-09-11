@@ -3,7 +3,7 @@ import sys, os, time, json, struct, tempfile, threading, math
 _base = (
     os.path.dirname(os.path.abspath(__file__))
     if "__file__" in globals()
-    else "C:/Users/PC/sneppx-ultra/ARIX_Algo/tests/python"
+    else "C:/Users/PC/SneppX/sneppx-alg/tests/python"
 )
 if not os.environ.get("PYTHONPATH"):
     sys.path.insert(0, os.path.join(os.path.dirname(_base), "../../bindings/python"))
