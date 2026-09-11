@@ -49,10 +49,10 @@ def load_library(
 
     if search_dirs is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        # Path: .../ARIX_Algo/bindings/python/SneppX_ALG/interface_bindings/
-        # Need to go up 4 levels to reach ARIX_Algo project root
+        # Path: .../sneppx-alg/bindings/python/SneppX_ALG/interface_bindings/
+        # Need to go up 4 levels to reach the sneppx-alg project root
         project_root = os.path.normpath(os.path.join(script_dir, "..", "..", "..", ".."))
-        # Also check sneppx-ultra root (one level up from project_root)
+        # Also check the SneppX root (one level up from project_root)
         sneppx_root = os.path.dirname(project_root)
         env_var_name = f"SNEPPX_{lib_name.upper()}_LIB"
         search_dirs = [
