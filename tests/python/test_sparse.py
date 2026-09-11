@@ -188,6 +188,38 @@ def test_layout_constants_and_wiring():
     assert sparse.SparseCOO == 1
 
 
+def test_tensor_layout_convenience_methods():
+    arr = np.array([[0.0, 5.0], [7.0, 0.0]])
+    d = Tensor(arr.astype("float32"))
+    csr = d.to_sparse_csr()
+    assert csr.layout == "sparse_csr"
+    csc = d.to_sparse_csc()
+    assert csc.layout == "sparse_csc"
+    bsr = d.to_sparse_bsr((1, 1))
+    assert bsr.layout == "sparse_bsr"
+    coo = d.to_sparse_coo()
+    assert coo.layout == "sparse_coo"
+    for sp in (csr, csc, bsr, coo):
+        assert np.allclose(np.asarray(sp.to_dense().data), arr)
+
+
+def test_sparse_conv2d():
+    x = np.zeros((1, 1, 4, 4), dtype=np.float32)
+    x[0, 0, 1, 1] = 1.0
+    x[0, 0, 2, 3] = 2.0
+    sp = Tensor(x).to_sparse()
+    w = Tensor(np.array([[[[1.0]]]], dtype=np.float32))  # 1x1 kernel
+    out = sparse.sparse_conv2d(sp, w)
+    assert isinstance(out, SparseTensor)
+    dense = np.asarray(out.to_dense().data)
+    assert dense[0, 0, 1, 1] == 1.0 and dense[0, 0, 2, 3] == 2.0
+    assert int(out._nnz) == 2  # sparse output keeps nonzero entries only
+    # dense input returns dense Tensor
+    dout = sparse.sparse_conv2d(Tensor(x), w)
+    assert not isinstance(dout, SparseTensor)
+    assert np.allclose(np.asarray(dout.data), x)
+
+
 def test_sparse_adam_updates_only_nonzero_grad_indices():
     from SneppX_ALG.interface_bindings.optim import SparseAdam
 

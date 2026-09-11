@@ -281,6 +281,7 @@ from .sparse import (
     sparse_addmm,
     sparse_sum,
     sparse_softmax,
+    sparse_conv2d,
 )
 from .optim import (
     Optimizer,
@@ -1161,6 +1162,7 @@ __all__ = [
     "sparse_addmm",
     "sparse_sum",
     "sparse_softmax",
+    "sparse_conv2d",
     # nn
     "Module",
     "Linear",

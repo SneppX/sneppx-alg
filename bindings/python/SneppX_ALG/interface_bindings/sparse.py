@@ -172,15 +172,13 @@ class SparseTensor:
     def from_tensor(cls, x, layout=SparseCOO):
         """Build a SparseTensor from a dense tensor (keep nonzero entries)."""
         arr = np.asarray(x.data, dtype=_numpy_dtype(x.dtype_name))
-        if arr.ndim != 2:
-            raise ValueError("to_sparse currently supports 2-D inputs")
         nz = np.nonzero(arr)
         if len(nz[0]) == 0:
-            inds = np.zeros((2, 0), dtype=np.int64)
+            inds = np.zeros((len(arr.shape), 0), dtype=np.int64)
             vals = np.zeros(0, dtype=_numpy_dtype(x.dtype_name))
         else:
             inds = np.stack(nz, axis=0).astype(np.int64)
-            vals = arr[inds[0], inds[1]]
+            vals = arr[tuple(inds)]
         return cls(inds, vals, arr.shape, layout=layout, dtype=x.dtype_name,
                    device=x.device)
 
@@ -462,3 +460,28 @@ def sparse_softmax(input, dim):
                 np.expand_dims(np.max(np.asarray(input.to_dense().data), axis=dim), axis=dim))
     return Tensor(ex / ex.sum(axis=dim, keepdims=True), dtype=input.dtype,
                   device=input.device)
+
+
+def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
+                  groups=1):
+    """2D conv over a sparse 4-D input; densifies, convolves, re-sparsifies.
+
+    Accepts either a ``SparseTensor`` (N,C,H,W layout; kept as a sparse output)
+    or a dense ``Tensor`` (plain dense convolve). Weight is a dense Tensor of
+    shape [C_out, C_in//groups, kH, kW].
+    """
+    from .advanced_ops import conv2d as _dense_conv2d
+
+    was_sparse = isinstance(input, SparseTensor)
+    x = input.to_dense() if was_sparse else input
+    if isinstance(stride, int):
+        stride = (stride, stride)
+    if isinstance(padding, int):
+        padding = (padding, padding)
+    if isinstance(dilation, int):
+        dilation = (dilation, dilation)
+    out = _dense_conv2d(x, weight, bias, stride=stride, padding=padding,
+                        dilation=dilation, groups=groups)
+    if not was_sparse:
+        return out
+    return SparseTensor.from_tensor(out, layout=SparseCOO)
