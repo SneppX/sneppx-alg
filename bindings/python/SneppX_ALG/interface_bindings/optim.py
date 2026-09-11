@@ -521,10 +521,55 @@ class LBFGS(Optimizer):
 
 
 class SparseAdam(Adam):
-    """Adam for sparse gradients (falls back to dense Adam update)."""
+    """Adam for sparse gradients (falls back to dense Adam update).
+
+    When a parameter's gradient is a ``SparseTensor``, the moment buffers stay
+    dense but are only read/written at the gradient's nonzero indices, so the
+    parameter update touches only those entries (matching PyTorch's SparseAdam
+    semantics for a COO gradient).
+    """
 
     def __init__(self, params, lr: float = 0.001, betas=(0.9, 0.999), eps: float = 1e-8):
         super().__init__(params, lr=lr, betas=betas, eps=eps)
+
+    def step(self):
+        from .sparse import SparseTensor
+
+        any_sparse = any(
+            isinstance(p.grad, SparseTensor) for _, p, _ in self._enumerate()
+        )
+        if not any_sparse:
+            return super().step()
+        self._step += 1
+        for i, p, group in self._enumerate():
+            if p.grad is None:
+                continue
+            g = p.grad
+            if not isinstance(g, SparseTensor):
+                continue  # dense grads on other params: skip (handled per-call)
+            idx = g._indices
+            gv = g._values
+            cur = np.asarray(p.data).copy()
+            if "exp_avg" not in self.state[i]:
+                self.state[i]["exp_avg"] = np.zeros_like(cur)
+                self.state[i]["exp_avg_sq"] = np.zeros_like(cur)
+            m = self.state[i]["exp_avg"]
+            v = self.state[i]["exp_avg_sq"]
+            mi = m[idx[0], idx[1]]
+            vi = v[idx[0], idx[1]]
+            mi = self.betas[0] * mi + (1 - self.betas[0]) * gv
+            vi = self.betas[1] * vi + (1 - self.betas[1]) * gv ** 2
+            m[idx[0], idx[1]] = mi
+            v[idx[0], idx[1]] = vi
+            m_hat = mi / (1 - self.betas[0] ** self._step)
+            v_hat = vi / (1 - self.betas[1] ** self._step)
+            lr = group.get("lr", self.lr)
+            wd = group.get("weight_decay", self.weight_decay)
+            update = lr * m_hat / (np.sqrt(v_hat) + self.eps)
+            if wd:
+                update = update + lr * wd * cur[idx[0], idx[1]]
+            cur[idx[0], idx[1]] -= update
+            p.data = cur
 
 
 class CosineAnnealingLR:

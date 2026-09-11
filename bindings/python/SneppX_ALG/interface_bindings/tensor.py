@@ -145,6 +145,7 @@ class Tensor:
         self, data=None, shape=None, dtype="float32", device="cpu", requires_grad=False
     ):
         self.device = device
+        self.layout = "strided"
         self.dtype = _resolve_dtype(dtype)
         self.requires_grad = requires_grad
         self.grad = None
@@ -293,6 +294,18 @@ class Tensor:
         t._data = _CTensorData(self.shape, self.dtype, is_cuda=self._data._is_cuda)
         t._data._data[:] = self._data._data[:]
         return t
+
+    def to_sparse(self, layout="sparse_coo", k=None):
+        """Convert a dense tensor to a sparse tensor (2-D supported)."""
+        if k is not None:
+            raise ValueError("top-k sparse conversion is not supported; use k=None")
+        from .sparse import SparseTensor, _S_TO_LAYOUT
+        lconst = _S_TO_LAYOUT.get(layout, 1)
+        return SparseTensor.from_tensor(self, layout=lconst)
+
+    def to_dense(self):
+        """Dense tensors are already dense; returns a copy."""
+        return Tensor(np.asarray(self.data), dtype=self.dtype, device=self.device)
 
     def item(self) -> float:
         return float(self.data.flat[0])
