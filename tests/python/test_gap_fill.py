@@ -201,6 +201,70 @@ def test_pooling_modules_shapes():
     assert nn.Pooling2d(2, stride=2, pool_type="avg")(x2).shape == (2, 3, 4, 4)
 
 
+def _fd_grad(inp, loss_fn, eps=1e-6):
+    base = np.asarray(inp.data, dtype=np.float64).copy()
+    g = np.zeros_like(base)
+    it = np.nditer(base, flags=["multi_index"])
+    while not it.finished:
+        idx = it.multi_index
+        o = base[idx]
+        base[idx] = o + eps
+        lp = loss_fn(Tensor(base.copy(), dtype="float64"))
+        base[idx] = o - eps
+        lm = loss_fn(Tensor(base.copy(), dtype="float64"))
+        base[idx] = o
+        g[idx] = (lp - lm) / (2 * eps)
+        it.iternext()
+    return g
+
+
+def test_named_pool_modules_shapes_and_backward():
+    x1 = Tensor(np.random.randn(2, 3, 10).astype("float64"))
+    x2 = Tensor(np.random.randn(2, 3, 8, 8).astype("float64"))
+    x3 = Tensor(np.random.randn(1, 2, 4, 6, 6).astype("float64"))
+
+    # MaxPool1d
+    m = nn.MaxPool1d(2, stride=2)
+    assert m(x1).shape == (2, 3, 5)
+    y = nn.AvgPool1d(3, stride=2)(x1)
+    assert y.shape == (2, 3, 4)
+
+    # MaxPool2d
+    m2 = nn.MaxPool2d(2, stride=2)
+    assert m2(x2).shape == (2, 3, 4, 4)
+    assert nn.AvgPool2d(2, stride=2)(x2).shape == (2, 3, 4, 4)
+    assert nn.MaxPool2d(2, stride=1, padding=1)(x2).shape == (2, 3, 9, 9)
+
+    # MaxPool3d
+    m3 = nn.MaxPool3d(2, stride=1)
+    assert m3(x3).shape == (1, 2, 3, 5, 5)
+    assert nn.AvgPool3d(2, stride=1)(x3).shape == (1, 2, 3, 5, 5)
+
+    # FD backward for each new named module type
+    for tag, x, mod in [
+        ("MaxPool1d", x1, nn.MaxPool1d(3, stride=2)),
+        ("AvgPool1d", x1, nn.AvgPool1d(3, stride=2)),
+        ("MaxPool2d", x2, nn.MaxPool2d(2, stride=2)),
+        ("AvgPool2d", x2, nn.AvgPool2d(2, stride=2)),
+        ("MaxPool2d-pad", x2, nn.MaxPool2d(2, stride=1, padding=1)),
+        ("MaxPool3d", x3, nn.MaxPool3d(2, stride=1)),
+        ("AvgPool3d", x3, nn.AvgPool3d(2, stride=1)),
+    ]:
+        xr = Tensor(np.asarray(x.data, dtype=np.float64).copy(), dtype="float64")
+        xr.requires_grad_(True)
+        y = mod(xr)
+        (y * y).mean().backward()
+
+        def loss(i):
+            yy = mod(i)
+            return (yy * yy).mean().data
+
+        num = _fd_grad(x, loss)
+        assert np.allclose(xr.grad.data, num, atol=1e-6), (
+            f"{tag}: max|d|={np.abs(xr.grad.data - num).max()}"
+        )
+
+
 def test_adaptive_pool_shapes():
     x1 = Tensor(np.random.randn(2, 3, 10).astype("float32"))
     x2 = Tensor(np.random.randn(2, 3, 8, 8).astype("float32"))

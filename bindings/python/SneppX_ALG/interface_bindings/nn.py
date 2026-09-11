@@ -1893,6 +1893,158 @@ class AdaptiveMaxPool3d(Module):
         return Tensor(out, dtype=x.dtype, device=x.device)
 
 
+def _norm_pool_param(kernel_size, stride, padding, dilation, ndim):
+    """Normalize pooling hyper-parameters to per-dim tuples (additive helper)."""
+    if isinstance(kernel_size, int):
+        kernel_size = (kernel_size,) * ndim
+    if stride is None:
+        stride = kernel_size
+    if isinstance(stride, int):
+        stride = (stride,) * ndim
+    if isinstance(padding, int):
+        padding = (padding,) * ndim
+    if isinstance(dilation, int):
+        dilation = (dilation,) * ndim
+    return tuple(kernel_size), tuple(stride), tuple(padding), tuple(dilation)
+
+
+class MaxPool1d(Module):
+    """1D max pooling (differentiable, padding + dilation)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
+                 return_indices=False, ceil_mode=False):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size,)
+        if isinstance(stride, int):
+            stride = (stride,)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.return_indices = return_indices
+        self.ceil_mode = ceil_mode
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import MaxPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, self.dilation, 1)
+        return MaxPool.apply(x, k, s, p, d)
+
+
+class MaxPool2d(Module):
+    """2D max pooling (differentiable, padding + dilation)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
+                 return_indices=False, ceil_mode=False):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.return_indices = return_indices
+        self.ceil_mode = ceil_mode
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import MaxPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, self.dilation, 2)
+        return MaxPool.apply(x, k, s, p, d)
+
+
+class MaxPool3d(Module):
+    """3D max pooling (differentiable, padding + dilation)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
+                 return_indices=False, ceil_mode=False):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride, stride)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.dilation = dilation
+        self.return_indices = return_indices
+        self.ceil_mode = ceil_mode
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import MaxPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, self.dilation, 3)
+        return MaxPool.apply(x, k, s, p, d)
+
+
+class AvgPool1d(Module):
+    """1D average pooling (differentiable, count_include_pad=True)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
+                 count_include_pad=True):
+        super().__init__()
+        self.kernel_size = (kernel_size,) if isinstance(kernel_size, int) else kernel_size
+        self.stride = stride if stride is not None else self.kernel_size
+        self.padding = padding
+        self.ceil_mode = ceil_mode
+        self.count_include_pad = count_include_pad
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import AvgPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, 1, 1)
+        return AvgPool.apply(x, k, s, p, d)
+
+
+class AvgPool2d(Module):
+    """2D average pooling (differentiable, count_include_pad=True)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
+                 count_include_pad=True):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.ceil_mode = ceil_mode
+        self.count_include_pad = count_include_pad
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import AvgPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, 1, 2)
+        return AvgPool.apply(x, k, s, p, d)
+
+
+class AvgPool3d(Module):
+    """3D average pooling (differentiable, count_include_pad=True)."""
+
+    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
+                 count_include_pad=True):
+        super().__init__()
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size, kernel_size)
+        if isinstance(stride, int):
+            stride = (stride, stride, stride)
+        self.kernel_size = kernel_size
+        self.stride = stride if stride is not None else kernel_size
+        self.padding = padding
+        self.ceil_mode = ceil_mode
+        self.count_include_pad = count_include_pad
+
+    def forward(self, x: Tensor) -> Tensor:
+        from .autograd_ops import AvgPool
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
+                                      self.padding, 1, 3)
+        return AvgPool.apply(x, k, s, p, d)
+
+
 class _ConstantPadNd(Module):
     def __init__(self, padding, value: float = 0.0):
         super().__init__()
