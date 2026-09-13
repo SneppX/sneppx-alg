@@ -15,7 +15,7 @@
 
 > **ARIX_Algo** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
 
-**⭐ Star this repo** to support the project and help us reach 1,000 stars!
+**⭐ Star this repo** to support the project and help us reach 1,000+ stars!
 
 ## 📑 Table of Contents
 - [Overview](#overview)
