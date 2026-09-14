@@ -13,9 +13,9 @@
 
 [![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ammar49-cyber/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/ammar49-cyber/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/ammar49-cyber/sneppx-alg)
 
-> **ARIX_Algo** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
+> **SneppX-ALG** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
 
-**⭐ Star this repo** to support the project and help us reach 1,000 stars!
+**⭐ Star this repo** to support the project and help us reach 1,000+ stars!
 
 ## 📑 Table of Contents
 - [Overview](#overview)
