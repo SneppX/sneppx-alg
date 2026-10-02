@@ -571,6 +571,17 @@ class SparseAdam(Adam):
             cur[idx[0], idx[1]] -= update
             p.data = cur
 
+    def load_state_dict(self, state_dict: dict):
+        super().load_state_dict(state_dict)
+        restored = state_dict.get("state", [])
+        for i, s in enumerate(restored):
+            if i < len(self.state):
+                for k, v in s.items():
+                    self.state[i][k] = v
+                # Restore step count
+                if "_step" in s:
+                    self._step = s["_step"]
+
 
 class CosineAnnealingLR:
     def __init__(self, optimizer: Optimizer, T_max: int, eta_min: float = 0.0):
