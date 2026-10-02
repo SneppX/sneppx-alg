@@ -2272,6 +2272,8 @@ __all__ = [
     "ContrastiveLoss",
     "MarginRankingLoss",
     "CTCLoss",
+    "Log1p",
+    "Expm1",
 ]
 
 # ============================================================================
@@ -2694,6 +2696,42 @@ class MinDim(Function):
             idx = np.argmin(xd, axis=dim)
             g_exp = g if keepdim else np.expand_dims(g, axis=dim)
             np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Log1p(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data, dtype=np.float64)
+        out = np.log1p(xd)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = g / (1.0 + xd)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Expm1(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data, dtype=np.float64)
+        out = np.expm1(xd)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x = _get_saved_tensor(ctx, "x")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = g * np.exp(xd)
         return [Tensor(grad, dtype=grad_output.dtype)]
 
 

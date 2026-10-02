@@ -555,6 +555,16 @@ class Tensor:
 
         return Log.apply(self)
 
+    def log1p(self):
+        from .autograd_ops import Log1p
+
+        return Log1p.apply(self)
+
+    def expm1(self):
+        from .autograd_ops import Expm1
+
+        return Expm1.apply(self)
+
     def abs(self):
         from .autograd_ops import Abs
 
