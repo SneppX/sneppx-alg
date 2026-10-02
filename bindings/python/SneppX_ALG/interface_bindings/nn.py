@@ -301,6 +301,7 @@ class LayerNorm(Module):
         self,
         normalized_shape: Union[int, Tuple[int, ...]],
         eps: float = 1e-5,
+        elementwise_affine: bool = True,
         dtype="float32",
     ):
         super().__init__()
@@ -308,16 +309,23 @@ class LayerNorm(Module):
             normalized_shape = (normalized_shape,)
         self.normalized_shape = normalized_shape
         self.eps = eps
-        self.weight = Tensor.ones(normalized_shape, dtype=dtype)
-        self.bias = Tensor.zeros(normalized_shape, dtype=dtype)
+        self.elementwise_affine = elementwise_affine
+        if elementwise_affine:
+            self.weight = Tensor.ones(normalized_shape, dtype=dtype)
+            self.bias = Tensor.zeros(normalized_shape, dtype=dtype)
+        else:
+            self.weight = None
+            self.bias = None
 
     def forward(self, x: Tensor) -> Tensor:
         if _is_cuda_tensor(x):
             out_data = np.empty_like(x.data)
+            w = self.weight.data if self.weight is not None else np.ones(self.normalized_shape)
+            b = self.bias.data if self.bias is not None else np.zeros(self.normalized_shape)
             layernorm_kernel(
                 x.data,
-                self.weight.data,
-                self.bias.data,
+                w,
+                b,
                 out_data,
                 self.normalized_shape,
                 self.eps,
@@ -328,7 +336,8 @@ class LayerNorm(Module):
         mean = arr.mean(axis=axis, keepdims=True)
         var = arr.var(axis=axis, keepdims=True)
         out = (arr - mean) / np.sqrt(var + self.eps)
-        out = out * self.weight.data + self.bias.data
+        if self.elementwise_affine:
+            out = out * self.weight.data + self.bias.data
         return Tensor(out, dtype=x.dtype_name, device=x.device)
 
 
