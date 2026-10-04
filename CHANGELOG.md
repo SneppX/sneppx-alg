@@ -4,6 +4,10 @@ All notable changes to SNEPPX-Algo.
 
 ## [Unreleased]
 
+- distributed_sampler: deterministic splitmix64 shuffle (was srand/rand)
+- Higher-order AD (create_graph) extended across autograd ops + JVP/VJP helpers
+- nn gap-fill: InstanceNorm/BatchNorm3d, Conv3d, ConvTranspose*, Unfold/Fold, Upsample, sparse tensors, F.* namespace
+
 ### Build
 - Standardized on the **Ninja** generator across all CMake presets
   (`CMakePresets.json`): `debug`, `release`, `asan`, `cuda`, `python`,
