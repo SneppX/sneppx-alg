@@ -183,6 +183,18 @@ y = x @ w
 print(y.shape)
 ```
 
+
+### Recent framework capabilities (since v1.1.1)
+
+- **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
+- **Functional API**: `sneppx_ALG.nn.functional` (aliased `F`) with ~70 differentiable ops (conv, pool, norm, pad, unfold/fold, embedding, losses, interpolate).
+- **nn modules**: Conv1d/Conv3d, ConvTranspose1d/2d/3d, MaxPool1d/2d/3d, AvgPool1d/2d/3d, adaptive pools, InstanceNorm*, Upsample, Unfold/Fold, MaxUnpool*, EmbeddingBag, ChannelShuffle/PixelShuffle, Bilinear, Flatten, ParameterList/Dict.
+- **Optimizers**: SGD, Adam, AdamW, NAdam, Rprop, ASGD, LBFGS, SparseAdam, plus classic/extras.
+- **Sparse tensors**: `SparseTensor` (COO/CSR/CSC/BSR), `sparse_mm`, `sparse_addmm`, `sparse_conv2d`.
+- **Init utils**: `nn.init` (xavier/kaiming/orthogonal/...), differentiable pooling autograd functions.
+- **Serialization**: strict `load_state_dict`, persistent/non-persistent buffers.
+- **Distributed C kernels**: NCCL-wired DDP/tensor/expert/pipeline/ZeRO/gradient-comm; deterministic distributed sampler.
+
 ## Build & Quickstart
 
 ```powershell
@@ -219,7 +231,7 @@ cd build && ctest -C Release --output-on-failure
 | Contribution framework | [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md) |
 | Branching strategy | [`docs/BRANCHING_STRATEGY.md`](docs/BRANCHING_STRATEGY.md) |
 | Code review guide | [`docs/CODE_REVIEW_GUIDE.md`](docs/CODE_REVIEW_GUIDE.md) |
-| API reference | [`docs/API.md`](docs/API.md) · [`docs/api/python.md`](docs/api/python.md) |
+| Python features | [`docs/python_features.md`](docs/python_features.md) |`n| API reference | [`docs/API.md`](docs/API.md) · [`docs/api/python.md`](docs/api/python.md) |
 | Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | Security layers | [`docs/security_layers.md`](docs/security_layers.md) |
 | Development workflow | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
