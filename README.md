@@ -5,13 +5,13 @@
 </p>
 
 <p align="center">
-<a href="https://github.com/ammar49-cyber/sneppx-alg/stargazers"><img src="https://img.shields.io/github/stars/ammar49-cyber/sneppx-alg?style=social" alt="Stars"></a>
-<a href="https://github.com/ammar49-cyber/sneppx-alg/network/members"><img src="https://img.shields.io/github/forks/ammar49-cyber/sneppx-alg?style=social" alt="Forks"></a>
-<a href="https://github.com/ammar49-cyber/sneppx-alg/issues"><img src="https://img.shields.io/github/issues/ammar49-cyber/sneppx-alg" alt="Issues"></a>
-<a href="https://github.com/ammar49-cyber/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+<a href="https://github.com/SneppX/sneppx-alg/stargazers"><img src="https://img.shields.io/github/stars/SneppX/sneppx-alg?style=social" alt="Stars"></a>
+<a href="https://github.com/SneppX/sneppx-alg/network/members"><img src="https://img.shields.io/github/forks/SneppX/sneppx-alg?style=social" alt="Forks"></a>
+<a href="https://github.com/SneppX/sneppx-alg/issues"><img src="https://img.shields.io/github/issues/SneppX/sneppx-alg" alt="Issues"></a>
+<a href="https://github.com/SneppX/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
 </p>
 
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ammar49-cyber/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/ammar49-cyber/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/ammar49-cyber/sneppx-alg)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
 
 > **SneppX-ALG** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
 
@@ -34,7 +34,7 @@
 
 ## Overview
 
-SNEPPX-Alg (codename **ARIX_Algo**) is a universal, MIT-licensed AI algorithm framework written primarily in **C11 / C++20 with CUDA**. It organizes model construction and inference as a composable, secure **5-stage pipeline** and wraps it with a layered security model (S0–S9). The codebase is large (~183K LOC) and spans a core tensor/autograd substrate, algorithm implementations, accelerator drivers, a security stack, an HTTP serving layer, and Python bindings.
+SNEPPX-Alg (under the SneppX organization) is a universal, MIT-licensed AI algorithm framework written primarily in **C11 / C++20 with CUDA**. It organizes model construction and inference as a composable, secure **5-stage pipeline** and wraps it with a layered security model (S0–S9). The codebase is large (~183K LOC) and spans a core tensor/autograd substrate, algorithm implementations, accelerator drivers, a security stack, an HTTP serving layer, and Python bindings.
 
 Design goals:
 - **Auditable native core** — the hot path lives in C/CUDA you can read and verify.
@@ -184,7 +184,7 @@ print(y.shape)
 ```
 
 
-### Recent framework capabilities (since v1.1.1)
+### Recent framework capabilities (v1.2.0)
 
 - **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
 - **Functional API**: `sneppx_ALG.nn.functional` (aliased `F`) with ~70 differentiable ops (conv, pool, norm, pad, unfold/fold, embedding, losses, interpolate).
@@ -241,15 +241,15 @@ cd build && ctest -C Release --output-on-failure
 
 We run a five-tier contribution framework and label good entry points:
 
-- 🏷️ `good first issue` · `help wanted` · `documentation` — see the [open issues](https://github.com/ammar49-cyber/sneppx-alg/issues)
-- 💬 [Discussions](https://github.com/ammar49-cyber/sneppx-alg/discussions) — announcements, Q&A, ideas, show-and-tell
+- 🏷️ `good first issue` · `help wanted` · `documentation` — see the [open issues](https://github.com/SneppX/sneppx-alg/issues)
+- 💬 [Discussions](https://github.com/SneppX/sneppx-alg/discussions) — announcements, Q&A, ideas, show-and-tell
 - 📚 Learning paths & tier system in [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md)
 
 PRs are welcome.
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ammar49-cyber/sneppx-alg&type=Date)](https://www.star-history.com/#ammar49-cyber/sneppx-alg&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=SneppX/sneppx-alg&type=Date)](https://www.star-history.com/#SneppX/sneppx-alg&Date)
 
 ## License
 
