@@ -253,4 +253,4 @@ PRs are welcome.
 
 ## License
 
-MIT — see [`LICENSE`](./LICENSE). Maintained by **Ammar [SNEPPX]**.
+MIT — see [`LICENSE`](./LICENSE). Maintained by **Ammar**.
