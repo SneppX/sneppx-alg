@@ -615,7 +615,7 @@ MIT License
 
 ## Copyright
 
-© 2024-2026 Ammar [SNEPPX] - algoSNEPPX@gmail.com
+© 2024-2026 Ammar [SNEPPX] - algosneppx@gmail.com
 
 ---
 
