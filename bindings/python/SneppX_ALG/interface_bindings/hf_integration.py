@@ -8,6 +8,17 @@ import os
 import numpy as np
 
 
+def _decode_bfloat16(raw: bytes) -> np.ndarray:
+    """Decode little-endian bfloat16 bytes into a float32 ndarray.
+
+    bfloat16 is the top 16 bits of an IEEE-754 float32, so widening is a
+    shift-left by 16 bits into a uint32 buffer reinterpreted as float32.
+    """
+    u16 = np.frombuffer(raw, dtype=np.uint16)
+    u32 = u16.astype(np.uint32) << np.uint32(16)
+    return u32.view(np.float32)
+
+
 def _load_safetensors(path: str) -> Dict[str, np.ndarray]:
     import struct
 
@@ -16,6 +27,10 @@ def _load_safetensors(path: str) -> Dict[str, np.ndarray]:
         header_size = struct.unpack("<Q", f.read(8))[0]
         header = json.loads(f.read(header_size))
         for key, info in header.items():
+            # safetensors may carry a top-level "__metadata__" entry whose
+            # value is a string map, not a tensor descriptor — skip it.
+            if not isinstance(info, dict) or "data_offsets" not in info:
+                continue
             offset, size = info["data_offsets"]
             cur = f.tell()
             f.seek(8 + header_size + offset)
@@ -23,15 +38,23 @@ def _load_safetensors(path: str) -> Dict[str, np.ndarray]:
             f.seek(cur)
             dtype_str = info["dtype"]
             shape = info["shape"]
-            dt_map = {
-                "F32": np.float32,
-                "F16": np.float16,
-                "I32": np.int32,
-                "I64": np.int64,
-            }
-            arr = np.frombuffer(data, dtype=dt_map.get(dtype_str, np.float32)).reshape(
-                shape
-            )
+            if dtype_str == "BF16":
+                arr = _decode_bfloat16(data).reshape(shape)
+            else:
+                dt_map = {
+                    "F32": np.float32,
+                    "F16": np.float16,
+                    "F64": np.float64,
+                    "I32": np.int32,
+                    "I64": np.int64,
+                    "I16": np.int16,
+                    "I8": np.int8,
+                    "U8": np.uint8,
+                    "BOOL": np.bool_,
+                }
+                arr = np.frombuffer(
+                    data, dtype=dt_map.get(dtype_str, np.float32)
+                ).reshape(shape)
             state[key] = arr
     return state
 
@@ -84,9 +107,7 @@ def _named_parameters(model) -> List[Tuple[str, Tensor]]:
     """
     if hasattr(model, "named_parameters"):
         return list(model.named_parameters())
-    return [
-        (f"param_{i}", p) for i, p in enumerate(model.parameters())
-    ]
+    return [(f"param_{i}", p) for i, p in enumerate(model.parameters())]
 
 
 def load_hf_model(model: Module, model_id: str, cache_dir: Optional[str] = None):
@@ -316,4 +337,3 @@ def from_pretrained(
             f"{len(params)} params from {model_id} ({family}/{size})"
         )
     return model
-
