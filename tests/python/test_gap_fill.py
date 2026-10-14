@@ -576,11 +576,30 @@ def test_conv_transpose1d_adjoint():
     assert abs(lhs - rhs) < 1e-2 * (abs(lhs) + 1.0)
 
 
+def test_conv_transpose2d_adjoint():
+    from SneppX_ALG.interface_bindings import advanced_ops
+
+    np.random.seed(83)
+    x = Tensor(np.random.randn(3, 2, 5, 5).astype("float32"))
+    wf = np.random.randn(4, 2, 3, 3).astype("float32")
+    y = advanced_ops.conv2d(x, Tensor(wf), stride=(2, 2), padding=(1, 1))
+    g = Tensor(np.random.randn(*y.shape).astype("float32"))
+
+    xt = advanced_ops.conv_transpose2d(g, Tensor(wf), stride=(2, 2), padding=(1, 1))
+
+    assert xt.shape == (3, 2, 5, 5)
+    lhs = float(np.sum(np.asarray(y.data, np.float64) * np.asarray(g.data, np.float64)))
+    rhs = float(
+        np.sum(np.asarray(x.data, np.float64) * np.asarray(xt.data, np.float64))
+    )
+    assert abs(lhs - rhs) < 1e-2 * (abs(lhs) + 1.0)
+
+
 def test_conv_transpose3d_adjoint():
     from SneppX_ALG.interface_bindings import advanced_ops
 
     np.random.seed(82)
-    x = Tensor(np.random.randn(1, 2, 4, 5, 6).astype("float32"))
+    x = Tensor(np.random.randn(2, 2, 4, 5, 6).astype("float32"))
     wf = np.random.randn(2, 2, 2, 2, 2).astype("float32")
     y = advanced_ops.conv3d(x, Tensor(wf), stride=(1, 1, 1), padding=(1, 1, 1))
     g = Tensor(np.random.randn(*y.shape).astype("float32"))
@@ -588,7 +607,7 @@ def test_conv_transpose3d_adjoint():
     wt = Tensor(_transposed_weight(wf).copy())
     xt = advanced_ops.conv_transpose3d(g, wt, stride=1, padding=1)
 
-    assert xt.shape == (1, 2, 4, 5, 6)
+    assert xt.shape == (2, 2, 4, 5, 6)
     lhs = float(np.sum(np.asarray(y.data, np.float64) * np.asarray(g.data, np.float64)))
     rhs = float(
         np.sum(np.asarray(x.data, np.float64) * np.asarray(xt.data, np.float64))

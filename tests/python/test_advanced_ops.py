@@ -135,6 +135,46 @@ def test_conv2d_batch_greater_than_one():
     )
 
 
+def test_conv3d_batch_greater_than_one():
+    from SneppX_ALG.interface_bindings.advanced_ops import conv3d
+
+    rng = np.random.default_rng(9)
+    x = rng.standard_normal((2, 2, 4, 4, 4))
+    wf = rng.standard_normal((3, 2, 2, 2, 2))
+    out = conv3d(Tensor(x), Tensor(wf), stride=(1, 1, 1), padding=(1, 1, 1))
+    assert out.shape == (2, 3, 5, 5, 5)
+    # batch elements must not be permuted/mixed: each sample matches its own
+    # direct conv computed independently.
+    for n in range(2):
+        ref = _direct_conv3d(x[n : n + 1], wf, (1, 1, 1), (1, 1, 1))
+        assert np.allclose(np.asarray(out.data, np.float64)[n : n + 1], ref, atol=1e-5)
+
+
+def _direct_conv3d(x, wf, stride, padding):
+    N, C_in, D, H, W = x.shape
+    C_out, _, kD, kH, kW = wf.shape
+    Do = (D + 2 * padding[0] - (kD - 1) - 1) // stride[0] + 1
+    Ho = (H + 2 * padding[1] - (kH - 1) - 1) // stride[1] + 1
+    Wo = (W + 2 * padding[2] - (kW - 1) - 1) // stride[2] + 1
+    y = np.zeros((N, C_out, Do, Ho, Wo))
+    for n in range(N):
+        for oc in range(C_out):
+            for i in range(Do):
+                for j in range(Ho):
+                    for k in range(Wo):
+                        for a in range(kD):
+                            for b in range(kH):
+                                for c in range(kW):
+                                    dd = i * stride[0] - padding[0] + a
+                                    hh = j * stride[1] - padding[1] + b
+                                    ww = k * stride[2] - padding[2] + c
+                                    if 0 <= dd < D and 0 <= hh < H and 0 <= ww < W:
+                                        y[n, oc, i, j, k] += np.dot(
+                                            x[n, :, dd, hh, ww], wf[oc, :, a, b, c]
+                                        )
+    return y
+
+
 def test_max_pool2d():
     x = Tensor.from_numpy(
         np.array([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=np.float32)
