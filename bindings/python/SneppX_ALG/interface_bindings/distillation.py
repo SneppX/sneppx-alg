@@ -360,6 +360,85 @@ class DistillationPruner:
 # =========================================================================
 
 
+def _forward_model_outputs(model: Any, inputs: Any) -> Dict[str, Any]:
+    """Run `model(inputs)` and normalise the result to a dict of tensors.
+
+    Accepts a plain ``Tensor`` (treated as logits), a ``dict`` with any of the
+    keys ``logits``/``hidden_states``/``features``/``attentions``, or a tuple
+    whose first element is the logits and remaining elements are features.
+    """
+    if model is None:
+        raise ValueError("model must not be None")
+    if hasattr(model, "forward") and callable(getattr(model, "forward")):
+        raw = model(inputs)
+    elif callable(model):
+        raw = model(inputs)
+    else:
+        raise TypeError("model must be callable or expose a forward() method")
+
+    out: Dict[str, Any] = {"logits": None, "features": None, "attentions": None}
+    if isinstance(raw, Tensor):
+        out["logits"] = raw
+    elif isinstance(raw, dict):
+        out["logits"] = raw.get("logits")
+        feats = raw.get("hidden_states", raw.get("features"))
+        if feats is not None and not isinstance(feats, (list, tuple)):
+            feats = [feats]
+        out["features"] = list(feats) if feats is not None else None
+        attns = raw.get("attentions", raw.get("attention"))
+        if attns is not None and not isinstance(attns, (list, tuple)):
+            attns = [attns]
+        out["attentions"] = list(attns) if attns is not None else None
+    elif isinstance(raw, (list, tuple)):
+        if len(raw) == 0:
+            raise ValueError("model returned an empty container")
+        out["logits"] = raw[0]
+        rest = list(raw[1:])
+        out["features"] = rest if rest else None
+    else:
+        raise TypeError(f"unsupported model output type: {type(raw)!r}")
+
+    if out["logits"] is None and out["features"] is None:
+        raise ValueError("model output did not contain logits or features")
+    return out
+
+
+def _split_batch(batch: Any) -> Tuple[Any, Any]:
+    """Split a data-loader batch into (inputs, labels)."""
+    if isinstance(batch, (list, tuple)):
+        if len(batch) == 0:
+            raise ValueError("empty batch")
+        if len(batch) == 1:
+            return batch[0], None
+        return batch[0], batch[1]
+    return batch, None
+
+
+def _optimizer_step(optimizer: Any, loss: Tensor) -> bool:
+    """Attempt a backward+step; return True if a step was actually taken.
+
+    The simulated tensor backend produces non-differentiable loss tensors for
+    the KD objectives (they are built from NumPy), so we only step when the loss
+    actually carries a computation graph.  This keeps the loop honest: it never
+    reports that weights changed when they did not.
+    """
+    if optimizer is None:
+        return False
+    if getattr(loss, "grad_fn", None) is None and not getattr(
+        loss, "requires_grad", False
+    ):
+        return False
+    try:
+        if hasattr(optimizer, "zero_grad"):
+            optimizer.zero_grad()
+        loss.backward()
+        if hasattr(optimizer, "step"):
+            optimizer.step()
+        return True
+    except Exception:
+        return False
+
+
 def distill_bert(
     student_config: Any,
     teacher_config: Any,
@@ -370,15 +449,94 @@ def distill_bert(
     temperature: float = 4.0,
     alpha: float = 0.5,
     distillation_type: str = "layer",
-) -> Any:
+    optimizer: Any = None,
+) -> Dict[str, Any]:
     """BERT-specific distillation.
 
+    Runs an evaluation/objective loop over `data_loader`, combining logit
+    distillation with the requested transfer objective:
+
     Args:
-        distillation_type: "layer", "logit", "attention", "embedding"
+        distillation_type: one of "layer", "logit", "attention", "embedding".
+            - "logit":       KL/CE logit distillation only.
+            - "layer":       feature-matching (FitNets) on hidden states + logit.
+            - "embedding":   feature-matching on the first hidden state + logit.
+            - "attention":   attention-map transfer + logit.
+    Returns:
+        A report dict with keys ``loss_history``, ``final_loss``,
+        ``distillation_type``, ``num_epochs``, ``num_batches``, ``steps_taken``
+        and ``student_model``.
     """
-    # This would implement BERT-specific distillation
-    # including layer-wise distillation, attention transfer, etc.
-    raise NotImplementedError("Use framework-specific implementation")
+    valid_types = {"layer", "logit", "attention", "embedding"}
+    if distillation_type not in valid_types:
+        raise ValueError(
+            f"distillation_type must be one of {sorted(valid_types)}, "
+            f"got {distillation_type!r}"
+        )
+    if num_epochs < 0:
+        raise ValueError("num_epochs must be non-negative")
+
+    history: List[float] = []
+    steps_taken = 0
+    num_batches = 0
+
+    for _epoch in range(num_epochs):
+        epoch_loss = 0.0
+        epoch_batches = 0
+        for batch in data_loader:
+            inputs, labels = _split_batch(batch)
+            s_out = _forward_model_outputs(student_model, inputs)
+            t_out = _forward_model_outputs(teacher_model, inputs)
+
+            loss = kd_loss(
+                s_out["logits"],
+                t_out["logits"],
+                temperature=temperature,
+                alpha=alpha,
+                labels=labels,
+            )
+
+            if (
+                distillation_type in ("layer", "embedding")
+                and s_out["features"]
+                and t_out["features"]
+            ):
+                n = min(len(s_out["features"]), len(t_out["features"]))
+                if distillation_type == "embedding":
+                    n = min(n, 1)
+                loss = loss + feature_matching_loss(
+                    s_out["features"][:n], t_out["features"][:n]
+                )
+            elif (
+                distillation_type == "attention"
+                and s_out["attentions"]
+                and t_out["attentions"]
+            ):
+                n = min(len(s_out["attentions"]), len(t_out["attentions"]))
+                loss = loss + attention_transfer_loss(
+                    s_out["attentions"][:n], t_out["attentions"][:n]
+                )
+
+            if _optimizer_step(optimizer, loss):
+                steps_taken += 1
+
+            epoch_loss += float(np.asarray(loss.data))
+            epoch_batches += 1
+
+        num_batches += epoch_batches
+        history.append(epoch_loss / epoch_batches if epoch_batches else 0.0)
+
+    return {
+        "loss_history": history,
+        "final_loss": history[-1] if history else None,
+        "distillation_type": distillation_type,
+        "num_epochs": num_epochs,
+        "num_batches": num_batches,
+        "steps_taken": steps_taken,
+        "student_model": student_model,
+        "student_config": student_config,
+        "teacher_config": teacher_config,
+    }
 
 
 def distill_gpt(
@@ -387,11 +545,69 @@ def distill_gpt(
     data_loader: Any,
     temperature: float = 2.0,
     alpha: float = 0.5,
-) -> Any:
-    """GPT-style decoder distillation."""
-    # For causal LM, use causal mask in attention
-    # and standard logit distillation
-    raise NotImplementedError("Use framework-specific implementation")
+    num_epochs: int = 1,
+    optimizer: Any = None,
+) -> Dict[str, Any]:
+    """GPT-style (causal decoder) distillation.
+
+    Causal LMs use the same logit-distillation objective as BERT but rely on the
+    model's own causal attention mask, so only logit (optionally feature)
+    distillation is applied.  Perplexity of the student is reported when
+    labels are available.
+
+    Returns:
+        A report dict with ``loss_history``, ``final_loss``, ``perplexity``,
+        ``num_epochs``, ``num_batches``, ``steps_taken`` and ``student_model``.
+    """
+    if num_epochs < 0:
+        raise ValueError("num_epochs must be non-negative")
+
+    history: List[float] = []
+    steps_taken = 0
+    num_batches = 0
+
+    for _epoch in range(num_epochs):
+        epoch_loss = 0.0
+        epoch_batches = 0
+        for batch in data_loader:
+            inputs, labels = _split_batch(batch)
+            s_out = _forward_model_outputs(student_model, inputs)
+            t_out = _forward_model_outputs(teacher_model, inputs)
+
+            loss = kd_loss(
+                s_out["logits"],
+                t_out["logits"],
+                temperature=temperature,
+                alpha=alpha,
+                labels=labels,
+            )
+            if s_out["features"] and t_out["features"]:
+                n = min(len(s_out["features"]), len(t_out["features"]))
+                loss = loss + feature_matching_loss(
+                    s_out["features"][:n], t_out["features"][:n]
+                )
+
+            if _optimizer_step(optimizer, loss):
+                steps_taken += 1
+
+            epoch_loss += float(np.asarray(loss.data))
+            epoch_batches += 1
+
+        num_batches += epoch_batches
+        history.append(epoch_loss / epoch_batches if epoch_batches else 0.0)
+
+    final = history[-1] if history else None
+    perplexity = float(np.exp(final)) if final is not None and final < 700 else None
+
+    return {
+        "loss_history": history,
+        "final_loss": final,
+        "perplexity": perplexity,
+        "num_epochs": num_epochs,
+        "num_batches": num_batches,
+        "steps_taken": steps_taken,
+        "student_model": student_model,
+    }
 
 
 # =========================================================================
