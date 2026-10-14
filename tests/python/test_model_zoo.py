@@ -122,6 +122,15 @@ def test_remap_deepseek():
     check("deepseek kv_b_proj", result == "layers.0.attn.kv_b_proj.weight")
 
 
+def test_remap_qwen2_bias():
+    result = _remap_hf_weight_name("model.layers.3.self_attn.q_proj.bias", "qwen2")
+    check("qwen2 q_proj bias", result == "layers.3.attn.q_proj.bias")
+    result = _remap_hf_weight_name("model.layers.3.self_attn.k_proj.bias", "qwen2")
+    check("qwen2 k_proj bias", result == "layers.3.attn.k_proj.bias")
+    result = _remap_hf_weight_name("model.layers.3.self_attn.v_proj.bias", "qwen2")
+    check("qwen2 v_proj bias", result == "layers.3.attn.v_proj.bias")
+
+
 def test_generate_weight_names():
     names = _generate_sneppx_weight_names("llama2", 2)
     # 3 non-layer + 9 per layer * 2 = 21
@@ -212,11 +221,17 @@ def test_safetensors_reader_invalid():
 def test_extend_context():
     """Test 128K context extension via NTK-aware RoPE scaling."""
     config = get_model_config("llama2", "7B")
-    assert config["max_position_embeddings"] == 4096, f"Expected 4096, got {config['max_position_embeddings']}"
+    assert config["max_position_embeddings"] == 4096, (
+        f"Expected 4096, got {config['max_position_embeddings']}"
+    )
 
     extended = extend_context(config, target_len=131072)
-    assert extended["max_position_embeddings"] == 131072, f"Expected 131072, got {extended['max_position_embeddings']}"
-    assert extended["rope_theta"] > config["rope_theta"], "NTK scaling should increase rope_theta"
+    assert extended["max_position_embeddings"] == 131072, (
+        f"Expected 131072, got {extended['max_position_embeddings']}"
+    )
+    assert extended["rope_theta"] > config["rope_theta"], (
+        "NTK scaling should increase rope_theta"
+    )
     assert extended["rope_scaling"] == 2
     assert abs(extended["rope_scaling_factor"] - 32.0) < 0.1
 
@@ -229,15 +244,22 @@ def test_extend_context():
 def test_context_extension_all_models():
     """Verify 128K context extension works for all supported architectures."""
     models = [
-        ("llama2", "7B"), ("llama3", "8B"), ("mistral", "7B"),
-        ("qwen2", "7B"), ("deepseek_v2", "lite"),
+        ("llama2", "7B"),
+        ("llama3", "8B"),
+        ("mistral", "7B"),
+        ("qwen2", "7B"),
+        ("deepseek_v2", "lite"),
     ]
     for family, size in models:
         config = get_model_config(family, size)
         orig = config["max_position_embeddings"]
         extended = extend_context(config, target_len=131072)
-        assert extended["max_position_embeddings"] == 131072, f"{family} {size} failed 128K"
-        assert extended["rope_theta"] >= config["rope_theta"], f"{family} {size}: rope_theta should not decrease"
+        assert extended["max_position_embeddings"] == 131072, (
+            f"{family} {size} failed 128K"
+        )
+        assert extended["rope_theta"] >= config["rope_theta"], (
+            f"{family} {size}: rope_theta should not decrease"
+        )
         print(f"  [PASS] extend_context({family}, {size}): {orig} -> 131072")
     print("  [PASS] context_extension_all_models")
 
@@ -278,6 +300,7 @@ if __name__ == "__main__":
     test_remap_unknown_family()
     test_remap_unmappable()
     test_remap_deepseek()
+    test_remap_qwen2_bias()
     test_generate_weight_names()
     test_build_model_from_config()
     test_build_model_deepseek()
