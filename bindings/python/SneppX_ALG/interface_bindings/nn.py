@@ -389,6 +389,18 @@ class Conv2d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
+        if self.groups == 1:
+            from .autograd_ops import Conv2d as _Conv2dFn
+
+            return _Conv2dFn.apply(
+                x,
+                self.weight,
+                self.bias,
+                self.stride,
+                self.padding,
+                self.dilation,
+                self.groups,
+            )
         from .advanced_ops import conv2d as _conv2d
 
         return _conv2d(
