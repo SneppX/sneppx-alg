@@ -142,6 +142,26 @@ def test_conv1d_parameters():
     assert "weight" in names and "bias" in names
 
 
+def test_conv2d_module_batch_numerical():
+    from SneppX_ALG.interface_bindings import advanced_ops
+
+    m = nn.Conv2d(2, 3, 3, stride=1, padding=1, bias=False)
+    x = Tensor(np.random.randn(3, 2, 5, 5).astype("float32"))
+    y = m(x)
+    ref = advanced_ops.conv2d(x, m.weight, stride=(1, 1), padding=(1, 1))
+    assert y.shape == (3, 3, 5, 5)
+    assert np.allclose(
+        np.asarray(y.data, np.float64), np.asarray(ref.data, np.float64), atol=1e-6
+    )
+    # batch samples must not be permuted: sample n equals its own 1-sample run
+    y0 = m(Tensor(np.asarray(x.data)[0:1]))
+    assert np.allclose(
+        np.asarray(y.data, np.float64)[0:1],
+        np.asarray(y0.data, np.float64),
+        atol=1e-6,
+    )
+
+
 def test_batchnorm3d_forward():
     m = nn.BatchNorm3d(4)
     x = Tensor(np.random.randn(2, 4, 3, 4, 4).astype("float32"))
