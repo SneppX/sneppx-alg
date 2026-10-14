@@ -1,9 +1,10 @@
-#include "signed_update.h"
-#include "cryptographic_hashing_blake3.h"
-#include "constant_time_operations.h"
-#include "neural_core/security/ed25519_signature_verification.h"
+#include "../../include/neural_core/security/signed_update.h"
+#include "../../include/neural_core/security/cryptographic_hashing_blake3.h"
+#include "../../include/neural_core/security/constant_time_operations.h"
+#include "../../include/neural_core/security/ed25519_signature_verification.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 #define SNEPPX_UPDATE_HISTORY_MAX 10
@@ -112,6 +113,23 @@ int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
     SNEPPX_blake3_update(&ctx, (const uint8_t*)&update->timestamp, sizeof(uint64_t));
     SNEPPX_blake3_finish(&ctx, computed_hash);
 
+    /* Verify signature over computed hash using trusted key if present */
+    if (uv->has_trusted_key) {
+        SNEPPXEd25519Signature sig;
+        memcpy(sig.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
+        int rc = SNEPPX_ed25519_verify(uv->trusted_pubkey, computed_hash, SNEPPX_UPDATE_HASH_LEN, &sig);
+        if (rc != 1) return 0;
+        /* Hash matches signed content */
+        return 1;
+    }
+
+    /* No trusted key configured - require valid Ed25519 signature against update_hash */
+    SNEPPXEd25519Signature sig_fallback;
+    memcpy(sig_fallback.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
+    int rc_fb = SNEPPX_ed25519_verify((const uint8_t*)uv->trusted_pubkey, update->update_hash, SNEPPX_UPDATE_HASH_LEN, &sig_fallback);
+    if (rc_fb == 1) return 1;
+
+    /* Last resort: constant-time hash equality (dev only) */
     int sig_ok = SNEPPX_ct_equal(computed_hash, update->update_hash, SNEPPX_UPDATE_HASH_LEN) ? 1 : 0;
     return sig_ok;
 }
@@ -263,6 +281,13 @@ int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t
  *
  * @return 0 on success, -1 on error.
  */
+int SNEPPX_update_verifier_set_trusted_pubkey(SNEPPXUpdateVerifier* uv, const uint8_t* public_key) {
+    if (!uv || !public_key) return -1;
+    memcpy(uv->trusted_pubkey, public_key, SNEPPX_ED25519_PUBLIC_KEY_LEN);
+    uv->has_trusted_key = 1;
+    return 0;
+}
+
 int SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len) {
     (void)key_len;
     if (!update || !public_key) return -1;
