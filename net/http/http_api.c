@@ -85,15 +85,61 @@ static int json_get_string(const char* json, const char* key, char* out, size_t 
     return 0;
 }
 
+/*
+ * Read a JSON scalar for `key` into `out`. Unlike json_get_string this also
+ * accepts unquoted numeric/boolean tokens (e.g. `"max_tokens": 32`), which is
+ * how real JSON request bodies encode numeric fields.
+ */
+static int json_get_scalar(const char* json, const char* key, char* out, size_t out_size) {
+    if (!json || !key || !out || out_size == 0) return -1;
+    char search[128];
+    snprintf(search, sizeof(search), "\"%s\"", key);
+    const char* p = strstr(json, search);
+    if (!p) return -1;
+    p = strchr(p, ':');
+    if (!p) return -1;
+    p++;
+    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
+    size_t n = 0;
+    if (*p == '"') {
+        p++;
+        while (*p && *p != '"' && n + 1 < out_size) {
+            if (*p == '\\' && p[1]) {
+                switch (p[1]) {
+                    case 'n': out[n++] = '\n'; break;
+                    case 't': out[n++] = '\t'; break;
+                    case 'r': out[n++] = '\r'; break;
+                    case '\\': out[n++] = '\\'; break;
+                    case '"': out[n++] = '"'; break;
+                    default: out[n++] = p[1]; break;
+                }
+                p += 2;
+            } else {
+                out[n++] = *p++;
+            }
+        }
+        out[n] = '\0';
+        return 0;
+    }
+    while (*p && *p != ',' && *p != '}' && *p != ']' &&
+           *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
+           n + 1 < out_size) {
+        out[n++] = *p++;
+    }
+    if (n == 0) return -1;
+    out[n] = '\0';
+    return 0;
+}
+
 static long long json_get_int(const char* json, const char* key, long long def) {
     char buf[128];
-    if (json_get_string(json, key, buf, sizeof(buf)) != 0) return def;
+    if (json_get_scalar(json, key, buf, sizeof(buf)) != 0) return def;
     return atoll(buf);
 }
 
 static double json_get_float(const char* json, const char* key, double def) {
     char buf[128];
-    if (json_get_string(json, key, buf, sizeof(buf)) != 0) return def;
+    if (json_get_scalar(json, key, buf, sizeof(buf)) != 0) return def;
     return atof(buf);
 }
 
@@ -140,6 +186,66 @@ static size_t preset_vocab_size(const ApiModelPreset* preset) {
         default:
             return 0;
     }
+}
+
+/* ---- Generation core (shared by /v1/generate and /v1/completions) ---- */
+
+/*
+ * Deterministic token generator used when no trained weights are loaded.
+ * The prompt is encoded as char-code token ids modulo the vocabulary; the
+ * completion is produced from a 32-bit LCG seeded by the prompt (or an
+ * explicit seed). Temperature <= 0 selects greedy/modulo sampling; top_p
+ * narrows the effective vocabulary. This is a reference path: real logits
+ * are produced once weights are wired into the serving engine.
+ */
+static size_t run_generation(const ApiModelPreset* preset, const char* prompt,
+                             long long max_new_tokens, double temperature,
+                             double top_p, long long seed,
+                             char* gen_text, size_t gen_text_size,
+                             int* gen_ids, int* gen_len_out,
+                             int* input_ids, size_t* prompt_len_out) {
+    size_t vocab = preset_vocab_size(preset);
+    if (vocab == 0) return 0;
+
+    size_t prompt_len = 0;
+    while (prompt[prompt_len] && prompt_len < 16384)
+        prompt_len++;
+
+    unsigned int state = 0x811C9DC5u;
+    for (size_t i = 0; i < prompt_len; i++) {
+        int tok = (int)((unsigned char)prompt[i] % vocab);
+        input_ids[i] = tok;
+        state = (state ^ (unsigned int)tok) * 0x01000193u;
+    }
+    if (seed >= 0) state = (unsigned int)seed;
+    if (state == 0) state = 0xDEADBEEFu;
+
+    size_t eff_vocab = vocab;
+    if (top_p > 0.0 && top_p < 1.0) {
+        eff_vocab = (size_t)((double)vocab * top_p);
+        if (eff_vocab == 0) eff_vocab = 1;
+    }
+
+    size_t gen_len = 0;
+    for (long long i = 0; i < max_new_tokens; i++) {
+        state = state * 1664525u + 1013904223u;
+        int tok;
+        if (temperature <= 0.0) {
+            tok = (int)(state % (unsigned int)eff_vocab);
+        } else {
+            double u = (double)(state & 0xFFFFFFu) / (double)0x1000000u;
+            u = u / temperature;
+            if (u > 1.0) u = 1.0;
+            tok = (int)((size_t)(u * (double)eff_vocab) % eff_vocab);
+        }
+        gen_ids[i] = tok;
+        if (gen_len + 1 < gen_text_size)
+            gen_text[gen_len++] = (char)(32 + (tok % 95));
+    }
+    gen_text[gen_len] = '\0';
+    *gen_len_out = (int)gen_len;
+    *prompt_len_out = prompt_len;
+    return vocab;
 }
 
 /* ---- Handlers ---- */
@@ -241,29 +347,23 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     if (max_new_tokens < 1) max_new_tokens = 1;
     if (max_new_tokens > 512) max_new_tokens = 512;
 
+    double temperature = json_get_float(body, "temperature", 1.0);
+    double top_p = json_get_float(body, "top_p", 1.0);
+    long long seed = json_get_int(body, "seed", -1);
+
     /* Encode prompt as char-code token ids (mirrors the Python fallback path). */
     int input_ids[16384];
-    size_t prompt_len = 0;
-    for (; prompt[prompt_len] && prompt_len < sizeof(input_ids) / sizeof(input_ids[0]); prompt_len++)
-        input_ids[prompt_len] = (int)((unsigned char)prompt[prompt_len] % vocab);
-
-    /* Deterministic generation seeded from the prompt. */
-    unsigned int state = 0x811C9DC5u;
-    for (size_t i = 0; i < prompt_len; i++)
-        state = (state ^ (unsigned int)input_ids[i]) * 0x01000193u;
-    if (state == 0) state = 0xDEADBEEFu;
-
     int gen_ids[512];
     char gen_text[2048];
-    size_t gen_len = 0;
-    for (int i = 0; i < (int)max_new_tokens; i++) {
-        state = state * 1664525u + 1013904223u;
-        int tok = (int)(state % (unsigned int)vocab);
-        gen_ids[i] = tok;
-        if (gen_len + 1 < sizeof(gen_text))
-            gen_text[gen_len++] = (char)(32 + (tok % 95));
+    int gen_len = 0;
+    size_t prompt_len = 0;
+    if (run_generation(preset, prompt, max_new_tokens, temperature, top_p, seed,
+                       gen_text, sizeof(gen_text), gen_ids, &gen_len,
+                       input_ids, &prompt_len) == 0) {
+        SNEPPX_http_response_set_status(resp, 500);
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"model_unavailable\",\"message\":\"Model configuration could not be loaded\"}");
+        return 0;
     }
-    gen_text[gen_len] = '\0';
 
     /* Build token_ids array (prompt + completion). */
     char token_ids[16384];
@@ -271,7 +371,7 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "[");
     for (size_t i = 0; i < prompt_len; i++)
         t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "%d,", input_ids[i]);
-    for (int i = 0; i < (int)max_new_tokens; i++)
+    for (int i = 0; i < gen_len; i++)
         t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "%d,", gen_ids[i]);
     if (t > 1) t--; /* drop trailing comma */
     t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "]");
@@ -283,8 +383,72 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     snprintf(out, sizeof(out),
         "{\"generated_text\":\"%s\",\"token_ids\":%s,\"prompt_tokens\":%zu,"
         "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld}",
-        esc_text, token_ids, prompt_len, (int)max_new_tokens,
-        (int)(prompt_len + (size_t)max_new_tokens), preset->id, (long)time(NULL));
+        esc_text, token_ids, prompt_len, gen_len,
+        (int)(prompt_len + (size_t)gen_len), preset->id, (long)time(NULL));
+    SNEPPX_http_response_set_json(resp, out);
+    return 0;
+}
+
+static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, void* userdata) {
+    (void)userdata;
+    size_t body_len = 0;
+    const char* body = SNEPPX_http_request_body(req, &body_len);
+    if (!body || body_len == 0) {
+        SNEPPX_http_response_set_status(resp, 400);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"JSON request body required\",\"type\":\"invalid_request_error\"}}");
+        return 0;
+    }
+
+    char model[256] = {0};
+    char prompt[16384] = {0};
+    if (json_get_string(body, "model", model, sizeof(model)) != 0 ||
+        json_get_string(body, "prompt", prompt, sizeof(prompt)) != 0) {
+        SNEPPX_http_response_set_status(resp, 400);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"'model' and 'prompt' are required\",\"type\":\"invalid_request_error\"}}");
+        return 0;
+    }
+
+    const ApiModelPreset* preset = find_preset(model);
+    if (!preset) {
+        SNEPPX_http_response_set_status(resp, 404);
+        char err[256];
+        snprintf(err, sizeof(err),
+            "{\"error\":{\"message\":\"Unknown model: %s\",\"type\":\"invalid_request_error\"}}", model);
+        SNEPPX_http_response_set_json(resp, err);
+        return 0;
+    }
+
+    long long max_new_tokens = json_get_int(body, "max_tokens", 32);
+    if (max_new_tokens < 1) max_new_tokens = 1;
+    if (max_new_tokens > 512) max_new_tokens = 512;
+    double temperature = json_get_float(body, "temperature", 1.0);
+    double top_p = json_get_float(body, "top_p", 1.0);
+    long long seed = json_get_int(body, "seed", -1);
+
+    int input_ids[16384];
+    int gen_ids[512];
+    char gen_text[2048];
+    int gen_len = 0;
+    size_t prompt_len = 0;
+    if (run_generation(preset, prompt, max_new_tokens, temperature, top_p, seed,
+                       gen_text, sizeof(gen_text), gen_ids, &gen_len,
+                       input_ids, &prompt_len) == 0) {
+        SNEPPX_http_response_set_status(resp, 500);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"model configuration could not be loaded\",\"type\":\"server_error\"}}");
+        return 0;
+    }
+
+    char esc_text[8192];
+    json_escape(gen_text, esc_text, sizeof(esc_text));
+
+    char out[49152];
+    snprintf(out, sizeof(out),
+        "{\"id\":\"cmpl-%ld\",\"object\":\"text_completion\",\"created\":%ld,"
+        "\"model\":\"%s\",\"choices\":[{\"text\":\"%s\",\"index\":0,"
+        "\"logprobs\":null,\"finish_reason\":\"length\"}],"
+        "\"usage\":{\"prompt_tokens\":%zu,\"completion_tokens\":%d,\"total_tokens\":%d}}",
+        (long)time(NULL), (long)time(NULL), preset->id, esc_text,
+        prompt_len, gen_len, (int)(prompt_len + (size_t)gen_len));
     SNEPPX_http_response_set_json(resp, out);
     return 0;
 }
@@ -327,6 +491,7 @@ int SNEPPX_http_api_register(SNEPPX_HttpServer* srv, SNEPPX_HttpApi* api) {
     if (SNEPPX_http_server_add_route(srv, "GET", "/v1/models", list_models_handler, api) != 0) return -1;
     if (SNEPPX_http_server_add_route(srv, "GET", "/v1/models/{id}", model_info_handler, api) != 0) return -1;
     if (SNEPPX_http_server_add_route(srv, "POST", "/v1/generate", generate_handler, api) != 0) return -1;
+    if (SNEPPX_http_server_add_route(srv, "POST", "/v1/completions", completions_handler, api) != 0) return -1;
     return 0;
 }
 
