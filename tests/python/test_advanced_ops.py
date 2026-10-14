@@ -3,14 +3,37 @@
 import numpy as np
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.advanced_ops import (
-    conv2d, conv1d, max_pool2d, avg_pool2d, adaptive_avg_pool2d,
-    rnn_cell, lstm_cell, gru_cell,
-    multi_head_attention, softmax, silu,
-    layernorm, linear, dropout, embedding,
-    cat, stack, split, flatten,
-    sum, mean, max, min, norm,
-    clamp, pad, permute, transpose,
-    relu, leaky_relu, sigmoid,
+    conv2d,
+    conv1d,
+    max_pool2d,
+    avg_pool2d,
+    adaptive_avg_pool2d,
+    rnn_cell,
+    lstm_cell,
+    gru_cell,
+    multi_head_attention,
+    softmax,
+    silu,
+    layernorm,
+    linear,
+    dropout,
+    embedding,
+    cat,
+    stack,
+    split,
+    flatten,
+    sum,
+    mean,
+    max,
+    min,
+    norm,
+    clamp,
+    pad,
+    permute,
+    transpose,
+    relu,
+    leaky_relu,
+    sigmoid,
 )
 
 
@@ -52,8 +75,70 @@ def test_conv1d_basic():
     assert np.allclose(out.data, 3.0)
 
 
+def _direct_conv1d(x, wf, stride, padding):
+    N, C_in, L = x.shape
+    C_out, _, kL = wf.shape
+    L_out = (L + 2 * padding - (kL - 1) - 1) // stride + 1
+    y = np.zeros((N, C_out, L_out))
+    for n in range(N):
+        for oc in range(C_out):
+            for i in range(L_out):
+                for k in range(kL):
+                    t = i * stride - padding + k
+                    if 0 <= t < L:
+                        y[n, oc, i] += np.dot(x[n, :, t], wf[oc, :, k])
+    return y
+
+
+def test_conv1d_batch_greater_than_one():
+    rng = np.random.default_rng(7)
+    x = rng.standard_normal((3, 2, 8))
+    wf = rng.standard_normal((4, 2, 3))
+    out = conv1d(Tensor(x), Tensor(wf), stride=2, padding=1)
+    assert out.shape == (3, 4, 4)
+    assert np.allclose(
+        np.asarray(out.data, np.float64), _direct_conv1d(x, wf, 2, 1), atol=1e-5
+    )
+
+
+def _direct_conv2d(x, wf, stride, padding):
+    N, C_in, H, W = x.shape
+    C_out, _, kH, kW = wf.shape
+    Ho = (H + 2 * padding[0] - (kH - 1) - 1) // stride[0] + 1
+    Wo = (W + 2 * padding[1] - (kW - 1) - 1) // stride[1] + 1
+    y = np.zeros((N, C_out, Ho, Wo))
+    for n in range(N):
+        for oc in range(C_out):
+            for i in range(Ho):
+                for j in range(Wo):
+                    for a in range(kH):
+                        for b in range(kW):
+                            hh = i * stride[0] - padding[0] + a
+                            ww = j * stride[1] - padding[1] + b
+                            if 0 <= hh < H and 0 <= ww < W:
+                                y[n, oc, i, j] += np.dot(
+                                    x[n, :, hh, ww], wf[oc, :, a, b]
+                                )
+    return y
+
+
+def test_conv2d_batch_greater_than_one():
+    rng = np.random.default_rng(8)
+    x = rng.standard_normal((2, 3, 6, 6))
+    wf = rng.standard_normal((5, 3, 3, 3))
+    out = conv2d(Tensor(x), Tensor(wf), stride=(1, 1), padding=(1, 1))
+    assert out.shape == (2, 5, 6, 6)
+    assert np.allclose(
+        np.asarray(out.data, np.float64),
+        _direct_conv2d(x, wf, (1, 1), (1, 1)),
+        atol=1e-5,
+    )
+
+
 def test_max_pool2d():
-    x = Tensor.from_numpy(np.array([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=np.float32))
+    x = Tensor.from_numpy(
+        np.array([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=np.float32)
+    )
     out = max_pool2d(x, kernel_size=2, stride=1)
     assert out.shape == (1, 1, 2, 2)
     assert np.allclose(out.data, [[[[5, 6], [8, 9]]]])
@@ -161,6 +246,7 @@ def test_clamp():
 
 def test_gelu_nn():
     from SneppX_ALG.interface_bindings.nn import GELU
+
     x = Tensor.ones((2, 3))
     out = GELU()(x)
     assert out.shape == (2, 3)
@@ -229,6 +315,7 @@ def test_transpose():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0
@@ -241,6 +328,6 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"  FAIL {name}: {e}")
                 failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)

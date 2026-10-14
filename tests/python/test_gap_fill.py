@@ -282,7 +282,9 @@ def test_padding_modules_shapes():
     x2 = Tensor(np.random.randn(2, 3, 8, 8).astype("float32"))
     assert nn.ConstantPad1d(2)(x1).shape == (2, 3, 14)
     assert nn.ConstantPad2d((2, 2, 1, 1))(x2).shape == (2, 3, 10, 12)
-    assert nn.ConstantPad3d(1)(Tensor(np.random.randn(1, 2, 3, 4, 4).astype("float32"))).shape == (1, 2, 5, 6, 6)
+    assert nn.ConstantPad3d(1)(
+        Tensor(np.random.randn(1, 2, 3, 4, 4).astype("float32"))
+    ).shape == (1, 2, 5, 6, 6)
     assert nn.ZeroPad1d(2)(x1).shape == (2, 3, 14)
     assert nn.ZeroPad2d((1, 1, 0, 0))(x2).shape == (2, 3, 8, 10)
     assert nn.ReflectionPad1d(1)(x1).shape == (2, 3, 12)
@@ -427,9 +429,7 @@ def test_embedding_bag_mean():
     off = Tensor(np.array([0, 2, 4], dtype=np.int64))
     out = bag(idx, off)
     assert out.shape == (2, 4)
-    assert np.allclose(
-        out.data[0], bag.weight.data[[0, 1]].mean(axis=0)
-    )
+    assert np.allclose(out.data[0], bag.weight.data[[0, 1]].mean(axis=0))
 
 
 def test_embedding_bag_sum():
@@ -548,3 +548,84 @@ def test_max_unpool2d():
     assert out.data[0, 0, 0, 2] == 1.0
     assert out.data[0, 0, 2, 0] == 2.0
     assert out.data[0, 0, 2, 2] == 3.0
+
+
+def _transposed_weight(wf):
+    # ConvTransposeNd weight layout is (in_channels, out_channels//groups, *k),
+    # which is exactly the forward ConvNd weight layout: the adjoint reuses it.
+    return wf
+
+
+def test_conv_transpose1d_adjoint():
+    from SneppX_ALG.interface_bindings import advanced_ops
+
+    np.random.seed(81)
+    x = Tensor(np.random.randn(2, 3, 7).astype("float32"))
+    wf = np.random.randn(4, 3, 3).astype("float32")
+    y = advanced_ops.conv1d(x, Tensor(wf), stride=2, padding=1)
+    g = Tensor(np.random.randn(*y.shape).astype("float32"))
+
+    wt = Tensor(_transposed_weight(wf).copy())
+    xt = advanced_ops.conv_transpose1d(g, wt, stride=2, padding=1)
+
+    assert xt.shape == (2, 3, 7)
+    lhs = float(np.sum(np.asarray(y.data, np.float64) * np.asarray(g.data, np.float64)))
+    rhs = float(
+        np.sum(np.asarray(x.data, np.float64) * np.asarray(xt.data, np.float64))
+    )
+    assert abs(lhs - rhs) < 1e-2 * (abs(lhs) + 1.0)
+
+
+def test_conv_transpose3d_adjoint():
+    from SneppX_ALG.interface_bindings import advanced_ops
+
+    np.random.seed(82)
+    x = Tensor(np.random.randn(1, 2, 4, 5, 6).astype("float32"))
+    wf = np.random.randn(2, 2, 2, 2, 2).astype("float32")
+    y = advanced_ops.conv3d(x, Tensor(wf), stride=(1, 1, 1), padding=(1, 1, 1))
+    g = Tensor(np.random.randn(*y.shape).astype("float32"))
+
+    wt = Tensor(_transposed_weight(wf).copy())
+    xt = advanced_ops.conv_transpose3d(g, wt, stride=1, padding=1)
+
+    assert xt.shape == (1, 2, 4, 5, 6)
+    lhs = float(np.sum(np.asarray(y.data, np.float64) * np.asarray(g.data, np.float64)))
+    rhs = float(
+        np.sum(np.asarray(x.data, np.float64) * np.asarray(xt.data, np.float64))
+    )
+    assert abs(lhs - rhs) < 1e-2 * (abs(lhs) + 1.0)
+
+
+def test_conv_transpose1d_module_shape():
+    m = nn.ConvTranspose1d(2, 3, 3, stride=2, padding=1, output_padding=1)
+    x = Tensor(np.random.randn(1, 2, 4).astype("float32"))
+    out = m(x)
+    # (L-1)*stride - 2*pad + (k-1) + output_padding + 1 = 3*2 -2 +2 +1 +1 = 8
+    assert out.shape == (1, 3, 8)
+
+
+def test_conv_transpose3d_module_shape():
+    m = nn.ConvTranspose3d(2, 3, 2, stride=2, padding=0, output_padding=0)
+    x = Tensor(np.random.randn(1, 2, 3, 3, 3).astype("float32"))
+    out = m(x)
+    # (S-1)*stride - 2*pad + (k-1) + output_padding + 1 = 2*2 + 1 + 1 = 6
+    assert out.shape == (1, 3, 6, 6, 6)
+
+
+def test_functional_conv_transpose1d_delegates():
+    from SneppX_ALG.interface_bindings import nn_functional as F
+
+    x = Tensor(np.random.randn(1, 2, 4).astype("float32"))
+    w = Tensor(np.random.randn(2, 3, 3).astype("float32"))
+    out = F.conv_transpose1d(x, w, stride=2, padding=1)
+    # (4-1)*2 - 2*1 + 3 + 0 = 7
+    assert out.shape == (1, 3, 7)
+
+
+def test_functional_conv_transpose3d_delegates():
+    from SneppX_ALG.interface_bindings import nn_functional as F
+
+    x = Tensor(np.random.randn(1, 2, 3, 3, 3).astype("float32"))
+    w = Tensor(np.random.randn(2, 3, 2, 2, 2).astype("float32"))
+    out = F.conv_transpose3d(x, w, stride=2)
+    assert out.shape == (1, 3, 6, 6, 6)

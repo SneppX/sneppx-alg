@@ -320,8 +320,16 @@ class LayerNorm(Module):
     def forward(self, x: Tensor) -> Tensor:
         if _is_cuda_tensor(x):
             out_data = np.empty_like(x.data)
-            w = self.weight.data if self.weight is not None else np.ones(self.normalized_shape)
-            b = self.bias.data if self.bias is not None else np.zeros(self.normalized_shape)
+            w = (
+                self.weight.data
+                if self.weight is not None
+                else np.ones(self.normalized_shape)
+            )
+            b = (
+                self.bias.data
+                if self.bias is not None
+                else np.zeros(self.normalized_shape)
+            )
             layernorm_kernel(
                 x.data,
                 w,
@@ -374,9 +382,10 @@ class Conv2d(Module):
         self.groups = groups
         kH, kW = kernel_size
         scale = math.sqrt(1.0 / (in_channels * kH * kW))
-        self.weight = Tensor.randn(
-            (out_channels, in_channels // groups, kH, kW), dtype=dtype
-        ) * scale
+        self.weight = (
+            Tensor.randn((out_channels, in_channels // groups, kH, kW), dtype=dtype)
+            * scale
+        )
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
@@ -426,9 +435,9 @@ class Conv1d(Module):
         self.groups = groups
         kL = kernel_size[0]
         scale = math.sqrt(1.0 / (in_channels * kL))
-        self.weight = Tensor.randn(
-            (out_channels, in_channels // groups, kL), dtype=dtype
-        ) * scale
+        self.weight = (
+            Tensor.randn((out_channels, in_channels // groups, kL), dtype=dtype) * scale
+        )
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
@@ -438,9 +447,15 @@ class Conv1d(Module):
             x,
             self.weight,
             self.bias,
-            stride=self.stride[0] if isinstance(self.stride, (list, tuple)) else self.stride,
-            padding=self.padding[0] if isinstance(self.padding, (list, tuple)) else self.padding,
-            dilation=self.dilation[0] if isinstance(self.dilation, (list, tuple)) else self.dilation,
+            stride=self.stride[0]
+            if isinstance(self.stride, (list, tuple))
+            else self.stride,
+            padding=self.padding[0]
+            if isinstance(self.padding, (list, tuple))
+            else self.padding,
+            dilation=self.dilation[0]
+            if isinstance(self.dilation, (list, tuple))
+            else self.dilation,
             groups=self.groups,
         )
 
@@ -478,9 +493,10 @@ class Conv3d(Module):
         self.groups = groups
         kD, kH, kW = kernel_size
         scale = math.sqrt(1.0 / (in_channels * kD * kH * kW))
-        self.weight = Tensor.randn(
-            (out_channels, in_channels // groups, kD, kH, kW), dtype=dtype
-        ) * scale
+        self.weight = (
+            Tensor.randn((out_channels, in_channels // groups, kD, kH, kW), dtype=dtype)
+            * scale
+        )
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
@@ -536,26 +552,37 @@ class _ConvTransposeNd(Module):
             k *= kk
         scale = math.sqrt(1.0 / (in_channels * k))
         # transposed weight layout: [C_in//groups, C_out, k...]
-        self.weight = Tensor.randn(
-            (in_channels // groups, out_channels) + tuple(kernel_size), dtype=dtype
-        ) * scale
+        self.weight = (
+            Tensor.randn(
+                (in_channels // groups, out_channels) + tuple(kernel_size), dtype=dtype
+            )
+            * scale
+        )
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if self.conv_ndim != 2:
-            raise NotImplementedError(
-                f"ConvTranspose{self.conv_ndim}d backward/forward only supported for 2d in this sim"
-            )
-        from .advanced_ops import conv_transpose2d as _ct2d
+        if self.conv_ndim == 2:
+            from .advanced_ops import conv_transpose2d as _ct2d
 
-        return _ct2d(
+            return _ct2d(
+                x,
+                self.weight,
+                self.bias,
+                stride=self.stride,
+                padding=self.padding,
+                output_padding=self.output_padding,
+                groups=self.groups,
+            )
+        from .advanced_ops import _conv_transpose_nd_impl
+
+        return _conv_transpose_nd_impl(
             x,
             self.weight,
             self.bias,
-            stride=self.stride,
-            padding=self.padding,
-            output_padding=self.output_padding,
-            groups=self.groups,
+            self.stride,
+            self.padding,
+            self.output_padding,
+            self.groups,
         )
 
 
@@ -821,7 +848,11 @@ class ModuleList(Module):
     def load_state_dict(self, state_dict: dict):
         for i, m in enumerate(self._list):
             if hasattr(m, "load_state_dict"):
-                sub = {k[len(f"{i}."):]: v for k, v in state_dict.items() if k.startswith(f"{i}.")}
+                sub = {
+                    k[len(f"{i}.") :]: v
+                    for k, v in state_dict.items()
+                    if k.startswith(f"{i}.")
+                }
                 m.load_state_dict(sub)
 
     def to(self, device: str):
@@ -903,7 +934,11 @@ class ModuleDict(Module):
     def load_state_dict(self, state_dict: dict):
         for k, m in self._dict.items():
             if hasattr(m, "load_state_dict"):
-                sub = {kk[len(f"{k}."):]: v for kk, v in state_dict.items() if kk.startswith(f"{k}.")}
+                sub = {
+                    kk[len(f"{k}.") :]: v
+                    for kk, v in state_dict.items()
+                    if kk.startswith(f"{k}.")
+                }
                 m.load_state_dict(sub)
 
     def to(self, device: str):
@@ -923,7 +958,9 @@ class ModuleDict(Module):
             m.eval()
 
     def forward(self, x: Tensor) -> Tensor:
-        raise NotImplementedError("ModuleDict has no default forward; index modules explicitly.")
+        raise NotImplementedError(
+            "ModuleDict has no default forward; index modules explicitly."
+        )
 
 
 # ===========================================================================
@@ -982,8 +1019,12 @@ class LSTMCell(Module):
         lin = lin + (h @ self.weight_hh.T)
         if self.bias_hh is not None:
             lin = lin + self.bias_hh
-        i, f, g, o = lin[:, : self.hidden_size], lin[:, self.hidden_size:2 * self.hidden_size], \
-            lin[:, 2 * self.hidden_size:3 * self.hidden_size], lin[:, 3 * self.hidden_size:]
+        i, f, g, o = (
+            lin[:, : self.hidden_size],
+            lin[:, self.hidden_size : 2 * self.hidden_size],
+            lin[:, 2 * self.hidden_size : 3 * self.hidden_size],
+            lin[:, 3 * self.hidden_size :],
+        )
         i = i.sigmoid()
         f = f.sigmoid()
         g = g.tanh()
@@ -1016,14 +1057,27 @@ class GRUCell(Module):
         if self.bias_hh is not None:
             lin_hh = lin_hh + self.bias_hh
         r = (lin_ih[:, : self.hidden_size] + lin_hh[:, : self.hidden_size]).sigmoid()
-        z = (lin_ih[:, self.hidden_size:2 * self.hidden_size] + lin_hh[:, self.hidden_size:2 * self.hidden_size]).sigmoid()
-        n = (lin_ih[:, 2 * self.hidden_size:] + r * lin_hh[:, 2 * self.hidden_size:]).tanh()
+        z = (
+            lin_ih[:, self.hidden_size : 2 * self.hidden_size]
+            + lin_hh[:, self.hidden_size : 2 * self.hidden_size]
+        ).sigmoid()
+        n = (
+            lin_ih[:, 2 * self.hidden_size :] + r * lin_hh[:, 2 * self.hidden_size :]
+        ).tanh()
         return (1 - z) * n + z * h
 
 
 class RNN(Module):
-    def __init__(self, input_size, hidden_size, num_layers=1, nonlinearity="tanh",
-                 bias=True, batch_first=False, dropout=0.0):
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        num_layers=1,
+        nonlinearity="tanh",
+        bias=True,
+        batch_first=False,
+        dropout=0.0,
+    ):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -1031,8 +1085,15 @@ class RNN(Module):
         self.batch_first = batch_first
         self.dropout = dropout
         self.layers = ModuleList(
-            [RNNCell(input_size if i == 0 else hidden_size, hidden_size, bias, nonlinearity)
-             for i in range(num_layers)]
+            [
+                RNNCell(
+                    input_size if i == 0 else hidden_size,
+                    hidden_size,
+                    bias,
+                    nonlinearity,
+                )
+                for i in range(num_layers)
+            ]
         )
 
     def forward(self, x: Tensor, h0=None):
@@ -1041,7 +1102,9 @@ class RNN(Module):
         T = x.shape[0]
         batch = x.shape[1]
         if h0 is None:
-            h = [Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)]
+            h = [
+                Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)
+            ]
         else:
             h = [h0[i] for i in range(self.num_layers)]
         outputs = []
@@ -1059,8 +1122,15 @@ class RNN(Module):
 
 
 class LSTM(Module):
-    def __init__(self, input_size, hidden_size, num_layers=1, bias=True,
-                 batch_first=False, dropout=0.0):
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        num_layers=1,
+        bias=True,
+        batch_first=False,
+        dropout=0.0,
+    ):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -1068,8 +1138,10 @@ class LSTM(Module):
         self.batch_first = batch_first
         self.dropout = dropout
         self.layers = ModuleList(
-            [LSTMCell(input_size if i == 0 else hidden_size, hidden_size, bias)
-             for i in range(num_layers)]
+            [
+                LSTMCell(input_size if i == 0 else hidden_size, hidden_size, bias)
+                for i in range(num_layers)
+            ]
         )
 
     def forward(self, x: Tensor, hc0=None):
@@ -1078,8 +1150,12 @@ class LSTM(Module):
         T = x.shape[0]
         batch = x.shape[1]
         if hc0 is None:
-            h = [Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)]
-            c = [Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)]
+            h = [
+                Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)
+            ]
+            c = [
+                Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)
+            ]
         else:
             h = [hc0[0][i] for i in range(self.num_layers)]
             c = [hc0[1][i] for i in range(self.num_layers)]
@@ -1099,8 +1175,15 @@ class LSTM(Module):
 
 
 class GRU(Module):
-    def __init__(self, input_size, hidden_size, num_layers=1, bias=True,
-                 batch_first=False, dropout=0.0):
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        num_layers=1,
+        bias=True,
+        batch_first=False,
+        dropout=0.0,
+    ):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -1108,8 +1191,10 @@ class GRU(Module):
         self.batch_first = batch_first
         self.dropout = dropout
         self.layers = ModuleList(
-            [GRUCell(input_size if i == 0 else hidden_size, hidden_size, bias)
-             for i in range(num_layers)]
+            [
+                GRUCell(input_size if i == 0 else hidden_size, hidden_size, bias)
+                for i in range(num_layers)
+            ]
         )
 
     def forward(self, x: Tensor, h0=None):
@@ -1118,7 +1203,9 @@ class GRU(Module):
         T = x.shape[0]
         batch = x.shape[1]
         if h0 is None:
-            h = [Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)]
+            h = [
+                Tensor.zeros((batch, self.hidden_size)) for _ in range(self.num_layers)
+            ]
         else:
             h = [h0[i] for i in range(self.num_layers)]
         outputs = []
@@ -1142,7 +1229,9 @@ class GRU(Module):
 
 class BatchNormFn(Function):
     @staticmethod
-    def forward(ctx, x, weight, bias, running_mean, running_var, training, momentum, eps):
+    def forward(
+        ctx, x, weight, bias, running_mean, running_var, training, momentum, eps
+    ):
         xd = x.data
         C = xd.shape[1]
         keep = (1, C) + (1,) * (xd.ndim - 2)
@@ -1163,7 +1252,14 @@ class BatchNormFn(Function):
         xhat = (xd - use_mean) * inv
         y = xhat * weight.data.reshape(keep) + bias.data.reshape(keep)
         N = int(np.prod([xd.shape[a] for a in axes]))
-        ctx.save_attr(inv=inv, xhat=xhat, w=weight.data.reshape(keep), axes=axes, N=N, training=training)
+        ctx.save_attr(
+            inv=inv,
+            xhat=xhat,
+            w=weight.data.reshape(keep),
+            axes=axes,
+            N=N,
+            training=training,
+        )
         return Tensor(y, dtype=x.dtype)
 
     @staticmethod
@@ -1179,7 +1275,11 @@ class BatchNormFn(Function):
         grad_b = g.sum(axis=axes)
         if training:
             grad_xhat = g * w
-            dx = N * grad_xhat - grad_xhat.sum(axis=axes, keepdims=True) - xhat * (grad_xhat * xhat).sum(axis=axes, keepdims=True)
+            dx = (
+                N * grad_xhat
+                - grad_xhat.sum(axis=axes, keepdims=True)
+                - xhat * (grad_xhat * xhat).sum(axis=axes, keepdims=True)
+            )
             dx = dx / N * inv
         else:
             dx = g * w * inv
@@ -1209,8 +1309,12 @@ class GroupNormFn(Function):
         keep = (1, C) + (1,) * (xd.ndim - 2)
         y = xhat * weight.data.reshape(keep) + bias.data.reshape(keep)
         Nred = int(np.prod(xg.shape[2:]))
-        inv_ch = np.repeat(np.sqrt(var + eps).reshape(N, G, 1, 1), Cg, axis=1).reshape(N, C, 1, 1)  # (N, C, 1, 1)
-        ctx.save_attr(inv=inv_ch, xhat=xhat, w=weight.data.reshape(keep), N=Nred, num_groups=G)
+        inv_ch = np.repeat(np.sqrt(var + eps).reshape(N, G, 1, 1), Cg, axis=1).reshape(
+            N, C, 1, 1
+        )  # (N, C, 1, 1)
+        ctx.save_attr(
+            inv=inv_ch, xhat=xhat, w=weight.data.reshape(keep), N=Nred, num_groups=G
+        )
         return Tensor(y, dtype=x.dtype)
 
     @staticmethod
@@ -1226,13 +1330,15 @@ class GroupNormFn(Function):
         spatial = g.shape[2:]
         gg = g.reshape(-1, num_groups, Cg, *spatial)
         xh = xhat.reshape(-1, num_groups, Cg, *spatial)
-        inv_g = inv.reshape(g.shape[0], num_groups, Cg, 1, 1)[:, :, 0].reshape(g.shape[0], num_groups, 1, 1, 1)
-        rax = tuple(range(2, gg.ndim))           # (Cg, *spatial) within each (n, g)
+        inv_g = inv.reshape(g.shape[0], num_groups, Cg, 1, 1)[:, :, 0].reshape(
+            g.shape[0], num_groups, 1, 1, 1
+        )
+        rax = tuple(range(2, gg.ndim))  # (Cg, *spatial) within each (n, g)
         sum_g = gg.sum(axis=rax, keepdims=True)
         sum_gx = (gg * xh).sum(axis=rax, keepdims=True)
         dxg = (N * gg - sum_g - xh * sum_gx) / N / inv_g
         dx = dxg.reshape(g.shape)
-        sax = tuple(range(3, gg.ndim))           # spatial dims
+        sax = tuple(range(3, gg.ndim))  # spatial dims
         grad_w = (gg * xh).sum(axis=(0,) + sax).reshape(C)
         grad_b = gg.sum(axis=(0,) + sax).reshape(C)
         return [
@@ -1244,7 +1350,14 @@ class GroupNormFn(Function):
 
 
 class _BatchNorm(Module):
-    def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True, track_running_stats=True):
+    def __init__(
+        self,
+        num_features,
+        eps=1e-5,
+        momentum=0.1,
+        affine=True,
+        track_running_stats=True,
+    ):
         super().__init__()
         self.num_features = num_features
         self.eps = eps
@@ -1319,7 +1432,12 @@ class InstanceNormFn(Function):
         xhat = (xd - mean) / np.sqrt(var + eps)
         keep = (1, xd.shape[1]) + (1,) * (xd.ndim - 2)
         y = xhat * weight.data.reshape(keep) + bias.data.reshape(keep)
-        ctx.save_attr(inv=1.0 / np.sqrt(var + eps), xhat=xhat, w=weight.data.reshape(keep), axes=axes)
+        ctx.save_attr(
+            inv=1.0 / np.sqrt(var + eps),
+            xhat=xhat,
+            w=weight.data.reshape(keep),
+            axes=axes,
+        )
         return Tensor(y, dtype=x.dtype)
 
     @staticmethod
@@ -1333,7 +1451,11 @@ class InstanceNormFn(Function):
         grad_w = (g * xhat).sum(axis=axes)
         grad_b = g.sum(axis=axes)
         grad_xhat = g * w
-        dx = N * grad_xhat - grad_xhat.sum(axis=axes, keepdims=True) - xhat * (grad_xhat * xhat).sum(axis=axes, keepdims=True)
+        dx = (
+            N * grad_xhat
+            - grad_xhat.sum(axis=axes, keepdims=True)
+            - xhat * (grad_xhat * xhat).sum(axis=axes, keepdims=True)
+        )
         dx = dx / N * inv
         return [
             Tensor(dx, dtype=grad_output.dtype),
@@ -1345,7 +1467,14 @@ class InstanceNormFn(Function):
 
 
 class _InstanceNorm(Module):
-    def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True, track_running_stats=False):
+    def __init__(
+        self,
+        num_features,
+        eps=1e-5,
+        momentum=0.1,
+        affine=True,
+        track_running_stats=False,
+    ):
         super().__init__()
         self.num_features = num_features
         self.eps = eps
@@ -1395,12 +1524,14 @@ class Flatten(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         shape = list(x.shape)
-        start_dim = self.start_dim if self.start_dim >= 0 else len(shape) + self.start_dim
+        start_dim = (
+            self.start_dim if self.start_dim >= 0 else len(shape) + self.start_dim
+        )
         end_dim = self.end_dim if self.end_dim >= 0 else len(shape) + self.end_dim
         flat = 1
-        for s in shape[start_dim:end_dim + 1]:
+        for s in shape[start_dim : end_dim + 1]:
             flat *= s
-        new_shape = shape[:start_dim] + [flat] + shape[end_dim + 1:]
+        new_shape = shape[:start_dim] + [flat] + shape[end_dim + 1 :]
         return x.reshape(new_shape)
 
 
@@ -1410,12 +1541,16 @@ class Identity(Module):
 
 
 class Bilinear(Module):
-    def __init__(self, in1_features, in2_features, out_features, bias=True, dtype="float32"):
+    def __init__(
+        self, in1_features, in2_features, out_features, bias=True, dtype="float32"
+    ):
         super().__init__()
         self.in1_features = in1_features
         self.in2_features = in2_features
         self.out_features = out_features
-        self.weight = Tensor.randn((out_features, in1_features, in2_features), dtype=dtype) * 0.1
+        self.weight = (
+            Tensor.randn((out_features, in1_features, in2_features), dtype=dtype) * 0.1
+        )
         self.bias = Tensor.zeros((out_features,), dtype=dtype) if bias else None
 
     def forward(self, input1: Tensor, input2: Tensor) -> Tensor:
@@ -1568,9 +1703,7 @@ class GaussianNLLLoss(_Loss):
         y = target.data
         v = var.data
         eps = self.eps
-        loss = 0.5 * (
-            np.log(2 * np.pi) + np.log(v + eps) + (x - y) ** 2 / (v + eps)
-        )
+        loss = 0.5 * (np.log(2 * np.pi) + np.log(v + eps) + (x - y) ** 2 / (v + eps))
         if self.full:
             loss = 0.5 * (np.log(2 * np.pi * v + eps) + (x - y) ** 2 / (v + eps))
         if self.reduction == "mean":
@@ -1637,7 +1770,9 @@ class SoftMarginLoss(_Loss):
 
 
 class MultiMarginLoss(_Loss):
-    def __init__(self, p: int = 1, margin: float = 1.0, weight=None, reduction: str = "mean"):
+    def __init__(
+        self, p: int = 1, margin: float = 1.0, weight=None, reduction: str = "mean"
+    ):
         super().__init__(reduction)
         self.p = p
         self.margin = margin
@@ -1687,7 +1822,10 @@ class MultiLabelSoftMarginLoss(_Loss):
         x = input.data
         y = target.data
         # per-element BCE (multi-label, many-hot targets)
-        loss = -(y * np.log(np.clip(x, 1e-7, 1.0)) + (1 - y) * np.log(np.clip(1 - x, 1e-7, 1.0)))
+        loss = -(
+            y * np.log(np.clip(x, 1e-7, 1.0))
+            + (1 - y) * np.log(np.clip(1 - x, 1e-7, 1.0))
+        )
         if self.reduction == "mean":
             loss = loss.mean()
         elif self.reduction == "sum":
@@ -1892,7 +2030,13 @@ class AdaptiveAvgPool3d(Module):
                 for k in range(ow):
                     w0 = int(np.floor(k * w / ow))
                     w1 = int(np.ceil((k + 1) * w / ow))
-                    win = x.data[:, :, d0:max(d1, d0 + 1), h0:max(h1, h0 + 1), w0:max(w1, w0 + 1)]
+                    win = x.data[
+                        :,
+                        :,
+                        d0 : max(d1, d0 + 1),
+                        h0 : max(h1, h0 + 1),
+                        w0 : max(w1, w0 + 1),
+                    ]
                     out[:, :, i, j, k] = win.mean(axis=(2, 3, 4)).astype(np.float32)
         return Tensor(out, dtype=x.dtype, device=x.device)
 
@@ -1949,7 +2093,13 @@ class AdaptiveMaxPool3d(Module):
                 for k in range(ow):
                     w0 = int(np.floor(k * w / ow))
                     w1 = int(np.ceil((k + 1) * w / ow))
-                    win = x.data[:, :, d0:max(d1, d0 + 1), h0:max(h1, h0 + 1), w0:max(w1, w0 + 1)]
+                    win = x.data[
+                        :,
+                        :,
+                        d0 : max(d1, d0 + 1),
+                        h0 : max(h1, h0 + 1),
+                        w0 : max(w1, w0 + 1),
+                    ]
                     out[:, :, i, j, k] = win.max(axis=(2, 3, 4)).astype(np.float32)
         return Tensor(out, dtype=x.dtype, device=x.device)
 
@@ -1972,8 +2122,15 @@ def _norm_pool_param(kernel_size, stride, padding, dilation, ndim):
 class MaxPool1d(Module):
     """1D max pooling (differentiable, padding + dilation)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
-                 return_indices=False, ceil_mode=False):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        dilation=1,
+        return_indices=False,
+        ceil_mode=False,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             kernel_size = (kernel_size,)
@@ -1988,16 +2145,25 @@ class MaxPool1d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import MaxPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, self.dilation, 1)
+
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 1
+        )
         return MaxPool.apply(x, k, s, p, d)
 
 
 class MaxPool2d(Module):
     """2D max pooling (differentiable, padding + dilation)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
-                 return_indices=False, ceil_mode=False):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        dilation=1,
+        return_indices=False,
+        ceil_mode=False,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             kernel_size = (kernel_size, kernel_size)
@@ -2012,16 +2178,25 @@ class MaxPool2d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import MaxPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, self.dilation, 2)
+
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 2
+        )
         return MaxPool.apply(x, k, s, p, d)
 
 
 class MaxPool3d(Module):
     """3D max pooling (differentiable, padding + dilation)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, dilation=1,
-                 return_indices=False, ceil_mode=False):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        dilation=1,
+        return_indices=False,
+        ceil_mode=False,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             kernel_size = (kernel_size, kernel_size, kernel_size)
@@ -2036,18 +2211,28 @@ class MaxPool3d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import MaxPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, self.dilation, 3)
+
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 3
+        )
         return MaxPool.apply(x, k, s, p, d)
 
 
 class AvgPool1d(Module):
     """1D average pooling (differentiable, count_include_pad=True)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
-                 count_include_pad=True):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        ceil_mode=False,
+        count_include_pad=True,
+    ):
         super().__init__()
-        self.kernel_size = (kernel_size,) if isinstance(kernel_size, int) else kernel_size
+        self.kernel_size = (
+            (kernel_size,) if isinstance(kernel_size, int) else kernel_size
+        )
         self.stride = stride if stride is not None else self.kernel_size
         self.padding = padding
         self.ceil_mode = ceil_mode
@@ -2055,16 +2240,22 @@ class AvgPool1d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import AvgPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, 1, 1)
+
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride, self.padding, 1, 1)
         return AvgPool.apply(x, k, s, p, d)
 
 
 class AvgPool2d(Module):
     """2D average pooling (differentiable, count_include_pad=True)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
-                 count_include_pad=True):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        ceil_mode=False,
+        count_include_pad=True,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             kernel_size = (kernel_size, kernel_size)
@@ -2078,16 +2269,22 @@ class AvgPool2d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import AvgPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, 1, 2)
+
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride, self.padding, 1, 2)
         return AvgPool.apply(x, k, s, p, d)
 
 
 class AvgPool3d(Module):
     """3D average pooling (differentiable, count_include_pad=True)."""
 
-    def __init__(self, kernel_size, stride=None, padding=0, ceil_mode=False,
-                 count_include_pad=True):
+    def __init__(
+        self,
+        kernel_size,
+        stride=None,
+        padding=0,
+        ceil_mode=False,
+        count_include_pad=True,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             kernel_size = (kernel_size, kernel_size, kernel_size)
@@ -2101,8 +2298,8 @@ class AvgPool3d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         from .autograd_ops import AvgPool
-        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride,
-                                      self.padding, 1, 3)
+
+        k, s, p, d = _norm_pool_param(self.kernel_size, self.stride, self.padding, 1, 3)
         return AvgPool.apply(x, k, s, p, d)
 
 
@@ -2120,9 +2317,7 @@ class _ConstantPadNd(Module):
         npads = len(pad) // 2
         pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
         pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
-        x_data = np.pad(
-            x.data, pad_width, mode="constant", constant_values=self.value
-        )
+        x_data = np.pad(x.data, pad_width, mode="constant", constant_values=self.value)
         return Tensor(x_data, dtype=x.dtype, device=x.device)
 
 
@@ -2315,7 +2510,11 @@ class LeakyReLU(Module):
         if self.inplace:
             x.data = np.maximum(x.data * self.negative_slope, x.data)
             return x
-        return Tensor(np.maximum(x.data * self.negative_slope, x.data), dtype=x.dtype_name, device=x.device)
+        return Tensor(
+            np.maximum(x.data * self.negative_slope, x.data),
+            dtype=x.dtype_name,
+            device=x.device,
+        )
 
 
 class PReLU(Module):
@@ -2324,7 +2523,11 @@ class PReLU(Module):
         self.weight = Tensor.full((num_parameters,), init)
 
     def forward(self, x: Tensor) -> Tensor:
-        return Tensor(np.maximum(x.data, self.weight.data * x.data), dtype=x.dtype_name, device=x.device)
+        return Tensor(
+            np.maximum(x.data, self.weight.data * x.data),
+            dtype=x.dtype_name,
+            device=x.device,
+        )
 
 
 class ELU(Module):
@@ -2333,7 +2536,11 @@ class ELU(Module):
         self.alpha = alpha
 
     def forward(self, x: Tensor) -> Tensor:
-        return Tensor(np.where(x.data > 0, x.data, self.alpha * (np.exp(x.data) - 1)), dtype=x.dtype_name, device=x.device)
+        return Tensor(
+            np.where(x.data > 0, x.data, self.alpha * (np.exp(x.data) - 1)),
+            dtype=x.dtype_name,
+            device=x.device,
+        )
 
 
 class Softmax(Module):
@@ -2380,7 +2587,9 @@ class Hardswish(Module):
 
 
 class Hardtanh(Module):
-    def __init__(self, min_val: float = -1.0, max_val: float = 1.0, inplace: bool = False):
+    def __init__(
+        self, min_val: float = -1.0, max_val: float = 1.0, inplace: bool = False
+    ):
         super().__init__()
         self.min_val = min_val
         self.max_val = max_val
@@ -2459,7 +2668,12 @@ class CELU(Module):
 
 
 class RReLU(Module):
-    def __init__(self, lower: float = 0.125, upper: float = 0.3333333333333333, inplace: bool = False):
+    def __init__(
+        self,
+        lower: float = 0.125,
+        upper: float = 0.3333333333333333,
+        inplace: bool = False,
+    ):
         super().__init__()
         self.lower = lower
         self.upper = upper
@@ -2470,7 +2684,9 @@ class RReLU(Module):
             slope = (self.lower + self.upper) / 2.0
             return x.leaky_relu(slope)
         xd = x.data
-        mask = (np.random.uniform(self.lower, self.upper, xd.shape).astype(xd.dtype)) * (xd < 0).astype(xd.dtype)
+        mask = (
+            np.random.uniform(self.lower, self.upper, xd.shape).astype(xd.dtype)
+        ) * (xd < 0).astype(xd.dtype)
         out = xd * (xd >= 0).astype(xd.dtype) + mask * xd
         return Tensor(out, dtype=x.dtype_name, device=x.device)
 
@@ -2535,7 +2751,7 @@ class EmbeddingBag(Module):
         n = off.size - 1
         bags = []
         for i in range(n):
-            seg = emb[off[i]:off[i + 1]]
+            seg = emb[off[i] : off[i + 1]]
             if seg.shape[0] == 0:
                 bags.append(np.zeros(emb.shape[1], dtype=np.float32))
             elif self.mode == "sum":
@@ -2544,7 +2760,9 @@ class EmbeddingBag(Module):
                 bags.append(seg.mean(axis=0))
             else:
                 bags.append(seg.max(axis=0))
-        return Tensor(np.stack(bags), dtype=self.weight.dtype, device=self.weight.device)
+        return Tensor(
+            np.stack(bags), dtype=self.weight.dtype, device=self.weight.device
+        )
 
 
 class CosineSimilarity(Module):
@@ -2560,9 +2778,8 @@ class CosineSimilarity(Module):
         b = x2.data.astype(np.float64)
         dim = self.dim % a.ndim
         num = (a * b).sum(axis=dim)
-        den = (
-            np.sqrt((a * a).sum(axis=dim) + self.eps)
-            * np.sqrt((b * b).sum(axis=dim) + self.eps)
+        den = np.sqrt((a * a).sum(axis=dim) + self.eps) * np.sqrt(
+            (b * b).sum(axis=dim) + self.eps
         )
         out = num / np.maximum(den, self.eps)
         return Tensor(out.astype(np.float32), dtype=x1.dtype, device=x1.device)
@@ -2603,7 +2820,9 @@ class ChannelShuffle(Module):
         xd = x.data
         n, c, *spatial = xd.shape
         cgh = c // self.groups
-        out = xd.reshape(n, self.groups, cgh, *spatial).transpose(0, 2, 1, *range(3, 3 + len(spatial)))
+        out = xd.reshape(n, self.groups, cgh, *spatial).transpose(
+            0, 2, 1, *range(3, 3 + len(spatial))
+        )
         out = out.reshape(n, c, *spatial)
         return Tensor(out, dtype=x.dtype, device=x.device)
 
@@ -2620,7 +2839,11 @@ class PixelShuffle(Module):
         r = self.upscale_factor
         n, c, h, w = xd.shape
         c_out = c // (r * r)
-        out = xd.reshape(n, c_out, r, r, h, w).transpose(0, 1, 4, 2, 5, 3).reshape(n, c_out, h * r, w * r)
+        out = (
+            xd.reshape(n, c_out, r, r, h, w)
+            .transpose(0, 1, 4, 2, 5, 3)
+            .reshape(n, c_out, h * r, w * r)
+        )
         return Tensor(out, dtype=x.dtype, device=x.device)
 
 
@@ -2636,14 +2859,20 @@ class PixelUnshuffle(Module):
         r = self.downscale_factor
         n, c, h, w = xd.shape
         c_out = c * r * r
-        out = xd.reshape(n, c, h // r, r, w // r, r).transpose(0, 1, 3, 5, 2, 4).reshape(n, c_out, h // r, w // r)
+        out = (
+            xd.reshape(n, c, h // r, r, w // r, r)
+            .transpose(0, 1, 3, 5, 2, 4)
+            .reshape(n, c_out, h // r, w // r)
+        )
         return Tensor(out, dtype=x.dtype, device=x.device)
 
 
 class Upsample(Module):
     """Upsamples a given multi-channel 1D/2D/3D input (nearest or bilinear)."""
 
-    def __init__(self, size=None, scale_factor=None, mode: str = "nearest", align_corners=None):
+    def __init__(
+        self, size=None, scale_factor=None, mode: str = "nearest", align_corners=None
+    ):
         super().__init__()
         self.size = size
         self.scale_factor = scale_factor
@@ -2657,7 +2886,14 @@ class Upsample(Module):
         if self.scale_factor is not None:
             target = tuple(int(round(s * self.scale_factor)) for s in spatial)
         elif self.size is not None:
-            target = tuple(int(s) for s in (self.size if isinstance(self.size, (tuple, list)) else (self.size,) * ndim))
+            target = tuple(
+                int(s)
+                for s in (
+                    self.size
+                    if isinstance(self.size, (tuple, list))
+                    else (self.size,) * ndim
+                )
+            )
         else:
             target = spatial
         scales = tuple(t / s for s, t in zip(spatial, target))
@@ -2727,7 +2963,9 @@ class Unfold(Module):
         H_out = (H + 2 * padH - dilH * (kH - 1) - 1) // sH + 1
         W_out = (W + 2 * padW - dilW * (kW - 1) - 1) // sW + 1
         if padH or padW:
-            xp = np.pad(xd, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant")
+            xp = np.pad(
+                xd, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant"
+            )
         else:
             xp = xd
         cols = np.zeros((N, C * kH * kW, H_out * W_out), dtype=np.float64)
@@ -2879,4 +3117,3 @@ from . import nn_init as init  # noqa: E402,F401
 
 from . import nn_functional as functional  # noqa: E402,F401
 from . import nn_functional as F  # noqa: E402,F401
-

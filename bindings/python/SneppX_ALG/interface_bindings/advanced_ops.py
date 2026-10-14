@@ -66,8 +66,8 @@ def conv2d(
     w_mat = w.reshape(C_out, -1)
 
     # Convolution via GEMM
-    out = w_mat @ col  # [C_out, N * H_out * W_out]
-    out = out.reshape(C_out, N, H_out, W_out).transpose(1, 0, 2, 3)
+    out = w_mat @ col  # (N, C_out, H_out * W_out)
+    out = out.reshape(N, C_out, H_out, W_out)
 
     if bias is not None:
         b = np.asarray(bias.data, dtype=np.float64)
@@ -106,8 +106,7 @@ def conv1d(
         )
 
     w_mat = w.reshape(C_out, -1)
-    out = w_mat @ col
-    out = out.reshape(C_out, N, L_out).transpose(1, 0, 2)
+    out = w_mat @ col  # (N, C_out, L_out)
 
     if bias is not None:
         b = np.asarray(bias.data, dtype=np.float64)
@@ -397,7 +396,11 @@ def multi_head_attention(
     training: bool = True,
 ) -> Tensor:
     """Multi-head attention."""
-    _to_arr = lambda t: np.asarray(t.data, dtype=np.float64) if hasattr(t, "data") else np.asarray(t, dtype=np.float64)
+    _to_arr = lambda t: (
+        np.asarray(t.data, dtype=np.float64)
+        if hasattr(t, "data")
+        else np.asarray(t, dtype=np.float64)
+    )
     q = _to_arr(query)
     k = _to_arr(key)
     v = _to_arr(value)
@@ -1261,6 +1264,8 @@ def topk(input: Tensor, k: int, dim: int = -1):
         Tensor.from_numpy(values.astype(np.float32)),
         Tensor.from_numpy(idx.astype(np.int64)),
     )
+
+
 def conv3d(
     input: Tensor,
     weight: Tensor,
@@ -1287,7 +1292,11 @@ def conv3d(
     H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // str_h + 1
     W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // str_w + 1
     if pad_d or pad_h or pad_w:
-        x = np.pad(x, ((0, 0), (0, 0), (pad_d, pad_d), (pad_h, pad_h), (pad_w, pad_w)), mode="constant")
+        x = np.pad(
+            x,
+            ((0, 0), (0, 0), (pad_d, pad_d), (pad_h, pad_h), (pad_w, pad_w)),
+            mode="constant",
+        )
     col = np.zeros((N, C_in * kD * kH * kW, D_out * H_out * W_out), dtype=np.float64)
     o = 0
     for i in range(D_out):
@@ -1305,8 +1314,8 @@ def conv3d(
                 ].reshape(N, -1)
                 o += 1
     w_mat = w.reshape(C_out, -1)
-    out = w_mat @ col
-    out = out.reshape(C_out, N, D_out, H_out, W_out).transpose(1, 0, 2, 3, 4)
+    out = w_mat @ col  # (N, C_out, D_out * H_out * W_out)
+    out = out.reshape(N, C_out, D_out, H_out, W_out)
     if bias is not None:
         out += np.asarray(bias.data, dtype=np.float64).reshape(1, -1, 1, 1, 1)
     return Tensor.from_numpy(out.astype(np.float32))
@@ -1366,4 +1375,114 @@ def conv_transpose2d(
     output_padding: Tuple[int, int] = (0, 0),
     groups: int = 1,
 ) -> Tensor:
-    return _conv_transpose2d_impl(input, weight, bias, stride, padding, output_padding, groups)
+    return _conv_transpose2d_impl(
+        input, weight, bias, stride, padding, output_padding, groups
+    )
+
+
+def _to_ntuple(value, ndim: int) -> Tuple[int, ...]:
+    if isinstance(value, (tuple, list)):
+        return tuple(int(v) for v in value)
+    return (int(value),) * ndim
+
+
+def _conv_transpose_nd_impl(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor],
+    stride,
+    padding,
+    output_padding,
+    groups: int,
+) -> Tensor:
+    """Generic N-D transposed convolution (scatter formulation).
+
+    ``input`` has shape ``(N, C_in, *S_in)`` and ``weight`` has shape
+    ``(C_in // groups, C_out, *K)``.  Produces ``(N, C_out * groups, *S_out)``
+    where ``S_out[d] = (S_in[d] - 1) * stride[d] - 2 * padding[d] + K[d] + output_padding[d]``.
+    Works for 1-D, 2-D and 3-D (and any higher rank).
+    """
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    ndim = x.ndim - 2
+    if ndim < 1:
+        raise ValueError("transposed conv input must have at least 3 dims")
+    N, C_in = x.shape[0], x.shape[1]
+    spatial_in = tuple(x.shape[2:])
+    C_in_w, C_out_g = w.shape[0], w.shape[1]
+    kshape = tuple(w.shape[2:])
+    if len(kshape) != ndim:
+        raise ValueError("weight spatial rank must match input spatial rank")
+    if C_in_w != C_in:
+        raise ValueError(
+            f"weight in_channels ({C_in_w}) must match input channels ({C_in})"
+        )
+    if C_in % groups != 0:
+        raise ValueError("input channels must be divisible by groups")
+
+    stride = _to_ntuple(stride, ndim)
+    padding = _to_ntuple(padding, ndim)
+    output_padding = _to_ntuple(output_padding, ndim)
+
+    S_out = tuple(
+        (spatial_in[d] - 1) * stride[d] - 2 * padding[d] + kshape[d] + output_padding[d]
+        for d in range(ndim)
+    )
+    for d in range(ndim):
+        if output_padding[d] >= stride[d] and output_padding[d] > 0:
+            raise ValueError(f"output_padding[{d}] must be smaller than stride[{d}]")
+        if S_out[d] < 1:
+            raise ValueError(f"output spatial dim {d} is non-positive")
+
+    ng = C_in // groups
+    out = np.zeros((N, C_out_g * groups) + S_out, dtype=np.float64)
+
+    for ci in range(C_in):
+        gi = ci // ng
+        w_ci = w[ci]  # (C_out_g, *K)
+        for co in range(C_out_g):
+            co_global = gi * C_out_g + co
+            wv = w_ci[co]  # (*K)
+            for sidx in np.ndindex(*spatial_in):
+                base = tuple(sidx[d] * stride[d] - padding[d] for d in range(ndim))
+                x_slice = x[(slice(None), ci) + sidx]  # (N,)
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(base[d] + kidx[d] for d in range(ndim))
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    out[(slice(None), co_global) + oidx] += x_slice * wv[kidx]
+
+    if bias is not None:
+        b = np.asarray(bias.data, dtype=np.float64).reshape((1, -1) + (1,) * ndim)
+        out += b
+    return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
+
+
+def conv_transpose1d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    output_padding: int = 0,
+    groups: int = 1,
+) -> Tensor:
+    """1-D transposed convolution (a.k.a. deconvolution)."""
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups
+    )
+
+
+def conv_transpose3d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    output_padding: int = 0,
+    groups: int = 1,
+) -> Tensor:
+    """3-D transposed convolution."""
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups
+    )
