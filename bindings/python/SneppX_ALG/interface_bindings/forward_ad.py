@@ -21,13 +21,58 @@ from .tensor import Tensor
 
 
 class DualTensor:
-    """A primal value paired with its tangent (directional derivative)."""
+    """A primal value paired with its tangent (directional derivative).
+
+    Supports the common arithmetic/exponent operators so a function written with
+    natural syntax (``x @ w``, ``x + b``, ``sigma(y)``) can be differentiated in a
+    single forward pass.  Each operator routes through the corresponding
+    :class:`~.autograd_ops.Function`, which ``forward_jvp`` has made dual-aware.
+    """
 
     __slots__ = ("value", "tangent")
 
     def __init__(self, value, tangent):
         self.value = value
         self.tangent = tangent
+
+    def __add__(self, other):
+        return ops.Add.apply(self, other)
+
+    def __radd__(self, other):
+        return ops.Add.apply(other, self)
+
+    def __sub__(self, other):
+        return ops.Sub.apply(self, other)
+
+    def __rsub__(self, other):
+        return ops.Sub.apply(other, self)
+
+    def __mul__(self, other):
+        return ops.Mul.apply(self, other)
+
+    def __rmul__(self, other):
+        return ops.Mul.apply(other, self)
+
+    def __truediv__(self, other):
+        return ops.Div.apply(self, other)
+
+    def __rtruediv__(self, other):
+        return ops.Div.apply(other, self)
+
+    def __matmul__(self, other):
+        return ops.MatMul.apply(self, other)
+
+    def __rmatmul__(self, other):
+        return ops.MatMul.apply(other, self)
+
+    def __pow__(self, other):
+        return ops.Pow.apply(self, other)
+
+    def __rpow__(self, other):
+        return ops.Pow.apply(other, self)
+
+    def __neg__(self):
+        return ops.Neg.apply(self)
 
 
 def _t(v):
@@ -50,29 +95,38 @@ def _logsoftmax(x, dim):
 def _r_add(ctx, v, t, kw):
     return t[0] + t[1]
 
+
 def _r_sub(ctx, v, t, kw):
     return t[0] - t[1]
+
 
 def _r_mul(ctx, v, t, kw):
     return t[0] * v[1] + v[0] * t[1]
 
+
 def _r_div(ctx, v, t, kw):
     return (t[0] * v[1] - v[0] * t[1]) / (v[1] ** 2)
+
 
 def _r_neg(ctx, v, t, kw):
     return -t[0]
 
+
 def _r_abs(ctx, v, t, kw):
     return np.sign(v[0]) * t[0]
+
 
 def _r_matmul(ctx, v, t, kw):
     return t[0] @ v[1] + v[0] @ t[1]
 
+
 def _r_sum(ctx, v, t, kw):
     return np.sum(t[0], axis=kw.get("axis"), keepdims=kw.get("keepdims", False))
 
+
 def _r_mean(ctx, v, t, kw):
     return np.mean(t[0], axis=kw.get("axis"), keepdims=kw.get("keepdims", False))
+
 
 def _r_transpose(ctx, v, t, kw):
     dims = kw.get("dims")
@@ -84,15 +138,19 @@ def _r_transpose(ctx, v, t, kw):
         inv[d] = i
     return np.transpose(a, inv)
 
+
 def _r_reshape(ctx, v, t, kw):
     return t[0].reshape(v[0].shape)
+
 
 def _r_squeeze(ctx, v, t, kw):
     return t[0].reshape(v[0].shape)
 
+
 def _r_unsqueeze(ctx, v, t, kw):
     dim = v[1] if len(v) > 1 else kw.get("dim")
     return np.squeeze(t[0], axis=dim)
+
 
 def _r_expand(ctx, v, t, kw):
     a = v[0]
@@ -103,45 +161,55 @@ def _r_expand(ctx, v, t, kw):
         out = out.sum(axis=-1, keepdims=False)
     return out.reshape(a.shape)
 
+
 def _r_getitem(ctx, v, t, kw):
     key = v[1] if len(v) > 1 else kw.get("key")
     out = np.zeros_like(v[0])
     out[key] = t[0]
     return out
 
+
 def _r_sigmoid(ctx, v, t, kw):
     s = 1.0 / (1.0 + np.exp(-v[0]))
     return s * (1.0 - s) * t[0]
+
 
 def _r_tanh(ctx, v, t, kw):
     y = np.tanh(v[0])
     return (1.0 - y * y) * t[0]
 
+
 def _r_relu(ctx, v, t, kw):
     return (v[0] > 0).astype(t[0].dtype) * t[0]
+
 
 def _r_sqrt(ctx, v, t, kw):
     return 0.5 / np.sqrt(v[0]) * t[0]
 
+
 def _r_exp(ctx, v, t, kw):
     return np.exp(v[0]) * t[0]
 
+
 def _r_log(ctx, v, t, kw):
     return t[0] / v[0]
+
 
 def _r_pow(ctx, v, t, kw):
     b = v[1]
     z = v[0]
     gz = (b * z ** (b - 1.0)) * t[0]
     if isinstance(b, np.ndarray):
-        gz = gz + (z ** b * np.log(z)) * t[1]
+        gz = gz + (z**b * np.log(z)) * t[1]
     return gz
+
 
 def _r_softmax(ctx, v, t, kw):
     dim = v[1] if len(v) > 1 else kw.get("dim", -1)
     s = _softmax(v[0], dim)
     sdt = np.sum(s * t[0], axis=dim, keepdims=True)
     return s * (t[0] - sdt)
+
 
 def _r_logsoftmax(ctx, v, t, kw):
     dim = v[1] if len(v) > 1 else kw.get("dim", -1)
@@ -150,13 +218,16 @@ def _r_logsoftmax(ctx, v, t, kw):
     sdt = np.sum(t[0], axis=dim, keepdims=True)
     return t[0] - s * sdt
 
+
 def _r_mse(ctx, v, t, kw):
     n = float(v[0].size)
     d = v[0] - v[1]
     return 2.0 * np.sum(d * (t[0] - t[1])) / n
 
+
 def _r_linearfn(ctx, v, t, kw):
-    a = v[0]; w = v[1]
+    a = v[0]
+    w = v[1]
     dy = t[0]
     if len(v) > 2 and v[2] is not None:
         da = dy @ w.T
@@ -164,6 +235,7 @@ def _r_linearfn(ctx, v, t, kw):
         db = np.sum(dy, axis=0)
         return da, dw, db
     return dy @ w.T, a.T @ dy
+
 
 def _r_dropoutfn(ctx, v, t, kw):
     rate = v[1] if len(v) > 1 else kw.get("rate", 0.5)
@@ -177,11 +249,13 @@ def _r_dropoutfn(ctx, v, t, kw):
 
 def _r_layernorm(ctx, v, t, kw):
     eps = kw.get("eps", 1e-5)
-    x = v[0]; g = v[1]; b = v[2]
+    x = v[0]
+    g = v[1]
+    b = v[2]
     axis = -1
     mean = x.mean(axis=axis, keepdims=True)
     xc = x - mean
-    var = (xc ** 2).mean(axis=axis, keepdims=True)
+    var = (xc**2).mean(axis=axis, keepdims=True)
     std = np.sqrt(var + eps)
     xhat = xc / std
     dx = t[0]
@@ -194,9 +268,10 @@ def _r_layernorm(ctx, v, t, kw):
 
 def _r_rmsnorm(ctx, v, t, kw):
     eps = kw.get("eps", 1e-6)
-    x = v[0]; g = v[1]
+    x = v[0]
+    g = v[1]
     axis = -1
-    ms = (x ** 2).mean(axis=axis, keepdims=True)
+    ms = (x**2).mean(axis=axis, keepdims=True)
     rms = np.sqrt(ms + eps)
     xnorm = x / rms
     dx = t[0]
@@ -242,7 +317,11 @@ def _all_functions():
     out = []
     for name in dir(ops):
         obj = getattr(ops, name)
-        if isinstance(obj, type) and issubclass(obj, ops.Function) and obj is not ops.Function:
+        if (
+            isinstance(obj, type)
+            and issubclass(obj, ops.Function)
+            and obj is not ops.Function
+        ):
             out.append(obj)
     return out
 
@@ -268,6 +347,7 @@ def _dual_apply(rule):
         out_tan = rule(ctx, v, t, kwargs)
         out_tan = np.asarray(out_tan, dtype=out_val.data.dtype)
         return DualTensor(out_val, Tensor(out_tan))
+
     return _apply
 
 
@@ -297,6 +377,7 @@ def forward_jvp(func, inputs, tangents):
                 sentinel["hit"] = True
                 raise _UnregisteredDual()
             return _cls._orig_apply(*args, **kwargs)
+
         return _apply
 
     for cls in _all_functions():
@@ -308,8 +389,10 @@ def forward_jvp(func, inputs, tangents):
             patched.append(cls)
 
     try:
-        dual_inputs = [DualTensor(inp, tan) if not isinstance(inp, DualTensor)
-                       else inp for inp, tan in zip(inputs, tangents)]
+        dual_inputs = [
+            DualTensor(inp, tan) if not isinstance(inp, DualTensor) else inp
+            for inp, tan in zip(inputs, tangents)
+        ]
         out = func(*dual_inputs)
         if sentinel["hit"]:
             raise _UnregisteredDual()
