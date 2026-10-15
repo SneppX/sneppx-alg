@@ -2880,16 +2880,14 @@ class PixelShuffle(Module):
         self.upscale_factor = upscale_factor
 
     def forward(self, x: Tensor) -> Tensor:
-        xd = x.data
         r = self.upscale_factor
-        n, c, h, w = xd.shape
+        n, c, h, w = x.shape
         c_out = c // (r * r)
-        out = (
-            xd.reshape(n, c_out, r, r, h, w)
-            .transpose(0, 1, 4, 2, 5, 3)
+        return (
+            x.reshape(n, c_out, r, r, h, w)
+            .permute(0, 1, 4, 2, 5, 3)
             .reshape(n, c_out, h * r, w * r)
         )
-        return Tensor(out, dtype=x.dtype, device=x.device)
 
 
 class PixelUnshuffle(Module):
@@ -2900,16 +2898,14 @@ class PixelUnshuffle(Module):
         self.downscale_factor = downscale_factor
 
     def forward(self, x: Tensor) -> Tensor:
-        xd = x.data
         r = self.downscale_factor
-        n, c, h, w = xd.shape
+        n, c, h, w = x.shape
         c_out = c * r * r
-        out = (
-            xd.reshape(n, c, h // r, r, w // r, r)
-            .transpose(0, 1, 3, 5, 2, 4)
+        return (
+            x.reshape(n, c, h // r, r, w // r, r)
+            .permute(0, 1, 3, 5, 2, 4)
             .reshape(n, c_out, h // r, w // r)
         )
-        return Tensor(out, dtype=x.dtype, device=x.device)
 
 
 class Upsample(Module):

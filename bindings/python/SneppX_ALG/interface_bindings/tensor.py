@@ -83,6 +83,7 @@ def _cuda_available() -> bool:
     """
     try:
         import torch
+
         return bool(getattr(torch.cuda, "is_available", lambda: False)())
     except Exception:
         return False
@@ -300,6 +301,7 @@ class Tensor:
         if k is not None:
             raise ValueError("top-k sparse conversion is not supported; use k=None")
         from .sparse import SparseTensor, _S_TO_LAYOUT
+
         lconst = _S_TO_LAYOUT.get(layout, 1)
         return SparseTensor.from_tensor(self, layout=lconst)
 
@@ -316,6 +318,7 @@ class Tensor:
         if k is not None:
             raise ValueError("top-k sparse conversion is not supported; use k=None")
         from .sparse import SparseTensor
+
         sp = SparseTensor.from_tensor(self, layout=4)
         return sp.to_sparse_bsr(blocksize)
 
@@ -726,9 +729,12 @@ class Tensor:
         return Transpose.apply(self, dim1, dim2)
 
     def permute(self, *dims):
-        """Permute tensor dimensions."""
-        # Use numpy for permutation
-        return Tensor(self.data.transpose(*dims), dtype=self.dtype, device=self.device)
+        """Permute tensor dimensions (differentiable)."""
+        from .autograd_ops import Permute
+
+        if len(dims) == 1 and isinstance(dims[0], (tuple, list)):
+            dims = tuple(dims[0])
+        return Permute.apply(self, dims)
 
     def squeeze(self, dim=None):
         from .autograd_ops import Squeeze
@@ -848,7 +854,9 @@ class Tensor:
     ):
         from .autograd_ops import CTCLoss
 
-        return CTCLoss.apply(self, targets, blank, input_lengths, target_lengths, reduction)
+        return CTCLoss.apply(
+            self, targets, blank, input_lengths, target_lengths, reduction
+        )
 
     def conv1d(self, kernel, stride=1, padding=0):
         from .autograd_ops import Conv1d

@@ -138,6 +138,37 @@ def test_rmsnorm_grad_finite_difference():
     )
 
 
+def test_permute_is_differentiable():
+    x = Tensor(np.random.randn(2, 3, 4).astype("float32"))
+    x.requires_grad_(True)
+    y = x.permute(2, 0, 1)
+    assert y.shape == (4, 2, 3)
+    assert y.requires_grad
+    (y * y).sum().backward()
+    assert np.allclose(x.grad.data, 2 * x.data, atol=1e-4)
+
+
+def test_pixel_shuffle_forward_matches_reference():
+    ps = nn.PixelShuffle(2)
+    xd = np.random.randn(2, 8, 4, 4).astype("float32")
+    y = ps(Tensor(xd))
+    ref = xd.reshape(2, 2, 2, 2, 4, 4).transpose(0, 1, 4, 2, 5, 3).reshape(2, 2, 8, 8)
+    assert y.shape == (2, 2, 8, 8)
+    assert np.allclose(y.data, ref)
+
+
+def test_pixel_shuffle_is_differentiable_and_roundtrips():
+    ps = nn.PixelShuffle(2)
+    pus = nn.PixelUnshuffle(2)
+    x = Tensor(np.random.randn(1, 8, 4, 4).astype("float32"))
+    x.requires_grad_(True)
+    y = ps(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert np.allclose(x.grad.data, 1.0)
+    assert np.allclose(pus(ps(Tensor(x.data))).data, x.data)
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

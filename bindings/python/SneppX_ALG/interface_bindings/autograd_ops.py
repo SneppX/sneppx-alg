@@ -1125,6 +1125,22 @@ class Transpose(Function):
         return [Tensor(grad_output.data.swapaxes(dim1, dim2), dtype=grad_output.dtype)]
 
 
+class Permute(Function):
+    @staticmethod
+    def forward(ctx, a, dims):
+        dims = tuple(int(d) for d in dims)
+        ctx.save_attr(dims=dims)
+        return Tensor(np.transpose(a.data, dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dims = ctx.get_attr("dims")
+        inv = tuple(int(i) for i in np.argsort(dims))
+        if create_graph:
+            return [Permute.apply(grad_output, inv)]
+        return [Tensor(np.transpose(grad_output.data, inv), dtype=grad_output.dtype)]
+
+
 class Expand(Function):
     @staticmethod
     def forward(ctx, a, shape):
