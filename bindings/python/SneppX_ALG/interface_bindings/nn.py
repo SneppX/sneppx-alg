@@ -1623,13 +1623,9 @@ class Bilinear(Module):
         self.bias = Tensor.zeros((out_features,), dtype=dtype) if bias else None
 
     def forward(self, input1: Tensor, input2: Tensor) -> Tensor:
-        x1 = input1.data
-        x2 = input2.data
-        w = self.weight.data
-        out = np.einsum("bi,bj,kij->bk", x1, x2, w)
-        if self.bias is not None:
-            out = out + self.bias.data
-        return Tensor(out, dtype=input1.dtype_name, device=input1.device)
+        from .autograd_ops import BilinearFn
+
+        return BilinearFn.apply(input1, input2, self.weight, self.bias)
 
 
 # ===========================================================================

@@ -2012,6 +2012,40 @@ class ConvTransposeNd(Function):
         ]
 
 
+class BilinearFn(Function):
+    """Differentiable bilinear layer: out[b,k] = sum_ij x1[b,i] x2[b,j] W[k,i,j] + b[k]."""
+
+    @staticmethod
+    def forward(ctx, input1, input2, weight, bias=None):
+        x1 = np.asarray(input1.data, dtype=np.float64)
+        x2 = np.asarray(input2.data, dtype=np.float64)
+        w = np.asarray(weight.data, dtype=np.float64)
+        out = np.einsum("bi,bj,kij->bk", x1, x2, w)
+        if bias is not None:
+            out = out + np.asarray(bias.data, dtype=np.float64)
+        ctx.save_for_backward(input1=input1, input2=input2, weight=weight)
+        ctx.save_attr(has_bias=bias is not None)
+        return Tensor(out, dtype=input1.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x1 = np.asarray(ctx.get_saved_tensor("input1").data, dtype=np.float64)
+        x2 = np.asarray(ctx.get_saved_tensor("input2").data, dtype=np.float64)
+        w = np.asarray(ctx.get_saved_tensor("weight").data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gx1 = np.einsum("bk,kij,bj->bi", g, w, x2)
+        gx2 = np.einsum("bk,kij,bi->bj", g, w, x1)
+        gw = np.einsum("bk,bi,bj->kij", g, x1, x2)
+        has_bias = ctx.get_attr("has_bias")
+        gb = g.sum(axis=0) if has_bias else None
+        return [
+            Tensor(gx1, dtype=grad_output.dtype),
+            Tensor(gx2, dtype=grad_output.dtype),
+            Tensor(gw, dtype=grad_output.dtype),
+            Tensor(gb, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
 class MaxPool2d(Function):
     @staticmethod
     def forward(ctx, inp, kernel_h, kernel_w, stride_h=None, stride_w=None):

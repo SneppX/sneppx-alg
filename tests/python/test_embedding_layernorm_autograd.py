@@ -15,6 +15,8 @@ sys.path.insert(
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import nn
+from SneppX_ALG.interface_bindings import autograd_ops as ops
+from tests.python.test_autograd_correctness import numerical_grads
 
 
 def test_embedding_is_differentiable():
@@ -189,6 +191,47 @@ def test_upsample_nearest_forward_matches_reference():
     y = u(Tensor(xd))
     ref = _zoom_nn(xd, (8, 10))
     assert np.allclose(y.data, ref)
+
+
+def test_bilinear_is_differentiable():
+    np.random.seed(5)
+    x1 = Tensor((np.random.randn(2, 4) * 0.3).astype("float32"))
+    x2 = Tensor((np.random.randn(2, 4) * 0.3).astype("float32"))
+    for t in (x1, x2):
+        t.requires_grad_(True)
+        t.grad = None
+    m = nn.Bilinear(4, 4, 3)
+    y = m(x1, x2)
+    assert y.shape == (2, 3)
+    assert y.requires_grad
+    (y * y).sum().backward()
+    assert x1.grad is not None
+    assert x2.grad is not None
+    assert m.weight.grad is not None
+    assert m.bias.grad is not None
+    ref = np.einsum("bi,bj,kij->bk", x1.data, x2.data, m.weight.data) + m.bias.data
+    assert np.allclose(y.data, ref, atol=1e-5)
+
+
+def test_bilinear_grad_matches_numeric():
+    np.random.seed(7)
+    x1 = Tensor((np.random.randn(2, 3) * 0.3).astype("float32"))
+    x2 = Tensor((np.random.randn(2, 3) * 0.3).astype("float32"))
+    w = Tensor((np.random.randn(2, 3, 3) * 0.3).astype("float32"))
+    b = Tensor((np.random.randn(2) * 0.3).astype("float32"))
+    for t in (x1, x2, w, b):
+        t.requires_grad_(True)
+        t.grad = None
+
+    def f(I):
+        y = ops.BilinearFn.apply(I[0], I[1], I[2], I[3])
+        return (y * y).sum()
+
+    f([x1, x2, w, b]).backward()
+    analytic = [t.grad.data.copy() for t in (x1, x2, w, b)]
+    numeric = numerical_grads(f, [x1, x2, w, b])
+    for a, n in zip(analytic, numeric):
+        assert np.allclose(a, n, atol=1e-2, rtol=1e-2)
 
 
 def test_adaptive_avg_pool1d_is_differentiable_and_matches_reference():
