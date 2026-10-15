@@ -1436,6 +1436,81 @@ class UpsampleBilinearFn(Function):
         return [Tensor(gi, dtype=grad_output.dtype)]
 
 
+class UpsampleLinearNdFn(Function):
+    """Differentiable N-D multilinear upsampling (torch align_corners semantics).
+
+    Generalizes bilinear (2-D) / trilinear (3-D) resampling to any spatial rank.
+    """
+
+    @staticmethod
+    def forward(ctx, a, size, align_corners=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        nd = len(size)
+        in_sp = x.shape[-nd:]
+        out_sp = tuple(int(s) for s in size)
+        coords = [
+            _bilinear_coords(in_sp[k], out_sp[k], align_corners) for k in range(nd)
+        ]
+        idx0 = [np.array([c[0] for c in coords[k]]) for k in range(nd)]
+        idx1 = [np.array([c[1] for c in coords[k]]) for k in range(nd)]
+        w0 = [np.array([c[2] for c in coords[k]]) for k in range(nd)]
+        w1 = [np.array([c[3] for c in coords[k]]) for k in range(nd)]
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + out_sp, dtype=np.float64)
+        for corner in itertools.product((0, 1), repeat=nd):
+            sel = []
+            wgt = np.ones(out_sp, dtype=np.float64)
+            for k in range(nd):
+                shape = [1] * nd
+                shape[k] = out_sp[k]
+                sel.append((idx1 if corner[k] else idx0)[k].reshape(shape))
+                wgt = wgt * (w1 if corner[k] else w0)[k].reshape(shape)
+            out += x[lead_sl + tuple(sel)] * wgt
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(
+            idx0=idx0,
+            idx1=idx1,
+            w0=w0,
+            w1=w1,
+            nd=nd,
+            in_shape=x.shape,
+            out_sp=out_sp,
+        )
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        idx0 = ctx.get_attr("idx0")
+        idx1 = ctx.get_attr("idx1")
+        w0 = ctx.get_attr("w0")
+        w1 = ctx.get_attr("w1")
+        nd = ctx.get_attr("nd")
+        out_sp = ctx.get_attr("out_sp")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        lead = g.shape[:-nd]
+        nlead = len(lead)
+        total_nd = nlead + nd
+        gi = np.zeros(a.data.shape, dtype=np.float64)
+        lead_idx = []
+        for k in range(nlead):
+            shape = [1] * total_nd
+            shape[k] = lead[k]
+            lead_idx.append(np.broadcast_to(np.arange(lead[k]).reshape(shape), g.shape))
+        for corner in itertools.product((0, 1), repeat=nd):
+            wgt = np.ones(g.shape, dtype=np.float64)
+            index = list(lead_idx)
+            for k in range(nd):
+                shape = [1] * total_nd
+                shape[nlead + k] = out_sp[k]
+                wgt = wgt * (w1 if corner[k] else w0)[k].reshape(shape)
+                sel = (idx1 if corner[k] else idx0)[k].reshape(shape)
+                index.append(np.broadcast_to(sel, g.shape))
+            np.add.at(gi, tuple(index), g * wgt)
+        return [Tensor(gi, dtype=grad_output.dtype)]
+
+
 class AdaptiveAvgPoolFn(Function):
     """Adaptive average pooling over trailing spatial dims (differentiable).
 

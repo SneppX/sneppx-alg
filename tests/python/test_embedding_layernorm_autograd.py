@@ -263,6 +263,41 @@ def test_fold_is_differentiable_and_matches_reference():
     assert np.allclose(x.grad.data, num[0], atol=1e-2, rtol=1e-2)
 
 
+def test_upsample_linear_nd_matches_bilinear_2d():
+    from SneppX_ALG.interface_bindings.autograd_ops import (
+        UpsampleBilinearFn,
+        UpsampleLinearNdFn,
+    )
+
+    np.random.seed(61)
+    x0 = np.random.randn(2, 3, 5, 7).astype("float32")
+    for ac in (False, True):
+        g = Tensor(x0)
+        g.requires_grad_(True)
+        UpsampleLinearNdFn.apply(g, (9, 11), ac).backward(
+            np.ones((2, 3, 9, 11), dtype="float32")
+        )
+        b = Tensor(x0)
+        b.requires_grad_(True)
+        UpsampleBilinearFn.apply(b, (9, 11), ac).backward(
+            np.ones((2, 3, 9, 11), dtype="float32")
+        )
+        assert np.allclose(g.grad.data, b.grad.data, atol=1e-5)
+
+
+def test_upsample_trilinear_is_differentiable():
+    np.random.seed(63)
+    x0 = (np.random.randn(1, 2, 4, 5, 6) * 0.5).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = nn.Upsample(size=(8, 10, 12), mode="trilinear")(x)
+    assert y.shape == (1, 2, 8, 10, 12)
+    assert y.requires_grad
+    # corner input (0,0,0,0,0) gradient for sum(y) = 2*2*2 = 8 (scale-2x axes)
+    y.backward(np.ones((1, 2, 8, 10, 12), dtype="float32"))
+    assert np.isclose(float(x.grad.data[0, 0, 0, 0, 0]), 8.0, atol=1e-4)
+
+
 def test_max_unpool2d_is_differentiable():
     np.random.seed(57)
     x0 = (np.random.randn(1, 2, 2, 2) * 0.5).astype("float32")

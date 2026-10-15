@@ -2904,11 +2904,11 @@ class Upsample(Module):
         else:
             target = spatial
         scales = tuple(t / s for s, t in zip(spatial, target))
-        if self.mode == "bilinear":
-            if ndim == 2:
-                from .autograd_ops import UpsampleBilinearFn
+        if self.mode in ("bilinear", "trilinear"):
+            if ndim in (2, 3):
+                from .autograd_ops import UpsampleLinearNdFn
 
-                return UpsampleBilinearFn.apply(x, target, bool(self.align_corners))
+                return UpsampleLinearNdFn.apply(x, target, bool(self.align_corners))
             from scipy.ndimage import zoom
 
             out = zoom(xd, (1.0, 1.0) + scales, order=1, mode="nearest")
