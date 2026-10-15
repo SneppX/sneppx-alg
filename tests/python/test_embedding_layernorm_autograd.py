@@ -193,6 +193,37 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def test_upsample_bilinear_is_differentiable():
+    np.random.seed(31)
+    x = Tensor((np.random.randn(2, 3, 4, 4) * 0.3).astype("float32"))
+    x.requires_grad_(True)
+    u = nn.Upsample(size=(8, 8), mode="bilinear")
+    y = u(x)
+    assert y.shape == (2, 3, 8, 8)
+    assert y.requires_grad
+    y.sum().backward()
+    assert x.grad is not None
+    assert np.isclose(x.grad.data.sum(), float(y.numel), atol=1e-3)
+
+
+def test_upsample_bilinear_grad_matches_numeric():
+    np.random.seed(33)
+    for ac in (False, True):
+        x0 = (np.random.randn(1, 2, 4, 4) * 0.3).astype("float32")
+        x = Tensor(x0)
+        x.requires_grad_(True)
+        u = nn.Upsample(size=(7, 5), mode="bilinear", align_corners=ac)
+
+        def f(I):
+            return (u(I[0]) * u(I[0])).sum()
+
+        f([x]).backward()
+        num = numerical_grads(f, [x])
+        assert np.allclose(x.grad.data, num[0], atol=1e-2, rtol=1e-2), (
+            f"align_corners={ac} max|diff|={np.max(np.abs(x.grad.data - num[0])):.3e}"
+        )
+
+
 def test_adaptive_max_pool2d_is_differentiable_and_matches_reference():
     from SneppX_ALG.interface_bindings.advanced_ops import adaptive_max_pool2d as ref
 

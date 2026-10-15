@@ -1183,6 +1183,88 @@ class UpsampleNearestFn(Function):
         return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
 
 
+def _bilinear_coords(in_size, out_size, align_corners):
+    """Per-output-pixel bilinear source indices/weights (torch semantics)."""
+    if align_corners:
+        if out_size == 1:
+            src = [0.0]
+        else:
+            src = [i * (in_size - 1) / (out_size - 1) for i in range(out_size)]
+    else:
+        src = [(i + 0.5) * in_size / out_size - 0.5 for i in range(out_size)]
+        src = [max(0.0, s) for s in src]
+    out = []
+    for s in src:
+        i0 = int(np.floor(s))
+        if i0 > in_size - 1:
+            i0 = in_size - 1
+        i1 = min(i0 + 1, in_size - 1)
+        w1 = s - i0
+        out.append((i0, i1, 1.0 - w1, w1))
+    return out
+
+
+class UpsampleBilinearFn(Function):
+    """Differentiable 2-D bilinear upsampling (NCHW, torch align_corners semantics)."""
+
+    @staticmethod
+    def forward(ctx, a, size, align_corners=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        H, W = x.shape[-2], x.shape[-1]
+        Ho, Wo = int(size[0]), int(size[1])
+        cy = _bilinear_coords(H, Ho, align_corners)
+        cx = _bilinear_coords(W, Wo, align_corners)
+        y0 = np.array([c[0] for c in cy])
+        y1 = np.array([c[1] for c in cy])
+        wy0 = np.array([c[2] for c in cy])
+        wy1 = np.array([c[3] for c in cy])
+        x0 = np.array([c[0] for c in cx])
+        x1 = np.array([c[1] for c in cx])
+        wx0 = np.array([c[2] for c in cx])
+        wx1 = np.array([c[3] for c in cx])
+        top = (
+            x[:, :, y0][:, :, :, x0] * wx0[None, None, None, :]
+            + x[:, :, y0][:, :, :, x1] * wx1[None, None, None, :]
+        )
+        bot = (
+            x[:, :, y1][:, :, :, x0] * wx0[None, None, None, :]
+            + x[:, :, y1][:, :, :, x1] * wx1[None, None, None, :]
+        )
+        out = top * wy0[None, None, :, None] + bot * wy1[None, None, :, None]
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(y0=y0, y1=y1, wy0=wy0, wy1=wy1, x0=x0, x1=x1, wx0=wx0, wx1=wx1)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        y0 = ctx.get_attr("y0")
+        y1 = ctx.get_attr("y1")
+        wy0 = ctx.get_attr("wy0")
+        wy1 = ctx.get_attr("wy1")
+        x0 = ctx.get_attr("x0")
+        x1 = ctx.get_attr("x1")
+        wx0 = ctx.get_attr("wx0")
+        wx1 = ctx.get_attr("wx1")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        N, C = g.shape[0], g.shape[1]
+        gi = np.zeros(a.data.shape, dtype=np.float64)
+        nidx = np.broadcast_to(np.arange(N)[:, None, None, None], g.shape)
+        cidx = np.broadcast_to(np.arange(C)[None, :, None, None], g.shape)
+
+        def _scatter(rows, cols, wr, wc):
+            ridx = np.broadcast_to(rows[None, None, :, None], g.shape)
+            cidx2 = np.broadcast_to(cols[None, None, None, :], g.shape)
+            contrib = g * wr[None, None, :, None] * wc[None, None, None, :]
+            np.add.at(gi, (nidx, cidx, ridx, cidx2), contrib)
+
+        _scatter(y0, x0, wy0, wx0)
+        _scatter(y0, x1, wy0, wx1)
+        _scatter(y1, x0, wy1, wx0)
+        _scatter(y1, x1, wy1, wx1)
+        return [Tensor(gi, dtype=grad_output.dtype)]
+
+
 class AdaptiveAvgPoolFn(Function):
     """Adaptive average pooling over trailing spatial dims (differentiable).
 
