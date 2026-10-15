@@ -2529,11 +2529,7 @@ class LeakyReLU(Module):
         if self.inplace:
             x.data = np.maximum(x.data * self.negative_slope, x.data)
             return x
-        return Tensor(
-            np.maximum(x.data * self.negative_slope, x.data),
-            dtype=x.dtype_name,
-            device=x.device,
-        )
+        return x.leaky_relu(self.negative_slope)
 
 
 class PReLU(Module):
@@ -2542,11 +2538,9 @@ class PReLU(Module):
         self.weight = Tensor.full((num_parameters,), init)
 
     def forward(self, x: Tensor) -> Tensor:
-        return Tensor(
-            np.maximum(x.data, self.weight.data * x.data),
-            dtype=x.dtype_name,
-            device=x.device,
-        )
+        from .autograd_ops import PReluFn
+
+        return PReluFn.apply(x, self.weight)
 
 
 class ELU(Module):
@@ -2555,11 +2549,7 @@ class ELU(Module):
         self.alpha = alpha
 
     def forward(self, x: Tensor) -> Tensor:
-        return Tensor(
-            np.where(x.data > 0, x.data, self.alpha * (np.exp(x.data) - 1)),
-            dtype=x.dtype_name,
-            device=x.device,
-        )
+        return x.elu(self.alpha)
 
 
 class Softmax(Module):
@@ -2699,22 +2689,21 @@ class RReLU(Module):
         self.inplace = inplace
 
     def forward(self, x: Tensor) -> Tensor:
-        if not self._training:
-            slope = (self.lower + self.upper) / 2.0
-            return x.leaky_relu(slope)
         xd = x.data
-        mask = (
-            np.random.uniform(self.lower, self.upper, xd.shape).astype(xd.dtype)
-        ) * (xd < 0).astype(xd.dtype)
-        out = xd * (xd >= 0).astype(xd.dtype) + mask * xd
-        return Tensor(out, dtype=x.dtype_name, device=x.device)
+        if self._training:
+            slope = np.random.uniform(self.lower, self.upper, xd.shape).astype(xd.dtype)
+        else:
+            slope = np.full(xd.shape, (self.lower + self.upper) / 2.0, dtype=xd.dtype)
+        # positive side slope 1, negative side sampled slope -> y = x * c (differentiable)
+        c = np.where(xd >= 0, np.float32(1.0), slope).astype(xd.dtype)
+        return x * Tensor(c, dtype=x.dtype_name, device=x.device)
 
 
 class LogSigmoid(Module):
     def forward(self, x: Tensor) -> Tensor:
-        xd = x.data
-        out = -np.log1p(np.exp(-np.abs(xd))) + np.minimum(xd, 0)
-        return Tensor(out, dtype=x.dtype_name, device=x.device)
+        from .autograd_ops import LogSigmoidFn
+
+        return LogSigmoidFn.apply(x)
 
 
 class CosineEmbeddingLoss(_Loss):

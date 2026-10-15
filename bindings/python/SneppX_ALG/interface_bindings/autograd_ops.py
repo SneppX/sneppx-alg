@@ -2434,6 +2434,58 @@ class MaxUnpoolFn(Function):
         return [Tensor(gx, dtype=grad_output.dtype), None]
 
 
+class PReluFn(Function):
+    """Differentiable PReLU: ``y = x where x >= w*x else w*x`` (trailing-broadcast weight)."""
+
+    @staticmethod
+    def forward(ctx, a, w):
+        x = np.asarray(a.data, dtype=np.float64)
+        wv = np.asarray(w.data, dtype=np.float64)
+        wexp = wv * x
+        mask_x = x >= wexp
+        out = np.where(mask_x, x, wexp)
+        ctx.save_attr(mask_x=mask_x, x=x, wv=wv)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask_x = ctx.get_attr("mask_x")
+        x = ctx.get_attr("x")
+        wv = ctx.get_attr("wv")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gx = g * np.where(mask_x, 1.0, wv)
+        gw = g * np.where(mask_x, 0.0, x)
+        nlead = x.ndim - wv.ndim
+        if nlead > 0:
+            gw = gw.sum(axis=tuple(range(nlead)))
+        rax = [j for j in range(wv.ndim) if wv.shape[j] == 1 and gw.shape[j] > 1]
+        if rax:
+            gw = gw.sum(axis=tuple(rax), keepdims=True)
+        gw = gw.reshape(wv.shape)
+        return [
+            Tensor(gx, dtype=grad_output.dtype),
+            Tensor(gw, dtype=grad_output.dtype),
+        ]
+
+
+class LogSigmoidFn(Function):
+    """Differentiable log-sigmoid: ``log(sigmoid(x)) = -log1p(exp(-|x|)) + min(x,0)``."""
+
+    @staticmethod
+    def forward(ctx, a):
+        x = np.asarray(a.data, dtype=np.float64)
+        out = -np.log1p(np.exp(-np.abs(x))) + np.minimum(x, 0.0)
+        ctx.save_attr(x=x)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = ctx.get_attr("x")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        sig_neg = 1.0 / (1.0 + np.exp(x))
+        return [Tensor(g * sig_neg, dtype=grad_output.dtype)]
+
+
 class BilinearFn(Function):
     """Differentiable bilinear layer: out[b,k] = sum_ij x1[b,i] x2[b,j] W[k,i,j] + b[k]."""
 
