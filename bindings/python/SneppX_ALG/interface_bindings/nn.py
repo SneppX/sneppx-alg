@@ -2793,15 +2793,12 @@ class CosineSimilarity(Module):
         self.eps = eps
 
     def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
-        a = x1.data.astype(np.float64)
-        b = x2.data.astype(np.float64)
-        dim = self.dim % a.ndim
-        num = (a * b).sum(axis=dim)
-        den = np.sqrt((a * a).sum(axis=dim) + self.eps) * np.sqrt(
-            (b * b).sum(axis=dim) + self.eps
-        )
-        out = num / np.maximum(den, self.eps)
-        return Tensor(out.astype(np.float32), dtype=x1.dtype, device=x1.device)
+        dim = self.dim % len(x1.shape)
+        num = (x1 * x2).sum(dim)
+        den = ((x1 * x1).sum(dim) + self.eps).sqrt() * (
+            (x2 * x2).sum(dim) + self.eps
+        ).sqrt()
+        return num / den.clamp_min(self.eps)
 
 
 class PairwiseDistance(Module):
@@ -2814,18 +2811,16 @@ class PairwiseDistance(Module):
         self.keepdim = keepdim
 
     def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
-        a = x1.data.astype(np.float64)
-        b = x2.data.astype(np.float64)
-        d = a - b
+        d = x1 - x2
         if self.p == 2.0:
-            out = np.sqrt((d * d).sum(axis=-1) + self.eps)
+            out = ((d * d).sum(-1) + self.eps).sqrt()
         elif self.p == 1.0:
-            out = np.abs(d).sum(axis=-1)
+            out = d.abs().sum(-1)
         else:
-            out = np.power(np.abs(d).sum(axis=-1) + self.eps, 1.0 / self.p)
+            out = (d.abs().sum(-1) + self.eps) ** (1.0 / self.p)
         if self.keepdim:
-            out = out[..., None]
-        return Tensor(out.astype(np.float32), dtype=x1.dtype, device=x1.device)
+            out = out.unsqueeze(-1)
+        return out
 
 
 class ChannelShuffle(Module):
@@ -2836,14 +2831,11 @@ class ChannelShuffle(Module):
         self.groups = groups
 
     def forward(self, x: Tensor) -> Tensor:
-        xd = x.data
-        n, c, *spatial = xd.shape
+        n, c, *spatial = x.shape
         cgh = c // self.groups
-        out = xd.reshape(n, self.groups, cgh, *spatial).transpose(
-            0, 2, 1, *range(3, 3 + len(spatial))
-        )
-        out = out.reshape(n, c, *spatial)
-        return Tensor(out, dtype=x.dtype, device=x.device)
+        out = x.reshape(n, self.groups, cgh, *spatial)
+        out = out.permute(0, 2, 1, *range(3, 3 + len(spatial)))
+        return out.reshape(n, c, *spatial)
 
 
 class PixelShuffle(Module):

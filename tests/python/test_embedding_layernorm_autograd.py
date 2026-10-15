@@ -193,6 +193,45 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def test_channel_shuffle_is_differentiable():
+    np.random.seed(41)
+    x = Tensor(np.random.randn(2, 4, 3, 3).astype("float32"))
+    x.requires_grad_(True)
+    y = nn.ChannelShuffle(2)(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert x.grad is not None
+    assert np.isclose(x.grad.data.sum(), float(y.numel))
+
+
+def test_pairwise_distance_is_differentiable():
+    np.random.seed(43)
+    x1 = Tensor(np.random.randn(4, 8).astype("float32"))
+    x2 = Tensor(np.random.randn(4, 8).astype("float32"))
+    for t in (x1, x2):
+        t.requires_grad_(True)
+        t.grad = None
+    for p in (2.0, 1.0, 3.0):
+        x1.grad = None
+        x2.grad = None
+        y = nn.PairwiseDistance(p=p)(x1, x2)
+        y.sum().backward()
+        assert x1.grad is not None and x2.grad is not None
+
+
+def test_cosine_similarity_is_differentiable():
+    np.random.seed(45)
+    x1 = Tensor(np.random.randn(4, 8).astype("float32"))
+    x2 = Tensor(np.random.randn(4, 8).astype("float32"))
+    for t in (x1, x2):
+        t.requires_grad_(True)
+        t.grad = None
+    y = nn.CosineSimilarity()(x1, x2)
+    assert y.requires_grad
+    y.sum().backward()
+    assert x1.grad is not None and x2.grad is not None
+
+
 def test_upsample_bilinear_is_differentiable():
     np.random.seed(31)
     x = Tensor((np.random.randn(2, 3, 4, 4) * 0.3).astype("float32"))
