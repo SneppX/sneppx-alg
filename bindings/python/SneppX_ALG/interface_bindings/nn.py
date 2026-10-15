@@ -274,9 +274,9 @@ class Embedding(Module):
         self.weight = Tensor.randn((num_embeddings, embedding_dim), dtype=dtype) * 0.01
 
     def forward(self, indices: Tensor) -> Tensor:
-        idx = indices.data.astype(np.int64)
-        w = self.weight.data
-        return Tensor.from_numpy(w[idx])
+        from .autograd_ops import EmbeddingFn
+
+        return EmbeddingFn.apply(self.weight, indices)
 
 
 class Dropout(Module):
@@ -339,6 +339,10 @@ class LayerNorm(Module):
                 self.eps,
             )
             return Tensor(out_data, dtype=x.dtype_name, device=x.device)
+        if self.elementwise_affine and len(self.normalized_shape) == 1:
+            from .autograd_ops import LayerNorm as _LayerNormFn
+
+            return _LayerNormFn.apply(x, self.weight, self.bias, self.eps)
         arr = x.data
         axis = tuple(range(-len(self.normalized_shape), 0))
         mean = arr.mean(axis=axis, keepdims=True)
