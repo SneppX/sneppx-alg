@@ -2012,6 +2012,72 @@ class ConvTransposeNd(Function):
         ]
 
 
+class AdaptiveMaxPoolFn(Function):
+    """Adaptive max pooling over trailing spatial dims (differentiable).
+
+    Bin scheme matches ``AdaptiveAvgPoolFn``: floor bins (``use_ceil=False``)
+    for the 2-D reference, ceil bins (``use_ceil=True``) for 1d/3d. Gradient
+    is routed to the first arg-max element of each bin.
+    """
+
+    @staticmethod
+    def forward(ctx, a, output_size, use_ceil=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        output_size = tuple(int(o) for o in output_size)
+        nd = len(output_size)
+        in_sp = x.shape[-nd:]
+        ranges = []
+        for H, O in zip(in_sp, output_size):
+            if use_ceil:
+                bins = [(i * H // O, -((-(i + 1) * H) // O)) for i in range(O)]
+            else:
+                bins = [(i * H // O, (i + 1) * H // O) for i in range(O)]
+            ranges.append(bins)
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + output_size, dtype=np.float64)
+        for idx in itertools.product(*[range(o) for o in output_size]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            win = x[lead_sl + sl]
+            if win.size and all(s.stop > s.start for s in sl):
+                out[lead_sl + idx] = win.max(axis=tuple(range(len(lead), x.ndim)))
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(ranges=ranges, nd=nd, use_ceil=use_ceil)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        ranges = ctx.get_attr("ranges")
+        nd = ctx.get_attr("nd")
+        x = np.asarray(a.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        osz = tuple(len(ranges[k]) for k in range(nd))
+        nlead = x.ndim - nd
+        lead_shape = x.shape[:nlead]
+        lead_idx = np.indices(lead_shape) if nlead else None
+        gx = np.zeros(x.shape, dtype=np.float64)
+        for idx in itertools.product(*[range(o) for o in osz]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            if any(s.stop <= s.start for s in sl):
+                continue
+            win = x[(slice(None),) * nlead + sl]
+            binshape = win.shape[nlead:]
+            flat = win.reshape(lead_shape + (-1,))
+            arg = flat.argmax(axis=-1)
+            unrav = np.unravel_index(arg, binshape)
+            gv = g[(slice(None),) * nlead + idx]
+            index = tuple(lead_idx[k] for k in range(nlead)) + tuple(
+                sl[k].start + unrav[k] for k in range(nd)
+            )
+            np.add.at(gx, index, gv)
+        return [Tensor(gx, dtype=grad_output.dtype)]
+
+
 class BilinearFn(Function):
     """Differentiable bilinear layer: out[b,k] = sum_ij x1[b,i] x2[b,j] W[k,i,j] + b[k]."""
 

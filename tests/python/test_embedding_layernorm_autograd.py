@@ -193,6 +193,39 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def test_adaptive_max_pool2d_is_differentiable_and_matches_reference():
+    from SneppX_ALG.interface_bindings.advanced_ops import adaptive_max_pool2d as ref
+
+    xd = np.random.randn(2, 3, 6, 6).astype("float32")
+    for osz in [(1, 1), (2, 2), (2, 3), (3, 3)]:
+        y = nn.AdaptiveMaxPool2d(osz)(Tensor(xd))
+        assert np.allclose(y.data, ref(Tensor(xd), osz).data, atol=1e-5)
+    x = Tensor(xd)
+    x.requires_grad_(True)
+    y = nn.AdaptiveMaxPool2d((2, 2))(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert x.grad is not None
+    assert np.isclose(x.grad.data.sum(), float(y.numel))
+
+
+def test_adaptive_max_pool1d_3d_are_differentiable():
+    x1 = Tensor(np.random.randn(2, 3, 7).astype("float32"))
+    x1.requires_grad_(True)
+    y1 = nn.AdaptiveMaxPool1d(3)(x1)
+    assert y1.requires_grad
+    y1.sum().backward()
+    assert x1.grad is not None
+
+    x3 = Tensor(np.random.randn(1, 2, 5, 6, 7).astype("float32"))
+    x3.requires_grad_(True)
+    y3 = nn.AdaptiveMaxPool3d((2, 3, 3))(x3)
+    assert y3.shape == (1, 2, 2, 3, 3)
+    assert y3.requires_grad
+    y3.sum().backward()
+    assert x3.grad is not None
+
+
 def test_bilinear_is_differentiable():
     np.random.seed(5)
     x1 = Tensor((np.random.randn(2, 4) * 0.3).astype("float32"))
