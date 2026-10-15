@@ -95,6 +95,49 @@ def test_layernorm_grad_finite_difference():
     )
 
 
+def test_rmsnorm_is_differentiable():
+    rn = nn.RMSNorm(8)
+    x = Tensor(np.random.randn(2, 5, 8).astype("float32"))
+    x.requires_grad_(True)
+    y = rn(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert rn.weight.grad is not None
+    assert x.grad is not None
+
+
+def test_rmsnorm_grad_finite_difference():
+    np.random.seed(9)
+    rn = nn.RMSNorm(6, eps=1e-6)
+    x = Tensor((np.random.randn(2, 4, 6) * 0.5).astype("float32"))
+    x.requires_grad_(True)
+    (rn(x) * rn(x)).sum().backward()
+    ana = np.asarray(x.grad.data, np.float64).copy()
+
+    x0 = np.asarray(x.data, np.float64).copy()
+    w = np.asarray(rn.weight.data, np.float64)
+    eps = 1e-3
+
+    def loss(xv):
+        arr = xv.astype(np.float64)
+        rms = np.sqrt((arr**2).mean(-1, keepdims=True) + 1e-6)
+        out = arr / rms * w
+        return float((out * out).sum())
+
+    num = np.zeros_like(x0)
+    it = np.nditer(x0, flags=["multi_index"])
+    for _ in it:
+        i = it.multi_index
+        xp = x0.copy()
+        xp[i] += eps
+        xm = x0.copy()
+        xm[i] -= eps
+        num[i] = (loss(xp) - loss(xm)) / (2 * eps)
+    assert np.allclose(ana, num, atol=1e-2, rtol=1e-2), (
+        f"rmsnorm input grad mismatch max|diff|={np.max(np.abs(ana - num)):.3e}"
+    )
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

@@ -655,9 +655,9 @@ class RMSNorm(Module):
             out_data = np.empty_like(x.data)
             rmsnorm_kernel(x.data, self.weight.data, out_data, (self.dim,), self.eps)
             return Tensor(out_data, dtype=x.dtype_name, device=x.device)
-        arr = x.data
-        rms = np.sqrt((arr**2).mean(axis=-1, keepdims=True) + self.eps)
-        return Tensor(arr / rms * self.weight.data, dtype=x.dtype_name, device=x.device)
+        from .autograd_ops import RMSNorm as _RMSNormFn
+
+        return _RMSNormFn.apply(x, self.weight, self.eps)
 
 
 class GELU(Module):
