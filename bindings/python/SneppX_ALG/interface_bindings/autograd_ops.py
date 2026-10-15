@@ -1191,14 +1191,18 @@ class AdaptiveAvgPoolFn(Function):
     """
 
     @staticmethod
-    def forward(ctx, a, output_size):
+    def forward(ctx, a, output_size, use_ceil=False):
         x = np.asarray(a.data, dtype=np.float64)
         output_size = tuple(int(o) for o in output_size)
         nd = len(output_size)
         in_sp = x.shape[-nd:]
         ranges = []
         for H, O in zip(in_sp, output_size):
-            ranges.append([(i * H // O, (i + 1) * H // O) for i in range(O)])
+            if use_ceil:
+                bins = [(i * H // O, -((-(i + 1) * H) // O)) for i in range(O)]
+            else:
+                bins = [(i * H // O, (i + 1) * H // O) for i in range(O)]
+            ranges.append(bins)
         lead = x.shape[:-nd]
         lead_sl = (slice(None),) * len(lead)
         out = np.zeros(lead + output_size, dtype=np.float64)

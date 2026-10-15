@@ -2055,15 +2055,9 @@ class AdaptiveAvgPool1d(Module):
         self.output_size = output_size
 
     def forward(self, x: Tensor) -> Tensor:
-        n, c, l = x.shape
-        out_l = self.output_size[0]
-        out = np.zeros((n, c, out_l), dtype=np.float32)
-        for i in range(out_l):
-            start = int(np.floor(i * l / out_l))
-            end = int(np.ceil((i + 1) * l / out_l))
-            if end > start:
-                out[:, :, i] = x.data[:, :, start:end].mean(axis=2).astype(np.float32)
-        return Tensor(out, dtype=x.dtype, device=x.device)
+        from .autograd_ops import AdaptiveAvgPoolFn
+
+        return AdaptiveAvgPoolFn.apply(x, tuple(self.output_size), True)
 
 
 class AdaptiveAvgPool2d(Module):
@@ -2087,27 +2081,9 @@ class AdaptiveAvgPool3d(Module):
         self.output_size = output_size
 
     def forward(self, x: Tensor) -> Tensor:
-        n, c, d, h, w = x.shape
-        od, oh, ow = self.output_size
-        out = np.zeros((n, c, od, oh, ow), dtype=np.float32)
-        for i in range(od):
-            d0 = int(np.floor(i * d / od))
-            d1 = int(np.ceil((i + 1) * d / od))
-            for j in range(oh):
-                h0 = int(np.floor(j * h / oh))
-                h1 = int(np.ceil((j + 1) * h / oh))
-                for k in range(ow):
-                    w0 = int(np.floor(k * w / ow))
-                    w1 = int(np.ceil((k + 1) * w / ow))
-                    win = x.data[
-                        :,
-                        :,
-                        d0 : max(d1, d0 + 1),
-                        h0 : max(h1, h0 + 1),
-                        w0 : max(w1, w0 + 1),
-                    ]
-                    out[:, :, i, j, k] = win.mean(axis=(2, 3, 4)).astype(np.float32)
-        return Tensor(out, dtype=x.dtype, device=x.device)
+        from .autograd_ops import AdaptiveAvgPoolFn
+
+        return AdaptiveAvgPoolFn.apply(x, tuple(self.output_size), True)
 
 
 class AdaptiveMaxPool1d(Module):

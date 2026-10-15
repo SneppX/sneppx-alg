@@ -191,6 +191,38 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def test_adaptive_avg_pool1d_is_differentiable_and_matches_reference():
+    def ref(x, ol):
+        n, c, l = x.shape
+        out = np.zeros((n, c, ol))
+        for i in range(ol):
+            s = int(np.floor(i * l / ol))
+            e = int(np.ceil((i + 1) * l / ol))
+            if e > s:
+                out[:, :, i] = x[:, :, s:e].mean(axis=2)
+        return out
+
+    for l, ol in [(6, 2), (7, 3), (5, 4), (9, 2)]:
+        xd = np.random.randn(2, 3, l).astype("float32")
+        x = Tensor(xd)
+        x.requires_grad_(True)
+        y = nn.AdaptiveAvgPool1d(ol)(x)
+        assert np.allclose(y.data, ref(xd, ol), atol=1e-5)
+        assert y.requires_grad
+        y.sum().backward()
+        assert x.grad is not None
+
+
+def test_adaptive_avg_pool3d_is_differentiable():
+    x = Tensor(np.random.randn(1, 2, 5, 6, 7).astype("float32"))
+    x.requires_grad_(True)
+    y = nn.AdaptiveAvgPool3d((2, 3, 3))(x)
+    assert y.shape == (1, 2, 2, 3, 3)
+    assert y.requires_grad
+    y.sum().backward()
+    assert x.grad is not None
+
+
 def test_adaptive_avg_pool2d_is_differentiable():
     from SneppX_ALG.interface_bindings.advanced_ops import adaptive_avg_pool2d as ref
 
