@@ -2050,9 +2050,9 @@ class AdaptiveAvgPool2d(Module):
         self.output_size = output_size
 
     def forward(self, x: Tensor) -> Tensor:
-        from .advanced_ops import adaptive_avg_pool2d as _aap2d
+        from .autograd_ops import AdaptiveAvgPoolFn
 
-        return _aap2d(x, self.output_size)
+        return AdaptiveAvgPoolFn.apply(x, tuple(self.output_size))
 
 
 class AdaptiveAvgPool3d(Module):

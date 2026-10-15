@@ -191,6 +191,30 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def test_adaptive_avg_pool2d_is_differentiable():
+    from SneppX_ALG.interface_bindings.advanced_ops import adaptive_avg_pool2d as ref
+
+    m = nn.AdaptiveAvgPool2d((1, 1))
+    xd = np.random.randn(2, 3, 7, 7).astype("float32")
+    x = Tensor(xd)
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.shape == (2, 3, 1, 1)
+    assert y.requires_grad
+    assert np.allclose(y.data, ref(Tensor(xd), (1, 1)).data, atol=1e-6)
+    y.sum().backward()
+    assert np.allclose(x.grad.data, 1.0 / 49)
+
+
+def test_adaptive_avg_pool2d_forward_matches_advanced_ops():
+    from SneppX_ALG.interface_bindings.advanced_ops import adaptive_avg_pool2d as ref
+
+    xd = np.random.randn(2, 3, 5, 5).astype("float32")
+    for osz in [(1, 1), (2, 2), (2, 3)]:
+        y = nn.AdaptiveAvgPool2d(osz)(Tensor(xd))
+        assert np.allclose(y.data, ref(Tensor(xd), osz).data, atol=1e-6)
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

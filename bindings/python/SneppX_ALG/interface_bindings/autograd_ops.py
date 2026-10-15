@@ -6,6 +6,8 @@ backward(ctx, grad_output) -> list of gradients.
 Consumed by tensor.py via lazy imports inside the op methods.
 """
 
+import itertools
+
 import numpy as np
 
 from .tensor import Tensor, _numpy_dtype, _resolve_dtype
@@ -1179,6 +1181,61 @@ class UpsampleNearestFn(Function):
         for l in range(lead_size):
             np.add.at(gi_flat[l], src, g_flat[l])
         return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
+
+
+class AdaptiveAvgPoolFn(Function):
+    """Adaptive average pooling over trailing spatial dims (differentiable).
+
+    Uses the same floor-based bin scheme as ``advanced_ops.adaptive_avg_pool2d``
+    (``start = i*H//O``, ``end = (i+1)*H//O``) so the forward output is identical.
+    """
+
+    @staticmethod
+    def forward(ctx, a, output_size):
+        x = np.asarray(a.data, dtype=np.float64)
+        output_size = tuple(int(o) for o in output_size)
+        nd = len(output_size)
+        in_sp = x.shape[-nd:]
+        ranges = []
+        for H, O in zip(in_sp, output_size):
+            ranges.append([(i * H // O, (i + 1) * H // O) for i in range(O)])
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + output_size, dtype=np.float64)
+        for idx in itertools.product(*[range(o) for o in output_size]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            out[lead_sl + idx] = x[lead_sl + sl].mean(
+                axis=tuple(range(len(lead), x.ndim))
+            )
+        ctx.save_attr(ranges=ranges, nd=nd, in_shape=x.shape)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        ranges = ctx.get_attr("ranges")
+        nd = ctx.get_attr("nd")
+        in_shape = ctx.get_attr("in_shape")
+        osz = tuple(len(ranges[k]) for k in range(nd))
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gi = np.zeros(in_shape, dtype=np.float64)
+        lead_nd = len(in_shape) - nd
+        lead_sl = (slice(None),) * lead_nd
+        lead_shape = in_shape[:lead_nd]
+        for idx in itertools.product(*[range(o) for o in osz]):
+            sizes = tuple(
+                ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
+            )
+            area = int(np.prod(sizes))
+            if area == 0:
+                continue
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            gbin = g[lead_sl + idx].reshape(lead_shape + (1,) * nd)
+            gi[lead_sl + sl] += gbin / area
+        return [Tensor(gi, dtype=grad_output.dtype)]
 
 
 class Expand(Function):
