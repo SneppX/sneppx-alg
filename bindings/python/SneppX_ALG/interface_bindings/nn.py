@@ -3047,20 +3047,9 @@ class _MaxUnpoolNd(Module):
                 (s - 1) * st + k
                 for s, st, k in zip(in_sp, self.stride, self.kernel_size)
             )
-        out = np.zeros((N, C) + tuple(out_sp), dtype=np.float32)
-        # coordinate of every input cell expanded to (N,C,outmap...) then flatten per channel
-        idxf = idx.reshape(N, C, -1).astype(np.int64)
-        n_out = 1
-        for d in out_sp:
-            n_out *= d
-        for n in range(N):
-            for c in range(C):
-                flat = np.zeros(n_out, dtype=np.float32)
-                vals = xd[n, c].reshape(-1)
-                pos = idxf[n, c]
-                flat[pos] = vals
-                out[n, c] = flat.reshape(out_sp)
-        return Tensor(out, dtype=input.dtype, device=input.device)
+        from .autograd_ops import MaxUnpoolFn
+
+        return MaxUnpoolFn.apply(input, indices, tuple(out_sp))
 
 
 class MaxUnpool1d(_MaxUnpoolNd):

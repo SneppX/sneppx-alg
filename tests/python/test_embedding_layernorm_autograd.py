@@ -263,6 +263,24 @@ def test_fold_is_differentiable_and_matches_reference():
     assert np.allclose(x.grad.data, num[0], atol=1e-2, rtol=1e-2)
 
 
+def test_max_unpool2d_is_differentiable():
+    np.random.seed(57)
+    x0 = (np.random.randn(1, 2, 2, 2) * 0.5).astype("float32")
+    idx = np.array([[[[0, 5], [10, 15]], [[1, 6], [11, 12]]]], dtype=np.int64)
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = nn.MaxUnpool2d(2, stride=2)(x, Tensor(idx))
+    assert y.shape == (1, 2, 4, 4)
+    assert y.requires_grad
+    # forward: scatter input into flat output at idx
+    ref = np.zeros((1, 2, 4, 4))
+    for c in range(2):
+        ref[0, c].reshape(-1)[idx[0, c].reshape(-1)] = x0[0, c].reshape(-1)
+    assert np.allclose(y.data, ref)
+    y.sum().backward()
+    assert np.allclose(x.grad.data, np.ones_like(x0))
+
+
 def test_channel_shuffle_is_differentiable():
     np.random.seed(41)
     x = Tensor(np.random.randn(2, 4, 3, 3).astype("float32"))

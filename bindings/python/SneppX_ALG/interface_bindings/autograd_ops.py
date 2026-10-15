@@ -2331,6 +2331,34 @@ class AdaptiveMaxPoolFn(Function):
         return [Tensor(gx, dtype=grad_output.dtype)]
 
 
+class MaxUnpoolFn(Function):
+    """Differentiable max-unpool: scatter input into ``out_sp`` at flat ``indices``."""
+
+    @staticmethod
+    def forward(ctx, inp, indices, out_sp):
+        x = np.asarray(inp.data, dtype=np.float64)
+        N, C = x.shape[:2]
+        in_sp = x.shape[2:]
+        out_sp = tuple(int(s) for s in out_sp)
+        n_out = int(np.prod(out_sp)) if out_sp else 1
+        idxf = np.asarray(indices.data, dtype=np.int64).reshape(N, C, -1)
+        flat = np.zeros((N, C, n_out), dtype=np.float64)
+        np.put_along_axis(flat, idxf, x.reshape(N, C, -1), axis=2)
+        ctx.save_attr(idxf=idxf, in_shape=x.shape, n_out=n_out)
+        return Tensor(flat.reshape((N, C) + out_sp), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idxf = ctx.get_attr("idxf")
+        in_shape = ctx.get_attr("in_shape")
+        n_out = ctx.get_attr("n_out")
+        g = np.asarray(grad_output.data, dtype=np.float64).reshape(
+            in_shape[0], in_shape[1], n_out
+        )
+        gx = np.take_along_axis(g, idxf, axis=2).reshape(in_shape)
+        return [Tensor(gx, dtype=grad_output.dtype), None]
+
+
 class BilinearFn(Function):
     """Differentiable bilinear layer: out[b,k] = sum_ij x1[b,i] x2[b,j] W[k,i,j] + b[k]."""
 
