@@ -2974,25 +2974,9 @@ class Unfold(Module):
         sH, sW = st
         H_out = (H + 2 * padH - dilH * (kH - 1) - 1) // sH + 1
         W_out = (W + 2 * padW - dilW * (kW - 1) - 1) // sW + 1
-        if padH or padW:
-            xp = np.pad(
-                xd, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant"
-            )
-        else:
-            xp = xd
-        cols = np.zeros((N, C * kH * kW, H_out * W_out), dtype=np.float64)
-        o = 0
-        for i in range(H_out):
-            for j in range(W_out):
-                win = xp[
-                    :,
-                    :,
-                    i * sH : i * sH + kH * dilH : dilH,
-                    j * sW : j * sW + kW * dilW : dilW,
-                ]
-                cols[:, :, o] = win.reshape(N, -1)
-                o += 1
-        return Tensor(cols.astype(xd.dtype), dtype=x.dtype, device=x.device)
+        from .autograd_ops import UnfoldFn
+
+        return UnfoldFn.apply(x, (kH, kW), (dilH, dilW), (padH, padW), (sH, sW))
 
 
 class Fold(Module):
@@ -3026,33 +3010,14 @@ class Fold(Module):
         od = self.output_size
         if isinstance(od, int):
             od = (od, od)
-        N, CL, L = xd.shape
-        C = CL // (k[0] * k[1])
+        from .autograd_ops import FoldFn
+
         H, W = od
         kH, kW = k
         dilH, dilW = dil
         padH, padW = pad
         sH, sW = st
-        H_out = (H + 2 * padH - dilH * (kH - 1) - 1) // sH + 1
-        W_out = (W + 2 * padW - dilW * (kW - 1) - 1) // sW + 1
-        acc = np.zeros((N, C, H + 2 * padH, W + 2 * padW), dtype=np.float64)
-        cnt = np.zeros((N, C, H + 2 * padH, W + 2 * padW), dtype=np.float64)
-        o = 0
-        for i in range(H_out):
-            for j in range(W_out):
-                col = xd[:, :, o].reshape(N, C, kH * kW)
-                for kh in range(kH):
-                    for kw in range(kW):
-                        hi = i * sH + kh * dilH
-                        wi = j * sW + kw * dilW
-                        gain = col[:, :, kh * kW + kw]
-                        acc[:, :, hi, wi] += gain
-                        cnt[:, :, hi, wi] += 1.0
-                o += 1
-        acc = acc / np.maximum(cnt, 1.0)
-        if padH or padW:
-            acc = acc[:, :, padH : padH + H, padW : padW + W]
-        return Tensor(acc.astype(xd.dtype), dtype=x.dtype, device=x.device)
+        return FoldFn.apply(x, H, W, (kH, kW), (dilH, dilW), (padH, padW), (sH, sW))
 
 
 class _MaxUnpoolNd(Module):

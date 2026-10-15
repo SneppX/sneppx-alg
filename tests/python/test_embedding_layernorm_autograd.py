@@ -193,6 +193,76 @@ def test_upsample_nearest_forward_matches_reference():
     assert np.allclose(y.data, ref)
 
 
+def _ref_unfold(xd, k, dil, pad, st):
+    N, C, H, W = xd.shape
+    kH, kW = k
+    dH, dW = dil
+    pH, pW = pad
+    sH, sW = st
+    Hp, Wp = H + 2 * pH, W + 2 * pW
+    Ho = (Hp - dH * (kH - 1) - 1) // sH + 1
+    Wo = (Wp - dW * (kW - 1) - 1) // sW + 1
+    xp = np.pad(xd, ((0, 0), (0, 0), (pH, pH), (pW, pW))) if (pH or pW) else xd
+    cols = np.zeros((N, C * kH * kW, Ho * Wo))
+    o = 0
+    for i in range(Ho):
+        for j in range(Wo):
+            win = xp[
+                :, :, i * sH : i * sH + kH * dH : dH, j * sW : j * sW + kW * dW : dW
+            ]
+            cols[:, :, o] = win.reshape(N, -1)
+            o += 1
+    return cols
+
+
+def test_unfold_is_differentiable_and_matches_reference():
+    np.random.seed(51)
+    for k, pad, st, dil in [
+        ((2, 2), (0, 0), (1, 1), (1, 1)),
+        ((3, 3), (1, 1), (2, 2), (1, 1)),
+        ((3, 3), (0, 0), (1, 1), (2, 2)),
+    ]:
+        x0 = (np.random.randn(2, 3, 6, 6) * 0.3).astype("float32")
+        x = Tensor(x0)
+        x.requires_grad_(True)
+        y = nn.Unfold(k, padding=pad, stride=st, dilation=dil)(x)
+        assert np.allclose(y.data, _ref_unfold(x0, k, dil, pad, st), atol=1e-4)
+        (y * y).sum().backward()
+        assert x.grad is not None
+
+
+def test_fold_is_differentiable_and_matches_reference():
+    np.random.seed(53)
+    x0 = (np.random.randn(1, 8, 9) * 0.3).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = nn.Fold((6, 6), 2, stride=2)(x)
+    assert y.shape == (1, 2, 6, 6)
+    # forward equals normalized scatter-add
+    N, CL, L = x0.shape
+    C = CL // 4
+    acc = np.zeros((N, C, 6, 6))
+    cnt = np.zeros((N, C, 6, 6))
+    o = 0
+    for i in range(3):
+        for j in range(3):
+            col = x0[:, :, o].reshape(N, C, 4)
+            for kh in range(2):
+                for kw in range(2):
+                    acc[:, :, i * 2 + kh, j * 2 + kw] += col[:, :, kh * 2 + kw]
+                    cnt[:, :, i * 2 + kh, j * 2 + kw] += 1
+            o += 1
+    assert np.allclose(y.data, acc / np.maximum(cnt, 1), atol=1e-5)
+
+    def f(I):
+        return (nn.Fold((6, 6), 2, stride=2)(I[0]) ** 2).sum()
+
+    x.grad = None
+    f([x]).backward()
+    num = numerical_grads(f, [x])
+    assert np.allclose(x.grad.data, num[0], atol=1e-2, rtol=1e-2)
+
+
 def test_channel_shuffle_is_differentiable():
     np.random.seed(41)
     x = Tensor(np.random.randn(2, 4, 3, 3).astype("float32"))

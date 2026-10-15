@@ -1183,6 +1183,177 @@ class UpsampleNearestFn(Function):
         return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
 
 
+def _unfold_index_map(H, W, kH, kW, dilH, dilW, padH, padW, sH, sW):
+    """Padded-grid gather indices for im2col (Unfold / Fold)."""
+    Hp = H + 2 * padH
+    Wp = W + 2 * padW
+    H_out = (Hp - dilH * (kH - 1) - 1) // sH + 1
+    W_out = (Wp - dilW * (kW - 1) - 1) // sW + 1
+    L = H_out * W_out
+    hi = np.zeros((L, kH, kW), dtype=np.int64)
+    wi = np.zeros((L, kH, kW), dtype=np.int64)
+    o = 0
+    for i in range(H_out):
+        for j in range(W_out):
+            for kh in range(kH):
+                ah = i * sH + kh * dilH
+                for kw in range(kW):
+                    hi[o, kh, kw] = ah
+                    wi[o, kh, kw] = j * sW + kw * dilW
+            o += 1
+    return Hp, Wp, H_out, W_out, L, hi, wi
+
+
+class UnfoldFn(Function):
+    """Differentiable im2col (nn.Unfold)."""
+
+    @staticmethod
+    def forward(ctx, a, kernel, dilation, padding, stride):
+        x = np.asarray(a.data, dtype=np.float64)
+        N, C, H, W = x.shape
+        kH, kW = kernel
+        dilH, dilW = dilation
+        padH, padW = padding
+        sH, sW = stride
+        Hp, Wp, H_out, W_out, L, hi, wi = _unfold_index_map(
+            H, W, kH, kW, dilH, dilW, padH, padW, sH, sW
+        )
+        if padH or padW:
+            xp = np.pad(
+                x, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant"
+            )
+        else:
+            xp = x
+        cols = np.zeros((N, C * kH * kW, L), dtype=np.float64)
+        cbase = np.arange(C) * kH * kW
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    cols[:, cbase + kh * kW + kw, o] = xp[
+                        :, :, hi[o, kh, kw], wi[o, kh, kw]
+                    ]
+        ctx.save_attr(
+            Hp=Hp,
+            Wp=Wp,
+            H=H,
+            W=W,
+            padH=padH,
+            padW=padW,
+            C=C,
+            kH=kH,
+            kW=kW,
+            L=L,
+            hi=hi,
+            wi=wi,
+        )
+        return Tensor(cols, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        Hp = ctx.get_attr("Hp")
+        Wp = ctx.get_attr("Wp")
+        H = ctx.get_attr("H")
+        W = ctx.get_attr("W")
+        padH = ctx.get_attr("padH")
+        padW = ctx.get_attr("padW")
+        C = ctx.get_attr("C")
+        kH = ctx.get_attr("kH")
+        kW = ctx.get_attr("kW")
+        L = ctx.get_attr("L")
+        hi = ctx.get_attr("hi")
+        wi = ctx.get_attr("wi")
+        N = g.shape[0]
+        gcol = g.reshape(N, C, kH * kW, L)
+        gxp = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    gxp[:, :, hi[o, kh, kw], wi[o, kh, kw]] += gcol[
+                        :, :, kh * kW + kw, o
+                    ]
+        gx = gxp[:, :, padH : padH + H, padW : padW + W] if (padH or padW) else gxp
+        return [Tensor(gx, dtype=grad_output.dtype)]
+
+
+class FoldFn(Function):
+    """Differentiable col2im (nn.Fold)."""
+
+    @staticmethod
+    def forward(ctx, a, H, W, kernel, dilation, padding, stride):
+        x = np.asarray(a.data, dtype=np.float64)
+        N, CL, L = x.shape
+        kH, kW = kernel
+        dilH, dilW = dilation
+        padH, padW = padding
+        sH, sW = stride
+        C = CL // (kH * kW)
+        Hp, Wp, H_out, W_out, Lmap, hi, wi = _unfold_index_map(
+            H, W, kH, kW, dilH, dilW, padH, padW, sH, sW
+        )
+        acc = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        cnt = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        cbase = np.arange(C) * kH * kW
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    ah = hi[o, kh, kw]
+                    aw = wi[o, kh, kw]
+                    acc[:, :, ah, aw] += x[:, cbase + kh * kW + kw, o]
+                    cnt[:, :, ah, aw] += 1.0
+        cnt = np.maximum(cnt, 1.0)
+        acc = acc / cnt
+        out = acc[:, :, padH : padH + H, padW : padW + W] if (padH or padW) else acc
+        ctx.save_attr(
+            Hp=Hp,
+            Wp=Wp,
+            H=H,
+            W=W,
+            padH=padH,
+            padW=padW,
+            C=C,
+            kH=kH,
+            kW=kW,
+            L=L,
+            hi=hi,
+            wi=wi,
+            cnt=cnt,
+        )
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        Hp = ctx.get_attr("Hp")
+        Wp = ctx.get_attr("Wp")
+        H = ctx.get_attr("H")
+        W = ctx.get_attr("W")
+        padH = ctx.get_attr("padH")
+        padW = ctx.get_attr("padW")
+        C = ctx.get_attr("C")
+        kH = ctx.get_attr("kH")
+        kW = ctx.get_attr("kW")
+        L = ctx.get_attr("L")
+        hi = ctx.get_attr("hi")
+        wi = ctx.get_attr("wi")
+        cnt = ctx.get_attr("cnt")
+        N = g.shape[0]
+        gf = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        if padH or padW:
+            gf[:, :, padH : padH + H, padW : padW + W] = g
+        else:
+            gf = g
+        dacc = gf / cnt
+        gcol = np.zeros((N, C, kH * kW, L), dtype=np.float64)
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    gcol[:, :, kh * kW + kw, o] = dacc[
+                        :, :, hi[o, kh, kw], wi[o, kh, kw]
+                    ]
+        return [Tensor(gcol.reshape(N, C * kH * kW, L), dtype=grad_output.dtype)]
+
+
 def _bilinear_coords(in_size, out_size, align_corners):
     """Per-output-pixel bilinear source indices/weights (torch semantics)."""
     if align_corners:
