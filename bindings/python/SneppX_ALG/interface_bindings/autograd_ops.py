@@ -1141,6 +1141,46 @@ class Permute(Function):
         return [Tensor(np.transpose(grad_output.data, inv), dtype=grad_output.dtype)]
 
 
+class UpsampleNearestFn(Function):
+    """Nearest-neighbour upsampling over the trailing spatial dims (differentiable)."""
+
+    @staticmethod
+    def forward(ctx, a, target):
+        x = a.data
+        target = tuple(int(t) for t in target)
+        ndim = len(target)
+        spatial = x.shape[-ndim:]
+        idxs = []
+        for s, t in zip(spatial, target):
+            idxs.append(
+                np.repeat(np.arange(s, dtype=np.int64), int(np.ceil(t / s)))[:t]
+            )
+        out = x
+        for k, idx in enumerate(idxs):
+            axis = out.ndim - ndim + k
+            out = np.take(out, idx, axis=axis)
+        ctx.save_attr(idxs=idxs, in_shape=x.shape, out_shape=out.shape, ndim=ndim)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idxs = ctx.get_attr("idxs")
+        in_shape = ctx.get_attr("in_shape")
+        out_shape = ctx.get_attr("out_shape")
+        ndim = ctx.get_attr("ndim")
+        g = np.asarray(grad_output.data, np.float64)
+        gi = np.zeros(in_shape, np.float64)
+        lead = in_shape[:-ndim]
+        lead_size = int(np.prod(lead)) if lead else 1
+        gi_flat = gi.reshape((lead_size,) + in_shape[-ndim:])
+        g_flat = g.reshape((lead_size,) + out_shape[-ndim:])
+        grids = np.meshgrid(*[np.arange(t) for t in out_shape[-ndim:]], indexing="ij")
+        src = tuple(idxs[k][grids[k]] for k in range(ndim))
+        for l in range(lead_size):
+            np.add.at(gi_flat[l], src, g_flat[l])
+        return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
+
+
 class Expand(Function):
     @staticmethod
     def forward(ctx, a, shape):

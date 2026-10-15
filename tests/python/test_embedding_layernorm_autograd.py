@@ -169,6 +169,28 @@ def test_pixel_shuffle_is_differentiable_and_roundtrips():
     assert np.allclose(pus(ps(Tensor(x.data))).data, x.data)
 
 
+def test_upsample_nearest_is_differentiable():
+    u = nn.Upsample(scale_factor=2, mode="nearest")
+    x = Tensor(np.random.randn(2, 3, 4, 5).astype("float32"))
+    x.requires_grad_(True)
+    y = u(x)
+    assert y.shape == (2, 3, 8, 10)
+    assert y.requires_grad
+    y.sum().backward()
+    # each input element contributes to 2x2 outputs -> gradient 4
+    assert np.allclose(x.grad.data, 4.0)
+
+
+def test_upsample_nearest_forward_matches_reference():
+    from SneppX_ALG.interface_bindings.nn import _zoom_nn
+
+    u = nn.Upsample(scale_factor=2, mode="nearest")
+    xd = np.random.randn(2, 3, 4, 5).astype("float32")
+    y = u(Tensor(xd))
+    ref = _zoom_nn(xd, (8, 10))
+    assert np.allclose(y.data, ref)
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

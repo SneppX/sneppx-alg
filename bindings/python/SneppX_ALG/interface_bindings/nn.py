@@ -2942,9 +2942,10 @@ class Upsample(Module):
             from scipy.ndimage import zoom
 
             out = zoom(xd, (1.0, 1.0) + scales, order=1, mode="nearest")
-        else:  # nearest
-            out = _zoom_nn(xd, target)
-        return Tensor(out.astype(xd.dtype), dtype=x.dtype, device=x.device)
+            return Tensor(out.astype(xd.dtype), dtype=x.dtype, device=x.device)
+        from .autograd_ops import UpsampleNearestFn
+
+        return UpsampleNearestFn.apply(x, target)
 
 
 def _zoom_nn(xd, target):
