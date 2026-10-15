@@ -280,6 +280,70 @@ def test_conv_transpose2d_grad_output_padding():
     _conv_transpose2d_fd_check(2, 1, 1)
 
 
+def _conv_transpose_nd_fd_check(ndim, stride, padding, output_padding, spatial=3):
+    from SneppX_ALG.interface_bindings.advanced_ops import (
+        _conv_transpose_nd_impl as ref_ct,
+    )
+
+    np.random.seed(21)
+    xshape = (1, 2) + (spatial,) * ndim
+    wshape = (2, 3) + (3,) * ndim
+    x = Tensor((np.random.randn(*xshape) * 0.3).astype("float32"))
+    w = Tensor((np.random.randn(*wshape) * 0.3).astype("float32"))
+    b = Tensor((np.random.randn(3) * 0.3).astype("float32"))
+    inputs = [x, w, b]
+    for t in inputs:
+        t.requires_grad_(True)
+        t.grad = None
+
+    def f(I):
+        y = ops.ConvTransposeNd.apply(
+            I[0], I[1], I[2], stride, padding, output_padding, 1
+        )
+        return (y * y).sum()
+
+    ref = ref_ct(x, w, b, stride, padding, output_padding, 1)
+    fwd = ops.ConvTransposeNd.apply(x, w, b, stride, padding, output_padding, 1)
+    assert np.allclose(
+        np.asarray(fwd.data, np.float64), np.asarray(ref.data, np.float64), atol=1e-6
+    )
+    f(inputs).backward()
+    analytic = [t.grad.data.copy() for t in inputs]
+    numeric = numerical_grads(f, inputs)
+    for a, n in zip(analytic, numeric):
+        assert np.allclose(a, n, atol=1e-2, rtol=1e-2), (
+            f"conv_transpose{ndim}d mismatch max|diff|={np.max(np.abs(a - n)):.3e}"
+        )
+
+
+def test_conv_transpose1d_grad():
+    _conv_transpose_nd_fd_check(1, 2, 1, 1, spatial=5)
+
+
+def test_conv_transpose3d_grad():
+    _conv_transpose_nd_fd_check(3, 2, 1, 1, spatial=2)
+
+
+def test_nn_conv_transpose1d_is_differentiable():
+    m = nn.ConvTranspose1d(2, 3, 3, stride=2, padding=1, output_padding=1)
+    x = Tensor(np.random.randn(2, 2, 5).astype("float32"))
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert m.weight.grad is not None and m.bias.grad is not None and x.grad is not None
+
+
+def test_nn_conv_transpose3d_is_differentiable():
+    m = nn.ConvTranspose3d(2, 3, 3, stride=2, padding=1, output_padding=1)
+    x = Tensor(np.random.randn(1, 2, 3, 3, 3).astype("float32"))
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert m.weight.grad is not None and m.bias.grad is not None and x.grad is not None
+
+
 def test_nn_conv_transpose2d_is_differentiable():
     m = nn.ConvTranspose2d(2, 3, 3, stride=2, padding=1, output_padding=1)
     x = Tensor(np.random.randn(2, 2, 4, 4).astype("float32"))

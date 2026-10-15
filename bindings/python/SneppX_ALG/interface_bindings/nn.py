@@ -630,6 +630,18 @@ class _ConvTransposeNd(Module):
                 output_padding=self.output_padding,
                 groups=self.groups,
             )
+        if self.groups == 1:
+            from .autograd_ops import ConvTransposeNd as _CTNdFn
+
+            return _CTNdFn.apply(
+                x,
+                self.weight,
+                self.bias,
+                self.stride,
+                self.padding,
+                self.output_padding,
+                self.groups,
+            )
         from .advanced_ops import _conv_transpose_nd_impl
 
         return _conv_transpose_nd_impl(

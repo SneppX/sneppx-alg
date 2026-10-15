@@ -1934,6 +1934,80 @@ class ConvTranspose2d(Function):
         ]
 
 
+def _as_ntuple(value, n):
+    if isinstance(value, (tuple, list)):
+        return tuple(int(v) for v in value)
+    return (int(value),) * n
+
+
+class ConvTransposeNd(Function):
+    """Differentiable generic N-D transposed convolution (groups=1).
+
+    Forward delegates to ``advanced_ops._conv_transpose_nd_impl``; the backward
+    is the exact adjoint of the scatter formulation (stride/padding).
+    """
+
+    @staticmethod
+    def forward(
+        ctx, inp, kernel, bias=None, stride=1, padding=0, output_padding=0, groups=1
+    ):
+        from .advanced_ops import _conv_transpose_nd_impl
+
+        out = _conv_transpose_nd_impl(
+            inp, kernel, bias, stride, padding, output_padding, groups
+        )
+        ndim = inp.data.ndim - 2
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=_as_ntuple(stride, ndim),
+            padding=_as_ntuple(padding, ndim),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        if groups != 1:
+            raise NotImplementedError("ConvTransposeNd backward supports groups=1 only")
+
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        ndim = x.ndim - 2
+        spatial_in = x.shape[2:]
+        kshape = w.shape[2:]
+        S_out = g.shape[2:]
+
+        grad_x = np.zeros_like(x)
+        grad_w = np.zeros_like(w)
+        xa = (slice(None), slice(None))
+        for sidx in np.ndindex(*spatial_in):
+            x_slice = x[xa + sidx]  # (N, C_in)
+            for kidx in np.ndindex(*kshape):
+                oidx = tuple(
+                    sidx[d] * stride[d] - padding[d] + kidx[d] for d in range(ndim)
+                )
+                if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                    continue
+                gv = g[xa + oidx]  # (N, C_out)
+                grad_x[xa + sidx] += gv @ w[xa + kidx].T
+                grad_w[xa + kidx] += x_slice.T @ gv
+        grad_b = g.sum(axis=(0,) + tuple(range(2, g.ndim))) if has_bias else None
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_w, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
 class MaxPool2d(Function):
     @staticmethod
     def forward(ctx, inp, kernel_h, kernel_w, stride_h=None, stride_w=None):
