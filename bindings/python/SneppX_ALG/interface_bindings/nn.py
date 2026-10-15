@@ -415,7 +415,7 @@ class Conv2d(Module):
 
 
 class Conv1d(Module):
-    """1D convolution layer."""
+    """1D convolution layer (NCL layout)."""
 
     def __init__(
         self,
@@ -445,7 +445,7 @@ class Conv1d(Module):
         self.padding = padding
         self.dilation = dilation
         self.groups = groups
-        kL = kernel_size[0]
+        kL = kernel_size[0] if kernel_size else 1
         scale = math.sqrt(1.0 / (in_channels * kL))
         self.weight = (
             Tensor.randn((out_channels, in_channels // groups, kL), dtype=dtype) * scale
@@ -453,21 +453,38 @@ class Conv1d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
+        if (
+            self.groups == 1
+            and (
+                self.dilation[0]
+                if hasattr(self.dilation, "__getitem__")
+                else self.dilation
+            )
+            == 1
+        ):
+            from .autograd_ops import Conv1d as _Conv1dFn
+
+            stride_ = (
+                self.stride[0] if hasattr(self.stride, "__getitem__") else self.stride
+            )
+            padding_ = (
+                self.padding[0]
+                if hasattr(self.padding, "__getitem__")
+                else self.padding
+            )
+            y = _Conv1dFn.apply(x, self.weight, stride_, padding_)
+            if self.bias is not None:
+                return y + self.bias.reshape(1, self.out_channels, 1)
+            return y
         from .advanced_ops import conv1d as _conv1d
 
         return _conv1d(
             x,
             self.weight,
             self.bias,
-            stride=self.stride[0]
-            if isinstance(self.stride, (list, tuple))
-            else self.stride,
-            padding=self.padding[0]
-            if isinstance(self.padding, (list, tuple))
-            else self.padding,
-            dilation=self.dilation[0]
-            if isinstance(self.dilation, (list, tuple))
-            else self.dilation,
+            stride=self.stride[0] if self.stride else 1,
+            padding=self.padding[0] if self.padding else 0,
+            dilation=self.dilation[0] if self.dilation else 1,
             groups=self.groups,
         )
 
@@ -512,6 +529,18 @@ class Conv3d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
+        if self.groups == 1:
+            from .autograd_ops import Conv3d as _Conv3dFn
+
+            return _Conv3dFn.apply(
+                x,
+                self.weight,
+                self.bias,
+                self.stride,
+                self.padding,
+                self.dilation,
+                self.groups,
+            )
         from .advanced_ops import conv3d as _conv3d
 
         return _conv3d(

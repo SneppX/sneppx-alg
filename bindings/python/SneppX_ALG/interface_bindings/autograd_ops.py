@@ -1636,6 +1636,114 @@ class Conv2d(Function):
         ]
 
 
+def _as_triple(v):
+    if isinstance(v, (tuple, list)):
+        return int(v[0]), int(v[1]), int(v[2])
+    return int(v), int(v), int(v)
+
+
+class Conv3d(Function):
+    """Differentiable 3-D convolution (NCDHW), groups=1.
+
+    Mirrors :class:`Conv2d` for three spatial dimensions (stride/padding/dilation).
+    """
+
+    @staticmethod
+    def forward(ctx, inp, kernel, bias=None, stride=1, padding=0, dilation=1, groups=1):
+        from .advanced_ops import conv3d as _conv3d
+
+        sd, sh, sw = _as_triple(stride)
+        pd, ph, pw = _as_triple(padding)
+        dd, dh, dw = _as_triple(dilation)
+        out = _conv3d(
+            inp,
+            kernel,
+            bias,
+            stride=(sd, sh, sw),
+            padding=(pd, ph, pw),
+            dilation=(dd, dh, dw),
+            groups=groups,
+        )
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=(sd, sh, sw),
+            padding=(pd, ph, pw),
+            dilation=(dd, dh, dw),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        sd, sh, sw = ctx.get_attr("stride")
+        pd, ph, pw = ctx.get_attr("padding")
+        dd, dh, dw = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        if groups != 1:
+            raise NotImplementedError("Conv3d backward supports groups=1 only")
+
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        N, C_in, D, H, W = x.shape
+        C_out, _, kD, kH, kW = w.shape
+        Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
+
+        xp = (
+            np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw)))
+            if (pd or ph or pw)
+            else x
+        )
+
+        # grad w.r.t. kernel
+        win = np.zeros((N, C_in, Do, Ho, Wo, kD, kH, kW), dtype=np.float64)
+        for a in range(kD):
+            for b in range(kH):
+                for c in range(kW):
+                    win[:, :, :, :, :, a, b, c] = xp[
+                        :,
+                        :,
+                        a * dd : a * dd + Do * sd : sd,
+                        b * dh : b * dh + Ho * sh : sh,
+                        c * dw : c * dw + Wo * sw : sw,
+                    ]
+        grad_k = np.einsum("nopqr,ncpqrstu->ocstu", g, win)
+
+        grad_b = g.sum(axis=(0, 2, 3, 4)) if has_bias else None
+
+        # grad w.r.t. input
+        padded = np.zeros(
+            (N, C_in, D + 2 * pd, H + 2 * ph, W + 2 * pw), dtype=np.float64
+        )
+        for i in range(Do):
+            for j in range(Ho):
+                for k in range(Wo):
+                    for a in range(kD):
+                        for b in range(kH):
+                            for c in range(kW):
+                                di = i * sd + a * dd
+                                hi = j * sh + b * dh
+                                wi = k * sw + c * dw
+                                padded[:, :, di, hi, wi] += np.einsum(
+                                    "no,oc->nc", g[:, :, i, j, k], w[:, :, a, b, c]
+                                )
+        grad_x = (
+            padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W]
+            if (pd or ph or pw)
+            else padded
+        )
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_k, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
 class MaxPool2d(Function):
     @staticmethod
     def forward(ctx, inp, kernel_h, kernel_w, stride_h=None, stride_w=None):
