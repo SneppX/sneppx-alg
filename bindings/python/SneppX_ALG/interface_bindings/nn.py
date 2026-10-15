@@ -293,7 +293,7 @@ class Dropout(Module):
             return Tensor.from_numpy(out_data, dtype=x.dtype_name)
         mask = np.random.binomial(1, 1.0 - self.p, x.shape).astype(np.float32)
         mask /= 1.0 - self.p
-        return Tensor.from_numpy(x.data * mask, dtype=x.dtype_name)
+        return x * Tensor.from_numpy(mask, dtype=x.dtype_name)
 
 
 class LayerNorm(Module):

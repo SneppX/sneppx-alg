@@ -106,3 +106,28 @@ def test_constant_pad_interior_grad_is_2x():
     y = nn.ConstantPad2d(2, 1.5)(x)
     (y * y).sum().backward()
     assert np.allclose(x.grad.data, 2 * x0, atol=1e-5)
+
+
+def test_dropout_is_differentiable():
+    np.random.seed(11)
+    m = nn.Dropout(0.5)
+    m._training = True
+    x0 = (np.random.randn(2, 8) + 3.0).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    y.backward(np.ones_like(y.data))
+    mask = np.asarray(y.data) / np.asarray(x0)
+    assert np.allclose(x.grad.data, mask, atol=1e-5)
+
+
+def test_dropout_eval_is_identity_differentiable():
+    m = nn.Dropout(0.5)
+    m._training = False
+    x0 = (np.random.randn(3, 4)).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    assert np.allclose(y.data, x0)
