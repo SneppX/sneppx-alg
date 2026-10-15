@@ -69,3 +69,40 @@ def test_log_sigmoid_backward_derivative_is_sigmoid_neg():
     y.backward(np.ones_like(x0))
     expected = 1.0 / (1.0 + np.exp(x0.astype(np.float64)))
     assert np.allclose(x.grad.data, expected, atol=1e-6)
+
+
+@pytest.mark.parametrize(
+    "cls,kwargs,shape",
+    [
+        (nn.ConstantPad2d, {"padding": 2, "value": 1.5}, (1, 3, 5, 5)),
+        (nn.ZeroPad1d, {"padding": 1}, (1, 3, 6)),
+        (nn.ReflectionPad2d, {"padding": 2}, (1, 3, 5, 5)),
+        (nn.ReplicationPad2d, {"padding": 2}, (1, 3, 5, 5)),
+        (
+            nn.ConstantPad3d,
+            {"padding": (1, 1, 0, 1, 0, 0), "value": 0.5},
+            (1, 2, 4, 4, 4),
+        ),
+    ],
+)
+def test_pad_is_differentiable(cls, kwargs, shape):
+    np.random.seed(7)
+    m = cls(**kwargs)
+    x0 = (np.random.randn(*shape)).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    (y * y).sum().backward()
+    assert x.grad is not None
+    assert np.isfinite(x.grad.data).all()
+
+
+def test_constant_pad_interior_grad_is_2x():
+    np.random.seed(9)
+    x0 = (np.random.randn(1, 3, 5, 5)).astype("float32")
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = nn.ConstantPad2d(2, 1.5)(x)
+    (y * y).sum().backward()
+    assert np.allclose(x.grad.data, 2 * x0, atol=1e-5)

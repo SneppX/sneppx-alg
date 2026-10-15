@@ -2434,6 +2434,39 @@ class MaxUnpoolFn(Function):
         return [Tensor(gx, dtype=grad_output.dtype), None]
 
 
+class PadNdFn(Function):
+    """Differentiable N-D padding via ``np.pad`` (constant / reflect / edge).
+
+    Forward builds a source-index map by padding a flat ``arange`` with the same
+    mode; backward scatter-adds gradients back to those source positions.
+    """
+
+    @staticmethod
+    def forward(ctx, a, pad_width, mode, value):
+        x = np.asarray(a.data, dtype=np.float64)
+        base = np.arange(x.size, dtype=np.int64).reshape(x.shape)
+        if mode == "constant":
+            imap = np.pad(base, pad_width, mode=mode, constant_values=-1)
+        else:
+            imap = np.pad(base, pad_width, mode=mode)
+        mask = imap >= 0
+        out = np.full(imap.shape, value, dtype=np.float64)
+        xf = x.reshape(-1)
+        out[mask] = xf[imap[mask]]
+        ctx.save_attr(imap=imap, mask=mask, in_shape=x.shape)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        imap = ctx.get_attr("imap")
+        mask = ctx.get_attr("mask")
+        in_shape = ctx.get_attr("in_shape")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gi = np.zeros(int(np.prod(in_shape)), dtype=np.float64)
+        np.add.at(gi, imap[mask], g[mask])
+        return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
+
+
 class PReluFn(Function):
     """Differentiable PReLU: ``y = x where x >= w*x else w*x`` (trailing-broadcast weight)."""
 

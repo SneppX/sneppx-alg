@@ -2336,8 +2336,9 @@ class _ConstantPadNd(Module):
         npads = len(pad) // 2
         pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
         pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
-        x_data = np.pad(x.data, pad_width, mode="constant", constant_values=self.value)
-        return Tensor(x_data, dtype=x.dtype, device=x.device)
+        from .autograd_ops import PadNdFn
+
+        return PadNdFn.apply(x, pad_width, "constant", float(self.value))
 
 
 class ConstantPad1d(_ConstantPadNd):
@@ -2380,8 +2381,9 @@ class _ReflectionPadNd(Module):
         npads = len(pad) // 2
         pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
         pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
-        x_data = np.pad(x.data, pad_width, mode="reflect")
-        return Tensor(x_data, dtype=x.dtype, device=x.device)
+        from .autograd_ops import PadNdFn
+
+        return PadNdFn.apply(x, pad_width, "reflect", 0.0)
 
 
 class ReflectionPad1d(_ReflectionPadNd):
@@ -2409,8 +2411,9 @@ class _ReplicationPadNd(Module):
         npads = len(pad) // 2
         pairs = [(pad[2 * i], pad[2 * i + 1]) for i in range(npads)]
         pad_width = [(0, 0)] * (ndim - npads) + list(reversed(pairs))
-        x_data = np.pad(x.data, pad_width, mode="edge")
-        return Tensor(x_data, dtype=x.dtype, device=x.device)
+        from .autograd_ops import PadNdFn
+
+        return PadNdFn.apply(x, pad_width, "edge", 0.0)
 
 
 class ReplicationPad1d(_ReplicationPadNd):
