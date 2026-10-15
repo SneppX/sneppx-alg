@@ -1857,6 +1857,83 @@ class Conv3d(Function):
         ]
 
 
+class ConvTranspose2d(Function):
+    """Differentiable 2-D transposed convolution (NCHW), groups=1.
+
+    Forward mirrors ``advanced_ops.conv_transpose2d``; backward is the exact
+    adjoint of the scatter formulation (stride/padding/output_padding).
+    """
+
+    @staticmethod
+    def forward(
+        ctx, inp, kernel, bias=None, stride=1, padding=0, output_padding=0, groups=1
+    ):
+        from .advanced_ops import conv_transpose2d as _ct
+
+        sh, sw = _as_pair(stride)
+        ph, pw = _as_pair(padding)
+        oph, opw = _as_pair(output_padding)
+        out = _ct(
+            inp,
+            kernel,
+            bias,
+            stride=(sh, sw),
+            padding=(ph, pw),
+            output_padding=(oph, opw),
+            groups=groups,
+        )
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=(sh, sw),
+            padding=(ph, pw),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        sh, sw = ctx.get_attr("stride")
+        ph, pw = ctx.get_attr("padding")
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        if groups != 1:
+            raise NotImplementedError("ConvTranspose2d backward supports groups=1 only")
+
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        N, C_in, H, W = x.shape
+        _, C_out, kH, kW = w.shape
+        Ho, Wo = g.shape[2], g.shape[3]
+
+        grad_x = np.zeros_like(x)
+        grad_w = np.zeros_like(w)
+        for i in range(H):
+            for j in range(W):
+                xij = x[:, :, i, j]  # (N, C_in)
+                for kh in range(kH):
+                    ah = i * sh - ph + kh
+                    if ah < 0 or ah >= Ho:
+                        continue
+                    for kw in range(kW):
+                        aw = j * sw - pw + kw
+                        if aw < 0 or aw >= Wo:
+                            continue
+                        gv = g[:, :, ah, aw]  # (N, C_out)
+                        grad_x[:, :, i, j] += gv @ w[:, :, kh, kw].T
+                        grad_w[:, :, kh, kw] += xij.T @ gv
+        grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_w, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
 class MaxPool2d(Function):
     @staticmethod
     def forward(ctx, inp, kernel_h, kernel_w, stride_h=None, stride_w=None):

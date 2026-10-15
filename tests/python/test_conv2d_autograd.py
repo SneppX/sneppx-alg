@@ -229,6 +229,69 @@ def test_nn_conv1d_bias_grad_finite_difference():
     )
 
 
+def _conv_transpose2d_fd_check(
+    stride, padding, output_padding, N=2, C_in=2, C_out=3, k=3
+):
+    from SneppX_ALG.interface_bindings.advanced_ops import conv_transpose2d as ref_ct
+
+    np.random.seed(17)
+    x = Tensor((np.random.randn(N, C_in, 5, 5) * 0.3).astype("float32"))
+    w = Tensor((np.random.randn(C_in, C_out, k, k) * 0.3).astype("float32"))
+    b = Tensor((np.random.randn(C_out) * 0.3).astype("float32"))
+    inputs = [x, w, b]
+    for t in inputs:
+        t.requires_grad_(True)
+        t.grad = None
+    op = (output_padding, output_padding)
+
+    def f(I):
+        y = ops.ConvTranspose2d.apply(
+            I[0], I[1], I[2], stride, padding, output_padding, 1
+        )
+        return (y * y).sum()
+
+    ref = ref_ct(
+        x, w, b, stride=(stride, stride), padding=(padding, padding), output_padding=op
+    )
+    fwd = ops.ConvTranspose2d.apply(x, w, b, stride, padding, output_padding, 1)
+    assert np.allclose(
+        np.asarray(fwd.data, np.float64), np.asarray(ref.data, np.float64), atol=1e-6
+    )
+    out = f(inputs)
+    out.backward()
+    analytic = [t.grad.data.copy() for t in inputs]
+    numeric = numerical_grads(f, inputs)
+    for a, n in zip(analytic, numeric):
+        assert np.allclose(a, n, atol=1e-2, rtol=1e-2), (
+            f"conv_transpose2d(s={stride},p={padding},op={output_padding}) mismatch "
+            f"max|diff|={np.max(np.abs(a - n)):.3e}"
+        )
+
+
+def test_conv_transpose2d_grad_stride1():
+    _conv_transpose2d_fd_check(1, 0, 0)
+
+
+def test_conv_transpose2d_grad_stride2_pad1():
+    _conv_transpose2d_fd_check(2, 1, 0)
+
+
+def test_conv_transpose2d_grad_output_padding():
+    _conv_transpose2d_fd_check(2, 1, 1)
+
+
+def test_nn_conv_transpose2d_is_differentiable():
+    m = nn.ConvTranspose2d(2, 3, 3, stride=2, padding=1, output_padding=1)
+    x = Tensor(np.random.randn(2, 2, 4, 4).astype("float32"))
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    y.sum().backward()
+    assert m.weight.grad is not None
+    assert m.bias.grad is not None
+    assert x.grad is not None
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
