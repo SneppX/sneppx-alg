@@ -236,6 +236,16 @@ def linear(input: Tensor, weight: Tensor, bias: Optional[Tensor] = None) -> Tens
 
 
 def conv1d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
+    if groups == 1 and dilation == 1:
+        from .autograd_ops import Conv1d as _Conv1dFn
+
+        stride_ = stride if not hasattr(stride, "__getitem__") else stride[0]
+        padding_ = padding if not hasattr(padding, "__getitem__") else padding[0]
+        y = _Conv1dFn.apply(input, weight, stride_, padding_)
+        if bias is not None:
+            c_out = weight.shape[0]
+            y = y + bias.reshape(1, c_out, 1)
+        return y
     return advanced_ops.conv1d(input, weight, bias, stride, padding, dilation, groups)
 
 
@@ -243,6 +253,10 @@ def conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
     stride = _pair(stride)
     padding = _pair(padding)
     dilation = _pair(dilation)
+    if groups == 1:
+        from .autograd_ops import Conv2d as _Conv2dFn
+
+        return _Conv2dFn.apply(input, weight, bias, stride, padding, dilation, groups)
     return advanced_ops.conv2d(input, weight, bias, stride, padding, dilation, groups)
 
 
@@ -250,6 +264,10 @@ def conv3d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
     stride = _triple(stride)
     padding = _triple(padding)
     dilation = _triple(dilation)
+    if groups == 1:
+        from .autograd_ops import Conv3d as _Conv3dFn
+
+        return _Conv3dFn.apply(input, weight, bias, stride, padding, dilation, groups)
     return advanced_ops.conv3d(input, weight, bias, stride, padding, dilation, groups)
 
 
@@ -265,6 +283,12 @@ def conv_transpose1d(
 ):
     if dilation != 1:
         raise NotImplementedError("conv_transpose1d: dilation != 1 is not supported")
+    if groups == 1:
+        from .autograd_ops import ConvTransposeNd as _CTNdFn
+
+        return _CTNdFn.apply(
+            input, weight, bias, stride, padding, output_padding, groups
+        )
     return advanced_ops.conv_transpose1d(
         input, weight, bias, stride, padding, output_padding, groups
     )
@@ -284,6 +308,12 @@ def conv_transpose2d(
     padding = _pair(padding)
     output_padding = _pair(output_padding)
     dilation = _pair(dilation)
+    if groups == 1:
+        from .autograd_ops import ConvTranspose2d as _CT2dFn
+
+        return _CT2dFn.apply(
+            input, weight, bias, stride, padding, output_padding, groups
+        )
     return advanced_ops.conv_transpose2d(
         input, weight, bias, stride, padding, output_padding, groups
     )
@@ -301,6 +331,12 @@ def conv_transpose3d(
 ):
     if dilation != 1:
         raise NotImplementedError("conv_transpose3d: dilation != 1 is not supported")
+    if groups == 1:
+        from .autograd_ops import ConvTransposeNd as _CTNdFn
+
+        return _CTNdFn.apply(
+            input, weight, bias, stride, padding, output_padding, groups
+        )
     return advanced_ops.conv_transpose3d(
         input, weight, bias, stride, padding, output_padding, groups
     )
