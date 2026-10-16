@@ -1839,24 +1839,20 @@ class MultiMarginLoss(_Loss):
         self.weight = weight
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
+        n, c = input.shape
         y = target.data.astype(np.int64)
-        n = x.shape[0]
-        c = x.shape[1]
-        target_scores = x[np.arange(n), y]
-        mask = np.arange(c) != y[:, None]
-        margin_diff = self.margin - (x - target_scores[:, None])
-        margin_diff = np.where(mask, margin_diff, 0)  # zero out the target class
-        losses = np.maximum(0, np.power(np.maximum(margin_diff, 0), self.p))
+        onehot = np.zeros((n, c), dtype=np.float32)
+        onehot[np.arange(n), y] = 1.0
+        oh_t = Tensor(onehot)
+        nt_t = Tensor(1.0 - onehot)
+        target_scores = (oh_t * input).sum(dim=1).unsqueeze(1)  # (n, 1)
+        diff = (self.margin - (target_scores - input)).clamp_min(0.0)  # (n, c)
+        losses = diff ** float(self.p)
         if self.weight is not None:
             w = self.weight.data if hasattr(self.weight, "data") else self.weight
-            losses = losses * w[None, :]
-        loss = losses.sum(axis=1)
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+            losses = losses * Tensor(np.asarray(w, dtype=np.float32)[None, :])
+        loss = (losses * nt_t).sum(dim=1)
+        return _reduce_loss(loss, self.reduction)
 
 
 class MultiLabelMarginLoss(_Loss):
