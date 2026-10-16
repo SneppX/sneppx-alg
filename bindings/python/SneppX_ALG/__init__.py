@@ -22,8 +22,16 @@ from . import metrics
 from . import datasets
 from . import sampling
 from . import regularization
+from . import callbacks
 
-__all__ = ["_neural_engine_bridge", "metrics", "datasets", "sampling", "regularization"]
+__all__ = [
+    "_neural_engine_bridge",
+    "metrics",
+    "datasets",
+    "sampling",
+    "regularization",
+    "callbacks",
+]
 
 
 def __getattr__(name):
