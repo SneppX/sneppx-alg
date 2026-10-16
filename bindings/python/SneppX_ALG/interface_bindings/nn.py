@@ -1857,20 +1857,17 @@ class MultiMarginLoss(_Loss):
 
 class MultiLabelMarginLoss(_Loss):
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
-        n, c = x.shape
-        loss_sum = 0.0
-        for i in range(n):
-            targets_i = [int(t) for t in y[i] if t >= 0]
-            for tn in targets_i:
-                for k in range(c):
-                    if k not in targets_i:
-                        loss_sum += float(np.maximum(0, 1 - x[i, tn] + x[i, k]))
-        loss = loss_sum / float(n * c)
+        n, c = input.shape
+        tmask = (target.data >= 0).astype(np.float32)  # (n, c)
+        tm = Tensor(tmask)
+        x_col = input.unsqueeze(2)  # (n, c, 1) -> x[tn]
+        x_row = input.unsqueeze(1)  # (n, 1, c) -> x[k]
+        term = (1.0 - x_col + x_row).clamp_min(0.0)
+        term = term * tm.unsqueeze(2) * (1.0 - tm).unsqueeze(1)
+        loss_sum = term.sum(dim=2).sum(dim=1).sum()
         if self.reduction == "sum":
-            loss = np.array(loss_sum)
-        return Tensor(np.array(loss, dtype=np.float32))
+            return loss_sum
+        return loss_sum / float(n * c)
 
 
 class MultiLabelSoftMarginLoss(_Loss):

@@ -106,3 +106,27 @@ def test_multi_margin_loss_is_differentiable_and_matches_reference():
     np.testing.assert_allclose(
         float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
     )
+
+
+def test_multi_label_margin_loss_is_differentiable_and_matches_reference():
+    x = _t(4, 5)
+    y = Tensor(np.full((4, 5), -1).astype("float32"))
+    y.data[0, 0] = 1
+    y.data[0, 2] = 2
+    y.data[1, 3] = 0
+    loss = nn.MultiLabelMarginLoss()(x, y)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    n, c = x.data.shape
+    tmask = y.data >= 0
+    ref_sum = 0.0
+    for i in range(n):
+        for tn in [int(t) for t in y.data[i] if t >= 0]:
+            for k in range(c):
+                if not tmask[i, k]:
+                    ref_sum += max(0.0, 1.0 - x.data[i, tn] + x.data[i, k])
+    ref = ref_sum / (n * c)
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
+    )
