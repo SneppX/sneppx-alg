@@ -1641,6 +1641,15 @@ class _Loss(Module):
         self.reduction = reduction
 
 
+def _reduce_loss(loss: Tensor, reduction: str) -> Tensor:
+    """Apply a reduction to a differentiable loss tensor."""
+    if reduction == "mean":
+        return loss.mean()
+    if reduction == "sum":
+        return loss.sum()
+    return loss
+
+
 class MSELoss(_Loss):
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         return input.mse_loss(target)
@@ -1824,14 +1833,9 @@ class SoftMarginLoss(_Loss):
         super().__init__(reduction)
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
-        loss = np.log1p(np.exp(-y * x))
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+        z = (input * target * (-1.0)).exp()
+        loss = (z + 1.0).log()
+        return _reduce_loss(loss, self.reduction)
 
 
 class MultiMarginLoss(_Loss):
