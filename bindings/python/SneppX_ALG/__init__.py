@@ -19,8 +19,9 @@ except ImportError:
 
 from .interface_bindings import *
 from . import metrics
+from . import datasets
 
-__all__ = ["_neural_engine_bridge", "metrics"]
+__all__ = ["_neural_engine_bridge", "metrics", "datasets"]
 
 
 def __getattr__(name):
