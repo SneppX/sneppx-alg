@@ -139,3 +139,45 @@ def test_functional_pools_are_differentiable():
         assert x.grad is not None and np.isfinite(x.grad.data).all(), name
         # value must match the nn module
         np.testing.assert_allclose(out.data, mod(x).data, atol=1e-5, err_msg=name)
+
+
+def test_functional_adaptive_pools_are_differentiable():
+    from SneppX_ALG.interface_bindings import nn
+
+    cases = [
+        (
+            "adaptive_avg_pool1d",
+            F.adaptive_avg_pool1d,
+            nn.AdaptiveAvgPool1d(4),
+            (2, 3, 8),
+            4,
+        ),
+        (
+            "adaptive_avg_pool2d",
+            F.adaptive_avg_pool2d,
+            nn.AdaptiveAvgPool2d(3),
+            (2, 3, 8, 8),
+            3,
+        ),
+        (
+            "adaptive_max_pool1d",
+            F.adaptive_max_pool1d,
+            nn.AdaptiveMaxPool1d(4),
+            (2, 3, 8),
+            4,
+        ),
+        (
+            "adaptive_max_pool2d",
+            F.adaptive_max_pool2d,
+            nn.AdaptiveMaxPool2d(3),
+            (2, 3, 8, 8),
+            3,
+        ),
+    ]
+    for name, fn, mod, shape, osize in cases:
+        x = Tensor(np.random.randn(*shape).astype("float32"), requires_grad=True)
+        out = fn(x, osize)
+        assert out.requires_grad, f"{name} not differentiable"
+        out.sum().backward()
+        assert x.grad is not None and np.isfinite(x.grad.data).all(), name
+        np.testing.assert_allclose(out.data, mod(x).data, atol=1e-5, err_msg=name)

@@ -565,27 +565,39 @@ def avg_pool3d(
 
 
 def adaptive_avg_pool1d(input: Tensor, output_size) -> Tensor:
-    return _adaptive_pool(input, output_size, mode="avg", ndim=1)
+    from .autograd_ops import AdaptiveAvgPoolFn
+
+    return AdaptiveAvgPoolFn.apply(input, _single(output_size), True)
 
 
 def adaptive_avg_pool2d(input: Tensor, output_size) -> Tensor:
-    return advanced_ops.adaptive_avg_pool2d(input, output_size)
+    from .autograd_ops import AdaptiveAvgPoolFn
+
+    return AdaptiveAvgPoolFn.apply(input, _pair(output_size))
 
 
 def adaptive_avg_pool3d(input: Tensor, output_size) -> Tensor:
-    return _adaptive_pool(input, output_size, mode="avg", ndim=3)
+    from .autograd_ops import AdaptiveAvgPoolFn
+
+    return AdaptiveAvgPoolFn.apply(input, _triple(output_size), True)
 
 
 def adaptive_max_pool1d(input: Tensor, output_size, return_indices=False):
-    return _adaptive_pool(input, output_size, mode="max", ndim=1)
+    from .autograd_ops import AdaptiveMaxPoolFn
+
+    return AdaptiveMaxPoolFn.apply(input, _single(output_size), True)
 
 
 def adaptive_max_pool2d(input: Tensor, output_size, return_indices=False) -> Tensor:
-    return advanced_ops.adaptive_max_pool2d(input, output_size)
+    from .autograd_ops import AdaptiveMaxPoolFn
+
+    return AdaptiveMaxPoolFn.apply(input, _pair(output_size), False)
 
 
 def adaptive_max_pool3d(input: Tensor, output_size, return_indices=False) -> Tensor:
-    return _adaptive_pool(input, output_size, mode="max", ndim=3)
+    from .autograd_ops import AdaptiveMaxPoolFn
+
+    return AdaptiveMaxPoolFn.apply(input, _triple(output_size), True)
 
 
 def layer_norm(
