@@ -20,8 +20,9 @@ except ImportError:
 from .interface_bindings import *
 from . import metrics
 from . import datasets
+from . import sampling
 
-__all__ = ["_neural_engine_bridge", "metrics", "datasets"]
+__all__ = ["_neural_engine_bridge", "metrics", "datasets", "sampling"]
 
 
 def __getattr__(name):
