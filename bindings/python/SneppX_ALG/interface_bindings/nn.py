@@ -1816,16 +1816,14 @@ class PoissonNLLLoss(_Loss):
         self.eps = eps
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
-        loss = np.exp(x) - y * x
+        loss = input.exp() - target * input
         if self.full:
-            loss = loss + y * np.log(y + self.eps) - y + y * np.log(2 * np.pi) / 2
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+            y = target.data.astype(np.float64)
+            const = (y * np.log(y + self.eps) - y + y * np.log(2 * np.pi) / 2).astype(
+                "float32"
+            )
+            loss = loss + Tensor(const)
+        return _reduce_loss(loss, self.reduction)
 
 
 class SoftMarginLoss(_Loss):
