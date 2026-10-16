@@ -2831,14 +2831,9 @@ class Upsample(Module):
             target = spatial
         scales = tuple(t / s for s, t in zip(spatial, target))
         if self.mode in ("bilinear", "trilinear"):
-            if ndim in (2, 3):
-                from .autograd_ops import UpsampleLinearNdFn
+            from .autograd_ops import UpsampleLinearNdFn
 
-                return UpsampleLinearNdFn.apply(x, target, bool(self.align_corners))
-            from scipy.ndimage import zoom
-
-            out = zoom(xd, (1.0, 1.0) + scales, order=1, mode="nearest")
-            return Tensor(out.astype(xd.dtype), dtype=x.dtype, device=x.device)
+            return UpsampleLinearNdFn.apply(x, target, bool(self.align_corners))
         from .autograd_ops import UpsampleNearestFn
 
         return UpsampleNearestFn.apply(x, target)
