@@ -390,6 +390,12 @@ def max_pool1d(
     ceil_mode=False,
     return_indices=False,
 ):
+    if not return_indices:
+        from .autograd_ops import MaxPool
+
+        k = _single(kernel_size)
+        s = _single(stride) if stride is not None else k
+        return MaxPool.apply(input, k, s, _single(padding), _single(dilation))
     x = input.data
     if isinstance(kernel_size, int):
         kernel_size = (kernel_size,)
@@ -433,6 +439,16 @@ def max_pool2d(
     ceil_mode=False,
     return_indices=False,
 ):
+    if not return_indices:
+        from .autograd_ops import MaxPool
+
+        return MaxPool.apply(
+            input,
+            _pair(kernel_size),
+            _pair(stride) if stride is not None else _pair(kernel_size),
+            _pair(padding),
+            _pair(dilation),
+        )
     return advanced_ops.max_pool2d(
         input,
         kernel_size,
@@ -452,6 +468,16 @@ def max_pool3d(
     ceil_mode=False,
     return_indices=False,
 ):
+    if not return_indices:
+        from .autograd_ops import MaxPool
+
+        return MaxPool.apply(
+            input,
+            _triple(kernel_size),
+            _triple(stride) if stride is not None else _triple(kernel_size),
+            _triple(padding),
+            _triple(dilation),
+        )
     x = input.data
     k = _triple(kernel_size)
     s = _triple(stride) if stride is not None else k
@@ -499,18 +525,11 @@ def avg_pool1d(
     ceil_mode=False,
     count_include_pad=True,
 ) -> Tensor:
-    x = np.asarray(input.data, dtype=np.float64)
-    k = _single(kernel_size)[0]
-    s = (_single(stride)[0]) if stride is not None else k
-    p = _single(padding)[0]
-    L = x.shape[-1]
-    L_out = (L + 2 * p - k) // s + 1
-    if p:
-        x = np.pad(x, [(0, 0)] * (x.ndim - 1) + [(p, p)], mode="constant")
-    out = np.zeros(x.shape[:-1] + (L_out,), dtype=np.float32)
-    for i in range(L_out):
-        out[..., i] = x[..., i * s : i * s + k].mean(axis=-1)
-    return Tensor.from_numpy(out)
+    from .autograd_ops import AvgPool
+
+    k = _single(kernel_size)
+    s = _single(stride) if stride is not None else k
+    return AvgPool.apply(input, k, s, _single(padding))
 
 
 def avg_pool2d(
@@ -522,7 +541,11 @@ def avg_pool2d(
     count_include_pad=True,
     divisor_override=None,
 ) -> Tensor:
-    return advanced_ops.avg_pool2d(input, kernel_size, stride=stride, padding=padding)
+    from .autograd_ops import AvgPool
+
+    k = _pair(kernel_size)
+    s = _pair(stride) if stride is not None else k
+    return AvgPool.apply(input, k, s, _pair(padding))
 
 
 def avg_pool3d(
@@ -534,7 +557,11 @@ def avg_pool3d(
     count_include_pad=True,
     divisor_override=None,
 ) -> Tensor:
-    return _pool_nd_mean(input, 3, kernel_size, stride, padding)
+    from .autograd_ops import AvgPool
+
+    k = _triple(kernel_size)
+    s = _triple(stride) if stride is not None else k
+    return AvgPool.apply(input, k, s, _triple(padding))
 
 
 def adaptive_avg_pool1d(input: Tensor, output_size) -> Tensor:

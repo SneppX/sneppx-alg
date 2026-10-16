@@ -118,3 +118,24 @@ def test_functional_conv2d_matches_nn_module_value():
     y_f = F.conv2d(x, conv.weight, conv.bias, padding=1)
     y_m = conv(x)
     np.testing.assert_allclose(y_f.data, y_m.data, atol=1e-5)
+
+
+def test_functional_pools_are_differentiable():
+    from SneppX_ALG.interface_bindings import nn
+
+    cases = [
+        ("max_pool1d", F.max_pool1d, nn.MaxPool1d(2), (2, 3, 8)),
+        ("max_pool2d", F.max_pool2d, nn.MaxPool2d(2), (2, 3, 8, 8)),
+        ("max_pool3d", F.max_pool3d, nn.MaxPool3d(2), (1, 3, 4, 4, 4)),
+        ("avg_pool1d", F.avg_pool1d, nn.AvgPool1d(2), (2, 3, 8)),
+        ("avg_pool2d", F.avg_pool2d, nn.AvgPool2d(2), (2, 3, 8, 8)),
+        ("avg_pool3d", F.avg_pool3d, nn.AvgPool3d(2), (1, 3, 4, 4, 4)),
+    ]
+    for name, fn, mod, shape in cases:
+        x = Tensor(np.random.randn(*shape).astype("float32"), requires_grad=True)
+        out = fn(x, 2)
+        assert out.requires_grad, f"{name} not differentiable"
+        out.sum().backward()
+        assert x.grad is not None and np.isfinite(x.grad.data).all(), name
+        # value must match the nn module
+        np.testing.assert_allclose(out.data, mod(x).data, atol=1e-5, err_msg=name)
