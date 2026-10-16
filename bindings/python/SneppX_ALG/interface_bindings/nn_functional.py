@@ -931,11 +931,9 @@ def ctc_loss(
 
 
 def soft_margin_loss(input: Tensor, target: Tensor, reduction: str = "mean") -> Tensor:
-    a = input.data.astype(np.float64)
-    t = target.data.astype(np.float64)
-    losses = np.log1p(np.exp(-a * t))
-    val = _reduce(losses, reduction)
-    return Tensor(val, dtype=input.dtype_name, device=input.device)
+    from . import nn as _nn
+
+    return _nn.SoftMarginLoss(reduction)(input, target)
 
 
 def poisson_nll_loss(
@@ -946,14 +944,17 @@ def poisson_nll_loss(
     eps: float = 1e-8,
     reduction: str = "mean",
 ) -> Tensor:
-    a = input.data.astype(np.float64)
-    t = target.data.astype(np.float64)
+    from . import nn as _nn
+
     if log_input:
-        losses = np.exp(a) - t * a
+        loss = input.exp() - target * input
     else:
-        losses = a - t * np.log(a + eps)
-    val = _reduce(losses, reduction)
-    return Tensor(val, dtype=input.dtype_name, device=input.device)
+        loss = input - target * (input + eps).log()
+    if full:
+        y = target.data.astype(np.float64)
+        const = (y * np.log(y + eps) - y + y * np.log(2 * np.pi) / 2).astype("float32")
+        loss = loss + Tensor(const)
+    return _nn._reduce_loss(loss, reduction)
 
 
 # ---------------------------------------------------------------------------

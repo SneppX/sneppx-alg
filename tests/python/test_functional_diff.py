@@ -181,3 +181,29 @@ def test_functional_adaptive_pools_are_differentiable():
         out.sum().backward()
         assert x.grad is not None and np.isfinite(x.grad.data).all(), name
         np.testing.assert_allclose(out.data, mod(x).data, atol=1e-5, err_msg=name)
+
+
+def test_functional_soft_margin_loss_is_differentiable():
+    x = _t(4, 3)
+    y = Tensor(np.random.choice([-1.0, 1.0], size=(4, 3)).astype("float32"))
+    loss = F.soft_margin_loss(x, y)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    ref = np.log1p(np.exp(-y.data * x.data)).mean()
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
+    )
+
+
+def test_functional_poisson_nll_loss_is_differentiable():
+    x = _t(5, 3)
+    y = Tensor(np.random.rand(5, 3).astype("float32"))
+    loss = F.poisson_nll_loss(x, y)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    ref = (np.exp(x.data) - y.data * x.data).mean()
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
+    )
