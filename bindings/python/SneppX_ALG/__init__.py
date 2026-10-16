@@ -23,6 +23,7 @@ from . import datasets
 from . import sampling
 from . import regularization
 from . import callbacks
+from . import linalg
 
 __all__ = [
     "_neural_engine_bridge",
@@ -31,6 +32,7 @@ __all__ = [
     "sampling",
     "regularization",
     "callbacks",
+    "linalg",
 ]
 
 
