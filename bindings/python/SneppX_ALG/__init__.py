@@ -14,11 +14,13 @@ except ImportError:
         from . import _SNEPPX_c as _neural_engine_bridge
     except ImportError:
         import types
+
         _neural_engine_bridge = types.ModuleType("_neural_engine_bridge_fallback")
 
 from .interface_bindings import *
+from . import metrics
 
-__all__ = ["_neural_engine_bridge"]
+__all__ = ["_neural_engine_bridge", "metrics"]
 
 
 def __getattr__(name):
@@ -26,12 +28,16 @@ def __getattr__(name):
         # standalone numpy-only ONNX toolkit in the top-level onnx/ package
         import os as _os
         import sys as _sys
-        _root = _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.dirname(
-            _os.path.abspath(__file__)
-        ))))
+
+        _root = _os.path.dirname(
+            _os.path.dirname(
+                _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+            )
+        )
         if _root not in _sys.path:
             _sys.path.insert(0, _root)
         import importlib as _importlib
+
         _mod = _importlib.import_module("onnx")
         globals()["onnx"] = _mod
         return _mod
