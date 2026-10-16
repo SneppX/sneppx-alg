@@ -131,3 +131,25 @@ def test_dropout_eval_is_identity_differentiable():
     y = m(x)
     assert y.requires_grad
     assert np.allclose(y.data, x0)
+
+
+@pytest.mark.parametrize(
+    "cls,shape,args,ptype",
+    [
+        (nn.Pooling1d, (2, 3, 10), (2, 2, 0, 1), "max"),
+        (nn.Pooling1d, (2, 3, 10), (3, 1, 1, 1), "mean"),
+        (nn.Pooling2d, (2, 3, 8, 8), (2, 2, 0, 1), "max"),
+        (nn.Pooling2d, (2, 2, 6, 6), (3, 2, 1, 1), "mean"),
+        (nn.Pooling3d, (1, 2, 5, 5, 5), (2, 2, 0, 1), "max"),
+    ],
+)
+def test_generic_pooling_is_differentiable(cls, shape, args, ptype):
+    np.random.seed(13)
+    x0 = np.random.randn(*shape).astype("float32")
+    m = cls(*args, pool_type=ptype)
+    x = Tensor(x0)
+    x.requires_grad_(True)
+    y = m(x)
+    assert y.requires_grad
+    (y * y).sum().backward()
+    assert np.isfinite(x.grad.data).all()

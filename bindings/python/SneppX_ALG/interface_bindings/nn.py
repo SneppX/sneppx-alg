@@ -1917,27 +1917,13 @@ class Pooling1d(Module):
         self.pool_type = pool_type
 
     def forward(self, x: Tensor) -> Tensor:
-        n, c, l = x.shape
-        k = self.kernel_size
-        s = self.stride
-        p = self.padding
-        d = self.dilation
-        if p > 0:
-            x_data = np.pad(x.data, ((0, 0), (0, 0), (p, p)), mode="constant")
-            l = l + 2 * p
-        else:
-            x_data = x.data
-        l_out = (l - d * (k - 1) - 1) // s + 1
-        out = np.zeros((n, c, l_out), dtype=np.float32)
-        for i in range(l_out):
-            start = i * s
-            end = start + d * k
-            window = x_data[:, :, start:end]
-            if self.pool_type == "max":
-                out[:, :, i] = window.max(axis=2).astype(np.float32)
-            else:
-                out[:, :, i] = window.mean(axis=2).astype(np.float32)
-        return Tensor(out, dtype=x.dtype, device=x.device)
+        from .autograd_ops import AvgPool, MaxPool
+
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 1
+        )
+        fn = MaxPool if self.pool_type == "max" else AvgPool
+        return fn.apply(x, k, s, p, d)
 
 
 class Pooling2d(Module):
@@ -1967,16 +1953,13 @@ class Pooling2d(Module):
         self.pool_type = pool_type
 
     def forward(self, x: Tensor) -> Tensor:
-        from .advanced_ops import max_pool2d as _max_pool2d
-        from .advanced_ops import avg_pool2d as _avg_pool2d
+        from .autograd_ops import AvgPool, MaxPool
 
-        if self.pool_type == "max":
-            return _max_pool2d(
-                x, self.kernel_size, self.stride, self.padding, self.dilation
-            )
-        return _avg_pool2d(
-            x, self.kernel_size, self.stride, self.padding, self.dilation
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 2
         )
+        fn = MaxPool if self.pool_type == "max" else AvgPool
+        return fn.apply(x, k, s, p, d)
 
 
 class Pooling3d(Module):
@@ -2006,41 +1989,13 @@ class Pooling3d(Module):
         self.pool_type = pool_type
 
     def forward(self, x: Tensor) -> Tensor:
-        n, c, dep, h, w = x.shape
-        kd, kh, kw = self.kernel_size
-        sD, sH, sW = self.stride
-        pD, pH, pW = self.padding
-        dD, dH, dW = self.dilation
-        if pD > 0 or pH > 0 or pW > 0:
-            x_data = np.pad(
-                x.data,
-                ((0, 0), (0, 0), (pD, pD), (pH, pH), (pW, pW)),
-                mode="constant",
-            )
-            dep = dep + 2 * pD
-            h = h + 2 * pH
-            w = w + 2 * pW
-        else:
-            x_data = x.data
-        out_d = (dep - dD * (kd - 1) - 1) // sD + 1
-        out_h = (h - dH * (kh - 1) - 1) // sH + 1
-        out_w = (w - dW * (kw - 1) - 1) // sW + 1
-        out = np.zeros((n, c, out_d, out_h, out_w), dtype=np.float32)
-        for i in range(out_d):
-            for j in range(out_h):
-                for k in range(out_w):
-                    d_start = i * sD
-                    d_end = d_start + dD * kd
-                    h_start = j * sH
-                    h_end = h_start + dH * kh
-                    w_start = k * sW
-                    w_end = w_start + dW * kw
-                    window = x_data[:, :, d_start:d_end, h_start:h_end, w_start:w_end]
-                    if self.pool_type == "max":
-                        out[:, :, i, j, k] = window.max(axis=(2, 3, 4))
-                    else:
-                        out[:, :, i, j, k] = window.mean(axis=(2, 3, 4))
-        return Tensor(out, dtype=x.dtype, device=x.device)
+        from .autograd_ops import AvgPool, MaxPool
+
+        k, s, p, d = _norm_pool_param(
+            self.kernel_size, self.stride, self.padding, self.dilation, 3
+        )
+        fn = MaxPool if self.pool_type == "max" else AvgPool
+        return fn.apply(x, k, s, p, d)
 
 
 class AdaptiveAvgPool1d(Module):
