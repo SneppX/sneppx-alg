@@ -39,3 +39,21 @@ def test_poisson_nll_loss_full_is_differentiable():
     loss = nn.PoissonNLLLoss(full=True)(x, y)
     loss.backward()
     assert np.isfinite(x.grad.data).all()
+
+
+def test_gaussian_nll_loss_is_differentiable_and_matches_reference():
+    x = _t(4, 3)
+    y = Tensor(np.random.randn(4, 3).astype("float32"))
+    var = Tensor((np.random.rand(4, 3).astype("float32") + 0.5))
+    loss = nn.GaussianNLLLoss()(x, y, var)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    v = var.data
+    ref = (
+        0.5
+        * (np.log(2 * np.pi) + np.log(v + 1e-6) + (x.data - y.data) ** 2 / (v + 1e-6))
+    ).mean()
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
+    )

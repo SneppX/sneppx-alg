@@ -1773,18 +1773,16 @@ class GaussianNLLLoss(_Loss):
         self.eps = eps
 
     def forward(self, input: Tensor, target: Tensor, var: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
-        v = var.data
         eps = self.eps
-        loss = 0.5 * (np.log(2 * np.pi) + np.log(v + eps) + (x - y) ** 2 / (v + eps))
         if self.full:
-            loss = 0.5 * (np.log(2 * np.pi * v + eps) + (x - y) ** 2 / (v + eps))
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+            loss = 0.5 * (
+                (var * (2 * np.pi) + eps).log() + (input - target) ** 2 / (var + eps)
+            )
+        else:
+            loss = 0.5 * (
+                (var + eps).log() + (input - target) ** 2 / (var + eps)
+            ) + 0.5 * math.log(2 * np.pi)
+        return _reduce_loss(loss, self.reduction)
 
 
 class HingeEmbeddingLoss(_Loss):

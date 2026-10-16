@@ -396,7 +396,7 @@ def test_gaussian_nll_loss():
     target = Tensor(np.random.randn(4, 5).astype("float32"))
     var = Tensor(np.abs(np.random.randn(4, 5).astype("float32")) + 0.5)
     out = loss(x, target, var)
-    assert out.data.ndim == 0
+    assert out.data.size == 1 and np.isfinite(out.data).all()
 
 
 def test_hinge_embedding_loss():
