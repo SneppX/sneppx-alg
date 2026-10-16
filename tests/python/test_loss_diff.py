@@ -57,3 +57,33 @@ def test_gaussian_nll_loss_is_differentiable_and_matches_reference():
     np.testing.assert_allclose(
         float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
     )
+
+
+def test_hinge_embedding_loss_is_differentiable_and_matches_reference():
+    x = _t(4, 3)
+    y = Tensor(np.random.choice([-1.0, 1.0], size=(4, 3)).astype("float32"))
+    loss = nn.HingeEmbeddingLoss()(x, y)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    ref = np.where(y.data >= 0, x.data, np.maximum(0.0, 1.0 - x.data)).mean()
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-4
+    )
+
+
+def test_multi_label_soft_margin_loss_is_differentiable_and_matches_reference():
+    x = _t(4, 3)
+    y = Tensor((np.random.rand(4, 3) > 0.5).astype("float32"))
+    loss = nn.MultiLabelSoftMarginLoss()(x, y)
+    assert loss.requires_grad
+    loss.backward()
+    assert x.grad is not None and np.isfinite(x.grad.data).all()
+    xc = x.data
+    ref = -(
+        y.data * np.log(np.clip(xc, 1e-7, 1.0))
+        + (1 - y.data) * np.log(np.clip(1 - xc, 1e-7, 1.0))
+    ).mean()
+    np.testing.assert_allclose(
+        float(np.asarray(loss.data).reshape(-1)[0]), ref, atol=1e-3
+    )

@@ -1791,15 +1791,10 @@ class HingeEmbeddingLoss(_Loss):
         self.margin = margin
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
-        # y in {-1, +1}
-        loss = np.where(y >= 0, x, np.maximum(0.0, self.margin - x))
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+        # y in {-1, +1}: mask selects x for y>=0, max(0, margin - x) otherwise.
+        mask = Tensor((target.data >= 0).astype(np.float32))
+        loss = mask * input + (1.0 - mask) * (self.margin - input).clamp_min(0.0)
+        return _reduce_loss(loss, self.reduction)
 
 
 class PoissonNLLLoss(_Loss):
@@ -1884,18 +1879,11 @@ class MultiLabelMarginLoss(_Loss):
 
 class MultiLabelSoftMarginLoss(_Loss):
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        x = input.data
-        y = target.data
         # per-element BCE (multi-label, many-hot targets)
-        loss = -(
-            y * np.log(np.clip(x, 1e-7, 1.0))
-            + (1 - y) * np.log(np.clip(1 - x, 1e-7, 1.0))
-        )
-        if self.reduction == "mean":
-            loss = loss.mean()
-        elif self.reduction == "sum":
-            loss = loss.sum()
-        return Tensor(np.array(loss, dtype=np.float32))
+        pos = input.clamp(1e-7, 1.0).log()
+        neg = (1.0 - input).clamp(1e-7, 1.0).log()
+        loss = -(target * pos + (1.0 - target) * neg)
+        return _reduce_loss(loss, self.reduction)
 
 
 class Pooling1d(Module):
