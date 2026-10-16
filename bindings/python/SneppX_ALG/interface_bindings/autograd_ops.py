@@ -2434,6 +2434,85 @@ class MaxUnpoolFn(Function):
         return [Tensor(gx, dtype=grad_output.dtype), None]
 
 
+class EmbeddingBagFn(Function):
+    """Differentiable EmbeddingBag (sum/mean/max) w.r.t. the embedding ``weight``.
+
+    ``indices``/``offsets``/``per_sample_weights`` are passed as plain numpy
+    arrays (or ``None``); only ``weight`` participates in the autograd graph.
+    """
+
+    @staticmethod
+    def forward(ctx, weight, idx, off, mode, psw):
+        w = np.asarray(weight.data, dtype=np.float64)
+        idx = np.asarray(idx, dtype=np.int64).reshape(-1)
+        emb = w[idx]
+        if psw is not None:
+            psw = np.asarray(psw, dtype=np.float64).reshape(-1)
+            emb = emb * psw[:, None]
+        if off is None:
+            groups = [np.arange(idx.size, dtype=np.int64)]
+        else:
+            off = np.clip(np.asarray(off, dtype=np.int64), 0, idx.size)
+            groups = [
+                np.arange(off[i], off[i + 1], dtype=np.int64)
+                for i in range(off.size - 1)
+            ]
+        D = w.shape[1]
+        out = np.zeros((len(groups), D), dtype=np.float64)
+        argmax = []
+        for g, rows in enumerate(groups):
+            if rows.size == 0:
+                argmax.append(np.full(D, -1, dtype=np.int64))
+                continue
+            seg = emb[rows]
+            if mode == "sum":
+                out[g] = seg.sum(axis=0)
+            elif mode == "mean":
+                out[g] = seg.mean(axis=0)
+            else:
+                am = seg.argmax(axis=0)
+                out[g] = seg[am, np.arange(D)]
+                argmax.append(am)
+        ctx.save_attr(
+            idx=idx,
+            mode=mode,
+            psw=psw,
+            argmax=argmax,
+            groups=groups,
+            weight_shape=w.shape,
+        )
+        return Tensor(out, dtype=weight.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idx = ctx.get_attr("idx")
+        mode = ctx.get_attr("mode")
+        psw = ctx.get_attr("psw")
+        argmax = ctx.get_attr("argmax")
+        groups = ctx.get_attr("groups")
+        n_emb, D = ctx.get_attr("weight_shape")
+        g = np.asarray(grad_output.data, dtype=np.float64).reshape(len(groups), D)
+        gw = np.zeros((n_emb, D), dtype=np.float64)
+        for gi, rows in enumerate(groups):
+            if rows.size == 0:
+                continue
+            if mode == "sum":
+                contrib = np.broadcast_to(g[gi][None, :], (rows.size, D)).copy()
+            elif mode == "mean":
+                contrib = np.broadcast_to(
+                    g[gi][None, :] / rows.size, (rows.size, D)
+                ).copy()
+            else:
+                contrib = np.zeros((rows.size, D), dtype=np.float64)
+                am = argmax[gi]
+                valid = am >= 0
+                contrib[am[valid], np.arange(D)[valid]] = g[gi][valid]
+            if psw is not None:
+                contrib = contrib * psw[rows][:, None]
+            np.add.at(gw, idx[rows], contrib)
+        return [Tensor(gw, dtype=grad_output.dtype)]
+
+
 class PadNdFn(Function):
     """Differentiable N-D padding via ``np.pad`` (constant / reflect / edge).
 

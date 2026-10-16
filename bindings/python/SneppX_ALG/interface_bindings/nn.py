@@ -2698,37 +2698,16 @@ class EmbeddingBag(Module):
         offsets: Optional[Tensor] = None,
         per_sample_weights: Optional[Tensor] = None,
     ) -> Tensor:
+        from .autograd_ops import EmbeddingBagFn
+
         idx = input.data.astype(np.int64).reshape(-1)
-        w = self.weight.data
-        emb = w[idx]
-        if per_sample_weights is not None:
-            psw = per_sample_weights.data.astype(np.float64).reshape(-1)
-            emb = emb * psw[:, None]
-        if offsets is None:
-            if self.mode == "sum":
-                agg = emb.sum(axis=0, keepdims=True)
-            elif self.mode == "mean":
-                agg = emb.mean(axis=0, keepdims=True)
-            else:  # max
-                agg = emb.max(axis=0, keepdims=True)
-            return Tensor(agg, dtype=self.weight.dtype, device=self.weight.device)
-        off = offsets.data.astype(np.int64)
-        off = np.clip(off, 0, idx.size)
-        n = off.size - 1
-        bags = []
-        for i in range(n):
-            seg = emb[off[i] : off[i + 1]]
-            if seg.shape[0] == 0:
-                bags.append(np.zeros(emb.shape[1], dtype=np.float32))
-            elif self.mode == "sum":
-                bags.append(seg.sum(axis=0))
-            elif self.mode == "mean":
-                bags.append(seg.mean(axis=0))
-            else:
-                bags.append(seg.max(axis=0))
-        return Tensor(
-            np.stack(bags), dtype=self.weight.dtype, device=self.weight.device
+        off = offsets.data.astype(np.int64) if offsets is not None else None
+        psw = (
+            per_sample_weights.data.astype(np.float64).reshape(-1)
+            if per_sample_weights is not None
+            else None
         )
+        return EmbeddingBagFn.apply(self.weight, idx, off, self.mode, psw)
 
 
 class CosineSimilarity(Module):

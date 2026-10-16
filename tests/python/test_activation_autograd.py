@@ -153,3 +153,48 @@ def test_generic_pooling_is_differentiable(cls, shape, args, ptype):
     assert y.requires_grad
     (y * y).sum().backward()
     assert np.isfinite(x.grad.data).all()
+
+
+def test_embedding_bag_sum_grad():
+    np.random.seed(15)
+    m = nn.EmbeddingBag(6, 3, mode="sum")
+    idx = Tensor(np.array([1, 1, 4], dtype="int64"))
+    y = m(idx)
+    assert y.requires_grad
+    y.backward(np.ones_like(y.data))
+    gw = m.weight.grad.data
+    assert np.allclose(gw[1], 2.0)
+    assert np.allclose(gw[4], 1.0)
+    assert np.allclose(gw[0], 0.0)
+
+
+def test_embedding_bag_mean_grad_with_offsets():
+    np.random.seed(16)
+    m = nn.EmbeddingBag(6, 3, mode="mean")
+    idx = Tensor(np.array([0, 2, 4, 1, 3], dtype="int64"))
+    off = Tensor(np.array([0, 2, 5], dtype="int64"))
+    y = m(idx, off)
+    assert y.shape == (2, 3)
+    y.backward(np.ones_like(y.data))
+    gw = m.weight.grad.data
+    assert np.allclose(gw[0], 0.5)
+    assert np.allclose(gw[2], 0.5)
+    assert np.allclose(gw[1], 1.0 / 3)
+    assert np.allclose(gw[4], 1.0 / 3)
+    assert np.allclose(gw[3], 1.0 / 3)
+
+
+def test_embedding_bag_max_grad_routes_to_argmax():
+    np.random.seed(17)
+    m = nn.EmbeddingBag(4, 2, mode="max")
+    m.weight = Tensor(
+        np.array([[0.1, 0.1], [0.2, 0.9], [0.5, 0.3], [0.0, 0.0]], dtype="float32")
+    )
+    idx = Tensor(np.array([0, 1, 2], dtype="int64"))
+    y = m(idx)
+    assert np.allclose(y.data, [[0.5, 0.9]], atol=1e-6)
+    y.backward(np.ones_like(y.data))
+    gw = m.weight.grad.data
+    assert np.allclose(gw[2], [1.0, 0.0])
+    assert np.allclose(gw[1], [0.0, 1.0])
+    assert np.allclose(gw[0], [0.0, 0.0])
