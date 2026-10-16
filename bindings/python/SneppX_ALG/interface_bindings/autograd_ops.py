@@ -247,6 +247,11 @@ class Div(Function):
         if isinstance(b, (int, float)):
             _save_attr(ctx, b_val=b, a_shape=tuple(a.shape))
             return Tensor(a.data / b, dtype=a.dtype)
+        if isinstance(a, (int, float)):
+            _save_attr(ctx, a_val=a, b_shape=tuple(b.shape))
+            if ctx is not None:
+                ctx.save_for_backward(b=b)
+            return Tensor(a / b.data, dtype=b.dtype)
         if ctx is not None:
             ctx.save_for_backward(a=a, b=b)
         _save_attr(ctx, a_shape=tuple(a.shape), b_shape=tuple(b.shape))
@@ -264,6 +269,20 @@ class Div(Function):
                 dtype=grad_output.dtype,
             )
             return [ga, None]
+        a_val = _get_attr(ctx, "a_val")
+        if a_val is not None:
+            b = _get_saved_tensor(ctx, "b")
+            if create_graph:
+                num = Mul.apply(_as_const(-a_val, grad_output.dtype), grad_output)
+                gb = Div.apply(num, Mul.apply(b, b))
+                return [None, gb]
+            gb = Tensor(
+                _reduce_to_shape(
+                    -a_val * grad_output.data / (b.data**2), _get_attr(ctx, "b_shape")
+                ),
+                dtype=b.dtype,
+            )
+            return [None, gb]
         a = _get_saved_tensor(ctx, "a")
         b = _get_saved_tensor(ctx, "b")
         if a is None or b is None:

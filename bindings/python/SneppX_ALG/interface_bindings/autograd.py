@@ -64,6 +64,7 @@ class no_grad:
     def __exit__(self, *exc):
         _GRAD_ENABLED[0] = self._prev
 
+
 # ---------------------------------------------------------------------------
 # Context — saved state between forward and backward
 # ---------------------------------------------------------------------------
@@ -121,15 +122,14 @@ class Function:
         # Determine whether any input requires gradient. Under create_graph the
         # gradient tensors themselves carry grad_fn, so treat those as needing
         # grad too (this is what wires up higher-order derivatives).
-        needs_grad = _any_requires_grad(args) or (
-            _CREATE_GRAPH[0] and _GRAD_ENABLED[0]
-        )
+        needs_grad = _any_requires_grad(args) or (_CREATE_GRAPH[0] and _GRAD_ENABLED[0])
 
         output = cls.forward(ctx, *args, **kwargs)
 
         if needs_grad and _GRAD_ENABLED[0] and isinstance(output, Tensor):
             output.requires_grad = True
-            fn = _GradFn(cls, ctx, _tensor_inputs(args))
+            positions = _tensor_positions(args)
+            fn = _GradFn(cls, ctx, _tensor_inputs(args), positions, len(args))
             output._attach_grad_fn(fn)
 
         return output
@@ -143,12 +143,18 @@ class Function:
 class _GradFn:
     """Wraps the operation, context, and input tensors for one edge."""
 
-    __slots__ = ("op_cls", "ctx", "inputs")
+    __slots__ = ("op_cls", "ctx", "inputs", "positions", "nargs")
 
-    def __init__(self, op_cls, ctx, inputs):
+    def __init__(self, op_cls, ctx, inputs, positions=None, nargs=None):
         self.op_cls = op_cls
         self.ctx = ctx
         self.inputs = inputs  # list of Tensors that were inputs to the op
+        # Positional indices of the Tensor args within the full arg list, or
+        # None when the mapping is ambiguous (e.g. nested list/tuple args).
+        # Used to realign backward output when an op returns one gradient per
+        # positional argument (including leading ``None`` for scalar args).
+        self.positions = positions
+        self.nargs = nargs
 
 
 _GradFn_ref = _GradFn  # export for tensor.py
@@ -229,8 +235,20 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
             if input_grads is None:
                 continue
 
+            # Realign backward output: some ops return one gradient per
+            # positional argument (a leading ``None`` for scalar args), while
+            # others return one per Tensor input. Detect the former by length.
+            grad_list = input_grads
+            positions = t.grad_fn.positions
+            if (
+                positions is not None
+                and t.grad_fn.nargs is not None
+                and len(input_grads) == t.grad_fn.nargs
+            ):
+                grad_list = [input_grads[p] for p in positions]
+
             # Distribute gradients to inputs
-            for inp, ig in zip(t.grad_fn.inputs, input_grads):
+            for inp, ig in zip(t.grad_fn.inputs, grad_list):
                 if not isinstance(inp, Tensor) or ig is None:
                     continue
                 if inp.is_leaf:
@@ -241,9 +259,7 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
                     else:
                         _acc_grad(inp, ig, create_graph)
                 else:
-                    grads[id(inp)] = _merge_grads(
-                        grads.get(id(inp)), ig, create_graph
-                    )
+                    grads[id(inp)] = _merge_grads(grads.get(id(inp)), ig, create_graph)
         return out_grads if return_grads else None
     finally:
         _CREATE_GRAPH[0] = prev_cg
@@ -365,6 +381,21 @@ def _tensor_inputs(args):
                 if isinstance(item, Tensor):
                     result.append(item)
     return result
+
+
+def _tensor_positions(args):
+    """Return the positional indices of top-level Tensor args.
+
+    Returns ``None`` when any arg is a nested list/tuple (ambiguous mapping),
+    so callers fall back to assuming backward output is already in Tensor order.
+    """
+    positions = []
+    for i, a in enumerate(args):
+        if isinstance(a, Tensor):
+            positions.append(i)
+        elif isinstance(a, (list, tuple)):
+            return None
+    return positions
 
 
 def _any_requires_grad(args):
