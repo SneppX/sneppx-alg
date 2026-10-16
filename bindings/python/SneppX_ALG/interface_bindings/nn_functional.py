@@ -218,18 +218,21 @@ def glu(input: Tensor, dim: int = -1) -> Tensor:
 
 
 def prelu(input: Tensor, weight: Tensor) -> Tensor:
-    w = weight.data
-    zeros = np.where(input.data >= 0, input.data, input.data * w).astype(
-        input.dtype_name
-    )
-    return Tensor(zeros, dtype=input.dtype_name, device=input.device)
+    from .autograd_ops import PReluFn
+
+    return PReluFn.apply(input, weight)
 
 
 # ---------------------------------------------------------------------------
 # Linear / conv / pool / norm / embedding
 # ---------------------------------------------------------------------------
 def linear(input: Tensor, weight: Tensor, bias: Optional[Tensor] = None) -> Tensor:
-    return advanced_ops.linear(input, weight, bias)
+    # y = x @ W^T + b — built with differentiable tensor ops (matches
+    # advanced_ops.linear values) so the functional form is trainable.
+    out = input @ weight.T
+    if bias is not None:
+        out = out + bias
+    return out
 
 
 def conv1d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
@@ -312,6 +315,10 @@ def embedding(
     scale_grad_by_freq=False,
     sparse=False,
 ) -> Tensor:
+    if padding_idx is None and max_norm is None:
+        from .autograd_ops import EmbeddingFn
+
+        return EmbeddingFn.apply(weight, input)
     idx = input.data.astype(np.int64)
     w = weight.data
     out = Tensor.from_numpy(w[idx])
@@ -331,32 +338,11 @@ def embedding_bag(
     include_last_offset: bool = False,
     sparse: bool = False,
 ) -> Tensor:
+    from .autograd_ops import EmbeddingBagFn
+
     idx = input.data.astype(np.int64).reshape(-1)
-    w = weight.data
-    emb = w[idx]
-    if offsets is None:
-        if mode == "sum":
-            agg = emb.sum(axis=0, keepdims=True)
-        elif mode == "max":
-            agg = emb.max(axis=0, keepdims=True)
-        else:
-            agg = emb.mean(axis=0, keepdims=True)
-        return Tensor.from_numpy(agg)
-    off = offsets.data.astype(np.int64)
-    off = np.clip(off, 0, idx.size)
-    n = off.size - 1
-    bags = []
-    for i in range(n):
-        seg = emb[off[i] : off[i + 1]]
-        if seg.shape[0] == 0:
-            bags.append(np.zeros(emb.shape[1], dtype=np.float32))
-        elif mode == "sum":
-            bags.append(seg.sum(axis=0))
-        elif mode == "max":
-            bags.append(seg.max(axis=0))
-        else:
-            bags.append(seg.mean(axis=0))
-    return Tensor.from_numpy(np.stack(bags))
+    off = offsets.data.astype(np.int64) if offsets is not None else None
+    return EmbeddingBagFn.apply(weight, idx, off, mode, None)
 
 
 def max_pool1d(
