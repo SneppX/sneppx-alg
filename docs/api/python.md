@@ -264,3 +264,16 @@ Crypto correctness is pinned by known-answer tests:
 $env:PYTHONPATH = "bindings/python"
 python -m pytest tests/python/test_crypto_kat.py -q   # Dilithium (FIPS 204) + SPHINCS+ KAT
 ```
+
+## Extended utilities
+
+A set of pure-Python, NumPy-backed utility packages is included under SneppX_ALG:
+sampling, 
+egularization, callbacks, linalg, signal, graph, stats,
+structured_output, 
+ag, gents, observability, speculative. Each module
+provides minimal, testable primitives and is re-exported from the top-level package.
+
+`python
+from SneppX_ALG import agents, rag, structured_output, observability, speculative
+`
