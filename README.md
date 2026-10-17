@@ -11,7 +11,7 @@
 <a href="https://github.com/SneppX/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
 </p>
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
 
 > **SneppX-ALG** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
 
@@ -195,7 +195,7 @@ stats, structured_output, rag, agents, observability, speculative
 `
 
 Import as rom SneppX_ALG import sampling, regularization, ...
-## Recent framework capabilities (v1.2.0)
+## Recent framework capabilities (v1.5.0)
 
 - **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
 - **Functional API**: `sneppx_ALG.nn.functional` (aliased `F`) with ~70 differentiable ops (conv, pool, norm, pad, unfold/fold, embedding, losses, interpolate).

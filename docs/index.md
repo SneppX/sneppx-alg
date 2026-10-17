@@ -2,7 +2,7 @@
 
 ## Overview
 
-SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 security layers. v1.1.1 delivers a production-stable pipeline with Model Zoo, Model Hub (`sneppx-hub`), C HTTP serving control plane, distributed training (ZeRO-1/2/3, pipeline/tensor/expert parallelism), advanced architectures (Differential Attention, Mamba-2, FlexAttention, MoD), quantization (INT8/INT4/FP8/AWQ/GPTQ), async checkpointing, profiling & debugging tools, and weight converters for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2.
+SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 security layers. v1.5.0 delivers a production-stable pipeline with a fully differentiable `nn` stack (every layer trains), higher-order autograd, a PyTorch-style functional API, sparse tensors, and fourteen extended Python packages — alongside the Model Zoo, Model Hub (`sneppx-hub`), C HTTP serving control plane, distributed training (ZeRO-1/2/3, pipeline/tensor/expert parallelism), advanced architectures (Differential Attention, Mamba-2, FlexAttention, MoD), quantization (INT8/INT4/FP8/AWQ/GPTQ), async checkpointing, profiling & debugging tools, and weight converters for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2.
 
 ## Quickstart
 
