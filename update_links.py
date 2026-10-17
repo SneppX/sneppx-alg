@@ -17,4 +17,4 @@ def replace_repo_link(docs_dir, old_link, new_link):
                     count += 1
     print(f"Total files updated: {count}")
 
-replace_repo_link('docs', 'github.com/ammar49-cyber/sneppx-alg', 'github.com/SneppX/sneppx-alg')
+replace_repo_link('docs', 'github.com/SneppX/sneppx-alg', 'github.com/SneppX/sneppx-alg')

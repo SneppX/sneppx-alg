@@ -44,11 +44,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ammar49-cyber/sneppx-alg"
-Repository = "https://github.com/ammar49-cyber/sneppx-alg"
-Documentation = "https://github.com/ammar49-cyber/sneppx-alg#readme"
-"Bug Tracker" = "https://github.com/ammar49-cyber/sneppx-alg/issues"
-"Release Notes" = "https://github.com/ammar49-cyber/sneppx-alg/releases"
+Homepage = "https://github.com/SneppX/sneppx-alg"
+Repository = "https://github.com/SneppX/sneppx-alg"
+Documentation = "https://github.com/SneppX/sneppx-alg#readme"
+"Bug Tracker" = "https://github.com/SneppX/sneppx-alg/issues"
+"Release Notes" = "https://github.com/SneppX/sneppx-alg/releases"
 
 [project.scripts]
 sneppx-train = "SneppX_ALG.interface_bindings.train_cli:main"

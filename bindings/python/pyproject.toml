@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Source = "https://github.com/ammar49-cyber/sneppx-alg"
+Source = "https://github.com/SneppX/sneppx-alg"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "scipy>=1.7"]

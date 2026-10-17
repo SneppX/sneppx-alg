@@ -7,5 +7,5 @@ contact_links:
     url: mailto:algoarix@gmail.com
     about: "Submit patches via email. See CONTRIBUTING.md for format requirements."
   - name: Questions
-    url: https://github.com/ammar49-cyber/sneppx-alg/blob/main/docs/index.md
+    url: https://github.com/SneppX/sneppx-alg/blob/main/docs/index.md
     about: "Check the documentation and FAQ before opening an issue."

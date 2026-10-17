@@ -10,7 +10,7 @@ This guide describes the contribution framework, tier system, and workflow.
 
 ```bash
 # Clone
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Build

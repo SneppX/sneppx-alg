@@ -8,7 +8,7 @@ This file contains practical documentation and quick start guides for working wi
 
 ```bash
 # Clone the project
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Configure build
@@ -467,7 +467,7 @@ fn main() {
 
 ```bash
 # Clone the repo
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Install Python dependencies
@@ -566,7 +566,7 @@ cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=OFF
 
 If you run into issues:
 
-1. **Check the docs**: https://github.com/ammar49-cyber/sneppx-alg
+1. **Check the docs**: https://github.com/SneppX/sneppx-alg
 2. **Search issues**: Look for similar problems
 3. **Create a new issue**: Include:
    - Reproduction steps
