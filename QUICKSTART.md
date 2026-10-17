@@ -23,7 +23,7 @@ No other dependencies. The C core is dependency-free; Python bindings use
 ## 2. Clone & Build
 
 ```powershell
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Configure (Release) — uses the Ninja generator
@@ -142,7 +142,7 @@ Full REST API docs (24 endpoints): [`docs/API_REFERENCE.md`](docs/API_REFERENCE.
 
 ## 6. Developer CLI Tools
 
-The 7 standalone tools live in `C:\Users\PC\sneppx-ultra\sneppx-{analyze,bench,test,format,deps,stats,serve}`
+The 7 standalone tools live under `C:\Users\PC\SneppX\` as `sneppx-{analyze,bench,test,format,deps,stats,serve}`
 or as a meta-package:
 
 ```powershell
