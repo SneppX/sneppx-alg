@@ -26,6 +26,7 @@ from . import callbacks
 from . import linalg
 from . import signal
 from . import graph
+from . import stats
 
 __all__ = [
     "_neural_engine_bridge",
@@ -37,6 +38,7 @@ __all__ = [
     "linalg",
     "signal",
     "graph",
+    "stats",
 ]
 
 
