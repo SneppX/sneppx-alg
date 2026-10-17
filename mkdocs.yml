@@ -5,10 +5,10 @@ site_description: >
     (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback
     Python API.
 site_author: Ammar [SNEPPX]
-site_url: https://ammar49-cyber.github.io/sneppx-alg/
+site_url: https://SneppX.github.io/sneppx-alg/
 
-repo_url: https://github.com/ammar49-cyber/sneppx-alg
-repo_name: ammar49-cyber/sneppx-alg
+repo_url: https://github.com/SneppX/sneppx-alg
+repo_name: SneppX/sneppx-alg
 edit_uri: edit/main/docs/
 
 copyright: >
