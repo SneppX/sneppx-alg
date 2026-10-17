@@ -357,7 +357,7 @@ SNEPPX_fuzzer_run(&fz, duration_sec, &report);
 
 ## Reporting Vulnerabilities
 
-See [SECURITY.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../SECURITY.md)
+See [SECURITY.md](https://github.com/SneppX/sneppx-alg/blob/main/../SECURITY.md)
 
 ## Security Best Practices
 

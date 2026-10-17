@@ -13,7 +13,7 @@ pip install torch
 # SneppX
 pip install sneppx-alg            # wheels include the C backend
 # or from source:
-git clone https://github.com/ammar49-cyber/sneppx-alg
+git clone https://github.com/SneppX/sneppx-alg
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```

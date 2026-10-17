@@ -55,7 +55,7 @@ navigation sidebar to jump to any `SNEPPX_*` symbol.
 ></iframe>
 
 If the frame does not render, open the reference directly:
-[`doxygen/html/index.html`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/docs/api/index.md).
+[`doxygen/html/index.html`](https://github.com/SneppX/sneppx-alg/blob/main/docs/api/index.md).
 
 ## Key headers to start from
 

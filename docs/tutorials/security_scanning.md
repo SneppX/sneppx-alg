@@ -1,7 +1,7 @@
 # Tutorial — Security Scanning
 
-**Notebook:** [`security_scanning.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/security_scanning.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/security_scanning.ipynb))
+**Notebook:** [`security_scanning.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/security_scanning.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/security_scanning.ipynb))
 
 ## What you'll build
 

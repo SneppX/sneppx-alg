@@ -1,7 +1,7 @@
 # Tutorial — Image Classification with SNEPPX
 
-**Notebook:** [`classification.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/classification.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/classification.ipynb))
+**Notebook:** [`classification.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/classification.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/classification.ipynb))
 
 ## What you'll build
 

@@ -1,7 +1,7 @@
 # Tutorial — Quantization & Serving
 
-**Notebook:** [`quantization_serving.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/quantization_serving.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/quantization_serving.ipynb))
+**Notebook:** [`quantization_serving.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/quantization_serving.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/quantization_serving.ipynb))
 
 ## What you'll build
 

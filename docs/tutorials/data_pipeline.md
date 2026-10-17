@@ -1,7 +1,7 @@
 # Tutorial — Data Pipeline
 
-**Notebook:** [`data_pipeline.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/data_pipeline.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/data_pipeline.ipynb))
+**Notebook:** [`data_pipeline.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/data_pipeline.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/data_pipeline.ipynb))
 
 ## What you'll build
 

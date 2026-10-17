@@ -1,7 +1,7 @@
 # Tutorial — MoE SER Expert Routing
 
-**Notebook:** [`moe_ser_routing.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/moe_ser_routing.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/moe_ser_routing.ipynb))
+**Notebook:** [`moe_ser_routing.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/moe_ser_routing.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/moe_ser_routing.ipynb))
 
 ## What you'll build
 

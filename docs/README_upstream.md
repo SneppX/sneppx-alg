@@ -35,7 +35,7 @@
 | [LEARNING_PATHS.md](LEARNING_PATHS.md) | Month-by-month roadmaps for 7 tracks | v1.1.0 |
 | [PR_TEMPLATE.md](PR_TEMPLATE.md) | Full PR submission template | v1.1.0 |
 | **Reference docs (converted)** | | |
-| [architecture.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/architecture.md) | System layers, data flow, memory model, distributed arch | v1.1.0 |
+| [architecture.md](https://github.com/SneppX/sneppx-alg/blob/main/architecture.md) | System layers, data flow, memory model, distributed arch | v1.1.0 |
 | [build.md](build.md) | Build prerequisites, options, targets, troubleshooting | v1.1.0 |
 | [api_quickref.md](api_quickref.md) | C and Python API quick reference with enums | v1.1.0 |
 | [security_layers.md](security_layers.md) | S0–S9 security deep dive with threat model | v1.1.0 |

@@ -1,7 +1,7 @@
 # Tutorial — Distributed Training
 
-**Notebook:** [`distributed_training.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/distributed_training.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/distributed_training.ipynb))
+**Notebook:** [`distributed_training.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/distributed_training.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/distributed_training.ipynb))
 
 ## What you'll build
 

@@ -33,7 +33,7 @@ entry is marked **Needs review** and the author is pinged.
 
 | Title | Author | Badge | What it does | Source |
 |-------|--------|-------|--------------|--------|
-| HSS speech command classifier | @ammar49-cyber | :material-check-decagram:{ .verified } | 16-class keyword spotting with a 4-layer HSS encoder | [demo/hss_speech](https://github.com/ammar49-cyber/sneppx-alg/tree/main/examples) |
+| HSS speech command classifier | @ammar49-cyber | :material-check-decagram:{ .verified } | 16-class keyword spotting with a 4-layer HSS encoder | [demo/hss_speech](https://github.com/SneppX/sneppx-alg/tree/main/examples) |
 | SER MoE load-balancing vis | @contrib-ai | :material-eye:{ .community } | Live top-k routing heatmap for 8-expert SER | [github.com/contrib-ai/ser-viz](https://example.com) |
 | ARC adversarial robustness benchmark | @sec-lab | :material-shield-check:{ .self-verified } | FGSM/PGD attack sweep + certified accuracy | [github.com/sec-lab/arc-bench](https://example.com) |
 | NPE bytecode compiler playground | @npe-hacker | :material-check-decagram:{ .verified } | Browser JIT playground compiling Python-like DSL to NPE bytecode | [sneppx.dev/npe-play](https://example.com) |
@@ -56,5 +56,5 @@ description):
 
 ## Code of conduct
 
-Community projects must follow the [SNEPPX Code of Conduct](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../CODE_OF_CONDUCT.md).
+Community projects must follow the [SNEPPX Code of Conduct](https://github.com/SneppX/sneppx-alg/blob/main/../CODE_OF_CONDUCT.md).
 Do not submit models trained on licensed data without attribution.

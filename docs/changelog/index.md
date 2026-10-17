@@ -153,14 +153,14 @@ _unreleased_
 - update PR template to tier-based system
 - chore: cleanup project structure
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v1.2.0...Unreleased){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.2.0...Unreleased){ .md-button }
 
 ## v1.2.0
 **2026-07-30**
 
 _No tagged changes; showing commits up to this tag._
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v1.1.1...v1.2.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.2.0){ .md-button }
 
 ## v1.1.1
 **2026-08-01**
@@ -175,7 +175,7 @@ _No tagged changes; showing commits up to this tag._
 - Phase 4-5: C HTTP server + middleware + API reference docs + CMake integration
 - chore: reorganize documentation system
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v1.1.0...v1.1.1){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.0...v1.1.1){ .md-button }
 
 ## v1.1.0
 **2026-07-30**
@@ -219,7 +219,7 @@ _No tagged changes; showing commits up to this tag._
 - chore: update Arix-Site submodule to b62b5d2 (add Models, Benchmarks, Playground, API Reference)
 - chore: bump version to 1.1.0 and prepare pre-release
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v1.0.0...v1.1.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.0.0...v1.1.0){ .md-button }
 
 ## v1.0.0
 **2026-07-26**
@@ -259,7 +259,7 @@ _No tagged changes; showing commits up to this tag._
 - Remove CI/CD: drop GitHub workflows/dependabot/CODEOWNERS, strip CI mentions from docs and configs
 - Docs: bump v0.9.7.890e, refresh stale content, add release/migration/HSS-training docs
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.7.890e...v1.0.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890e...v1.0.0){ .md-button }
 
 ## v0.9.7.890e
 **2026-07-19**
@@ -275,7 +275,7 @@ _No tagged changes; showing commits up to this tag._
 - Phase D: Layer 2 Memory cognitive architecture
 - Phase C: realize 6 stub drivers with reference-compute + opt-in flags + tests
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.7.890b...v0.9.7.890e){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890b...v0.9.7.890e){ .md-button }
 
 ## v0.9.7.890b
 **2026-07-18**
@@ -284,7 +284,7 @@ _No tagged changes; showing commits up to this tag._
 
 - Phase B: populate 4 kernel directories (activations, position, algorithms, drivers)
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.7.890a...v0.9.7.890b){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890a...v0.9.7.890b){ .md-button }
 
 ## v0.9.7.890a
 **2026-07-18**
@@ -295,7 +295,7 @@ _No tagged changes; showing commits up to this tag._
 - Update VERSION with correct LOC/file/test counts
 - Docs: document v0.9.7.890 â€” real implementations and opt-in Vulkan/TPU/HTTP/ZK backends
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.7.890...v0.9.7.890a){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890...v0.9.7.890a){ .md-button }
 
 ## v0.9.7.890
 **2026-07-18**
@@ -345,7 +345,7 @@ _No tagged changes; showing commits up to this tag._
 - Split bindings.cpp into modular include files
 - docs: comprehensive README for v0.9.5.748 release
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.5.748...v0.9.7.890){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.5.748...v0.9.7.890){ .md-button }
 
 ## v0.9.5.748
 **2026-07-15**
@@ -445,7 +445,7 @@ _No tagged changes; showing commits up to this tag._
 - ci: mark C/CUDA build jobs non-blocking (pre-existing source compile errors); keep Lint/Security/Docs as real gates
 - chore(ci): add workflow_dispatch for manual runs
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.0-fix4...v0.9.5.748){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix4...v0.9.5.748){ .md-button }
 
 ## v0.9.0-fix4
 **2026-07-11**
@@ -454,7 +454,7 @@ _No tagged changes; showing commits up to this tag._
 
 - fix: remove CUDA job (needs Docker Hub secrets not set)
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.0-fix3...v0.9.0-fix4){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix3...v0.9.0-fix4){ .md-button }
 
 ## v0.9.0-fix3
 **2026-07-11**
@@ -463,7 +463,7 @@ _No tagged changes; showing commits up to this tag._
 
 - fix: wrap secrets check in template expr for job if
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.0-fix2...v0.9.0-fix3){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix2...v0.9.0-fix3){ .md-button }
 
 ## v0.9.0-fix2
 **2026-07-11**
@@ -472,14 +472,14 @@ _No tagged changes; showing commits up to this tag._
 
 - fix: skip CUDA Docker if Docker Hub secrets not set
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.0-fix1...v0.9.0-fix2){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix1...v0.9.0-fix2){ .md-button }
 
 ## v0.9.0-fix1
 **2026-07-11**
 
 _No tagged changes; showing commits up to this tag._
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.9.0...v0.9.0-fix1){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0...v0.9.0-fix1){ .md-button }
 
 ## v0.9.0
 **2026-07-11**
@@ -686,14 +686,14 @@ _No tagged changes; showing commits up to this tag._
 - L3: HSS paper draft (LaTeX)
 - Release system: scripts, VERSION, CHANGELOG, installers
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/v0.1.0...v0.9.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.1.0...v0.9.0){ .md-button }
 
 ## v0.1.0
 **2026-06-24**
 
 _No tagged changes; showing commits up to this tag._
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.9.4.467...v0.1.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.4.467...v0.1.0){ .md-button }
 
 ## algo0.9.4.467
 **2026-07-14**
@@ -723,7 +723,7 @@ _No tagged changes; showing commits up to this tag._
 - firewall: assembly routines for IP match, rate counter, conn track, port knock
 - chore: bump version to 0.9.2.094 across all files
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.9.2.094...algo0.9.4.467){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.2.094...algo0.9.4.467){ .md-button }
 
 ## algo0.9.2.094
 **2026-07-13**
@@ -805,7 +805,7 @@ _No tagged changes; showing commits up to this tag._
 - ci: mark C/CUDA build jobs non-blocking (pre-existing source compile errors); keep Lint/Security/Docs as real gates
 - chore(ci): add workflow_dispatch for manual runs
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.9.0...algo0.9.2.094){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.0...algo0.9.2.094){ .md-button }
 
 ## algo0.9.0
 **2026-07-11**
@@ -929,7 +929,7 @@ _No tagged changes; showing commits up to this tag._
 - Fix ASM language, macOS func ptr types, clz64 order, skip broken MSVC tests
 - Fix CI/CD: ASAN Debug build, macOS march, clang-tidy targets, Codecov v4, release changelog
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.8.0...algo0.9.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.8.0...algo0.9.0){ .md-button }
 
 ## algo0.8.0
 **2026-07-08**
@@ -940,7 +940,7 @@ _No tagged changes; showing commits up to this tag._
 - Add Python package scaffolding, update Makefile/CI/gitignore/pre-commit [algo0.7.8 infra]
 - Update README for algo0.7.8: Python bindings, PQ benchmarks, stats
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.7.8...algo0.8.0){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.7.8...algo0.8.0){ .md-button }
 
 ## algo0.7.8
 **2026-07-08**
@@ -956,7 +956,7 @@ _No tagged changes; showing commits up to this tag._
 - Add CI/CD pipeline with GitHub Actions
 - Add AGENTS.md for AI-assisted development workflow
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.7.5...algo0.7.8){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.7.5...algo0.7.8){ .md-button }
 
 ## algo0.7.5
 **2026-07-07**
@@ -971,7 +971,7 @@ _No tagged changes; showing commits up to this tag._
 - Fix README cd path (arix-algo -> arixalgo), update pyproject.toml version to 0.5.0
 - Update VERSION file to reflect algo0.5 release
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/compare/algo0.5...algo0.7.5){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.5...algo0.7.5){ .md-button }
 
 ## algo0.5
 **2026-07-01**
@@ -1066,7 +1066,7 @@ _No tagged changes; showing commits up to this tag._
 - Initial foundation: tensor ops, memory allocator, thread pool stub, CMake build system, C test suite, Python/Rust/C security stubs, MIT license
 - Initial commit
 
-[:material-git-compare: `View diff vs previous`](https://github.com/ammar49-cyber/sneppx-alg/commits/algo0.5){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/commits/algo0.5){ .md-button }
 
 ---
 

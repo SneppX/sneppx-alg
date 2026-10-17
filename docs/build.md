@@ -18,7 +18,7 @@ which select the Ninja generator and write to per-config binary directories.
 
 **Windows (MSVC):**
 ```powershell
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build --preset release
@@ -26,7 +26,7 @@ cmake --build --preset release
 
 **Linux/Mac (GCC/Clang):**
 ```bash
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build --preset release -j$(nproc)

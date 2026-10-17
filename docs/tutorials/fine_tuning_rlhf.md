@@ -1,7 +1,7 @@
 # Tutorial — RLHF Fine-Tuning with LoRA + DPO
 
-**Notebook:** [`fine_tuning_rlhf.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/fine_tuning_rlhf.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/fine_tuning_rlhf.ipynb))
+**Notebook:** [`fine_tuning_rlhf.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/fine_tuning_rlhf.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/fine_tuning_rlhf.ipynb))
 
 ## What you'll build
 

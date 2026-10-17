@@ -1,7 +1,7 @@
 # Tutorial — Text Generation
 
-**Notebook:** [`generation.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/generation.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/generation.ipynb))
+**Notebook:** [`generation.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/generation.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/generation.ipynb))
 
 ## What you'll build
 

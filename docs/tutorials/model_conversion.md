@@ -1,7 +1,7 @@
 # Tutorial — Model Conversion (HF → SNEPPX)
 
-**Notebook:** [`model_conversion.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/model_conversion.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/model_conversion.ipynb))
+**Notebook:** [`model_conversion.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/model_conversion.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/model_conversion.ipynb))
 
 ## What you'll build
 

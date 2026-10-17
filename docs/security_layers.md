@@ -187,4 +187,4 @@
 
 **Reporting:** algoSNEPPX@gmail.com
 
-See [security.md](security.md) for the security overview and [security/](https://github.com/ammar49-cyber/sneppx-alg/blob/main/security/) for threat modeling docs.
+See [security.md](security.md) for the security overview and [security/](https://github.com/SneppX/sneppx-alg/blob/main/security/) for threat modeling docs.

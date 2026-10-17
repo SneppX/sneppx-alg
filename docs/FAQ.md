@@ -154,7 +154,7 @@ manifest signature). Unsigned/unsigned-mismatch checkpoints are quarantined by
 S7 until re-signed with the key-vault signing key.
 
 ### "How do I report a vulnerability?"
-See [`SECURITY.md`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../SECURITY.md). Do **not** open a public issue for
+See [`SECURITY.md`](https://github.com/SneppX/sneppx-alg/blob/main/../SECURITY.md). Do **not** open a public issue for
 security bugs — email `algoSNEPPX@gmail.com`.
 
 ## Profiling
@@ -175,4 +175,4 @@ prof.print_summary()
 - Browse the [cookbook](cookbook/index.md) for copy-paste recipes.
 - Read [installation](installation.md) for platform notes.
 - Open a non-security issue at the
-  [tracker](https://github.com/ammar49-cyber/sneppx-alg/issues).
+  [tracker](https://github.com/SneppX/sneppx-alg/issues).

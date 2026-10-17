@@ -1,7 +1,7 @@
 # Tutorial — Profiling & Benchmarks
 
-**Notebook:** [`profiling_benchmarks.ipynb`](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/profiling_benchmarks.ipynb)
-([download](https://github.com/ammar49-cyber/sneppx-alg/blob/main/notebooks/profiling_benchmarks.ipynb))
+**Notebook:** [`profiling_benchmarks.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/profiling_benchmarks.ipynb)
+([download](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/profiling_benchmarks.ipynb))
 
 ## What you'll build
 

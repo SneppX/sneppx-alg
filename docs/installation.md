@@ -20,7 +20,7 @@ sudo apt-get update
 sudo apt-get install -y build-essential cmake git
 
 # Build
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release -j$(nproc)
@@ -42,7 +42,7 @@ sudo dnf install -y gcc gcc-c++ cmake git
 
 ```bash
 brew install cmake gcc
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build -j$(sysctl -n hw.ncpu)
@@ -53,7 +53,7 @@ cd build && ctest --output-on-failure
 
 ```bash
 brew install cmake
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build -j$(sysctl -n hw.ncpu)
@@ -66,7 +66,7 @@ cd build && ctest --output-on-failure
 
 ```powershell
 # Open "Developer Command Prompt for VS 2022"
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release

@@ -7,13 +7,13 @@
 The documentation is a static **Material for MkDocs** site. There is a **primary**
 origin (GitHub Pages) and a **mirror** on the company Vercel project.
 
-## Primary: `ammar49-cyber.github.io/sneppx-alg` (GitHub Pages)
+## Primary: `SneppX.github.io/sneppx-alg` (GitHub Pages)
 
 The canonical docs site is published from the `ammar49-cyber/sneppx-alg`
 repository's `gh-pages` branch. `mkdocs.yml` -> `site_url` points here:
 
 ```yaml
-site_url: https://ammar49-cyber.github.io/sneppx-alg/
+site_url: https://SneppX.github.io/sneppx-alg/
 ```
 
 ## Mirror: `sneppxalg.vercel.app/sneppxalg` (Ariz-Site)

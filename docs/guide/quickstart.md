@@ -6,7 +6,7 @@ three minutes. Everything here runs on CPU — no GPU required for this path.
 ## 1. Build the core
 
 ```bash
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release -j$(nproc)
@@ -16,7 +16,7 @@ cd build && ctest --output-on-failure
 On Windows, use the Ninja generator (per the project note) or VS 2022:
 
 ```powershell
-git clone https://github.com/ammar49-cyber/sneppx-alg.git; cd sneppx-alg
+git clone https://github.com/SneppX/sneppx-alg.git; cd sneppx-alg
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```

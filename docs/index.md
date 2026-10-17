@@ -9,7 +9,7 @@ SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 secur
 ### Build from source
 
 ```powershell
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release
@@ -288,15 +288,15 @@ SNEPPX-Algo uses a **five-tier merit system** with a track-based Git Flow branch
 | [CODE_REVIEW_GUIDE.md](CODE_REVIEW_GUIDE.md) | Review levels (L1–L3), per-subsystem criteria, review process |
 | [LEARNING_PATHS.md](LEARNING_PATHS.md) | Track-specific month-by-month roadmaps |
 | [PR_TEMPLATE.md](PR_TEMPLATE.md) | Pull request submission template |
-| [CONTRIBUTING.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../CONTRIBUTING.md) | Contribution workflow and acceptance criteria |
-| [GOVERNANCE.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../GOVERNANCE.md) | BDFL + Maintainer Council governance |
-| [MAINTAINERS.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/../MAINTAINERS.md) | Tier tracking and maintainer table |
+| [CONTRIBUTING.md](https://github.com/SneppX/sneppx-alg/blob/main/../CONTRIBUTING.md) | Contribution workflow and acceptance criteria |
+| [GOVERNANCE.md](https://github.com/SneppX/sneppx-alg/blob/main/../GOVERNANCE.md) | BDFL + Maintainer Council governance |
+| [MAINTAINERS.md](https://github.com/SneppX/sneppx-alg/blob/main/../MAINTAINERS.md) | Tier tracking and maintainer table |
 
 ## Reference Docs
 
 | Document | Description |
 |----------|-------------|
-| [architecture.md](https://github.com/ammar49-cyber/sneppx-alg/blob/main/architecture.md) | System layers, data flow, memory model, distributed architecture |
+| [architecture.md](https://github.com/SneppX/sneppx-alg/blob/main/architecture.md) | System layers, data flow, memory model, distributed architecture |
 | [build.md](build.md) | Build prerequisites, options, targets, troubleshooting |
 | [api_quickref.md](api_quickref.md) | C and Python API quick reference with enums |
 | [API_REFERENCE.md](API_REFERENCE.md) | Full REST API reference for the inference server (21 endpoints) |
