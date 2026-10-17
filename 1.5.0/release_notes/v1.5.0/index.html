@@ -1,0 +1,3497 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
+">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.5.0/release_notes/v1.5.0/">
+      
+      
+        <link rel="prev" href="../../incident_response/ir_framework_overview/">
+      
+      
+        <link rel="next" href="../v1.1.1/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>v1.5.0 - SNEPPX-Algo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release&#702;v15&#702;trainable&#702;everything&#702;higher-order&#702;autograd&#702;and&#702;the&#702;python&#702;ecosystem" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SNEPPX-Algo" class="md-header__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SNEPPX-Algo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              v1.5.0
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SNEPPX-Algo" class="md-nav__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../../logo.jpeg" alt="logo">
+
+    </a>
+    SNEPPX-Algo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipeline Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Walkthroughs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Code Walkthroughs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-hss/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-ser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-arc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-npe/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-fm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RLHF Fine-Tuning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization + Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MoE Expert Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Scanning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling & Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Conversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/autodoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API (auto)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen (C/C++)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Cookbook
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Cookbook
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/tensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models & Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/quantization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/distributed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving & Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data & Tokenization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/profiling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpointing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conversion/Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/obf_audit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Obfuscation Audit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threat Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compliance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incident Response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    v1.5.0
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    v1.5.0
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats&#702;new" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's New
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What's New">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1&#702;full&#702;differentiability&#702;every&#702;nn&#702;module&#702;now&#702;trains" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Full differentiability — every nn module now trains
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#&#702;higher-order&#702;autograd&#702;forwardreverse-mode&#702;helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Higher-order autograd + forward/reverse-mode helpers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3&#702;functional&#702;namespace&#702;f" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Functional namespace — F.*
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4&#702;sparse&#702;tensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Sparse tensors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5&#702;new&#702;python&#702;package&#702;ecosystem&#702;14&#702;packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. New Python package ecosystem (14 packages)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6&#702;optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Optimizers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#&#702;correctness&#702;bug&#702;fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Correctness &amp; bug fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8&#702;documentation&#702;website" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Documentation &amp; website
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade&#702;notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diff
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.1.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.1.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.x to v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From PyTorch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From TensorFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_jax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From JAX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-walkthrough/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Walkthrough
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COMMENTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commenting Standard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Review Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributor Tiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branching Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hss_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SneppX Console
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/model_hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Hub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/model_zoo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/onnx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ONNX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MHA Forward Pass
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    128K Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/testing_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python_features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_quickref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BENCHMARKS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COVERAGE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coverage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DESIGN/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../VISION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Paths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Legacy API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Style Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Community
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/videos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Video Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Pages Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doxygen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PR Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_upstream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upstream README
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats&#702;new" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's New
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What's New">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1&#702;full&#702;differentiability&#702;every&#702;nn&#702;module&#702;now&#702;trains" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Full differentiability — every nn module now trains
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#&#702;higher-order&#702;autograd&#702;forwardreverse-mode&#702;helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Higher-order autograd + forward/reverse-mode helpers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3&#702;functional&#702;namespace&#702;f" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Functional namespace — F.*
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4&#702;sparse&#702;tensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Sparse tensors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5&#702;new&#702;python&#702;package&#702;ecosystem&#702;14&#702;packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. New Python package ecosystem (14 packages)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6&#702;optimizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Optimizers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#&#702;correctness&#702;bug&#702;fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Correctness &amp; bug fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8&#702;documentation&#702;website" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Documentation &amp; website
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade&#702;notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diff
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="release&#702;v15&#702;trainable&#702;everything&#702;higher-order&#702;autograd&#702;and&#702;the&#702;python&#702;ecosystem">Release v1.5.0 — Trainable Everything, Higher-Order Autograd, and the Python Ecosystem<a class="headerlink" href="#release&#702;v15&#702;trainable&#702;everything&#702;higher-order&#702;autograd&#702;and&#702;the&#702;python&#702;ecosystem" title="Permanent link">&para;</a></h1>
+<p><strong>Date:</strong> 2026-10-17
+<strong>Tag:</strong> <code>v1.5.0</code>
+<strong>Type:</strong> Minor — large feature &amp; correctness release</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>v1.5.0 is the largest autograd and Python-ecosystem release since v1.0.0. Every
+<code>nn.*</code> module that consumes a tensor is now <strong>end-to-end differentiable</strong>, the
+autograd tape gained <strong>higher-order (double-backward) support</strong> across 40+ ops
+plus forward/reverse-mode helpers, a PyTorch-style <strong>functional namespace</strong> was
+added, <strong>sparse tensors</strong> landed, and <strong>fourteen new pure-NumPy Python packages</strong>
+(<code>metrics</code>, <code>datasets</code>, <code>sampling</code>, <code>regularization</code>, <code>callbacks</code>, <code>linalg</code>,
+<code>signal</code>, <code>graph</code>, <code>stats</code>, <code>structured_output</code>, <code>rag</code>, <code>agents</code>,
+<code>observability</code>, <code>speculative</code>) were shipped with dedicated test suites.</p>
+<p>A recurring theme of this release was finding and fixing silent correctness bugs
+that made <strong>models untrainable</strong> while still producing numerically plausible
+forward passes. Many of those bugs were caught by adding finite-difference and
+exact-analytic gradient tests.</p>
+<h2 id="whats&#702;new">What's New<a class="headerlink" href="#whats&#702;new" title="Permanent link">&para;</a></h2>
+<h3 id="1&#702;full&#702;differentiability&#702;every&#702;nn&#702;module&#702;now&#702;trains">1. Full differentiability — <em>every</em> <code>nn</code> module now trains<a class="headerlink" href="#1&#702;full&#702;differentiability&#702;every&#702;nn&#702;module&#702;now&#702;trains" title="Permanent link">&para;</a></h3>
+<p>Prior to this release a significant number of <code>nn</code> modules used raw NumPy
+forward paths and therefore produced <strong>no autograd graph</strong> — the model would
+"run" but never learn. Each was rewritten to route through an <code>autograd_ops</code>
+<code>Function</code> with an exact analytic adjoint:</p>
+<ul>
+<li><strong>Convolutions:</strong> <code>Conv1d</code>, <code>Conv2d</code>, <code>Conv3d</code> (windowed-einsum grad-kernel,
+  scatter-add grad-input; stride / padding / dilation aware).</li>
+<li><strong>Transposed convolutions:</strong> <code>ConvTranspose1d/2d/3d</code> (exact adjoint of the
+  scatter formulation).</li>
+<li><strong>Normalization:</strong> <code>LayerNorm</code>, <code>RMSNorm</code>, <code>BatchNorm1d/2d/3d</code>, <code>GroupNorm</code>,
+  <code>InstanceNorm1d/2d/3d</code>.</li>
+<li><strong>Embeddings:</strong> <code>Embedding</code>, <code>EmbeddingBag</code> (sum / mean / max).</li>
+<li><strong>Pooling:</strong> <code>MaxPool1d/2d/3d</code>, <code>AvgPool1d/2d/3d</code>, <code>AdaptiveAvgPool1d/2d/3d</code>,
+  <code>AdaptiveMaxPool1d/2d/3d</code>, <code>MaxUnpool1d/2d/3d</code>, generic <code>Pooling1d/2d/3d</code>.</li>
+<li><strong>Resampling:</strong> <code>Upsample</code> (nearest + generic N-D multilinear bilinear/trilinear
+  with PyTorch <code>align_corners</code> semantics), <code>PixelShuffle</code>, <code>PixelUnshuffle</code>,
+  <code>ChannelShuffle</code>.</li>
+<li><strong>Geometry / shape:</strong> <code>Unfold</code>, <code>Fold</code>, differentiable <code>permute</code>, <code>Flatten</code>.</li>
+<li><strong>Metrics / heads:</strong> <code>Bilinear</code>, <code>CosineSimilarity</code>, <code>PairwiseDistance</code>.</li>
+<li><strong>Activations:</strong> <code>LeakyReLU</code>, <code>ELU</code>, <code>SELU</code>, <code>CELU</code>, <code>PReLU</code>, <code>RReLU</code>,
+  <code>LogSigmoid</code>, <code>Softplus</code>, <code>Softsign</code>, <code>Hardswish</code>, <code>Hardtanh</code>, <code>Mish</code>,
+  <code>Hardsigmoid</code>, <code>Hardshrink</code>, <code>Softshrink</code>, <code>Tanhshrink</code>, <code>Threshold</code>, <code>GLU</code>
+  (notably <code>LogSigmoid</code> had an <strong>incorrect derivative</strong> that finite-difference
+  tests caught).</li>
+<li><strong>Padding:</strong> <code>ConstantPad</code> / <code>ZeroPad</code> / <code>ReflectionPad</code> / <code>ReplicationPad</code>
+  (1d / 2d / 3d).</li>
+<li><strong>Dropout:</strong> CPU path rewritten as a constant-mask multiply so gradients flow.</li>
+</ul>
+<p>A repo-wide probe now reports <strong>zero non-differentiable <code>nn</code> modules</strong>.</p>
+<h3 id="&#702;higher-order&#702;autograd&#702;forwardreverse-mode&#702;helpers">2. Higher-order autograd + forward/reverse-mode helpers<a class="headerlink" href="#&#702;higher-order&#702;autograd&#702;forwardreverse-mode&#702;helpers" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Tensor.backward(create_graph=True)</code> and <code>grad(..., create_graph=True)</code> build a
+  replayable graph so gradients themselves carry gradients.</li>
+<li><code>create_graph</code> branches added for <strong>40+ operations</strong>, including <code>Add</code>, <code>Sub</code>,
+  <code>Mul</code>, <code>Div</code>, <code>MatMul</code>, <code>Transpose</code>, <code>Sum</code>, <code>Mean</code>, <code>Relu</code>, <code>Sigmoid</code>, <code>Tanh</code>,
+  <code>Sqrt</code>, <code>Exp</code>, <code>Log</code>, <code>Pow</code>, <code>Reshape</code>, <code>GetItem</code>, <code>Linear</code>, <code>Gelu</code>, <code>Silu</code>,
+  <code>Softmax</code>, <code>LogSoftmax</code>, <code>LayerNorm</code>, <code>RMSNorm</code>, <code>Abs</code>, <code>Squeeze</code>, <code>Unsqueeze</code>,
+  <code>Dropout</code>, <code>Cat</code>, <code>Stack</code>, <code>Neg</code>, <code>Conv1d</code>, and the loss functions
+  (<code>MSELoss</code>, <code>CrossEntropyLoss</code>, <code>KLDivLoss</code>, <code>NLLLoss</code>, <code>BCELoss</code>,
+  <code>BCEWithLogitsLoss</code>, <code>SmoothL1Loss</code>, <code>HuberLoss</code>).</li>
+<li>Verified with <strong>exact Hessian reference tests</strong> (e.g. KLDiv <code>2·t·tᵀ/n²</code>,
+  CrossEntropy <code>2·c·cᵀ</code>, BCEWithLogits <code>(1/N)·xᵀ·diag(s(1−s))·x</code>,
+  SmoothL1/Huber <code>H = 2·dS·dSᵀ + 2·S·diag(d²S)</code>).</li>
+<li>Added <strong><code>jvp</code></strong> (forward-mode: <code>J @ tangent</code>) and <strong><code>vjp</code></strong> (reverse-mode)
+  helpers in <code>autograd</code>.</li>
+</ul>
+<h3 id="3&#702;functional&#702;namespace&#702;f">3. Functional namespace — <code>F.*</code><a class="headerlink" href="#3&#702;functional&#702;namespace&#702;f" title="Permanent link">&para;</a></h3>
+<p>A PyTorch-mirroring functional API (<code>sneppx_ALG.nn.functional</code>, exported as <code>F</code>)
+with ~70 differentiable ops: activations, <code>linear</code> / <code>conv1d/2d/3d</code> /
+<code>conv_transpose2d</code>, pooling (incl. adaptive), layer / rms / batch / group /
+instance norm, padding, <code>flatten</code> / <code>unflatten</code>, <code>unfold</code> / <code>fold</code>, <code>embedding</code> /
+<code>embedding_bag</code>, 14 losses, <code>interpolate</code>, <code>pixel_shuffle</code> / <code>channel_shuffle</code>,
+<code>one_hot</code>, <code>pad_sequence</code>.</p>
+<blockquote>
+<p><code>sx.functional</code> remains reserved for the pre-existing autograd functional
+module (JVP/VJP) — use the <code>F</code> alias.</p>
+</blockquote>
+<h3 id="4&#702;sparse&#702;tensors">4. Sparse tensors<a class="headerlink" href="#4&#702;sparse&#702;tensors" title="Permanent link">&para;</a></h3>
+<p>New <code>sparse.py</code> with a canonical <strong>COO</strong> storage type (<code>SparseTensor</code>),
+CSR / CSC / BSR layout constants and factories, dense interop, and ops:</p>
+<ul>
+<li><code>sparse_mm</code> (sparse@dense, sparse@sparse, dense@dense)</li>
+<li><code>sparse_addmm</code>, <code>sparse_sum</code>, <code>sparse_softmax</code>, <code>sparse_conv2d</code></li>
+<li><code>Tensor.to_sparse()</code> / <code>to_dense()</code> and <code>to_sparse_coo/csr/csc/bsr</code></li>
+<li><code>optim.SparseAdam</code> performs a real sparse step: moment buffers are read/written
+  only at the grad's nonzero indices.</li>
+</ul>
+<h3 id="5&#702;new&#702;python&#702;package&#702;ecosystem&#702;14&#702;packages">5. New Python package ecosystem (14 packages)<a class="headerlink" href="#5&#702;new&#702;python&#702;package&#702;ecosystem&#702;14&#702;packages" title="Permanent link">&para;</a></h3>
+<p>All pure-NumPy / stdlib, each with its own test suite:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Highlights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metrics</code></td>
+<td>classification / regression / ranking metrics</td>
+</tr>
+<tr>
+<td><code>datasets</code></td>
+<td>synthetic + tabular dataset utilities</td>
+</tr>
+<tr>
+<td><code>sampling</code></td>
+<td>random / weighted / stratified samplers</td>
+</tr>
+<tr>
+<td><code>regularization</code></td>
+<td>weight decay, label smoothing, dropout helpers</td>
+</tr>
+<tr>
+<td><code>callbacks</code></td>
+<td>early stopping, LR schedulers, checkpoints</td>
+</tr>
+<tr>
+<td><code>linalg</code></td>
+<td>decompositions, solvers, norms</td>
+</tr>
+<tr>
+<td><code>signal</code></td>
+<td>windows, FFT helpers, filters</td>
+</tr>
+<tr>
+<td><code>graph</code></td>
+<td>adjacency structures, traversal, embedding helpers</td>
+</tr>
+<tr>
+<td><code>stats</code></td>
+<td>descriptive, distributions, scipy-free inference (t/χ² CIs, bootstrap, permutation)</td>
+</tr>
+<tr>
+<td><code>structured_output</code></td>
+<td>JSON-Schema subset validator, fence stripping, logit masking</td>
+</tr>
+<tr>
+<td><code>rag</code></td>
+<td>tokenization, chunking, BM25, hashing embeddings, hybrid retriever</td>
+</tr>
+<tr>
+<td><code>agents</code></td>
+<td>messages, tool registry, ReAct parsing, conversation memory, agent loop</td>
+</tr>
+<tr>
+<td><code>observability</code></td>
+<td>tracing/spans, timers, event bus, structured logging, metric registry</td>
+</tr>
+<tr>
+<td><code>speculative</code></td>
+<td>n-gram / prompt-lookup drafters, speculative verification &amp; decoding</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6&#702;optimizers">6. Optimizers<a class="headerlink" href="#6&#702;optimizers" title="Permanent link">&para;</a></h3>
+<p>Added <code>Adam</code>, <code>NAdam</code>, <code>Rprop</code>, <code>ASGD</code>, <code>LBFGS</code>, and <code>SparseAdam</code> (sparse-aware)
+alongside the existing SGD-family, plus full <code>param_groups</code> support.</p>
+<h3 id="&#702;correctness&#702;bug&#702;fixes">7. Correctness &amp; bug fixes<a class="headerlink" href="#&#702;correctness&#702;bug&#702;fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Scalar-first autograd:</strong> <code>0.5 * x</code>, <code>1.0 - x</code>, <code>1.0 + x</code>, <code>2.0 / x</code> returned
+  <code>requires_grad=True</code> but produced <strong>no gradient</strong>. <code>Function.apply</code> now records
+  Tensor positions and realigns grads positionally.</li>
+<li><strong>Batched convolution (N&gt;1):</strong> <code>conv1d/2d/3d</code> scrambled outputs for batch
+  sizes &gt; 1 (a bogus reshape/transpose that was only correct at N=1).</li>
+<li><strong><code>Conv</code> args:</strong> Conv1d now adds bias with correct broadcasting.</li>
+<li><strong><code>Cat.backward</code></strong> used <code>np.split(grad, sizes)</code> (wrong — treats sizes as
+  indices); fixed to <code>np.cumsum(sizes)[:-1]</code>.</li>
+<li><strong><code>RMSNorm.backward</code></strong> used the normalized input where the raw input was
+  required (spurious <code>1/rms</code> factor).</li>
+<li><strong><code>Mul.backward</code></strong> leaked a raw ndarray into <code>Tensor.*</code> (re-entering <code>forward</code>).</li>
+<li><strong><code>Div.forward</code></strong> crashed on a scalar numerator; <strong><code>Pow.forward</code></strong> produced a
+  shape-<code>(0,)</code> gradient when the exponent was a constant <code>Tensor</code>.</li>
+<li><strong><code>MatMul</code></strong> double-backward for 1-D vectors (<code>xᵀw</code>) via Unsqueeze/Squeeze.</li>
+<li><strong><code>MultiMarginLoss</code></strong> had a flipped margin sign
+  (<code>margin − x_j + x_y</code> instead of <code>margin − x_y + x_j</code>).</li>
+<li><code>load_state_dict(strict=True)</code> now raises on missing/unexpected keys and reports
+  size mismatches; <code>register_buffer(persistent=False)</code> excludes buffers from
+  <code>state_dict</code>.</li>
+</ul>
+<h3 id="8&#702;documentation&#702;website">8. Documentation &amp; website<a class="headerlink" href="#8&#702;documentation&#702;website" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Refreshed MkDocs site published with <code>mike</code> as <strong>1.5.0</strong> / <code>latest</code>.</li>
+<li>All repository links updated to the current org repo
+  (<code>github.com/SneppX/sneppx-alg</code>).</li>
+<li>Fixed a UTF-8 encoding fault in <code>python_features.md</code> that broke the docs build
+  and added the page to the site navigation.</li>
+<li>New <code>Python Features</code> reference page documenting the extended packages.</li>
+</ul>
+<h2 id="upgrade&#702;notes">Upgrade Notes<a class="headerlink" href="#upgrade&#702;notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>nn</code> forward paths now build autograd graphs. If you relied on raw NumPy outputs
+  from a layer (no <code>requires_grad</code>), wrap computations in
+  <code>autograd.no_grad()</code>.</li>
+<li><code>Tensor</code> stores <strong>float32</strong>; finite-difference checks should use <code>eps≈1e-3</code>.</li>
+<li>Scalar reductions (<code>sum()</code>, <code>mean()</code>, losses) return shape <code>(1,)</code>, not <code>0-d</code>.</li>
+<li>Install/upgrade: <code>pip install -U sneppx-alg</code>.</li>
+</ul>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>All Python suites run per-file (the full-suite collection is intentionally
+disabled in this environment):</p>
+<div class="highlight"><pre><span></span><code>$env:PYTHONPATH = &quot;bindings/python&quot;
+python -m pytest tests/python/&lt;file&gt;.py -q -p no:cacheprovider
+</code></pre></div>
+<p>Green suites include: <code>test_tensor</code>, <code>test_nn</code>, <code>test_optim</code>,
+<code>test_gap_fill</code> (58), <code>test_state_dict</code> (10), <code>test_sparse</code> (15), <code>test_norm</code> (6),
+<code>test_functional_ns</code> (18), <code>test_higher_order_ad{,2,3,4,5}</code>, <code>test_jvp_vjp</code>,
+<code>test_autograd_correctness</code>, <code>test_autograd_ops2/3</code>, <code>test_scalar_ops</code>,
+<code>test_loss_diff</code>, <code>test_functional_diff</code>, <code>test_activation_autograd</code>,
+<code>test_conv2d_autograd</code>, <code>test_embedding_layernorm_autograd</code>, and the new-package
+suites (<code>test_stats</code>, <code>test_structured_output</code>, <code>test_rag</code>, <code>test_agents</code>,
+<code>test_observability</code>, <code>test_speculative</code>).</p>
+<h2 id="diff">Diff<a class="headerlink" href="#diff" title="Permanent link">&para;</a></h2>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.5.0">:material-git-compare: <code>View diff vs v1.1.1</code></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Built with the SNEPPX-Algo documentation stack. Content licensed under the repository's MIT license.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

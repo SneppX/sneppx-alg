@@ -1,0 +1,4257 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
+">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.5.0/security/">
+      
+      
+        <link rel="prev" href="../cookbook/generation/">
+      
+      
+        <link rel="next" href="../security_layers/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Security Overview - SNEPPX-Algo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security&#702;architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SNEPPX-Algo" class="md-header__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SNEPPX-Algo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SNEPPX-Algo" class="md-nav__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    SNEPPX-Algo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipeline Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Walkthroughs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Code Walkthroughs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-hss/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-ser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-arc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-npe/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-fm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RLHF Fine-Tuning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization + Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MoE Expert Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Scanning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling & Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Conversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/autodoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API (auto)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen (C/C++)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Cookbook
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Cookbook
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/tensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models & Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/quantization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/distributed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving & Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data & Tokenization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/profiling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpointing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conversion/Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;cryptographic&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      S0 — Cryptographic Core ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S0 — Cryptographic Core ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primitives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known&#702;issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s1&#702;secure&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      S1 — Secure Memory ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S1 — Secure Memory ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform&#702;requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;obfuscation&#702;engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      S2 — Obfuscation Engine ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S2 — Obfuscation Engine ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s3&#702;behavioral&#702;monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 — Behavioral Monitor ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S3 — Behavioral Monitor ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s4&#702;network&#702;security" class="md-nav__link">
+    <span class="md-ellipsis">
+      S4 — Network Security ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S4 — Network Security ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s5&#702;ai&#702;sanitizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      S5 — AI Sanitizer ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S5 — AI Sanitizer ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s6&#702;security&#702;ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      S6 — Security UI ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S6 — Security UI ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;secure&#702;updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      S7 — Secure Updates ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S7 — Secure Updates ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s8&#702;formal&#702;verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      S8 — Formal Verification ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S8 — Formal Verification ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s9&#702;penetration&#702;testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      S9 — Penetration Testing ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S9 — Penetration Testing ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat&#702;model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Threat Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assumptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defenses
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting&#702;vulnerabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reporting Vulnerabilities
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security&#702;best&#702;practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="obf_audit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Obfuscation Audit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="threat_modeling_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threat Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compliance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incident Response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.5.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.5.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.x to v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From PyTorch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From TensorFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_jax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From JAX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-walkthrough/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Walkthrough
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMMENTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commenting Standard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Review Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributor Tiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branching Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hss_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SneppX Console
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Hub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_zoo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/onnx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ONNX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MHA Forward Pass
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    128K Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/testing_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_quickref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COVERAGE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coverage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VISION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Paths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Legacy API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Style Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Community
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learn/videos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Video Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Pages Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doxygen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PR Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_upstream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upstream README
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;cryptographic&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      S0 — Cryptographic Core ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S0 — Cryptographic Core ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Primitives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known&#702;issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s1&#702;secure&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      S1 — Secure Memory ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S1 — Secure Memory ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform&#702;requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;obfuscation&#702;engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      S2 — Obfuscation Engine ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S2 — Obfuscation Engine ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s3&#702;behavioral&#702;monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 — Behavioral Monitor ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S3 — Behavioral Monitor ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s4&#702;network&#702;security" class="md-nav__link">
+    <span class="md-ellipsis">
+      S4 — Network Security ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S4 — Network Security ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s5&#702;ai&#702;sanitizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      S5 — AI Sanitizer ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S5 — AI Sanitizer ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s6&#702;security&#702;ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      S6 — Security UI ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S6 — Security UI ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;secure&#702;updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      S7 — Secure Updates ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S7 — Secure Updates ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s8&#702;formal&#702;verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      S8 — Formal Verification ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S8 — Formal Verification ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s9&#702;penetration&#702;testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      S9 — Penetration Testing ✅
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S9 — Penetration Testing ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat&#702;model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Threat Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assumptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defenses
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting&#702;vulnerabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reporting Vulnerabilities
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security&#702;best&#702;practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="security&#702;architecture">Security Architecture<a class="headerlink" href="#security&#702;architecture" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>SNEPPX-Algo implements security in ten phases (S0-S9). All ten phases (S0-S9) are complete and use real cryptographic primitives, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure.</p>
+<p>Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.</p>
+<div class="highlight"><pre><span></span><code>S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
+│     │     │     │     │     │     │     │     │     │
+Crypto Memory Obfusc Monitor Network AI    UI    Update Formal Pentest
+Core  Secure Engine  Engine  Sec   San    Sec   Sec    Verif  Report
+      Mem
+</code></pre></div>
+<h2 id="s&#702;cryptographic&#702;core">S0 — Cryptographic Core ✅<a class="headerlink" href="#s&#702;cryptographic&#702;core" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/crypto/c/</code> and <code>include/neural_core/security/</code></p>
+<p>All crypto source files follow the four-layer commenting standard in <a href="../COMMENTING/">COMMENTING.md</a>: Layer 1 file headers, Layer 2 concept blocks, Layer 3 inline "why" comments, and Layer 4 Doxygen API docs on every public <code>SNEPPX_*</code> function.</p>
+<h3 id="primitives">Primitives<a class="headerlink" href="#primitives" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Primitive</th>
+<th>Standard</th>
+<th>Use Case</th>
+<th>Verified</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ed25519</td>
+<td>RFC 8032</td>
+<td>Signatures</td>
+<td>304/306 test vectors pass</td>
+</tr>
+<tr>
+<td>X25519</td>
+<td>RFC 7748</td>
+<td>Key exchange</td>
+<td>Full DH exchange</td>
+</tr>
+<tr>
+<td>ChaCha20-Poly1305</td>
+<td>RFC 8439</td>
+<td>Authenticated encryption</td>
+<td>100+ test vectors</td>
+</tr>
+<tr>
+<td>SHA-3</td>
+<td>FIPS 202</td>
+<td>Hashing (224/256/384/512)</td>
+<td>NIST test vectors</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>FIPS 180-4</td>
+<td>General-purpose hashing</td>
+<td>NIST test vectors</td>
+</tr>
+<tr>
+<td>BLAKE3</td>
+<td>Reference</td>
+<td>Fast hashing</td>
+<td>Reference test vectors</td>
+</tr>
+<tr>
+<td>Argon2id</td>
+<td>RFC 9106</td>
+<td>Secure KDF</td>
+<td>Test vectors + timing defense</td>
+</tr>
+<tr>
+<td>Secure Random</td>
+<td>OS CPRG</td>
+<td>Entropy</td>
+<td>Windows CNG / Linux getrandom</td>
+</tr>
+<tr>
+<td>Kyber-512/768/1024</td>
+<td>FIPS 203 (ML-KEM)</td>
+<td>PQ key encapsulation</td>
+<td>NIST KAT vectors</td>
+</tr>
+<tr>
+<td>Dilithium-2/3/5</td>
+<td>FIPS 204 (ML-DSA)</td>
+<td>PQ digital signatures</td>
+<td>FIPS 204 KAT (automated)</td>
+</tr>
+<tr>
+<td>SPHINCS+-128/192/256</td>
+<td>FIPS 205 (SLH-DSA)</td>
+<td>Stateless PQ signatures</td>
+<td>NIST KAT vectors</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Automated Dilithium verification.</strong> The ML-DSA / Dilithium implementation in
+<code>security/crypto/c/dilithium.c</code> is exercised by the FIPS 204 known-answer test
+suite in <code>tests/python/test_crypto_kat.py</code> (vectors in
+<code>tests/python/data/kat_vectors.json</code>). The suite covers keypair generation,
+signing, and verification round-trips for all three parameter sets
+(Dilithium-2/3/5) and runs under <code>pytest</code> and in CI. This replaced the previous
+ad-hoc KAT reference with deterministic, standard-aligned vectors.</p>
+</blockquote>
+<h3 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cryptographic_primitives_bundle.h&quot;</span>
+
+<span class="c1">// Ed25519 signing</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">pk</span><span class="p">[</span><span class="mi">32</span><span class="p">],</span><span class="w"> </span><span class="n">sk</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<span class="n">SNEPPX_ed25519_keypair</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">);</span>
+<span class="n">SNEPPX_ed25519_sign</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">msglen</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">pk</span><span class="p">);</span>
+
+<span class="c1">// ChaCha20-Poly1305 encryption</span>
+<span class="n">SNEPPX_chacha20_poly1305_encrypt</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ctlen</span><span class="p">,</span><span class="w"> </span><span class="n">pt</span><span class="p">,</span><span class="w"> </span><span class="n">ptlen</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">nonce</span><span class="p">,</span><span class="w"> </span><span class="n">aad</span><span class="p">,</span><span class="w"> </span><span class="n">aadlen</span><span class="p">);</span>
+
+<span class="c1">// Argon2id key derivation</span>
+<span class="n">SNEPPX_s0_argon2id_hash</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">hashlen</span><span class="p">,</span><span class="w"> </span><span class="n">pwd</span><span class="p">,</span><span class="w"> </span><span class="n">pwdlen</span><span class="p">,</span><span class="w"> </span><span class="n">salt</span><span class="p">,</span><span class="w"> </span><span class="n">saltlen</span><span class="p">,</span><span class="w"> </span><span class="n">t_cost</span><span class="p">,</span><span class="w"> </span><span class="n">m_cost</span><span class="p">);</span>
+
+<span class="c1">// Kyber key encapsulation (CCA-secure via Fujisaki-Okamoto transform)</span>
+<span class="n">SNEPPX_kyber_keypair</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_kyber_encaps</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span><span class="w"> </span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_kyber_decaps</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+
+<span class="c1">// Dilithium signatures</span>
+<span class="n">SNEPPX_dilithium_keypair</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_dilithium_sign</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">siglen</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">msglen</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_dilithium_verify</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="n">siglen</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">msglen</span><span class="p">,</span><span class="w"> </span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+
+<span class="c1">// SPHINCS+ signatures (stateless, hash-based)</span>
+<span class="n">SNEPPX_sphincsplus_keypair</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_sphincsplus_sign</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">siglen</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">msglen</span><span class="p">,</span><span class="w"> </span><span class="n">sk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+<span class="n">SNEPPX_sphincsplus_verify</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="w"> </span><span class="n">siglen</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">msglen</span><span class="p">,</span><span class="w"> </span><span class="n">pk</span><span class="p">,</span><span class="w"> </span><span class="n">variant</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="known&#702;issues">Known Issues<a class="headerlink" href="#known&#702;issues" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Ed25519 verification</strong>: 2 of 306 test vectors fail under specific edge conditions (batch verification edge cases). These do not represent security vulnerabilities.</li>
+<li><strong>Argon2 timing</strong>: 1 of 4 timing tests shows variation on certain hardware. Mitigated by noise injection.</li>
+<li><strong>PQ primitives</strong>: Kyber, Dilithium, and SPHINCS+ implementations are reference-style and may not be optimized for constant-time execution on all platforms.</li>
+</ol>
+<h2 id="s1&#702;secure&#702;memory">S1 — Secure Memory ✅<a class="headerlink" href="#s1&#702;secure&#702;memory" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/memory/</code> and <code>include/neural_core/security/</code></p>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guard Pages</td>
+<td>Allocate with PROT_NONE guard on both sides in debug mode</td>
+</tr>
+<tr>
+<td>Canaries</td>
+<td>Stack overflow detection on memory regions</td>
+</tr>
+<tr>
+<td>ASLR</td>
+<td>Heap randomization via VirtualAlloc (Windows) / mmap (Linux)</td>
+</tr>
+<tr>
+<td>Locked Memory</td>
+<td>mlock / VirtualLock to prevent swap to disk</td>
+</tr>
+<tr>
+<td>Secure Wipe</td>
+<td>Compiler-barrier-protected zeroing of sensitive data</td>
+</tr>
+<tr>
+<td>Constant-Time Compare</td>
+<td>Timing-attack-resistant memory comparison</td>
+</tr>
+<tr>
+<td>Memory Leak Detector</td>
+<td>Tracks allocations and reports unfreed blocks on shutdown</td>
+</tr>
+</tbody>
+</table>
+<h3 id="api_1">API<a class="headerlink" href="#api_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;protected_memory_manager.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;memory_leak_detector.h&quot;</span>
+
+<span class="c1">// Allocate locked memory (cannot be swapped to disk)</span>
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_s1_alloc_locked</span><span class="p">(</span><span class="mi">4096</span><span class="p">);</span>
+
+<span class="c1">// Securely free</span>
+<span class="n">SNEPPX_s1_free_locked</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="mi">4096</span><span class="p">);</span>
+
+<span class="c1">// Constant-time comparison</span>
+<span class="kt">int32_t</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_s1_memcmp_consttime</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+
+<span class="c1">// Memory leak detection</span>
+<span class="n">SNEPPX_memory_leak_detector_init</span><span class="p">(</span><span class="n">max_tracked_allocations</span><span class="p">);</span>
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">256</span><span class="p">);</span>
+<span class="n">SNEPPX_memory_leak_detector_track</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cache buffer&quot;</span><span class="p">);</span>
+<span class="n">SNEPPX_memory_leak_detector_untrack</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+<span class="n">SNEPPX_memory_leak_detector_report</span><span class="p">();</span><span class="w"> </span><span class="c1">// prints leaks to stderr</span>
+</code></pre></div>
+<h3 id="platform&#702;requirements">Platform Requirements<a class="headerlink" href="#platform&#702;requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Linux</strong>: Requires <code>CAP_IPC_LOCK</code> capability for memory locking</li>
+<li><strong>Windows</strong>: Automatic via <code>VirtualLock</code></li>
+<li><strong>macOS</strong>: Not fully supported (limited mlock)</li>
+</ul>
+<h2 id="s&#702;obfuscation&#702;engine">S2 — Obfuscation Engine ✅<a class="headerlink" href="#s&#702;obfuscation&#702;engine" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/obfuscation/</code> and <code>security/cpp/</code></p>
+<h3 id="implemented">Implemented<a class="headerlink" href="#implemented" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Control flow flattening: converts natural control flow to switch-based dispatch</li>
+<li>String encryption: XOR-based compile-time string obfuscation with rotating keys</li>
+<li>Instruction substitution: replace ADD/SUB/MUL/AND/OR/XOR with NAND-gate equivalent sequences</li>
+<li>Opaque predicates: always-true/false branches to confuse static analysis</li>
+<li>Code virtualization: basic-block-level bytecode compilation with encrypted handler dispatch table</li>
+<li>Anti-debug: ptrace detection, NtGlobalFlag check, timing anomaly detection, breakpoint scanning</li>
+<li>Binary substitution: opcode-level replacement with prefix/suffix byte insertion</li>
+<li>Junk code insertion: NOP slides, dead-store MOVs, identity XORs</li>
+<li>Constant unfolding: integer constants expressed as (a + b) with random splits</li>
+<li>IAT protection: hash-based import resolution, integrity scanning</li>
+<li>SEH/VEH obfuscation: exception-based control flow</li>
+<li>TLS callback obfuscation: runtime function pointer encoding</li>
+<li>Anti-dump: PE/ELF header XOR encryption with CRC integrity verification</li>
+<li>Multi-VM diversity: multiple bytecode handlers with slot switching</li>
+<li>Instruction scheduling randomization: basic-block-level instruction reordering</li>
+</ul>
+<h2 id="s3&#702;behavioral&#702;monitor">S3 — Behavioral Monitor ✅<a class="headerlink" href="#s3&#702;behavioral&#702;monitor" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/monitor/</code></p>
+<h3 id="implemented_1">Implemented<a class="headerlink" href="#implemented_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Integrity monitoring: CRC32-based memory region verification</li>
+<li>Container breakout detection: monitors for escape attempts via cgroup, namespace, and mount inspection</li>
+<li>Frequency analysis: detect unusual API call patterns</li>
+<li>Timing analysis: detect side-channel probing via rdtsc and execution time measurement</li>
+<li>Anomaly detection: statistical baseline comparison for runtime behavior</li>
+</ul>
+<h2 id="s4&#702;network&#702;security">S4 — Network Security ✅<a class="headerlink" href="#s4&#702;network&#702;security" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/network/</code></p>
+<h3 id="implemented_2">Implemented<a class="headerlink" href="#implemented_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>DDoS mitigation: SYN flood detection, rate limiting, connection tracking, IP blacklisting</li>
+<li>Transport security: TLS-compatible handshake padding, traffic analysis resistance</li>
+<li>Identity management: certificate pinning, peer fingerprint verification</li>
+<li>Certificate validation: chain-of-trust verification with expiry checking</li>
+</ul>
+<h3 id="api_2">API<a class="headerlink" href="#api_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ddos_mitigation.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;transport_security.h&quot;</span>
+
+<span class="c1">// DDoS mitigation</span>
+<span class="n">SNEPPXDDoSState</span><span class="w"> </span><span class="n">ddos</span><span class="p">;</span>
+<span class="n">SNEPPX_ddos_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ddos</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1000 pkt/s window, 100 burst limit</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SNEPPX_ddos_is_attack</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ddos</span><span class="p">,</span><span class="w"> </span><span class="n">src_ip</span><span class="p">,</span><span class="w"> </span><span class="n">dst_ip</span><span class="p">,</span><span class="w"> </span><span class="n">now_us</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SNEPPX_ddos_block_ip</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ddos</span><span class="p">,</span><span class="w"> </span><span class="n">src_ip</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Transport security</span>
+<span class="n">SNEPPXTransportSec</span><span class="w"> </span><span class="n">ts</span><span class="p">;</span>
+<span class="n">SNEPPX_transport_sec_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ts</span><span class="p">);</span>
+<span class="n">SNEPPX_transport_sec_handshake</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">cert</span><span class="p">,</span><span class="w"> </span><span class="n">cert_len</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="s5&#702;ai&#702;sanitizer">S5 — AI Sanitizer ✅<a class="headerlink" href="#s5&#702;ai&#702;sanitizer" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/ai/</code></p>
+<h3 id="implemented_3">Implemented<a class="headerlink" href="#implemented_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Prompt injection detection: regex + embedded pattern scanning for jailbreak attempts</li>
+<li>Differential privacy: Laplace mechanism with configurable epsilon for training data protection</li>
+<li>Data poisoning defense: gradient outlier detection, abnormal loss spike monitoring</li>
+<li>RLHF safety: reward model validation, preference alignment checking, harmful output filtering</li>
+<li>Output verifier: model output constraint checking against allow/deny lists</li>
+</ul>
+<h3 id="api_3">API<a class="headerlink" href="#api_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;differential_privacy.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;rlhf_safety.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;data_poisoning_defense.h&quot;</span>
+
+<span class="c1">// Differential privacy (Laplace mechanism)</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">noisy_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_differential_privacy_laplace</span><span class="p">(</span><span class="n">original_value</span><span class="p">,</span><span class="w"> </span><span class="n">sensitivity</span><span class="p">,</span><span class="w"> </span><span class="n">epsilon</span><span class="p">);</span>
+
+<span class="c1">// RLHF safety check</span>
+<span class="n">SNEPPXRLHFSafety</span><span class="w"> </span><span class="n">rlhf</span><span class="p">;</span>
+<span class="n">SNEPPX_rlhf_safety_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rlhf</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SNEPPX_rlhf_safety_check_output</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rlhf</span><span class="p">,</span><span class="w"> </span><span class="n">model_output</span><span class="p">,</span><span class="w"> </span><span class="n">output_len</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// output is safe</span>
+<span class="p">}</span>
+
+<span class="c1">// Poisoning detection</span>
+<span class="n">SNEPPXPoisonDetect</span><span class="w"> </span><span class="n">pd</span><span class="p">;</span>
+<span class="n">SNEPPX_poison_detect_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pd</span><span class="p">,</span><span class="w"> </span><span class="n">threshold_gradient_norm</span><span class="p">);</span>
+<span class="n">SNEPPX_poison_detect_feed_gradient</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pd</span><span class="p">,</span><span class="w"> </span><span class="n">grad</span><span class="p">,</span><span class="w"> </span><span class="n">grad_len</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">is_poisoned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_poison_detect_is_anomalous</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pd</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="s6&#702;security&#702;ui">S6 — Security UI ✅<a class="headerlink" href="#s6&#702;security&#702;ui" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/ui/</code></p>
+<h3 id="implemented_4">Implemented<a class="headerlink" href="#implemented_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking</li>
+<li>Key vault: in-memory encrypted key store with PIN-protected access</li>
+<li>Dashboard: (see <code>docs/api/c.md</code> for C API or <code>bindings/python/</code> for Python bindings)</li>
+</ul>
+<h2 id="s&#702;secure&#702;updates">S7 — Secure Updates ✅<a class="headerlink" href="#s&#702;secure&#702;updates" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/updates/</code></p>
+<h3 id="implemented_5">Implemented<a class="headerlink" href="#implemented_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Container security: OCI-compatible layer verification, manifest integrity checking, image signing</li>
+<li>Signed update bundles: Ed25519-signed update payloads with version rolling</li>
+<li>Rollback protection: monotonic version counter preventing downgrade attacks</li>
+<li>Staged rollout: gradual update distribution with health-check gating</li>
+</ul>
+<h3 id="api_4">API<a class="headerlink" href="#api_4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;container_security.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;signed_update.h&quot;</span>
+
+<span class="c1">// Container image verification</span>
+<span class="n">SNEPPXContainerSec</span><span class="w"> </span><span class="n">cs</span><span class="p">;</span>
+<span class="n">SNEPPX_container_sec_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cs</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SNEPPX_container_sec_verify_layer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="n">layer_data</span><span class="p">,</span><span class="w"> </span><span class="n">layer_len</span><span class="p">,</span><span class="w"> </span><span class="n">expected_hash</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// layer integrity verified</span>
+<span class="p">}</span>
+
+<span class="c1">// Signed update</span>
+<span class="n">SNEPPXSignedUpdate</span><span class="w"> </span><span class="n">su</span><span class="p">;</span>
+<span class="n">SNEPPX_signed_update_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">su</span><span class="p">,</span><span class="w"> </span><span class="n">signing_sk</span><span class="p">);</span>
+<span class="n">SNEPPX_signed_update_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">su</span><span class="p">,</span><span class="w"> </span><span class="n">update_data</span><span class="p">,</span><span class="w"> </span><span class="n">update_len</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bundle</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bundle_len</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="s8&#702;formal&#702;verification">S8 — Formal Verification ✅<a class="headerlink" href="#s8&#702;formal&#702;verification" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/formal/</code></p>
+<h3 id="implemented_6">Implemented<a class="headerlink" href="#implemented_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Model checking: bounded state-space exploration for critical algorithm paths</li>
+<li>Invariant verification: pre/post-condition checking on memory safety and data flow</li>
+<li>Symbolic execution: path constraint generation for NPE bytecode verification</li>
+<li>Container breakout detection (formal): state-machine-based detection rule engine</li>
+</ul>
+<h3 id="api_5">API<a class="headerlink" href="#api_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;model_checking.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;container_breakout.h&quot;</span>
+
+<span class="c1">// Model checking</span>
+<span class="n">SNEPPXModelCheck</span><span class="w"> </span><span class="n">mc</span><span class="p">;</span>
+<span class="n">SNEPPX_model_check_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mc</span><span class="p">,</span><span class="w"> </span><span class="n">max_states</span><span class="p">,</span><span class="w"> </span><span class="n">max_transitions</span><span class="p">);</span>
+<span class="n">SNEPPX_model_check_add_invariant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mc</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ptr != NULL&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">INV_PTR_NOT_NULL</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_model_check_verify</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mc</span><span class="p">,</span><span class="w"> </span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">program_len</span><span class="p">);</span>
+
+<span class="c1">// Container breakout detection</span>
+<span class="n">SNEPPXBreakoutDetect</span><span class="w"> </span><span class="n">bd</span><span class="p">;</span>
+<span class="n">SNEPPX_breakout_detect_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bd</span><span class="p">);</span>
+<span class="n">SNEPPX_breakout_detect_watch_syscall</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bd</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mount&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">BREAKOUT_FLAG_NAMESPACE_ESCAPE</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="s9&#702;penetration&#702;testing">S9 — Penetration Testing ✅<a class="headerlink" href="#s9&#702;penetration&#702;testing" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: Complete
+<strong>Source</strong>: <code>security/pentest/</code></p>
+<h3 id="implemented_7">Implemented<a class="headerlink" href="#implemented_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Network fuzzer: protocol-aware fuzzing engine with mutation strategies (bit flip, boundary, dictionary)</li>
+<li>Self-audit: comprehensive internal consistency checks across all security layers</li>
+<li>Security report generation: structured output of audit findings</li>
+<li>Capture-the-flag utilities: challenge scaffolding for internal red-team exercises</li>
+</ul>
+<h3 id="api_6">API<a class="headerlink" href="#api_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;network_fuzzer.h&quot;</span>
+
+<span class="c1">// Network fuzzing</span>
+<span class="n">SNEPPXFuzzer</span><span class="w"> </span><span class="n">fz</span><span class="p">;</span>
+<span class="n">SNEPPX_fuzzer_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fz</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPX_FUZZ_TCP</span><span class="p">);</span>
+<span class="n">SNEPPX_fuzzer_set_target</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fz</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;192.168.1.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">443</span><span class="p">);</span>
+<span class="n">SNEPPX_fuzzer_set_mutation</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fz</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPX_FUZZ_MUTATE_BITFLIP</span><span class="p">,</span><span class="w"> </span><span class="mf">0.05</span><span class="p">);</span>
+<span class="n">SNEPPX_fuzzer_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fz</span><span class="p">,</span><span class="w"> </span><span class="n">duration_sec</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">report</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="threat&#702;model">Threat Model<a class="headerlink" href="#threat&#702;model" title="Permanent link">&para;</a></h2>
+<h3 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The hardware is trusted (no side-channel attacks on CPU)</li>
+<li>The OS is trusted (no kernel-level compromise)</li>
+<li>The network is untrusted</li>
+<li>Other AI models are untrusted and potentially adversarial</li>
+<li>Supply chain is trusted (verified commits, signed releases)</li>
+</ul>
+<h3 id="defenses">Defenses<a class="headerlink" href="#defenses" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Defense</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Signature forgery</td>
+<td>Ed25519</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Data breach at rest</td>
+<td>ChaCha20-Poly1305</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Side-channel timing</td>
+<td>Constant-time ops</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Memory scraping</td>
+<td>Locked memory + guard pages</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Swap forensic</td>
+<td>mlock/VirtualLock</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Reverse engineering</td>
+<td>CF flattening + string encryption</td>
+<td>⚠️ Partial</td>
+</tr>
+<tr>
+<td>Runtime tampering</td>
+<td>Behavioral monitor</td>
+<td>⚠️ Partial</td>
+</tr>
+<tr>
+<td>Adversarial input</td>
+<td>ARC input guard</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Gradient leakage</td>
+<td>ARC gradient obfuscation</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Model inversion</td>
+<td>ARC output verifier</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reporting&#702;vulnerabilities">Reporting Vulnerabilities<a class="headerlink" href="#reporting&#702;vulnerabilities" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/SneppX/sneppx-alg/blob/main/../SECURITY.md">SECURITY.md</a></p>
+<h2 id="security&#702;best&#702;practices">Security Best Practices<a class="headerlink" href="#security&#702;best&#702;practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Always verify signatures</strong>: Use <code>SNEPPX_ed25519_verify</code> on any external data</li>
+<li><strong>Lock sensitive data</strong>: Use <code>SNEPPX_s1_alloc_locked</code> for keys and secrets</li>
+<li><strong>Wipe after use</strong>: Call <code>SNEPPX_s1_free_locked</code> or <code>SNEPPX_secure_zero</code> on sensitive buffers</li>
+<li><strong>Use constant-time comparisons</strong>: Never use <code>memcmp</code> for secret comparison</li>
+<li><strong>Use AEAD</strong>: Always use <code>SNEPPX_chacha20_poly1305_encrypt</code> with associated data</li>
+<li><strong>Don't roll your own</strong>: Use the provided crypto primitives; do not implement your own</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Built with the SNEPPX-Algo documentation stack. Content licensed under the repository's MIT license.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

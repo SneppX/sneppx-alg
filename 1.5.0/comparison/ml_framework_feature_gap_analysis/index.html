@@ -1,0 +1,3568 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
+">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.5.0/comparison/ml_framework_feature_gap_analysis/">
+      
+      
+        <link rel="prev" href="../../ROADMAP/">
+      
+      
+        <link rel="next" href="../../LEARNING_PATHS/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Framework Comparison - SNEPPX-Algo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#machine-learning&#702;framework&#702;feature&#702;gap&#702;analysis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SNEPPX-Algo" class="md-header__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SNEPPX-Algo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Framework Comparison
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SNEPPX-Algo" class="md-nav__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../../logo.jpeg" alt="logo">
+
+    </a>
+    SNEPPX-Algo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipeline Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Walkthroughs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Code Walkthroughs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-hss/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-ser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-arc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-npe/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walkthrough-fm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RLHF Fine-Tuning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization + Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MoE Expert Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Scanning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling & Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Conversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/autodoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API (auto)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen (C/C++)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Cookbook
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Cookbook
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/tensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models & Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/quantization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/distributed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving & Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data & Tokenization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/profiling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpointing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conversion/Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cookbook/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/obf_audit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Obfuscation Audit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threat Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compliance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incident Response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_notes/v1.5.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.5.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_notes/v1.1.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_notes/v1.1.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_notes/v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release_notes/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.x to v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From PyTorch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From TensorFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/from_jax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From JAX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-walkthrough/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Walkthrough
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COMMENTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commenting Standard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Review Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributor Tiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branching Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hss_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SneppX Console
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/model_hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Hub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/model_zoo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/onnx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ONNX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MHA Forward Pass
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    128K Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/testing_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python_features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_quickref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BENCHMARKS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../COVERAGE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coverage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DESIGN/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../VISION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methodology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary&#702;matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what&#702;implemented&#702;in&#702;this&#702;pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      What "Implemented" in this pass
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What "Implemented" in this pass">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known&#702;limitation&#702;of&#702;the&#702;existing&#702;c&#702;reader&#702;not&#702;introduced&#702;here" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known limitation of the existing C reader (NOT introduced here)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onnx&#702;validation&#702;sneppx_onnx_validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      ONNX validation (SneppX_onnx_validate)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remaining&#702;high-signal&#702;gaps&#702;prioritized" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remaining high-signal gaps (prioritized)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Paths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Legacy API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Style Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Community
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/videos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Video Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Pages Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../doxygen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PR Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_upstream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upstream README
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methodology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary&#702;matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what&#702;implemented&#702;in&#702;this&#702;pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      What "Implemented" in this pass
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What "Implemented" in this pass">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known&#702;limitation&#702;of&#702;the&#702;existing&#702;c&#702;reader&#702;not&#702;introduced&#702;here" class="md-nav__link">
+    <span class="md-ellipsis">
+      Known limitation of the existing C reader (NOT introduced here)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onnx&#702;validation&#702;sneppx_onnx_validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      ONNX validation (SneppX_onnx_validate)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remaining&#702;high-signal&#702;gaps&#702;prioritized" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remaining high-signal gaps (prioritized)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="machine-learning&#702;framework&#702;feature&#702;gap&#702;analysis">Machine-Learning Framework Feature Gap Analysis<a class="headerlink" href="#machine-learning&#702;framework&#702;feature&#702;gap&#702;analysis" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Status: living analysis. "Implemented" means shipped in <code>SNEPPX.Algo</code> (C/C++/ASM core
+or Python bindings) and exercised by tests. "Has-equivalent" means SNEPPX reaches the
+same end result through a different subsystem. "Stub / partial" means a public API
+exists but does not yet perform real work. "Missing" means no implementation.</p>
+</blockquote>
+<h2 id="methodology">Methodology<a class="headerlink" href="#methodology" title="Permanent link">&para;</a></h2>
+<p>This analysis compares SNEPPX-Algo against the <em>capabilities</em> that general-purpose
+machine-learning frameworks ship as standard, grouped by subsystem. It is not a
+comparison of "framework X vs SNEPPX"; it is a gap list of user-facing capabilities
+that a self-described universal AI engine is expected to provide, and where SNEPPX
+currently stands on each. Statuses are verified against the source tree and the
+phase log in <code>AGENTS.md</code>.</p>
+<h2 id="summary&#702;matrix">Summary matrix<a class="headerlink" href="#summary&#702;matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Subsystem / Capability</th>
+<th>SNEPPX status</th>
+<th>Gap note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Binary model export (ONNX)</strong></td>
+<td><strong>Implemented</strong></td>
+<td>Canonical binary <code>ModelProto</code> export: single-op linear (<code>SneppX_onnx_save_linear</code>), arbitrary DAGs (<code>SneppX_onnx_save_graph</code>, any op with INT/FLOAT/INTS/FLOATS attrs, symbolic batch dims), and the Python <code>OnnxExporter</code> (<code>.onnx</code> paths now emit raw protobuf via <code>OnnxModel.to_bytes</code>). Cross-validated in both directions with the C writer/validator.</td>
+</tr>
+<tr>
+<td>ONNX validation / shape inference</td>
+<td><strong>Implemented</strong></td>
+<td><code>SneppX_onnx_validate</code> (C) and <code>onnx_validate</code> (Python) check ir_version/opset/graph name, initializer <code>raw_data</code> vs dims product, node input declaration, and output production. Python <code>onnx_check</code> adds op-schema arity checks and full type/shape inference with symbolic batch propagation (Conv/Gemm/MatMul/pool/broadcast/reshape/transpose/concat/split/reduce/gather, 20+ op rules).</td>
+</tr>
+<tr>
+<td>Graph-level model import (run)</td>
+<td>Partial</td>
+<td>In-tree C reader uses <strong>non-standard</strong> protobuf field numbers (see note)</td>
+</tr>
+<tr>
+<td>Keras-/nn.Module-style layer API</td>
+<td><strong>Implemented</strong></td>
+<td><code>Sequential</code>/<code>Model</code> with add/compile/fit/evaluate/predict/summary + layer factories and pure-Python optimizers</td>
+</tr>
+<tr>
+<td>Post-training quantization</td>
+<td>Implemented</td>
+<td>INT8/INT4/FP8, AWQ, GPTQ (C, CUDA, Python)</td>
+</tr>
+<tr>
+<td>Quantization-aware training (fake-quant + STE)</td>
+<td>Implemented</td>
+<td><code>SNEPPX_tensor_fake_quant</code> + <code>SNEPPX_fake_quant</code> op: symmetric affine forward (round/dequant, INT8/INT4/FP8 bit widths) with straight-through-estimator backward (unit gradient w.r.t. input). Verified by <code>test_fake_quant</code> (3/3).</td>
+</tr>
+<tr>
+<td>Structured / channel-wise pruning</td>
+<td>Implemented</td>
+<td><code>pruning.py</code> tested</td>
+</tr>
+<tr>
+<td>Distillation</td>
+<td>Implemented</td>
+<td><code>distillation.py</code> tested</td>
+</tr>
+<tr>
+<td>Activation / full-model autograd</td>
+<td>Implemented</td>
+<td>Autograd framework with ∇ for GEMM/activations/layernorm/softmax</td>
+</tr>
+<tr>
+<td>Optimizers</td>
+<td>Implemented</td>
+<td>AdamW/SGD/Lion/LAMB/LARS/AdaFactor + ZeRO-1/2/3</td>
+</tr>
+<tr>
+<td>Mixed-precision (AMP)</td>
+<td>Implemented</td>
+<td>FP16/BF16 autocast + gradient scaling</td>
+</tr>
+<tr>
+<td>LR schedulers</td>
+<td>Implemented</td>
+<td>cosine/linear/warmup etc.</td>
+</tr>
+<tr>
+<td>Hyperparameter search orchestrator</td>
+<td><strong>Implemented</strong></td>
+<td><code>hpo.Study</code> with random/grid/halving/GP-UCB samplers, ask/tell + run drivers, JSON results</td>
+</tr>
+<tr>
+<td>Experiment / run tracking</td>
+<td><strong>Implemented</strong></td>
+<td><code>Run</code>/<code>Experiment</code>/<code>ExperimentStore</code> with structured <code>metadata.json</code> + <code>metrics.jsonl</code> persistence</td>
+</tr>
+<tr>
+<td>Data pipeline</td>
+<td>Implemented</td>
+<td>datamodules / dataloaders tested</td>
+</tr>
+<tr>
+<td>Augmentation</td>
+<td>Implemented</td>
+<td><code>augmentation.py</code> tested</td>
+</tr>
+<tr>
+<td>Distributed (DP/TP/PP/EP, ZeRO, FSDP, elastic)</td>
+<td>Implemented</td>
+<td>Phases 2 completed; checkpoint coordinator + heartbeat/elastic</td>
+</tr>
+<tr>
+<td>NCCL / multi-node transports</td>
+<td>Implemented</td>
+<td><code>net/distributed/</code></td>
+</tr>
+<tr>
+<td>Continuous-batching serving</td>
+<td>Implemented</td>
+<td><code>continuous_batching.py</code></td>
+</tr>
+<tr>
+<td>Paged attention / KV caching</td>
+<td><strong>Implemented</strong></td>
+<td><code>paged_attention.py</code></td>
+</tr>
+<tr>
+<td>MX deployment formats (MXFP4/6/8)</td>
+<td><strong>Implemented</strong></td>
+<td><code>mx_formats.py</code></td>
+</tr>
+<tr>
+<td>MLflow-class observability (registry/lineage/prompts/gateway/eval)</td>
+<td><strong>Implemented</strong></td>
+<td><code>mlflow_like.py</code></td>
+</tr>
+<tr>
+<td>Hardware inference backends (CPU/ONNX/OpenVINO/NPU/auto)</td>
+<td><strong>Implemented</strong></td>
+<td><code>hw_backends.py</code></td>
+</tr>
+<tr>
+<td>Quantized serving</td>
+<td>Implemented</td>
+<td><code>quantized_serve.py</code></td>
+</tr>
+<tr>
+<td>Inference HTTP API</td>
+<td>Implemented</td>
+<td><code>inference_server.py</code> (<code>/v1/generate/continuous-batch</code>, <code>/v1/models/quantize</code>)</td>
+</tr>
+<tr>
+<td>Mobile / edge runtime</td>
+<td><strong>Implemented</strong></td>
+<td>Python <code>EdgeRuntime</code>: CPU/ISA detection, pluggable backends with CPU fallback, INT8-quantized matmul, scratch-buffer pooling, latency/flops; NPU/ARM delegate extension point</td>
+</tr>
+<tr>
+<td>Graph compiler (op fusion / tiling / Triton)</td>
+<td><strong>Implemented</strong></td>
+<td>Python <code>GraphCompiler</code> fuses maximal element-wise chains into single kernels, tiles large kernels, and emits C source (fused loops + matmul helper + driver); no Triton codegen</td>
+</tr>
+<tr>
+<td>JIT / trace → executable graph</td>
+<td><strong>Implemented</strong></td>
+<td><code>jit.py</code>: symbolic trace, <code>jit</code>/<code>grad</code>/<code>value_and_grad</code>/<code>jacobian</code>/<code>hessian</code>/<code>vmap</code></td>
+</tr>
+<tr>
+<td>RLHF / DPO / GRPO</td>
+<td>Implemented (fixed)</td>
+<td>Phases 9 completed</td>
+</tr>
+<tr>
+<td>Tokenizer</td>
+<td>Implemented</td>
+<td>Tested</td>
+</tr>
+<tr>
+<td>Model zoo / <code>from_pretrained</code></td>
+<td>Implemented</td>
+<td>LLaMA2/3, Mistral, Qwen2, DeepSeek V2 + HF weight conversion</td>
+</tr>
+<tr>
+<td>Security stack (S0–S9: PQC, memory hardening, signed updates)</td>
+<td>Implemented</td>
+<td>Core differentiator</td>
+</tr>
+<tr>
+<td>NVTX / profiling JSON export</td>
+<td>Implemented</td>
+<td>Phases 7 completed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what&#702;implemented&#702;in&#702;this&#702;pass">What "Implemented" in this pass<a class="headerlink" href="#what&#702;implemented&#702;in&#702;this&#702;pass" title="Permanent link">&para;</a></h2>
+<p><code>SNEPPX_onnx_save_linear</code> (<code>fs/format/onnx_format.c</code>, declared in
+<code>fs/format/onnx_format.h</code>) emits a <strong>canonical binary ONNX <code>ModelProto</code></strong>
+(raw protobuf, no <code>ONNX</code> magic prefix — the same layout
+<code>torch.onnx.export</code> / <code>onnx.save</code> produce and that <code>onnxruntime</code> loads). It writes:</p>
+<ul>
+<li><code>ModelProto</code> (<code>ir_version</code>, <code>producer_name</code>/<code>producer_version</code>, <code>model_version</code>,
+  <code>graph</code> (field 7), <code>opset_import</code> <code>{domain:"", version:14}</code> (field 8)).</li>
+<li><code>GraphProto</code> with one <code>Gemm</code> node (<code>transB=1</code>, <code>alpha=beta=1</code>) computing
+  <code>Y = X * W^T + B</code>, a single graph input <code>X</code> with a symbolic <code>batch</code> dimension,
+  output <code>Y</code>, and two initializers <code>W [N,K]</code> and <code>B [N]</code> serialized as
+  <code>raw_data</code> (little-endian IEEE-754 float bytes).</li>
+<li><code>TensorProto</code> / <code>ValueInfoProto</code> using the <strong>canonical ONNX IR field numbers</strong>
+  (<code>dims=1</code>, <code>data_type=2</code>, <code>name=8</code>, <code>raw_data=9</code>; <code>GraphProto.node=1</code>,
+  <code>input=11</code>, <code>output=12</code>, <code>initializer=5</code>; <code>NodeProto.input=1</code>, <code>op_type=4</code>,
+  <code>attribute=5</code>; <code>AttributeProto.type=20</code>, <code>i=3</code>; <code>OperatorSetIdProto.version=2</code>).</li>
+</ul>
+<p>This is verified end-to-end by <code>tests/unit/test_onnx_export.c</code>, which re-parses the
+emitted bytes with an independent standard-field-number protobuf reader and asserts:
+file is raw protobuf (first byte <code>0x08</code>, no <code>ONNX</code> magic), <code>ir_version &gt; 0</code>,
+producer name, opset version, graph name, exactly one <code>Gemm</code> node with inputs
+<code>[X, W, B]</code>, output <code>[Y]</code>, a <code>transB=1</code> attribute, two initializers whose <code>raw_data</code>
+exactly equals the input weights/bias, correct dims, and input/output shapes
+<code>[batch, in]</code>/<code>[batch, out]</code>.</p>
+<p><code>SneppX_onnx_save_graph</code> (<code>fs/format/onnx_format.c</code>) generalizes this to an
+<strong>arbitrary directed graph</strong>: caller supplies <code>SneppXOnnxNode</code> entries (op_type,
+input/output name lists, attribute list with INT/FLOAT/INTS/FLOATS attributes),
+<code>SneppXOnnxInitializer</code> tensors (row-major, <code>raw_data</code>), and <code>SneppXOnnxValueInfo</code>
+inputs/outputs with concrete or symbolic (<code>dim.param</code>) dimensions. It emits the same
+canonical <code>ModelProto</code> (raw protobuf). <code>SNEPPX_onnx_save_linear</code> is retained as a
+thin convenience wrapper around this primitive. This is verified by
+<code>tests/unit/test_onnx_export_graph.c</code>, which exports a 2-node <code>Gemm -&gt; Relu</code> graph
+and asserts node order, op types, input/output wiring, the <code>transB=1</code> attribute,
+initializer byte-exact round-trip, symbolic <code>[batch, …]</code> shapes, and the semantic
+ground truth <code>hidden = X·Wᵀ + B</code> then <code>Y = Relu(hidden)</code>.</p>
+<h3 id="known&#702;limitation&#702;of&#702;the&#702;existing&#702;c&#702;reader&#702;not&#702;introduced&#702;here">Known limitation of the existing C reader (NOT introduced here)<a class="headerlink" href="#known&#702;limitation&#702;of&#702;the&#702;existing&#702;c&#702;reader&#702;not&#702;introduced&#702;here" title="Permanent link">&para;</a></h3>
+<p>The in-tree reader (<code>SNEPPX_onnx_load</code> / <code>parse_graph</code> in <code>onnx_format.c</code>) was written
+against a <strong>non-standard</strong> field layout (<code>GraphProto.node</code> treated as field 11,
+<code>input</code> as field 1, <code>output</code> as field 10, <code>initializer</code> as field 13,
+<code>TensorProto.name</code> as field 9, <code>raw_data</code> as field 12). Files emitted by
+<code>SNEPPX_onnx_save_linear</code> (canonical) are therefore <strong>not</strong> meant to be round-tripped
+through that reader; they are written for interoperability with standard runtimes.
+The reader and its non-standard field mapping are left untouched to avoid regressions.</p>
+<h3 id="onnx&#702;validation&#702;sneppx_onnx_validate">ONNX validation (<code>SneppX_onnx_validate</code>)<a class="headerlink" href="#onnx&#702;validation&#702;sneppx_onnx_validate" title="Permanent link">&para;</a></h3>
+<p><code>SneppX_onnx_validate</code> (same file) parses a canonical <code>ModelProto</code> with a small
+standard-field-number reader and enforces structural correctness: a present
+<code>ir_version</code> and <code>opset_import</code>; a graph name; every initializer's <code>data_type</code>
+being a supported float family and <code>raw_data</code> length matching the product of its
+dims; every node <code>op_type</code> non-empty; every node input being <em>declared</em> (a graph
+input, an initializer, or produced by an earlier node, since nodes are in
+topological order); every node output not colliding with an existing tensor; and
+every graph output being produced by some node. It accepts both raw-protobuf and
+the SNEPPX-internal <code>ONNX</code>-magic-prefixed files. Verified by
+<code>tests/unit/test_onnx_validate.c</code>: a valid <code>Gemm -&gt; Relu</code> graph passes; an
+undeclared input, an unproduced output, and a truncated model are each rejected
+with a descriptive error.</p>
+<h2 id="remaining&#702;high-signal&#702;gaps&#702;prioritized">Remaining high-signal gaps (prioritized)<a class="headerlink" href="#remaining&#702;high-signal&#702;gaps&#702;prioritized" title="Permanent link">&para;</a></h2>
+<ol>
+<li><del><strong>Arbitrary graph ONNX export.</strong></del> <strong>Done</strong> — <code>SneppX_onnx_save_graph</code> emits
+   canonical binary ONNX for any op DAG, and the Python <code>OnnxExporter</code>
+   (<code>bindings/python/.../onnx_export.py</code>) now emits the same canonical binary
+   <code>.onnx</code> (raw protobuf) for <code>.onnx</code> paths via <code>OnnxModel.to_bytes()</code> /
+   <code>export_binary</code>, with a pure-Python decoder (<code>protobuf_to_onnx</code>) and
+   <code>onnx_validate</code> checks that mirror the C validator. The two implementations
+   were cross-validated: the Python decoder reads C-written files and the C
+   validator accepts Python-written files.</li>
+<li><del><strong>ONNX validation &amp; shape inference.</strong></del> <strong>Done</strong> — <code>SneppX_onnx_validate</code> (C)
+   and <code>onnx_validate</code> (Python, parity checks) perform structural validation
+   (see above). The Python <code>onnx_check</code> module adds op-schema arity checks and
+   full type/shape inference with symbolic batch propagation
+   (<code>infer_shapes</code>, 20+ op rules), surfaced as <code>infer_shapes</code> / <code>onnx_check</code>
+   on the top-level package.</li>
+<li><del><strong>Quantization-aware training.</strong></del> <strong>Done</strong> — <code>SNEPPX_tensor_fake_quant</code> +
+   <code>SNEPPX_fake_quant</code> autograd op register the canonical QAT recipe: symmetric
+   affine fake-quantize forward (INT8/INT4/FP8 bit widths) with a
+   straight-through-estimator backward, verified by <code>test_fake_quant</code> (3/3).</li>
+<li><del><strong>Experiment / run tracking.</strong></del> <strong>Done</strong> — <code>Run</code> (context manager, params,
+    metrics with step/extra, artifacts, tags, <code>best</code>/<code>last</code>/<code>metric_history</code>),
+    <code>Experiment</code> (run aggregation + <code>best_run</code>), and <code>ExperimentStore</code> (root
+    directory manager), persisted as structured <code>metadata.json</code> + <code>metrics.jsonl</code>
+    under <code>runs/&lt;experiment&gt;/&lt;run_id&gt;/</code> and reloadable via <code>load_experiment</code>;
+    8 Python tests in <code>tests/python/test_experiment.py</code> pass.</li>
+<li><del><strong>Keras-style layer API.</strong></del> <strong>Done</strong> — <code>keras_api.Sequential</code>/<code>Model</code>
+    with <code>add</code>/<code>compile</code>/<code>fit</code>/<code>evaluate</code>/<code>predict</code>/<code>summary</code>/<code>count_params</code>/
+    <code>get</code>+<code>set</code>+<code>save</code>+<code>load</code> weights, layer factories (<code>Dense</code>, <code>Conv2D</code>,
+    <code>MaxPool2D</code>, <code>AveragePool2D</code>, <code>Flatten</code>, <code>Dropout</code>, <code>BatchNormalization</code>,
+    <code>LayerNorm</code>, <code>Activation</code>, <code>ReLU</code>, <code>Sigmoid</code>, <code>Tanh</code>, <code>GELU</code>, <code>SiLU</code>,
+    <code>Softmax</code>, <code>Input</code>) with training <code>history</code> + <code>validation_data</code>/callbacks.
+    Also fixed a pre-existing pure-Python autograd bug (Add/Sub/Mul/Div
+    <code>backward</code> did not reduce gradients over broadcast axes, corrupting bias
+    tensors during training); 15 Python tests in
+    <code>tests/python/test_keras_api.py</code> pass, 119 across the core regression.</li>
+<li><del><strong>Graph compiler.</strong></del> <strong>Done</strong> — <code>GraphCompiler</code> builds a <code>GraphNode</code> compute
+    DAG (arithmetic/unary sugar, <code>clip</code>, <code>matmul</code>, <code>evaluate</code>), fuses maximal
+    chains of element-wise ops (add/sub/mul/div/neg/abs/exp/log/relu/sigmoid/
+    tanh/gelu/silu/clip) into single <code>FusedNode</code> kernels via union-find with
+    shared-subexpression collapsing, rewrites the graph with a replacement map,
+    tiles large element-wise kernels (<code>forward(..., tile_size=...)</code>), and emits C
+    source (<code>generate_c</code>): fused flat-<code>n</code> kernels with scalar constants inlined,
+    a row-major <code>sneppx_matmul_f32</code> helper, and a topological
+    <code>sneppx_graph_forward</code> driver. 32 Python tests in
+    <code>tests/python/test_graph_compiler.py</code> pass (fusion parity vs unfused
+    evaluate, broadcast shapes, matmul boundaries, multiple clusters, codegen
+    structural checks).</li>
+<li><del><strong>Mobile / edge runtime.</strong></del> <strong>Done</strong> — <code>EdgeRuntime</code> (Python) detects the
+    host as an <code>EdgeDevice</code> (x86 SSE/AVX/AVX-512, ARM NEON/FP16, RISC-V via
+    ISA flags + vector width), executes compiled graphs through pluggable
+    <code>EdgeBackend</code> implementations (registered via <code>register_backend</code>, default
+    <code>CPUBackend</code>, with a CPU fallback for ops a delegate doesn't support),
+    runs INT8-quantized matmuls (<code>quantize_graph_weights</code> + <code>int8_matmul</code>
+    with fp32/int32 accumulation), recycles scratch buffers between calls
+    (<code>BufferPool</code>, safe within a graph), and reports <code>latency_ms</code>/
+    <code>throughput</code>/<code>flops</code>/<code>summary</code>/<code>benchmark</code>. 24 Python tests in
+    <code>tests/python/test_edge_runtime.py</code> pass.</li>
+<li><del><strong>Hyperparameter-search orchestrator.</strong></del> <strong>Done</strong> — <code>hpo.py</code> provides a
+     <code>Study</code> controller (Optuna-style <code>suggest</code>/<code>tell</code> plus a one-shot <code>run</code>
+     driver) over a <code>SearchSpace</code> of <code>choice</code>/<code>int_</code>/<code>uniform</code>/<code>log_uniform</code>
+     specs with four samplers: random search, exhaustive grid search, successive
+     halving (budget-scheduled evaluations with top-1/η promotion), and
+     Bayesian optimization via GP-UCB (closed-form RBF Gaussian-process
+     regression, <code>minimize</code>/<code>maximize</code> directions). Trials and results persist
+     to JSON (<code>to_json</code>/<code>from_json</code>). Convenience drivers
+     <code>random_search</code>/<code>grid_search</code>/<code>halving_search</code>/<code>bayesian_search</code> are
+     exported top-level. 24 Python tests in <code>tests/python/test_hpo.py</code> pass.</li>
+<li><del><strong>Paged attention / KV caching.</strong></del> <strong>Done</strong> — <code>paged_attention.py</code>
+     implements a <code>Tracer</code> (LIFO page reuse) + <code>PrefixCache</code> (token-hash-deduped
+     prefix re-use) and <code>paged_attention_forward</code> for GQA with causal-masked
+     prefill (<code>[0, t]</code> rows) and non-causal decode; paged <code>incremental</code>/
+     <code>chunked</code> paths exercised. Fixed upstream bugs found while testing: GQA
+     <code>q @ k.T</code> was over-expanding to <code>(heads, kv, seq)</code> (now a <code>np.einsum</code>),
+     causal mask axis, and per-position prefill scoring. 16 Python tests in
+     <code>tests/python/test_paged_attention.py</code> pass.</li>
+<li><del><strong>MX deployment formats (MXFP4/6/8).</strong></del> <strong>Done</strong> — <code>mx_formats.py</code>
+      implements an MXFloat codec (block shared exponents, 1/2-bit exponent +
+      2/3/4/6-bit mantissa, scaling of block exponents by <code>E8M0</code>-style
+      exponents) and micro-scaled dot products (MXFP4/MXFP6/MXFP8<em>E4M3/BNB6).
+      Fixed the scale formula (<code>ceil(log2(peak)) - bias</code> broke 2-bit-exponent
+      formats → <code>ceil(log2(peak) - log2(max))</code>) and added IEEE subnormal
+      encode/decode, lifting MXFP4 SNR 2.2→16.2 dB and MXFP6</em>E2M3 2.3→30.5 dB.
+      7 Python tests in <code>tests/python/test_mx_formats.py</code> pass.</li>
+<li><del><strong>JIT / trace → executable graph.</strong></del> <strong>Done</strong> — <code>jit.py</code> provides
+      symbolic tracing (op graph + <code>tuple</code> nodes), <code>jit</code> (cache by input
+      shapes), first/second-order <code>grad</code> (multi-<code>argnum</code>, <code>value_and_grad</code>,
+      <code>jacobian</code>, <code>hessian</code> incl. mixed partials), and <code>vmap</code> (batched
+      <code>args</code>/<code>out_axes</code>). Fixed: multi-argnum <code>grad</code> only returned the first
+      gradient (now builds a <code>tuple</code> node), transposed-1-D matmul VJPs
+      (<code>matmul_grad_a/b</code>), and <code>sum_to_shape</code> robustness to extra/fewer dims.
+      24 Python tests in <code>tests/python/test_jit.py</code> pass.</li>
+<li><del><strong>MLflow-class observability.</strong></del> <strong>Done</strong> — <code>mlflow_like.py</code> provides
+      <code>JSONStore</code> persistence, <code>ModelRegistry</code> (version lifecycle, stages with
+      Production↔Archived guard, aliases, lineage), <code>LineageStore</code> (run DAG:
+      chain/descendants/tags/models), <code>PromptRegistry</code> (versions + template
+      <code>render</code>), <code>AIGateway</code> (route priorities, disabled-route fallback,
+      usage), <code>EvalMonitor</code> (delta/regression detection), and the
+      <code>SneppxTrackingClient</code> facade. 9 Python tests in
+      <code>tests/python/test_observability.py</code> pass.</li>
+<li><del><strong>Hardware inference backends.</strong></del> <strong>Done</strong> — <code>hw_backends.py</code> probes
+      CPU/ONNX/OpenVINO/NPU/GPU devices without importing heavy packages,
+      routes through <code>BackendRegistry</code>/<code>select_execution_provider</code>/
+      <code>inference_session</code> with an alias-aware <code>auto</code> priority chain
+      (NPU &gt; OpenVINO &gt; ONNX &gt; CPU<em>FP16 &gt; CPU</em>FP32) and per-backend degradation
+      to a deterministic seeded numpy fallback, and records latency per run.
+      9 Python tests in <code>tests/python/test_hw_backends.py</code> pass.</li>
+</ol>
+<h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
+<p>The binary ONNX export and validation/shape-inference gaps are now closed across
+both implementations and verified end-to-end: linear + arbitrary graph export (C),
+Python <code>OnnxExporter</code> binary emission + <code>protobuf_to_onnx</code> decode + parity
+<code>onnx_validate</code>, plus <code>onnx_check</code> shape inference with symbolic batch
+propagation; C-written files parse in Python and Python-written files pass the C
+validator (42 Python ONNX/shape tests pass). Experiment/run tracking is also in:
+<code>Run</code>/<code>Experiment</code>/<code>ExperimentStore</code> with structured <code>metadata.json</code> +
+<code>metrics.jsonl</code> persistence (8 Python tests), and the Keras-style layer API
+(<code>Sequential</code>/<code>Model</code> with compile/fit/evaluate/predict/summary, 15 Python
+tests) with the broadcast-aware autograd fix. The graph compiler is also in:
+<code>GraphCompiler</code> fuses element-wise chains into single kernels, tiles large
+kernels, and emits C source with a topological driver (32 Python tests). The
+mobile/edge runtime is in too: <code>EdgeRuntime</code> with device detection, pluggable
+backends + CPU fallback, INT8-quantized matmul, buffer pooling, and
+latency/flops reporting (24 Python tests). The hyperparameter-search
+orchestrator is also in: <code>Study</code> with random/grid/halving/GP-UCB samplers
+over a <code>SearchSpace</code>, ask/tell streaming + run driver, and JSON results
+(24 Python tests). With these closures every gap identified by the original
+analysis is now <strong>Implemented</strong> or partial-with-a-documented-cause. This pass also
+closed the remaining user-facing gaps from the matrix: paged attention (16 tests),
+MX deployment formats (7 tests), JIT/grad/vmap tracing (24 tests), MLflow-class
+observability (9 tests), and hardware inference backends (9 tests) — all Python
+tests green alongside the core regression suite.</p>
+<p>A subsequent production-serving pass also closed the model-serving gap: a
+C serving control plane (<code>net/http/serving_engine.h/.c</code>) with model versioning,
+rolling updates, A/B traffic routing, dynamic batching (size + timeout drain),
+Prometheus+JSON metrics, health/readiness probes, and YAML hot-reload (compiled
+and linked with MSVC 19.44 + UCRT; C unit test in <code>tests/unit/test_serving_engine.c</code>
+passes), mirrored in Python (<code>interface_bindings/serving_engine.py</code> with
+<code>ServingEngine</code>, <code>DynamicBatchQueue</code>, <code>WorkerPool</code>, <code>ConfigReloader</code>, and a
+stdlib <code>http.server.ThreadingHTTPServer</code> in <code>serving_server.py</code>) plus a
+stdlib-<code>urllib</code> client SDK (<code>serving_client.py</code>). The FastAPI
+<code>inference_server.py</code> was extended with <code>/healthz</code>, <code>/readyz</code>, <code>/metrics</code>
+(Prometheus + JSON), <code>/v1/models/{model_id}/versions</code>, <code>/v1/deploy</code>, and
+<code>/v1/traffic</code>, and <code>register_model</code> now mirrors into the serving control plane.
+Example config: <code>config/serving.yaml</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Built with the SNEPPX-Algo documentation stack. Content licensed under the repository's MIT license.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

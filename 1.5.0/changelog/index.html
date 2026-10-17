@@ -1,0 +1,5215 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
+">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.5.0/changelog/">
+      
+      
+        <link rel="prev" href="../learn/videos/">
+      
+      
+        <link rel="next" href="../FAQ/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Changelog - SNEPPX-Algo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SNEPPX-Algo" class="md-header__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SNEPPX-Algo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SNEPPX-Algo" class="md-nav__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    SNEPPX-Algo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipeline Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Walkthroughs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Code Walkthroughs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-hss/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-ser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-arc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-npe/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-fm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RLHF Fine-Tuning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization + Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MoE Expert Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Scanning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling & Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Conversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/autodoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API (auto)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen (C/C++)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Cookbook
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Cookbook
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/tensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models & Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/quantization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/distributed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving & Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data & Tokenization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/profiling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpointing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conversion/Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/obf_audit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Obfuscation Audit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threat Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compliance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incident Response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.5.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.5.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.x to v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From PyTorch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From TensorFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_jax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From JAX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-walkthrough/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Walkthrough
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMMENTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commenting Standard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Review Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributor Tiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branching Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hss_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SneppX Console
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Hub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_zoo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/onnx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ONNX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MHA Forward Pass
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    128K Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/testing_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_quickref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COVERAGE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coverage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VISION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Paths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Legacy API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Style Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Community
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learn/videos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Video Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v15&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.5.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unreleased
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build&#702;tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build / Tooling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v111" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.1.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.1.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v11&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.1.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.1.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1&#702;_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;e" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890e
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890e">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;b" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890b
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890b">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;a" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890a
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890a">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;95&#702;48" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.5.748
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.5.748">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor&#702;internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refactor / Internal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix4" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix3" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix3
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix1" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Pages Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doxygen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PR Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_upstream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upstream README
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v15&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.5.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unreleased
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build&#702;tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build / Tooling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v111" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.1.1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.1.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v11&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.1.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.1.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v1&#702;_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.0.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.0.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;e" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890e
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890e">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;b" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890b
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890b">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;a" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890a
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890a">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#other_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;89&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.7.890
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.7.890">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;95&#702;48" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.5.748
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.5.748">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor&#702;internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refactor / Internal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix4" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix4
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix3" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix3
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0-fix2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;-fix1" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0-fix1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v&#702;9&#702;" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.9.0
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.9.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug&#702;fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>Auto-generated from git tags + commit history. Regenerate with <code>python docs/changelog/generate.py</code>. No CI writes this file.</p>
+<!-- prettier-ignore -->
+
+<div class="toc">
+<ul>
+<li><a href="#changelog">Changelog</a><ul>
+<li><a href="#v15&#702;">v1.5.0</a><ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#bug&#702;fixes">Bug Fixes</a></li>
+</ul>
+</li>
+<li><a href="#unreleased">Unreleased</a><ul>
+<li><a href="#features_1">Features</a></li>
+<li><a href="#bug&#702;fixes_1">Bug Fixes</a></li>
+<li><a href="#build&#702;tooling">Build / Tooling</a></li>
+<li><a href="#other">Other</a></li>
+</ul>
+</li>
+<li><a href="#v1&#702;">v1.2.0</a></li>
+<li><a href="#v111">v1.1.1</a><ul>
+<li><a href="#other_1">Other</a></li>
+</ul>
+</li>
+<li><a href="#v11&#702;">v1.1.0</a><ul>
+<li><a href="#features_2">Features</a></li>
+<li><a href="#bug&#702;fixes_2">Bug Fixes</a></li>
+<li><a href="#other_2">Other</a></li>
+</ul>
+</li>
+<li><a href="#v1&#702;_1">v1.0.0</a><ul>
+<li><a href="#features_3">Features</a></li>
+<li><a href="#bug&#702;fixes_3">Bug Fixes</a></li>
+<li><a href="#other_3">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;89&#702;e">v0.9.7.890e</a><ul>
+<li><a href="#bug&#702;fixes_4">Bug Fixes</a></li>
+<li><a href="#other_4">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;89&#702;b">v0.9.7.890b</a><ul>
+<li><a href="#other_5">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;89&#702;a">v0.9.7.890a</a><ul>
+<li><a href="#other_6">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;89&#702;">v0.9.7.890</a><ul>
+<li><a href="#features_4">Features</a></li>
+<li><a href="#bug&#702;fixes_5">Bug Fixes</a></li>
+<li><a href="#other_7">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;95&#702;48">v0.9.5.748</a><ul>
+<li><a href="#features_5">Features</a></li>
+<li><a href="#bug&#702;fixes_6">Bug Fixes</a></li>
+<li><a href="#refactor&#702;internal">Refactor / Internal</a></li>
+<li><a href="#other_8">Other</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;-fix4">v0.9.0-fix4</a><ul>
+<li><a href="#bug&#702;fixes_7">Bug Fixes</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;-fix3">v0.9.0-fix3</a><ul>
+<li><a href="#bug&#702;fixes_8">Bug Fixes</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;-fix&#702;">v0.9.0-fix2</a><ul>
+<li><a href="#bug&#702;fixes_9">Bug Fixes</a></li>
+</ul>
+</li>
+<li><a href="#v&#702;9&#702;-fix1">v0.9.0-fix1</a></li>
+<li><a href="#v&#702;9&#702;">v0.9.0</a><ul>
+<li><a href="#features_6">Features</a></li>
+<li><a href="#bug&#702;fixes_10">Bug Fixes</a></li>
+<li><a href="#other_9">Other</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test">81 v0.5.0: ARC/NPE/FM training graphs, trainer fix, NPE training test</a></li>
+<li><a href="#8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests">80 Fix loss computation in trainer, multi-module train graphs, and tests</a></li>
+<li><a href="#&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix">79 Full attention training graph, reshape op, trainer fix</a><ul>
+<li><a href="#v&#702;1&#702;">v0.1.0</a></li>
+<li><a href="#algo&#702;9446&#702;">algo0.9.4.467</a><ul>
+<li><a href="#bug&#702;fixes_11">Bug Fixes</a></li>
+<li><a href="#other_10">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;9&#702;94">algo0.9.2.094</a><ul>
+<li><a href="#features_7">Features</a></li>
+<li><a href="#bug&#702;fixes_12">Bug Fixes</a></li>
+<li><a href="#refactor&#702;internal_1">Refactor / Internal</a></li>
+<li><a href="#other_11">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;9&#702;">algo0.9.0</a><ul>
+<li><a href="#features_8">Features</a></li>
+<li><a href="#bug&#702;fixes_13">Bug Fixes</a></li>
+<li><a href="#other_12">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;8&#702;">algo0.8.0</a><ul>
+<li><a href="#other_13">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;8">algo0.7.8</a><ul>
+<li><a href="#other_14">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;5">algo0.7.5</a><ul>
+<li><a href="#other_15">Other</a></li>
+</ul>
+</li>
+<li><a href="#algo&#702;5_1">algo0.5</a><ul>
+<li><a href="#features_9">Features</a></li>
+<li><a href="#bug&#702;fixes_14">Bug Fixes</a></li>
+<li><a href="#other_16">Other</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test_1">81 v0.5.0: ARC/NPE/FM training graphs, trainer fix, NPE training test</a></li>
+<li><a href="#8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests_1">80 Fix loss computation in trainer, multi-module train graphs, and tests</a></li>
+<li><a href="#&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix_1">79 Full attention training graph, reshape op, trainer fix</a></li>
+</ul>
+</div>
+<h2 id="v15&#702;">v1.5.0<a class="headerlink" href="#v15&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-10-17</strong></p>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat(nn): make every nn module end-to-end differentiable (conv/transposed conv, norms, pools, interpolate, pad, embedding, unpool, unfold/fold)</li>
+<li>feat(autograd): higher-order (create_graph) support across 40+ ops + jvp/vjp helpers</li>
+<li>feat(F): add PyTorch-style functional namespace F.* with ~70 differentiable ops</li>
+<li>feat(sparse): add SparseTensor (COO/CSR/CSC/BSR), sparse_mm/addmm/sum/softmax/conv2d, sparse-aware SparseAdam</li>
+<li>feat(packages): add metrics, datasets, sampling, regularization, callbacks, linalg, signal, graph</li>
+<li>feat(packages): add stats, structured_output, rag, agents, observability, speculative</li>
+<li>feat(optim): add Adam, NAdam, Rprop, ASGD, LBFGS, SparseAdam with param_groups</li>
+<li>feat(init): add nn.init (xavier/kaiming/orthogonal/...)</li>
+</ul>
+<h3 id="bug&#702;fixes">Bug Fixes<a class="headerlink" href="#bug&#702;fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(autograd): scalar-first ops (0.5*x, 1.0-x, 1.0+x, 2.0/x) produced no gradient</li>
+<li>fix(conv): conv1d/2d/3d scrambled outputs for batch size N&gt;1</li>
+<li>fix(autograd): Cat.backward used np.split(sizes) instead of cumsum indices</li>
+<li>fix(autograd): RMSNorm.backward used normalized input instead of raw input</li>
+<li>fix(loss): MultiMarginLoss flipped margin sign</li>
+<li>fix(state_dict): strict load raises on missing/unexpected keys + size mismatch</li>
+<li>fix(docs): UTF-8 fault in python_features.md broke the MkDocs build</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.5.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<p><em>unreleased</em></p>
+<h3 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat(onnx): add standalone numpy-only ONNX import/export toolkit</li>
+<li>feat(integrations): add bi-directional HuggingFace integration module</li>
+<li>feat(edge): add lightweight C edge runtime skeleton, build system, and model converter</li>
+<li>feat(compiler): add static graph optimizer with constant folding and IR serialization</li>
+<li>feat(api): add PyTorch-like high-level Python API layer and 10 examples</li>
+<li>feat(hub): add model hub CLI, server, registry, storage, and C client</li>
+</ul>
+<h3 id="bug&#702;fixes_1">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(security): Dilithium S0 sign rejection from NTT domain + zeta typos</li>
+<li>fix(arc,security): argon2 timing-safe password clobber + ARC input<em>guard output</em>dim projection</li>
+<li>fix(security): S7 version enforcement + S8 symex paths + S9 redteam return</li>
+<li>fix(security): VM dispatch scrambling + HALT register wipe</li>
+<li>fix(autodiff): no<em>grad scope zeroes requires</em>grad on outputs</li>
+<li>fix(tensor): matmul of two 1-D vectors returns NULL</li>
+<li>fix(attention): correct in-place RoPE contamination + NULL sin bail</li>
+<li>fix(kernel): SNEPPX<em>arch</em>config<em>default input/output</em>dim 16 -&gt; 512</li>
+<li>fix(compress): add SNEPPX<em>COMPRESS</em>NONE pass-through codec</li>
+<li>fix(ser): correct malloc/<em>aligned</em>free mismatch in route+forward</li>
+<li>fix(hub): correct download card path, total_size, upload overrides, and CLI errors</li>
+<li>fix(vizmon): fix access violation, DLL export macros, and JSON format in histogram snapshot</li>
+<li>fix(crypto): correct Dilithium NTT twiddle table and Kyber/DRBG crypto primitives</li>
+<li>fix: tensor.c header insertion broke BINARY<em>OP</em>F32 macro</li>
+<li>fix: argon2.c header insertion broke macro definition</li>
+<li>fix: replace missing tensor.h include and wrong API names in attention_module.c</li>
+</ul>
+<h3 id="build&#702;tooling">Build / Tooling<a class="headerlink" href="#build&#702;tooling" title="Permanent link">&para;</a></h3>
+<ul>
+<li>build(ninja): auto-resolve x64 MASM to ml64 so 'cmake -B build -G Ninja' works</li>
+<li>build: add Ninja generator to profiles README</li>
+<li>build: set Ninja generator in devcontainer config</li>
+<li>build: add Ninja generator to remaining cmake .. commands</li>
+<li>build: switch docker-compose to Ninja generator</li>
+<li>build: switch install.sh and Dockerfile to Ninja generator</li>
+<li>build: switch install.sh to Ninja generator</li>
+<li>build: add Ninja generator to shell scripts</li>
+<li>build: add Ninja generator to Makefile</li>
+<li>build: add Ninja generator to run_sanitizers.ps1</li>
+<li>build: add Ninja generator to install.ps1</li>
+<li>build: switch build.ps1 to Ninja generator</li>
+<li>build: wire sneppx-format --docs into pre-commit and dev-tools.ps1</li>
+</ul>
+<h3 id="other">Other<a class="headerlink" href="#other" title="Permanent link">&para;</a></h3>
+<ul>
+<li>test: fix RoPE self-attention + causal masking failures</li>
+<li>test: use INT32 index tensor in embedding grad check</li>
+<li>test: migrate C/C++ test suite to GoogleTest (135 .c + 6 .cpp)</li>
+<li>docs(onnx): document ONNX import/export toolkit</li>
+<li>docs: update READMEs with edge runtime information</li>
+<li>docs(readme): update README with Model Hub, serving guides, and v1.1.1 highlights</li>
+<li>docs: update main documentation index for v1.1.1</li>
+<li>docs: update roadmap with v1.1 completion and model hub status</li>
+<li>docs(guide): add model hub and serving system guides</li>
+<li>docs(guide): add model hub and serving system guides</li>
+<li>Serving system: C control plane + Python engine/client + FastAPI endpoints + example config</li>
+<li>Fix save/load<em>hf</em>model for modules without named_parameters</li>
+<li>Add paged attention, MX formats, JIT tracing, MLflow-like observability, hw backends</li>
+<li>Fix stale summary-matrix rows for layer API and experiment tracking</li>
+<li>Document hyperparameter-search closure and complete gap analysis</li>
+<li>Add hyperparameter-search orchestrator with random/grid/halving/bayesian samplers</li>
+<li>Document edge runtime closure in gap analysis</li>
+<li>Add mobile/edge runtime with device detection and INT8 inference</li>
+<li>Document graph compiler closure in gap analysis</li>
+<li>Add graph compiler with element-wise fusion, tiling and C codegen</li>
+<li>Document Keras-style layer API and autograd fix in gap analysis</li>
+<li>Add Keras-style layer API with compile/fit/evaluate/predict/summary</li>
+<li>Fix broadcast-aware backward for Add/Sub/Mul/Div autograd ops</li>
+<li>Document experiment/run tracking closure in gap analysis</li>
+<li>Add experiment/run tracking with metadata and metrics persistence</li>
+<li>Document ONNX shape inference and QAT closure in gap analysis</li>
+<li>Add ONNX shape inference and op-schema checks (onnx_check)</li>
+<li>Document Python canonical binary ONNX bridge in gap analysis</li>
+<li>Add canonical binary ONNX export/import to Python bindings</li>
+<li>Mark QAT fake-quant as implemented in gap analysis</li>
+<li>Fix allocator mismatch in reduce<em>grad</em>to_shape error path</li>
+<li>Add QAT fake_quant op with straight-through estimator backward</li>
+<li>Fix double-free in autodiff tape backward tests</li>
+<li>Add ONNX structural validator (SneppX<em>onnx</em>validate) with rejection tests</li>
+<li>Reflect general-graph ONNX export implementation in gap analysis</li>
+<li>Add general-graph ONNX exporter with multi-node graph test</li>
+<li>Add ML framework feature gap analysis and roadmap</li>
+<li>Add real binary ONNX exporter for linear models with round-trip test</li>
+<li>docs: fix stale Ninja build output paths (build_test/Release subdirs)</li>
+<li>docs(changelog): record Ninja build switch + Dilithium/Kyber/DRBG fixes</li>
+<li>docs(quickstart): use release preset + correct ninja build output paths</li>
+<li>docs(testing): align test dirs/commands to Ninja preset layout</li>
+<li>docs(agents): note stable Ninja + auto-ml64 for Windows builds</li>
+<li>docs(build): align build/test instructions to Ninja presets + VS+MASM notes</li>
+<li>docs: add Ninja generator to remaining README build commands</li>
+<li>docs: add Ninja generator to remaining doc build commands</li>
+<li>docs: add Ninja generator to Docs.md build commands</li>
+<li>docs: add Ninja generator to README build commands</li>
+<li>docs: add Ninja generator to build.md</li>
+<li>docs: add Ninja generator to build commands</li>
+<li>docs: index the five pipeline code walkthroughs</li>
+<li>docs: add FM code walkthrough</li>
+<li>docs: add NPE code walkthrough</li>
+<li>docs: add ARC code walkthrough</li>
+<li>docs: add SER code walkthrough</li>
+<li>docs: add HSS code walkthrough</li>
+<li>docs: add pipeline code-walkthrough overview</li>
+<li>chore: remove obsolete docs/process_all.py batch annotation script</li>
+<li>docs: add Layer-1 headers and Doxygen blocks to lib, bindings and standalone tests</li>
+<li>docs: add Layer-1 headers across examples, benchmarks, samples and tests</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across drivers and tools</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across memory and filesystem modules</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across network modules</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across all kernel modules</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across all algorithm modules</li>
+<li>docs: add Doxygen blocks and Layer-1 headers across all security modules</li>
+<li>docs: add Doxygen blocks and Layer-1 headers to crypto C sources</li>
+<li>docs: add Layer-1 header to coverage.h</li>
+<li>docs: add Doxygen blocks and Layer-1 headers to drivers, model_zoo, network headers</li>
+<li>docs: add Doxygen blocks and Layer-1 headers to all kernel headers</li>
+<li>docs: add Doxygen blocks to all architecture headers</li>
+<li>docs: add Doxygen blocks and Layer-1 headers to all security headers</li>
+<li>docs: add Doxygen blocks to kyber and aes_gcm headers</li>
+<li>docs: add commenting standard reference to security architecture</li>
+<li>docs: add commenting standard reference to C API reference</li>
+<li>docs: add commenting standard to docs index</li>
+<li>docs: add commenting standard to contributing guide</li>
+<li>docs: add commenting standard reference to README</li>
+<li>docs: add commenting standard reference to doxygen guide</li>
+<li>docs: add commenting standards reference to architecture guide</li>
+<li>docs: add commenting standard to development guide</li>
+<li>docs: add commenting standards to code review checklist</li>
+<li>docs: add commenting standard reference to style guide</li>
+<li>docs: add commenting standards reference to index</li>
+<li>docs: add Layer-1 file headers, API docs, and commenting conventions</li>
+<li>Bump version to 1.1.1 and add v1.1.1 changelog</li>
+<li>Add C HTTP REST API, packaging improvements, quickstart, and dev-tools chain</li>
+<li>Fix unsafe C functions: replace gets/scanf/strcpy/sprintf/alloca with safe alternatives</li>
+<li>Fix spec: correct tensor header and source file paths</li>
+<li>Fix fuzz harness: register targets via static init, add NULL target check</li>
+<li>Phase 4-5: C HTTP server + middleware + API reference docs + CMake integration</li>
+<li>chore: reorganize documentation system</li>
+<li>chore: remove all CI/CD â€” manual-only workflow</li>
+<li>fix CI: install numpy for CMake, add build step for CodeQL analysis, fix pre-commit deps</li>
+<li>fix CI workflows: correct action versions, add CodeQL init, fix cross-platform shell compatibility</li>
+<li>update PR template to tier-based system</li>
+<li>chore: cleanup project structure</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.5.0...Unreleased">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v1&#702;">v1.2.0<a class="headerlink" href="#v1&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-30</strong></p>
+<p><em>No tagged changes; showing commits up to this tag.</em></p>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.2.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v111">v1.1.1<a class="headerlink" href="#v111" title="Permanent link">&para;</a></h2>
+<p><strong>2026-08-01</strong></p>
+<h3 id="other_1">Other<a class="headerlink" href="#other_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Bump version to 1.1.1 and add v1.1.1 changelog</li>
+<li>Add C HTTP REST API, packaging improvements, quickstart, and dev-tools chain</li>
+<li>Fix unsafe C functions: replace gets/scanf/strcpy/sprintf/alloca with safe alternatives</li>
+<li>Fix spec: correct tensor header and source file paths</li>
+<li>Fix fuzz harness: register targets via static init, add NULL target check</li>
+<li>Phase 4-5: C HTTP server + middleware + API reference docs + CMake integration</li>
+<li>chore: reorganize documentation system</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.1.0...v1.1.1">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v11&#702;">v1.1.0<a class="headerlink" href="#v11&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-30</strong></p>
+<h3 id="features_2">Features<a class="headerlink" href="#features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat: add serving benchmark; update pyproject.toml with new CLIs; fix continuous_batching decode</li>
+<li>feat: integrate continuous batching + quantized serving into inference server; fix rlhf_cli</li>
+<li>feat: add sneppx-eval, sneppx-quantize, sneppx-rlhf CLI entry points</li>
+<li>feat: add synthetic data loaders for MMLU/GSM8K/HumanEval eval tasks</li>
+<li>feat: add FP8/INT4 quantized model serving module</li>
+<li>feat: add continuous batching scheduler for inference serving</li>
+<li>feat: complete v1.1.0 â€” LoRA/QLoRA, Eval Harness, FSDP</li>
+<li>feat: add serving profile to Docker Compose</li>
+</ul>
+<h3 id="bug&#702;fixes_2">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: replace missing tensor.h include and wrong API names in attention_module.c</li>
+<li>fix: use .item() for numpy scalar conversion in ultra_trainer test</li>
+<li>fix: add model_implementations test file</li>
+<li>fix: correct API calls in LLM/vision test files (model names, create_model args)</li>
+<li>fix: align quantized<em>serve with QuantizedLinear API, fix quant</em>mode refs</li>
+<li>fix: implement DPO/GRPO trainer logprob methods (replaced stubs)</li>
+</ul>
+<h3 id="other_2">Other<a class="headerlink" href="#other_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>chore: remove all CI/CD â€” manual-only workflow</li>
+<li>fix CI: install numpy for CMake, add build step for CodeQL analysis, fix pre-commit deps</li>
+<li>fix CI workflows: correct action versions, add CodeQL init, fix cross-platform shell compatibility</li>
+<li>update PR template to tier-based system</li>
+<li>chore: cleanup project structure</li>
+<li>docs: add contribution framework with tiers, branching strategy, CI workflows</li>
+<li>Fix test bugs found during regression suite: - test<em>crypto</em>asm.py: add missing import hashlib - test<em>eval</em>harness.py: update assertion for synthetic data fallback - test<em>key</em>vault.py: adapt to audit<em>logger.py API (FileAuditBackend, AuditAction enums) - test</em>s4<em>network.py: adapt to ddos</em>mitigation.py API (DDoSConfig, check<em>request) - test</em>trainer<em>v2.py: add missing import numpy as np - audit</em>logger.py: string-to-enum conversion in log(), hash computation fix in FileAuditBackend.write(), verify<em>chain sort order fix, add clear() - benchmarking.py: fix RNN/transformer weight shape mismatches - test</em>algo<em>wrappers.py: add _</em>test__ = False to prevent pytest collection</li>
+<li>docs: update AGENTS.md with v1.2-1.3 features and new safe test list</li>
+<li>test: add tests for continuous batching, quantized serve, and CLI entry points</li>
+<li>docs: add .nojekyll for GitHub Pages serving</li>
+<li>test: add batch 3 test files (security, CLI, benchmark, trainer_v3, audit, firewall, DDoS)</li>
+<li>test: add batch 2 test files (data<em>loader, advanced</em>ops, augmentation, pruning, distillation)</li>
+<li>test: add 5 missing test files (AMP, grad<em>checkpoint, tokenizer, autograd</em>ops, schedulers) â€” 60 tests</li>
+<li>docs: add documentation system with Doxygen config, feature guides, and API references</li>
+<li>chore: update Arix-Site submodule to b62b5d2 (add Models, Benchmarks, Playground, API Reference)</li>
+<li>chore: bump version to 1.1.0 and prepare pre-release</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v1.0.0...v1.1.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v1&#702;_1">v1.0.0<a class="headerlink" href="#v1&#702;_1" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-26</strong></p>
+<h3 id="features_3">Features<a class="headerlink" href="#features_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat: add 128K context extension and MHA forward pass</li>
+</ul>
+<h3 id="bug&#702;fixes_3">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: pyproject.toml dependencies format for PEP 621 compatibility</li>
+</ul>
+<h3 id="other_3">Other<a class="headerlink" href="#other_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>chore: update Arix-Site submodule to latest (v1.0.0 site rebuild)</li>
+<li>chore: update Arix-Site submodule to v1.0.0 site content</li>
+<li>repo SEO &amp; infrastructure: badges, CITATION.cff, keywords, classifiers, docs refresh</li>
+<li>docs: comprehensive v1.0.0 documentation refresh</li>
+<li>v1.0.0: Stable Release</li>
+<li>1.8: C + Python integration tests; weights.c buffer overrun fix</li>
+<li>1.7: C++ Model Factory with RAII wrappers; model<em>card</em>to_json hang fix; 1.6 Python ModelHub</li>
+<li>1.5: Python ModelConfig dataclass with JSON serialization, validation, C config conversion, registry integration; added to LlamaConfig, MistralConfig, Qwen2Config, DeepSeekV2Config</li>
+<li>1.4: Model Cards - Metadata with JSON serialization, validation, file I/O; unit tests</li>
+<li>1.3: Pretrained Weights - WeightCollection API, dtype conversion (f32/f16), INT8 quantization, safetensors/gguf/npz loaders (stubs); unit tests</li>
+<li>1.2: Model Registry - Registration, discovery, search, save/load, deprecation; C API with tests</li>
+<li>1.1: Model Config Schema - C config API with JSON serialize/parse, presets for LLaMA2/3, Mistral, Qwen2, BERT, ViT, SDXL; unit tests</li>
+<li>docs: Complete documentation overhaul for v0.5.0</li>
+<li>Update ROADMAP.md to reflect v0.5.0 completed features</li>
+<li>Add Python API wrappers for ARC/NPE/FM/Trainer features</li>
+<li>Add CUDA-accelerated training loop with optimizer bridge</li>
+<li>Add NPE JIT pipeline with fusion passes, auto-JIT in VM</li>
+<li>Add FM NCCL distributed sync bridge with callback pattern, tests</li>
+<li>Wire ARC adversarial training: FGSM/PGD/CW attack injection in training graph, config epsilon, test</li>
+<li>Add SER learned MLP gater: config flag, 2-layer MLP forward, autodiff subgraph, bindings, tests</li>
+<li>Enable HSS Blelloch parallel scan by default; update ARCHITECTURE.md</li>
+<li>Remove remaining CI/CD mentions (cliff.toml, ROADMAP)</li>
+<li>Remove CI/CD: drop GitHub workflows/dependabot/CODEOWNERS, strip CI mentions from docs and configs</li>
+<li>Docs: bump v0.9.7.890e, refresh stale content, add release/migration/HSS-training docs</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890e...v1.0.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;89&#702;e">v0.9.7.890e<a class="headerlink" href="#v&#702;9&#702;89&#702;e" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-19</strong></p>
+<h3 id="bug&#702;fixes_4">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix: HSS backward corruption â€” layer_norm gamma/beta gradient pointer deref + missing math.h (sqrt)</li>
+<li>Fix: build lib/internal/*.c + vulkan typo + CI matrix + tape guard</li>
+</ul>
+<h3 id="other_4">Other<a class="headerlink" href="#other_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Phase E: E2E integration tests + gradient flow tests + CI l0-validation job</li>
+<li>Phase D: Layer 2 Memory cognitive architecture</li>
+<li>Phase C: realize 6 stub drivers with reference-compute + opt-in flags + tests</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890b...v0.9.7.890e">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;89&#702;b">v0.9.7.890b<a class="headerlink" href="#v&#702;9&#702;89&#702;b" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-18</strong></p>
+<h3 id="other_5">Other<a class="headerlink" href="#other_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Phase B: populate 4 kernel directories (activations, position, algorithms, drivers)</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890a...v0.9.7.890b">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;89&#702;a">v0.9.7.890a<a class="headerlink" href="#v&#702;9&#702;89&#702;a" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-18</strong></p>
+<h3 id="other_6">Other<a class="headerlink" href="#other_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Phase A: eliminate last C stubs (vmem evict + FM params/train_graph)</li>
+<li>Update VERSION with correct LOC/file/test counts</li>
+<li>Docs: document v0.9.7.890 â€” real implementations and opt-in Vulkan/TPU/HTTP/ZK backends</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890...v0.9.7.890a">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;89&#702;">v0.9.7.890<a class="headerlink" href="#v&#702;9&#702;89&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-18</strong></p>
+<h3 id="features_4">Features<a class="headerlink" href="#features_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat: add S8/S9 security layer stubs (verification, hardware, c/asm)</li>
+</ul>
+<h3 id="bug&#702;fixes_5">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: implement real C networking layer (replace skeletons with working code)</li>
+<li>fix: critical bugs, security hardening, and code quality improvements</li>
+<li>fix: replace unsafe strcpy/sprintf/sscanf with bounds-checked snprintf across 5 security modules</li>
+<li>fix: remove duplicate version param in FastAPI init</li>
+</ul>
+<h3 id="other_7">Other<a class="headerlink" href="#other_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Build v0.9.7.890: real implementations across formats, kernel, architectures, security, and backends</li>
+<li>Update files and add new kernel algorithms</li>
+<li>Rewrite README with accurate stats, correct links, updated architecture tree</li>
+<li>Create comprehensive skeleton framework for future planned features</li>
+<li>Update tests for real implementations + fix vmem.c field name</li>
+<li>Fill in remaining 4 stub files with real implementations</li>
+<li>Fill in remaining stubs with real implementations (+1,227 lines)</li>
+<li>Fix autodiff backward regressions: matmul, pow, sum, and add reduce<em>grad</em>to_shape</li>
+<li>Wire CUDA optimizer dispatch for all optimizer types, add LARS enum</li>
+<li>v0.9.5.937: Fix CUDA autodiff bugs, implement NCCL reduce/reduce_scatter, add RAdam and Schedule-Free AdamW C optimizers</li>
+<li>Implement all 26 missing autodiff forward+backward ops, add header declarations</li>
+<li>Fix package name in pyproject.toml, add Python audit<em>logger/container</em>security/ddos_mitigation modules, fix SyslogBackend default arg and Tuple import</li>
+<li>Fix autodiff ops.c deduplication, add missing helpers, implement all 25 forward+backward ops</li>
+<li>Re-enable 13 previously excluded C tests by implementing missing APIs and fixing test mismatches</li>
+<li>Fix pre-existing C compilation errors (CUDA guards, missing includes, duplicate symbols)</li>
+<li>Add scripts/README.md documenting sanitizer build/CI scripts</li>
+<li>Add include/README.md documenting C/C++ header structure and include conventions</li>
+<li>Add examples/README.md documenting demo programs</li>
+<li>Add drivers/README.md for CUDA, ROCm, and TPU hardware abstraction layers</li>
+<li>Add net/README.md documenting topology, socket, RDMA, gRPC, and NCCL layers</li>
+<li>Add docs/security_layers.txt with deep-dive into all 10 security layers (S0-S9), post-quantum crypto, and compliance mappings</li>
+<li>Add docs/build.txt (build instructions, options, troubleshooting) and docs/api_quickref.txt (C + Python API reference)</li>
+<li>Add docs/architecture.txt with system layers, data flow, memory model, distributed arch, and security stack</li>
+<li>Add tests/README.md documenting 31+ test suites, Python/C/CUDA tests, and excluded tests</li>
+<li>Add bindings/README.md documenting Python bindings architecture, 8 phases, build, and pure-Python fallback</li>
+<li>Add security/README.md documenting S0-S9 layers, post-quantum crypto, 4-ring firewall, and MASM routines</li>
+<li>Add algorithms/README.md covering HSS, SER, ARC, NPE, FM with configs and CUDA kernel details</li>
+<li>Add kernel/README.md documenting the entire computational substrate (tensor, autodiff, optimizer, CUDA, distributed, quantization)</li>
+<li>Expand root README.md with full project structure, C networking layer, post-quantum crypto, and build instructions</li>
+<li>Split bindings.cpp into modular include files</li>
+<li>docs: comprehensive README for v0.9.5.748 release</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.5.748...v0.9.7.890">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;95&#702;48">v0.9.5.748<a class="headerlink" href="#v&#702;95&#702;48" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-15</strong></p>
+<h3 id="features_5">Features<a class="headerlink" href="#features_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat: add test_watermark (tests/python)</li>
+<li>feat: add test<em>security</em>middleware (tests/python)</li>
+<li>feat: add test<em>s5</em>safety (tests/python)</li>
+<li>feat: add test_onnx (tests/python)</li>
+<li>feat: add test_nccl (tests/python)</li>
+<li>feat: add test<em>inference</em>server (tests/python)</li>
+<li>feat: add test_hparams (tests/python)</li>
+<li>feat: add test<em>graph</em>compiler (tests/python)</li>
+<li>feat: add test_generation (tests/python)</li>
+<li>feat: add test<em>experiment</em>tracker (tests/python)</li>
+<li>feat: add test<em>distributed</em>wrapper (tests/python)</li>
+<li>feat: add test<em>differential</em>privacy (tests/python)</li>
+<li>feat: add test<em>cuda</em>kernels (tests/python)</li>
+<li>feat: add test_cuda (tests/python)</li>
+<li>feat: add test<em>checkpoint</em>manager (tests/python)</li>
+<li>feat: add test_autograd (tests/python)</li>
+<li>feat: add test_adversarial (tests/python)</li>
+<li>feat: add example (config/training)</li>
+<li>feat: add watermark (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add trainer<em>v3 (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add train<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add tokenizer (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add serve<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add security<em>middleware (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add s5<em>safety (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add nccl (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add inference<em>server (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add hparams (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add graph<em>compiler (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add generation (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add experiment<em>tracker (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add experiment<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add distributed<em>wrapper (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add differential<em>privacy (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add cuda<em>kernels (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add cuda<em>device (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add checkpoint<em>manager (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add autograd<em>ops (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add autograd (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add adversarial (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+</ul>
+<h3 id="bug&#702;fixes_6">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(N4): fix autocast duplicate import syntax error</li>
+<li>fix(N3): Optimizer saves lr, step() works without C backend, autocast is proper context manager</li>
+<li>fix(N2): add Trainer.train() method and fix LSTM benchmark shape</li>
+<li>fix(N1): MSELoss returns scalar tensor</li>
+<li>fix: resolve test import errors in test<em>trainer</em>v2 and test<em>ultra</em>trainer</li>
+<li>fix(C3): add fallback stub when C extension not available</li>
+<li>fix(C2): add missing Tensor import and fix matmul in benchmarking.py</li>
+<li>fix(C1): prevent SimpleTokenizer shadowing from .tokenizer over .data version</li>
+<li>fix(build): compile CUDA extension sources into existing exported targets via target_sources</li>
+<li>fix(build): link CUDA extension libs privately to avoid export-set errors</li>
+<li>fix(build): add CMakeLists.txt for algorithms/*/cuda CUDA extension libraries</li>
+<li>fix(ci): pin CUDA builds to ubuntu-22.04 for CUDA 12.4 repo compatibility</li>
+<li>fix(ci): install CUDA toolkit on runner (avoid container checkout break), mark macOS/Windows non-blocking</li>
+<li>fix(ci): build Linux via CUDA container, add net/distributed CMakeLists, mark macOS/Windows non-blocking</li>
+<li>fix: guard CUDA-only source files for CPU builds, fix CI workflow</li>
+<li>fix(ci): install numpy for CMake, fix markdownlint, cuda keyring</li>
+<li>fix(ci): remove remaining empty with block in security-scan</li>
+<li>fix(ci): remove submodules recursive (breaks on Arix-Site dir)</li>
+<li>fix(ci): remove duplicate runs-on, embedded dependabot, and other invalid YAML</li>
+</ul>
+<h3 id="refactor&#702;internal">Refactor / Internal<a class="headerlink" href="#refactor&#702;internal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>refactor: update advanced_ops, quantization, C tests</li>
+<li>refactor: update C source files (checkpoint_reader, dilithium)</li>
+<li>refactor: update test files and CMakeLists</li>
+<li>refactor: update <strong>init</strong>.py exports</li>
+<li>refactor: update benchmarks/export/distillation</li>
+<li>refactor: update training/infra modules</li>
+<li>refactor: update model/hf/vision modules</li>
+<li>refactor: update core tensor/nn/optim/data modules</li>
+<li>refactor(ci): restructure jobs, fix deps, make CUDA/security/docs non-blocking</li>
+</ul>
+<h3 id="other_8">Other<a class="headerlink" href="#other_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Release v0.9.5.748 â€” Unified Python Bindings (Phases 1-7), CLI commands, version bump</li>
+<li>Fix CLI entry points (console<em>scripts), experiment</em>cli.py import time bug, add missing deps, sync pyproject.toml</li>
+<li>bump: v0.9.4.467</li>
+<li>firewall: test files (24 tests), fix path traversal detection, lazy SSL context build</li>
+<li>firewall: CLI flags for serve_cli.py, kwargs safety in firewall constructors</li>
+<li>firewall: wire into inference<em>server.py middleware, set</em>security accepts firewall config</li>
+<li>firewall: integrate into SecurityMiddleware with check<em>firewall, release</em>concurrent</li>
+<li>firewall: orchestrator with YAML config, env/CLI overrides, 3-ring dispatch</li>
+<li>firewall: transport ring with TLS/mTLS, cert pinning, ALPN</li>
+<li>firewall: application ring with injection filter, path normalization, concurrent limiter</li>
+<li>firewall: network ring with IP CIDR filtering, rate limiting, port knock</li>
+<li>firewall: assembly routines for IP match, rate counter, conn track, port knock</li>
+<li>chore: bump version to 0.9.2.094 across all files</li>
+<li>ci: mark C/CUDA build jobs non-blocking (pre-existing source compile errors); keep Lint/Security/Docs as real gates</li>
+<li>chore(ci): add workflow_dispatch for manual runs</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix4...v0.9.5.748">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;-fix4">v0.9.0-fix4<a class="headerlink" href="#v&#702;9&#702;-fix4" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<h3 id="bug&#702;fixes_7">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: remove CUDA job (needs Docker Hub secrets not set)</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix3...v0.9.0-fix4">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;-fix3">v0.9.0-fix3<a class="headerlink" href="#v&#702;9&#702;-fix3" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<h3 id="bug&#702;fixes_8">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: wrap secrets check in template expr for job if</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix2...v0.9.0-fix3">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;-fix&#702;">v0.9.0-fix2<a class="headerlink" href="#v&#702;9&#702;-fix&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<h3 id="bug&#702;fixes_9">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: skip CUDA Docker if Docker Hub secrets not set</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix1...v0.9.0-fix2">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;-fix1">v0.9.0-fix1<a class="headerlink" href="#v&#702;9&#702;-fix1" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<p><em>No tagged changes; showing commits up to this tag.</em></p>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.9.0...v0.9.0-fix1">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;9&#702;">v0.9.0<a class="headerlink" href="#v&#702;9&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<h3 id="features_6">Features<a class="headerlink" href="#features_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat(packaging): add comprehensive packaging for PyPI, Docker, Conda, CI/CD</li>
+<li>feat(models): add complete LLaMA, Mistral, Qwen2, DeepSeek V2 architectures</li>
+<li>feat(vision): add Vision Transformer (ViT), DeiT, Swin, MAE architectures</li>
+<li>feat: add benchmarking suite + all 11 tests pass</li>
+<li>feat: massive expansion - distillation, pruning, advanced ops, augmentation, ONNX, model zoo</li>
+<li>feat: distillation, pruning, advanced ops, augmentation, ONNX export</li>
+<li>feat(augmentation): comprehensive data augmentation pipeline</li>
+<li>feat(train): add AMP, gradient checkpointing, advanced DataLoader, UltraTrainer</li>
+<li>feat(optim): add 7 extra optimizers + 10 schedulers + 6 advanced optimizers</li>
+<li>feat(tensor): add advanced ops - conv, pooling, RNN, attention, norms, tensor manip</li>
+<li>feat(core): add SIMD GEMM + tensor expression IR with operator fusion</li>
+<li>feat(crypto): Dilithium DRBG-based sampling, 10-bit packing, SHA512 challenge</li>
+<li>feat(zoo): model configs, weight converters, from_pretrained for LLaMA2/3, Mistral, Qwen2, DeepSeek V2 + 49 tests</li>
+<li>feat(profile): profiler, logger, NVTX markers, compute-sanitizer CI scripts + 13 tests</li>
+<li>feat(ft): async checkpointing, heartbeat, elastic training, fault tolerance (C + Python) + 23 tests</li>
+<li>feat(quant): INT8/FP8/AWQ/GPTQ quantization kernels (C, CUDA, Python) + 17 tests</li>
+<li>feat(py): self-contained Tensor with optional C backend, update exports and pip package config</li>
+<li>feat(py): implement neural network, optimizers, data, distributed, hf, model, train modules</li>
+<li>feat(arch): Mamba-2 selective SSM with HiPPO initialization, conv1d, discretized scan</li>
+<li>feat(arch): FlexAttention block-sparse with mask modulation, multi-modal cross-attention, MoD, gated activations, YaRN NTK-RoPE, ALiBi</li>
+<li>feat(arch): Differential Attention and Multi-head Latent Attention (DeepSeek MLA style)</li>
+<li>feat(arch): advanced architectures master header (DifferentialAttn, MLA, FlexAttn, Mamba2, MoD, YaRN, ALiBi)</li>
+<li>feat(dist): distributed sampler with epoch-based shuffling and gradient accumulation manager</li>
+<li>feat(dist): distributed checkpoint coordinator with async save and fault tolerance</li>
+<li>feat(dist): hierarchical all-reduce (NVLink+RDMA) and Top-K gradient compression with error feedback</li>
+<li>feat(dist): DDP with bucket-based gradient all-reduce and compute overlap</li>
+<li>feat(dist): expert parallelism all-to-all dispatch and FM distributed communication</li>
+<li>feat(dist): tensor parallelism row/column split linear with all-reduce</li>
+<li>feat(dist): pipeline parallelism 1F1B schedule with microbatches</li>
+<li>feat(dist): ZeRO-1/2/3 optimizer state partitioning and fused AdamW step</li>
+<li>feat(dist): distributed training config header (ZeRO, pipeline, tensor, expert parallel)</li>
+<li>feat(dist): NCCL dynamic loading, all-reduce, process group part 2/2</li>
+<li>feat(dist): NCCL dynamic loading, all-reduce, process group part 1/2</li>
+<li>feat(dist): NCCL communication primitives header</li>
+<li>feat(hss): extended SSM step, conv, selective scan kernels</li>
+<li>feat(arc): PGD/FGSM attacks, gradient obfuscation, smoothing</li>
+<li>feat(arc): adversarial robustness CUDA header</li>
+<li>feat(npe): differentiable program execution GPU kernel part 2/2</li>
+<li>feat(npe): differentiable program execution GPU kernel part 1/2</li>
+<li>feat(npe): neural VM instruction dispatch CUDA header</li>
+<li>feat(fm): ring/butterfly all-reduce, gradient quantization part 2/2</li>
+<li>feat(fm): ring/butterfly all-reduce, gradient quantization part 1/2</li>
+<li>feat(fm): all-reduce, quantization, federated avg CUDA header</li>
+<li>feat(ser): fused MoE forward, load balancing loss</li>
+<li>feat(ser): top-k gating, dispatch, combine kernels</li>
+<li>feat(ser): top-k gating and fused MoE CUDA header</li>
+<li>feat(hss): Mamba/S6 selective scan, SSM conv, HiPPO matrix CUDA kernels</li>
+<li>feat(hss): selective scan, S4, HiPPO CUDA header</li>
+<li>feat(cuda): RNG API header (Philox, distributions, init schemes)</li>
+<li>feat(cuda): random number generation kernels part 3/3</li>
+<li>feat(cuda): random number generation kernels part 2/3</li>
+<li>feat(cuda): random number generation kernels part 1/3</li>
+<li>feat(cuda): memory pool/stream/event API header</li>
+<li>feat(cuda): memory management (pool, streams, events) part 3/3</li>
+<li>feat(cuda): memory management (pool, streams, events) part 2/3</li>
+<li>feat(cuda): memory management (pool, streams, events) part 1/3</li>
+<li>feat(cuda): optimizer header with all step types</li>
+<li>feat(cuda): fused optimizer kernels part 3/3</li>
+<li>feat(cuda): fused optimizer kernels part 2/3</li>
+<li>feat(cuda): fused optimizer kernels part 1/3</li>
+<li>feat(cuda): autodiff backward header declarations</li>
+<li>feat(cuda): autodiff backward kernels part 4/4</li>
+<li>feat(cuda): autodiff backward kernels part 3/4</li>
+<li>feat(cuda): autodiff backward kernels part 2/4</li>
+<li>feat(cuda): autodiff backward kernels part 1/4</li>
+<li>feat(cuda): attention kernels part 5/5</li>
+<li>feat(cuda): attention kernels part 4/5</li>
+<li>feat(cuda): attention kernels part 3/5</li>
+<li>feat(cuda): attention kernels part 2/5</li>
+<li>feat(cuda): attention kernels part 1/5</li>
+<li>feat: expand assembly code to 3258 lines with constant-time, speculation-safe, cache-resistant security improvements across 15 files</li>
+<li>feat: security infrastructure expansion - compliance, PQ crypto, threat intel, IR, automation, ZT, chaos, AI guardrails, supply chain, fuzzing + docs</li>
+<li>feat(tokenizer): BPE tokenizer with train/encode/decode/save/load</li>
+<li>feat(autodiff): gradient checkpointing + view-aware storage</li>
+<li>feat(autodiff): min/max with selective gradient routing</li>
+<li>feat(autodiff): ref-counted backward lifecycle with ctx cleanup</li>
+</ul>
+<h3 id="bug&#702;fixes_10">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(docker): make CPU Dockerfile self-contained, fix packages workflow</li>
+<li>fix(version): bump setup.py to 0.9.0 to match pyproject.toml and tag</li>
+<li>fix(crypto): Kyber uses DRBG for deterministic noise sampling instead of rand()</li>
+<li>fix: full build cleanup â€” fix 8 test files for API changes, stub sha512, fix audit<em>logger stdarg, fix secure</em>wipe ABI, exclude unimplemented tests</li>
+<li>fix(asm): rewrite poly1305<em>sse.asm with correct 5-limb scalar algorithm, fix 8 ABI signature mismatches in asm</em>exports.h</li>
+<li>fix(asm): fix 6 ABI signature mismatches in asm_exports.h header</li>
+<li>fix(asm): fix 5 assembly correctness bugs</li>
+<li>fix(crypto): fix 7 critical bugs - auth bypasses, memory overflows, X25519, Kyber</li>
+<li>fix: update metadata to align with sneppx-alg identity</li>
+<li>fix: update build.ps1 CMake flags to SNEPPX_ prefix</li>
+<li>fix: rename arix<em>algo package to SneppX</em>ALG, fix Python relative imports</li>
+<li>fix: sha3 finalize-&gt;finish, fm_forward 4 args, m.lib MSVC guard</li>
+<li>fix: add csignal, time.h, link m for math in kernel lib</li>
+<li>fix: move sys/prctl.h to <strong>linux</strong> guard, ifdef s9_extensions _finddata for WIN32</li>
+<li>fix: s9_extensions io.h guard, blake3 finalize-&gt;finish across 4 files</li>
+<li>fix: use asm/unistd.h for _<em>NR</em>* in seccomp filter</li>
+<li>fix: memory_hardening sys/syscall.h, hmac.c sha512 func name</li>
+<li>fix: memory_hardening linux headers, drbg sha512 func name, asm only on MSVC</li>
+<li>fix: ed25519 <em>umul128 compat + point</em>is<em>on</em>curve ordering; fix cache.c aarch64 prfm syntax</li>
+<li>fix: sign scheme S=r+h*a mod L with proper sc_reduce64</li>
+<li>fix: fe<em>to</em>bytes final p-subtraction via limb comparison</li>
+<li>fix: fe_mul rewrite with _umul128 128-bit arithmetic</li>
+<li>fix: point_add formula (X3=EÂ·F, Y3=GÂ·H, T3=EÂ·H, Z3=FÂ·G)</li>
+<li>fix: point_double formula (Y3=EÂ·G, T3=FÂ·G, Z3=DÂ·H) + identity guard</li>
+<li>fix: fe_sub per-limb bias constants</li>
+<li>fix: point<em>scalar</em>mult cswap mask uint8<em>t-&gt;uint64</em>t</li>
+<li>fix: add two-round carry chain to fe<em>to</em>bytes</li>
+<li>fix: add shebangs to build.sh, test.sh, clean.sh</li>
+</ul>
+<h3 id="other_9">Other<a class="headerlink" href="#other_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ci(packages): add GitHub Packages workflow for Docker and Python publishing</li>
+<li>chore: update Arix-Site submodule reference after cleanup</li>
+<li>test(crypto): add Kyber debug output for pk/sk/shared-secret bytes</li>
+<li>docs: update AGENTS.md with Phases 5-8, deprecate old lib/python bindings</li>
+<li>test(py): add 7 Python API test suites (82 tests)</li>
+<li>test(cuda): GPU kernel test suite part 3/3</li>
+<li>test(cuda): GPU kernel test suite part 2/3</li>
+<li>test(cuda): GPU kernel test suite part 1/3</li>
+<li>docs: update AGENTS.md with Phase 1 CUDA backend overview</li>
+<li>chore: bump version to 0.8.6 for 12 critical bug fixes across C and asm</li>
+<li>Fix ASM<em>MASM compiler (ml64.exe) and add asm</em>exports.h header</li>
+<li>Update README for algo0.8.2: assembly stats, version bump, S0 detail</li>
+<li>Fix MASM syntax errors: all 15 asm files assemble cleanly</li>
+<li>Fix assembly bugs across 8 files</li>
+<li>Remove CI/CD workflows, rebrand releases to SneppX-ALG</li>
+<li>Full rebrand: ARIX<em>Algo -&gt; SneppX</em>ALG</li>
+<li>Fix ed25519 intrin.h, entropy_pool stdio.h, clang-tidy target order</li>
+<li>Fix ASM language, macOS func ptr types, clz64 order, skip broken MSVC tests</li>
+<li>Fix CI/CD: ASAN Debug build, macOS march, clang-tidy targets, Codecov v4, release changelog</li>
+<li>algo0.8.0: Infrastructure overhaul â€” build fixes, CI/CD, dev tooling, project organization</li>
+<li>Add Python package scaffolding, update Makefile/CI/gitignore/pre-commit [algo0.7.8 infra]</li>
+<li>Update README for algo0.7.8: Python bindings, PQ benchmarks, stats</li>
+<li>Bump version to algo0.7.8</li>
+<li>Add PQ crypto benchmark suite (Kyber, Dilithium, SPHINCS+) [algo0.7.8 #7]</li>
+<li>Enable Python bindings (pybind11) with linker + naming fixes [algo0.7.8 #6]</li>
+<li>Fix test projects infrastructure [algo0.7.8 #5]</li>
+<li>Add docs for 11 new security modules [algo0.7.8 #4]</li>
+<li>Fix C++ obfuscation layer errors (neural<em>security</em>cpp) [algo0.7.8 #3]</li>
+<li>Add CI/CD pipeline with GitHub Actions</li>
+<li>Add AGENTS.md for AI-assisted development workflow</li>
+<li>algo0.7.5: S4-S9 security additions - PQ crypto, ASM optimizations, DP, DDoS, container security, fuzzer, leak detector, breakout detection, RLHF safety</li>
+<li>Fix website link: aixsite -&gt; arixsite.vercel.app</li>
+<li>Update README for algo0.7: S0-S9 complete, 64,589 total lines, full architecture details</li>
+<li>algo0.7: Complete S0-S9 security system (21,809 lines) + 64,589 total codebase</li>
+<li>bump version to algo0.5.4</li>
+<li>Fix README cd path (arix-algo -&gt; arixalgo), update pyproject.toml version to 0.5.0</li>
+<li>Update VERSION file to reflect algo0.5 release</li>
+<li>
+<h1 id="81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test">81 v0.5.0: ARC/NPE/FM training graphs, trainer fix, NPE training test<a class="headerlink" href="#81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests">80 Fix loss computation in trainer, multi-module train graphs, and tests<a class="headerlink" href="#8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix">79 Full attention training graph, reshape op, trainer fix<a class="headerlink" href="#&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix" title="Permanent link">&para;</a></h1>
+</li>
+<li>Add 24 infrastructural files across 7 directories</li>
+<li>Remove CI/CD concepts</li>
+<li>README, VERSION, changelog, and 20 infra files</li>
+<li>Attention, inference, data pipeline, arch improvements</li>
+<li>Project-wide nomenclature restructuring: renamed all module identifiers to extended descriptive nomenclature for enhanced clarity and semantic precision</li>
+<li>Multi-head attention + RoPE + KV-cache + batched matmul</li>
+<li>test(gradient): conv2d finite-difference gradient verification</li>
+<li>L0.1 audit fixes: include paths, orphaned tests, pre-commit hook, ed25519 bit unpack, docs, gitignore</li>
+<li>docs: update README with skeleton infrastructure stats, fix links and back-to-top</li>
+<li>chore: add .gitkeep for papers/figures</li>
+<li>skeleton: samples directory with basic demo</li>
+<li>skeleton: generic library â€” rbtree, hashtable, pqueue, strutil, Rust, Python bindings</li>
+<li>skeleton: test suites â€” fuzz, unit, algorithm tests, HSS CUDA</li>
+<li>skeleton: tools â€” benchmark runner, CLI, fuzz harness, scripts</li>
+<li>skeleton: security language bindings â€” C, C++, C#, Go, Rust, secure allocator, integrity monitor</li>
+<li>skeleton: kernel internal implementations â€” autodiff, memory, optimizer, tensor, thread</li>
+<li>skeleton: checkpoint format, slab alloc, vmem, compression</li>
+<li>skeleton: network subsystem â€” socket, RDMA, gRPC, topology</li>
+<li>skeleton: ROCm and TPU drivers</li>
+<li>skeleton: CUDA driver interface</li>
+<li>chore: gitignore target/ and Cargo.lock</li>
+<li>chore: add target/ to .gitignore (Rust build artifacts)</li>
+<li>v0.2.0: rewrite all stubs into comprehensive implementations</li>
+<li>docs: update PROGRESS &amp; README for restructure</li>
+<li>restructure: remove old src/ tree</li>
+<li>restructure: move security source to security/</li>
+<li>restructure: move algorithm sources to algorithms/</li>
+<li>restructure: move kernel source to kernel/</li>
+<li>restructure: move public headers to include/arix/</li>
+<li>T2-T5: implement stubs (inverse, det, conv1d/2d, pool1d/2d, save/load) + 54/56 tests pass, add specs</li>
+<li>Update README: 50/52 tests, 13 dtypes, 80+ ops</li>
+<li>T1: creation &amp; shape tests + fixes</li>
+<li>T0: tensor audit &amp; foundation</li>
+<li>Fix pre-existing benchmark errors: add seed arg to hss<em>model</em>create, fix npe instruction initializers</li>
+<li>Add backward gradient passes for sub, div, neg, pow and extend test coverage</li>
+<li>Update all GitHub URLs to ammar49-cyber/arixalgo</li>
+<li>Normalize all contact emails to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#97;&#108;&#103;&#111;&#97;&#114;&#105;&#120;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#97;&#108;&#103;&#111;&#97;&#114;&#105;&#120;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+<li>Project infrastructure: git config, GitHub templates (no CI/CD), editorconfig, clang-format/tidy, Docker, pre-commit hooks, release scripts, security.txt, GOVERNANCE, DESIGN, STYLEGUIDE, AUTHORS, NEWS, INSTALL, COPYING; fix stale URLs</li>
+<li>Remove GitHub CI/CD workflow</li>
+<li>K0 foundation: extend NPE to 32 opcodes, expand autodiff tape/variable, optimizer factories, Python bindings (ARC/NPE/FM/SER), tensor/model/train Python API, checkpoint v2, API docs, benchmarks</li>
+<li>Remove black background from logo via CSS mix-blend-mode</li>
+<li>Resize logo to 30%</li>
+<li>Add ARIX logo to README</li>
+<li>Add back-to-top link at bottom of README</li>
+<li>âœ¨ Supercharged README with emojis, TOC, badges, and visual design</li>
+<li>Markdown documentation rewrite</li>
+<li>Phase 8: Training graphs (HSS multi-timestep + SER soft MoE), test suite hardening (edge cases, shared header, build config), benchmark infra (tensor + autodiff), CI workflow, CMakePresets, LTO support, Windows build scripts</li>
+<li>L3: HSS paper draft (LaTeX)</li>
+<li>Release system: scripts, VERSION, CHANGELOG, installers</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/v0.1.0...v0.9.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="v&#702;1&#702;">v0.1.0<a class="headerlink" href="#v&#702;1&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-06-24</strong></p>
+<p><em>No tagged changes; showing commits up to this tag.</em></p>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.9.4.467...v0.1.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;9446&#702;">algo0.9.4.467<a class="headerlink" href="#algo&#702;9446&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-14</strong></p>
+<h3 id="bug&#702;fixes_11">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(N4): fix autocast duplicate import syntax error</li>
+<li>fix(N3): Optimizer saves lr, step() works without C backend, autocast is proper context manager</li>
+<li>fix(N2): add Trainer.train() method and fix LSTM benchmark shape</li>
+<li>fix(N1): MSELoss returns scalar tensor</li>
+<li>fix: resolve test import errors in test<em>trainer</em>v2 and test<em>ultra</em>trainer</li>
+<li>fix(C3): add fallback stub when C extension not available</li>
+<li>fix(C2): add missing Tensor import and fix matmul in benchmarking.py</li>
+<li>fix(C1): prevent SimpleTokenizer shadowing from .tokenizer over .data version</li>
+</ul>
+<h3 id="other_10">Other<a class="headerlink" href="#other_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>bump: v0.9.4.467</li>
+<li>firewall: test files (24 tests), fix path traversal detection, lazy SSL context build</li>
+<li>firewall: CLI flags for serve_cli.py, kwargs safety in firewall constructors</li>
+<li>firewall: wire into inference<em>server.py middleware, set</em>security accepts firewall config</li>
+<li>firewall: integrate into SecurityMiddleware with check<em>firewall, release</em>concurrent</li>
+<li>firewall: orchestrator with YAML config, env/CLI overrides, 3-ring dispatch</li>
+<li>firewall: transport ring with TLS/mTLS, cert pinning, ALPN</li>
+<li>firewall: application ring with injection filter, path normalization, concurrent limiter</li>
+<li>firewall: network ring with IP CIDR filtering, rate limiting, port knock</li>
+<li>firewall: assembly routines for IP match, rate counter, conn track, port knock</li>
+<li>chore: bump version to 0.9.2.094 across all files</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.9.2.094...algo0.9.4.467">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;9&#702;94">algo0.9.2.094<a class="headerlink" href="#algo&#702;9&#702;94" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-13</strong></p>
+<h3 id="features_7">Features<a class="headerlink" href="#features_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat: add test_watermark (tests/python)</li>
+<li>feat: add test<em>security</em>middleware (tests/python)</li>
+<li>feat: add test<em>s5</em>safety (tests/python)</li>
+<li>feat: add test_onnx (tests/python)</li>
+<li>feat: add test_nccl (tests/python)</li>
+<li>feat: add test<em>inference</em>server (tests/python)</li>
+<li>feat: add test_hparams (tests/python)</li>
+<li>feat: add test<em>graph</em>compiler (tests/python)</li>
+<li>feat: add test_generation (tests/python)</li>
+<li>feat: add test<em>experiment</em>tracker (tests/python)</li>
+<li>feat: add test<em>distributed</em>wrapper (tests/python)</li>
+<li>feat: add test<em>differential</em>privacy (tests/python)</li>
+<li>feat: add test<em>cuda</em>kernels (tests/python)</li>
+<li>feat: add test_cuda (tests/python)</li>
+<li>feat: add test<em>checkpoint</em>manager (tests/python)</li>
+<li>feat: add test_autograd (tests/python)</li>
+<li>feat: add test_adversarial (tests/python)</li>
+<li>feat: add example (config/training)</li>
+<li>feat: add watermark (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add trainer<em>v3 (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add train<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add tokenizer (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add serve<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add security<em>middleware (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add s5<em>safety (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add nccl (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add inference<em>server (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add hparams (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add graph<em>compiler (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add generation (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add experiment<em>tracker (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add experiment<em>cli (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add distributed<em>wrapper (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add differential<em>privacy (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add cuda<em>kernels (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add cuda<em>device (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add checkpoint<em>manager (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add autograd<em>ops (bindings/python/SneppX</em>ALG/interface_bindings)</li>
+<li>feat: add autograd (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+<li>feat: add adversarial (bindings/python/SneppX<em>ALG/interface</em>bindings)</li>
+</ul>
+<h3 id="bug&#702;fixes_12">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(build): compile CUDA extension sources into existing exported targets via target_sources</li>
+<li>fix(build): link CUDA extension libs privately to avoid export-set errors</li>
+<li>fix(build): add CMakeLists.txt for algorithms/*/cuda CUDA extension libraries</li>
+<li>fix(ci): pin CUDA builds to ubuntu-22.04 for CUDA 12.4 repo compatibility</li>
+<li>fix(ci): install CUDA toolkit on runner (avoid container checkout break), mark macOS/Windows non-blocking</li>
+<li>fix(ci): build Linux via CUDA container, add net/distributed CMakeLists, mark macOS/Windows non-blocking</li>
+<li>fix: guard CUDA-only source files for CPU builds, fix CI workflow</li>
+<li>fix(ci): install numpy for CMake, fix markdownlint, cuda keyring</li>
+<li>fix(ci): remove remaining empty with block in security-scan</li>
+<li>fix(ci): remove submodules recursive (breaks on Arix-Site dir)</li>
+<li>fix(ci): remove duplicate runs-on, embedded dependabot, and other invalid YAML</li>
+<li>fix: remove CUDA job (needs Docker Hub secrets not set)</li>
+<li>fix: wrap secrets check in template expr for job if</li>
+<li>fix: skip CUDA Docker if Docker Hub secrets not set</li>
+</ul>
+<h3 id="refactor&#702;internal_1">Refactor / Internal<a class="headerlink" href="#refactor&#702;internal_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>refactor: update advanced_ops, quantization, C tests</li>
+<li>refactor: update C source files (checkpoint_reader, dilithium)</li>
+<li>refactor: update test files and CMakeLists</li>
+<li>refactor: update <strong>init</strong>.py exports</li>
+<li>refactor: update benchmarks/export/distillation</li>
+<li>refactor: update training/infra modules</li>
+<li>refactor: update model/hf/vision modules</li>
+<li>refactor: update core tensor/nn/optim/data modules</li>
+<li>refactor(ci): restructure jobs, fix deps, make CUDA/security/docs non-blocking</li>
+</ul>
+<h3 id="other_11">Other<a class="headerlink" href="#other_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ci: mark C/CUDA build jobs non-blocking (pre-existing source compile errors); keep Lint/Security/Docs as real gates</li>
+<li>chore(ci): add workflow_dispatch for manual runs</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.9.0...algo0.9.2.094">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;9&#702;">algo0.9.0<a class="headerlink" href="#algo&#702;9&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-11</strong></p>
+<h3 id="features_8">Features<a class="headerlink" href="#features_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat(packaging): add comprehensive packaging for PyPI, Docker, Conda, CI/CD</li>
+<li>feat(models): add complete LLaMA, Mistral, Qwen2, DeepSeek V2 architectures</li>
+<li>feat(vision): add Vision Transformer (ViT), DeiT, Swin, MAE architectures</li>
+<li>feat: add benchmarking suite + all 11 tests pass</li>
+<li>feat: massive expansion - distillation, pruning, advanced ops, augmentation, ONNX, model zoo</li>
+<li>feat: distillation, pruning, advanced ops, augmentation, ONNX export</li>
+<li>feat(augmentation): comprehensive data augmentation pipeline</li>
+<li>feat(train): add AMP, gradient checkpointing, advanced DataLoader, UltraTrainer</li>
+<li>feat(optim): add 7 extra optimizers + 10 schedulers + 6 advanced optimizers</li>
+<li>feat(tensor): add advanced ops - conv, pooling, RNN, attention, norms, tensor manip</li>
+<li>feat(core): add SIMD GEMM + tensor expression IR with operator fusion</li>
+<li>feat(crypto): Dilithium DRBG-based sampling, 10-bit packing, SHA512 challenge</li>
+<li>feat(zoo): model configs, weight converters, from_pretrained for LLaMA2/3, Mistral, Qwen2, DeepSeek V2 + 49 tests</li>
+<li>feat(profile): profiler, logger, NVTX markers, compute-sanitizer CI scripts + 13 tests</li>
+<li>feat(ft): async checkpointing, heartbeat, elastic training, fault tolerance (C + Python) + 23 tests</li>
+<li>feat(quant): INT8/FP8/AWQ/GPTQ quantization kernels (C, CUDA, Python) + 17 tests</li>
+<li>feat(py): self-contained Tensor with optional C backend, update exports and pip package config</li>
+<li>feat(py): implement neural network, optimizers, data, distributed, hf, model, train modules</li>
+<li>feat(arch): Mamba-2 selective SSM with HiPPO initialization, conv1d, discretized scan</li>
+<li>feat(arch): FlexAttention block-sparse with mask modulation, multi-modal cross-attention, MoD, gated activations, YaRN NTK-RoPE, ALiBi</li>
+<li>feat(arch): Differential Attention and Multi-head Latent Attention (DeepSeek MLA style)</li>
+<li>feat(arch): advanced architectures master header (DifferentialAttn, MLA, FlexAttn, Mamba2, MoD, YaRN, ALiBi)</li>
+<li>feat(dist): distributed sampler with epoch-based shuffling and gradient accumulation manager</li>
+<li>feat(dist): distributed checkpoint coordinator with async save and fault tolerance</li>
+<li>feat(dist): hierarchical all-reduce (NVLink+RDMA) and Top-K gradient compression with error feedback</li>
+<li>feat(dist): DDP with bucket-based gradient all-reduce and compute overlap</li>
+<li>feat(dist): expert parallelism all-to-all dispatch and FM distributed communication</li>
+<li>feat(dist): tensor parallelism row/column split linear with all-reduce</li>
+<li>feat(dist): pipeline parallelism 1F1B schedule with microbatches</li>
+<li>feat(dist): ZeRO-1/2/3 optimizer state partitioning and fused AdamW step</li>
+<li>feat(dist): distributed training config header (ZeRO, pipeline, tensor, expert parallel)</li>
+<li>feat(dist): NCCL dynamic loading, all-reduce, process group part 2/2</li>
+<li>feat(dist): NCCL dynamic loading, all-reduce, process group part 1/2</li>
+<li>feat(dist): NCCL communication primitives header</li>
+<li>feat(hss): extended SSM step, conv, selective scan kernels</li>
+<li>feat(arc): PGD/FGSM attacks, gradient obfuscation, smoothing</li>
+<li>feat(arc): adversarial robustness CUDA header</li>
+<li>feat(npe): differentiable program execution GPU kernel part 2/2</li>
+<li>feat(npe): differentiable program execution GPU kernel part 1/2</li>
+<li>feat(npe): neural VM instruction dispatch CUDA header</li>
+<li>feat(fm): ring/butterfly all-reduce, gradient quantization part 2/2</li>
+<li>feat(fm): ring/butterfly all-reduce, gradient quantization part 1/2</li>
+<li>feat(fm): all-reduce, quantization, federated avg CUDA header</li>
+<li>feat(ser): fused MoE forward, load balancing loss</li>
+<li>feat(ser): top-k gating, dispatch, combine kernels</li>
+<li>feat(ser): top-k gating and fused MoE CUDA header</li>
+<li>feat(hss): Mamba/S6 selective scan, SSM conv, HiPPO matrix CUDA kernels</li>
+<li>feat(hss): selective scan, S4, HiPPO CUDA header</li>
+<li>feat(cuda): RNG API header (Philox, distributions, init schemes)</li>
+<li>feat(cuda): random number generation kernels part 3/3</li>
+<li>feat(cuda): random number generation kernels part 2/3</li>
+<li>feat(cuda): random number generation kernels part 1/3</li>
+<li>feat(cuda): memory pool/stream/event API header</li>
+<li>feat(cuda): memory management (pool, streams, events) part 3/3</li>
+<li>feat(cuda): memory management (pool, streams, events) part 2/3</li>
+<li>feat(cuda): memory management (pool, streams, events) part 1/3</li>
+<li>feat(cuda): optimizer header with all step types</li>
+<li>feat(cuda): fused optimizer kernels part 3/3</li>
+<li>feat(cuda): fused optimizer kernels part 2/3</li>
+<li>feat(cuda): fused optimizer kernels part 1/3</li>
+<li>feat(cuda): autodiff backward header declarations</li>
+<li>feat(cuda): autodiff backward kernels part 4/4</li>
+<li>feat(cuda): autodiff backward kernels part 3/4</li>
+<li>feat(cuda): autodiff backward kernels part 2/4</li>
+<li>feat(cuda): autodiff backward kernels part 1/4</li>
+<li>feat(cuda): attention kernels part 5/5</li>
+<li>feat(cuda): attention kernels part 4/5</li>
+<li>feat(cuda): attention kernels part 3/5</li>
+<li>feat(cuda): attention kernels part 2/5</li>
+<li>feat(cuda): attention kernels part 1/5</li>
+<li>feat: expand assembly code to 3258 lines with constant-time, speculation-safe, cache-resistant security improvements across 15 files</li>
+<li>feat: security infrastructure expansion - compliance, PQ crypto, threat intel, IR, automation, ZT, chaos, AI guardrails, supply chain, fuzzing + docs</li>
+</ul>
+<h3 id="bug&#702;fixes_13">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix(docker): make CPU Dockerfile self-contained, fix packages workflow</li>
+<li>fix(version): bump setup.py to 0.9.0 to match pyproject.toml and tag</li>
+<li>fix(crypto): Kyber uses DRBG for deterministic noise sampling instead of rand()</li>
+<li>fix: full build cleanup â€” fix 8 test files for API changes, stub sha512, fix audit<em>logger stdarg, fix secure</em>wipe ABI, exclude unimplemented tests</li>
+<li>fix(asm): rewrite poly1305<em>sse.asm with correct 5-limb scalar algorithm, fix 8 ABI signature mismatches in asm</em>exports.h</li>
+<li>fix(asm): fix 6 ABI signature mismatches in asm_exports.h header</li>
+<li>fix(asm): fix 5 assembly correctness bugs</li>
+<li>fix(crypto): fix 7 critical bugs - auth bypasses, memory overflows, X25519, Kyber</li>
+<li>fix: update metadata to align with sneppx-alg identity</li>
+<li>fix: update build.ps1 CMake flags to SNEPPX_ prefix</li>
+<li>fix: rename arix<em>algo package to SneppX</em>ALG, fix Python relative imports</li>
+<li>fix: sha3 finalize-&gt;finish, fm_forward 4 args, m.lib MSVC guard</li>
+<li>fix: add csignal, time.h, link m for math in kernel lib</li>
+<li>fix: move sys/prctl.h to <strong>linux</strong> guard, ifdef s9_extensions _finddata for WIN32</li>
+<li>fix: s9_extensions io.h guard, blake3 finalize-&gt;finish across 4 files</li>
+<li>fix: use asm/unistd.h for _<em>NR</em>* in seccomp filter</li>
+<li>fix: memory_hardening sys/syscall.h, hmac.c sha512 func name</li>
+<li>fix: memory_hardening linux headers, drbg sha512 func name, asm only on MSVC</li>
+<li>fix: ed25519 <em>umul128 compat + point</em>is<em>on</em>curve ordering; fix cache.c aarch64 prfm syntax</li>
+</ul>
+<h3 id="other_12">Other<a class="headerlink" href="#other_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ci(packages): add GitHub Packages workflow for Docker and Python publishing</li>
+<li>chore: update Arix-Site submodule reference after cleanup</li>
+<li>test(crypto): add Kyber debug output for pk/sk/shared-secret bytes</li>
+<li>docs: update AGENTS.md with Phases 5-8, deprecate old lib/python bindings</li>
+<li>test(py): add 7 Python API test suites (82 tests)</li>
+<li>test(cuda): GPU kernel test suite part 3/3</li>
+<li>test(cuda): GPU kernel test suite part 2/3</li>
+<li>test(cuda): GPU kernel test suite part 1/3</li>
+<li>docs: update AGENTS.md with Phase 1 CUDA backend overview</li>
+<li>chore: bump version to 0.8.6 for 12 critical bug fixes across C and asm</li>
+<li>Fix ASM<em>MASM compiler (ml64.exe) and add asm</em>exports.h header</li>
+<li>Update README for algo0.8.2: assembly stats, version bump, S0 detail</li>
+<li>Fix MASM syntax errors: all 15 asm files assemble cleanly</li>
+<li>Fix assembly bugs across 8 files</li>
+<li>Remove CI/CD workflows, rebrand releases to SneppX-ALG</li>
+<li>Full rebrand: ARIX<em>Algo -&gt; SneppX</em>ALG</li>
+<li>Fix ed25519 intrin.h, entropy_pool stdio.h, clang-tidy target order</li>
+<li>Fix ASM language, macOS func ptr types, clz64 order, skip broken MSVC tests</li>
+<li>Fix CI/CD: ASAN Debug build, macOS march, clang-tidy targets, Codecov v4, release changelog</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.8.0...algo0.9.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;8&#702;">algo0.8.0<a class="headerlink" href="#algo&#702;8&#702;" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-08</strong></p>
+<h3 id="other_13">Other<a class="headerlink" href="#other_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>algo0.8.0: Infrastructure overhaul â€” build fixes, CI/CD, dev tooling, project organization</li>
+<li>Add Python package scaffolding, update Makefile/CI/gitignore/pre-commit [algo0.7.8 infra]</li>
+<li>Update README for algo0.7.8: Python bindings, PQ benchmarks, stats</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.7.8...algo0.8.0">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;8">algo0.7.8<a class="headerlink" href="#algo&#702;8" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-08</strong></p>
+<h3 id="other_14">Other<a class="headerlink" href="#other_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Bump version to algo0.7.8</li>
+<li>Add PQ crypto benchmark suite (Kyber, Dilithium, SPHINCS+) [algo0.7.8 #7]</li>
+<li>Enable Python bindings (pybind11) with linker + naming fixes [algo0.7.8 #6]</li>
+<li>Fix test projects infrastructure [algo0.7.8 #5]</li>
+<li>Add docs for 11 new security modules [algo0.7.8 #4]</li>
+<li>Fix C++ obfuscation layer errors (neural<em>security</em>cpp) [algo0.7.8 #3]</li>
+<li>Add CI/CD pipeline with GitHub Actions</li>
+<li>Add AGENTS.md for AI-assisted development workflow</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.7.5...algo0.7.8">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;5">algo0.7.5<a class="headerlink" href="#algo&#702;5" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-07</strong></p>
+<h3 id="other_15">Other<a class="headerlink" href="#other_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li>algo0.7.5: S4-S9 security additions - PQ crypto, ASM optimizations, DP, DDoS, container security, fuzzer, leak detector, breakout detection, RLHF safety</li>
+<li>Fix website link: aixsite -&gt; arixsite.vercel.app</li>
+<li>Update README for algo0.7: S0-S9 complete, 64,589 total lines, full architecture details</li>
+<li>algo0.7: Complete S0-S9 security system (21,809 lines) + 64,589 total codebase</li>
+<li>bump version to algo0.5.4</li>
+<li>Fix README cd path (arix-algo -&gt; arixalgo), update pyproject.toml version to 0.5.0</li>
+<li>Update VERSION file to reflect algo0.5 release</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/compare/algo0.5...algo0.7.5">:material-git-compare: <code>View diff vs previous</code></a></p>
+<h2 id="algo&#702;5_1">algo0.5<a class="headerlink" href="#algo&#702;5_1" title="Permanent link">&para;</a></h2>
+<p><strong>2026-07-01</strong></p>
+<h3 id="features_9">Features<a class="headerlink" href="#features_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>feat(tokenizer): BPE tokenizer with train/encode/decode/save/load</li>
+<li>feat(autodiff): gradient checkpointing + view-aware storage</li>
+<li>feat(autodiff): min/max with selective gradient routing</li>
+<li>feat(autodiff): ref-counted backward lifecycle with ctx cleanup</li>
+</ul>
+<h3 id="bug&#702;fixes_14">Bug Fixes<a class="headerlink" href="#bug&#702;fixes_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fix: sign scheme S=r+h*a mod L with proper sc_reduce64</li>
+<li>fix: fe<em>to</em>bytes final p-subtraction via limb comparison</li>
+<li>fix: fe_mul rewrite with _umul128 128-bit arithmetic</li>
+<li>fix: point_add formula (X3=EÂ·F, Y3=GÂ·H, T3=EÂ·H, Z3=FÂ·G)</li>
+<li>fix: point_double formula (Y3=EÂ·G, T3=FÂ·G, Z3=DÂ·H) + identity guard</li>
+<li>fix: fe_sub per-limb bias constants</li>
+<li>fix: point<em>scalar</em>mult cswap mask uint8<em>t-&gt;uint64</em>t</li>
+<li>fix: add two-round carry chain to fe<em>to</em>bytes</li>
+<li>fix: add shebangs to build.sh, test.sh, clean.sh</li>
+</ul>
+<h3 id="other_16">Other<a class="headerlink" href="#other_16" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test_1">81 v0.5.0: ARC/NPE/FM training graphs, trainer fix, NPE training test<a class="headerlink" href="#81&#702;v&#702;5&#702;arcnpefm&#702;training&#702;graphs&#702;trainer&#702;fix&#702;npe&#702;training&#702;test_1" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests_1">80 Fix loss computation in trainer, multi-module train graphs, and tests<a class="headerlink" href="#8&#702;fix&#702;loss&#702;computation&#702;in&#702;trainer&#702;multi-module&#702;train&#702;graphs&#702;and&#702;tests_1" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix_1">79 Full attention training graph, reshape op, trainer fix<a class="headerlink" href="#&#702;9&#702;full&#702;attention&#702;training&#702;graph&#702;reshape&#702;op&#702;trainer&#702;fix_1" title="Permanent link">&para;</a></h1>
+</li>
+<li>Add 24 infrastructural files across 7 directories</li>
+<li>Remove CI/CD concepts</li>
+<li>README, VERSION, changelog, and 20 infra files</li>
+<li>Attention, inference, data pipeline, arch improvements</li>
+<li>Project-wide nomenclature restructuring: renamed all module identifiers to extended descriptive nomenclature for enhanced clarity and semantic precision</li>
+<li>Multi-head attention + RoPE + KV-cache + batched matmul</li>
+<li>test(gradient): conv2d finite-difference gradient verification</li>
+<li>L0.1 audit fixes: include paths, orphaned tests, pre-commit hook, ed25519 bit unpack, docs, gitignore</li>
+<li>docs: update README with skeleton infrastructure stats, fix links and back-to-top</li>
+<li>chore: add .gitkeep for papers/figures</li>
+<li>skeleton: samples directory with basic demo</li>
+<li>skeleton: generic library â€” rbtree, hashtable, pqueue, strutil, Rust, Python bindings</li>
+<li>skeleton: test suites â€” fuzz, unit, algorithm tests, HSS CUDA</li>
+<li>skeleton: tools â€” benchmark runner, CLI, fuzz harness, scripts</li>
+<li>skeleton: security language bindings â€” C, C++, C#, Go, Rust, secure allocator, integrity monitor</li>
+<li>skeleton: kernel internal implementations â€” autodiff, memory, optimizer, tensor, thread</li>
+<li>skeleton: checkpoint format, slab alloc, vmem, compression</li>
+<li>skeleton: network subsystem â€” socket, RDMA, gRPC, topology</li>
+<li>skeleton: ROCm and TPU drivers</li>
+<li>skeleton: CUDA driver interface</li>
+<li>chore: gitignore target/ and Cargo.lock</li>
+<li>chore: add target/ to .gitignore (Rust build artifacts)</li>
+<li>v0.2.0: rewrite all stubs into comprehensive implementations</li>
+<li>docs: update PROGRESS &amp; README for restructure</li>
+<li>restructure: remove old src/ tree</li>
+<li>restructure: move security source to security/</li>
+<li>restructure: move algorithm sources to algorithms/</li>
+<li>restructure: move kernel source to kernel/</li>
+<li>restructure: move public headers to include/arix/</li>
+<li>T2-T5: implement stubs (inverse, det, conv1d/2d, pool1d/2d, save/load) + 54/56 tests pass, add specs</li>
+<li>Update README: 50/52 tests, 13 dtypes, 80+ ops</li>
+<li>T1: creation &amp; shape tests + fixes</li>
+<li>T0: tensor audit &amp; foundation</li>
+<li>Fix pre-existing benchmark errors: add seed arg to hss<em>model</em>create, fix npe instruction initializers</li>
+<li>Add backward gradient passes for sub, div, neg, pow and extend test coverage</li>
+<li>Update all GitHub URLs to ammar49-cyber/arixalgo</li>
+<li>Normalize all contact emails to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#97;&#108;&#103;&#111;&#97;&#114;&#105;&#120;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#97;&#108;&#103;&#111;&#97;&#114;&#105;&#120;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+<li>Project infrastructure: git config, GitHub templates (no CI/CD), editorconfig, clang-format/tidy, Docker, pre-commit hooks, release scripts, security.txt, GOVERNANCE, DESIGN, STYLEGUIDE, AUTHORS, NEWS, INSTALL, COPYING; fix stale URLs</li>
+<li>Remove GitHub CI/CD workflow</li>
+<li>K0 foundation: extend NPE to 32 opcodes, expand autodiff tape/variable, optimizer factories, Python bindings (ARC/NPE/FM/SER), tensor/model/train Python API, checkpoint v2, API docs, benchmarks</li>
+<li>Remove black background from logo via CSS mix-blend-mode</li>
+<li>Resize logo to 30%</li>
+<li>Add ARIX logo to README</li>
+<li>Add back-to-top link at bottom of README</li>
+<li>âœ¨ Supercharged README with emojis, TOC, badges, and visual design</li>
+<li>Markdown documentation rewrite</li>
+<li>Phase 8: Training graphs (HSS multi-timestep + SER soft MoE), test suite hardening (edge cases, shared header, build config), benchmark infra (tensor + autodiff), CI workflow, CMakePresets, LTO support, Windows build scripts</li>
+<li>L3: HSS paper draft (LaTeX)</li>
+<li>Release system: scripts, VERSION, CHANGELOG, installers</li>
+<li>Add release artifacts to gitignore</li>
+<li>Update docs with new vision: verifiable inference, on-device, federated contribution, safety guarantees</li>
+<li>S2: obfuscation engine (C++) â€” CFG flattening, string encryption, instruction substitution, opaque predicates, code VM, anti-debug, pipeline, tests, demo</li>
+<li>Add x86_64 assembly: ed25519 scalarmult, constant-time cmp, SC cmov ops</li>
+<li>Phase 7: S1 - Secure Memory &amp; Side-Channel Resistance</li>
+<li>Phase 7: Security - AES-free crypto suite (ChaCha20-Poly1305 AEAD, Ed25519, Argon2, SHA-3, BLAKE3)</li>
+<li>Phase 6: Training Loop &amp; Python Bindings</li>
+<li>Phase 5: FM - Federated Memory</li>
+<li>Phase 4: NPE - Neural Program Executor</li>
+<li>Phase 3: ARC - Adversarial Robustness Core - input guard with anomaly detection, gradient obfuscator with noise+clamp, output verifier with consistency history, attack simulation (FGSM/PGD/CW), multi-layer model, tests, integration with HSS+SER, demo</li>
+<li>Phase 2: SER - Sparse Expert Routing - expert create/destroy, routing with softmax+top-k, expert forward (ReLU/GELU/Swish), layer forward with gather/scatter, load balance loss, multi-layer model, tests, integration test with HSS, demo</li>
+<li>Phase 1: HSS forward pass - layer create/destroy, model create/destroy, discretization, single step, seq scan, hierarchical scan stub, forward pass with layer norm and input projection, test suite, demo</li>
+<li>Add .gitignore, remove build artifacts from tracking</li>
+<li>Fix CMakeLists.txt for MSVC compatibility, update README</li>
+<li>Initial foundation: tensor ops, memory allocator, thread pool stub, CMake build system, C test suite, Python/Rust/C security stubs, MIT license</li>
+<li>Initial commit</li>
+</ul>
+<p><a class="md-button" href="https://github.com/SneppX/sneppx-alg/commits/algo0.5">:material-git-compare: <code>View diff vs previous</code></a></p>
+<hr />
+<p>Each release header links to a <strong>GitHub compare view</strong> (<code>{prev}...{tag}</code>) which renders a side-by-side <strong>visual diff</strong> of the source tree between releases. Tag the repo (<code>git tag v1.2.0</code>) and re-run <code>python docs/changelog/generate.py</code> to refresh.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Built with the SNEPPX-Algo documentation stack. Content licensed under the repository's MIT license.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
