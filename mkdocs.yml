@@ -141,6 +141,7 @@ nav:
         - Compliance: compliance/compliance_overview.md
         - Incident Response: incident_response/ir_framework_overview.md
     - Release Notes:
+        - v1.5.0: release_notes/v1.5.0.md
         - v1.1.1: release_notes/v1.1.1.md
         - v1.1.0: release_notes/v1.1.0.md
         - v1.0.0: release_notes/v1.0.0.md
