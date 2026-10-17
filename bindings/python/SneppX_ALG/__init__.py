@@ -29,6 +29,7 @@ from . import graph
 from . import stats
 from . import structured_output
 from . import rag
+from . import agents
 
 __all__ = [
     "_neural_engine_bridge",
@@ -43,6 +44,7 @@ __all__ = [
     "stats",
     "structured_output",
     "rag",
+    "agents",
 ]
 
 
