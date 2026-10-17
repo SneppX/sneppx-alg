@@ -175,6 +175,7 @@ nav:
     - Reference:
         - Architecture Overview: ARCHITECTURE.md
         - API Index: API_REFERENCE.md
+        - Python Features: python_features.md
         - API Quick Reference: api_quickref.md
         - Benchmarks: BENCHMARKS.md
         - Coverage: COVERAGE.md
