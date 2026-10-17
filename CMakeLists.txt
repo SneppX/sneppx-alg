@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(cognitive_processing_system VERSION 1.1.1 LANGUAGES C CXX ASM_MASM)
+project(cognitive_processing_system VERSION 1.5.0 LANGUAGES C CXX ASM_MASM)
 
 # Under the Ninja generator CMake's ASM_MASM language latches onto a bare
 # 'ml', which only exists under the HostX86 toolset path and is therefore

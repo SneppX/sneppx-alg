@@ -4,10 +4,10 @@ title: "SNEPPX-Alg: Secure Neural Architecture with Composable AI Algorithm Pipe
 authors:
   - family-names: "Ammar [SNEPPX]"
     email: algoSNEPPX@gmail.com
-version: 1.0.0
-date-released: 2026-07
+version: 1.5.0
+date-released: 2026-10-17
 license: MIT
-repository-code: "https://github.com/ammar49-cyber/sneppx-alg"
+repository-code: "https://github.com/SneppX/sneppx-alg"
 keywords:
   - artificial-intelligence
   - machine-learning
