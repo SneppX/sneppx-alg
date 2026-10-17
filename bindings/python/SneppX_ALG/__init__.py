@@ -27,6 +27,7 @@ from . import linalg
 from . import signal
 from . import graph
 from . import stats
+from . import structured_output
 
 __all__ = [
     "_neural_engine_bridge",
@@ -39,6 +40,7 @@ __all__ = [
     "signal",
     "graph",
     "stats",
+    "structured_output",
 ]
 
 
