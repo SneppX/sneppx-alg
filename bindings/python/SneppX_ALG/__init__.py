@@ -25,6 +25,7 @@ from . import regularization
 from . import callbacks
 from . import linalg
 from . import signal
+from . import graph
 
 __all__ = [
     "_neural_engine_bridge",
@@ -35,6 +36,7 @@ __all__ = [
     "callbacks",
     "linalg",
     "signal",
+    "graph",
 ]
 
 
