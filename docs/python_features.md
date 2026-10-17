@@ -49,3 +49,19 @@ SGD, Adam, AdamW, NAdam, Rprop, ASGD, LBFGS, SparseAdam.
 `kernel/distributed/*.c` (ddp, tensor_parallel, expert_parallel, zero,
 gradient_comm, pipeline) create and destroy a `SNEPPX_ProcessGroup` per
 collective; the NCCL binding falls back to a correct CPU path single-process.
+
+
+## New Python packages (2026-10-16)
+
+- **sampling** — Sampler, RandomSampler, SequentialSampler, BatchSampler, DistributedSampler
+- **regularization** — penalties, spectral norm, label smoothing, early stopping, mixup/cutmix, weight decay
+- **callbacks** — Callback, History, CSVLogger, ModelCheckpoint, ReduceLROnPlateau, WarmupLR, ProgressBar
+- **linalg** — LU/QR/SVD/Cholesky/eig/eigh, solve/lstsq/inv/pinv, norms, utilities
+- **signal** — windows, FFT/RFFT, filtering, spectral, resampling
+- **graph** — Graph, BFS/DFS, topological, components, shortest paths (Dijkstra/Bellman-Ford/Floyd–Warshall), MST (Kruskal/Prim), centrality/Pagerank
+- **stats** — descriptive, distributions, inference (t/chi2, CIs, bootstrap, permutation)
+- **structured_output** — JSON-schema subset validator, extract/repair/parse JSON, logit masking, constrained decoding
+- **rag** — tokenization, chunking, BM25, hashing embeddings, hybrid retriever
+- **agents** — Message/Conversation, Tool/ToolRegistry, ReAct parsing, ConversationMemory, Agent
+- **observability** — Span/Tracer, Timer/Stopwatch, EventBus, StructuredLogger, MetricRegistry
+- **speculative** — NGram/PromptLookup drafters, acceptance/verification, SpeculativeDecoder

@@ -184,7 +184,18 @@ print(y.shape)
 ```
 
 
-### Recent framework capabilities (v1.2.0)
+#
+## Extended Python Utilities
+
+Additional pragmatic packages (pure NumPy/Python, fully tested):
+
+`	ext
+sampling, regularization, callbacks, linalg, signal, graph,
+stats, structured_output, rag, agents, observability, speculative
+`
+
+Import as rom SneppX_ALG import sampling, regularization, ...
+## Recent framework capabilities (v1.2.0)
 
 - **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
 - **Functional API**: `sneppx_ALG.nn.functional` (aliased `F`) with ~70 differentiable ops (conv, pool, norm, pad, unfold/fold, embedding, losses, interpolate).
