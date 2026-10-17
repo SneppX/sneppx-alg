@@ -30,6 +30,7 @@ from . import stats
 from . import structured_output
 from . import rag
 from . import agents
+from . import observability
 
 __all__ = [
     "_neural_engine_bridge",
@@ -45,6 +46,7 @@ __all__ = [
     "structured_output",
     "rag",
     "agents",
+    "observability",
 ]
 
 
