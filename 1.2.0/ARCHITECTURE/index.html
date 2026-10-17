@@ -1,0 +1,4546 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
+">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.2.0/ARCHITECTURE/">
+      
+      
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../API_REFERENCE/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Architecture Overview - SNEPPX-Algo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sneppx-algo&#702;architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SNEPPX-Algo" class="md-header__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SNEPPX-Algo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SNEPPX-Algo" class="md-nav__button md-logo" aria-label="SNEPPX-Algo" data-md-component="logo">
+      
+  <img src="../logo.jpeg" alt="logo">
+
+    </a>
+    SNEPPX-Algo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pipeline Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Walkthroughs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Code Walkthroughs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-hss/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-ser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SER
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-arc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-npe/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NPE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../walkthrough-fm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RLHF Fine-Tuning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization + Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MoE Expert Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Scanning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling & Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Conversion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/autodoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API (auto)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen (C/C++)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Cookbook
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Cookbook
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/tensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models & Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimizers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/quantization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quantization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/distributed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Distributed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving & Inference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data & Tokenization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/profiling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profiling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Checkpointing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/conversion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conversion/Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cookbook/generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Layers (S0-S9)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/obf_audit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Obfuscation Audit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threat Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compliance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incident Response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.1.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release_notes/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Migration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Migration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.x to v1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v0.9.7.890e
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From PyTorch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From TensorFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/from_jax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    From JAX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-walkthrough/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Walkthrough
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMMENTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Commenting Standard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Review Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributor Tiers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branching Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hss_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HSS Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SneppX Console
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guides Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Hub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_zoo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Zoo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/serving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serving
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/onnx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ONNX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MHA Forward Pass
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    128K Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/testing_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing Framework
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Overview
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#documentation&#702;standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Standards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm&#702;pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Algorithm Pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hss&#702;hierarchical&#702;state&#702;space" class="md-nav__link">
+    <span class="md-ellipsis">
+      HSS — Hierarchical State Space
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HSS — Hierarchical State Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mathematical&#702;formulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mathematical Formulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ser&#702;sparse&#702;expert&#702;routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      SER — Sparse Expert Routing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SER — Sparse Expert Routing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mathematical&#702;formulation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mathematical Formulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arc&#702;adversarial&#702;robustness&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      ARC — Adversarial Robustness Core
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ARC — Adversarial Robustness Core">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defense&#702;layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defense Layers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack&#702;simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attack Simulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adversarial&#702;training&#702;graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adversarial Training Graph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#npe&#702;neural&#702;program&#702;executor" class="md-nav__link">
+    <span class="md-ellipsis">
+      NPE — Neural Program Executor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NPE — Neural Program Executor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#virtual&#702;machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Virtual Machine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jit&#702;pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIT Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm&#702;federated&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      FM — Federated Memory
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FM — Federated Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory&#702;bank" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Bank
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#synchronization&#702;protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      Synchronization Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nccl&#702;sync&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      NCCL Sync Bridge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trainer&#702;cuda&#702;accelerated&#702;optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trainer + CUDA Accelerated Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trainer + CUDA Accelerated Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cuda&#702;optimizer&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      CUDA Optimizer Bridge
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security&#702;layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;cryptographic&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      S0 — Cryptographic Core
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s1&#702;secure&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      S1 — Secure Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;obfuscation&#702;engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      S2 — Obfuscation Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3&#702;behavioral&#702;monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 — Behavioral Monitor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4&#702;network&#702;security" class="md-nav__link">
+    <span class="md-ellipsis">
+      S4 — Network Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5&#702;ai&#702;sanitizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      S5 — AI Sanitizer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6&#702;security&#702;ui&#702;key&#702;vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      S6 — Security UI / Key Vault
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;secure&#702;updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      S7 — Secure Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8&#702;formal&#702;verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      S8 — Formal Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9&#702;penetration&#702;testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      S9 — Penetration Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foundation&#702;components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Foundation Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Foundation Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tensor&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tensor Core
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autodiff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autodiff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimizer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread&#702;pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thread Pool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data&#702;flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training&#702;flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrity&#702;layer&#702;future&#702;opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrity Layer (future / opt-in)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_quickref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COVERAGE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Coverage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VISION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Framework Comparison
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learning Paths
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Legacy API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Style Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Community
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learn/videos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Video Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Dev
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            Dev
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub Pages Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doxygen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Doxygen Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PR Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_upstream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upstream README
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#documentation&#702;standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Standards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm&#702;pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Algorithm Pipeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hss&#702;hierarchical&#702;state&#702;space" class="md-nav__link">
+    <span class="md-ellipsis">
+      HSS — Hierarchical State Space
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HSS — Hierarchical State Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mathematical&#702;formulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mathematical Formulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ser&#702;sparse&#702;expert&#702;routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      SER — Sparse Expert Routing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SER — Sparse Expert Routing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mathematical&#702;formulation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mathematical Formulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arc&#702;adversarial&#702;robustness&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      ARC — Adversarial Robustness Core
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ARC — Adversarial Robustness Core">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defense&#702;layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defense Layers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attack&#702;simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attack Simulation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adversarial&#702;training&#702;graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adversarial Training Graph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#npe&#702;neural&#702;program&#702;executor" class="md-nav__link">
+    <span class="md-ellipsis">
+      NPE — Neural Program Executor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NPE — Neural Program Executor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#virtual&#702;machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Virtual Machine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jit&#702;pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIT Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm&#702;federated&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      FM — Federated Memory
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FM — Federated Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory&#702;bank" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Bank
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#synchronization&#702;protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      Synchronization Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nccl&#702;sync&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      NCCL Sync Bridge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code&#702;structure_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trainer&#702;cuda&#702;accelerated&#702;optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trainer + CUDA Accelerated Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trainer + CUDA Accelerated Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cuda&#702;optimizer&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      CUDA Optimizer Bridge
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security&#702;layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;cryptographic&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      S0 — Cryptographic Core
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s1&#702;secure&#702;memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      S1 — Secure Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;obfuscation&#702;engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      S2 — Obfuscation Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3&#702;behavioral&#702;monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 — Behavioral Monitor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4&#702;network&#702;security" class="md-nav__link">
+    <span class="md-ellipsis">
+      S4 — Network Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5&#702;ai&#702;sanitizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      S5 — AI Sanitizer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6&#702;security&#702;ui&#702;key&#702;vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      S6 — Security UI / Key Vault
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s&#702;secure&#702;updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      S7 — Secure Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8&#702;formal&#702;verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      S8 — Formal Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9&#702;penetration&#702;testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      S9 — Penetration Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#foundation&#702;components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Foundation Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Foundation Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tensor&#702;core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tensor Core
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autodiff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autodiff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimizer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread&#702;pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thread Pool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data&#702;flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training&#702;flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Flow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrity&#702;layer&#702;future&#702;opt-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrity Layer (future / opt-in)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="sneppx-algo&#702;architecture">SNEPPX-Algo Architecture<a class="headerlink" href="#sneppx-algo&#702;architecture" title="Permanent link">&para;</a></h1>
+<h2 id="documentation&#702;standards">Documentation Standards<a class="headerlink" href="#documentation&#702;standards" title="Permanent link">&para;</a></h2>
+<p>This project uses a four-layer commenting standard defined in <a href="../COMMENTING/">COMMENTING.md</a>. All source files must have Layer 1 file headers and public <code>SNEPPX_*</code> functions must have Layer 4 Doxygen docs. See <a href="../STYLE_GUIDE/">STYLE_GUIDE.md</a> for code formatting rules.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>SNEPPX-Algo implements a composite AI algorithm with cryptographic integrity. The system processes inputs through five sequential algorithm components, each wrapped in ten security layers.</p>
+<div class="highlight"><pre><span></span><code>                     ┌──────────────────────────────────────┐
+                     |         Security Layer (S0-S9)        |
+                     |  Crypto · Secure Mem · Obfuscation   |
+                     |  Monitor · Network · AI Sanitizer    |
+                     |  Key Vault · Updates · Formal · Pen. |
+                     └──────────────────────────────────────┘
+                                     |
+                     ┌───────────────▼──────────────────────┐
+                     |         Algorithm Pipeline            |
+                     |  HSS -&gt; SER -&gt; ARC -&gt; NPE -&gt; FM       |
+                     |  (SSM) (MoE) (Guard) (VM)  (Fed Mem) |
+                     └──────────────────────────────────────┘
+                                     |
+                      ┌───────────────▼──────────────────────┐
+                      |         Integrity Layer               |
+                      |  ZK Proofs (opt-in) · Formal Safety   |
+                      |  On-Device Attestation                |
+                      └──────────────────────────────────────┘
+</code></pre></div>
+<h2 id="algorithm&#702;pipeline">Algorithm Pipeline<a class="headerlink" href="#algorithm&#702;pipeline" title="Permanent link">&para;</a></h2>
+<h3 id="hss&#702;hierarchical&#702;state&#702;space">HSS — Hierarchical State Space<a class="headerlink" href="#hss&#702;hierarchical&#702;state&#702;space" title="Permanent link">&para;</a></h3>
+<p><strong>Layer</strong>: <code>algorithms/hss/core/</code>
+<strong>Files</strong>: <code>layer.c</code>, <code>forward_train.c</code>, <code>cuda/hss_cuda.cu</code></p>
+<p>HSS is a multi-layer state space model that processes sequences by maintaining a hidden state updated per timestep.</p>
+<h4 id="mathematical&#702;formulation">Mathematical Formulation<a class="headerlink" href="#mathematical&#702;formulation" title="Permanent link">&para;</a></h4>
+<p>For each layer l at timestep k:</p>
+<div class="highlight"><pre><span></span><code>x_k  in R^{d_model}     (input at timestep k)
+h^l_k                   (hidden state for layer l, timestep k)
+y^l_k                   (output for layer l, timestep k)
+
+Transition matrices:
+A^l  in R^{d_state x d_state}
+B^l  in R^{d_state x d_model}
+C^l  in R^{d_model x d_state}
+D^l  in R^{d_model x d_model}     (step size)
+
+Discretization (zero-order hold):
+A_bar = exp(D * A)
+B_bar = (D * A)^{-1} * (exp(D * A) - I) * D * B
+
+State update:
+h^l_k = A_bar * h^l_{k-1} + B_bar * x^l_k
+
+Output:
+y^l_k = C^l * h^l_k
+
+Merge multi-layer outputs:
+y_k = Sum_l W^l * y^l_k + x_k     (residual connection)
+</code></pre></div>
+<p>The sequential scan processes timesteps sequentially. The Blelloch tree-based parallel scan over state dimension is enabled by default on CPU (set <code>use_parallel_scan=0</code> in config to disable). A CUDA parallel scan is pending.</p>
+<h4 id="code&#702;structure">Code Structure<a class="headerlink" href="#code&#702;structure" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_model</span><span class="p">;</span><span class="w">         </span><span class="c1">// Input/output dimension</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_state</span><span class="p">;</span><span class="w">         </span><span class="c1">// Hidden state dimension (default: d_model/4)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_layers</span><span class="p">;</span><span class="w">      </span><span class="c1">// Number of HSS layers</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">use_parallel_scan</span><span class="p">;</span><span class="w"> </span><span class="c1">// 1 = Blelloch parallel scan (default)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_min</span><span class="p">;</span><span class="w">            </span><span class="c1">// Minimum step size (default: 0.001)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_max</span><span class="p">;</span><span class="w">            </span><span class="c1">// Maximum step size (default: 0.1)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span><span class="w">            </span><span class="c1">// Random seed for init</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXHSSConfig</span><span class="p">;</span>
+
+<span class="n">SNEPPXHSSConfig</span><span class="w"> </span><span class="nf">SNEPPX_hss_config_default</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">SNEPPXHSSLayer</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_hss_layer_create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXHSSConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_hss_layer_destroy</span><span class="p">(</span><span class="n">SNEPPXHSSLayer</span><span class="o">*</span><span class="w"> </span><span class="n">layer</span><span class="p">);</span>
+<span class="n">SNEPPXHSSModel</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_hss_model_create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXHSSConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_hss_model_destroy</span><span class="p">(</span><span class="n">SNEPPXHSSModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_hss_forward</span><span class="p">(</span><span class="n">SNEPPXHSSModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_hss_build_train_graph</span><span class="p">(</span><span class="n">SNEPPXHSSModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">**</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n_params</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="ser&#702;sparse&#702;expert&#702;routing">SER — Sparse Expert Routing<a class="headerlink" href="#ser&#702;sparse&#702;expert&#702;routing" title="Permanent link">&para;</a></h3>
+<p><strong>Layer</strong>: <code>algorithms/ser/core/</code>
+<strong>Files</strong>: <code>layer.c</code>, <code>gater.c</code>, <code>forward_train.c</code>, <code>cuda/ser_cuda.cu</code></p>
+<p>SER implements a Mixture-of-Experts layer with top-k routing and optional learned MLP gating.</p>
+<h4 id="mathematical&#702;formulation_1">Mathematical Formulation<a class="headerlink" href="#mathematical&#702;formulation_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>Input:  x in R^{batch x seq x d_model}
+Experts: E_1, ..., E_n where E_i : R^{d_model} -&gt; R^{d_model}
+Router:  r(x) = Softmax(W_r * x + b_r)     W_r in R^{n x d_model}
+
+Top-k selection (k &lt;&lt; n):
+indices = topk(r(x), k)
+weights = Softmax(r(x)[indices])
+
+Output:
+y = Sum_{i=1}^{k} weights_i * E_{indices_i}(x)
+</code></pre></div>
+<p><strong>Learned MLP Gater</strong> (opt-in, <code>use_mlp_gater=1</code>): replaces the linear router with a 2-layer MLP:
+<div class="highlight"><pre><span></span><code>r(x) = Softmax(W2 * ReLU(W1 * x + b1) + b2)
+</code></pre></div></p>
+<p>Load-balancing loss:
+<div class="highlight"><pre><span></span><code>L_balance = alpha * n * Sum_{i=1}^{n} f_i * P_i
+
+where:
+f_i = fraction of tokens routed to expert i
+P_i = average router probability for expert i
+alpha = balancing coefficient (default: 0.01)
+</code></pre></div></p>
+<h4 id="code&#702;structure_1">Code Structure<a class="headerlink" href="#code&#702;structure_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_model</span><span class="p">;</span><span class="w">          </span><span class="c1">// Input/output dimension</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_expert</span><span class="p">;</span><span class="w">         </span><span class="c1">// Expert hidden dimension (default: 4*d_model)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_experts</span><span class="p">;</span><span class="w">      </span><span class="c1">// Total number of experts (default: 8)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">top_k</span><span class="p">;</span><span class="w">            </span><span class="c1">// Number of active experts per token (default: 2)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">use_mlp_gater</span><span class="p">;</span><span class="w">    </span><span class="c1">// 1 = MLP gater, 0 = linear router</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">gater_hidden_dim</span><span class="p">;</span><span class="w">  </span><span class="c1">// MLP gater hidden size (default: 64)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span><span class="w">             </span><span class="c1">// Random seed for expert init</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXSERConfig</span><span class="p">;</span>
+
+<span class="n">SNEPPXSERConfig</span><span class="w"> </span><span class="nf">SNEPPX_ser_config_default</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">SNEPPXSERModel</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_ser_model_create</span><span class="p">(</span><span class="n">SNEPPXSERConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_ser_forward</span><span class="p">(</span><span class="n">SNEPPXSERLayer</span><span class="o">*</span><span class="w"> </span><span class="n">layer</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">SNEPPX_ser_load_balance_loss</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXSERLayer</span><span class="o">*</span><span class="w"> </span><span class="n">layer</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">routing_weights</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_ser_route_mlp_gated</span><span class="p">(</span><span class="n">SNEPPXSERLayer</span><span class="o">*</span><span class="w"> </span><span class="n">layer</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">routing_weights</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_ser_model_destroy</span><span class="p">(</span><span class="n">SNEPPXSERModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="arc&#702;adversarial&#702;robustness&#702;core">ARC — Adversarial Robustness Core<a class="headerlink" href="#arc&#702;adversarial&#702;robustness&#702;core" title="Permanent link">&para;</a></h3>
+<p><strong>Layer</strong>: <code>algorithms/arc/core/</code>
+<strong>Files</strong>: <code>layer.c</code>, <code>forward_train.c</code>, <code>cuda/arc_cuda.cu</code></p>
+<p>ARC provides a three-layer defense-with-verification pipeline plus adversarial training.</p>
+<h4 id="defense&#702;layers">Defense Layers<a class="headerlink" href="#defense&#702;layers" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Input Guard</strong>: z-score anomaly detection across the input.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1">// For each feature dimension j:</span>
+<span class="n">z_j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x_j</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mu_j</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sigma_j</span>
+<span class="c1">// Flag if |z_j| &gt; threshold (default: 3.0)</span>
+</code></pre></div>
+<ol>
+<li><strong>Gradient Obfuscation</strong>: Noise injection + gradient clipping.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1">// During training:</span>
+<span class="n">g</span><span class="err">&#39;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">N</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="n">g</span><span class="o">|</span><span class="p">)</span><span class="w">     </span><span class="c1">// noise proportional to gradient magnitude</span>
+<span class="n">g</span><span class="err">&#39;&#39;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clamp</span><span class="p">(</span><span class="n">g</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">gamma</span><span class="p">,</span><span class="w"> </span><span class="n">gamma</span><span class="p">)</span><span class="w">     </span><span class="c1">// gradient clipping threshold gamma</span>
+</code></pre></div>
+<ol>
+<li><strong>Output Verifier</strong>: Consistency check with cosine similarity + temporal smoothing.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1">// Cosine similarity:</span>
+<span class="n">sim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y_hat</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_prev</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="o">|</span><span class="n">y_hat</span><span class="o">|</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">|</span><span class="n">y_prev</span><span class="o">|</span><span class="p">)</span>
+<span class="c1">// Detect if sim drops below threshold tau_adv (default: 0.5)</span>
+<span class="c1">// Temporal smoothing:</span>
+<span class="n">y_smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_hat</span><span class="w">     </span><span class="c1">// with beta in [0.7, 0.99]</span>
+</code></pre></div>
+<h4 id="attack&#702;simulation">Attack Simulation<a class="headerlink" href="#attack&#702;simulation" title="Permanent link">&para;</a></h4>
+<p>ARC includes simulation for:
+- <strong>FGSM</strong> (Fast Gradient Sign Method): <code>x_adv = x + eps * sign(grad_x L(x, y))</code>
+- <strong>PGD</strong> (Projected Gradient Descent): Multi-step FGSM with projection
+- <strong>C&amp;W</strong> (Carlini-Wagner): Optimization-based attack: <code>min ||delta|| + c * f(x + delta)</code></p>
+<h4 id="adversarial&#702;training&#702;graph">Adversarial Training Graph<a class="headerlink" href="#adversarial&#702;training&#702;graph" title="Permanent link">&para;</a></h4>
+<p><code>SNEPPX_arc_build_adversarial_train_graph</code> constructs a shared-weight dual forward graph:
+1. Clean forward on original input (requires<em>grad=1)
+2. FGSM perturbation generated from clean loss gradients
+3. Adversarial forward on perturbed input (adversarial variable requires</em>grad=0)
+4. Combined loss = clean<em>loss + lambda * adv</em>loss</p>
+<h4 id="code&#702;structure_2">Code Structure<a class="headerlink" href="#code&#702;structure_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">z_threshold</span><span class="p">;</span><span class="w">        </span><span class="c1">// Z-score anomaly threshold (default: 3.0)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">noise_std</span><span class="p">;</span><span class="w">          </span><span class="c1">// Gradient noise std deviation (default: 0.01)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">grad_clip</span><span class="p">;</span><span class="w">          </span><span class="c1">// Gradient clipping threshold (default: 1.0)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">sim_threshold</span><span class="p">;</span><span class="w">      </span><span class="c1">// Cosine similarity threshold (default: 0.5)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">temporal_beta</span><span class="p">;</span><span class="w">      </span><span class="c1">// Temporal smoothing coefficient (default: 0.9)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">attack_epsilon</span><span class="p">;</span><span class="w">     </span><span class="c1">// FGSM perturbation size (default: 0.1)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span><span class="w">             </span><span class="c1">// Random seed</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXARCConfig</span><span class="p">;</span>
+
+<span class="n">SNEPPXARCConfig</span><span class="w"> </span><span class="nf">SNEPPX_arc_config_default</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">SNEPPXARCModel</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_arc_model_create</span><span class="p">(</span><span class="n">SNEPPXARCConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_arc_forward</span><span class="p">(</span><span class="n">SNEPPXARCModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">anomaly_scores</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_arc_attack_fgsm</span><span class="p">(</span><span class="n">SNEPPXARCModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">gradient</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">epsilon</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_arc_build_adversarial_train_graph</span><span class="p">(</span><span class="n">SNEPPXARCModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">,</span>
+<span class="w">    </span><span class="n">SNEPPXVariable</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">**</span><span class="w"> </span><span class="n">weights</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n_weights</span><span class="p">,</span>
+<span class="w">    </span><span class="n">SNEPPXVariable</span><span class="o">**</span><span class="w"> </span><span class="n">clean_out</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">**</span><span class="w"> </span><span class="n">adv_out</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_arc_model_destroy</span><span class="p">(</span><span class="n">SNEPPXARCModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="npe&#702;neural&#702;program&#702;executor">NPE — Neural Program Executor<a class="headerlink" href="#npe&#702;neural&#702;program&#702;executor" title="Permanent link">&para;</a></h3>
+<p><strong>Layer</strong>: <code>algorithms/npe/core/</code>
+<strong>Files</strong>: <code>vm.c</code>, <code>compiler.c</code>, <code>jit_pipeline.c</code>, <code>cuda/npe_cuda.cu</code></p>
+<p>NPE is a 16-register virtual machine with 15+ opcodes for executing neural network operations. Includes a JIT pipeline with multiple optimization passes.</p>
+<h4 id="virtual&#702;machine">Virtual Machine<a class="headerlink" href="#virtual&#702;machine" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>Registers: R0-R15, each holds an SNEPPXTensor*
+Program Counter: PC
+Halt Flag: H
+JIT Profile: records executed opcodes for hot-path optimization
+
+Opcodes:
+  0x00  NOP                No operation
+  0x01  LOAD rd, imm       Load immediate into register
+  0x02  MOV rd, rs         Move register
+  0x03  MATMUL rd, rs1, rs2    Matrix multiply
+  0x04  ADD  rd, rs1, rs2      Element-wise add
+  0x05  RELU rd, rs            ReLU activation
+  0x06  SOFTMAX rd, rs         Softmax over last dim
+  0x07  LAYERNORM rd, rs       Layer normalization
+  0x08  SIGMOID rd, rs         Sigmoid activation
+  0x09  SUM rd, rs             Sum all elements
+  0x0A  MEAN rd, rs            Mean of elements
+  0x0D  ATTENTION rd, q, k, v  Scaled dot-product attention
+  0x10  COMPUTE rd, rs         Compute opcode (extended)
+  0x11  HALT                   Stop execution
+  0x13  TANH rd, rs            Tanh activation
+
+Fused opcodes (JIT output):
+  0x80000000  MATMUL_RELU    MATMUL + RELU fused
+  0x40000000  MATMUL_ADD     MATMUL + ADD fused (bias in low byte)
+  0x20000000  MATMUL_ADD_RELU  MATMUL + ADD + RELU fused
+  0x80000001  ADD_RELU       ADD + RELU fused
+</code></pre></div>
+<h4 id="jit&#702;pipeline">JIT Pipeline<a class="headerlink" href="#jit&#702;pipeline" title="Permanent link">&para;</a></h4>
+<p>The JIT pipeline (<code>jit_pipeline.c</code>) composes four optimization passes:</p>
+<div class="highlight"><pre><span></span><code>Input Program
+    |
+    v
+[DCE] — Dead Code Elimination: removes NOPs and unused writes
+    |
+    v
+[Constant Folding] — evaluates constant expressions at compile time
+    |
+    v
+[Fusion] — merges adjacent compatible ops:
+     MATMUL + ADD + RELU -&gt; MATMUL_ADD_RELU (bit 0x20000000)
+     MATMUL + RELU       -&gt; MATMUL_RELU     (bit 0x80000000)
+     MATMUL + ADD        -&gt; MATMUL_ADD      (bit 0x40000000, bias reg in low byte)
+     ADD + RELU          -&gt; ADD_RELU        (bit 0x80000001)
+    |
+    v
+[Compile] — final program assembly
+    |
+    v
+Optimized Program
+</code></pre></div>
+<p><strong>Auto-JIT Mode</strong>: The VM records executed opcodes in a profile during <code>vm_step</code>. When the hot threshold is reached (configurable, default 100 executions), <code>vm_run</code> automatically triggers <code>SNEPPX_npe_vm_optimize</code> before continuing.</p>
+<h4 id="code&#702;structure_3">Code Structure<a class="headerlink" href="#code&#702;structure_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_registers</span><span class="p">;</span><span class="w">     </span><span class="c1">// Number of registers (default: 16)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">max_program_size</span><span class="p">;</span><span class="w">  </span><span class="c1">// Maximum program length (default: 1024)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">jit_hot_threshold</span><span class="p">;</span><span class="w"> </span><span class="c1">// Auto-JIT trigger count (default: 100)</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXNPEConfig</span><span class="p">;</span>
+
+<span class="n">SNEPPXNPEConfig</span><span class="w"> </span><span class="nf">SNEPPX_npe_config_default</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_npe_model_create</span><span class="p">(</span><span class="n">SNEPPXNPEConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+<span class="kt">int32_t</span><span class="w"> </span><span class="nf">SNEPPX_npe_load_program</span><span class="p">(</span><span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="o">*</span><span class="w"> </span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_npe_execute</span><span class="p">(</span><span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">outputs</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_outputs</span><span class="p">);</span>
+<span class="kt">int32_t</span><span class="w"> </span><span class="nf">SNEPPX_npe_verify</span><span class="p">(</span><span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+
+<span class="c1">// JIT API</span>
+<span class="n">SNEPPXNPEProgram</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_npe_jit_pipeline_compose</span><span class="p">(</span><span class="n">SNEPPXNPEProgram</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_npe_vm_optimize</span><span class="p">(</span><span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_npe_jit_fuse</span><span class="p">(</span><span class="n">SNEPPXNPEProgram</span><span class="o">*</span><span class="w"> </span><span class="n">prog</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_npe_compile_mlp</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">input_dim</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">hidden_dim</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_npe_compile_attention</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">dim</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_npe_model_destroy</span><span class="p">(</span><span class="n">SNEPPXNPEModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="fm&#702;federated&#702;memory">FM — Federated Memory<a class="headerlink" href="#fm&#702;federated&#702;memory" title="Permanent link">&para;</a></h3>
+<p><strong>Layer</strong>: <code>algorithms/fm/core/</code>
+<strong>Files</strong>: <code>fm.c</code>, <code>sync.c</code>, <code>cuda/fm_cuda.cu</code></p>
+<p>FM provides distributed memory with per-node memory banks, trust-weighted synchronization, and NCCL sync bridge.</p>
+<h4 id="memory&#702;bank">Memory Bank<a class="headerlink" href="#memory&#702;bank" title="Permanent link">&para;</a></h4>
+<p>Each node maintains a fixed-size memory bank with:
+- <strong>Euclidean similarity</strong> for nearest-neighbor retrieval
+- <strong>LRU eviction</strong> when the bank is full
+- <strong>Learnable read/write</strong> operations</p>
+<h4 id="synchronization&#702;protocol">Synchronization Protocol<a class="headerlink" href="#synchronization&#702;protocol" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>Trust-weighted all-reduce:
+theta_global = Sum_i trust_score_i * theta_i / Sum_j trust_score_j
+
+Differential privacy noise:
+theta_shared = theta_global + Lap(0, epsilon)     // Laplace noise
+epsilon = noise_scale / sensitivity
+
+Gradient compression:
+Select top-k gradients by magnitude (random sampling fallback)
+</code></pre></div>
+<h4 id="nccl&#702;sync&#702;bridge">NCCL Sync Bridge<a class="headerlink" href="#nccl&#702;sync&#702;bridge" title="Permanent link">&para;</a></h4>
+<p><code>SNEPPX_fm_sync_nccl</code> integrates with NCCL using a callback pattern:</p>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">SNEPPXFMSyncCallback</span><span class="p">)(</span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">context</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_fm_sync_nccl</span><span class="p">(</span><span class="n">SNEPPXFMController</span><span class="o">*</span><span class="w"> </span><span class="n">ctrl</span><span class="p">,</span>
+<span class="w">    </span><span class="n">SNEPPXFMSyncCallback</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">context</span><span class="p">);</span>
+</code></pre></div>
+<p>The callback receives the aggregated gradient data and a user-provided context pointer. The bridge is NCCL-header-free — no compile-time dependency on NCCL.</p>
+<h4 id="code&#702;structure_4">Code Structure<a class="headerlink" href="#code&#702;structure_4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">memory_size</span><span class="p">;</span><span class="w">        </span><span class="c1">// Number of memory slots per node (default: 1024)</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_model</span><span class="p">;</span><span class="w">            </span><span class="c1">// Memory vector dimension</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">lr</span><span class="p">;</span><span class="w">                   </span><span class="c1">// Learning rate for memory writes</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">diff_privacy_noise</span><span class="p">;</span><span class="w">   </span><span class="c1">// Differential privacy noise scale</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">compression_ratio</span><span class="p">;</span><span class="w">    </span><span class="c1">// Gradient compression ratio (default: 0.01)</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXFMConfig</span><span class="p">;</span>
+
+<span class="n">SNEPPXFMConfig</span><span class="w"> </span><span class="nf">SNEPPX_fm_config_default</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">SNEPPXFMModel</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_fm_model_create</span><span class="p">(</span><span class="n">SNEPPXFMConfig</span><span class="o">*</span><span class="w"> </span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">node_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">seed</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_fm_write</span><span class="p">(</span><span class="n">SNEPPXFMModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_fm_read</span><span class="p">(</span><span class="n">SNEPPXFMModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_fm_sync_all_reduce</span><span class="p">(</span><span class="n">SNEPPXFMController</span><span class="o">*</span><span class="w"> </span><span class="n">ctrl</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXFMNode</span><span class="o">**</span><span class="w"> </span><span class="n">nodes</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_nodes</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">privacy_epsilon</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_fm_sync_nccl</span><span class="p">(</span><span class="n">SNEPPXFMController</span><span class="o">*</span><span class="w"> </span><span class="n">ctrl</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXFMSyncCallback</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">context</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_fm_forward</span><span class="p">(</span><span class="n">SNEPPXFMController</span><span class="o">*</span><span class="w"> </span><span class="n">ctrl</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">node_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXTensor</span><span class="o">**</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_fm_model_destroy</span><span class="p">(</span><span class="n">SNEPPXFMModel</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="trainer&#702;cuda&#702;accelerated&#702;optimization">Trainer + CUDA Accelerated Optimization<a class="headerlink" href="#trainer&#702;cuda&#702;accelerated&#702;optimization" title="Permanent link">&para;</a></h2>
+<p><strong>Files</strong>: <code>kernel/train/trainer.c</code>, <code>kernel/train/trainer_cuda.c</code>, <code>kernel/train/trainer_cuda.h</code></p>
+<p>The trainer provides a CPU training loop with an optional CUDA-accelerated optimizer path.</p>
+<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>Training Step:
+  1. Forward pass (HSS -&gt; SER -&gt; ARC -&gt; NPE -&gt; FM)  [CPU]
+  2. Compute loss (MSE + load balance + ARC regularization)  [CPU]
+  3. Backward pass (autodiff tape)  [CPU]
+  4. [if use_cuda_optimizer] Transfer params/grads to GPU async  [CUDA]
+  5. Optimizer step (SGD/AdamW)  [CPU or GPU]
+  6. [if use_cuda_optimizer] Transfer updated params back to CPU  [CUDA]
+  7. Secure memory wipe of intermediate tensors  [CPU]
+</code></pre></div>
+<h3 id="cuda&#702;optimizer&#702;bridge">CUDA Optimizer Bridge<a class="headerlink" href="#cuda&#702;optimizer&#702;bridge" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_available</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span><span class="w">       </span><span class="c1">// Runtime device detection</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_init</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">mem_pool_size</span><span class="p">);</span><span class="w">  </span><span class="c1">// Allocates device pool + stream + cublas handle</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_shutdown</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span><span class="w">       </span><span class="c1">// Frees all device resources</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_transfer</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span><span class="w">  </span><span class="c1">// Async H2D</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_to_host</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span><span class="w">   </span><span class="c1">// Async D2H</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_trainer_cuda_optimizer_step</span><span class="p">(</span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">grads</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">lr</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">weight_decay</span><span class="p">);</span><span class="w">             </span><span class="c1">// cuBLAS SGD or AdamW</span>
+
+<span class="c1">// Config flag:</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... other fields ...</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">use_cuda_optimizer</span><span class="p">;</span><span class="w">    </span><span class="c1">// 1 = CUDA optimizer path (default: 0)</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXTrainConfig</span><span class="p">;</span>
+</code></pre></div>
+<p>When <code>SNEPPX_HAS_CUDA</code> is not defined, all <code>trainer_cuda</code> functions return clean stubs (error codes / 0), and the trainer falls back to CPU optimization.</p>
+<h2 id="security&#702;layers">Security Layers<a class="headerlink" href="#security&#702;layers" title="Permanent link">&para;</a></h2>
+<h3 id="s&#702;cryptographic&#702;core">S0 — Cryptographic Core<a class="headerlink" href="#s&#702;cryptographic&#702;core" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/crypto/c/</code> and <code>include/neural_core/security/</code></p>
+<p>Production-grade cryptographic primitives:</p>
+<table>
+<thead>
+<tr>
+<th>Primitive</th>
+<th>Implementation</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ed25519</td>
+<td>RFC 8032</td>
+<td>Verified, 304/306 vectors pass</td>
+</tr>
+<tr>
+<td>X25519</td>
+<td>RFC 7748</td>
+<td>Full DH exchange</td>
+</tr>
+<tr>
+<td>ChaCha20-Poly1305</td>
+<td>RFC 8439</td>
+<td>AEAD encrypt/decrypt</td>
+</tr>
+<tr>
+<td>SHA-3</td>
+<td>FIPS 202</td>
+<td>224/256/384/512</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>FIPS 180-4</td>
+<td>General-purpose hashing</td>
+</tr>
+<tr>
+<td>BLAKE3</td>
+<td>Reference impl</td>
+<td>Fast hashing</td>
+</tr>
+<tr>
+<td>Argon2id</td>
+<td>RFC 9106</td>
+<td>KDF with timing defense</td>
+</tr>
+<tr>
+<td>Secure Random</td>
+<td>OS CPRG</td>
+<td>Entropy source abstraction</td>
+</tr>
+<tr>
+<td>Kyber-512/768/1024</td>
+<td>FIPS 203 (ML-KEM)</td>
+<td>PQ key encapsulation</td>
+</tr>
+<tr>
+<td>Dilithium-2/3/5</td>
+<td>FIPS 204 (ML-DSA)</td>
+<td>PQ digital signatures</td>
+</tr>
+<tr>
+<td>SPHINCS+-128/192/256</td>
+<td>FIPS 205 (SLH-DSA)</td>
+<td>Stateless PQ signatures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s1&#702;secure&#702;memory">S1 — Secure Memory<a class="headerlink" href="#s1&#702;secure&#702;memory" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/memory/</code> and <code>include/neural_core/security/</code></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guard Pages</td>
+<td>RW pages with PROT_NONE adjacent to detect overflow</td>
+</tr>
+<tr>
+<td>Canaries</td>
+<td>Stack-based overflow detection</td>
+</tr>
+<tr>
+<td>ASLR</td>
+<td>Heap entropy via Windows VirtualAlloc / Linux mmap randomization</td>
+</tr>
+<tr>
+<td>Locked Memory</td>
+<td>mlock/VirtualLock to prevent swapping to disk</td>
+</tr>
+<tr>
+<td>Secure Wipe</td>
+<td>memset with compiler barrier to prevent removal</td>
+</tr>
+<tr>
+<td>Constant-Time Ops</td>
+<td>memcmp variant for secret comparison</td>
+</tr>
+<tr>
+<td>Memory Leak Detector</td>
+<td>Tracks allocations and reports unfreed blocks on shutdown</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s&#702;obfuscation&#702;engine">S2 — Obfuscation Engine<a class="headerlink" href="#s&#702;obfuscation&#702;engine" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/cpp/</code> and <code>security/obfuscation/</code></p>
+<p>Control flow flattening, string encryption, instruction substitution, opaque predicates, code virtualization, anti-debug, binary substitution, junk code insertion, constant unfolding, IAT protection, SEH/VEH obfuscation, TLS callback obfuscation, anti-dump, multi-VM diversity, instruction scheduling randomization.</p>
+<h3 id="s3&#702;behavioral&#702;monitor">S3 — Behavioral Monitor<a class="headerlink" href="#s3&#702;behavioral&#702;monitor" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/monitor/</code></p>
+<p>Integrity monitoring (CRC32), container breakout detection, frequency analysis, timing analysis, anomaly detection (statistical baseline comparison).</p>
+<h3 id="s4&#702;network&#702;security">S4 — Network Security<a class="headerlink" href="#s4&#702;network&#702;security" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/network/</code></p>
+<p>DDoS mitigation (SYN flood detection, rate limiting, connection tracking, IP blacklisting), transport security (TLS-compatible handshake padding, traffic analysis resistance), identity management (certificate pinning, peer fingerprint verification).</p>
+<h3 id="s5&#702;ai&#702;sanitizer">S5 — AI Sanitizer<a class="headerlink" href="#s5&#702;ai&#702;sanitizer" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/ai/</code></p>
+<p>Prompt injection detection, differential privacy (Laplace mechanism), data poisoning defense (gradient outlier detection), RLHF safety (reward model validation, preference alignment checking, harmful output filtering).</p>
+<h3 id="s6&#702;security&#702;ui&#702;key&#702;vault">S6 — Security UI / Key Vault<a class="headerlink" href="#s6&#702;security&#702;ui&#702;key&#702;vault" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/ui/</code></p>
+<p>Audit logging (structured JSON), key vault (in-memory encrypted store with PIN protection).</p>
+<h3 id="s&#702;secure&#702;updates">S7 — Secure Updates<a class="headerlink" href="#s&#702;secure&#702;updates" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/updates/</code></p>
+<p>Container security (OCI layer verification), signed update bundles (Ed25519), rollback protection (monotonic version counter), staged rollout.</p>
+<h3 id="s8&#702;formal&#702;verification">S8 — Formal Verification<a class="headerlink" href="#s8&#702;formal&#702;verification" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/formal/</code></p>
+<p>Model checking (bounded state-space exploration), invariant verification (pre/post-condition checking), symbolic execution (NPE bytecode), container breakout detection (state-machine rules).</p>
+<h3 id="s9&#702;penetration&#702;testing">S9 — Penetration Testing<a class="headerlink" href="#s9&#702;penetration&#702;testing" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Complete</strong>
+<strong>Files</strong>: <code>security/pentest/</code></p>
+<p>Network fuzzer (protocol-aware, mutation strategies), self-audit (internal consistency checks), security report generation, CTF utilities.</p>
+<h2 id="foundation&#702;components">Foundation Components<a class="headerlink" href="#foundation&#702;components" title="Permanent link">&para;</a></h2>
+<h3 id="tensor&#702;core">Tensor Core<a class="headerlink" href="#tensor&#702;core" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>kernel/tensor/</code> and <code>include/neural_core/kernel/</code></p>
+<p>Multi-dimensional array with row-major layout. Supports 12 data types.</p>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SNEPPX_BOOL</span><span class="p">,</span><span class="w">       </span><span class="c1">// sizeof(int8_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_INT8</span><span class="p">,</span><span class="w">       </span><span class="c1">// sizeof(int8_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_INT16</span><span class="p">,</span><span class="w">      </span><span class="c1">// sizeof(int16_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_INT32</span><span class="p">,</span><span class="w">      </span><span class="c1">// sizeof(int32_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_INT64</span><span class="p">,</span><span class="w">      </span><span class="c1">// sizeof(int64_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_UINT8</span><span class="p">,</span><span class="w">      </span><span class="c1">// sizeof(uint8_t)</span>
+<span class="w">    </span><span class="n">SNEPPX_FLOAT16</span><span class="p">,</span><span class="w">    </span><span class="c1">// sizeof(uint16_t) — IEEE 754 half</span>
+<span class="w">    </span><span class="n">SNEPPX_BFLOAT16</span><span class="p">,</span><span class="w">   </span><span class="c1">// sizeof(uint16_t) — Brain float</span>
+<span class="w">    </span><span class="n">SNEPPX_FLOAT32</span><span class="p">,</span><span class="w">    </span><span class="c1">// sizeof(float) — default</span>
+<span class="w">    </span><span class="n">SNEPPX_FLOAT64</span><span class="p">,</span><span class="w">    </span><span class="c1">// sizeof(double)</span>
+<span class="w">    </span><span class="n">SNEPPX_FLOAT8</span><span class="p">,</span><span class="w">     </span><span class="c1">// sizeof(uint8_t) — FP8 E4M3/E5M2</span>
+<span class="w">    </span><span class="n">SNEPPX_COMPLEX64</span><span class="p">,</span><span class="w">  </span><span class="c1">// sizeof(float) * 2</span>
+<span class="w">    </span><span class="n">SNEPPX_COMPLEX128</span><span class="p">,</span><span class="w"> </span><span class="c1">// sizeof(double) * 2</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SNEPPXDType</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Supported ops (50+):</strong>
+- Creation: zeros, ones, full, randn, arange, identity, from<em>buffer, copy
+- Shape: reshape, transpose, permute, expand, squeeze, unsqueeze, slice, pad
+- Arithmetic: add, sub, mul, div, pow, sqrt, neg, abs
+- Matmul: matmul, batch</em>matmul
+- Reduction: sum, mean, var, max, min, argmax, argmin
+- Comparison: eq, ne, lt, gt, le, ge
+- Unary: exp, log, sin, cos, tan, sigmoid, relu, softmax, gelu, layer_norm
+- Format I/O: safetensors, numpy (.npy/.npz), PyTorch (.pth), ONNX</p>
+<h3 id="autodiff">Autodiff<a class="headerlink" href="#autodiff" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>kernel/autodiff/</code> and <code>include/neural_core/kernel/</code></p>
+<p>Tape-based reverse-mode automatic differentiation. Builds a computation graph of operations, then traverses it in reverse topological order to compute gradients.</p>
+<div class="highlight"><pre><span></span><code><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="nf">SNEPPX_tape_create</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_tape_backward</span><span class="p">(</span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPXVariable</span><span class="o">*</span><span class="w"> </span><span class="n">loss</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_tape_zero_grad</span><span class="p">(</span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">);</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">SNEPPX_tape_global_norm</span><span class="p">(</span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SNEPPX_tape_clip_grad_norm</span><span class="p">(</span><span class="n">SNEPPXTape</span><span class="o">*</span><span class="w"> </span><span class="n">tape</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">max_norm</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="optimizer">Optimizer<a class="headerlink" href="#optimizer" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>kernel/optimizer/</code> and <code>include/neural_core/kernel/</code></p>
+<p>CPU optimizers: SGD (momentum, weight decay), AdamW, RMSprop, Adagrad. LR schedulers: StepLR, Exponential, Cosine, ReduceOnPlateau.</p>
+<h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>kernel/memory/</code> and <code>include/neural_core/kernel/</code></p>
+<p>Aligned allocation on aligned boundaries. Free list with best-fit for sizes &gt; 4KB. Optional guard pages on request.</p>
+<h3 id="thread&#702;pool">Thread Pool<a class="headerlink" href="#thread&#702;pool" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>kernel/thread_pool/</code> and <code>include/neural_core/kernel/</code></p>
+<p>Single-threaded fallback. Interface supports work queue and tasks. Real parallelism deferred.</p>
+<h2 id="data&#702;flow">Data Flow<a class="headerlink" href="#data&#702;flow" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Input (SNEPPXTensor)
+    |
+    v
++---------------------+
+|  HSS Forward         |
+|  (parallel scan)     |
+|  Output: (B, S, D)   |
++---------+-----------+
+          |
+          v
++---------------------+
+|  SER Forward         |
+|  (top-k routing +    |
+|   MLP gater)         |
+|  Output: (B, S, D)   |
++---------+-----------+
+          |
+          v
++---------------------+
+|  ARC Forward         |
+|  (guard + filter)    |
+|  Output: (B, S, D)   |
+|  + anomaly_scores    |
++---------+-----------+
+          |
+          v
++---------------------+
+|  NPE Execute         |
+|  (VM program,        |
+|   JIT-optimized)     |
+|  Output: (B, S, D)   |
++---------+-----------+
+          |
+          v
++---------------------+
+|  FM Read             |
+|  (memory lookup,     |
+|   NCCL sync)         |
+|  Output: (B, S, D)   |
++---------+-----------+
+          |
+          v
+      Output (SNEPPXTensor)
+</code></pre></div>
+<h2 id="training&#702;flow">Training Flow<a class="headerlink" href="#training&#702;flow" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Forward pass (HSS -&gt; SER -&gt; ARC -&gt; NPE -&gt; FM)
+    |
+    v
+Compute loss (MSE + load balance + ARC regularization)
+    |
+    v
+Backward pass (autodiff tape-based reverse-topological gradient computation)
+    |
+    v
+[if use_cuda_optimizer] Transfer params/grads to GPU (async H2D)
+    |
+    v
+Optimizer step (SGD / AdamW on CPU, or cuBLAS SGD / AdamW on GPU)
+    |
+    v
+[if use_cuda_optimizer] Transfer params back to CPU (async D2H)
+    |
+    v
+Secure memory wipe of intermediate tensors
+</code></pre></div>
+<h2 id="integrity&#702;layer&#702;future&#702;opt-in">Integrity Layer (future / opt-in)<a class="headerlink" href="#integrity&#702;layer&#702;future&#702;opt-in" title="Permanent link">&para;</a></h2>
+<p>Zero-knowledge proofs of correct inference (<code>SNEPPX_BUILD_ZK</code> enables a Schnorr proof over Curve25519 reference backend). Formal safety verification of constraint compliance. On-device attestation for distributed verification.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Built with the SNEPPX-Algo documentation stack. Content licensed under the repository's MIT license.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
