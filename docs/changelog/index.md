@@ -6,6 +6,32 @@ Auto-generated from git tags + commit history. Regenerate with `python docs/chan
 
 [TOC]
 
+## v1.5.0
+**2026-10-17**
+
+### Features
+
+- feat(nn): make every nn module end-to-end differentiable (conv/transposed conv, norms, pools, interpolate, pad, embedding, unpool, unfold/fold)
+- feat(autograd): higher-order (create_graph) support across 40+ ops + jvp/vjp helpers
+- feat(F): add PyTorch-style functional namespace F.* with ~70 differentiable ops
+- feat(sparse): add SparseTensor (COO/CSR/CSC/BSR), sparse_mm/addmm/sum/softmax/conv2d, sparse-aware SparseAdam
+- feat(packages): add metrics, datasets, sampling, regularization, callbacks, linalg, signal, graph
+- feat(packages): add stats, structured_output, rag, agents, observability, speculative
+- feat(optim): add Adam, NAdam, Rprop, ASGD, LBFGS, SparseAdam with param_groups
+- feat(init): add nn.init (xavier/kaiming/orthogonal/...)
+
+### Bug Fixes
+
+- fix(autograd): scalar-first ops (0.5*x, 1.0-x, 1.0+x, 2.0/x) produced no gradient
+- fix(conv): conv1d/2d/3d scrambled outputs for batch size N>1
+- fix(autograd): Cat.backward used np.split(sizes) instead of cumsum indices
+- fix(autograd): RMSNorm.backward used normalized input instead of raw input
+- fix(loss): MultiMarginLoss flipped margin sign
+- fix(state_dict): strict load raises on missing/unexpected keys + size mismatch
+- fix(docs): UTF-8 fault in python_features.md broke the MkDocs build
+
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.5.0){ .md-button }
+
 ## Unreleased
 _unreleased_
 
@@ -153,7 +179,7 @@ _unreleased_
 - update PR template to tier-based system
 - chore: cleanup project structure
 
-[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.2.0...Unreleased){ .md-button }
+[:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.5.0...Unreleased){ .md-button }
 
 ## v1.2.0
 **2026-07-30**
