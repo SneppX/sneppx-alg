@@ -6,6 +6,38 @@ Secure, composable, production-grade AI in C/C++ & CUDA — tensor engine,
 autograd, MoE/SSM transformers, quantization, distributed training, and 10
 security layers (S0–S9). MIT licensed.
 
+<div class="sx-hero-art" role="img" aria-label="SNEPPX pipeline: HSS to SER to ARC to NPE to FM, observed by security layers S0-S9">
+<svg viewBox="0 0 640 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<defs>
+<marker id="sxarrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" class="sx-art-arrow"/></marker>
+</defs>
+<g class="sx-art-node">
+<rect x="8" y="34" width="104" height="42" rx="10"/>
+<rect x="136" y="34" width="104" height="42" rx="10"/>
+<rect x="264" y="34" width="104" height="42" rx="10"/>
+<rect x="392" y="34" width="104" height="42" rx="10"/>
+<rect x="520" y="34" width="104" height="42" rx="10"/>
+</g>
+<g class="sx-art-label">
+<text x="60" y="60" text-anchor="middle">HSS</text>
+<text x="188" y="60" text-anchor="middle">SER</text>
+<text x="316" y="60" text-anchor="middle">ARC</text>
+<text x="444" y="60" text-anchor="middle">NPE</text>
+<text x="572" y="60" text-anchor="middle">FM</text>
+</g>
+<g class="sx-art-edge">
+<line x1="112" y1="55" x2="132" y2="55" marker-end="url(#sxarrow)"/>
+<line x1="240" y1="55" x2="260" y2="55" marker-end="url(#sxarrow)"/>
+<line x1="368" y1="55" x2="388" y2="55" marker-end="url(#sxarrow)"/>
+<line x1="496" y1="55" x2="516" y2="55" marker-end="url(#sxarrow)"/>
+</g>
+<g class="sx-art-sec">
+<path d="M320 4 l14 6 v10 c0 9 -7 15 -14 18 c-7 -3 -14 -9 -14 -18 v-10 z"/>
+<text x="320" y="24" text-anchor="middle">S0&#8211;S9</text>
+</g>
+</svg>
+</div>
+
 <div class="sx-stats" markdown>
 
 <span class="sx-stat">

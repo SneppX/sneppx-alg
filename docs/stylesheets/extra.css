@@ -231,6 +231,54 @@ h3 .word {
     background: var(--md-primary-fg-color);
 }
 
+/* --- Hero illustration ---------------------------------------------------- */
+.sx-hero-art {
+    margin: 0.6rem auto 0.2rem;
+    max-width: 40rem;
+}
+.sx-hero-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.sx-art-node rect {
+    fill: var(--md-primary-fg-color);
+    fill-opacity: 0.12;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 1.5;
+}
+.sx-art-label text {
+    fill: var(--md-default-fg-color);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--md-text-font-family);
+}
+.sx-art-edge line {
+    stroke: var(--md-default-fg-color--lighter);
+    stroke-width: 2;
+}
+.sx-art-arrow {
+    fill: var(--md-default-fg-color--lighter);
+}
+.sx-art-sec path {
+    fill: var(--md-primary-fg-color);
+    fill-opacity: 0.18;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 1.2;
+}
+.sx-art-sec text {
+    fill: var(--md-primary-fg-color);
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--md-text-font-family);
+}
+[data-md-color-scheme="slate"] .sx-art-node rect {
+    fill-opacity: 0.24;
+}
+[data-md-color-scheme="slate"] .sx-art-sec path {
+    fill-opacity: 0.3;
+}
+
 /* --- Playground ----------------------------------------------------------- */
 .sx-playground {
     margin: 1.2rem 0;
