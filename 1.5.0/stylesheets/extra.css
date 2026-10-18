@@ -1,18 +1,194 @@
-/* Animation for content fade-in */
-.md-main__inner {
-    animation: fadeIn 0.5s ease-in-out;
+/* ==========================================================================
+   SNEPPX-Alg site styles
+   - scroll reveal (driven by javascripts/extra.js)
+   - word-by-word heading reveal
+   - misc polish (nav hover, code fade, hero gradient, counters)
+   All animations respect prefers-reduced-motion (see media query at bottom).
+   ========================================================================== */
+
+/* --- Scroll reveal -------------------------------------------------------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+}
+.reveal.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* --- Word-by-word heading reveal ------------------------------------------ */
+h1 .word,
+h2 .word,
+h3 .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.4em);
+    animation: wordIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--word-index, 0) * 60ms);
+}
+@keyframes wordIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Hover effect for navigation links */
+/* --- Home hero ------------------------------------------------------------ */
+.sx-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+}
+.sx-hero h1 {
+    font-size: 2.4rem;
+    background: linear-gradient(
+        90deg,
+        var(--md-primary-fg-color),
+        var(--md-accent-fg-color),
+        var(--md-primary-fg-color)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: heroGradient 6s linear infinite;
+}
+@keyframes heroGradient {
+    to {
+        background-position: 200% center;
+    }
+}
+.sx-hero p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    max-width: 46rem;
+    margin: 0.75rem auto 1.5rem;
+}
+
+/* --- Stat counters -------------------------------------------------------- */
+.sx-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0 0.5rem;
+}
+.sx-stat {
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    padding: 0.9rem 1.4rem;
+    min-width: 8.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+.sx-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border-color: var(--md-accent-fg-color);
+}
+.sx-stat .sx-stat-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--md-primary-fg-color);
+    display: block;
+}
+.sx-stat .sx-stat-label {
+    font-size: 0.78rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* --- Feature cards (home page) -------------------------------------------- */
+.sx-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+.sx-card {
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    padding: 1rem 1.1rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease;
+    text-decoration: none;
+    display: block;
+}
+.sx-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border-color: var(--md-primary-fg-color);
+}
+.sx-card h3 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+.sx-card p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* --- Nav / misc polish ---------------------------------------------------- */
 .md-nav__link {
     transition: color 0.2s, background-color 0.2s;
 }
-
 .md-nav__link:hover {
     color: var(--md-accent-fg-color);
+}
+.md-typeset table:not([class]) {
+    transition: box-shadow 0.2s ease;
+}
+.md-typeset table:not([class]):hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Scroll progress bar -------------------------------------------------- */
+.sx-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(
+        90deg,
+        var(--md-primary-fg-color),
+        var(--md-accent-fg-color)
+    );
+    z-index: 6;
+    transition: width 0.1s linear;
+}
+
+/* --- Dark-mode aware logo ------------------------------------------------- */
+[data-md-color-scheme="slate"] .md-header__button.md-logo img,
+[data-md-color-scheme="slate"] .md-nav__button.md-logo img {
+    filter: brightness(1.15);
+}
+
+/* --- Announcement bar ----------------------------------------------------- */
+.md-announcement {
+    background: var(--md-primary-fg-color);
+    color: var(--md-primary-bg-color);
+}
+.md-announcement a {
+    color: var(--md-primary-bg-color);
+}
+
+/* --- Accessibility: honor reduced motion ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal.reveal-visible,
+    h1 .word,
+    h2 .word,
+    h3 .word,
+    .sx-hero h1,
+    .sx-stat,
+    .sx-card {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
