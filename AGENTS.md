@@ -126,3 +126,15 @@ Order matters for regression safety:
 1. Run per-file pytest on changed module (e.g., `test_gap_fill.py`, `test_norm.py`, `test_higher_order_ad.py`)
 2. If module touches C/ctypes, verify `ctest` for the specific target only
 3. Do NOT run full test suite — it hangs; per-file only is the gate
+
+## Docs Site (Material 9.5.3 + mike)
+
+- **Dark/light toggle** lives in `theme.palette` (list of two schemes: `default`/`indigo`/`deep purple` and `slate`/`indigo`/`amber`). It MUST be under `theme:` — `extra.palette` is silently ignored (was the original bug). Persistence is automatic (localStorage `__palette`).
+- **Custom assets** are wired via `extra_css: [stylesheets/extra.css]` and `extra_javascript: [javascripts/extra.js]`.
+  - `docs/stylesheets/extra.css`: scroll-reveal, word-by-word heading animation, `.sx-hero` gradient, `.sx-stat`/`.sx-card` polish, `.sx-progress` bar, dark-mode logo, and a `prefers-reduced-motion` kill-switch block.
+  - `docs/javascripts/extra.js`: `IntersectionObserver` scroll reveal, heading word-splitter, stat count-up (`[data-count]` / `data-suffix`), fixed scroll progress bar. No external deps.
+- **Home page** (`docs/index.md`) opens with an `md_in_html` hero (`.sx-hero`), stat counters, and four `.sx-card` links.
+- **Announcement banner**: Material 9.5.x has NO `extra.announcement` support — override `{% block announce %}` in `overrides/main.html`, enabled via `theme.custom_dir: overrides`. (base.html renders the banner only when `self.announce()` is non-empty.)
+- **404**: `docs/404.md` → `404.html` (GitHub Pages serves it automatically; keep it out of nav).
+- Deploy: `mike deploy 1.5.0 latest --update-aliases` then `git push origin gh-pages`. `python -m mike` fails (no `__main__`) — use the `mike` entrypoint. Verify by grepping the built `site/index.html` or `curl` the live latest URL with a cache-buster.
+- **Feedback widget / social cards / RSS / Pyodide playground** remain unbuilt ideas (social cards need `mkdocs-material[imaging]`).
