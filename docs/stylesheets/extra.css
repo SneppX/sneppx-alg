@@ -231,6 +231,76 @@ h3 .word {
     background: var(--md-primary-fg-color);
 }
 
+/* --- Playground ----------------------------------------------------------- */
+.sx-playground {
+    margin: 1.2rem 0;
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: var(--md-code-bg-color);
+}
+.sx-pg-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-pg-run {
+    cursor: pointer;
+    border: none;
+    border-radius: 0.35rem;
+    padding: 0.35rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+.sx-pg-run:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+.sx-pg-status {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+.sx-pg-status.sx-pg-ready {
+    color: #2e7d32;
+    opacity: 1;
+}
+.sx-pg-status.sx-pg-error {
+    color: #c62828;
+    opacity: 1;
+}
+.sx-pg-editor {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    resize: vertical;
+    padding: 0.8rem;
+    font-family: var(--md-code-font), monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--md-code-fg-color);
+    background: transparent;
+    outline: none;
+}
+.sx-pg-output {
+    margin: 0;
+    padding: 0.8rem;
+    max-height: 20rem;
+    overflow: auto;
+    font-family: var(--md-code-font), monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    background: rgba(0, 0, 0, 0.04);
+}
+
 /* --- Announcement bar ----------------------------------------------------- */
 .md-announcement {
     background: var(--md-primary-fg-color);
