@@ -66,8 +66,14 @@ extra:
           name: SNEPPX-Alg on GitHub
 plugins:
     - search
+    - rss:
+          match_path: "(changelog|release_notes)/.*"
+          use_git: true
+          use_material_blog: false
+          use_material_social_cards: false
+          feed_description: SNEPPX-Alg release notes and changelog
     - mike:
-        version_selector: true
+          version_selector: true
 
 markdown_extensions:
     - admonition
