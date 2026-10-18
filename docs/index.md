@@ -58,6 +58,13 @@ Every `nn` module now trains. Higher-order autograd. New ecosystem packages.
 
 </div>
 
+<p align="center">
+<a href="https://pypi.org/project/sneppx-alg/"><img src="https://img.shields.io/pypi/v/sneppx-alg?color=blue" alt="PyPI"></a>
+<a href="https://github.com/SneppX/sneppx-alg/stargazers"><img src="https://img.shields.io/github/stars/SneppX/sneppx-alg?style=social" alt="Stars"></a>
+<a href="https://github.com/SneppX/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT"></a>
+<a href="https://github.com/SneppX/sneppx-alg/commits/main"><img src="https://img.shields.io/github/last-commit/SneppX/sneppx-alg" alt="Last commit"></a>
+</p>
+
 </div>
 
 ## Overview
