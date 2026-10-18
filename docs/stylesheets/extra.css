@@ -279,6 +279,71 @@ h3 .word {
     fill-opacity: 0.3;
 }
 
+/* --- 404 page ------------------------------------------------------------- */
+.sx-404-art {
+    max-width: 11rem;
+    margin: 0.5rem auto 1rem;
+}
+.sx-404-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.sx-404-art .sx-ring {
+    fill: none;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 2;
+    opacity: 0.55;
+}
+.sx-404-art .sx-ticks line {
+    stroke: var(--md-default-fg-color--lighter);
+    stroke-width: 2;
+}
+.sx-404-art .sx-needle-n {
+    fill: var(--md-primary-fg-color);
+}
+.sx-404-art .sx-needle-s {
+    fill: var(--md-default-fg-color--lighter);
+}
+.sx-404-art .sx-center {
+    fill: var(--md-primary-fg-color);
+}
+.sx-404-art .sx-404-num {
+    fill: var(--md-default-fg-color--light);
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--md-text-font-family);
+}
+.sx-404-url {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.3rem;
+    font-size: 0.8em;
+    word-break: break-all;
+    color: var(--md-code-fg-color);
+    background: var(--md-code-bg-color);
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-404-search {
+    cursor: pointer;
+    border: none;
+    border-radius: 0.35rem;
+    padding: 0.4rem 1rem;
+    margin: 0.4rem 0 0.2rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+.sx-404-search:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+[data-md-color-scheme="slate"] .sx-404-art .sx-ring {
+    opacity: 0.7;
+}
+
 /* --- Playground ----------------------------------------------------------- */
 .sx-playground {
     margin: 1.2rem 0;
