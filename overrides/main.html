@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{#
+  Announcement banner (Material 9.x renders this only when the `announce`
+  block is overridden; there is no `extra.announcement` support in 9.5.x).
+#}
+{% block announce %}
+  🎉 v1.5.0 released — every nn module now trains, higher-order autograd,
+  14 new Python packages.
+  <a href="{{ 'release_notes/v1.5.0/' | url }}">
+    <strong>See the release notes</strong></a>.
+{% endblock %}

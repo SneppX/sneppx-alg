@@ -17,6 +17,7 @@ copyright: >
 
 theme:
     name: material
+    custom_dir: overrides
     favicon: logo.jpeg
     icon:
         repo: fontawesome/brands/github
@@ -63,11 +64,6 @@ extra:
         - icon: fontawesome/brands/github
           link: https://github.com/SneppX/sneppx-alg
           name: SNEPPX-Alg on GitHub
-    announcement: >
-        🎉 v1.5.0 released — every nn module now trains, higher-order autograd,
-        14 new Python packages.
-        <a href="release_notes/v1.5.0/">
-        <strong>See the release notes</strong></a>.
 plugins:
     - search
     - mike:
