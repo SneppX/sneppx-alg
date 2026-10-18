@@ -217,6 +217,20 @@ h3 .word {
     font-weight: 600;
 }
 
+/* --- Version pill --------------------------------------------------------- */
+.sx-version-pill {
+    margin-left: 0.6rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    align-self: center;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+}
+
 /* --- Announcement bar ----------------------------------------------------- */
 .md-announcement {
     background: var(--md-primary-fg-color);

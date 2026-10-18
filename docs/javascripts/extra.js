@@ -73,6 +73,44 @@
     );
     headings.forEach(splitWords);
 
+    /* ---- Version selector pill -------------------------------------------- */
+    (function () {
+        var logo = document.querySelector('[data-md-component="logo"]');
+        if (!logo) return;
+        var versionRoot;
+        try {
+            versionRoot = new URL(logo.getAttribute("href"), location);
+        } catch (e) {
+            return;
+        }
+        var versionsUrl = new URL("../versions.json", versionRoot);
+        fetch(versionsUrl, { cache: "no-cache" })
+            .then(function (r) {
+                return r.ok ? r.json() : null;
+            })
+            .then(function (versions) {
+                if (!versions || !versions.length) return;
+                var current = versionRoot.pathname
+                    .replace(/\/$/, "")
+                    .split("/")
+                    .pop();
+                var entry = versions.filter(function (v) {
+                    return v.version === current;
+                })[0];
+                var isLatest =
+                    entry &&
+                    entry.aliases &&
+                    entry.aliases.indexOf("latest") >= 0;
+                var pill = document.createElement("span");
+                pill.className = "sx-version-pill";
+                pill.textContent = current + (isLatest ? " · latest" : "");
+                pill.title = "Documentation version";
+                var inner = document.querySelector(".md-header__inner");
+                if (inner) inner.appendChild(pill);
+            })
+            .catch(function () {});
+    })();
+
     /* ---- Page feedback widget --------------------------------------------- */
     function buildFeedback() {
         var content = document.querySelector(".md-content__inner");
