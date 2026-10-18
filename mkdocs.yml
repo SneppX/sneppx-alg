@@ -59,6 +59,7 @@ extra_css:
     - stylesheets/extra.css
 extra_javascript:
     - javascripts/extra.js
+    - javascripts/playground.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -107,6 +108,7 @@ markdown_extensions:
 
 nav:
     - Home: index.md
+    - Playground: playground.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
