@@ -10,3 +10,9 @@
   <a href="{{ 'release_notes/v1.5.0/' | url }}">
     <strong>See the release notes</strong></a>.
 {% endblock %}
+
+{% block extrahead %}
+  {{ super() }}
+  <link rel="alternate" type="application/rss+xml"
+        title="SNEPPX-Alg changelog" href="{{ base_url }}/feed_rss_updated.xml">
+{% endblock %}
