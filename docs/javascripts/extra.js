@@ -7,6 +7,31 @@
 (function () {
     "use strict";
 
+    /* ---- 404 helpers (always run) ----------------------------------------- */
+    (function () {
+        var url = document.getElementById("sx-404-url");
+        if (url) {
+            url.textContent = location.pathname + location.search;
+        }
+        var searchBtn = document.querySelector(".sx-404-search");
+        if (searchBtn) {
+            searchBtn.addEventListener("click", function () {
+                var toggle = document.querySelector(
+                    '[data-md-toggle="search"]'
+                );
+                if (toggle && !toggle.checked) {
+                    toggle.checked = true;
+                    toggle.dispatchEvent(new Event("change"));
+                }
+                var input = document.querySelector(".md-search__input");
+                if (input) {
+                    input.focus();
+                    input.select && input.select();
+                }
+            });
+        }
+    })();
+
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         // Reduced motion: show everything immediately, skip animations.
         document.querySelectorAll(".reveal").forEach(function (el) {
