@@ -73,6 +73,21 @@
     );
     headings.forEach(splitWords);
 
+    /* ---- Scroll progress bar ---------------------------------------------- */
+    var bar = document.createElement("div");
+    bar.className = "sx-progress";
+    document.body.appendChild(bar);
+    window.addEventListener(
+        "scroll",
+        function () {
+            var doc = document.documentElement;
+            var max = doc.scrollHeight - doc.clientHeight;
+            var pct = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+            bar.style.width = pct + "%";
+        },
+        { passive: true }
+    );
+
     /* ---- Stat counter count-up -------------------------------------------- */
     function animateCount(el) {
         var target = parseInt(el.getAttribute("data-count"), 10);

@@ -145,6 +145,28 @@ h3 .word {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
+/* --- Scroll progress bar -------------------------------------------------- */
+.sx-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(
+        90deg,
+        var(--md-primary-fg-color),
+        var(--md-accent-fg-color)
+    );
+    z-index: 6;
+    transition: width 0.1s linear;
+}
+
+/* --- Dark-mode aware logo ------------------------------------------------- */
+[data-md-color-scheme="slate"] .md-header__button.md-logo img,
+[data-md-color-scheme="slate"] .md-nav__button.md-logo img {
+    filter: brightness(1.15);
+}
+
 /* --- Announcement bar ----------------------------------------------------- */
 .md-announcement {
     background: var(--md-primary-fg-color);
