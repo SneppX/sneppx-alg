@@ -1,4 +1,64 @@
-# SneppX-ALG Documentation
+<div class="sx-hero" markdown>
+
+# The Universal Open-Source AI Algorithm
+
+Secure, composable, production-grade AI in C/C++ & CUDA — tensor engine,
+autograd, MoE/SSM transformers, quantization, distributed training, and 10
+security layers (S0–S9). MIT licensed.
+
+<div class="sx-stats" markdown>
+
+<span class="sx-stat">
+<span class="sx-stat-value" data-count="253" data-suffix="K+">253K+</span>
+<span class="sx-stat-label">Lines of code</span>
+</span>
+
+<span class="sx-stat">
+<span class="sx-stat-value" data-count="300" data-suffix="+">300+</span>
+<span class="sx-stat-label">Python tests</span>
+</span>
+
+<span class="sx-stat">
+<span class="sx-stat-value" data-count="40" data-suffix="+">40+</span>
+<span class="sx-stat-label">Autograd ops</span>
+</span>
+
+<span class="sx-stat">
+<span class="sx-stat-value" data-count="10">10</span>
+<span class="sx-stat-label">Security layers</span>
+</span>
+
+</div>
+
+<div class="sx-cards" markdown>
+
+<div class="sx-card" markdown>
+### 5-Stage Pipeline
+HSS → SER → ARC → NPE → FM. Each stage independently testable.
+[Pipeline overview →](architecture/5-pipeline-architecture.md)
+</div>
+
+<div class="sx-card" markdown>
+### Security S0–S9
+Post-quantum crypto (Kyber/Dilithium/SPHINCS+), memory hardening, signed updates.
+[Security layers →](security_layers.md)
+</div>
+
+<div class="sx-card" markdown>
+### Python API
+Fully differentiable `nn`, higher-order autograd, functional API, 14 extra packages.
+[Python API →](api/python.md)
+</div>
+
+<div class="sx-card" markdown>
+### v1.5.0
+Every `nn` module now trains. Higher-order autograd. New ecosystem packages.
+[Release notes →](release_notes/v1.5.0.md)
+</div>
+
+</div>
+
+</div>
 
 ## Overview
 
