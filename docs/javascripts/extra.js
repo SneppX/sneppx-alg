@@ -73,6 +73,44 @@
     );
     headings.forEach(splitWords);
 
+    /* ---- Page feedback widget --------------------------------------------- */
+    function buildFeedback() {
+        var content = document.querySelector(".md-content__inner");
+        if (!content || content.querySelector(".sx-feedback")) return;
+        var key = "sx-feedback:" + location.pathname;
+        var box = document.createElement("div");
+        box.className = "sx-feedback";
+        var saved = null;
+        try {
+            saved = localStorage.getItem(key);
+        } catch (e) {}
+        if (saved) {
+            box.innerHTML =
+                '<span class="sx-feedback-thanks">Thanks for the feedback!</span>';
+            content.appendChild(box);
+            return;
+        }
+        box.innerHTML = "<span>Was this page helpful?</span>";
+        ["👍", "👎"].forEach(function (emoji) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = emoji;
+            btn.setAttribute("aria-label", emoji === "👍" ? "Yes" : "No");
+            btn.addEventListener("click", function () {
+                try {
+                    localStorage.setItem(key, emoji);
+                } catch (e) {}
+                box.innerHTML =
+                    '<span class="sx-feedback-thanks">Thanks for the feedback!</span>';
+            });
+            box.appendChild(btn);
+        });
+        content.appendChild(box);
+    }
+    if (document.querySelector(".md-content__inner")) {
+        buildFeedback();
+    }
+
     /* ---- Scroll progress bar ---------------------------------------------- */
     var bar = document.createElement("div");
     bar.className = "sx-progress";

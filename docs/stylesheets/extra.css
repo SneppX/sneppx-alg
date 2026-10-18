@@ -167,6 +167,56 @@ h3 .word {
     filter: brightness(1.15);
 }
 
+/* --- Mermaid diagram polish ----------------------------------------------- */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node polygon,
+.mermaid .node path {
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+.mermaid .node:hover rect,
+.mermaid .node:hover circle,
+.mermaid .node:hover polygon,
+.mermaid .node:hover path {
+    filter: drop-shadow(0 0 6px var(--md-accent-fg-color));
+}
+.mermaid .edgePath path {
+    transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+.mermaid .edgePath:hover path {
+    stroke: var(--md-accent-fg-color);
+    stroke-width: 2px;
+}
+
+/* --- Feedback widget ------------------------------------------------------ */
+.sx-feedback {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
+.sx-feedback button {
+    cursor: pointer;
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.4rem;
+    background: transparent;
+    color: inherit;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.sx-feedback button:hover {
+    transform: translateY(-2px);
+    border-color: var(--md-accent-fg-color);
+}
+.sx-feedback .sx-feedback-thanks {
+    color: var(--md-primary-fg-color);
+    font-weight: 600;
+}
+
 /* --- Announcement bar ----------------------------------------------------- */
 .md-announcement {
     background: var(--md-primary-fg-color);
