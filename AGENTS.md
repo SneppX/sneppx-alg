@@ -137,4 +137,8 @@ Order matters for regression safety:
 - **Announcement banner**: Material 9.5.x has NO `extra.announcement` support — override `{% block announce %}` in `overrides/main.html`, enabled via `theme.custom_dir: overrides`. (base.html renders the banner only when `self.announce()` is non-empty.)
 - **404**: `docs/404.md` → `404.html` (GitHub Pages serves it automatically; keep it out of nav).
 - Deploy: `mike deploy 1.5.0 latest --update-aliases` then `git push origin gh-pages`. `python -m mike` fails (no `__main__`) — use the `mike` entrypoint. Verify by grepping the built `site/index.html` or `curl` the live latest URL with a cache-buster.
-- **Feedback widget / social cards / RSS / Pyodide playground** remain unbuilt ideas (social cards need `mkdocs-material[imaging]`).
+- **Feedback widget / RSS / version pill / hero art / Pyodide playground** are now built (social cards still blocked — `cairosvg` cannot load `libcairo-2.dll`).
+  - `docs/javascripts/extra.js`: also page feedback widget (`localStorage` key `sx-feedback:<path>`) + version pill (fetches `../versions.json`).
+  - `docs/404.md`: custom 404; `overrides/main.html`: `{% block announce %}` banner.
+  - `docs/index.md`: scheme-aware inline-SVG pipeline hero (`#sxarrow`, `.sx-art-*` classes; colors via `var(--md-primary-fg-color)` so dark/light both work).
+  - **Playground**: `docs/playground.md` + `docs/javascripts/playground.js` + `docs/assets/sneppx_py.zip` (regen with Python `zipfile`, forward-slash arcnames, exclude `__pycache__`/`*.pyd`). Pyodide `v0.26.2` from jsDelivr loads NumPy then extracts the zip to `/sneppx` and `sys.path.insert`. Verified `import SneppX_ALG` works with all heavy deps absent (blocked via `sys.modules[m]=None`). `.gitignore` has `!docs/assets/sneppx_py.zip` to override `*.zip`.
