@@ -15,35 +15,34 @@ copyright: >
     Built with the SNEPPX-Algo documentation stack. Content licensed under the
     repository's MIT license.
 
-extra:
-    palette:
-        - scheme: default
-          primary: default
-          accent: indigo
-          toggle:
-              icon: material/weather-night
-              name: Switch to dark mode
-        - scheme: dark
-          primary: indigo
-          accent: indigo
-          toggle:
-              icon: material/weather-sunny
-              name: Switch to light mode
-    feature:
-        navigation:
-            top: true
-
 theme:
     name: material
+    favicon: logo.jpeg
     icon:
         repo: fontawesome/brands/github
         menu: material/menu
         close: material/close
     logo: logo.jpeg
+    palette:
+        - media: "(prefers-color-scheme: light)"
+          scheme: default
+          primary: indigo
+          accent: deep purple
+          toggle:
+              icon: material/weather-night
+              name: Switch to dark mode
+        - media: "(prefers-color-scheme: dark)"
+          scheme: slate
+          primary: indigo
+          accent: amber
+          toggle:
+              icon: material/weather-sunny
+              name: Switch to light mode
     features:
         - navigation.expand
         - navigation.sections
         - navigation.tracking
+        - navigation.keyboard
         - search.suggest
         - search.highlight
         - content.code.annotate
@@ -55,6 +54,20 @@ theme:
         - back-to-top
     readme_file: false
     exclude_docs: README.md
+extra_css:
+    - stylesheets/extra.css
+extra_javascript:
+    - javascripts/extra.js
+extra:
+    social:
+        - icon: fontawesome/brands/github
+          link: https://github.com/SneppX/sneppx-alg
+          name: SNEPPX-Alg on GitHub
+    announcement: >
+        🎉 v1.5.0 released — every nn module now trains, higher-order autograd,
+        14 new Python packages.
+        <a href="release_notes/v1.5.0/">
+        <strong>See the release notes</strong></a>.
 plugins:
     - search
     - mike:
