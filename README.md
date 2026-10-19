@@ -92,7 +92,7 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
 | PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented but **not yet FIPS-KAT validated** |
 | Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
-| Formal verification (S8) | 🔴 Known gap | LTL model checker is currently a no-op; bounded checking planned |
+| Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock scan + invariant walk; bounded safety LTL (`G !deadlock`, `AG !deadlock`, `F deadlock`) — unsupported properties report "not verified" rather than false-positiving; state-space minimization is a stub |
 | Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
 | Model Zoo `from_pretrained()` | 🟡 Experimental | Resolves architecture configs + builds skeleton; weight download unwired |
 | C HTTP REST API | 🟡 Experimental | `/v1/health`, `/v1/models` real; `/v1/generate` is a demo scaffold |
@@ -130,11 +130,11 @@ Ten layers wrap the pipeline:
 | S4 | Network security | 🟡 |
 | S5 | AI sanitizer (prompt filter, DP) | 🟡 |
 | S6 | Key vault & audit logging | 🟢 |
-| S7 | Signed updates | 🔴 (forgeable, under remediation) |
-| S8 | Formal verification | 🔴 (no-op, under remediation) |
+| S7 | Signed updates | 🟡 (Ed25519 live; dev fallback pending removal) |
+| S8 | Formal verification | 🟡 (bounded safety LTL; full LTL pending) |
 | S9 | Penetration testing / self-audit | 🟢 |
 
-> Honest note: several layers are substantial, but the project openly tracks gaps — **S7 signed-update verification and S8 formal verification are flagged for remediation**, and the post-quantum primitives are not yet FIPS-KAT validated. See `docs/security_layers.md` for the full mapping.
+> Honest note: several layers are substantial, and the project openly tracks what is still partial — **S7 signed-update verification and S8 formal verification are implemented but bounded** (Ed25519 with a dev-build fallback; safety-LTL properties only), and the post-quantum primitives are not yet FIPS-KAT validated. See `docs/security_layers.md` for the full mapping.
 
 ## Model Zoo
 
