@@ -1,4 +1,4 @@
-"""Advanced tensor operations — convolution, pooling, RNN, transformer blocks."""
+"""Advanced tensor operations â€” convolution, pooling, RNN, transformer blocks."""
 
 from typing import Optional, Tuple, List, Union, Callable
 import numpy as np
@@ -6,14 +6,13 @@ import numpy as np
 from .tensor import Tensor, Dtype
 
 
-def conv2d(
+def _conv2d_single_group(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
     stride: Tuple[int, int] = (1, 1),
     padding: Tuple[int, int] = (0, 0),
     dilation: Tuple[int, int] = (1, 1),
-    groups: int = 1,
 ) -> Tensor:
     """2D convolution with optional bias.
 
@@ -35,7 +34,6 @@ def conv2d(
     N, C_in, H, W = x.shape
     C_out, C_in_g, kH, kW = w.shape
 
-    assert C_in == C_in_g * groups, "Input channels must match weight channels * groups"
 
     # Calculate output dimensions
     pad_h, pad_w = padding
@@ -76,22 +74,20 @@ def conv2d(
     return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
 
 
-def conv1d(
+def _conv1d_single_group(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
     stride: int = 1,
     padding: int = 0,
     dilation: int = 1,
-    groups: int = 1,
 ) -> Tensor:
-    """1D convolution."""
+    """1D convolution (single group)."""
     x = np.asarray(input.data, dtype=np.float64)
     w = np.asarray(weight.data, dtype=np.float64)
 
     N, C_in, L = x.shape
     C_out, C_in_g, kL = w.shape
-    assert C_in == C_in_g * groups
 
     L_out = (L + 2 * padding - dilation * (kL - 1) - 1) // stride + 1
 
@@ -106,7 +102,7 @@ def conv1d(
         )
 
     w_mat = w.reshape(C_out, -1)
-    out = w_mat @ col  # (N, C_out, L_out)
+    out = w_mat @ col
 
     if bias is not None:
         b = np.asarray(bias.data, dtype=np.float64)
@@ -115,6 +111,38 @@ def conv1d(
     return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
 
 
+def conv1d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    dilation: int = 1,
+    groups: int = 1,
+) -> Tensor:
+    """1D convolution with optional groups."""
+    if groups == 1:
+        return _conv1d_single_group(input, weight, bias, stride, padding, dilation)
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, L = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    L_out = (L + 2 * padding - dilation * (w.shape[2] - 1) - 1) // stride + 1
+    out = np.zeros((N, C_out, L_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv1d_single_group(xi, wi, bi, stride, padding, dilation)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
+    return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
 def max_pool2d(
     input: Tensor,
     kernel_size: Union[int, Tuple[int, int]],
@@ -1266,7 +1294,7 @@ def topk(input: Tensor, k: int, dim: int = -1):
     )
 
 
-def conv3d(
+def _conv3d_single_group(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
@@ -1284,7 +1312,6 @@ def conv3d(
     w = np.asarray(weight.data, dtype=np.float64)
     N, C_in, D, H, W = x.shape
     C_out, C_in_g, kD, kH, kW = w.shape
-    assert C_in == C_in_g * groups
     pad_d, pad_h, pad_w = padding
     dil_d, dil_h, dil_w = dilation
     str_d, str_h, str_w = stride
@@ -1486,3 +1513,80 @@ def conv_transpose3d(
     return _conv_transpose_nd_impl(
         input, weight, bias, stride, padding, output_padding, groups
     )
+
+def conv2d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int] = (1, 1),
+    padding: Tuple[int, int] = (0, 0),
+    dilation: Tuple[int, int] = (1, 1),
+    groups: int = 1,
+) -> Tensor:
+    # 2D convolution with optional bias and groups.
+    if groups == 1:
+        return _conv2d_single_group(input, weight, bias, stride, padding, dilation)
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, H, W = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    pad_h, pad_w = padding
+    dil_h, dil_w = dilation
+    stride_h, stride_w = stride
+    kH, kW = w.shape[2], w.shape[3]
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // stride_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // stride_w + 1
+    out = np.zeros((N, C_out, H_out, W_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv2d_single_group(xi, wi, bi, stride, padding, dilation)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+def conv3d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int, int] = (1, 1, 1),
+    padding: Tuple[int, int, int] = (0, 0, 0),
+    dilation: Tuple[int, int, int] = (1, 1, 1),
+    groups: int = 1,
+) -> Tensor:
+    # 3D convolution with optional bias and groups.
+    if groups == 1:
+        return _conv3d_single_group(input, weight, bias, stride, padding, dilation, groups=1)
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, D, H, W = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    pad_d, pad_h, pad_w = padding
+    dil_d, dil_h, dil_w = dilation
+    str_d, str_h, str_w = stride
+    kD, kH, kW = w.shape[2], w.shape[3], w.shape[4]
+    D_out = (D + 2 * pad_d - dil_d * (kD - 1) - 1) // str_d + 1
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // str_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // str_w + 1
+    out = np.zeros((N, C_out, D_out, H_out, W_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv3d_single_group(xi, wi, bi, stride, padding, dilation, groups=1)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
+    return Tensor.from_numpy(out.astype(np.float32))

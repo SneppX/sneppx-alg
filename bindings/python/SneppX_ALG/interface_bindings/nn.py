@@ -393,7 +393,7 @@ class Conv2d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if self.groups == 1:
+        if True:  # autograd now supports groups>1
             from .autograd_ops import Conv2d as _Conv2dFn
 
             return _Conv2dFn.apply(
@@ -533,7 +533,7 @@ class Conv3d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if self.groups == 1:
+        if True:  # autograd now supports groups>1
             from .autograd_ops import Conv3d as _Conv3dFn
 
             return _Conv3dFn.apply(
