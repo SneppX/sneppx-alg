@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug to help improve ARIX-Algo
+about: Report a bug to help improve SNEPPX-Alg
 title: "[Bug] "
 labels: bug
 assignees: ""
@@ -26,10 +26,10 @@ What actually happens. Include error messages, stack traces, or test failures.
 - Compiler: [e.g. GCC 12, Clang 15, MSVC 2022]
 - CMake version: [e.g. 3.25]
 - Build type: [Debug / Release]
-- ARIX-Algo version: [e.g. v1.0.0, commit hash]
+- SNEPPX-Alg version: [e.g. v1.5.0, commit hash]
 
 ## Additional Context
 Logs, screenshots, or relevant test output.
 
-> **Security issues**: Do NOT open public issues for security vulnerabilities. Email algoarix@gmail.com.
+> **Security issues**: Do NOT open public issues for security vulnerabilities. Report them privately via [GitHub Security Advisories](https://github.com/SneppX/sneppx-alg/security/advisories/new).
 > **BDFL governance**: This project uses BDFL governance. Issues are tracked but not voted on.
