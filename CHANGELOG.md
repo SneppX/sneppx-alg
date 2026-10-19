@@ -2,6 +2,16 @@
 
 All notable changes to SNEPPX-Algo.
 
+## [v1.5.1] - 2026-10-19
+
+### GitHub credibility, community health & docs polish
+- **Social preview card**: new 1280×640 PNG at `docs/assets/social-preview.png` (dark palette, WCAG AA contrast), verified by a programmatic layout QA (margins, overlaps, contrast ratios).
+- **Open Graph / Twitter cards**: `overrides/main.html` now emits `og:*` and `twitter:*` meta tags — previously absent because Material's social-card plugin is disabled (cairosvg cannot load `libcairo-2.dll`). Deployed live via mike; `og:image` resolves.
+- **README**: verified-runnable Python quickstart (loss 7.4 → 0.04 in 200 steps), honest "Why SNEPPX-Alg" comparison table vs PyTorch/JAX, and a "By the numbers" proof section.
+- **Community health**: adopted Contributor Covenant v2.1 (verbatim canonical); GitHub now detects it as `contributor_covenant`. Issue templates fixed (stale "ARIX-Algo" branding removed; `mailto:` contact links — which failed GitHub's template validation — replaced with valid `https://` links). Secret scanning + push protection + dependabot security updates enabled.
+- **Stale PR cleanup**: closed duplicate/mistitled PRs #12 and #7; residual Ed25519 cofactor-8 question tracked in issue #21.
+- **Security hardening (settings)**: secret scanning + push protection enabled on the public repo.
+
 ## [Unreleased]
 
 - distributed_sampler: deterministic splitmix64 shuffle (was srand/rand)
