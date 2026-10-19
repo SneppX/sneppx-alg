@@ -2320,7 +2320,7 @@ class Conv3d(Function):
         ]
 
 
-def _convtranspose2d_backward_single(inp, w, g, sh, sw, ph, pw, has_bias):
+def _convtranspose2d_backward_single(inp, w, g, sh, sw, ph, pw, has_bias, dh=1, dw=1):
     x = np.asarray(inp.data if hasattr(inp, "data") else inp, dtype=np.float64)
     w = np.asarray(w.data if hasattr(w, "data") else w, dtype=np.float64)
     g = np.asarray(g.data if hasattr(g, "data") else g, dtype=np.float64)
@@ -2333,11 +2333,11 @@ def _convtranspose2d_backward_single(inp, w, g, sh, sw, ph, pw, has_bias):
         for j in range(W):
             xij = x[:, :, i, j]
             for kh in range(kH):
-                ah = i * sh - ph + kh
+                ah = i * sh - ph + kh * dh
                 if ah < 0 or ah >= Ho:
                     continue
                 for kw in range(kW):
-                    aw = j * sw - pw + kw
+                    aw = j * sw - pw + kw * dw
                     if aw < 0 or aw >= Wo:
                         continue
                     gv = g[:, :, ah, aw]
@@ -2356,13 +2356,22 @@ class ConvTranspose2d(Function):
 
     @staticmethod
     def forward(
-        ctx, inp, kernel, bias=None, stride=1, padding=0, output_padding=0, groups=1
+        ctx,
+        inp,
+        kernel,
+        bias=None,
+        stride=1,
+        padding=0,
+        output_padding=0,
+        groups=1,
+        dilation=1,
     ):
         from .advanced_ops import conv_transpose2d as _ct
 
         sh, sw = _as_pair(stride)
         ph, pw = _as_pair(padding)
         oph, opw = _as_pair(output_padding)
+        dh, dw = _as_pair(dilation)
         out = _ct(
             inp,
             kernel,
@@ -2371,11 +2380,13 @@ class ConvTranspose2d(Function):
             padding=(ph, pw),
             output_padding=(oph, opw),
             groups=groups,
+            dilation=(dh, dw),
         )
         ctx.save_for_backward(inp=inp, kernel=kernel)
         ctx.save_attr(
             stride=(sh, sw),
             padding=(ph, pw),
+            dilation=(dh, dw),
             groups=groups,
             has_bias=bias is not None,
         )
@@ -2387,6 +2398,10 @@ class ConvTranspose2d(Function):
         kernel = ctx.get_saved_tensor("kernel")
         sh, sw = ctx.get_attr("stride")
         ph, pw = ctx.get_attr("padding")
+        dh, dw = ctx.get_attr("dilation", (1, 1))
+        if not isinstance(dh, (tuple, list)):
+            dh, dw = dh, dw
+        dh, dw = int(dh), int(dw)
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
         x = np.asarray(inp.data, dtype=np.float64)
@@ -2411,6 +2426,8 @@ class ConvTranspose2d(Function):
                 ph,
                 pw,
                 has_bias,
+                dh,
+                dw,
             )
             grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gx
             grad_w[gg * cin_g : (gg + 1) * cin_g] = gw
@@ -2439,18 +2456,28 @@ class ConvTransposeNd(Function):
 
     @staticmethod
     def forward(
-        ctx, inp, kernel, bias=None, stride=1, padding=0, output_padding=0, groups=1
+        ctx,
+        inp,
+        kernel,
+        bias=None,
+        stride=1,
+        padding=0,
+        output_padding=0,
+        groups=1,
+        dilation=1,
     ):
         from .advanced_ops import _conv_transpose_nd_impl
 
-        out = _conv_transpose_nd_impl(
-            inp, kernel, bias, stride, padding, output_padding, groups
-        )
         ndim = inp.data.ndim - 2
+        dilation_t = _as_ntuple(dilation, ndim)
+        out = _conv_transpose_nd_impl(
+            inp, kernel, bias, stride, padding, output_padding, groups, dilation_t
+        )
         ctx.save_for_backward(inp=inp, kernel=kernel)
         ctx.save_attr(
             stride=_as_ntuple(stride, ndim),
             padding=_as_ntuple(padding, ndim),
+            dilation=dilation_t,
             groups=groups,
             has_bias=bias is not None,
         )
@@ -2462,6 +2489,9 @@ class ConvTransposeNd(Function):
         kernel = ctx.get_saved_tensor("kernel")
         stride = ctx.get_attr("stride")
         padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation", None)
+        if dilation is None:
+            dilation = (1,) * len(stride)
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
         if groups != 1:
@@ -2482,7 +2512,8 @@ class ConvTransposeNd(Function):
             x_slice = x[xa + sidx]  # (N, C_in)
             for kidx in np.ndindex(*kshape):
                 oidx = tuple(
-                    sidx[d] * stride[d] - padding[d] + kidx[d] for d in range(ndim)
+                    sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                    for d in range(ndim)
                 )
                 if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
                     continue
