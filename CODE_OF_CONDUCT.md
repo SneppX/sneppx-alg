@@ -1,3 +1,4 @@
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
@@ -82,10 +83,3 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 [FAQ]: https://www.contributor-covenant.org/faq
 [translations]: https://www.contributor-covenant.org/translations
 
----
-
-### Project-specific note
-
-SNEPPX-Alg is maintained by Ammar [SNEPPX]. If a report concerns the
-maintainer, escalate to GitHub at <https://github.com/contact> for independent
-review. Contact: <mailto:algoSNEPPX@gmail.com>.
