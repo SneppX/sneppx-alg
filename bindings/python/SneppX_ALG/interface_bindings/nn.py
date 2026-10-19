@@ -607,7 +607,7 @@ class _ConvTransposeNd(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         if self.conv_ndim == 2:
-            if self.groups == 1:
+            if self.groups == 1 and all(d == 1 for d in self.dilation):
                 from .autograd_ops import ConvTranspose2d as _CT2dFn
 
                 return _CT2dFn.apply(
@@ -630,7 +630,7 @@ class _ConvTransposeNd(Module):
                 output_padding=self.output_padding,
                 groups=self.groups,
             )
-        if self.groups == 1:
+        if self.groups == 1 and all(d == 1 for d in self.dilation):
             from .autograd_ops import ConvTransposeNd as _CTNdFn
 
             return _CTNdFn.apply(
@@ -652,6 +652,7 @@ class _ConvTransposeNd(Module):
             self.padding,
             self.output_padding,
             self.groups,
+            self.dilation,
         )
 
 

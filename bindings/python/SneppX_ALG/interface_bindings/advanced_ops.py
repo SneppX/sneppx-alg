@@ -1421,6 +1421,7 @@ def _conv_transpose_nd_impl(
     padding,
     output_padding,
     groups: int,
+    dilation=1,
 ) -> Tensor:
     """Generic N-D transposed convolution (scatter formulation).
 
@@ -1450,9 +1451,14 @@ def _conv_transpose_nd_impl(
     stride = _to_ntuple(stride, ndim)
     padding = _to_ntuple(padding, ndim)
     output_padding = _to_ntuple(output_padding, ndim)
+    dilation = _to_ntuple(dilation, ndim)
 
     S_out = tuple(
-        (spatial_in[d] - 1) * stride[d] - 2 * padding[d] + kshape[d] + output_padding[d]
+        (spatial_in[d] - 1) * stride[d]
+        - 2 * padding[d]
+        + (kshape[d] - 1) * dilation[d]
+        + 1
+        + output_padding[d]
         for d in range(ndim)
     )
     for d in range(ndim):
@@ -1474,7 +1480,7 @@ def _conv_transpose_nd_impl(
                 base = tuple(sidx[d] * stride[d] - padding[d] for d in range(ndim))
                 x_slice = x[(slice(None), ci) + sidx]  # (N,)
                 for kidx in np.ndindex(*kshape):
-                    oidx = tuple(base[d] + kidx[d] for d in range(ndim))
+                    oidx = tuple(base[d] + kidx[d] * dilation[d] for d in range(ndim))
                     if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
                         continue
                     out[(slice(None), co_global) + oidx] += x_slice * wv[kidx]
@@ -1493,10 +1499,11 @@ def conv_transpose1d(
     padding: int = 0,
     output_padding: int = 0,
     groups: int = 1,
+    dilation: int = 1,
 ) -> Tensor:
     """1-D transposed convolution (a.k.a. deconvolution)."""
     return _conv_transpose_nd_impl(
-        input, weight, bias, stride, padding, output_padding, groups
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 
@@ -1508,10 +1515,11 @@ def conv_transpose3d(
     padding: int = 0,
     output_padding: int = 0,
     groups: int = 1,
+    dilation: int = 1,
 ) -> Tensor:
     """3-D transposed convolution."""
     return _conv_transpose_nd_impl(
-        input, weight, bias, stride, padding, output_padding, groups
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 def conv2d(

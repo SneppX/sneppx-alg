@@ -281,16 +281,14 @@ def conv_transpose1d(
     groups=1,
     dilation=1,
 ):
-    if dilation != 1:
-        raise NotImplementedError("conv_transpose1d: dilation != 1 is not supported")
-    if groups == 1:
+    if groups == 1 and dilation == 1:
         from .autograd_ops import ConvTransposeNd as _CTNdFn
 
         return _CTNdFn.apply(
             input, weight, bias, stride, padding, output_padding, groups
         )
     return advanced_ops.conv_transpose1d(
-        input, weight, bias, stride, padding, output_padding, groups
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 
@@ -329,16 +327,14 @@ def conv_transpose3d(
     groups=1,
     dilation=1,
 ):
-    if dilation != 1:
-        raise NotImplementedError("conv_transpose3d: dilation != 1 is not supported")
-    if groups == 1:
+    if groups == 1 and dilation == 1:
         from .autograd_ops import ConvTransposeNd as _CTNdFn
 
         return _CTNdFn.apply(
             input, weight, bias, stride, padding, output_padding, groups
         )
     return advanced_ops.conv_transpose3d(
-        input, weight, bias, stride, padding, output_padding, groups
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 
