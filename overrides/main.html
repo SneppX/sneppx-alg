@@ -15,4 +15,40 @@
   {{ super() }}
   <link rel="alternate" type="application/rss+xml"
         title="SNEPPX-Alg changelog" href="{{ base_url }}/feed_rss_updated.xml">
+
+  {#
+    Open Graph / Twitter card metadata.
+
+    Material's social-card plugin is disabled on this project (its cairosvg
+    dependency fails to load libcairo-2.dll on this machine), so no og:*
+    tags are emitted by default — this block adds them by hand and points
+    og:image at a pre-rendered PNG committed at docs/assets/social-preview.png
+    (1280x640, 131 KB — within GitHub's <1 MB / 1280x640 spec).
+
+    The URL is pinned to the `latest` mike alias so the card never 404s when
+    a new version is cut.
+  #}
+  {% set sx_card = "https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" %}
+  {#
+    The homepage card is the one that actually gets shared, so it gets the
+    tagline rather than the nav label ("Home"); inner pages keep
+    "<page> | SNEPPX-Alg". page.is_homepage is a MkDocs Page property.
+  #}
+  {% set sx_title %}{% if page and page.is_homepage %}SNEPPX-Alg — the universal open-source AI + security framework{% elif page and page.title %}{{ page.title }} | SNEPPX-Alg{% else %}SNEPPX-Alg — open-source AI + security framework{% endif %}{% endset %}
+  {% set sx_desc %}{% if page and page.description %}{{ page.description }}{% else %}The universal open-source AI + security framework: HSS, SER, ARC, NPE and FM wrapped in 10 security layers.{% endif %}{% endset %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SNEPPX-Alg">
+  <meta property="og:title" content="{{ sx_title | trim }}">
+  <meta property="og:description" content="{{ sx_desc | trim }}">
+  {% if page %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
+  <meta property="og:image" content="{{ sx_card }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="SNEPPX-Alg — the universal open-source AI + security framework">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ sx_title | trim }}">
+  <meta name="twitter:description" content="{{ sx_desc | trim }}">
+  <meta name="twitter:image" content="{{ sx_card }}">
+  <meta name="twitter:image:alt" content="SNEPPX-Alg — the universal open-source AI + security framework">
 {% endblock %}
