@@ -1875,7 +1875,7 @@ class EmbeddingFn(Function):
 
 class Conv1d(Function):
     @staticmethod
-    def forward(ctx, inp, kernel, stride=1, padding=0, dilation=1):
+    def forward(ctx, inp, kernel, stride=1, padding=0, dilation=1, groups=1):
         arr = inp.data
         k = kernel.data if isinstance(kernel, Tensor) else kernel
         batched = arr.ndim == 3
@@ -1883,16 +1883,23 @@ class Conv1d(Function):
             arr = arr[None]
         N, C_in, L = arr.shape
         C_out, C_in_k, K = k.shape
+        cin_g = C_in // groups
+        cout_g = C_out // groups
         Lp = L + 2 * padding
         padded = (
             np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
         )
         Lout = (Lp - dilation * (K - 1) - 1) // stride + 1
         out = np.zeros((N, C_out, Lout), dtype=arr.dtype)
-        for l in range(Lout):
-            for kk in range(K):
-                pos = l * stride + kk * dilation
-                out[:, :, l] += np.einsum("nc,oc->no", padded[:, :, pos], k[:, :, kk])
+        for g in range(groups):
+            for l in range(Lout):
+                for kk in range(K):
+                    pos = l * stride + kk * dilation
+                    out[:, g * cout_g : (g + 1) * cout_g, l] += np.einsum(
+                        "nc,oc->no",
+                        padded[:, g * cin_g : (g + 1) * cin_g, pos],
+                        k[g * cout_g : (g + 1) * cout_g, :, kk],
+                    )
         ctx.save_for_backward(
             inp=inp, kernel=kernel if isinstance(kernel, Tensor) else Tensor(kernel)
         )
@@ -1900,6 +1907,7 @@ class Conv1d(Function):
             stride=stride,
             padding=padding,
             dilation=dilation,
+            groups=groups,
             L=L,
             K=K,
             C_in=C_in,
@@ -1919,6 +1927,7 @@ class Conv1d(Function):
         stride = ctx.get_attr("stride")
         padding = ctx.get_attr("padding")
         dilation = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
         L = ctx.get_attr("L")
         K = ctx.get_attr("K")
         Lout = ctx.get_attr("Lout")
@@ -1933,7 +1942,15 @@ class Conv1d(Function):
             # grad w.r.t input: scatter-add at l*stride + kk*dilation
             N = garr.shape[0]
             padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
-            contrib = np.einsum("nol,ock->nclk", garr, k)
+            cin_g = C_in // groups
+            cout_g = k.shape[0] // groups
+            contrib = np.zeros((garr.shape[0], C_in, Lout, K), dtype=g.dtype)
+            for gi in range(groups):
+                contrib[:, gi * cin_g : (gi + 1) * cin_g] = np.einsum(
+                    "nol,ock->nclk",
+                    garr[:, gi * cout_g : (gi + 1) * cout_g],
+                    k[gi * cout_g : (gi + 1) * cout_g],
+                )
             for l in range(Lout):
                 for kk in range(K):
                     padded[:, :, l * stride + kk * dilation] += contrib[:, :, l, kk]
@@ -1951,18 +1968,31 @@ class Conv1d(Function):
                 else arrb
             )
             grad_k = np.zeros((k.shape[0], k.shape[1], k.shape[2]), dtype=g.dtype)
-            for l in range(Lout):
-                for kk in range(K):
-                    pos = l * stride + kk * dilation
-                    grad_k[:, :, kk] += np.einsum(
-                        "no,nc->oc", garr[:, :, l], padded_in[:, :, pos]
-                    )
+            cin_g = C_in // groups
+            cout_g = k.shape[0] // groups
+            for gi in range(groups):
+                for l in range(Lout):
+                    for kk in range(K):
+                        pos = l * stride + kk * dilation
+                        grad_k[
+                            gi * cout_g : (gi + 1) * cout_g,
+                            :,
+                            kk,
+                        ] += np.einsum(
+                            "no,nc->oc",
+                            garr[:, gi * cout_g : (gi + 1) * cout_g, l],
+                            padded_in[:, gi * cin_g : (gi + 1) * cin_g, pos],
+                        )
             return [
                 Tensor(grad_inp, dtype=inp.dtype),
                 Tensor(grad_k, dtype=kernel.dtype),
             ]
 
         # ---- graph-aware backward (higher-order differentiation) ----
+        if groups != 1:
+            raise NotImplementedError(
+                "Conv1d create_graph backward supports groups=1 only"
+            )
         dt = grad_output.dtype
         N = garr.shape[0]
         # build batched graph tensors
