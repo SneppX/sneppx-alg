@@ -96,7 +96,7 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
 | Model Zoo `from_pretrained()` | 🟡 Experimental | Resolves architecture configs + builds skeleton; weight download unwired |
 | C HTTP REST API | 🟡 Experimental | `/v1/health`, `/v1/models` real; `/v1/generate` is a demo scaffold |
-| Distributed training | 🟡 Experimental | DDP/ZeRO/TP/PP/EP scaffolded; collectives run as single-device reference paths, NCCL wiring in progress |
+| Distributed training | 🟡 Experimental | Gradient collectives in DDP/ZeRO/TP/PP/EP/grad-comm are wired to the NCCL binding (`net/distributed/nccl.c`), which falls back to a CPU path so single-process runs stay correct; control-plane pieces (checkpoint/elastic/heartbeat/sampler) remain scaffolded |
 | Python bindings | 🟢 Stable | NumPy-backed `Tensor`/`nn`/`Trainer`; C `_Tensor` reachable via pybind |
 
 ## The 5-Stage Pipeline
