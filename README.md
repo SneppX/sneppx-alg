@@ -91,7 +91,7 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | CUDA kernels | 🟡 Experimental | Real `.cu` files; compiled only with `-DSNEPPX_BUILD_CUDA=ON` (OFF by default) |
 | Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
 | PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented but **not yet FIPS-KAT validated** |
-| Signed updates (S7) | 🔴 Known gap | Current verifier is forgeable (`hash ^ 0xAA`); Ed25519 signing planned |
+| Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
 | Formal verification (S8) | 🔴 Known gap | LTL model checker is currently a no-op; bounded checking planned |
 | Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
 | Model Zoo `from_pretrained()` | 🟡 Experimental | Resolves architecture configs + builds skeleton; weight download unwired |
