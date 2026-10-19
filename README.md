@@ -197,6 +197,7 @@ Import as:
 ```python
 from SneppX_ALG import sampling, regularization, ...
 ```
+
 ## Recent framework capabilities (v1.5.0)
 
 - **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
@@ -244,7 +245,8 @@ cd build && ctest -C Release --output-on-failure
 | Contribution framework | [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md) |
 | Branching strategy | [`docs/BRANCHING_STRATEGY.md`](docs/BRANCHING_STRATEGY.md) |
 | Code review guide | [`docs/CODE_REVIEW_GUIDE.md`](docs/CODE_REVIEW_GUIDE.md) |
-| Python features | [`docs/python_features.md`](docs/python_features.md) |`n| API reference | [`docs/API.md`](docs/API.md) · [`docs/api/python.md`](docs/api/python.md) |
+| Python features | [`docs/python_features.md`](docs/python_features.md) |
+| API reference | [`docs/API.md`](docs/API.md) · [`docs/api/python.md`](docs/api/python.md) |
 | Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | Security layers | [`docs/security_layers.md`](docs/security_layers.md) |
 | Development workflow | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
