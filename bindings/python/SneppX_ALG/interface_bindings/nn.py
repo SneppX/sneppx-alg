@@ -393,28 +393,16 @@ class Conv2d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if True:  # autograd now supports groups>1
-            from .autograd_ops import Conv2d as _Conv2dFn
+        from .autograd_ops import Conv2d as _Conv2dFn
 
-            return _Conv2dFn.apply(
-                x,
-                self.weight,
-                self.bias,
-                self.stride,
-                self.padding,
-                self.dilation,
-                self.groups,
-            )
-        from .advanced_ops import conv2d as _conv2d
-
-        return _conv2d(
+        return _Conv2dFn.apply(
             x,
             self.weight,
             self.bias,
-            stride=self.stride,
-            padding=self.padding,
-            dilation=self.dilation,
-            groups=self.groups,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.groups,
         )
 
 
@@ -533,28 +521,16 @@ class Conv3d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if True:  # autograd now supports groups>1
-            from .autograd_ops import Conv3d as _Conv3dFn
+        from .autograd_ops import Conv3d as _Conv3dFn
 
-            return _Conv3dFn.apply(
-                x,
-                self.weight,
-                self.bias,
-                self.stride,
-                self.padding,
-                self.dilation,
-                self.groups,
-            )
-        from .advanced_ops import conv3d as _conv3d
-
-        return _conv3d(
+        return _Conv3dFn.apply(
             x,
             self.weight,
             self.bias,
-            stride=self.stride,
-            padding=self.padding,
-            dilation=self.dilation,
-            groups=self.groups,
+            self.stride,
+            self.padding,
+            self.dilation,
+            self.groups,
         )
 
 
