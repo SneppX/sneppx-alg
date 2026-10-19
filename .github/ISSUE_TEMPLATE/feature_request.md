@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for ARIX-Algo
+about: Suggest an idea for SNEPPX-Alg
 title: "[Feature] "
 labels: enhancement
 assignees: ""
