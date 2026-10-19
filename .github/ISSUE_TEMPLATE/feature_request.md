@@ -2,11 +2,11 @@
 name: Feature Request
 about: Suggest an idea for SNEPPX-Alg
 title: "[Feature] "
-labels: enhancement
-assignees: ""
+labels: ["enhancement"]
+assignees: []
 ---
 
-## Problem
+## Problem / Motivation
 What problem does this feature solve? Be specific.
 
 ## Proposed Solution
