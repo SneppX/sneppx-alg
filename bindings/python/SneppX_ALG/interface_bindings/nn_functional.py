@@ -282,11 +282,11 @@ def conv_transpose1d(
     groups=1,
     dilation=1,
 ):
-    if groups == 1 and dilation == 1:
+    if groups == 1:
         from .autograd_ops import ConvTransposeNd as _CTNdFn
 
         return _CTNdFn.apply(
-            input, weight, bias, stride, padding, output_padding, groups
+            input, weight, bias, stride, padding, output_padding, groups, dilation
         )
     return advanced_ops.conv_transpose1d(
         input, weight, bias, stride, padding, output_padding, groups, dilation
@@ -307,13 +307,9 @@ def conv_transpose2d(
     padding = _pair(padding)
     output_padding = _pair(output_padding)
     dilation = _pair(dilation)
-    if groups == 1 and dilation == (1, 1):
-        from .autograd_ops import ConvTranspose2d as _CT2dFn
+    from .autograd_ops import ConvTranspose2d as _CT2dFn
 
-        return _CT2dFn.apply(
-            input, weight, bias, stride, padding, output_padding, groups
-        )
-    return advanced_ops.conv_transpose2d(
+    return _CT2dFn.apply(
         input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
@@ -328,11 +324,11 @@ def conv_transpose3d(
     groups=1,
     dilation=1,
 ):
-    if groups == 1 and dilation == 1:
+    if groups == 1:
         from .autograd_ops import ConvTransposeNd as _CTNdFn
 
         return _CTNdFn.apply(
-            input, weight, bias, stride, padding, output_padding, groups
+            input, weight, bias, stride, padding, output_padding, groups, dilation
         )
     return advanced_ops.conv_transpose3d(
         input, weight, bias, stride, padding, output_padding, groups, dilation
