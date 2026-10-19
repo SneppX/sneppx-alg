@@ -2280,6 +2280,33 @@ class Conv3d(Function):
         ]
 
 
+def _convtranspose2d_backward_single(inp, w, g, sh, sw, ph, pw, has_bias):
+    x = np.asarray(inp.data if hasattr(inp, "data") else inp, dtype=np.float64)
+    w = np.asarray(w.data if hasattr(w, "data") else w, dtype=np.float64)
+    g = np.asarray(g.data if hasattr(g, "data") else g, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    _, C_out, kH, kW = w.shape
+    Ho, Wo = g.shape[2], g.shape[3]
+    grad_x = np.zeros_like(x)
+    grad_w = np.zeros_like(w)
+    for i in range(H):
+        for j in range(W):
+            xij = x[:, :, i, j]
+            for kh in range(kH):
+                ah = i * sh - ph + kh
+                if ah < 0 or ah >= Ho:
+                    continue
+                for kw in range(kW):
+                    aw = j * sw - pw + kw
+                    if aw < 0 or aw >= Wo:
+                        continue
+                    gv = g[:, :, ah, aw]
+                    grad_x[:, :, i, j] += gv @ w[:, :, kh, kw].T
+                    grad_w[:, :, kh, kw] += xij.T @ gv
+    grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+    return grad_x, grad_w, grad_b
+
+
 class ConvTranspose2d(Function):
     """Differentiable 2-D transposed convolution (NCHW), groups=1.
 
@@ -2322,33 +2349,33 @@ class ConvTranspose2d(Function):
         ph, pw = ctx.get_attr("padding")
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
-        if groups != 1:
-            raise NotImplementedError("ConvTranspose2d backward supports groups=1 only")
-
         x = np.asarray(inp.data, dtype=np.float64)
         w = np.asarray(kernel.data, dtype=np.float64)
         g = np.asarray(grad_output.data, dtype=np.float64)
         N, C_in, H, W = x.shape
-        _, C_out, kH, kW = w.shape
-        Ho, Wo = g.shape[2], g.shape[3]
+        _, C_out_g, kH, kW = w.shape
+        C_out = C_out_g * groups
+        cin_g = C_in // groups
+        cout_g = C_out // groups
 
         grad_x = np.zeros_like(x)
         grad_w = np.zeros_like(w)
-        for i in range(H):
-            for j in range(W):
-                xij = x[:, :, i, j]  # (N, C_in)
-                for kh in range(kH):
-                    ah = i * sh - ph + kh
-                    if ah < 0 or ah >= Ho:
-                        continue
-                    for kw in range(kW):
-                        aw = j * sw - pw + kw
-                        if aw < 0 or aw >= Wo:
-                            continue
-                        gv = g[:, :, ah, aw]  # (N, C_out)
-                        grad_x[:, :, i, j] += gv @ w[:, :, kh, kw].T
-                        grad_w[:, :, kh, kw] += xij.T @ gv
-        grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+        grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+        for gg in range(groups):
+            gx, gw, gb = _convtranspose2d_backward_single(
+                x[:, gg * cin_g : (gg + 1) * cin_g],
+                w[gg * cin_g : (gg + 1) * cin_g],
+                g[:, gg * cout_g : (gg + 1) * cout_g],
+                sh,
+                sw,
+                ph,
+                pw,
+                has_bias,
+            )
+            grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gx
+            grad_w[gg * cin_g : (gg + 1) * cin_g] = gw
+            if has_bias:
+                grad_b[gg * cout_g : (gg + 1) * cout_g] = gb
 
         return [
             Tensor(grad_x, dtype=inp.dtype),

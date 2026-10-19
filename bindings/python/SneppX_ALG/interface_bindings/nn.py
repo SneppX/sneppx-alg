@@ -575,7 +575,7 @@ class _ConvTransposeNd(Module):
         # transposed weight layout: [C_in//groups, C_out, k...]
         self.weight = (
             Tensor.randn(
-                (in_channels // groups, out_channels) + tuple(kernel_size), dtype=dtype
+                (in_channels, out_channels // groups) + tuple(kernel_size), dtype=dtype
             )
             * scale
         )
@@ -583,7 +583,7 @@ class _ConvTransposeNd(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         if self.conv_ndim == 2:
-            if self.groups == 1 and all(d == 1 for d in self.dilation):
+            if all(d == 1 for d in self.dilation):
                 from .autograd_ops import ConvTranspose2d as _CT2dFn
 
                 return _CT2dFn.apply(
@@ -605,8 +605,9 @@ class _ConvTransposeNd(Module):
                 padding=self.padding,
                 output_padding=self.output_padding,
                 groups=self.groups,
+                dilation=self.dilation,
             )
-        if self.groups == 1 and all(d == 1 for d in self.dilation):
+        if all(d == 1 for d in self.dilation):
             from .autograd_ops import ConvTransposeNd as _CTNdFn
 
             return _CTNdFn.apply(
