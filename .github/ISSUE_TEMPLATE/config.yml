@@ -1,11 +1,14 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security Vulnerabilities
-    url: mailto:algoarix@gmail.com
+    url: https://github.com/SneppX/sneppx-alg/security/advisories/new
     about: "Report security vulnerabilities privately. Do not open public issues."
-  - name: Patches and Contributions
-    url: mailto:algoarix@gmail.com
-    about: "Submit patches via email. See CONTRIBUTING.md for format requirements."
-  - name: Questions
-    url: https://github.com/SneppX/sneppx-alg/blob/main/docs/index.md
-    about: "Check the documentation and FAQ before opening an issue."
+  - name: Contributing Guide
+    url: https://github.com/SneppX/sneppx-alg/blob/main/CONTRIBUTING.md
+    about: "Read CONTRIBUTING.md for coding standards, branch naming, and PR requirements."
+  - name: Questions & Discussion
+    url: https://github.com/SneppX/sneppx-alg/discussions
+    about: "Ask usage questions or float design ideas in GitHub Discussions."
+  - name: Documentation & FAQ
+    url: https://sneppx.github.io/sneppx-alg/latest/
+    about: "Check the docs and FAQ before opening an issue."
