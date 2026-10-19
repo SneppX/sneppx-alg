@@ -90,7 +90,7 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | FM (Fractal Memory) | 🟢 Stable | Memory-bank read/write + EWM combine (`algorithms/fm/core`) |
 | CUDA kernels | 🟡 Experimental | Real `.cu` files; compiled only with `-DSNEPPX_BUILD_CUDA=ON` (OFF by default) |
 | Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
-| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented but **not yet FIPS-KAT validated** |
+| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented, with deterministic self-generated regression vectors in `tests/python/test_crypto_kat.py`; **not yet validated against official NIST ACVP / FIPS 203-205 known-answer vectors** |
 | Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
 | Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock scan + invariant walk; bounded safety LTL (`G !deadlock`, `AG !deadlock`, `F deadlock`) — unsupported properties report "not verified" rather than false-positiving; state-space minimization is a stub |
 | Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
@@ -183,18 +183,20 @@ y = x @ w
 print(y.shape)
 ```
 
-
-#
 ## Extended Python Utilities
 
 Additional pragmatic packages (pure NumPy/Python, fully tested):
 
-`	ext
+```text
 sampling, regularization, callbacks, linalg, signal, graph,
 stats, structured_output, rag, agents, observability, speculative
-`
+```
 
-Import as rom SneppX_ALG import sampling, regularization, ...
+Import as:
+
+```python
+from SneppX_ALG import sampling, regularization, ...
+```
 ## Recent framework capabilities (v1.5.0)
 
 - **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
