@@ -44,6 +44,19 @@ Design goals:
 - **Security by design** — ten layers from crypto to pentest are built into the framework.
 - **Open & extensible** — opt-in backends, a model zoo, and a Python API on top of the native core.
 
+## By the numbers
+
+- **~183K lines** of C11 / C++20 / CUDA / Python across a single auditable codebase
+- **300+ tests** (Python autograd, NN, optimizers, losses, sparse, higher-order AD, security)
+- **10 security layers** (S0–S9): classical + post-quantum crypto, memory hardening, obfuscation, monitoring, network, AI sanitizer, key vault, signed updates, formal verification, pentest
+- **5-stage pipeline**: HSS → SER → ARC → NPE → FM
+- **40+ autograd ops** with higher-order AD (`create_graph=True`), plus `jvp` / `vjp`
+- **~70 differentiable functional ops** (`F.*`), 14 loss Module wrappers, 30+ optimizers
+- **Quantization**: INT8 / INT4 / FP8 / AWQ / GPTQ
+- **Distributed**: DDP, ZeRO-1/2/3, tensor / pipeline / expert parallelism (NCCL + CPU fallback)
+- **Model zoo**: LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2 presets
+- **MIT licensed**, maintained by Ammar [SNEPPX]
+
 ## Why SNEPPX-Alg?
 
 Honest positioning — SNEPPX-Alg is **not** a PyTorch replacement for training at scale. It is a **native, security-first AI substrate** you can read, audit, and compose: a C/C++/CUDA tensor engine, a composable 5-stage pipeline, and ten security layers (S0–S9) including post-quantum crypto and signed updates.
