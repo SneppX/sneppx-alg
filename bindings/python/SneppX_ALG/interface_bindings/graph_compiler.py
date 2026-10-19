@@ -33,8 +33,20 @@ __all__ = [
 ]
 
 FUSABLE_OPS = {
-    "add", "sub", "mul", "div", "neg",
-    "abs", "exp", "log", "relu", "sigmoid", "tanh", "gelu", "silu", "clip",
+    "add",
+    "sub",
+    "mul",
+    "div",
+    "neg",
+    "abs",
+    "exp",
+    "log",
+    "relu",
+    "sigmoid",
+    "tanh",
+    "gelu",
+    "silu",
+    "clip",
 }
 
 
@@ -75,8 +87,13 @@ ELEMENTWISE_IMPL: Dict[str, Callable] = {
 class GraphNode:
     """A node in a compute DAG."""
 
-    def __init__(self, op: str, inputs: Sequence["GraphNode"] = (),
-                 params: Optional[Dict[str, Any]] = None, name: Optional[str] = None):
+    def __init__(
+        self,
+        op: str,
+        inputs: Sequence["GraphNode"] = (),
+        params: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
+    ):
         self.op = op
         self.inputs = list(inputs)
         self.params = dict(params or {})
@@ -89,13 +106,11 @@ class GraphNode:
 
     @staticmethod
     def constant(value: Any, name: Optional[str] = None) -> "GraphNode":
-        return GraphNode("const", params={"value": np.asarray(value)},
-                         name=name)
+        return GraphNode("const", params={"value": np.asarray(value)}, name=name)
 
     @staticmethod
     def parameter(value: Any, name: Optional[str] = None) -> "GraphNode":
-        return GraphNode("param", params={"value": np.asarray(value)},
-                         name=name)
+        return GraphNode("param", params={"value": np.asarray(value)}, name=name)
 
     @staticmethod
     def clip(x: "GraphNode", lo: float, hi: float) -> "GraphNode":
@@ -146,7 +161,8 @@ class GraphNode:
         if self.op == "clip":
             return np.clip(
                 self.inputs[0].evaluate(bindings),
-                self.params["min"], self.params["max"],
+                self.params["min"],
+                self.params["max"],
             )
         fn = ELEMENTWISE_IMPL.get(self.op)
         if fn is None:
@@ -166,8 +182,9 @@ def _node(other) -> GraphNode:
     return GraphNode.constant(other)
 
 
-def _external_inputs(members: List[GraphNode],
-                     by_id: Dict[int, GraphNode]) -> List[GraphNode]:
+def _external_inputs(
+    members: List[GraphNode], by_id: Dict[int, GraphNode]
+) -> List[GraphNode]:
     """Inputs to the cluster that come from outside it, in first-use order."""
     member_ids = {id(m) for m in members}
     external = []
@@ -181,8 +198,7 @@ def _external_inputs(members: List[GraphNode],
     return external
 
 
-def _make_fused_fn(members: List[GraphNode],
-                   external: List[GraphNode]) -> Callable:
+def _make_fused_fn(members: List[GraphNode], external: List[GraphNode]) -> Callable:
     """Compose the member element-wise ops into a single callable."""
     ext_index = {id(e): i for i, e in enumerate(external)}
 
@@ -229,8 +245,9 @@ class FusedNode:
 class CompiledGraph:
     """Topologically-ordered executable graph of (possibly fused) nodes."""
 
-    def __init__(self, nodes: List[Any], entry: Any,
-                 replaced: Optional[Dict[int, Any]] = None):
+    def __init__(
+        self, nodes: List[Any], entry: Any, replaced: Optional[Dict[int, Any]] = None
+    ):
         self.nodes = nodes
         self.entry = entry
         self.replaced = replaced or {}
@@ -240,16 +257,15 @@ class CompiledGraph:
             return node
         return self.replaced.get(id(node), node)
 
-    def forward(self, inputs: Dict[str, np.ndarray],
-                tile_size: Optional[int] = None) -> np.ndarray:
+    def forward(
+        self, inputs: Dict[str, np.ndarray], tile_size: Optional[int] = None
+    ) -> np.ndarray:
         values: Dict[int, np.ndarray] = {}
         bindings = {k: np.asarray(v) for k, v in inputs.items()}
 
         for node in self.nodes:
             if node.op == "input":
-                values[id(node)] = bindings.get(
-                    node.name, bindings.get(id(node))
-                )
+                values[id(node)] = bindings.get(node.name, bindings.get(id(node)))
             elif node.op == "const":
                 values[id(node)] = node.params["value"]
             elif node.op == "param":
@@ -273,8 +289,9 @@ class CompiledGraph:
         return values[id(self.entry)]
 
 
-def _eval_fused(node: FusedNode, values: Dict[int, np.ndarray],
-                tile_size: Optional[int] = None) -> np.ndarray:
+def _eval_fused(
+    node: FusedNode, values: Dict[int, np.ndarray], tile_size: Optional[int] = None
+) -> np.ndarray:
     inputs = [values[id(i)] for i in node.external_inputs]
     if tile_size is None:
         return node.fn(*inputs)
@@ -447,7 +464,9 @@ class GraphCompiler:
             base[i] = f"{ident}[i]"
         for i, e in enumerate(node.external_inputs):
             if e.op in ("const", "param") and np.asarray(e.params["value"]).size == 1:
-                base[i] = _c_literal(float(np.asarray(e.params["value"]).reshape(-1)[0]))
+                base[i] = _c_literal(
+                    float(np.asarray(e.params["value"]).reshape(-1)[0])
+                )
 
         temps: Dict[int, str] = {}
         exprs: List[str] = []
@@ -471,8 +490,7 @@ class GraphCompiler:
             elif len(m.inputs) == 1:
                 expr = _C_UNARY[m.op].format(x=src(m.inputs[0]))
             else:
-                expr = _C_BINARY[m.op].format(
-                    a=src(m.inputs[0]), b=src(m.inputs[1]))
+                expr = _C_BINARY[m.op].format(a=src(m.inputs[0]), b=src(m.inputs[1]))
             temps[id(m)] = f"t{j}"
             exprs.append(expr)
 
@@ -514,8 +532,9 @@ class GraphCompiler:
         ]
 
     def _gen_driver(self, compiled: CompiledGraph, has_matmul: bool) -> List[str]:
-        input_index = {id(n): k for k, n in enumerate(compiled.nodes)
-                       if n.op == "input"}
+        input_index = {
+            id(n): k for k, n in enumerate(compiled.nodes) if n.op == "input"
+        }
         non_inputs = [n for n in compiled.nodes if n.op != "input"]
         slot = {id(n): k for k, n in enumerate(non_inputs)}
         entry_id = id(compiled.entry)
@@ -540,26 +559,35 @@ class GraphCompiler:
                 continue
             if isinstance(node, FusedNode):
                 name, params = _fused_kernel_spec(node)
-                args = [ref(node.external_inputs[i])
-                        for i, ident in params if ident]
+                args = [ref(node.external_inputs[i]) for i, ident in params if ident]
                 args += [ref(node), "n"]
                 lines.append(f"    {name}({', '.join(args)});")
             elif node.op == "matmul":
                 a = ref(compiled._resolve(node.inputs[0]))
                 b = ref(compiled._resolve(node.inputs[1]))
-                lines.append(
-                    f"    sneppx_matmul_f32({a}, {b}, {ref(node)}, m, k, nn);")
+                lines.append(f"    sneppx_matmul_f32({a}, {b}, {ref(node)}, m, k, nn);")
             elif node.op in ("const", "param"):
                 continue
             elif node.op == "clip":
-                raise NotImplementedError(
-                    "non-fused clip in codegen; fuse the graph first")
+                _a = ref(compiled._resolve(node.inputs[0]))
+                _o = ref(node)
+                _lo = node.params["min"]
+                _hi = node.params["max"]
+                lines.append("    for (size_t i = 0; i < n; ++i) {")
+                lines.append("        float _v = %s[i];" % _a)
+                lines.append("        if (_v < %sf) _v = %sf;" % (_lo, _lo))
+                lines.append("        if (_v > %sf) _v = %sf;" % (_hi, _hi))
+                lines.append("        %s[i] = _v;" % _o)
+                lines.append("    }")
             else:
                 raise NotImplementedError(f"codegen for op {node.op!r}")
         if entry_is_input:
             lines.append("    /* graph output is a passthrough input */")
-            lines.append("    for (size_t i = 0; i < n; ++i) { out[i] = inputs["
-                         + str(input_index[entry_id]) + "][i]; }")
+            lines.append(
+                "    for (size_t i = 0; i < n; ++i) { out[i] = inputs["
+                + str(input_index[entry_id])
+                + "][i]; }"
+            )
         lines.append("}")
         lines.append("")
         return lines
