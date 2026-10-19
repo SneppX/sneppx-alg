@@ -19,6 +19,7 @@
 
 ## 📑 Table of Contents
 - [Overview](#overview)
+- [By the numbers](#by-the-numbers)
 - [Why SNEPPX-Alg?](#why-sneppx-alg)
 - [Architecture](#architecture)
 - [Component Status](#component-status)
