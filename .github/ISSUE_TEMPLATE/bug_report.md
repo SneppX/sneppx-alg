@@ -2,12 +2,15 @@
 name: Bug Report
 about: Report a bug to help improve SNEPPX-Alg
 title: "[Bug] "
-labels: bug
-assignees: ""
+labels: ["bug"]
+assignees: []
 ---
 
 ## Description
 A clear and concise description of the bug.
+
+> Before filing, please check the [FAQ](https://sneppx.github.io/sneppx-alg/latest/FAQ/) and search
+> [existing issues](https://github.com/SneppX/sneppx-alg/issues) to avoid duplicates.
 
 ## Reproduction Steps
 1. Configure: `cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON`
