@@ -34,7 +34,6 @@ def _conv2d_single_group(
     N, C_in, H, W = x.shape
     C_out, C_in_g, kH, kW = w.shape
 
-
     # Calculate output dimensions
     pad_h, pad_w = padding
     dil_h, dil_w = dilation
@@ -143,6 +142,8 @@ def conv1d(
         og = _conv1d_single_group(xi, wi, bi, stride, padding, dilation)
         out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
     return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
+
+
 def max_pool2d(
     input: Tensor,
     kernel_size: Union[int, Tuple[int, int]],
@@ -1397,13 +1398,14 @@ def conv_transpose2d(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
-    stride: Tuple[int, int] = (1, 1),
-    padding: Tuple[int, int] = (0, 0),
-    output_padding: Tuple[int, int] = (0, 0),
+    stride: Union[int, Tuple[int, int]] = (1, 1),
+    padding: Union[int, Tuple[int, int]] = (0, 0),
+    output_padding: Union[int, Tuple[int, int]] = (0, 0),
     groups: int = 1,
+    dilation: Union[int, Tuple[int, int]] = 1,
 ) -> Tensor:
-    return _conv_transpose2d_impl(
-        input, weight, bias, stride, padding, output_padding, groups
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 
@@ -1522,6 +1524,7 @@ def conv_transpose3d(
         input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
+
 def conv2d(
     input: Tensor,
     weight: Tensor,
@@ -1560,6 +1563,7 @@ def conv2d(
         out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
     return Tensor.from_numpy(out.astype(np.float32))
 
+
 def conv3d(
     input: Tensor,
     weight: Tensor,
@@ -1571,7 +1575,9 @@ def conv3d(
 ) -> Tensor:
     # 3D convolution with optional bias and groups.
     if groups == 1:
-        return _conv3d_single_group(input, weight, bias, stride, padding, dilation, groups=1)
+        return _conv3d_single_group(
+            input, weight, bias, stride, padding, dilation, groups=1
+        )
     x = np.asarray(input.data)
     w = np.asarray(weight.data)
     N, C_in, D, H, W = x.shape

@@ -306,14 +306,14 @@ def conv_transpose2d(
     padding = _pair(padding)
     output_padding = _pair(output_padding)
     dilation = _pair(dilation)
-    if groups == 1:
+    if groups == 1 and dilation == (1, 1):
         from .autograd_ops import ConvTranspose2d as _CT2dFn
 
         return _CT2dFn.apply(
             input, weight, bias, stride, padding, output_padding, groups
         )
     return advanced_ops.conv_transpose2d(
-        input, weight, bias, stride, padding, output_padding, groups
+        input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
 
