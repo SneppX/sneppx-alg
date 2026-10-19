@@ -76,7 +76,7 @@ Be honest with yourself before choosing it:
 
 ## See also
 
-- [Benchmarks](BENCHMARKS.md) — measured numbers (where available).
+- [Benchmarks](benchmarks.md) - measured numbers (where available).
 - [Framework comparison](comparison/ml_framework_feature_gap_analysis.md) — detailed gap analysis.
 - [Architecture overview](ARCHITECTURE.md) — the 5-stage pipeline in depth.
 - [Security layers](security_layers.md) — S0–S9 mapping.

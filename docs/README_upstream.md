@@ -18,7 +18,7 @@
 | [TESTING.md](TESTING.md) | Test suite guide | v1.0.0 |
 | [FAQ.md](FAQ.md) | Frequently asked questions | v0.5.0 |
 | [GLOSSARY.md](GLOSSARY.md) | Terminology reference | v0.5.0 |
-| [BENCHMARKS.md](BENCHMARKS.md) | Performance benchmarks | v1.0.0 |
+| [BENCHMARKS.md](benchmarks.md) | Performance benchmarks | v1.0.0 |
 | [COVERAGE.md](COVERAGE.md) | Code coverage reporting | v0.5.0 |
 | [hss_training.md](hss_training.md) | End-to-end HSS training walkthrough | v0.5.0 |
 | **Code walkthroughs (v1.1.0)** | | |

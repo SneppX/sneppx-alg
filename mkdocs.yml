@@ -131,6 +131,7 @@ nav:
         - MoE Expert Routing: tutorials/moe_ser_routing.md
         - Security Scanning: tutorials/security_scanning.md
         - Profiling & Benchmarks: tutorials/profiling_benchmarks.md
+        - Benchmarks: benchmarks.md
         - Data Pipeline: tutorials/data_pipeline.md
         - Model Conversion: tutorials/model_conversion.md
     - API Reference:
@@ -199,7 +200,6 @@ nav:
         - API Index: API_REFERENCE.md
         - Python Features: python_features.md
         - API Quick Reference: api_quickref.md
-        - Benchmarks: BENCHMARKS.md
         - Coverage: COVERAGE.md
         - Glossary: GLOSSARY.md
         - Design: DESIGN.md
