@@ -83,6 +83,38 @@ Notes:
 - For the HTTP backend, `SNEPPX_BUILD_HTTP=ON` needs no extra deps (BSD sockets are in libc).
 - For Vulkan/TPU/ZK backends, install the corresponding SDKs (`libvulkan-dev`, etc.) — see `docs/build.md`.
 
+### macOS (Apple Silicon & Intel)
+
+```bash
+# Prerequisites (Homebrew)
+brew install cmake ninja git python@3.11
+
+# Clone + configure + build
+git clone https://github.com/SneppX/sneppx-alg.git
+cd sneppx-alg
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+
+# Optional: Apple Metal backend (Apple Silicon / Intel Macs)
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_METAL=ON
+cmake --build build --config Release
+
+# Python bindings
+cd bindings/python
+pip install -e .
+cd ../..
+export PYTHONPATH="$PWD/bindings/python"
+python -c "from SneppX_ALG import Tensor; print('ok')"
+```
+
+Notes:
+- Use the system Clang (`/usr/bin/clang`, ≥ 14). C11 + C++20 (obfuscation layer only).
+- On Apple Silicon, Metal is the recommended accelerator backend (`SNEPPX_BUILD_METAL=ON`).
+- The HTTP backend (`SNEPPX_BUILD_HTTP=ON`) uses BSD sockets and works on macOS without extra deps.
+- If `ninja` is not found, install via `brew install ninja` or use the CMake default generator (`cmake -B build`).
+
+
 ---
 
 ## 3. Python Setup
