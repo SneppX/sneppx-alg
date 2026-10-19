@@ -56,6 +56,33 @@ cmake --build build --config Release
 cd build && ctest -C Release --output-on-failure
 ```
 
+### Linux (Ubuntu / Debian / Fedora)
+
+```bash
+# Prerequisites (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install -y build-essential cmake ninja-build git python3 python3-pip
+
+# Clone + configure + build
+git clone https://github.com/SneppX/sneppx-alg.git
+cd sneppx-alg
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+
+# Python bindings
+cd ../bindings/python
+pip install -e .
+cd ../..
+export PYTHONPATH="$PWD/bindings/python"
+python -c "from SneppX_ALG import Tensor; print('ok')"
+```
+
+Notes:
+- Use `gcc` (≥ 11) or `clang` (≥ 14). C11 is required.
+- For the HTTP backend, `SNEPPX_BUILD_HTTP=ON` needs no extra deps (BSD sockets are in libc).
+- For Vulkan/TPU/ZK backends, install the corresponding SDKs (`libvulkan-dev`, etc.) — see `docs/build.md`.
+
 ---
 
 ## 3. Python Setup
