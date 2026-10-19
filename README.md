@@ -19,6 +19,7 @@
 
 ## 📑 Table of Contents
 - [Overview](#overview)
+- [Why SNEPPX-Alg?](#why-sneppx-alg)
 - [Architecture](#architecture)
 - [Component Status](#component-status)
 - [The 5-Stage Pipeline](#the-5-stage-pipeline)
@@ -42,6 +43,23 @@ Design goals:
 - **Composable pipeline** — HSS → SER → ARC → NPE → FM stages are independently testable.
 - **Security by design** — ten layers from crypto to pentest are built into the framework.
 - **Open & extensible** — opt-in backends, a model zoo, and a Python API on top of the native core.
+
+## Why SNEPPX-Alg?
+
+Honest positioning — SNEPPX-Alg is **not** a PyTorch replacement for training at scale. It is a **native, security-first AI substrate** you can read, audit, and compose: a C/C++/CUDA tensor engine, a composable 5-stage pipeline, and ten security layers (S0–S9) including post-quantum crypto and signed updates.
+
+| | SNEPPX-Alg | PyTorch | JAX |
+|---|---|---|---|
+| Core implementation | C / C++ / CUDA (auditable) | C++ / Python | Python → XLA |
+| Python API | NumPy-backed `Tensor` / `nn` | Native tensors | `jax.numpy` |
+| Built-in security | 10 layers (S0–S9) + PQC | none | none |
+| Post-quantum crypto | Kyber / Dilithium / SPHINCS+ (FIPS 203/204/205) | none | none |
+| Signed model updates | Ed25519 over BLAKE3 | none | none |
+| Quantization | INT8 / INT4 / FP8 / AWQ / GPTQ | INT8 / FP8 | limited |
+| Distributed | DDP / ZeRO / TP / PP / EP (NCCL) | DDP / FSDP | pmap / pjit |
+| License | MIT | BSD-3 | Apache 2.0 |
+
+If you want a drop-in PyTorch experience today, use PyTorch. If you want a **readable native core with security built in**, SNEPPX-Alg is for you.
 
 ## Architecture
 
