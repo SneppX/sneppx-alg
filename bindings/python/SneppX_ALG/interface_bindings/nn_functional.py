@@ -236,12 +236,13 @@ def linear(input: Tensor, weight: Tensor, bias: Optional[Tensor] = None) -> Tens
 
 
 def conv1d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
-    if groups == 1 and dilation == 1:
+    if groups == 1:
         from .autograd_ops import Conv1d as _Conv1dFn
 
         stride_ = stride if not hasattr(stride, "__getitem__") else stride[0]
         padding_ = padding if not hasattr(padding, "__getitem__") else padding[0]
-        y = _Conv1dFn.apply(input, weight, stride_, padding_)
+        dilation_ = dilation if not hasattr(dilation, "__getitem__") else dilation[0]
+        y = _Conv1dFn.apply(input, weight, stride_, padding_, dilation_)
         if bias is not None:
             c_out = weight.shape[0]
             y = y + bias.reshape(1, c_out, 1)

@@ -445,15 +445,7 @@ class Conv1d(Module):
         self.bias = Tensor.zeros((out_channels,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
-        if (
-            self.groups == 1
-            and (
-                self.dilation[0]
-                if hasattr(self.dilation, "__getitem__")
-                else self.dilation
-            )
-            == 1
-        ):
+        if self.groups == 1:
             from .autograd_ops import Conv1d as _Conv1dFn
 
             stride_ = (
@@ -464,7 +456,12 @@ class Conv1d(Module):
                 if hasattr(self.padding, "__getitem__")
                 else self.padding
             )
-            y = _Conv1dFn.apply(x, self.weight, stride_, padding_)
+            dilation_ = (
+                self.dilation[0]
+                if hasattr(self.dilation, "__getitem__")
+                else self.dilation
+            )
+            y = _Conv1dFn.apply(x, self.weight, stride_, padding_, dilation_)
             if self.bias is not None:
                 return y + self.bias.reshape(1, self.out_channels, 1)
             return y

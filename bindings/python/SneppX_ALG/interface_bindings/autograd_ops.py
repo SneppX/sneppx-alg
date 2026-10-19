@@ -1875,9 +1875,7 @@ class EmbeddingFn(Function):
 
 class Conv1d(Function):
     @staticmethod
-    def forward(ctx, inp, kernel, stride=1, padding=0):
-        from numpy.lib.stride_tricks import sliding_window_view
-
+    def forward(ctx, inp, kernel, stride=1, padding=0, dilation=1):
         arr = inp.data
         k = kernel.data if isinstance(kernel, Tensor) else kernel
         batched = arr.ndim == 3
@@ -1889,15 +1887,19 @@ class Conv1d(Function):
         padded = (
             np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
         )
-        win = sliding_window_view(padded, K, axis=2)[:, :, ::stride, :]
-        Lout = win.shape[2]
-        out = np.einsum("nclk,ock->nol", win, k)
+        Lout = (Lp - dilation * (K - 1) - 1) // stride + 1
+        out = np.zeros((N, C_out, Lout), dtype=arr.dtype)
+        for l in range(Lout):
+            for kk in range(K):
+                pos = l * stride + kk * dilation
+                out[:, :, l] += np.einsum("nc,oc->no", padded[:, :, pos], k[:, :, kk])
         ctx.save_for_backward(
             inp=inp, kernel=kernel if isinstance(kernel, Tensor) else Tensor(kernel)
         )
         ctx.save_attr(
             stride=stride,
             padding=padding,
+            dilation=dilation,
             L=L,
             K=K,
             C_in=C_in,
@@ -1916,6 +1918,7 @@ class Conv1d(Function):
         kernel = ctx.get_saved_tensor("kernel")
         stride = ctx.get_attr("stride")
         padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
         L = ctx.get_attr("L")
         K = ctx.get_attr("K")
         Lout = ctx.get_attr("Lout")
@@ -1927,19 +1930,19 @@ class Conv1d(Function):
         garr = g if g.ndim == 3 else g[None]
 
         if not create_graph:
-            # grad w.r.t input: scatter-add einsum('nol,ock->nclk') at l*stride+k
+            # grad w.r.t input: scatter-add at l*stride + kk*dilation
             N = garr.shape[0]
             padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
             contrib = np.einsum("nol,ock->nclk", garr, k)
             for l in range(Lout):
                 for kk in range(K):
-                    padded[:, :, l * stride + kk] += contrib[:, :, l, kk]
+                    padded[:, :, l * stride + kk * dilation] += contrib[:, :, l, kk]
             grad_inp_full = (
                 padded[:, :, padding : L + padding] if padding > 0 else padded
             )
             grad_inp = grad_inp_full if batched else grad_inp_full[0]
 
-            # grad w.r.t kernel: einsum over batch/spatial of g * window
+            # grad w.r.t kernel: manual windowed gather with dilation
             arr = inp.data
             arrb = arr if arr.ndim == 3 else arr[None]
             padded_in = (
@@ -1947,8 +1950,13 @@ class Conv1d(Function):
                 if padding > 0
                 else arrb
             )
-            win = sliding_window_view(padded_in, K, axis=2)[:, :, ::stride, :]
-            grad_k = np.einsum("nol,nclk->ock", garr, win)
+            grad_k = np.zeros((k.shape[0], k.shape[1], k.shape[2]), dtype=g.dtype)
+            for l in range(Lout):
+                for kk in range(K):
+                    pos = l * stride + kk * dilation
+                    grad_k[:, :, kk] += np.einsum(
+                        "no,nc->oc", garr[:, :, l], padded_in[:, :, pos]
+                    )
             return [
                 Tensor(grad_inp, dtype=inp.dtype),
                 Tensor(grad_k, dtype=kernel.dtype),
@@ -1974,7 +1982,9 @@ class Conv1d(Function):
         wins = []
         for l in range(Lout):
             cols = [
-                GetItem.apply(inp_padded, (slice(None), slice(None), l * stride + kk))
+                GetItem.apply(
+                    inp_padded, (slice(None), slice(None), l * stride + kk * dilation)
+                )
                 for kk in range(K)
             ]
             wins.append(Stack.apply(*cols, -1))  # (N,C_in,K)
