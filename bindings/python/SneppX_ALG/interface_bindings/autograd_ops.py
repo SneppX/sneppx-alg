@@ -2014,6 +2014,42 @@ def _as_pair(v):
     return int(v), int(v)
 
 
+def _conv2d_backward_single(x, w, g, sh, sw, ph, pw, dh, dw, has_bias):
+    """Single-group (groups=1) adjoint for Conv2d. Returns (grad_x, grad_k, grad_b)
+    as float64 ndarrays. x:(N,Cin,H,W) w:(Cout,Cin,kH,kW) g:(N,Cout,Ho,Wo)."""
+    x = np.asarray(x, dtype=np.float64)
+    w = np.asarray(w, dtype=np.float64)
+    g = np.asarray(g, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    C_out, _, kH, kW = w.shape
+    Ho, Wo = g.shape[2], g.shape[3]
+
+    xp = np.pad(x, ((0, 0), (0, 0), (ph, ph), (pw, pw))) if (ph or pw) else x
+
+    win = np.zeros((N, C_in, Ho, Wo, kH, kW), dtype=np.float64)
+    for a in range(kH):
+        for b in range(kW):
+            win[:, :, :, :, a, b] = xp[
+                :, :, a * dh : a * dh + Ho * sh : sh, b * dw : b * dw + Wo * sw : sw
+            ]
+    grad_k = np.einsum("noij,ncijkl->ockl", g, win)
+
+    grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+
+    padded = np.zeros((N, C_in, H + 2 * ph, W + 2 * pw), dtype=np.float64)
+    for i in range(Ho):
+        for j in range(Wo):
+            for a in range(kH):
+                for b in range(kW):
+                    hi = i * sh + a * dh
+                    wi = j * sw + b * dw
+                    padded[:, :, hi, wi] += np.einsum(
+                        "no,oc->nc", g[:, :, i, j], w[:, :, a, b]
+                    )
+    grad_x = padded[:, :, ph : ph + H, pw : pw + W] if (ph or pw) else padded
+    return grad_x, grad_k, grad_b
+
+
 class Conv2d(Function):
     """Differentiable 2-D convolution (NCHW), groups=1.
 
@@ -2057,46 +2093,46 @@ class Conv2d(Function):
         dh, dw = ctx.get_attr("dilation")
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
-        if groups != 1:
-            raise NotImplementedError("Conv2d backward supports groups=1 only")
-
         x = np.asarray(inp.data, dtype=np.float64)
         w = np.asarray(kernel.data, dtype=np.float64)
         g = np.asarray(grad_output.data, dtype=np.float64)
-        N, C_in, H, W = x.shape
-        C_out, _, kH, kW = w.shape
-        Ho, Wo = g.shape[2], g.shape[3]
 
-        xp = np.pad(x, ((0, 0), (0, 0), (ph, ph), (pw, pw))) if (ph or pw) else x
-
-        # grad w.r.t. kernel: windows[n, c, i, j, a, b] = xp[n, c, i*sh+a*dh, j*sw+b*dw]
-        win = np.zeros((N, C_in, Ho, Wo, kH, kW), dtype=np.float64)
-        for a in range(kH):
-            for b in range(kW):
-                win[:, :, :, :, a, b] = xp[
-                    :, :, a * dh : a * dh + Ho * sh : sh, b * dw : b * dw + Wo * sw : sw
-                ]
-        grad_k = np.einsum("noij,ncijkl->ockl", g, win)
-
-        grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
-
-        # grad w.r.t. input: scatter-add into padded input
-        padded = np.zeros((N, C_in, H + 2 * ph, W + 2 * pw), dtype=np.float64)
-        for i in range(Ho):
-            for j in range(Wo):
-                for a in range(kH):
-                    for b in range(kW):
-                        hi = i * sh + a * dh
-                        wi = j * sw + b * dw
-                        padded[:, :, hi, wi] += np.einsum(
-                            "no,oc->nc", g[:, :, i, j], w[:, :, a, b]
-                        )
-        grad_x = padded[:, :, ph : ph + H, pw : pw + W] if (ph or pw) else padded
+        if groups == 1:
+            grad_x, grad_k, grad_b = _conv2d_backward_single(
+                x, w, g, sh, sw, ph, pw, dh, dw, has_bias
+            )
+        else:
+            N, C_in, H, W = x.shape
+            C_out = w.shape[0]
+            cin_g = C_in // groups
+            cout_g = C_out // groups
+            grad_x = np.zeros_like(x)
+            grad_k = np.zeros_like(w)
+            grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+            for gg in range(groups):
+                gxg, gkg, gbg = _conv2d_backward_single(
+                    x[:, gg * cin_g : (gg + 1) * cin_g],
+                    w[gg * cout_g : (gg + 1) * cout_g],
+                    g[:, gg * cout_g : (gg + 1) * cout_g],
+                    sh,
+                    sw,
+                    ph,
+                    pw,
+                    dh,
+                    dw,
+                    has_bias,
+                )
+                grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gxg
+                grad_k[gg * cout_g : (gg + 1) * cout_g] = gkg
+                if has_bias:
+                    grad_b[gg * cout_g : (gg + 1) * cout_g] = gbg
 
         return [
             Tensor(grad_x, dtype=inp.dtype),
             Tensor(grad_k, dtype=kernel.dtype),
-            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+            Tensor(grad_b, dtype=grad_output.dtype)
+            if (has_bias and grad_b is not None)
+            else None,
         ]
 
 
@@ -2104,6 +2140,57 @@ def _as_triple(v):
     if isinstance(v, (tuple, list)):
         return int(v[0]), int(v[1]), int(v[2])
     return int(v), int(v), int(v)
+
+
+def _conv3d_backward_single(x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bias):
+    """Single-group adjoint for Conv3d. Returns (grad_x, grad_k, grad_b) ndarrays."""
+    x = np.asarray(x, dtype=np.float64)
+    w = np.asarray(w, dtype=np.float64)
+    g = np.asarray(g, dtype=np.float64)
+    N, C_in, D, H, W = x.shape
+    C_out, _, kD, kH, kW = w.shape
+    Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
+
+    xp = (
+        np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw)))
+        if (pd or ph or pw)
+        else x
+    )
+
+    win = np.zeros((N, C_in, Do, Ho, Wo, kD, kH, kW), dtype=np.float64)
+    for a in range(kD):
+        for b in range(kH):
+            for c in range(kW):
+                win[:, :, :, :, :, a, b, c] = xp[
+                    :,
+                    :,
+                    a * dd : a * dd + Do * sd : sd,
+                    b * dh : b * dh + Ho * sh : sh,
+                    c * dw : c * dw + Wo * sw : sw,
+                ]
+    grad_k = np.einsum("nopqr,ncpqrstu->ocstu", g, win)
+
+    grad_b = g.sum(axis=(0, 2, 3, 4)) if has_bias else None
+
+    padded = np.zeros((N, C_in, D + 2 * pd, H + 2 * ph, W + 2 * pw), dtype=np.float64)
+    for i in range(Do):
+        for j in range(Ho):
+            for k in range(Wo):
+                for a in range(kD):
+                    for b in range(kH):
+                        for c in range(kW):
+                            di = i * sd + a * dd
+                            hi = j * sh + b * dh
+                            wi = k * sw + c * dw
+                            padded[:, :, di, hi, wi] += np.einsum(
+                                "no,oc->nc", g[:, :, i, j, k], w[:, :, a, b, c]
+                            )
+    grad_x = (
+        padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W]
+        if (pd or ph or pw)
+        else padded
+    )
+    return grad_x, grad_k, grad_b
 
 
 class Conv3d(Function):
@@ -2147,64 +2234,49 @@ class Conv3d(Function):
         dd, dh, dw = ctx.get_attr("dilation")
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
-        if groups != 1:
-            raise NotImplementedError("Conv3d backward supports groups=1 only")
-
         x = np.asarray(inp.data, dtype=np.float64)
         w = np.asarray(kernel.data, dtype=np.float64)
         g = np.asarray(grad_output.data, dtype=np.float64)
-        N, C_in, D, H, W = x.shape
-        C_out, _, kD, kH, kW = w.shape
-        Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
 
-        xp = (
-            np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw)))
-            if (pd or ph or pw)
-            else x
-        )
-
-        # grad w.r.t. kernel
-        win = np.zeros((N, C_in, Do, Ho, Wo, kD, kH, kW), dtype=np.float64)
-        for a in range(kD):
-            for b in range(kH):
-                for c in range(kW):
-                    win[:, :, :, :, :, a, b, c] = xp[
-                        :,
-                        :,
-                        a * dd : a * dd + Do * sd : sd,
-                        b * dh : b * dh + Ho * sh : sh,
-                        c * dw : c * dw + Wo * sw : sw,
-                    ]
-        grad_k = np.einsum("nopqr,ncpqrstu->ocstu", g, win)
-
-        grad_b = g.sum(axis=(0, 2, 3, 4)) if has_bias else None
-
-        # grad w.r.t. input
-        padded = np.zeros(
-            (N, C_in, D + 2 * pd, H + 2 * ph, W + 2 * pw), dtype=np.float64
-        )
-        for i in range(Do):
-            for j in range(Ho):
-                for k in range(Wo):
-                    for a in range(kD):
-                        for b in range(kH):
-                            for c in range(kW):
-                                di = i * sd + a * dd
-                                hi = j * sh + b * dh
-                                wi = k * sw + c * dw
-                                padded[:, :, di, hi, wi] += np.einsum(
-                                    "no,oc->nc", g[:, :, i, j, k], w[:, :, a, b, c]
-                                )
-        grad_x = (
-            padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W]
-            if (pd or ph or pw)
-            else padded
-        )
+        if groups == 1:
+            grad_x, grad_k, grad_b = _conv3d_backward_single(
+                x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bias
+            )
+        else:
+            N, C_in, D, H, W = x.shape
+            C_out = w.shape[0]
+            cin_g = C_in // groups
+            cout_g = C_out // groups
+            grad_x = np.zeros_like(x)
+            grad_k = np.zeros_like(w)
+            grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+            for gg in range(groups):
+                gxg, gkg, gbg = _conv3d_backward_single(
+                    x[:, gg * cin_g : (gg + 1) * cin_g],
+                    w[gg * cout_g : (gg + 1) * cout_g],
+                    g[:, gg * cout_g : (gg + 1) * cout_g],
+                    sd,
+                    sh,
+                    sw,
+                    pd,
+                    ph,
+                    pw,
+                    dd,
+                    dh,
+                    dw,
+                    has_bias,
+                )
+                grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gxg
+                grad_k[gg * cout_g : (gg + 1) * cout_g] = gkg
+                if has_bias:
+                    grad_b[gg * cout_g : (gg + 1) * cout_g] = gbg
 
         return [
             Tensor(grad_x, dtype=inp.dtype),
             Tensor(grad_k, dtype=kernel.dtype),
-            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+            Tensor(grad_b, dtype=grad_output.dtype)
+            if (has_bias and grad_b is not None)
+            else None,
         ]
 
 
