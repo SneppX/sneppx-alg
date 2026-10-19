@@ -1,4 +1,6 @@
 import json
+
+import numpy as np
 import os
 import struct
 from pathlib import Path
@@ -1518,12 +1520,27 @@ class ModelHub:
         with open(config_path, "w") as f:
             json.dump(config, f, indent=2)
 
-        # Save weights (stub - would save actual weights in real implementation)
+        # Save weights. Prefer safetensors when available; fall back to np.savez
+        # (torch/safetensors are optional deps in this environment).
         weights = model.get("weights", {})
         if weights:
-            weights_path = save_dir / "model.safetensors"
-            # safetensors.torch.save_file(weights, weights_path)
-            pass
+            arrays = {}
+            for name, val in weights.items():
+                if hasattr(val, "data"):
+                    arrays[name] = np.asarray(val.data)
+                elif hasattr(val, "detach"):
+                    arrays[name] = val.detach().cpu().numpy()
+                else:
+                    arrays[name] = np.asarray(val)
+            try:
+                import safetensors.numpy as _st
+
+                weights_path = save_dir / "model.safetensors"
+                _st.save_file(arrays, str(weights_path))
+            except Exception:
+                weights_path = save_dir / "model.npz"
+                np.savez(str(weights_path), **arrays)
+            print(f"Weights saved to {weights_path}")
 
         # Save model card
         model_card = model.get("model_card", "")
