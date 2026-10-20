@@ -182,6 +182,7 @@ nav:
         - Commenting Standard: COMMENTING.md
         - Code Review Guide: CODE_REVIEW_GUIDE.md
         - Contributor Tiers: CONTRIBUTOR_TIERS.md
+        - Good First Issues: GOOD_FIRST_ISSUES.md
         - Branching Strategy: BRANCHING_STRATEGY.md
         - HSS Training: hss_training.md
     - Guides:

@@ -311,6 +311,7 @@ cd build && ctest -C Release --output-on-failure
 |------|----------------|
 | Quick start & build | [`docs/index.md`](docs/index.md) · [`QUICKSTART.md`](QUICKSTART.md) |
 | Contribution framework | [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md) |
+| Good first issues | [`docs/GOOD_FIRST_ISSUES.md`](docs/GOOD_FIRST_ISSUES.md) |
 | Branching strategy | [`docs/BRANCHING_STRATEGY.md`](docs/BRANCHING_STRATEGY.md) |
 | Code review guide | [`docs/CODE_REVIEW_GUIDE.md`](docs/CODE_REVIEW_GUIDE.md) |
 | Python features | [`docs/python_features.md`](docs/python_features.md) |
