@@ -159,14 +159,15 @@ build\release\examples\arc_demo.exe
 build\release\examples\npe_demo.exe
 build\release\examples\fm_demo.exe
 
-# Python — run a regression test (safe, no GPU/LLM)
+# Python - run a regression test
 python tests/python/test_tensor.py
 ```
 
-> ⚠️ This machine has **no GPU / limited RAM**. Never run LLM-inference or
-> CUDA tests (`test_llama_models.py`, `test_cuda.py`, `test_inference_server.py`).
-> Always run the safe suite: `test_tensor`, `test_nn`, `test_optim`, `test_data`,
-> `test_quantization`, `test_checkpoint`, `test_profiler`, `test_model_zoo`.
+> **Note:** LLM-inference and CUDA tests (`test_llama_models.py`,
+> `test_cuda.py`, `test_inference_server.py`) require a GPU and are
+> skipped on CPU-only machines. The safe suite (`test_tensor`, `test_nn`,
+> `test_optim`, `test_data`, `test_quantization`, `test_checkpoint`,
+> `test_profiler`, `test_model_zoo`) runs on any machine without a GPU.
 
 ---
 

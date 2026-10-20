@@ -62,7 +62,7 @@ print(s._HAS_C_BACKEND)   # True once the C bridge is linked
 ```
 
 ### "CUDA not available"
-There is no CUDA on this machine. Build with `SNEPPX_BUILD_CUDA=OFF` (the
+If you have no CUDA device, build with `SNEPPX_BUILD_CUDA=OFF` (the
 default) — the stack runs on CPU. CUDA kernels are opt-in:
 
 ```powershell
@@ -105,7 +105,7 @@ the packed byte count.
 ## Distributed training
 
 ### "Training hangs after init_process_group"
-This machine has no GPU/NCCL. The most common cause is a **master-port /
+On CPU-only machines without NCCL, the most common cause is a **master-port /
 world-size mismatch** between ranks. Verify every rank sets the same
 `MASTER_ADDR`/`MASTER_PORT` and that `WORLD_SIZE = dp×tp×pp`:
 
