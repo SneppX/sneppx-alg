@@ -1989,6 +1989,7 @@ class Conv1d(Function):
             ]
 
         # ---- graph-aware backward (higher-order differentiation) ----
+        groups = ctx.get_attr("groups")
         if groups != 1:
             raise NotImplementedError(
                 "Conv1d create_graph backward supports groups=1 only"
