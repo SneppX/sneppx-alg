@@ -91,11 +91,13 @@ class SBOM:
     components: List[SBOMComponent] = field(default_factory=list)
     dependencies: List[Dict[str, Any]] = field(default_factory=list)
     services: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     def __post_init__(self):
         if not self.serial_number:
-            self.serial_number = f"urn:uuid:{hashlib.sha256(str(time.time()).encode()).hexdigest()[:32]}"
-    
+            self.serial_number = (
+                f"urn:uuid:{hashlib.sha256(str(time.time()).encode()).hexdigest()[:32]}"
+            )
+
     def to_cyclonedx_json(self) -> Dict[str, Any]:
         return {
             "bomFormat": self.bom_format,
@@ -130,7 +132,7 @@ class ScanResult:
     cves: List[CVE] = field(default_factory=list)
     sbom: Optional[SBOM] = None
     error: Optional[str] = None
-    
+
     def get_severity_counts(self) -> Dict[str, int]:
         counts = {s.value: 0 for s in Severity}
         for cve in self.cves:
@@ -140,14 +142,16 @@ class ScanResult:
 
 class CVEScanner:
     """CVE vulnerability scanner with multiple backend support."""
-    
+
     def __init__(self, cache_dir: Optional[str] = None):
-        self.cache_dir = Path(cache_dir) if cache_dir else Path.home() / ".sneppx" / "cve_cache"
+        self.cache_dir = (
+            Path(cache_dir) if cache_dir else Path.home() / ".sneppx" / "cve_cache"
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self._cache: Dict[str, List[CVE]] = {}
         self._lock = threading.Lock()
         self._load_cache()
-    
+
     def _load_cache(self):
         cache_file = self.cache_dir / "cve_cache.json"
         if cache_file.exists():
@@ -171,7 +175,7 @@ class CVEScanner:
                         ]
             except Exception:
                 pass
-    
+
     def _save_cache(self):
         cache_file = self.cache_dir / "cve_cache.json"
         try:
@@ -195,53 +199,116 @@ class CVEScanner:
                 json.dump(data, f)
         except Exception:
             pass
-    
+
     def scan_package(self, package: str, version: str) -> List[CVE]:
         """Scan a single package for CVEs."""
         cache_key = f"{package}@{version}"
-        
+
         with self._lock:
             if cache_key in self._cache:
                 return self._cache[cache_key]
-        
+
         # Try multiple sources
         cves = []
-        
+
         # Try NVD API
         try:
             cves.extend(self._scan_nvd(package, version))
         except Exception:
             pass
-        
+
         # Try OSV.dev
         try:
             cves.extend(self._scan_osv(package, version))
         except Exception:
             pass
-        
+
         # Try GitHub Advisory Database
         try:
             cves.extend(self._scan_github_advisory(package, version))
         except Exception:
             pass
-        
+
         with self._lock:
             self._cache[cache_key] = cves
             self._save_cache()
-        
+
         return cves
-    
+
     def _scan_nvd(self, package: str, version: str) -> List[CVE]:
-        """Scan using NVD API (requires API key for production)."""
-        # This is a stub - real implementation would use NVD API
-        return []
-    
+        """Scan using NVD API v2 (public, rate-limited without API key)."""
+        import urllib.request
+        import urllib.parse
+
+        cves: List[CVE] = []
+        try:
+            query = urllib.parse.quote(package)
+            url = (
+                "https://services.nvd.nist.gov/rest/json/cves/2.0"
+                "?keywordSearch=%s&resultsPerPage=20" % query
+            )
+            req = urllib.request.Request(url, headers={"User-Agent": "sneppx-alg"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except Exception:
+            return cves
+
+        for item in data.get("vulnerabilities", []):
+            cve = item.get("cve", {})
+            cve_id = cve.get("id", "")
+            descriptions = cve.get("descriptions", [])
+            desc = ""
+            for d in descriptions:
+                if d.get("lang") == "en":
+                    desc = d.get("value", "")
+                    break
+            if not desc and descriptions:
+                desc = descriptions[0].get("value", "")
+
+            # CVSS score
+            metrics = cve.get("metrics", {})
+            cvss_score = 0.0
+            for key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
+                if key in metrics and metrics[key]:
+                    cvss_score = (
+                        metrics[key][0].get("cvssData", {}).get("baseScore", 0.0)
+                    )
+                    break
+
+            if cvss_score >= 9.0:
+                severity = Severity.CRITICAL
+            elif cvss_score >= 7.0:
+                severity = Severity.HIGH
+            elif cvss_score >= 4.0:
+                severity = Severity.MEDIUM
+            elif cvss_score > 0:
+                severity = Severity.LOW
+            else:
+                severity = Severity.INFO
+
+            refs = [r.get("url", "") for r in cve.get("references", [])]
+            published = cve.get("published")
+
+            cves.append(
+                CVE(
+                    id=cve_id,
+                    severity=severity,
+                    cvss_score=float(cvss_score),
+                    description=desc,
+                    package=package,
+                    version=version,
+                    references=refs,
+                    published_date=published,
+                )
+            )
+        return cves
+
     def _scan_osv(self, package: str, version: str) -> List[CVE]:
         """Scan using OSV.dev API."""
         try:
             import urllib.request
             import urllib.parse
-            
+
             url = "https://api.osv.dev/v1/query"
             payload = {
                 "package": {"name": package},
@@ -255,7 +322,7 @@ class CVEScanner:
             )
             with urllib.request.urlopen(req, timeout=10) as response:
                 data = json.loads(response.read().decode())
-            
+
             cves = []
             for vuln in data.get("vulns", []):
                 severity = Severity.MEDIUM
@@ -272,7 +339,7 @@ class CVEScanner:
                         else:
                             severity = Severity.LOW
                         break
-                
+
                 fixed_version = None
                 for affected in vuln.get("affected", []):
                     for r in affected.get("ranges", []):
@@ -280,31 +347,111 @@ class CVEScanner:
                             if "fixed" in event:
                                 fixed_version = event["fixed"]
                                 break
-                
-                cves.append(CVE(
-                    id=vuln.get("id", ""),
-                    severity=severity,
-                    cvss_score=cvss_score,
-                    description=vuln.get("summary", vuln.get("details", "")),
-                    package=package,
-                    version=version,
-                    fixed_version=fixed_version,
-                    references=[r.get("url", "") for r in vuln.get("references", [])],
-                    published_date=vuln.get("published"),
-                ))
+
+                cves.append(
+                    CVE(
+                        id=vuln.get("id", ""),
+                        severity=severity,
+                        cvss_score=cvss_score,
+                        description=vuln.get("summary", vuln.get("details", "")),
+                        package=package,
+                        version=version,
+                        fixed_version=fixed_version,
+                        references=[
+                            r.get("url", "") for r in vuln.get("references", [])
+                        ],
+                        published_date=vuln.get("published"),
+                    )
+                )
             return cves
         except Exception:
             return []
-    
+
     def _scan_github_advisory(self, package: str, version: str) -> List[CVE]:
-        """Scan using GitHub Advisory Database."""
-        # Stub - would use GitHub GraphQL API
-        return []
-    
+        """Scan using GitHub Advisory Database (public REST endpoint)."""
+        import urllib.request
+        import urllib.parse
+
+        cves: List[CVE] = []
+        try:
+            eco = urllib.parse.quote("pip")
+            pkg = urllib.parse.quote(package)
+            url = (
+                "https://api.github.com/advisories"
+                "?ecosystem=%s&package=%s&per_page=20" % (eco, pkg)
+            )
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "Accept": "application/vnd.github+json",
+                    "User-Agent": "sneppx-alg",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except Exception:
+            return cves
+
+        if not isinstance(data, list):
+            data = data.get("advisories", []) if isinstance(data, dict) else []
+
+        for adv in data:
+            ghsa_id = adv.get("ghsa_id", adv.get("id", ""))
+            cve_id = adv.get("cve_id") or ghsa_id
+            summary = adv.get("summary", "")
+            desc = adv.get("description", summary)
+            severity_str = (adv.get("severity") or "medium").lower()
+            severity_map = {
+                "critical": Severity.CRITICAL,
+                "high": Severity.HIGH,
+                "medium": Severity.MEDIUM,
+                "low": Severity.LOW,
+            }
+            severity = severity_map.get(severity_str, Severity.MEDIUM)
+
+            cvss = adv.get("cvss") or {}
+            cvss_score = float(cvss.get("score", 0.0) or 0.0)
+            if cvss_score == 0.0:
+                # fall back from severity
+                cvss_score = {
+                    "critical": 9.5,
+                    "high": 7.5,
+                    "medium": 5.0,
+                    "low": 2.5,
+                }.get(severity_str, 5.0)
+
+            fixed_version = None
+            for vuln in adv.get("vulnerabilities", []):
+                for r in vuln.get("first_patched_version", {}) or {}:
+                    pass
+                fpv = vuln.get("first_patched_version")
+                if isinstance(fpv, dict):
+                    fixed_version = fpv.get("identifier")
+                elif isinstance(fpv, str):
+                    fixed_version = fpv
+
+            refs = [u for u in adv.get("references", []) if isinstance(u, str)]
+            published = adv.get("published_at")
+
+            cves.append(
+                CVE(
+                    id=cve_id,
+                    severity=severity,
+                    cvss_score=cvss_score,
+                    description=desc,
+                    package=package,
+                    version=version,
+                    fixed_version=fixed_version,
+                    references=refs,
+                    published_date=published,
+                )
+            )
+        return cves
+
     def scan_requirements(self, requirements_path: str) -> Dict[str, List[CVE]]:
         """Scan a requirements.txt or pyproject.toml file."""
         results = {}
-        
+
         if requirements_path.endswith(".txt"):
             with open(requirements_path, "r") as f:
                 for line in f:
@@ -313,10 +460,13 @@ class CVEScanner:
                         parts = line.split("==")
                         if len(parts) == 2:
                             pkg, ver = parts
-                            results[f"{pkg}@{ver}"] = self.scan_package(pkg.strip(), ver.strip())
+                            results[f"{pkg}@{ver}"] = self.scan_package(
+                                pkg.strip(), ver.strip()
+                            )
         elif requirements_path.endswith("pyproject.toml"):
             try:
                 import tomli
+
                 with open(requirements_path, "rb") as f:
                     data = tomli.load(f)
                 deps = data.get("project", {}).get("dependencies", [])
@@ -327,26 +477,28 @@ class CVEScanner:
                         pkg, ver = dep.split("==")
                     else:
                         continue
-                    results[f"{pkg}@{ver}"] = self.scan_package(pkg.strip(), ver.strip())
+                    results[f"{pkg}@{ver}"] = self.scan_package(
+                        pkg.strip(), ver.strip()
+                    )
             except Exception:
                 pass
-        
+
         return results
 
 
 class SBOMGenerator:
     """Generate Software Bill of Materials (SBOM) in CycloneDX and SPDX formats."""
-    
+
     def __init__(self):
         self._lock = threading.Lock()
-    
+
     def generate_from_pip(self, output_path: Optional[str] = None) -> SBOM:
         """Generate SBOM from installed pip packages."""
         try:
             import pkg_resources
         except ImportError:
             return SBOM()
-        
+
         sbom = SBOM()
         sbom.metadata = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -357,7 +509,7 @@ class SBOMGenerator:
                 "version": "0.9.0",
             },
         }
-        
+
         for dist in pkg_resources.working_set:
             hashes = {}
             try:
@@ -371,7 +523,7 @@ class SBOMGenerator:
                     hashes[algo] = h.hexdigest()
             except Exception:
                 pass
-            
+
             licenses = []
             try:
                 licenses = dist.get_metadata_lines("METADATA")
@@ -379,7 +531,7 @@ class SBOMGenerator:
                 licenses = [l.split(":", 1)[1].strip() for l in licenses]
             except Exception:
                 licenses = ["Unknown"]
-            
+
             component = SBOMComponent(
                 name=dist.key,
                 version=dist.version,
@@ -390,14 +542,16 @@ class SBOMGenerator:
                 purl=f"pkg:pypi/{dist.key}@{dist.version}",
             )
             sbom.components.append(component)
-        
+
         if output_path:
             with open(output_path, "w") as f:
                 json.dump(sbom.to_cyclonedx_json(), f, indent=2)
-        
+
         return sbom
-    
-    def generate_from_docker(self, image: str, output_path: Optional[str] = None) -> SBOM:
+
+    def generate_from_docker(
+        self, image: str, output_path: Optional[str] = None
+    ) -> SBOM:
         """Generate SBOM from Docker image (uses syft if available)."""
         sbom = SBOM()
         sbom.metadata = {
@@ -405,7 +559,7 @@ class SBOMGenerator:
             "tools": [{"name": "syft", "version": "unknown"}],
             "component": {"type": "container", "name": image},
         }
-        
+
         try:
             # Try to use syft
             result = subprocess.run(
@@ -418,24 +572,34 @@ class SBOMGenerator:
                 data = json.loads(result.stdout)
                 # Parse syft output into SBOM
                 for comp in data.get("components", []):
-                    sbom.components.append(SBOMComponent(
-                        name=comp.get("name", ""),
-                        version=comp.get("version", ""),
-                        supplier=comp.get("supplier", {}).get("name") if comp.get("supplier") else None,
-                        description=comp.get("description", ""),
-                        licenses=[l.get("license", {}).get("id", "") for l in comp.get("licenses", [])],
-                        hashes={h.get("alg", ""): h.get("content", "") for h in comp.get("hashes", [])},
-                        purl=comp.get("purl"),
-                    ))
+                    sbom.components.append(
+                        SBOMComponent(
+                            name=comp.get("name", ""),
+                            version=comp.get("version", ""),
+                            supplier=comp.get("supplier", {}).get("name")
+                            if comp.get("supplier")
+                            else None,
+                            description=comp.get("description", ""),
+                            licenses=[
+                                l.get("license", {}).get("id", "")
+                                for l in comp.get("licenses", [])
+                            ],
+                            hashes={
+                                h.get("alg", ""): h.get("content", "")
+                                for h in comp.get("hashes", [])
+                            },
+                            purl=comp.get("purl"),
+                        )
+                    )
         except Exception:
             pass
-        
+
         if output_path:
             with open(output_path, "w") as f:
                 json.dump(sbom.to_cyclonedx_json(), f, indent=2)
-        
+
         return sbom
-    
+
     def to_spdx(self, sbom: SBOM) -> str:
         """Convert SBOM to SPDX tag-value format."""
         lines = [
@@ -447,33 +611,35 @@ class SBOMGenerator:
             f"Creator: Tool: sneppx-sbom-generator-0.9.0",
             f"Created: {sbom.metadata.get('timestamp', datetime.utcnow().isoformat())}Z",
         ]
-        
+
         for i, comp in enumerate(sbom.components):
             pkg_id = f"SPDXRef-Package-{i}"
-            lines.extend([
-                "",
-                f"PackageName: {comp.name}",
-                f"SPDXID: {pkg_id}",
-                f"PackageVersion: {comp.version}",
-                f"PackageDownloadLocation: NOASSERTION",
-                f"FilesAnalyzed: false",
-                f"LicenseConcluded: {' OR '.join(comp.licenses) if comp.licenses else 'NOASSERTION'}",
-                f"PackageSupplier: {comp.supplier or 'NOASSERTION'}",
-                f"PackageDescription: {comp.description or 'NOASSERTION'}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"PackageName: {comp.name}",
+                    f"SPDXID: {pkg_id}",
+                    f"PackageVersion: {comp.version}",
+                    f"PackageDownloadLocation: NOASSERTION",
+                    f"FilesAnalyzed: false",
+                    f"LicenseConcluded: {' OR '.join(comp.licenses) if comp.licenses else 'NOASSERTION'}",
+                    f"PackageSupplier: {comp.supplier or 'NOASSERTION'}",
+                    f"PackageDescription: {comp.description or 'NOASSERTION'}",
+                ]
+            )
             if comp.purl:
                 lines.append(f"ExternalRef: {pkg_id} {comp.purl}")
-        
+
         return "\n".join(lines)
 
 
 class ABOOTPartition:
     """A/B partition management for atomic updates."""
-    
+
     def __init__(self, root: str = "/"):
         self.root = Path(root)
         self.current = self._detect_current_slot()
-    
+
     def _detect_current_slot(self) -> str:
         """Detect current A/B slot from boot params."""
         try:
@@ -489,11 +655,11 @@ class ABOOTPartition:
         except Exception:
             pass
         return "_a"  # default
-    
+
     @property
     def inactive_slot(self) -> str:
         return "_b" if self.current == "_a" else "_a"
-    
+
     def switch_slot(self) -> bool:
         """Switch to other slot on next boot."""
         try:
@@ -502,7 +668,7 @@ class ABOOTPartition:
             return True
         except Exception:
             return False
-    
+
     def get_partition_path(self, partition: str, slot: Optional[str] = None) -> Path:
         """Get partition path for given slot."""
         slot = slot or self.current
@@ -511,7 +677,7 @@ class ABOOTPartition:
 
 class SignedUpdateManager:
     """Signed update management with rollback support."""
-    
+
     def __init__(
         self,
         update_dir: Optional[str] = None,
@@ -521,7 +687,7 @@ class SignedUpdateManager:
         self.update_dir.mkdir(parents=True, exist_ok=True)
         self.public_key_path = public_key_path
         self._lock = threading.Lock()
-    
+
     def verify_signature(self, update_path: str, signature_path: str) -> bool:
         """Verify update package signature using Ed25519."""
         if not self.public_key_path:
@@ -529,21 +695,21 @@ class SignedUpdateManager:
         try:
             import nacl.signing
             import nacl.encoding
-            
+
             with open(self.public_key_path, "rb") as f:
                 pk = f.read()
             verify_key = nacl.signing.VerifyKey(pk, encoder=nacl.encoding.RawEncoder)
-            
+
             with open(update_path, "rb") as f:
                 data = f.read()
             with open(signature_path, "rb") as f:
                 sig = f.read()
-            
+
             verify_key.verify(data, sig, encoder=nacl.encoding.RawEncoder)
             return True
         except Exception:
             return False
-    
+
     def stage_update(
         self,
         update_path: str,
@@ -555,17 +721,18 @@ class SignedUpdateManager:
             update_id = f"update_{version}_{int(time.time())}"
             staged_dir = self.update_dir / "staged" / update_id
             staged_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Copy update
             import shutil
+
             dest = staged_dir / Path(update_path).name
             shutil.copy2(update_path, dest)
-            
+
             # Verify signature if provided
             if signature_path and not self.verify_signature(str(dest), signature_path):
                 shutil.rmtree(staged_dir)
                 return False, "Signature verification failed"
-            
+
             # Save metadata
             meta = {
                 "update_id": update_id,
@@ -576,50 +743,59 @@ class SignedUpdateManager:
             }
             with open(staged_dir / "meta.json", "w") as f:
                 json.dump(meta, f)
-            
+
             return True, update_id
-    
-    def install_update(self, update_id: str, partition: ABOOTPartition) -> Tuple[bool, str]:
+
+    def install_update(
+        self, update_id: str, partition: ABOOTPartition
+    ) -> Tuple[bool, str]:
         """Install staged update to inactive partition."""
         with self._lock:
             staged_dir = self.update_dir / "staged" / update_id
             meta_file = staged_dir / "meta.json"
-            
+
             if not meta_file.exists():
                 return False, "Update not found"
-            
+
             with open(meta_file, "r") as f:
                 meta = json.load(f)
-            
+
             update_file = staged_dir / meta["path"].split("/")[-1]
             if not update_file.exists():
                 return False, "Update file missing"
-            
+
             # Apply update to inactive partition
             inactive = partition.inactive_slot
             part_path = partition.get_partition_path("rootfs", inactive)
-            
+
             try:
                 # This would use dd, flash, or similar on real systems
                 subprocess.run(
-                    ["dd", f"if={update_file}", f"of={part_path}", "bs=4M", "status=progress"],
+                    [
+                        "dd",
+                        f"if={update_file}",
+                        f"of={part_path}",
+                        "bs=4M",
+                        "status=progress",
+                    ],
                     check=True,
                 )
-                
+
                 # Switch slot
                 if not partition.switch_slot():
                     return False, "Failed to switch boot slot"
-                
+
                 # Mark as installed
                 installed_dir = self.update_dir / "installed"
                 installed_dir.mkdir(exist_ok=True)
                 import shutil
+
                 shutil.move(str(staged_dir), str(installed_dir / update_id))
-                
+
                 return True, "Update installed successfully"
             except Exception as e:
                 return False, f"Installation failed: {e}"
-    
+
     def rollback(self, partition: ABOOTPartition) -> bool:
         """Rollback to previous slot."""
         return partition.switch_slot()
@@ -627,7 +803,7 @@ class SignedUpdateManager:
 
 class ContainerSecurityManager:
     """Unified container security manager."""
-    
+
     def __init__(
         self,
         update_dir: Optional[str] = None,
@@ -640,7 +816,7 @@ class ContainerSecurityManager:
         self.update_manager = SignedUpdateManager(update_dir, public_key_path)
         self._scan_history: List[ScanResult] = []
         self._lock = threading.Lock()
-    
+
     def scan_image(
         self,
         image: str,
@@ -648,47 +824,47 @@ class ContainerSecurityManager:
     ) -> ScanResult:
         """Scan a container image for vulnerabilities."""
         scan_id = f"scan_{image.replace('/', '_').replace(':', '_')}_{int(time.time())}"
-        
+
         result = ScanResult(
             scan_id=scan_id,
             image_name=image,
             status=ScanStatus.RUNNING,
             started_at=datetime.utcnow().isoformat(),
         )
-        
+
         try:
             # Generate SBOM
             sbom = None
             if generate_sbom:
                 sbom = self.sbom_generator.generate_from_docker(image)
-            
+
             # Scan each component
             cves = []
             for comp in sbom.components:
                 comp_cves = self.cve_scanner.scan_package(comp.name, comp.version)
                 cves.extend(comp_cves)
-            
+
             result.cves = cves
             result.sbom = sbom
             result.status = ScanStatus.COMPLETED
             result.completed_at = datetime.utcnow().isoformat()
-            
+
         except Exception as e:
             result.status = ScanStatus.FAILED
             result.error = str(e)
-        
+
         with self._lock:
             self._scan_history.append(result)
             # Keep only last 100 scans
             if len(self._scan_history) > 100:
                 self._scan_history = self._scan_history[-100:]
-        
+
         return result
-    
+
     def scan_requirements(self, requirements_path: str) -> Dict[str, List[CVE]]:
         """Scan a requirements file."""
         return self.cve_scanner.scan_requirements(requirements_path)
-    
+
     def generate_sbom(
         self,
         source: str = "pip",
@@ -702,7 +878,7 @@ class ContainerSecurityManager:
             return self.sbom_generator.generate_from_docker(image, output_path)
         else:
             raise ValueError(f"Unknown source: {source}")
-    
+
     def stage_update(
         self,
         update_path: str,
@@ -711,23 +887,23 @@ class ContainerSecurityManager:
     ) -> Tuple[bool, str]:
         """Stage an update for installation."""
         return self.update_manager.stage_update(update_path, version, signature_path)
-    
+
     def install_update(self, update_id: str) -> Tuple[bool, str]:
         """Install staged update."""
         return self.update_manager.install_update(update_id, self.partition_manager)
-    
+
     def rollback(self) -> bool:
         """Rollback to previous slot."""
         return self.update_manager.rollback(self.partition_manager)
-    
+
     def get_scan_history(self, limit: int = 50) -> List[ScanResult]:
         """Get recent scan history."""
         with self._lock:
             return self._scan_history[-limit:]
-    
+
     def get_current_slot(self) -> str:
         return self.partition_manager.current
-    
+
     def get_partition_info(self) -> Dict[str, Any]:
         return {
             "current_slot": self.partition_manager.current,
@@ -765,11 +941,15 @@ def scan_requirements(path: str) -> Dict[str, List[CVE]]:
     return get_container_security().scan_requirements(path)
 
 
-def generate_sbom(source: str = "pip", output_path: Optional[str] = None, image: Optional[str] = None) -> SBOM:
+def generate_sbom(
+    source: str = "pip", output_path: Optional[str] = None, image: Optional[str] = None
+) -> SBOM:
     return get_container_security().generate_sbom(source, output_path, image)
 
 
-def stage_update(update_path: str, version: str, signature_path: Optional[str] = None) -> Tuple[bool, str]:
+def stage_update(
+    update_path: str, version: str, signature_path: Optional[str] = None
+) -> Tuple[bool, str]:
     return get_container_security().stage_update(update_path, version, signature_path)
 
 
