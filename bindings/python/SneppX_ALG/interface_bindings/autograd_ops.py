@@ -2494,8 +2494,9 @@ class ConvTransposeNd(Function):
             dilation = (1,) * len(stride)
         groups = ctx.get_attr("groups")
         has_bias = ctx.get_attr("has_bias")
-        if groups != 1:
-            raise NotImplementedError("ConvTransposeNd backward supports groups=1 only")
+        dilation = ctx.get_attr("dilation", None)
+        if dilation is None:
+            dilation = (1,) * len(stride)
 
         x = np.asarray(inp.data, dtype=np.float64)
         w = np.asarray(kernel.data, dtype=np.float64)
@@ -2505,22 +2506,43 @@ class ConvTransposeNd(Function):
         kshape = w.shape[2:]
         S_out = g.shape[2:]
 
+        C_in = x.shape[1]
+        C_out = g.shape[1]
+        cin_g = C_in // groups
+        cout_g = C_out // groups
+
         grad_x = np.zeros_like(x)
         grad_w = np.zeros_like(w)
-        xa = (slice(None), slice(None))
-        for sidx in np.ndindex(*spatial_in):
-            x_slice = x[xa + sidx]  # (N, C_in)
-            for kidx in np.ndindex(*kshape):
-                oidx = tuple(
-                    sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
-                    for d in range(ndim)
+        grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+
+        for gg in range(groups):
+            xg = x[:, gg * cin_g : (gg + 1) * cin_g]
+            wg = w[gg * cin_g : (gg + 1) * cin_g]
+            gg_out = g[:, gg * cout_g : (gg + 1) * cout_g]
+            S_out_g = gg_out.shape[2:]
+            grad_xg = np.zeros_like(xg)
+            grad_wg = np.zeros_like(wg)
+            xa = (slice(None), slice(None))
+            for sidx in np.ndindex(*spatial_in):
+                x_slice = xg[xa + sidx]
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out_g[d] for d in range(ndim)):
+                        continue
+                    gv = gg_out[xa + oidx]
+                    grad_xg[xa + sidx] += gv @ wg[xa + kidx].T
+                    grad_wg[xa + kidx] += x_slice.T @ gv
+            grad_x[:, gg * cin_g : (gg + 1) * cin_g] = grad_xg
+            grad_w[gg * cin_g : (gg + 1) * cin_g] = grad_wg
+            if has_bias:
+                grad_b[gg * cout_g : (gg + 1) * cout_g] = gg_out.sum(
+                    axis=(0,) + tuple(range(2, gg_out.ndim))
                 )
-                if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
-                    continue
-                gv = g[xa + oidx]  # (N, C_out)
-                grad_x[xa + sidx] += gv @ w[xa + kidx].T
-                grad_w[xa + kidx] += x_slice.T @ gv
-        grad_b = g.sum(axis=(0,) + tuple(range(2, g.ndim))) if has_bias else None
+
+        grad_b = grad_b if has_bias else None
 
         return [
             Tensor(grad_x, dtype=inp.dtype),

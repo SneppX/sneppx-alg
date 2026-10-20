@@ -282,13 +282,9 @@ def conv_transpose1d(
     groups=1,
     dilation=1,
 ):
-    if groups == 1:
-        from .autograd_ops import ConvTransposeNd as _CTNdFn
+    from .autograd_ops import ConvTransposeNd as _CTNdFn
 
-        return _CTNdFn.apply(
-            input, weight, bias, stride, padding, output_padding, groups, dilation
-        )
-    return advanced_ops.conv_transpose1d(
+    return _CTNdFn.apply(
         input, weight, bias, stride, padding, output_padding, groups, dilation
     )
 
