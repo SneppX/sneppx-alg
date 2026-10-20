@@ -1,0 +1,85 @@
+name: Bug report
+description: Report something that isn't working in sneppx-alg.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report.
+
+        **Security issues: do NOT use this form.** Report them privately via
+        [GitHub Security Advisories](https://github.com/SneppX/sneppx-alg/security/advisories/new).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of sneppx-alg is affected?
+      options:
+        - C/C++ core (kernel/, algorithms/)
+        - Python bindings (SneppX_ALG)
+        - Build / CMake
+        - Distributed training
+        - Security layers
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Smallest possible steps or script.
+      placeholder: |
+        1. Install `sneppx-alg` from `main`
+        2. Run `python -m pytest tests/python/test_tensor.py`
+        3. See `AssertionError` on ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      placeholder: |
+        - OS: Windows 11 x64
+        - Python: 3.11.9
+        - sneppx-alg: main @ abc1234
+        - Compiler: MSVC 2022 / GCC 12 / Clang 15
+        - CMake: 3.25
+        - Build type: Debug / Release
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / traceback
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing open and closed issues
+          required: true
+        - label: This is not a security vulnerability
+          required: true

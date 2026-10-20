@@ -1,0 +1,60 @@
+name: Feature request
+description: Suggest an idea or capability for sneppx-alg.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. The fastest path to landing is a pull request
+        (see [CONTRIBUTING.md](https://github.com/SneppX/sneppx-alg/blob/main/CONTRIBUTING.md)).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Python bindings (SneppX_ALG)
+        - C/C++ core
+        - Distributed training
+        - Security layers
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do that is currently hard or impossible?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How you imagine it working. API sketch welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, prior art, benchmarks, or screenshots.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing open and closed issues
+          required: true
+        - label: I am willing to help implement or test this
