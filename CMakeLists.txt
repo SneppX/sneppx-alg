@@ -248,8 +248,9 @@ add_subdirectory(algorithms/model_zoo)
 if(CORE_SECURITY_C_SRC)
     add_library(neural_security_c STATIC ${CORE_SECURITY_C_SRC})
     target_include_directories(neural_security_c PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-        $<INSTALL_INTERFACE:include/neural_core/security>
+        $<INSTALL_INTERFACE:include>
     )
     target_compile_definitions(neural_security_c PRIVATE $<$<CONFIG:Release>:SNEPPX_S1_SECURE_MEMORY>)
 
