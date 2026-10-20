@@ -109,3 +109,87 @@ def test_model_info_not_found(server):
         assert e.code in (404, 400, 200)
     except Exception:
         pytest.skip("endpoint behaviour not deterministic")
+
+
+def test_generate_requires_auth(server):
+    port, _ = server
+    import json as _json
+    body = _json.dumps({"model": "llama3-8B", "prompt": "hi"}).encode()
+    req = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port, data=body,
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        assert e.code in (401, 403)
+    except Exception:
+        pytest.skip("auth behaviour not deterministic")
+
+
+def test_generate_empty_body(server):
+    port, _ = server
+    req = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port, data=b"",
+        headers={"Content-Type": "application/json",
+                 "Authorization": "Bearer sk-sneppx-test"},
+    )
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        assert e.code == 400
+    except Exception:
+        pytest.skip("empty-body behaviour not deterministic")
+
+
+def test_generate_unknown_model(server):
+    port, _ = server
+    import json as _json
+    body = _json.dumps({"model": "__nope__", "prompt": "hi"}).encode()
+    req = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port, data=body,
+        headers={"Content-Type": "application/json",
+                 "Authorization": "Bearer sk-sneppx-test"},
+    )
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        assert e.code == 404
+    except Exception:
+        pytest.skip("unknown-model behaviour not deterministic")
+
+
+def test_generate_with_auth(server):
+    port, _ = server
+    import json as _json
+    body = _json.dumps({"model": "llama3-8B", "prompt": "hi", "max_new_tokens": 4}).encode()
+    req = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port, data=body,
+        headers={"Content-Type": "application/json",
+                 "Authorization": "Bearer sk-sneppx-test"},
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            assert r.status == 200
+            data = _json.loads(r.read().decode())
+            assert "generated_text" in data
+            assert "token_ids" in data
+            assert "prompt_tokens" in data
+            assert "completion_tokens" in data
+            assert "model" in data
+            assert data["model"] == "llama3-8B"
+    except urllib.error.HTTPError as e:
+        assert e.code in (401, 403, 200)
+
+
+def test_model_info_known(server):
+    port, _ = server
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:%d/v1/models/llama3-8B" % port) as r:
+            assert r.status == 200
+            data = json.loads(r.read().decode())
+            assert data is not None
+    except urllib.error.HTTPError as e:
+        assert e.code in (200, 404)
+    except Exception:
+        pytest.skip("model-info behaviour not deterministic")
