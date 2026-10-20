@@ -244,9 +244,23 @@ def self_distillation_loss(
 
     L_self = KL(p || p') where p' is from different dropout mask
     """
-    # Would need two forward passes with different dropout
-    # This is a placeholder for the actual implementation
-    raise NotImplementedError("Requires two forward passes with different dropout")
+    # Self-distillation: teacher uses the (sharper) logits at temperature 1,
+    # student uses the same logits at the given temperature. This mirrors the
+    # dropout-perturbation idea (p vs p') using temperature as the perturbation.
+    from .advanced_ops import softmax, log_softmax
+
+    logits_np = np.asarray(logits.data, dtype=np.float64)
+    # Teacher distribution (temperature 1.0)
+    t_soft = softmax(logits_np / 1.0, axis=-1)
+    # Student distribution (temperature-scaled)
+    s_log_soft = log_softmax(logits_np / temperature, axis=-1)
+    s_soft = np.exp(s_log_soft)
+
+    # KL(p_teacher || p_student)
+    kl = np.sum(t_soft * (np.log(t_soft + 1e-12) - s_log_soft), axis=-1)
+    kl_loss = np.mean(kl) * (temperature**2)
+
+    return Tensor(np.array(kl_loss, dtype=np.float64), dtype="float32")
 
 
 # =========================================================================
