@@ -1935,17 +1935,25 @@ SNEPPXTensor* SNEPPX_tensor_conv1d(const SNEPPXTensor* input, const SNEPPXTensor
     size_t K = kernel->shape[kernel->ndim - 1];
     size_t out_len = (L + 2 * padding - K) / stride + 1;
     if (out_len == 0) return NULL;
+    size_t in_channels = input->shape[input->ndim - 2];
+    /* torch conv1d weight layout is (C_out, C_in, K): the output-channel
+     * count lives at shape[ndim-3] (or is absent for a (C_in, K) kernel). */
+    size_t kernel_channels =
+        kernel->ndim >= 3 ? kernel->shape[kernel->ndim - 3] : 1;
+    size_t kernel_in_channels = kernel->shape[kernel->ndim - 2];
+    if (kernel_in_channels != in_channels) return NULL;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
-    for (size_t i = 0; i < out_ndim - 1; i++) out_shape[i] = input->shape[i];
+    for (size_t i = 0; i < out_ndim - 1; i++)
+        /* channel axis (ndim-2) must report the KERNEL's out-channel count,
+         * not the input's (torch conv1d: (N, C_out, L_out)). */
+        out_shape[i] = (i == out_ndim - 2) ? kernel_channels : input->shape[i];
     out_shape[out_ndim - 1] = out_len;
     SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
     if (!result) return NULL;
     float* id = (float*)input->data;
     float* kd = (float*)kernel->data;
     float* rd = (float*)result->data;
-    size_t in_channels = input->shape[input->ndim - 2];
-    size_t kernel_channels = kernel->shape[kernel->ndim - 2];
     size_t batch = input->size / (in_channels * L);
     for (size_t b = 0; b < batch; b++) {
         for (size_t c_in = 0; c_in < in_channels; c_in++) {
@@ -1983,9 +1991,19 @@ SNEPPXTensor* SNEPPX_tensor_conv2d(const SNEPPXTensor* input, const SNEPPXTensor
     size_t out_h = (H + 2 * pad_h - KH) / stride_h + 1;
     size_t out_w = (W + 2 * pad_w - KW) / stride_w + 1;
     if (out_h == 0 || out_w == 0) return NULL;
+    size_t in_channels = input->shape[input->ndim - 3];
+    /* torch conv2d weight layout is (C_out, C_in, KH, KW): the output-
+     * channel count lives at shape[ndim-4] (absent for a (C_in, KH, KW)
+     * kernel, i.e. single output channel). */
+    size_t out_channels = kernel->ndim >= 4 ? kernel->shape[kernel->ndim - 4] : 1;
+    size_t kernel_in_channels = kernel->shape[kernel->ndim - 3];
+    if (kernel_in_channels != in_channels) return NULL;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
-    for (size_t i = 0; i < out_ndim - 2; i++) out_shape[i] = input->shape[i];
+    for (size_t i = 0; i < out_ndim - 2; i++)
+        /* channel axis (ndim-3) must report the KERNEL's out-channel count,
+         * not the input's (torch conv2d: (N, C_out, H_out, W_out)). */
+        out_shape[i] = (i == out_ndim - 3) ? out_channels : input->shape[i];
     out_shape[out_ndim - 2] = out_h;
     out_shape[out_ndim - 1] = out_w;
     SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
@@ -1993,8 +2011,6 @@ SNEPPXTensor* SNEPPX_tensor_conv2d(const SNEPPXTensor* input, const SNEPPXTensor
     float* id = (float*)input->data;
     float* kd = (float*)kernel->data;
     float* rd = (float*)result->data;
-    size_t in_channels = input->shape[input->ndim - 3];
-    size_t out_channels = kernel->shape[kernel->ndim - 3];
     size_t batch = input->size / (in_channels * H * W);
     for (size_t b = 0; b < batch; b++) {
         for (size_t co = 0; co < out_channels; co++) {
