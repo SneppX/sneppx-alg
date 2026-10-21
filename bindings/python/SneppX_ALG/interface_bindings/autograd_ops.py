@@ -91,7 +91,7 @@ def _cg_broadcast(g, target_shape):
     g2 = g
     if tuple(out_p) != tuple(out):
         g2 = Reshape.apply(g, tuple(out_p))
-    for i in range(n):
+    for i in range(n - 1, -1, -1):
         if tgt_p[i] == out_p[i]:
             continue
         if tgt_p[i] == 1 and out_p[i] != 1:
