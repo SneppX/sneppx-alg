@@ -34,6 +34,10 @@ public:
     }
     ~PyTensor() { if (owner && ptr) SNEPPX_tensor_destroy(ptr); }
 
+    /* Relinquish python-side ownership: used by PyVariable::create because
+     * SNEPPX_variable_create takes ownership of the tensor pointer. */
+    void release() { owner = false; }
+
     PyTensor(const PyTensor&) = delete;
     PyTensor& operator=(const PyTensor&) = delete;
 
