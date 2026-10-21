@@ -1736,6 +1736,17 @@ SNEPPXTensor* SNEPPX_tensor_cumprod(const SNEPPXTensor* src, size_t dim) {
  */
 float SNEPPX_tensor_dot(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     if (!a || !b || a->size != b->size) return 0.0f;
+    if (a->dtype != b->dtype) return 0.0f;
+    if (a->dtype == SNEPPX_FLOAT64) {
+        /* float64 inputs: accumulate in double (the float return caps the
+         * final precision, but the accumulation must not misread the
+         * f64 storage as f32 — that produced garbage). */
+        const double* ad = (const double*)a->data;
+        const double* bd = (const double*)b->data;
+        double sum = 0.0;
+        for (size_t i = 0; i < a->size; i++) sum += ad[i] * bd[i];
+        return (float)sum;
+    }
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
     float sum = 0.0f;

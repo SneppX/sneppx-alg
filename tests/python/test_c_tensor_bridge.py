@@ -140,6 +140,17 @@ def test_matmul_parity_batched():
     assert np.max(np.abs(got - ref)) <= 1e-4
 
 
+def test_dot_parity_float32_float64():
+    """dot() must read f64 storage correctly (was misread as f32 -> garbage)."""
+    a = np.random.RandomState(21).rand(8).astype(np.float32)
+    b = np.random.RandomState(22).rand(8).astype(np.float32)
+    assert np.isclose(cb.from_numpy(a).dot(cb.from_numpy(b)), float(a @ b), rtol=1e-5)
+    a64 = np.random.RandomState(23).rand(8)
+    b64 = np.random.RandomState(24).rand(8)
+    # float return type caps precision; garbage misread would be far off
+    assert np.isclose(cb.from_numpy(a64).dot(cb.from_numpy(b64)), float(a64 @ b64), rtol=1e-6)
+
+
 def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
     x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
     n, c, h, w = x.shape
