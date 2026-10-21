@@ -23,7 +23,15 @@ public:
     bool owner;
 
     PyTensor() : ptr(nullptr), owner(false) {}
-    explicit PyTensor(SNEPPXTensor* t, bool own = true) : ptr(t), owner(own) {}
+    explicit PyTensor(SNEPPXTensor* t, bool own = true) : ptr(t), owner(own) {
+        // Ops return NULL for invalid inputs (shape/dtype mismatch,
+        // unsupported cases) — fail fast with a python-visible error
+        // instead of letting a NULL ptr segfault later lifetimes (issue #14).
+        if (own && !t)
+            throw std::runtime_error(
+                "SNEPPX op returned NULL (invalid shape/dtype combination for "
+                "this op)");
+    }
     ~PyTensor() { if (owner && ptr) SNEPPX_tensor_destroy(ptr); }
 
     PyTensor(const PyTensor&) = delete;
@@ -129,8 +137,13 @@ public:
         std::vector<py::ssize_t> np_shape(ptr->shape, ptr->shape + ptr->ndim);
         std::vector<py::ssize_t> np_strides(ptr->ndim);
         if (ptr->strides) {
+            // SNEPPXTensor.strides are ELEMENT strides (see compute_offset in
+            // kernel/tensor/tensor.c: `((float*)data)[offset]`), while numpy
+            // expects BYTE strides — multiply by the item size (issue #14).
             for (size_t i = 0; i < ptr->ndim; ++i)
-                np_strides[i] = static_cast<py::ssize_t>(ptr->strides[i]);
+                np_strides[i] =
+                    static_cast<py::ssize_t>(ptr->strides[i]) *
+                    static_cast<py::ssize_t>(itemsize);
         } else {
             np_strides[ptr->ndim - 1] = itemsize;
             for (size_t i = ptr->ndim; i > 1; --i)
