@@ -120,6 +120,17 @@ def test_matmul_parity_rectangular():
     assert err <= 1e-5
 
 
+def test_matmul_parity_float64_exact_dtype():
+    """f64 matmul must stay f64 (was hardcoded float32 downcast)."""
+    a = np.random.RandomState(14).rand(3, 5)
+    b = np.random.RandomState(15).rand(5, 4)
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    out = ta.matmul(tb)
+    assert cb.c_dtype_to_numpy(out.dtype) == np.float64
+    got = cb.to_numpy(out)
+    assert np.max(np.abs(got - (a @ b))) <= 1e-12
+
+
 def test_matmul_parity_batched():
     a = np.random.RandomState(7).rand(3, 4, 5).astype(np.float32)
     b = np.random.RandomState(8).rand(3, 5, 2).astype(np.float32)

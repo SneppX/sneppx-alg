@@ -1784,14 +1784,58 @@ SNEPPXTensor* SNEPPX_tensor_matmul(const SNEPPXTensor* a, const SNEPPXTensor* b)
     for (size_t i = 0; i < out_lead_ndim; i++) out_shape[i] = out_lead[i];
     if (!a1) out_shape[out_lead_ndim] = a_m;
     if (!b1) out_shape[out_lead_ndim + (a1 ? 0 : 1)] = b_n;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXDtype mm_dtype = (a->dtype == b->dtype) ? a->dtype : SNEPPX_FLOAT32;
+    if (mm_dtype != SNEPPX_FLOAT32 && mm_dtype != SNEPPX_FLOAT64) {
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return NULL;
+    }
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, mm_dtype);
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; }
+
+    size_t batches = 1; for (size_t i = 0; i < out_lead_ndim; i++) batches *= out_lead[i];
+    if (batches == 0) batches = 1;
+
+    if (mm_dtype == SNEPPX_FLOAT64) {
+        /* float64 path — element offsets are in double counts */
+        const double* a64 = (const double*)a->data;
+        const double* b64 = (const double*)b->data;
+        double* r64 = (double*)result->data;
+        for (size_t batch2 = 0; batch2 < batches; batch2++) {
+            size_t rem64 = batch2, coords64[8];
+            for (long i = (long)out_lead_ndim - 1; i >= 0; i--) { coords64[i] = rem64 % out_lead[i]; rem64 /= out_lead[i]; }
+            long aoff64 = 0, boff64 = 0;
+            for (size_t i = 0; i < out_lead_ndim; i++) {
+                long ai = (long)i - (long)(out_lead_ndim - a_lead_ndim);
+                long bi = (long)i - (long)(out_lead_ndim - b_lead_ndim);
+                size_t ac = ai >= 0 ? (a_lead[ai] == 1 ? 0 : coords64[i]) : 0;
+                size_t bc = bi >= 0 ? (b_lead[bi] == 1 ? 0 : coords64[i]) : 0;
+                if (ai >= 0) { size_t pre = 1; for (long k = 0; k < ai; k++) pre *= a_lead[k]; aoff64 += (long)(ac * pre); }
+                if (bi >= 0) { size_t pre = 1; for (long k = 0; k < bi; k++) pre *= b_lead[k]; boff64 += (long)(bc * pre); }
+            }
+            size_t Ab = (size_t)aoff64 * (a1 ? a_k : a_m * a_k);
+            size_t Bb = (size_t)boff64 * (b1 ? b_k : b_k * b_n);
+            size_t Cb = batch2 * (a1 ? 0 : a_m) * (b1 ? 0 : b_n);
+            if (a1 && b1) {
+                double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + l] * b64[Bb + l];
+                r64[batch2] = s;
+            } else if (a1) {
+                for (size_t j = 0; j < b_n; j++) { double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + l] * b64[Bb + l * b_n + j]; r64[Cb + j] = s; }
+            } else if (b1) {
+                for (size_t i = 0; i < a_m; i++) { double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + i * a_k + l] * b64[Bb + l]; r64[Cb + i] = s; }
+            } else {
+                for (size_t i = 0; i < a_m; i++) for (size_t j = 0; j < b_n; j++) {
+                    double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + i * a_k + l] * b64[Bb + l * b_n + j];
+                    r64[Cb + i * b_n + j] = s;
+                }
+            }
+        }
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return result;
+    }
 
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
     float* rd = (float*)result->data;
-    size_t batches = 1; for (size_t i = 0; i < out_lead_ndim; i++) batches *= out_lead[i];
-    if (batches == 0) batches = 1;
 
     for (size_t batch = 0; batch < batches; batch++) {
         /* decompose batch into out_lead coords */
