@@ -168,6 +168,27 @@ def test_reductions_sum_mean_float64_dtype_following():
     assert np.allclose(cb.to_numpy(t32.mean(0)), a32.mean(axis=0, keepdims=True), atol=1e-6)
 
 
+def test_binary_ops_float64_dtype_following():
+    """f64 add/sub/mul/div/pow must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(26).rand(3, 4) + 0.5
+    b = np.random.RandomState(27).rand(3, 4) + 0.5
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    for name, np_ref in [
+        ("add", a + b),
+        ("sub", a - b),
+        ("mul", a * b),
+        ("div", a / (b + 1e-10)),  # C div adds an epsilon stabilizer
+        ("pow_", a ** b),
+    ]:
+        out = getattr(ta, name)(tb)
+        assert cb.c_dtype_to_numpy(out.dtype) == np.float64, name
+        got = cb.to_numpy(out)
+        assert np.allclose(got, np_ref, rtol=0, atol=1e-12), name
+    # mixed dtype -> clean NULL -> RuntimeError, not garbage
+    with pytest.raises(RuntimeError):
+        ta.sub(cb.from_numpy(b.astype(np.float32)))
+
+
 def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
     x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
     n, c, h, w = x.shape

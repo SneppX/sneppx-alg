@@ -1277,20 +1277,33 @@ SNEPPXTensor* SNEPPX_tensor_gt(const SNEPPXTensor* a, const SNEPPXTensor* b) { r
  */
 SNEPPXTensor* SNEPPX_tensor_ge(const SNEPPXTensor* a, const SNEPPXTensor* b) { return compare_op(a, b, cmp_ge); }
 
-/* Helper: binary op with contiguity support */
-#define BINARY_OP_F32(name, body) \
+/* Helper: binary op with contiguity support.
+ * Dtype-following: f32/f64 inputs compute and stay in their dtype; any
+ * other (or mixed) dtype combination returns NULL instead of misreading
+ * the storage as f32 (which produced garbage). */
+#define BINARY_OP_F32(name, body_f32, body_f64) \
     SNEPPXTensor* SNEPPX_tensor_##name(const SNEPPXTensor* a, const SNEPPXTensor* b) { \
     if (!a || !b) return NULL; \
     SNEPPXTensor* ta = NULL, *tb = NULL; \
     a = tensor_prep_contiguous(a, &ta); \
     b = tensor_prep_contiguous(b, &tb); \
     size_t sz = a->size < b->size ? a->size : b->size; \
-    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, SNEPPX_FLOAT32); \
+    if (a->dtype != b->dtype || (a->dtype != SNEPPX_FLOAT32 && a->dtype != SNEPPX_FLOAT64)) { \
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; \
+    } \
+    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, a->dtype); \
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; } \
-    float* rd = (float*)result->data; \
-    float* ad = (float*)a->data; \
-    float* bd = (float*)b->data; \
-    for (size_t i = 0; i < sz; i++) { body; } \
+    if (a->dtype == SNEPPX_FLOAT64) { \
+        double* rd = (double*)result->data; \
+        double* ad = (double*)a->data; \
+        double* bd = (double*)b->data; \
+        for (size_t i = 0; i < sz; i++) { body_f64; } \
+    } else { \
+        float* rd = (float*)result->data; \
+        float* ad = (float*)a->data; \
+        float* bd = (float*)b->data; \
+        for (size_t i = 0; i < sz; i++) { body_f32; } \
+    } \
     if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); \
     return result; \
 }
@@ -1309,8 +1322,24 @@ SNEPPXTensor* SNEPPX_tensor_add(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     a = tensor_prep_contiguous(a, &ta);
     b = tensor_prep_contiguous(b, &tb);
     size_t sz = a->size < b->size ? a->size : b->size;
-    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, SNEPPX_FLOAT32);
+    if (a->dtype != b->dtype || (a->dtype != SNEPPX_FLOAT32 && a->dtype != SNEPPX_FLOAT64)) {
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL;
+    }
+    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, a->dtype);
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; }
+    if (a->dtype == SNEPPX_FLOAT64) {
+        const double* ad = (const double*)a->data;
+        const double* bd = (const double*)b->data;
+        double* rd = (double*)result->data;
+        if (a->size == b->size) {
+            for (size_t i = 0; i < sz; i++) rd[i] = ad[i] + bd[i];
+        } else {
+            size_t last = a->shape[a->ndim - 1];
+            for (size_t i = 0; i < a->size; i++) rd[i] = ad[i] + bd[i % last];
+        }
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return result;
+    }
     float* rd = (float*)result->data;
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
@@ -1323,12 +1352,12 @@ SNEPPXTensor* SNEPPX_tensor_add(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
     return result;
 }
-BINARY_OP_F32(sub, rd[i] = ad[i] - bd[i])
-BINARY_OP_F32(mul, rd[i] = ad[i] * bd[i])
-BINARY_OP_F32(div, rd[i] = ad[i] / (bd[i] + 1e-10f))
-BINARY_OP_F32(minimum, rd[i] = ad[i] < bd[i] ? ad[i] : bd[i])
-BINARY_OP_F32(maximum, rd[i] = ad[i] > bd[i] ? ad[i] : bd[i])
-BINARY_OP_F32(pow, rd[i] = powf(ad[i], bd[i]))
+BINARY_OP_F32(sub, rd[i] = ad[i] - bd[i], rd[i] = ad[i] - bd[i])
+BINARY_OP_F32(mul, rd[i] = ad[i] * bd[i], rd[i] = ad[i] * bd[i])
+BINARY_OP_F32(div, rd[i] = ad[i] / (bd[i] + 1e-10f), rd[i] = ad[i] / (bd[i] + 1e-10))
+BINARY_OP_F32(minimum, rd[i] = ad[i] < bd[i] ? ad[i] : bd[i], rd[i] = ad[i] < bd[i] ? ad[i] : bd[i])
+BINARY_OP_F32(maximum, rd[i] = ad[i] > bd[i] ? ad[i] : bd[i], rd[i] = ad[i] > bd[i] ? ad[i] : bd[i])
+BINARY_OP_F32(pow, rd[i] = powf(ad[i], bd[i]), rd[i] = pow(ad[i], bd[i]))
 
 /* ===== Contiguity helper =====
  * If src is non-contiguous, creates a contiguous copy and returns it via *out.
