@@ -151,6 +151,23 @@ def test_dot_parity_float32_float64():
     assert np.isclose(cb.from_numpy(a64).dot(cb.from_numpy(b64)), float(a64 @ b64), rtol=1e-6)
 
 
+def test_reductions_sum_mean_float64_dtype_following():
+    """f64 sum/mean must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(25).rand(3, 5)
+    t = cb.from_numpy(a)
+    s = t.sum(1)
+    assert cb.c_dtype_to_numpy(s.dtype) == np.float64
+    assert np.allclose(cb.to_numpy(s), a.sum(axis=1, keepdims=True), rtol=0, atol=1e-13)
+    m = t.mean(0)
+    assert cb.c_dtype_to_numpy(m.dtype) == np.float64
+    assert np.allclose(cb.to_numpy(m), a.mean(axis=0, keepdims=True), rtol=0, atol=1e-13)
+    # f32 inputs keep f32
+    a32 = a.astype(np.float32)
+    t32 = cb.from_numpy(a32)
+    assert cb.c_dtype_to_numpy(t32.sum(1).dtype) == np.float32
+    assert np.allclose(cb.to_numpy(t32.mean(0)), a32.mean(axis=0, keepdims=True), atol=1e-6)
+
+
 def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
     x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
     n, c, h, w = x.shape

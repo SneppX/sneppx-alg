@@ -1525,17 +1525,28 @@ SNEPPXTensor* SNEPPX_tensor_sum(const SNEPPXTensor* src, size_t dim) {
     size_t out_ndim = src->ndim;
     size_t out_shape[16];
     for (size_t i = 0; i < src->ndim; i++) out_shape[i] = (i == dim) ? 1 : src->shape[i];
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 reductions stay f64 (f32 hardcoded downcast) */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) { if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* rd = (float*)result->data;
     size_t inner = 1, outer = 1, reduce = src->shape[dim];
     for (size_t i = 0; i < dim; i++) outer *= src->shape[i];
     for (size_t i = dim + 1; i < src->ndim; i++) inner *= src->shape[i];
-    for (size_t o = 0; o < outer; o++) {
-        for (size_t r = 0; r < reduce; r++) {
-            for (size_t i = 0; i < inner; i++) {
-                rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        double* rd = (double*)result->data;
+        for (size_t o = 0; o < outer; o++)
+            for (size_t r = 0; r < reduce; r++)
+                for (size_t i = 0; i < inner; i++)
+                    rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+    } else {
+        float* sd = (float*)src->data;
+        float* rd = (float*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+                }
             }
         }
     }
@@ -1554,6 +1565,12 @@ SNEPPXTensor* SNEPPX_tensor_mean(const SNEPPXTensor* src, size_t dim) {
     if (!src || dim >= src->ndim) return NULL;
     SNEPPXTensor* sum = SNEPPX_tensor_sum(src, dim);
     if (!sum) return NULL;
+    if (sum->dtype == SNEPPX_FLOAT64) {
+        double* rd64 = (double*)sum->data;
+        double inv_n64 = 1.0 / (double)src->shape[dim];
+        for (size_t i = 0; i < sum->size; i++) rd64[i] *= inv_n64;
+        return sum;
+    }
     float* rd = (float*)sum->data;
     float inv_n = 1.0f / (float)src->shape[dim];
     for (size_t i = 0; i < sum->size; i++) rd[i] *= inv_n;
