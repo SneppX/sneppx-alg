@@ -122,6 +122,7 @@ nav:
     - Higher-Order AD: higher-order-ad.md
     - API Explorer: api-explorer.md
     - Model Zoo Browser: model-zoo-browser.md
+    - Contributing: contributing.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
