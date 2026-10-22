@@ -119,6 +119,7 @@ nav:
     - Autograd Guide: autograd-guide.md
     - Distributed Guide: distributed-guide.md
     - Sparse Tensors: sparse-tensors.md
+    - Higher-Order AD: higher-order-ad.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
