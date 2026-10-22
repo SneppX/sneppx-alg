@@ -72,6 +72,9 @@ plugins:
     - search
     - social:
           cards: true
+          cache_dir: .cache
+          cards_layout_options:
+              font_family: Roboto
     - rss:
           match_path: "(changelog|release_notes)/.*"
           use_git: true

@@ -2165,6 +2165,11 @@ SNEPPXTensor* SNEPPX_tensor_conv2d(const SNEPPXTensor* input, const SNEPPXTensor
     size_t out_channels = kernel->ndim >= 4 ? kernel->shape[kernel->ndim - 4] : 1;
     size_t kernel_in_channels = kernel->shape[kernel->ndim - 3];
     if (kernel_in_channels != in_channels) return NULL;
+    if (input->dtype != kernel->dtype ||
+        (input->dtype != SNEPPX_FLOAT32 && input->dtype != SNEPPX_FLOAT64))
+        return NULL;
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = input->dtype;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
     for (size_t i = 0; i < out_ndim - 2; i++)
@@ -2173,28 +2178,55 @@ SNEPPXTensor* SNEPPX_tensor_conv2d(const SNEPPXTensor* input, const SNEPPXTensor
         out_shape[i] = (i == out_ndim - 3) ? out_channels : input->shape[i];
     out_shape[out_ndim - 2] = out_h;
     out_shape[out_ndim - 1] = out_w;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) return NULL;
-    float* id = (float*)input->data;
-    float* kd = (float*)kernel->data;
-    float* rd = (float*)result->data;
     size_t batch = input->size / (in_channels * H * W);
-    for (size_t b = 0; b < batch; b++) {
-        for (size_t co = 0; co < out_channels; co++) {
-            for (size_t ci = 0; ci < in_channels; ci++) {
-                for (size_t oh = 0; oh < out_h; oh++) {
-                    for (size_t ow = 0; ow < out_w; ow++) {
-                        float sum = 0.0f;
-                        for (size_t kh = 0; kh < KH; kh++) {
-                            int ih = (int)(oh * stride_h + kh) - (int)pad_h;
-                            for (size_t kw = 0; kw < KW; kw++) {
-                                int iw = (int)(ow * stride_w + kw) - (int)pad_w;
-                                if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
-                                    sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
-                                         * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* id = (const double*)input->data;
+        const double* kd = (const double*)kernel->data;
+        double* rd = (double*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t co = 0; co < out_channels; co++) {
+                for (size_t ci = 0; ci < in_channels; ci++) {
+                    for (size_t oh = 0; oh < out_h; oh++) {
+                        for (size_t ow = 0; ow < out_w; ow++) {
+                            double sum = 0.0;
+                            for (size_t kh = 0; kh < KH; kh++) {
+                                int ih = (int)(oh * stride_h + kh) - (int)pad_h;
+                                for (size_t kw = 0; kw < KW; kw++) {
+                                    int iw = (int)(ow * stride_w + kw) - (int)pad_w;
+                                    if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
+                                        sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
+                                             * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+                                }
                             }
+                            rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
                         }
-                        rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
+                    }
+                }
+            }
+        }
+    } else {
+        float* id = (float*)input->data;
+        float* kd = (float*)kernel->data;
+        float* rd = (float*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t co = 0; co < out_channels; co++) {
+                for (size_t ci = 0; ci < in_channels; ci++) {
+                    for (size_t oh = 0; oh < out_h; oh++) {
+                        for (size_t ow = 0; ow < out_w; ow++) {
+                            float sum = 0.0f;
+                            for (size_t kh = 0; kh < KH; kh++) {
+                                int ih = (int)(oh * stride_h + kh) - (int)pad_h;
+                                for (size_t kw = 0; kw < KW; kw++) {
+                                    int iw = (int)(ow * stride_w + kw) - (int)pad_w;
+                                    if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
+                                        sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
+                                             * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+                                }
+                            }
+                            rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
+                        }
                     }
                 }
             }

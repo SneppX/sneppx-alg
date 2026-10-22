@@ -102,3 +102,6 @@ COMPATIBILITY.md
 
 # Docs playground bundle is intentionally committed
 !docs/assets/sneppx_py.zip
+
+# mkdocs social plugin cache (PNGs only)
+.cache/*.png
