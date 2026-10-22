@@ -70,11 +70,13 @@ extra:
           name: RSS feed
 plugins:
     - search
+    - social:
+          cards: true
     - rss:
           match_path: "(changelog|release_notes)/.*"
           use_git: true
           use_material_blog: false
-          use_material_social_cards: false
+          use_material_social_cards: true
           feed_description: SNEPPX-Alg release notes and changelog
     - mike:
           version_selector: true
