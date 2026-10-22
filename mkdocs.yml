@@ -116,6 +116,7 @@ nav:
     - Playground: playground.md
     - Why SneppX-Alg: why-sneppx-alg.md
     - Getting Started: getting-started.md
+    - Autograd Guide: autograd-guide.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
