@@ -189,6 +189,28 @@
         { passive: true }
     );
 
+    /* ---- Back-to-top button ----------------------------------------------- */
+    (function () {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sx-back-to-top";
+        btn.setAttribute("aria-label", "Back to top");
+        btn.textContent = "↑";
+        document.body.appendChild(btn);
+        function update() {
+            if (window.scrollY > 400) {
+                btn.classList.add("sx-back-to-top--visible");
+            } else {
+                btn.classList.remove("sx-back-to-top--visible");
+            }
+        }
+        window.addEventListener("scroll", update, { passive: true });
+        update();
+        btn.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    })();
+
     /* ---- Stat counter count-up -------------------------------------------- */
     function animateCount(el) {
         var target = parseInt(el.getAttribute("data-count"), 10);

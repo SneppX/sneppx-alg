@@ -6,6 +6,33 @@
    All animations respect prefers-reduced-motion (see media query at bottom).
    ========================================================================== */
 
+/* --- Back-to-top button ---------------------------------- */
+.sx-back-to-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--md-primary-fg-color);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.sx-back-to-top--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.sx-back-to-top:hover {
+    transform: translateY(-2px);
+}
+
 /* --- Scroll reveal -------------------------------------------------------- */
 .reveal {
     opacity: 0;
