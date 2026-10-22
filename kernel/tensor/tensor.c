@@ -1371,21 +1371,31 @@ static const SNEPPXTensor* tensor_prep_contiguous(const SNEPPXTensor* src, SNEPP
     return *out ? *out : src;
 }
 
-static SNEPPXTensor* unary_op_f32(const SNEPPXTensor* src, float (*op)(float)) {
+static SNEPPXTensor* unary_op(const SNEPPXTensor* src, float (*opf32)(float), double (*opf64)(double)) {
     if (!src) return NULL;
     SNEPPXTensor* tmp = NULL;
     src = tensor_prep_contiguous(src, &tmp);
-    SNEPPXTensor* result = SNEPPX_tensor_create(src->shape, src->ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 inputs stay f64 (was f32 hardcode -> misread garbage) */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_create(src->shape, src->ndim, dt);
     if (!result) { if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* rd = (float*)result->data;
-    for (size_t i = 0; i < src->size; i++) rd[i] = op(sd[i]);
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        double* rd = (double*)result->data;
+        for (size_t i = 0; i < src->size; i++) rd[i] = opf64(sd[i]);
+    } else {
+        float* sd = (float*)src->data;
+        float* rd = (float*)result->data;
+        for (size_t i = 0; i < src->size; i++) rd[i] = opf32(sd[i]);
+    }
     if (tmp) SNEPPX_tensor_destroy(tmp);
     return result;
 }
 
 static float negate_f32(float x) { return -x; }
 static float sign_f32(float x) { return (x > 0) ? 1.0f : (x < 0) ? -1.0f : 0.0f; }
+static double negate_f64(double x) { return -x; }
+static double sign_f64(double x) { return (x > 0) ? 1.0 : (x < 0) ? -1.0 : 0.0; }
 
 /**
  * @brief Perform Tensor Neg.
@@ -1394,7 +1404,7 @@ static float sign_f32(float x) { return (x > 0) ? 1.0f : (x < 0) ? -1.0f : 0.0f;
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op_f32(src, negate_f32); }
+SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op(src, negate_f32, negate_f64); }
 /**
  * @brief Perform Tensor Abs.
  *
@@ -1402,7 +1412,7 @@ SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op_f32(src, fabsf); }
+SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op(src, fabsf, fabs); }
 /**
  * @brief Sign Tensor.
  *
@@ -1410,7 +1420,7 @@ SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op_f32(src, sign_f32); }
+SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op(src, sign_f32, sign_f64); }
 /**
  * @brief Perform Tensor Floor.
  *
@@ -1418,7 +1428,7 @@ SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op_f32(src, floorf); }
+SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op(src, floorf, floor); }
 /**
  * @brief Perform Tensor Ceil.
  *
@@ -1426,7 +1436,7 @@ SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op_f32(src, ceilf); }
+SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op(src, ceilf, ceil); }
 /**
  * @brief Perform Tensor Round.
  *
@@ -1434,7 +1444,7 @@ SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op_f32(src, roundf); }
+SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op(src, roundf, round); }
 /**
  * @brief Perform Tensor Trunc.
  *
@@ -1442,7 +1452,7 @@ SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op_f32(src, truncf); }
+SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op(src, truncf, trunc); }
 /**
  * @brief Perform Tensor Exp.
  *
@@ -1450,7 +1460,7 @@ SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op_f32(src, expf); }
+SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op(src, expf, exp); }
 /**
  * @brief Perform Tensor Log.
  *
@@ -1458,7 +1468,7 @@ SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op_f32(src, logf); }
+SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op(src, logf, log); }
 /**
  * @brief Perform Tensor Sqrt.
  *
@@ -1466,7 +1476,7 @@ SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op_f32(src, sqrtf); }
+SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op(src, sqrtf, sqrt); }
 /**
  * @brief Perform Tensor Sin.
  *
@@ -1474,7 +1484,7 @@ SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op_f32(src, sinf); }
+SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op(src, sinf, sin); }
 /**
  * @brief Perform Tensor Cos.
  *
@@ -1482,7 +1492,7 @@ SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op_f32(src, cosf); }
+SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op(src, cosf, cos); }
 /**
  * @brief Perform Tensor Tan.
  *
@@ -1490,7 +1500,7 @@ SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op_f32(src, tanf); }
+SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op(src, tanf, tan); }
 /**
  * @brief Perform Tensor Asin.
  *
@@ -1498,7 +1508,7 @@ SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op_f32(src, asinf); }
+SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op(src, asinf, asin); }
 /**
  * @brief Perform Tensor Acos.
  *
@@ -1506,7 +1516,7 @@ SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op_f32(src, acosf); }
+SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op(src, acosf, acos); }
 /**
  * @brief Perform Tensor Atan.
  *
@@ -1514,7 +1524,7 @@ SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op_f32(src, atanf); }
+SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op(src, atanf, atan); }
 /**
  * @brief Perform Tensor Sinh.
  *
@@ -1522,7 +1532,7 @@ SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op_f32(src, sinhf); }
+SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op(src, sinhf, sinh); }
 /**
  * @brief Perform Tensor Cosh.
  *
@@ -1530,7 +1540,7 @@ SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op_f32(src, coshf); }
+SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op(src, coshf, cosh); }
 /**
  * @brief Perform Tensor Tanh.
  *
@@ -1538,7 +1548,7 @@ SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_tanh(const SNEPPXTensor* src) { return unary_op_f32(src, tanhf); }
+SNEPPXTensor* SNEPPX_tensor_tanh(const SNEPPXTensor* src) { return unary_op(src, tanhf, tanh); }
 
 /**
  * @brief Perform Tensor Sum.
@@ -2868,3 +2878,4 @@ const char* SNEPPX_tensor_dtype_name(SNEPPXDtype dtype) {
     }
     return "unknown";
 }
+
