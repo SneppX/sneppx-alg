@@ -115,6 +115,7 @@ nav:
     - Home: index.md
     - Playground: playground.md
     - Why SneppX-Alg: why-sneppx-alg.md
+    - Getting Started: getting-started.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
