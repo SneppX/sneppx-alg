@@ -240,6 +240,24 @@ def test_var_std_float64_dtype_following():
     )
 
 
+def test_conv1d_float64_dtype_following():
+    """f64 conv1d must stay f64 and match a numpy conv1d reference."""
+    rs = np.random.RandomState(31)
+    x = rs.rand(2, 3, 10).astype(np.float64)
+    w = rs.rand(4, 3, 3).astype(np.float64)  # (C_out, C_in, K)
+    tx, tw = cb.from_numpy(x), cb.from_numpy(w)
+    out = tx.conv1d(tw, 1, 0)
+    assert cb.c_dtype_to_numpy(out.dtype) == np.float64
+    got = cb.to_numpy(out)
+    ref = np.zeros((2, 4, 8), dtype=np.float64)
+    for b in range(2):
+        for co in range(4):
+            for ci in range(3):
+                for pos in range(8):
+                    ref[b, co, pos] += np.sum(x[b, ci, pos : pos + 3] * w[co, ci, :])
+    assert np.allclose(got, ref, rtol=0, atol=1e-12)
+
+
 def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
     x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
     n, c, h, w = x.shape

@@ -2081,6 +2081,11 @@ SNEPPXTensor* SNEPPX_tensor_conv1d(const SNEPPXTensor* input, const SNEPPXTensor
         kernel->ndim >= 3 ? kernel->shape[kernel->ndim - 3] : 1;
     size_t kernel_in_channels = kernel->shape[kernel->ndim - 2];
     if (kernel_in_channels != in_channels) return NULL;
+    if (input->dtype != kernel->dtype ||
+        (input->dtype != SNEPPX_FLOAT32 && input->dtype != SNEPPX_FLOAT64))
+        return NULL;
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = input->dtype;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
     for (size_t i = 0; i < out_ndim - 1; i++)
@@ -2088,23 +2093,46 @@ SNEPPXTensor* SNEPPX_tensor_conv1d(const SNEPPXTensor* input, const SNEPPXTensor
          * not the input's (torch conv1d: (N, C_out, L_out)). */
         out_shape[i] = (i == out_ndim - 2) ? kernel_channels : input->shape[i];
     out_shape[out_ndim - 1] = out_len;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) return NULL;
-    float* id = (float*)input->data;
-    float* kd = (float*)kernel->data;
-    float* rd = (float*)result->data;
     size_t batch = input->size / (in_channels * L);
-    for (size_t b = 0; b < batch; b++) {
-        for (size_t c_in = 0; c_in < in_channels; c_in++) {
-            for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
-                for (size_t pos = 0; pos < out_len; pos++) {
-                    float sum = 0.0f;
-                    for (size_t k = 0; k < K; k++) {
-                        int inp_pos = (int)(pos * stride + k) - (int)padding;
-                        if (inp_pos >= 0 && inp_pos < (int)L)
-                            sum += id[b * in_channels * L + c_in * L + inp_pos] * kd[c_out * in_channels * K + c_in * K + k];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* id = (const double*)input->data;
+        const double* kd = (const double*)kernel->data;
+        double* rd = (double*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t c_in = 0; c_in < in_channels; c_in++) {
+                for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
+                    for (size_t pos = 0; pos < out_len; pos++) {
+                        double sum = 0.0;
+                        for (size_t k = 0; k < K; k++) {
+                            int inp_pos = (int)(pos * stride + k) - (int)padding;
+                            if (inp_pos >= 0 && inp_pos < (int)L)
+                                sum += id[b * in_channels * L + c_in * L + (size_t)inp_pos]
+                                     * kd[c_out * in_channels * K + c_in * K + k];
+                        }
+                        rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
                     }
-                    rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
+                }
+            }
+        }
+    } else {
+        float* id = (float*)input->data;
+        float* kd = (float*)kernel->data;
+        float* rd = (float*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t c_in = 0; c_in < in_channels; c_in++) {
+                for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
+                    for (size_t pos = 0; pos < out_len; pos++) {
+                        float sum = 0.0f;
+                        for (size_t k = 0; k < K; k++) {
+                            int inp_pos = (int)(pos * stride + k) - (int)padding;
+                            if (inp_pos >= 0 && inp_pos < (int)L)
+                                sum += id[b * in_channels * L + c_in * L + (size_t)inp_pos]
+                                     * kd[c_out * in_channels * K + c_in * K + k];
+                        }
+                        rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
+                    }
                 }
             }
         }
