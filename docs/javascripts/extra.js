@@ -203,6 +203,33 @@
         });
     })();
 
+    /* ---- TOC auto-highlight on scroll ------------------------------------- */
+    (function () {
+        var tocLinks = document.querySelectorAll(".md-nav--secondary a");
+        if (!tocLinks.length) return;
+        var headings = [];
+        tocLinks.forEach(function (link) {
+            var id = (link.getAttribute("href") || "").replace(/^#/, "");
+            if (id) {
+                var el = document.getElementById(id);
+                if (el) headings.push({ el: el, link: link });
+            }
+        });
+        if (!headings.length) return;
+        function update() {
+            var scrollY = window.scrollY + 120;
+            var current = headings[0];
+            for (var i = 0; i < headings.length; i++) {
+                if (headings[i].el.offsetTop <= scrollY) current = headings[i];
+                else break;
+            }
+            tocLinks.forEach(function (l) { l.classList.remove("sx-toc-active"); });
+            if (current) current.link.classList.add("sx-toc-active");
+        }
+        window.addEventListener("scroll", update, { passive: true });
+        update();
+    })();
+
     /* ---- Smooth scroll for anchor links ----------------------------------- */
     document.addEventListener("click", function (e) {
         var a = e.target.closest('a[href^="#"]');

@@ -37,6 +37,12 @@ html {
     background-color: rgba(76, 175, 80, 0.15);
 }
 
+/* --- TOC active highlight ------------------------------- */
+.md-nav--secondary .sx-toc-active {
+    color: var(--md-accent-fg-color);
+    font-weight: 600;
+}
+
 /* --- Back-to-top button ---------------------------------- */
 .sx-back-to-top {
     position: fixed;
