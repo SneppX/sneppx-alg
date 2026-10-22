@@ -6,6 +6,20 @@
    All animations respect prefers-reduced-motion (see media query at bottom).
    ========================================================================== */
 
+/* --- Code block copy flash ------------------------------- */
+.md-typeset .md-clipboard {
+    transition: transform 0.15s ease;
+}
+.md-typeset .md-clipboard:active {
+    transform: scale(0.9);
+}
+.md-typeset pre > code {
+    transition: background-color 0.3s ease;
+}
+.md-typeset pre.copied > code {
+    background-color: rgba(76, 175, 80, 0.15);
+}
+
 /* --- Back-to-top button ---------------------------------- */
 .sx-back-to-top {
     position: fixed;

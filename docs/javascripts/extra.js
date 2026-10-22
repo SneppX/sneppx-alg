@@ -189,6 +189,20 @@
         { passive: true }
     );
 
+    /* ---- Code block copy flash -------------------------------------------- */
+    (function () {
+        document.addEventListener("click", function (e) {
+            var btn = e.target.closest(".md-clipboard");
+            if (!btn) return;
+            var pre = btn.closest("pre");
+            if (!pre) return;
+            pre.classList.add("copied");
+            setTimeout(function () {
+                pre.classList.remove("copied");
+            }, 600);
+        });
+    })();
+
     /* ---- Back-to-top button ----------------------------------------------- */
     (function () {
         var btn = document.createElement("button");
