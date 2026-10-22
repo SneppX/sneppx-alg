@@ -37,6 +37,12 @@ html {
     background-color: rgba(76, 175, 80, 0.15);
 }
 
+/* --- TOC active highlight ------------------------------- */
+.md-nav--secondary .sx-toc-active {
+    color: var(--md-accent-fg-color);
+    font-weight: 600;
+}
+
 /* --- Back-to-top button ---------------------------------- */
 .sx-back-to-top {
     position: fixed;
@@ -490,7 +496,8 @@ h3 .word {
     h3 .word,
     .sx-hero h1,
     .sx-stat,
-    .sx-card {
+    .sx-card,
+    .sx-back-to-top {
         animation: none !important;
         transition: none !important;
         opacity: 1 !important;

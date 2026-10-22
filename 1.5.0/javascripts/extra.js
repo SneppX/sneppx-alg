@@ -203,6 +203,70 @@
         });
     })();
 
+    /* ---- TOC auto-highlight on scroll ------------------------------------- */
+    (function () {
+        var tocLinks = document.querySelectorAll(".md-nav--secondary a");
+        if (!tocLinks.length) return;
+        var headings = [];
+        tocLinks.forEach(function (link) {
+            var id = (link.getAttribute("href") || "").replace(/^#/, "");
+            if (id) {
+                var el = document.getElementById(id);
+                if (el) headings.push({ el: el, link: link });
+            }
+        });
+        if (!headings.length) return;
+        function update() {
+            var scrollY = window.scrollY + 120;
+            var current = headings[0];
+            for (var i = 0; i < headings.length; i++) {
+                if (headings[i].el.offsetTop <= scrollY) current = headings[i];
+                else break;
+            }
+            tocLinks.forEach(function (l) { l.classList.remove("sx-toc-active"); });
+            if (current) current.link.classList.add("sx-toc-active");
+        }
+        window.addEventListener("scroll", update, { passive: true });
+        update();
+    })();
+
+    /* ---- Smooth scroll for anchor links ----------------------------------- */
+    document.addEventListener("click", function (e) {
+        var a = e.target.closest('a[href^="#"]');
+        if (!a) return;
+        var id = a.getAttribute("href").slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.replaceState(null, "", "#" + id);
+        }
+    });
+
+    /* ---- Keyboard shortcut: / to focus search ----------------------------- */
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            var active = document.activeElement;
+            if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
+            e.preventDefault();
+            var toggle = document.querySelector('[data-md-toggle="search"]');
+            if (toggle && !toggle.checked) {
+                toggle.checked = true;
+                toggle.dispatchEvent(new Event("change"));
+            }
+            var input = document.querySelector(".md-search__input");
+            if (input) { input.focus(); input.select && input.select(); }
+        }
+        if (e.key === "Escape") {
+            var toggle = document.querySelector('[data-md-toggle="search"]');
+            if (toggle && toggle.checked) {
+                toggle.checked = false;
+                toggle.dispatchEvent(new Event("change"));
+            }
+        }
+    });
+
     /* ---- Back-to-top button ----------------------------------------------- */
     (function () {
         var btn = document.createElement("button");
