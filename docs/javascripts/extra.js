@@ -203,6 +203,20 @@
         });
     })();
 
+    /* ---- Smooth scroll for anchor links ----------------------------------- */
+    document.addEventListener("click", function (e) {
+        var a = e.target.closest('a[href^="#"]');
+        if (!a) return;
+        var id = a.getAttribute("href").slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.replaceState(null, "", "#" + id);
+        }
+    });
+
     /* ---- Keyboard shortcut: / to focus search ----------------------------- */
     document.addEventListener("keydown", function (e) {
         if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
