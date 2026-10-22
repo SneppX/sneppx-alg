@@ -203,6 +203,29 @@
         });
     })();
 
+    /* ---- Keyboard shortcut: / to focus search ----------------------------- */
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            var active = document.activeElement;
+            if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
+            e.preventDefault();
+            var toggle = document.querySelector('[data-md-toggle="search"]');
+            if (toggle && !toggle.checked) {
+                toggle.checked = true;
+                toggle.dispatchEvent(new Event("change"));
+            }
+            var input = document.querySelector(".md-search__input");
+            if (input) { input.focus(); input.select && input.select(); }
+        }
+        if (e.key === "Escape") {
+            var toggle = document.querySelector('[data-md-toggle="search"]');
+            if (toggle && toggle.checked) {
+                toggle.checked = false;
+                toggle.dispatchEvent(new Event("change"));
+            }
+        }
+    });
+
     /* ---- Back-to-top button ----------------------------------------------- */
     (function () {
         var btn = document.createElement("button");
