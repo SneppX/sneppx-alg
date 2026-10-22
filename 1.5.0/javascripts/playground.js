@@ -107,5 +107,35 @@
         .forEach(function (btn) {
             btn.addEventListener("click", run);
         });
+    /* ---- Save / restore code via localStorage ----------------------------- */
+    var storageKey = "sx-pg-code";
+    try {
+        var saved = localStorage.getItem(storageKey);
+        if (saved && editor) editor.value = saved;
+    } catch (e) {}
+    if (editor) {
+        editor.addEventListener("input", function () {
+            try {
+                localStorage.setItem(storageKey, editor.value);
+            } catch (e) {}
+        });
+    }
+
+    /* ---- Example snippet buttons ----------------------------------------- */
+    var examples = {
+        mlp: "import numpy as np\\nfrom SneppX_ALG import Tensor\\nfrom SneppX_ALG.interface_bindings import nn, optim\\n\\nnp.random.seed(0)\\n\\nclass MLP(nn.Module):\\n    def __init__(self):\\n        super().__init__()\\n        self.fc1 = nn.Linear(4, 8)\\n        self.fc2 = nn.Linear(8, 2)\\n    def forward(self, x):\\n        return self.fc2(nn.functional.relu(self.fc1(x)))\\n\\nmodel = MLP()\\nopt = optim.Adam(model.parameters(), lr=1e-2)\\nfor step in range(50):\\n    x = Tensor(np.random.randn(8, 4).astype(np.float32))\\n    y = Tensor((2.0 * x.data[:, :2]).astype(np.float32))\\n    loss = nn.functional.mse_loss(model(x), y)\\n    loss.backward()\\n    opt.step()\\n    opt.zero_grad()\\nprint('loss:', round(float(np.asarray(loss.data).reshape(-1)[0]), 4))\\n",
+        autograd: "import numpy as np\\nfrom SneppX_ALG import Tensor\\n\\nx = Tensor(np.array([2.0, 3.0]), requires_grad=True)\\ny = (x * x).sum()\\ny.backward()\\nprint('grad:', x.grad.data())\\n",
+        sparse: "import numpy as np\\nfrom SneppX_ALG.interface_bindings.sparse import sparse_coo_tensor\\n\\nindices = np.array([[0, 1, 2], [0, 1, 2]])\\nvalues = np.array([1.0, 2.0, 3.0])\\nsp = sparse_coo_tensor(indices, values, (3, 3))\\nprint('dense:')\\nprint(sp.to_dense().data())\\n",
+    };
+    document.querySelectorAll(".sx-pg-example").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var key = btn.getAttribute("data-example");
+            if (examples[key] && editor) {
+                editor.value = examples[key];
+                try { localStorage.setItem(storageKey, editor.value); } catch (e) {}
+            }
+        });
+    });
+
     setStatus("Click Run to load the Python runtime (~10s first time).");
 })();
