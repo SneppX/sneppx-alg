@@ -219,6 +219,27 @@ def test_unary_ops_float64_dtype_following():
         assert np.allclose(got, np_ref, rtol=0, atol=1e-12), name
 
 
+def test_var_std_float64_dtype_following():
+    """f64 var/std must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(29).rand(3, 5)
+    ta = cb.from_numpy(a)
+    for name, np_ref in [
+        ("var", lambda: a.var(axis=1, keepdims=True)),
+        ("std", lambda: a.std(axis=1, keepdims=True)),
+    ]:
+        out = getattr(ta, name)(1)
+        assert cb.c_dtype_to_numpy(out.dtype) == np.float64, name
+        got = cb.to_numpy(out)
+        assert np.allclose(got, np_ref(), rtol=0, atol=1e-10), name
+    # f32 inputs keep f32
+    a32 = a.astype(np.float32)
+    ta32 = cb.from_numpy(a32)
+    assert cb.c_dtype_to_numpy(ta32.var(1).dtype) == np.float32
+    assert np.allclose(
+        cb.to_numpy(ta32.std(1)), a32.std(axis=1, keepdims=True), atol=1e-6
+    )
+
+
 def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
     x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
     n, c, h, w = x.shape

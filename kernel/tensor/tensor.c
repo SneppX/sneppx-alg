@@ -1632,21 +1632,44 @@ SNEPPXTensor* SNEPPX_tensor_var(const SNEPPXTensor* src, size_t dim) {
     size_t inner = 1, outer = 1, reduce = src->shape[dim];
     for (size_t i = 0; i < dim; i++) outer *= src->shape[i];
     for (size_t i = dim + 1; i < src->ndim; i++) inner *= src->shape[i];
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(mean->shape, mean->ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(mean->shape, mean->ndim, dt);
     if (!result) { SNEPPX_tensor_destroy(mean); if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* md = (float*)mean->data;
-    float* rd = (float*)result->data;
-    for (size_t o = 0; o < outer; o++) {
-        for (size_t r = 0; r < reduce; r++) {
-            for (size_t i = 0; i < inner; i++) {
-                float d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
-                rd[o * inner + i] += d * d;
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        const double* md = (const double*)mean->data;
+        double* rd = (double*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    double d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
+                    rd[o * inner + i] += d * d;
+                }
+            }
+        }
+    } else {
+        float* sd = (float*)src->data;
+        float* md = (float*)mean->data;
+        float* rd = (float*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    float d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
+                    rd[o * inner + i] += d * d;
+                }
             }
         }
     }
-    float inv_n = 1.0f / (float)reduce;
-    for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    if (dt == SNEPPX_FLOAT64) {
+        double inv_n = 1.0 / (double)reduce;
+        double* rd = (double*)result->data;
+        for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    } else {
+        float inv_n = 1.0f / (float)reduce;
+        float* rd = (float*)result->data;
+        for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    }
     SNEPPX_tensor_destroy(mean);
     if (tmp) SNEPPX_tensor_destroy(tmp);
     return result;
@@ -1662,8 +1685,13 @@ SNEPPXTensor* SNEPPX_tensor_var(const SNEPPXTensor* src, size_t dim) {
 SNEPPXTensor* SNEPPX_tensor_std(const SNEPPXTensor* src, size_t dim) {
     SNEPPXTensor* v = SNEPPX_tensor_var(src, dim);
     if (!v) return NULL;
-    float* d = (float*)v->data;
-    for (size_t i = 0; i < v->size; i++) d[i] = sqrtf(d[i]);
+    if (v->dtype == SNEPPX_FLOAT64) {
+        double* d = (double*)v->data;
+        for (size_t i = 0; i < v->size; i++) d[i] = sqrt(d[i]);
+    } else {
+        float* d = (float*)v->data;
+        for (size_t i = 0; i < v->size; i++) d[i] = sqrtf(d[i]);
+    }
     return v;
 }
 
