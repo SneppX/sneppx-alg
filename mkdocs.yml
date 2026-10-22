@@ -118,6 +118,7 @@ nav:
     - Getting Started: getting-started.md
     - Autograd Guide: autograd-guide.md
     - Distributed Guide: distributed-guide.md
+    - Sparse Tensors: sparse-tensors.md
     - Quick Start: guide/quickstart.md
     - Architecture:
         - Pipeline Overview: architecture/5-pipeline-architecture.md
