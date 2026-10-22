@@ -6,6 +6,15 @@
    All animations respect prefers-reduced-motion (see media query at bottom).
    ========================================================================== */
 
+/* --- Page transition fade ------------------------------- */
+.md-content {
+    animation: sx-fade-in 0.35s ease-out;
+}
+@keyframes sx-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* --- Code block copy flash ------------------------------- */
 .md-typeset .md-clipboard {
     transition: transform 0.15s ease;
