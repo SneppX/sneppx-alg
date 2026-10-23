@@ -1,26 +1,35 @@
 # Support
 
-If you need help with SneppX-ALG, here are the available channels:
+If you need help with SNEPPX-Alg, here are the available channels and resources:
 
-## Documentation
+## Official Documentation
 
-- [README.md](README.md) — project overview, quick start, and component descriptions
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — full architecture documentation with mathematics
-- [docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md) — coding conventions and standards
-- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — development setup and workflow
-- [docs/TESTING.md](docs/TESTING.md) — testing guidelines
+- **Live Docs Site:** [https://sneppx.github.io/sneppx-alg/](https://sneppx.github.io/sneppx-alg/) — Full searchable reference, interactive API explorer, and guides
+- [Quickstart Guide](QUICKSTART.md) — 5-minute setup and runnable verification
+- [Architecture Overview](docs/ARCHITECTURE.md) — Deep dive into the 5-stage pipeline and mathematical formulations
+- [Contributing Guide](CONTRIBUTING.md) — How to submit pull requests and test changes locally
+- [FAQ](docs/FAQ.md) — Frequently asked questions and troubleshooting
 
-## Community
+## Community & Issue Tracker
 
-- **Email**: [algoSNEPPX@gmail.com](mailto:algoSNEPPX@gmail.com) — patches, questions, security reports
-- **GitHub Issues**: [https://github.com/SneppX/sneppx-alg/issues](https://github.com/SneppX/sneppx-alg/issues)
-- **Twitter / X**: [@SNEPPXdrv](https://x.com/SNEPPXdrv)
-- **YouTube**: [sneppx-alg](https://www.youtube.com/@sneppx-alg)
+- **GitHub Issues:** [https://github.com/SneppX/sneppx-alg/issues](https://github.com/SneppX/sneppx-alg/issues) — Bug reports and feature proposals
+- **GitHub Discussions:** [https://github.com/SneppX/sneppx-alg/discussions](https://github.com/SneppX/sneppx-alg/discussions) — General questions and usage discussions
+- **Security Inquiries:** Report privately via [Security Advisories](https://github.com/SneppX/sneppx-alg/security/advisories/new) or email `algoSNEPPX@gmail.com`
+- **Updates & Announcements:** Follow [@SNEPPXdrv](https://x.com/SNEPPXdrv) on X/Twitter
 
-## Scope
+## Common Troubleshooting Tips
 
-SneppX-ALG is maintained by a single BDFL. Response times vary. For urgent security issues, send encrypted email.
+1. **`ModuleNotFoundError: No module named 'SneppX_ALG'`**:
+   Ensure `bindings/python` is added to your Python path:
+   ```powershell
+   $env:PYTHONPATH = "bindings/python"
+   ```
 
-## License
+2. **Tests hanging**:
+   Only run unit tests **per-file** with pytest. Never execute GPU/LLM tests on CPU-only machines.
 
-See [LICENSE](LICENSE) for terms.
+3. **C Compiler missing during pip install**:
+   The pure-Python / NumPy engine runs out of the box without compiling C extensions:
+   ```powershell
+   pip install --no-build-isolation sneppx-alg
+   ```
