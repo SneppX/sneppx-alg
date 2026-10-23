@@ -128,14 +128,14 @@ sched = get_scheduler("cosine", opt, num_warmup_steps=500, num_training_steps=10
 `"polynomial"`, `"constant"`, `"constant_with_warmup"`, `"reduce_on_plateau"`.
 CPU-safe.
 
-## 11. Inspect optimizer state
+## 12. Optimizer Selection Reference Table
 
-**Intent:** Debug / log LR / moment norms.
+| Optimizer | State Memory Overhead | Primary Use Case | Key Hyperparameters |
+|---|---|---|---|
+| **AdamW** | $2\times$ parameter count ($m, v$) | General LLM and vision pretraining | `lr=2e-4`, `betas=(0.9, 0.999)`, `weight_decay=0.01` |
+| **SGD** | $1\times$ with momentum | Computer vision baselines, fine-tuning | `lr=0.01-0.1`, `momentum=0.9`, `weight_decay=1e-4` |
+| **Lion** | $1\times$ parameter count | Memory-constrained large-batch training | `lr=1e-4`, `betas=(0.9, 0.99)`, `weight_decay=0.1` |
+| **AdaFactor** | Factored row/col stats ($<1\times$) | Extremely large architectures | `scale_parameter=True`, `relative_step=True` |
+| **SparseAdam**| Sparse tracking on indexed slices | Embedding tables, sparse features | `lr=1e-3`, `betas=(0.9, 0.999)` |
+| **ScheduleFree**| $2\times$ (internal eval point) | Zero-scheduler training loops | `warmup_steps=500`, `weight_decay=0.01` |
 
-```python
-from SneppX_ALG import AdamW
-
-opt = AdamW(model.parameters(), lr=2e-4, weight_decay=0.01)
-print(opt.lr)
-print(len(opt.state))               # one dict per param
-```
