@@ -2,6 +2,22 @@
 
 All notable changes to SNEPPX-Algo.
 
+## [v1.5.2] - 2026-10-23
+
+### Packaging, Site UX, Playground & Documentation
+- **PyPI packaging discovery**: fixed setuptools find specification in `pyproject.toml` pointing explicitly to `bindings/python`, ensured `README.md` metadata is included on PyPI package builds.
+- **Site UX enhancements**:
+  - Added smooth dark/light theme transition CSS.
+  - Keyboard shortcuts: `/` to focus documentation search, `Esc` to dismiss modal.
+  - Smooth scroll behavior for in-page anchor links.
+  - Dynamic Table of Contents (TOC) auto-highlighting on scroll.
+  - Back-to-top button integration respecting `prefers-reduced-motion`.
+- **Playground persistence**: client-side `localStorage` state saving/restoring and curated example snippets for interactive browser tensor experiments.
+- **Documentation expansion**:
+  - Added interactive `model-zoo-browser` page.
+  - Added interactive `api-explorer` page with runnable snippets.
+  - Added comprehensive `contributing` page with local-only validation guidance.
+
 ## [v1.5.1] - 2026-10-19
 
 ### GitHub credibility, community health & docs polish
