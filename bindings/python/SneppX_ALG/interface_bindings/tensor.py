@@ -142,6 +142,21 @@ class _CTensorData:
 
 
 class Tensor:
+    """Multi-dimensional array with autograd tape support and dual C/NumPy storage.
+
+    A Tensor encapsulates an n-dimensional data buffer, associated data type, device
+    placement, and gradient history. When ``requires_grad=True``, mathematical operations
+    record backward functions on the computation graph for reverse-mode automatic differentiation.
+
+    Attributes:
+        data (np.ndarray): Copy of the underlying tensor data as a NumPy array.
+        shape (tuple): Shape of the multi-dimensional tensor.
+        dtype: Data type enumeration or descriptor (e.g. float32, float64, int32).
+        device (str): Device placement string (e.g. "cpu", "cuda:0").
+        requires_grad (bool): Whether gradients are tracked for this tensor.
+        grad (Optional[Tensor]): Accumulated gradient tensor after ``backward()``.
+    """
+
     def __init__(
         self, data=None, shape=None, dtype="float32", device="cpu", requires_grad=False
     ):
