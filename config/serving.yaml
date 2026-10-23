@@ -7,15 +7,16 @@
 # consumed by the Python `serve_from_config` loader.
 #
 # Usage:
-#   python -m SneppX_ALG.interface_bindings.serving_cli --config config/serving.yaml
+#   sneppx-serve start --config config/serving.yaml
 #   python -c "from SneppX_ALG.interface_bindings.serving_engine import serve_from_config; serve_from_config('config/serving.yaml')"
 
 serving.listen: 127.0.0.1
 serving.port: 8300
-serving.max_batch_size: 32
-serving.batch_timeout_ms: 5.0
-serving.n_workers: 4
-serving.warmup_iters: 8
+serving.max_batch_size: 32           # Maximum sequence batch size for continuous batching
+serving.batch_timeout_ms: 5.0        # Max queue wait time before dispatching batch
+serving.n_workers: 4                 # Worker threads for concurrent request handling
+serving.warmup_iters: 8              # Warmup iterations before serving live traffic
+serving.quantization: int8           # 'none', 'int8', 'int4', 'fp8'
 
 models:
   gpt2:
