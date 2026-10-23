@@ -265,8 +265,23 @@ ctest -C Release -R test_kyber --output-on-failure
 
 ```powershell
 $env:PYTHONPATH = "bindings/python"
-python tests/python/test_tensor.py
+python -m pytest tests/python/test_tensor.py -q -p no:cacheprovider
 ```
+
+#### Safe Python Regression Test Suite
+
+Always execute tests **per-file** using `pytest` without cache provider. Recommended safe test suite for CPU:
+
+| Test File | Focus Area |
+|---|---|
+| `test_tensor.py` | Autograd tape, tensor creations, arithmetic, gradients |
+| `test_nn.py` | Module layers (Linear, Conv, Normalization, Sequential) |
+| `test_optim.py` | Optimizers (SGD, Adam, AdamW, convergence checks) |
+| `test_sparse.py` | Sparse COO/CSR tensors and sparse matrix operations |
+| `test_higher_order_ad.py` | Second-order differentiation and Hessian-vector products |
+
+> **Critical:** Do NOT execute LLM inference or GPU tests (`test_llama_models.py`, `test_cuda.py`, `test_inference_server.py`) on machines lacking dedicated CUDA hardware.
+
 
 ### Load a model from Hugging Face
 
