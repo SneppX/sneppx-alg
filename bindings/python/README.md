@@ -1,0 +1,340 @@
+# SNEPPX-Alg 🤖 — The Universal Open-Source AI Algorithm Framework
+
+<p align="center">
+<b>A universal, open-source AI algorithm framework in C/C++ &amp; CUDA</b> — tensor engine, autograd, MoE/SSM transformers, LLM model zoo, quantization, distributed-training primitives &amp; 10-layer AI security.
+</p>
+
+<p align="center">
+<a href="https://github.com/SneppX/sneppx-alg/stargazers"><img src="https://img.shields.io/github/stars/SneppX/sneppx-alg?style=social" alt="Stars"></a>
+<a href="https://github.com/SneppX/sneppx-alg/network/members"><img src="https://img.shields.io/github/forks/SneppX/sneppx-alg?style=social" alt="Forks"></a>
+<a href="https://github.com/SneppX/sneppx-alg/issues"><img src="https://img.shields.io/github/issues/SneppX/sneppx-alg" alt="Issues"></a>
+<a href="https://github.com/SneppX/sneppx-alg/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+</p>
+
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
+
+> **SneppX-ALG** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
+
+**⭐ Star this repo** to support the project and help us reach 1,000+ stars!
+
+## 📑 Table of Contents
+- [Overview](#overview)
+- [By the numbers](#by-the-numbers)
+- [Why SNEPPX-Alg?](#why-sneppx-alg)
+- [Architecture](#architecture)
+- [Component Status](#component-status)
+- [The 5-Stage Pipeline](#the-5-stage-pipeline)
+- [Security Layers (S0–S9)](#security-layers-s0s9)
+- [Model Zoo](#model-zoo)
+- [C HTTP REST API](#c-http-rest-api)
+- [Python Bindings](#python-bindings)
+- [Python Quickstart](#python-quickstart)
+- [Build & Quickstart](#build--quickstart)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Star History](#-star-history)
+- [License](#license)
+
+## Overview
+
+SNEPPX-Alg (under the SneppX organization) is a universal, MIT-licensed AI algorithm framework written primarily in **C11 / C++20 with CUDA**. It organizes model construction and inference as a composable, secure **5-stage pipeline** and wraps it with a layered security model (S0–S9). The codebase is large (~183K LOC) and spans a core tensor/autograd substrate, algorithm implementations, accelerator drivers, a security stack, an HTTP serving layer, and Python bindings.
+
+Design goals:
+- **Auditable native core** — the hot path lives in C/CUDA you can read and verify.
+- **Composable pipeline** — HSS → SER → ARC → NPE → FM stages are independently testable.
+- **Security by design** — ten layers from crypto to pentest are built into the framework.
+- **Open & extensible** — opt-in backends, a model zoo, and a Python API on top of the native core.
+
+## By the numbers
+
+- **~183K lines** of C11 / C++20 / CUDA / Python across a single auditable codebase
+- **300+ tests** (Python autograd, NN, optimizers, losses, sparse, higher-order AD, security)
+- **10 security layers** (S0–S9): classical + post-quantum crypto, memory hardening, obfuscation, monitoring, network, AI sanitizer, key vault, signed updates, formal verification, pentest
+- **5-stage pipeline**: HSS → SER → ARC → NPE → FM
+- **40+ autograd ops** with higher-order AD (`create_graph=True`), plus `jvp` / `vjp`
+- **~70 differentiable functional ops** (`F.*`), 14 loss Module wrappers, 30+ optimizers
+- **Quantization**: INT8 / INT4 / FP8 / AWQ / GPTQ
+- **Distributed**: DDP, ZeRO-1/2/3, tensor / pipeline / expert parallelism (NCCL + CPU fallback)
+- **Model zoo**: LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2 presets
+- **MIT licensed**, maintained by Ammar [SNEPPX]
+
+## Why SNEPPX-Alg?
+
+Honest positioning — SNEPPX-Alg is **not** a PyTorch replacement for training at scale. It is a **native, security-first AI substrate** you can read, audit, and compose: a C/C++/CUDA tensor engine, a composable 5-stage pipeline, and ten security layers (S0–S9) including post-quantum crypto and signed updates.
+
+| | SNEPPX-Alg | PyTorch | JAX |
+|---|---|---|---|
+| Core implementation | C / C++ / CUDA (auditable) | C++ / Python | Python → XLA |
+| Python API | NumPy-backed `Tensor` / `nn` | Native tensors | `jax.numpy` |
+| Built-in security | 10 layers (S0–S9) + PQC | none | none |
+| Post-quantum crypto | Kyber / Dilithium / SPHINCS+ (FIPS 203/204/205) | none | none |
+| Signed model updates | Ed25519 over BLAKE3 | none | none |
+| Quantization | INT8 / INT4 / FP8 / AWQ / GPTQ | INT8 / FP8 | limited |
+| Distributed | DDP / ZeRO / TP / PP / EP (NCCL) | DDP / FSDP | pmap / pjit |
+| License | MIT | BSD-3 | Apache 2.0 |
+
+If you want a drop-in PyTorch experience today, use PyTorch. If you want a **readable native core with security built in**, SNEPPX-Alg is for you.
+
+## Architecture
+
+The framework is structured as a secure pipeline. Each stage consumes the previous stage's output and the whole flow is observed by the security layers.
+
+```mermaid
+flowchart LR
+    IN([Input]) --> HSS
+    subgraph Pipeline
+        HSS["HSS<br/>(State-Space Model)"]
+        SER["SER<br/>(Mixture-of-Experts)"]
+        ARC["ARC<br/>(Adversarial Guard)"]
+        NPE["NPE<br/>(Neural VM)"]
+        FM["FM<br/>(Fractal Memory)"]
+    end
+    HSS --> SER --> ARC --> NPE --> FM
+    FM --> OUT([Output])
+    SEC["Security Layers S0–S9<br/>(crypto, memory, monitor,<br/>AI sanitizer, updates, ...)"]
+    SEC -.observes.-> Pipeline
+```
+
+### Directory layout
+
+| Path | Purpose |
+|------|---------|
+| `kernel/` | Core tensor / autograd / optimizer / trainer / attention substrate, `distributed/`, `quantization/` |
+| `algorithms/` | HSS, SER, ARC, NPE, FM, Transformer, ViT, GCN, RNN, GAN, Diffusion, RL, `model_zoo/` |
+| `drivers/` | Accelerator backends (CUDA, ROCm, Vulkan, TPU, HTTP, ZK, Metal*, oneAPI*) |
+| `security/` | S0–S9 security layers (crypto, memory, monitor, network, AI, vault, updates, formal, obfuscation, pentest) |
+| `net/` | HTTP serving, distributed (NCCL), gRPC, QUIC, RDMA, WebSocket |
+| `bindings/python/` | `SneppX_ALG` Python package + pybind wrappers |
+| `docs/` | ~70 reference docs (see [Documentation](#documentation)) |
+| `tests/` `examples/` `scripts/` `tools/` | Test suite, demos, dev tooling |
+
+`*` Metal and oneAPI are reference-compute backends enabled via `SNEPPX_BUILD_METAL` / `SNEPPX_BUILD_ONEAPI`. Vulkan/TPU/HTTP/ZK do real reference computation and are enabled via `SNEPPX_BUILD_VULKAN` / `SNEPPX_BUILD_TPU` / `SNEPPX_BUILD_HTTP` / `SNEPPX_BUILD_ZK`.
+
+## Component Status
+
+We label maturity honestly so contributors know where to focus. Status: 🟢 Stable · 🟡 Experimental · 🔴 Known gap / under remediation.
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| HSS (SSM) | 🟢 Stable | Selective-scan recurrence, layer norm, discretize implemented (`algorithms/hss/core`) |
+| SER (MoE) | 🟢 Stable | Gating, expert routing, capacity balance (`algorithms/ser/core`) |
+| ARC (Adversarial Guard) | 🟢 Stable | Input guard + output verifier + security metrics (`algorithms/arc/core`) |
+| NPE (Neural VM) | 🟢 Stable | 16-register / 32-opcode dispatch with tensor kernels (`algorithms/npe/core/vm.c`) |
+| FM (Fractal Memory) | 🟢 Stable | Memory-bank read/write + EWM combine (`algorithms/fm/core`) |
+| CUDA kernels | 🟡 Experimental | Real `.cu` files; compiled only with `-DSNEPPX_BUILD_CUDA=ON` (OFF by default) |
+| Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
+| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented, with deterministic self-generated regression vectors in `tests/python/test_crypto_kat.py`; **not yet validated against official NIST ACVP / FIPS 203-205 known-answer vectors** |
+| Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
+| Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock scan + invariant walk; bounded safety LTL (`G !deadlock`, `AG !deadlock`, `F deadlock`) — unsupported properties report "not verified" rather than false-positiving; state-space minimization is a stub |
+| Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
+| Model Zoo `from_pretrained()` | 🟡 Experimental | Resolves architecture configs + builds skeleton; weight download unwired |
+| C HTTP REST API | 🟡 Experimental | `/v1/health`, `/v1/models` real; `/v1/generate` is a demo scaffold |
+| Distributed training | 🟡 Experimental | Gradient collectives in DDP/ZeRO/TP/PP/EP/grad-comm are wired to the NCCL binding (`net/distributed/nccl.c`), which falls back to a CPU path so single-process runs stay correct; control-plane pieces (checkpoint/elastic/heartbeat/sampler) remain scaffolded |
+| Python bindings | 🟢 Stable | NumPy-backed `Tensor`/`nn`/`Trainer`; C `_Tensor` reachable via pybind |
+
+## The 5-Stage Pipeline
+
+```mermaid
+flowchart TD
+    A[Raw sequence / tokens] --> B[HSS<br/>compress with SSM]
+    B --> C[SER<br/>route tokens to experts]
+    C --> D[ARC<br/>guard input + verify output]
+    D --> E[NPE<br/>execute neural program]
+    E --> F[FM<br/>store / recall memory]
+    F --> G[Trained model / inference result]
+```
+
+- **HSS — Hierarchical State-Space model** (`algorithms/hss/`): SSM front-end for long-range sequence modeling. Entry points `SNEPPX_hss_model_create`, `SNEPPX_hss_forward`.
+- **SER — Sparse Expert Router** (`algorithms/ser/`): Mixture-of-Experts with gating, capacity balancing, and expert forwarding. Entry points `SNEPPX_ser_model_create`, `SNEPPX_ser_forward`, `SNEPPX_ser_gate_forward`.
+- **ARC — Adversarial Robustness guard** (`algorithms/arc/`): input guard, output verifier, and gradient obfuscation that report security metrics. Entry point `SNEPPX_arc_forward`.
+- **NPE — Neural Processing Engine** (`algorithms/npe/`): a 16-register, 32-opcode neural VM (`SNEPPX_npe_vm_run`, `SNEPPX_npe_vm_step`) executing tensor operations as programs.
+- **FM — Fractal Memory** (`algorithms/fm/`): layered memory banks with a controller and EWM combine (`SNEPPX_fm_forward`).
+
+## Security Layers (S0–S9)
+
+Ten layers wrap the pipeline:
+
+| ID | Layer | Status |
+|----|-------|--------|
+| S0 | Cryptography core (classical + PQC) | Classical 🟢 / PQC 🟡 |
+| S1 | Secure memory hardening | 🟢 |
+| S2 | Code obfuscation | 🟢 |
+| S3 | Behavioral monitoring | 🟢 |
+| S4 | Network security | 🟡 |
+| S5 | AI sanitizer (prompt filter, DP) | 🟡 |
+| S6 | Key vault & audit logging | 🟢 |
+| S7 | Signed updates | 🟡 (Ed25519 live; dev fallback pending removal) |
+| S8 | Formal verification | 🟡 (bounded safety LTL; full LTL pending) |
+| S9 | Penetration testing / self-audit | 🟢 |
+
+> Honest note: several layers are substantial, and the project openly tracks what is still partial — **S7 signed-update verification and S8 formal verification are implemented but bounded** (Ed25519 with a dev-build fallback; safety-LTL properties only), and the post-quantum primitives are not yet FIPS-KAT validated. See `docs/security_layers.md` for the full mapping.
+
+## Model Zoo
+
+The model zoo provides architecture presets and a `from_pretrained()` entry point.
+
+- **Supported families (config presets):** LLaMA 2 / 3, Mistral, Qwen 2, DeepSeek V2 — resolved via `SNEPPX_llm_config_from_name` (`algorithms/model_zoo/`).
+- **`from_pretrained()`** (`bindings/python/.../model_zoo.py`): maps a model id → (family, size), builds the architecture skeleton, and returns a config. End-to-end pretrained-weight download/conversion is **in progress**; the safetensors / PyTorch `.bin` parsers in `hf_integration.py` are real but not yet wired into the loader.
+
+```python
+# Illustrative — resolves config + builds skeleton (weights download in progress)
+from SneppX_ALG.interface_bindings.model_zoo import from_pretrained
+model = from_pretrained("meta-llama/Llama-3-8b")
+```
+
+## C HTTP REST API
+
+A real cross-platform socket server (`net/http/http_server.c`) with a route table. **Opt-in** via `-DSNEPPX_BUILD_HTTP=ON` (OFF by default).
+
+| Endpoint | Status | Description |
+|----------|--------|-------------|
+| `GET /v1/health` | 🟢 | Liveness check |
+| `GET /v1/models` | 🟢 | List preset model configs |
+| `GET /v1/models/{id}` | 🟢 | Fetch one model config |
+| `POST /v1/generate` | 🟡 | **Demo scaffold** — deterministic token generator, no model forward pass yet |
+
+Run the demo:
+
+```powershell
+cmake -B build -DSNEPPX_BUILD_HTTP=ON
+cmake --build build --config Release
+# see examples/http_server_demo.c
+```
+
+## Python Bindings
+
+The `SneppX_ALG` package exposes a NumPy-backed `Tensor`, `nn` modules, and trainers (`Trainer`, `UltraTrainer`, LoRA/DPO/GRPO). The C `_Tensor` engine is wrapped via pybind (`_SNEPPX_c.Tensor`) and used internally by the C algorithm cores.
+
+```python
+# Illustrative — NumPy-backed tensor math
+import numpy as np
+from SneppX_ALG import Tensor
+
+x = Tensor(np.random.randn(4, 8))
+w = Tensor(np.random.randn(8, 16))
+y = x @ w
+print(y.shape)
+```
+
+## Python Quickstart
+
+Verified runnable (loss drops from ~7.4 to ~0.04 in 200 steps):
+
+```python
+import numpy as np
+from SneppX_ALG import Tensor
+from SneppX_ALG.interface_bindings import nn, optim
+
+np.random.seed(0)
+
+class MLP(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(4, 8)
+        self.fc2 = nn.Linear(8, 2)
+    def forward(self, x):
+        return self.fc2(nn.functional.relu(self.fc1(x)))
+
+model = MLP()
+opt = optim.Adam(model.parameters(), lr=1e-2)
+
+for step in range(200):
+    x = Tensor(np.random.randn(32, 4).astype(np.float32))
+    y = Tensor((2.0 * x.data[:, :2]).astype(np.float32))
+    loss = nn.functional.mse_loss(model(x), y)
+    loss.backward()
+    opt.step()
+    opt.zero_grad()
+
+print("final loss:", round(float(np.asarray(loss.data).reshape(-1)[0]), 4))  # ~0.04
+```
+
+Run with `PYTHONPATH=bindings/python python quickstart.py`. More runnable examples in [`examples/python_api/`](examples/python_api/).
+
+## Extended Python Utilities
+
+Additional pragmatic packages (pure NumPy/Python, fully tested):
+
+```text
+sampling, regularization, callbacks, linalg, signal, graph,
+stats, structured_output, rag, agents, observability, speculative
+```
+
+Import as:
+
+```python
+from SneppX_ALG import sampling, regularization, ...
+```
+
+## Recent framework capabilities (v1.5.0)
+
+- **Higher-order autograd**: `create_graph=True` through 40+ ops incl. Conv1d, layer/rms norm, all losses; plus `jvp` / `vjp` forward/reverse mode helpers.
+- **Functional API**: `sneppx_ALG.nn.functional` (aliased `F`) with ~70 differentiable ops (conv, pool, norm, pad, unfold/fold, embedding, losses, interpolate).
+- **nn modules**: Conv1d/Conv3d, ConvTranspose1d/2d/3d, MaxPool1d/2d/3d, AvgPool1d/2d/3d, adaptive pools, InstanceNorm*, Upsample, Unfold/Fold, MaxUnpool*, EmbeddingBag, ChannelShuffle/PixelShuffle, Bilinear, Flatten, ParameterList/Dict.
+- **Optimizers**: SGD, Adam, AdamW, NAdam, Rprop, ASGD, LBFGS, SparseAdam, plus classic/extras.
+- **Sparse tensors**: `SparseTensor` (COO/CSR/CSC/BSR), `sparse_mm`, `sparse_addmm`, `sparse_conv2d`.
+- **Init utils**: `nn.init` (xavier/kaiming/orthogonal/...), differentiable pooling autograd functions.
+- **Serialization**: strict `load_state_dict`, persistent/non-persistent buffers.
+- **Distributed C kernels**: NCCL-wired DDP/tensor/expert/pipeline/ZeRO/gradient-comm; deterministic distributed sampler.
+
+## Build & Quickstart
+
+```powershell
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+```
+
+Opt-in backends — real reference implementations, **OFF by default**. Each performs genuine computation via the shared reference-compute path and reports `DRIVER_UNSUPPORTED` when its flag is off:
+
+```powershell
+cmake -B build -DSNEPPX_BUILD_VULKAN=ON   # Vulkan — real GEMM / elementwise reference compute
+cmake -B build -DSNEPPX_BUILD_TPU=ON      # TPU — real GEMM reference + device emulation
+cmake -B build -DSNEPPX_BUILD_HTTP=ON     # HTTP — real BSD-socket transport (GET/POST)
+cmake -B build -DSNEPPX_BUILD_ZK=ON      # ZK — real Schnorr proof over Curve25519 (p = 2^255 - 19)
+cmake -B build -DSNEPPX_BUILD_METAL=ON   # Apple Metal reference backend
+cmake -B build -DSNEPPX_BUILD_ONEAPI=ON  # Intel oneAPI/SYCL reference backend
+```
+
+Build everything (all opt-in backends + tests) and run the full suite:
+
+```powershell
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON `
+  -DSNEPPX_BUILD_VULKAN=ON -DSNEPPX_BUILD_TPU=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_ZK=ON
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+```
+
+## Documentation
+
+| Area | Where to start |
+|------|----------------|
+| Quick start & build | [`docs/index.md`](docs/index.md) · [`QUICKSTART.md`](QUICKSTART.md) |
+| Contribution framework | [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md) |
+| Good first issues | [`docs/GOOD_FIRST_ISSUES.md`](docs/GOOD_FIRST_ISSUES.md) |
+| Branching strategy | [`docs/BRANCHING_STRATEGY.md`](docs/BRANCHING_STRATEGY.md) |
+| Code review guide | [`docs/CODE_REVIEW_GUIDE.md`](docs/CODE_REVIEW_GUIDE.md) |
+| Python features | [`docs/python_features.md`](docs/python_features.md) |
+| API reference | [`docs/API.md`](docs/API.md) · [`docs/api/python.md`](docs/api/python.md) |
+| Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Security layers | [`docs/security_layers.md`](docs/security_layers.md) |
+| Development workflow | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
+| All docs | [`docs/README.md`](docs/README.md) |
+
+## Contributing
+
+We run a five-tier contribution framework and label good entry points:
+
+- 🏷️ `good first issue` · `help wanted` · `documentation` — see the [open issues](https://github.com/SneppX/sneppx-alg/issues)
+- 💬 [Discussions](https://github.com/SneppX/sneppx-alg/discussions) — announcements, Q&A, ideas, show-and-tell
+- 📚 Learning paths & tier system in [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md)
+
+PRs are welcome.
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=SneppX/sneppx-alg&type=Date)](https://www.star-history.com/#SneppX/sneppx-alg&Date)
+
+## License
+
+MIT — see [`LICENSE`](./LICENSE). Maintained by **Ammar**.

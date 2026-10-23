@@ -4,8 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sneppx-alg"
-version = "1.5.1"
+version = "1.5.2"
 description = "Next-generation AI architecture with security built into the foundation"
+readme = "README.md"
 requires-python = ">=3.9"
 authors = [{ name = "Ammar [SNEPPX]", email = "algoSNEPPX@gmail.com" }]
 license = { text = "MIT" }
@@ -43,12 +44,14 @@ sneppx-eval = "SneppX_ALG.interface_bindings.eval_cli:main"
 sneppx-quantize = "SneppX_ALG.interface_bindings.quantize_cli:main"
 sneppx-rlhf = "SneppX_ALG.interface_bindings.rlhf_cli:main"
 
-[tool.setuptools]
-packages = ["SneppX_ALG", "SneppX_ALG.interface_bindings"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["SneppX_ALG", "SneppX_ALG.*"]
 
 [tool.setuptools.package-data]
 SneppX_ALG = [
     "_SNEPPX_c*.pyd", "_SNEPPX_c*.so",
     "_sneppx_c*.pyd", "_sneppx_c*.so",
     "_arix_c*.pyd", "_arix_c*.so",
+    "interface_bindings/*.py",
 ]
