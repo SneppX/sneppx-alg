@@ -43,6 +43,13 @@ IncompatibleKeys = namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_k
 
 
 class Module:
+    """Base class for all neural network modules and computational layers.
+
+    Modules support recursive sub-module registration, automatic parameter collection,
+    state dict serialization, execution hooks, and training/evaluation mode switching.
+    Custom layers should subclass ``Module`` and override the ``forward`` method.
+    """
+
     def __init__(self):
         self._parameters = {}
         self._modules = {}
