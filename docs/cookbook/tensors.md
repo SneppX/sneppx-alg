@@ -182,5 +182,25 @@ leaf = y.detach()                # no grad tracking
 x.requires_grad_(True)
 ```
 
-**Notes:** Requires C backend for a functional graph; otherwise `backward()`
-raises. CPU-safe to construct the graph.
+**Notes:** The autograd tape records operations automatically. `detach()` produces a leaf tensor sharing memory but disconnected from gradient history.
+
+## 11. Higher-Order Automatic Differentiation
+
+**Intent:** Compute gradients of gradients (e.g., Hessian-vector products).
+
+```python
+from SneppX_ALG import Tensor
+
+x = Tensor([3.0], requires_grad=True)
+# First derivative y' = 3 * x^2
+y = x ** 3
+# With create_graph=True, backward graph itself is differentiable
+y.backward(create_graph=True)
+print("first grad:", x.grad.data)  # [27.0]
+
+# Take gradient of gradient
+first_grad = x.grad
+first_grad.backward()
+print("second grad:", x.grad.data) # [27.0 + 18.0]
+```
+
