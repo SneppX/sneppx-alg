@@ -123,6 +123,16 @@ class NesterovSGD(SGD):
 
 
 class AdamW(Optimizer):
+    """Implements AdamW optimizer with decoupled weight decay.
+
+    Arguments:
+        params: Iterable of parameters to optimize or dicts defining parameter groups.
+        lr (float): Learning rate (default: 1e-3).
+        betas (tuple): Coefficients for computing running averages of gradient and square (default: (0.9, 0.999)).
+        eps (float): Term added to the denominator to improve numerical stability (default: 1e-8).
+        weight_decay (float): Decoupled weight decay coefficient (default: 0.01).
+    """
+
     def __init__(
         self,
         params,
