@@ -46,7 +46,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/SneppX/sneppx-alg"
 Repository = "https://github.com/SneppX/sneppx-alg"
-Documentation = "https://github.com/SneppX/sneppx-alg#readme"
+Documentation = "https://sneppx.github.io/sneppx-alg/"
 "Bug Tracker" = "https://github.com/SneppX/sneppx-alg/issues"
 "Release Notes" = "https://github.com/SneppX/sneppx-alg/releases"
 
