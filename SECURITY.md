@@ -2,17 +2,18 @@
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
-| 0.1.x   | Security fixes only |
-| 0.5.x   | Security + bug fixes |
-| 1.0.x   | Full support |
+| Version | Status | Level of Support |
+|---------|--------|------------------|
+| 1.5.x   | Current | Active feature, bug, and security updates |
+| 1.0.x - 1.1.x | Maintained | Critical security patches only |
+| < 1.0.0 | End of Life | Unsupported |
 
 ## Reporting a Vulnerability
 
 Report security vulnerabilities privately. Do NOT open public issues.
 
-Email: algoSNEPPX@gmail.com
+- **GitHub Security Advisory (Preferred):** [Open a private advisory](https://github.com/SneppX/sneppx-alg/security/advisories/new)
+- **Direct Maintainer Contact:** `algoSNEPPX@gmail.com`
 
 GPG key: Available from S0 key infrastructure (Ed25519).
 
