@@ -1,9 +1,12 @@
-# Example training configuration for the v3 autograd trainer
-# Usage: python -m SneppX_ALG.interface_bindings.train_cli --config config/training/example.yaml
+# Example training configuration for SNEPPX-Alg trainer (v3)
+# Usage:
+#   sneppx-train --config config/training/example.yaml
 
 model:
   name: mlp
   dims: [64, 128, 64, 10]
+  activation: gelu
+  dropout: 0.1
 
 training:
   batch_size: 32
@@ -12,34 +15,40 @@ training:
   max_epochs: 0
   seed: 42
   max_grad_norm: 1.0
-  device: cpu
+  device: cpu                     # 'cpu', 'cuda', 'cuda:0'
   log_every: 10
   eval_every: 200
   save_every: 500
   checkpoint_dir: checkpoints
+  keep_last_n_checkpoints: 3
   resume_from: null
 
 optimizer:
-  name: adamw
+  name: adamw                     # 'adamw', 'adam', 'sgd', 'lion'
   lr: 0.0003
   weight_decay: 0.01
   betas: [0.9, 0.999]
   eps: 1.0e-8
 
 scheduler:
-  name: cosine
+  name: cosine                    # 'cosine', 'linear', 'constant_with_warmup'
   warmup_steps: 100
   min_lr: 0.00001
 
 amp:
-  enabled: false
-  dtype: float16
+  enabled: false                  # Automatic Mixed Precision
+  dtype: float16                  # 'float16' or 'bfloat16'
+
+distributed:
+  backend: gloo                   # 'nccl' on Linux/GPU clusters, 'gloo' on CPU/Windows
+  zero_stage: 0                   # 0 = disabled, 1 = shard states, 2 = shard gradients, 3 = full shard
 
 logging:
   use_wandb: false
+  project: sneppx-training
 
 privacy:
-  enabled: false
+  enabled: false                  # Differential Privacy (DP-SGD)
   noise_multiplier: 1.0
   max_per_sample_grad_norm: 1.0
   epsilon: 8.0
