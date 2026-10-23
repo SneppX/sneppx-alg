@@ -36,6 +36,18 @@ All 8 development phases complete, API frozen for stability, full regression sui
 | **Reliability** | Circuit breakers, retry logic, health checks for distributed training | 99.9% job success |
 | **Monitoring** | Prometheus metrics, Grafana dashboards, tracing | Real-time visibility |
 
+## v1.5 — Python DL Ecosystem, Higher-Order AD & Site Polish
+
+| Area | Deliverable | Status |
+|------|-------------|--------|
+| **Higher-Order AD** | `create_graph=True`, JVP/VJP forward/reverse tangent engine, Hessian-vector products | **Done (v1.5.0)** |
+| **NN Module Parity** | `InstanceNorm1d/2d/3d`, `BatchNorm3d`, `Conv3d`, `ConvTranspose*`, `Unfold`/`Fold` | **Done (v1.5.0)** |
+| **Functional API** | Pure `F.*` namespace with ~70 differentiable operations and loss functions | **Done (v1.5.0)** |
+| **Sparse Tensors** | COO/CSR/CSC/BSR formats with `sparse_mm`, `sparse_addmm`, and `SparseAdam` | **Done (v1.5.0)** |
+| **Community Health** | Canonical Contributor Covenant v2.1, structured issue templates, secret scanning | **Done (v1.5.1)** |
+| **Interactive Docs** | Pyodide browser playground, Model Zoo browser, API explorer, and smooth UX | **Done (v1.5.2)** |
+| **PyPI Discovery** | Multi-directory packaging resolution and PyPI build configuration | **Done (v1.5.2)** |
+
 ## v2.0 — Competitive with LLaMA-3
 
 - 70B parameters, 1M LOC
