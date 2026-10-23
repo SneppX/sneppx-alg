@@ -150,3 +150,19 @@ x  = Tensor.randn((4, 64))
 q  = quantize_mx(x, MX_FORMATS["mxfp4"])
 xr = dequantize_mx(q)
 ```
+
+## 11. Quantize via CLI (`sneppx-quantize`)
+
+**Intent:** Command-line quantization for offline checkpoint compression.
+
+```powershell
+# Quantize model weights to INT8 symmetric
+sneppx-quantize --model-dir ./checkpoints/llama2-7b --mode int8 --out ./quantized/llama2-7b-int8
+
+# Quantize to INT4 with group size 128
+sneppx-quantize --model-dir ./checkpoints/llama2-7b --mode int4 --group-size 128 --out ./quantized/llama2-7b-int4
+
+# Quantize to FP8 E4M3 for faster CPU inference
+sneppx-quantize --model-dir ./checkpoints/llama2-7b --mode fp8 --out ./quantized/llama2-7b-fp8
+```
+
