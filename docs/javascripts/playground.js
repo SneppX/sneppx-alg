@@ -107,11 +107,19 @@
         .forEach(function (btn) {
             btn.addEventListener("click", run);
         });
+    /* ---- Restore from URL hash (shareable permalinks) --------------------- */
+    try {
+        var hash = location.hash || "";
+        var m = hash.match(/[#&]code=([^&]+)/);
+        if (m && editor) {
+            try { editor.value = decodeURIComponent(escape(atob(m[1]))); } catch (e) {}
+        }
+    } catch (e) {}
     /* ---- Save / restore code via localStorage ----------------------------- */
     var storageKey = "sx-pg-code";
     try {
         var saved = localStorage.getItem(storageKey);
-        if (saved && editor) editor.value = saved;
+        if (saved && editor && !(location.hash || "").match(/[#&]code=/)) editor.value = saved;
     } catch (e) {}
     if (editor) {
         editor.addEventListener("input", function () {
@@ -135,6 +143,28 @@
                 try { localStorage.setItem(storageKey, editor.value); } catch (e) {}
             }
         });
+    });
+    /* ---- Share permalink button ------------------------------------------- */
+    var shareBtn = document.createElement("button");
+    shareBtn.type = "button";
+    shareBtn.className = "sx-pg-share";
+    shareBtn.textContent = "🔗 Copy link";
+    shareBtn.title = "Copy a shareable link to this snippet";
+    var pgControls = root.querySelector(".sx-pg-controls") || root;
+    pgControls.appendChild(shareBtn);
+    shareBtn.addEventListener("click", function () {
+        try {
+            var b64 = btoa(unescape(encodeURIComponent(editor.value)));
+            var url = location.href.split("#")[0] + "#code=" + b64;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function () {
+                    shareBtn.textContent = "✓ Copied";
+                    setTimeout(function () { shareBtn.textContent = "🔗 Copy link"; }, 1500);
+                });
+            } else {
+                prompt("Copy this link:", url);
+            }
+        } catch (e) {}
     });
 
     setStatus("Click Run to load the Python runtime (~10s first time).");
