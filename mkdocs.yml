@@ -58,10 +58,12 @@ theme:
 extra_css:
     - stylesheets/extra.css
   - stylesheets/run-snippet.css
+  - stylesheets/command-palette.css
 extra_javascript:
     - javascripts/extra.js
     - javascripts/playground.js
   - javascripts/run-snippet.js
+  - javascripts/command-palette.js
 extra:
     social:
         - icon: fontawesome/brands/github
