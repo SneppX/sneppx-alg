@@ -1,0 +1,21 @@
+/* Run-snippet buttons + output panels */
+.sx-run-wrap { position: relative; margin: 0.6em 0; }
+.sx-run-wrap pre { margin: 0; }
+.sx-run-btn {
+    position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2;
+    padding: 0.25rem 0.6rem; font-size: 0.75rem; font-weight: 600;
+    border: 1px solid rgba(127,127,127,0.35); border-radius: 6px;
+    background: rgba(120, 80, 220, 0.12); color: inherit;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+}
+.sx-run-btn:hover { background: rgba(120, 80, 220, 0.25); }
+.sx-run-btn:active { transform: scale(0.96); }
+.sx-run-btn:disabled { opacity: 0.6; cursor: wait; }
+.sx-run-out {
+    display: none; margin-top: 0.35rem; padding: 0.55rem 0.7rem;
+    background: rgba(0,0,0,0.35); border: 1px solid rgba(127,127,127,0.25);
+    border-radius: 6px; font-size: 0.78rem; max-height: 240px; overflow: auto;
+    white-space: pre-wrap; word-break: break-word;
+}
+.sx-run-out--open { display: block; }
+.md-typeset .sx-run-out { font-family: "Roboto Mono", monospace; }

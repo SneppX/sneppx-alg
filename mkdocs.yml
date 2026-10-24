@@ -57,9 +57,11 @@ theme:
     exclude_docs: README.md
 extra_css:
     - stylesheets/extra.css
+  - stylesheets/run-snippet.css
 extra_javascript:
     - javascripts/extra.js
     - javascripts/playground.js
+  - javascripts/run-snippet.js
 extra:
     social:
         - icon: fontawesome/brands/github
