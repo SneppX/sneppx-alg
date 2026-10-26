@@ -1,0 +1,38 @@
+/* Autograd graph visualizer */
+.sx-agv {
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 10px;
+    padding: 0.9rem 1rem 1rem;
+    margin: 1.2rem 0;
+    background: rgba(127, 127, 127, 0.04);
+}
+.sx-agv-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.sx-agv-expr {
+    flex: 1 1 240px; min-width: 160px; padding: 0.45rem 0.6rem;
+    font-family: "Roboto Mono", monospace; font-size: 0.85rem;
+    border: 1px solid rgba(127, 127, 127, 0.35); border-radius: 6px;
+    background: var(--md-default-bg-color, #fff); color: inherit;
+}
+.sx-agv button {
+    padding: 0.4rem 0.7rem; font-size: 0.78rem; font-weight: 600;
+    border: 1px solid rgba(127, 127, 127, 0.35); border-radius: 6px;
+    background: rgba(120, 80, 220, 0.12); color: inherit; cursor: pointer;
+}
+.sx-agv button:hover:not(:disabled) { background: rgba(120, 80, 220, 0.25); }
+.sx-agv button:disabled { opacity: 0.5; cursor: not-allowed; }
+.sx-agv-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.9; }
+.sx-agv-presets button { font-family: "Roboto Mono", monospace; padding: 0.25rem 0.5rem; font-weight: 400; }
+.sx-agv-vars { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 0.7rem 0; }
+.sx-agv-var { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-family: "Roboto Mono", monospace; }
+.sx-agv-var input { width: 68px; padding: 0.2rem 0.35rem; border: 1px solid rgba(127,127,127,0.35); border-radius: 5px; background: transparent; color: inherit; }
+.sx-agv-error { color: #d9534f; font-size: 0.8rem; min-height: 1.1em; }
+.sx-agv-svg { display: block; width: 100%; margin: 0.4rem 0; overflow: visible; }
+.sx-agv-node rect { fill: rgba(120, 80, 220, 0.12); stroke: rgba(120, 80, 220, 0.5); stroke-width: 1.2; }
+.sx-agv-node .sx-agv-op { font-size: 8px; font-weight: 700; fill: currentColor; opacity: 0.8; }
+.sx-agv-node .sx-agv-val { font-size: 9px; fill: currentColor; font-family: "Roboto Mono", monospace; }
+.sx-agv-node .sx-agv-grad { font-size: 8px; fill: #2e9e5b; font-family: "Roboto Mono", monospace; }
+.sx-agv-edge { stroke: rgba(127, 127, 127, 0.5); stroke-width: 1; }
+.sx-agv-out { font-family: "Roboto Mono", monospace; font-size: 0.78rem; opacity: 0.85; min-height: 1.1em; word-break: break-word; }
+@media (prefers-reduced-motion: reduce) {
+    .sx-agv * { transition: none !important; animation: none !important; }
+}

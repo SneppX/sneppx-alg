@@ -60,12 +60,15 @@ extra_css:
   - stylesheets/run-snippet.css
   - stylesheets/command-palette.css
   - stylesheets/shortcuts.css
+  - stylesheets/visualizers.css
 extra_javascript:
     - javascripts/extra.js
     - javascripts/playground.js
   - javascripts/run-snippet.js
   - javascripts/command-palette.js
   - javascripts/shortcuts.js
+  - javascripts/autograd-core.js
+  - javascripts/autograd-graph.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -125,6 +128,7 @@ nav:
     - Why SneppX-Alg: why-sneppx-alg.md
     - Getting Started: getting-started.md
     - Autograd Guide: autograd-guide.md
+    - Autograd Visualizer: autograd-visualizer.md
     - Distributed Guide: distributed-guide.md
     - Sparse Tensors: sparse-tensors.md
     - Higher-Order AD: higher-order-ad.md
