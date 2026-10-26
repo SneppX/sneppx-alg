@@ -124,3 +124,26 @@
 @media (prefers-reduced-motion: reduce) {
     .sx-race-canvas { transition: none !important; }
 }
+
+/* ---- loss gallery ---- */
+.sx-loss {
+    border: 1px solid rgba(127,127,127,0.25); border-radius: 10px;
+    padding: 1rem; margin: 1.2rem 0; background: rgba(127,127,127,0.04);
+}
+.sx-loss-controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.8rem; }
+.sx-loss-controls label { display: flex; align-items: center; gap: 0.4rem; }
+.sx-loss-controls select {
+    padding: 0.28rem 0.45rem; border-radius: 6px; font-size: 0.8rem;
+    border: 1px solid rgba(127,127,127,0.35); background: var(--md-default-bg-color, #fff); color: inherit;
+}
+.sx-loss-params { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: 0.6rem; }
+.sx-loss-param { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.74rem; font-family: "Roboto Mono", monospace; }
+.sx-loss-param input[type="range"] { width: 130px; }
+.sx-loss-canvas {
+    display: block; width: 100%; height: auto; margin-top: 0.7rem;
+    border-radius: 8px; border: 1px solid rgba(127,127,127,0.25);
+}
+.sx-loss-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.55rem; font-size: 0.76rem; }
+.sx-loss-key { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sx-loss-key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.sx-loss-readout { margin-top: 0.4rem; font-family: "Roboto Mono", monospace; font-size: 0.72rem; opacity: 0.85; }
