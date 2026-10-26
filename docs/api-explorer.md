@@ -2,6 +2,13 @@
 
 Quick reference for SNEPPX-Alg's Python API.
 
+!!! tip "Interactive pages"
+    - [Matmul visualizer](matmul-visualizer.md) — see the row · column dot product
+    - [Conv2d visualizer](conv-visualizer.md) — sliding window, stride and padding
+    - [Loss gallery](loss-gallery.md) — every loss with its gradient curve
+    - [Optimizer race](optimizer-race.md) — SGD vs Adam vs AdamW vs NAdam
+
+
 ## Tensor
 
 ```python
