@@ -120,6 +120,7 @@ markdown_extensions:
 nav:
     - Home: index.md
     - Playground: playground.md
+    - Cookbook: cookbook.md
     - Why SneppX-Alg: why-sneppx-alg.md
     - Getting Started: getting-started.md
     - Autograd Guide: autograd-guide.md
