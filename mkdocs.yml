@@ -69,6 +69,8 @@ extra_javascript:
   - javascripts/shortcuts.js
   - javascripts/autograd-core.js
   - javascripts/autograd-graph.js
+  - javascripts/matmul-viz.js
+  - javascripts/conv-viz.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -129,6 +131,8 @@ nav:
     - Getting Started: getting-started.md
     - Autograd Guide: autograd-guide.md
     - Autograd Visualizer: autograd-visualizer.md
+    - Matmul Visualizer: matmul-visualizer.md
+    - Conv2d Visualizer: conv-visualizer.md
     - Distributed Guide: distributed-guide.md
     - Sparse Tensors: sparse-tensors.md
     - Higher-Order AD: higher-order-ad.md
