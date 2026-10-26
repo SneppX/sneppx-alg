@@ -127,6 +127,18 @@
                 localStorage.setItem(storageKey, editor.value);
             } catch (e) {}
         });
+        editor.addEventListener("keydown", function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                e.preventDefault();
+                run();
+            }
+            if (e.key === "Tab") {
+                e.preventDefault();
+                var s = editor.selectionStart, t = editor.selectionEnd;
+                editor.value = editor.value.slice(0, s) + "    " + editor.value.slice(t);
+                editor.selectionStart = editor.selectionEnd = s + 4;
+            }
+        });
     }
 
     /* ---- Example snippet buttons ----------------------------------------- */
