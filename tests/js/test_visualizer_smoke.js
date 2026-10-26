@@ -64,11 +64,12 @@ try { Object.defineProperty(global, "navigator", { value: { clipboard: null }, c
 require("../../docs/javascripts/autograd-core.js");
 require("../../docs/javascripts/matmul-viz.js");
 require("../../docs/javascripts/conv-viz.js");
+require("../../docs/javascripts/optimizer-race.js");
 require("../../docs/javascripts/autograd-graph.js");
 require("../../docs/javascripts/run-snippet.js");
 require("../../docs/javascripts/command-palette.js");
 require("../../docs/javascripts/shortcuts.js");
 
 // With no host element present every module should be a harmless no-op.
-console.log("visualizer smoke: 7 scripts loaded, no host -> no crash");
+console.log("visualizer smoke: 8 scripts loaded, no host -> no crash");
 process.exit(0);

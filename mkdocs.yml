@@ -71,6 +71,7 @@ extra_javascript:
   - javascripts/autograd-graph.js
   - javascripts/matmul-viz.js
   - javascripts/conv-viz.js
+  - javascripts/optimizer-race.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -133,6 +134,7 @@ nav:
     - Autograd Visualizer: autograd-visualizer.md
     - Matmul Visualizer: matmul-visualizer.md
     - Conv2d Visualizer: conv-visualizer.md
+    - Optimizer Race: optimizer-race.md
     - Distributed Guide: distributed-guide.md
     - Sparse Tensors: sparse-tensors.md
     - Higher-Order AD: higher-order-ad.md

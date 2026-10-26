@@ -93,3 +93,34 @@
 }
 .sx-cv-shape { margin-top: 0.55rem; font-size: 0.74rem; opacity: 0.75; font-family: "Roboto Mono", monospace; }
 .sx-cv-explain { margin-top: 0.45rem; font-family: "Roboto Mono", monospace; font-size: 0.74rem; opacity: 0.9; word-break: break-word; }
+
+/* ---- optimizer race ---- */
+.sx-race {
+    border: 1px solid rgba(127,127,127,0.25); border-radius: 10px;
+    padding: 1rem; margin: 1.2rem 0; background: rgba(127,127,127,0.04);
+}
+.sx-race-controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; margin-bottom: 0.7rem; font-size: 0.8rem; }
+.sx-race-controls label { display: flex; align-items: center; gap: 0.4rem; }
+.sx-race-controls select {
+    padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.8rem;
+    border: 1px solid rgba(127,127,127,0.35); background: var(--md-default-bg-color, #fff); color: inherit;
+}
+.sx-race-controls button {
+    padding: 0.35rem 0.7rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px;
+    border: 1px solid rgba(127,127,127,0.35); background: rgba(120,80,220,0.12); color: inherit; cursor: pointer;
+}
+.sx-race-controls button:hover { background: rgba(120,80,220,0.25); }
+.sx-race-canvas {
+    display: block; width: 100%; height: auto; border-radius: 8px;
+    border: 1px solid rgba(127,127,127,0.25); background: #101018;
+}
+.sx-race-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.6rem; font-size: 0.76rem; }
+.sx-race-key { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sx-race-key i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.sx-race-readout {
+    margin-top: 0.45rem; font-family: "Roboto Mono", monospace;
+    font-size: 0.72rem; opacity: 0.85; word-break: break-word;
+}
+@media (prefers-reduced-motion: reduce) {
+    .sx-race-canvas { transition: none !important; }
+}
