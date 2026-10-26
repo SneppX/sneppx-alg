@@ -43,6 +43,7 @@ function makeEl(tag) {
 global.window = global;
 global.document = {
     readyState: "complete",
+    documentElement: { scrollHeight: 1000, clientHeight: 800 },
     body: makeEl("body"),
     head: makeEl("head"),
     createElement: (t) => makeEl(t),
@@ -56,6 +57,9 @@ global.document = {
 };
 global.matchMedia = () => ({ matches: false });
 global.location = { hash: "", href: "http://x/", pathname: "/" };
+global.scrollY = 0;
+global.innerHeight = 800;
+global.addEventListener = () => {};
 global.localStorage = { getItem: () => null, setItem: () => {} };
 global.setTimeout = (fn) => { try { fn(); } catch (e) {} return 0; };
 global.requestAnimationFrame = (fn) => fn(0);
@@ -66,6 +70,7 @@ require("../../docs/javascripts/matmul-viz.js");
 require("../../docs/javascripts/conv-viz.js");
 require("../../docs/javascripts/optimizer-race.js");
 require("../../docs/javascripts/loss-gallery.js");
+require("../../docs/javascripts/progress.js");
 require("../../docs/javascripts/autograd-graph.js");
 require("../../docs/javascripts/run-snippet.js");
 require("../../docs/javascripts/command-palette.js");

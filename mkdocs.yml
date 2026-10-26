@@ -61,6 +61,7 @@ extra_css:
   - stylesheets/command-palette.css
   - stylesheets/shortcuts.css
   - stylesheets/visualizers.css
+  - stylesheets/progress.css
 extra_javascript:
     - javascripts/extra.js
     - javascripts/playground.js
@@ -73,6 +74,7 @@ extra_javascript:
   - javascripts/conv-viz.js
   - javascripts/optimizer-race.js
   - javascripts/loss-gallery.js
+  - javascripts/progress.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -129,6 +131,7 @@ nav:
     - Playground: playground.md
     - Cookbook: cookbook.md
     - Keyboard Shortcuts: keyboard-shortcuts.md
+    - Your Progress: progress.md
     - Why SneppX-Alg: why-sneppx-alg.md
     - Getting Started: getting-started.md
     - Autograd Guide: autograd-guide.md
