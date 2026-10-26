@@ -795,6 +795,12 @@ class Tensor:
         return CrossEntropyLoss.apply(self, target)
 
     def mae_loss(self, target):
+        from .autograd_ops import Abs, Mean, Sub
+
+        if getattr(self, "requires_grad", False) or getattr(
+            target, "requires_grad", False
+        ):
+            return Mean.apply(Abs.apply(Sub.apply(self, target)))
         return Tensor(
             np.array([np.mean(np.abs(self.data - target.data))]), dtype="float32"
         )
