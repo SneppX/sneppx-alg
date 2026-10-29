@@ -433,18 +433,10 @@ def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
     or a dense ``Tensor`` (plain dense convolve). Weight is a dense Tensor of
     shape [C_out, C_in//groups, kH, kW].
     """
-    from .advanced_ops import conv2d as _dense_conv2d
-
+    from .autograd_ops import SparseConv2d
     was_sparse = isinstance(input, SparseTensor)
-    x = input.to_dense() if was_sparse else input
-    if isinstance(stride, int):
-        stride = (stride, stride)
-    if isinstance(padding, int):
-        padding = (padding, padding)
-    if isinstance(dilation, int):
-        dilation = (dilation, dilation)
-    out = _dense_conv2d(x, weight, bias, stride=stride, padding=padding,
-                        dilation=dilation, groups=groups)
+    out = SparseConv2d.apply(input, weight, bias, stride=stride, padding=padding,
+                             dilation=dilation, groups=groups)
     if not was_sparse:
         return out
     return SparseTensor.from_tensor(out, layout=SparseCOO)
