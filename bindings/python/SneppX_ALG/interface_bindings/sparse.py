@@ -98,6 +98,11 @@ class SparseTensor:
         return self.size
 
     @property
+    def data(self):
+        """Return the values as a Tensor (for autograd compatibility)."""
+        return Tensor(self._values.copy(), dtype=self.dtype, device=self.device)
+
+    @property
     def grad_fn(self):
         return self._grad_fn
 

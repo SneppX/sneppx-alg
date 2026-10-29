@@ -437,38 +437,40 @@ class SparseMM(Function):
         mat2_is_sparse = ctx.get_attr("mat2_is_sparse")
 
         from .autograd_ops import MatMul, Transpose, Unsqueeze, Squeeze
+        from .sparse import SparseTensor
+
+        def _as_dense(t):
+            if isinstance(t, SparseTensor):
+                return Tensor(np.asarray(t.to_dense().data), dtype=t.dtype)
+            return t
 
         if create_graph:
             g_t = grad_output
             grads = [None, None]
 
-            if mat1_is_sparse:
-                # grad_mat1 = g @ mat2^T
-                if mat2.data.ndim == 2:
-                    mat2_t = Transpose.apply(mat2, -1, -2)
-                else:
-                    mat2_t = mat2
-                if g_t.data.ndim == 1:
-                    g_row = Unsqueeze.apply(g_t, 0)
-                    grad_mat1 = MatMul.apply(g_row, mat2_t)
-                    grad_mat1 = Squeeze.apply(grad_mat1, 0)
-                else:
-                    grad_mat1 = MatMul.apply(g_t, mat2_t)
-                grads[0] = grad_mat1
+            # grad_mat1 = g @ mat2^T
+            mat2_dense = _as_dense(mat2)
+            if mat2_dense.data.ndim == 2:
+                mat2_t = Transpose.apply(mat2_dense, -1, -2)
             else:
-                if mat2.data.ndim == 2:
-                    mat2_t = Transpose.apply(mat2, -1, -2)
-                else:
-                    mat2_t = mat2
-                grads[0] = MatMul.apply(g_t, mat2_t)
+                mat2_t = mat2_dense
+            if g_t.data.ndim == 1:
+                g_row = Unsqueeze.apply(g_t, 0)
+                grad_mat1 = MatMul.apply(g_row, mat2_t)
+                grad_mat1 = Squeeze.apply(grad_mat1, 0)
+            else:
+                grad_mat1 = MatMul.apply(g_t, mat2_t)
+            grads[0] = grad_mat1
 
+            # grad_mat2 = mat1^T @ g
             if mat2_is_sparse:
                 grads[1] = None
             else:
-                if mat1.data.ndim == 2:
-                    mat1_t = Transpose.apply(mat1, -1, -2)
+                mat1_dense = _as_dense(mat1)
+                if mat1_dense.data.ndim == 2:
+                    mat1_t = Transpose.apply(mat1_dense, -1, -2)
                 else:
-                    mat1_t = mat1
+                    mat1_t = mat1_dense
                 grads[1] = MatMul.apply(mat1_t, g_t)
             return grads
 
@@ -476,20 +478,15 @@ class SparseMM(Function):
         gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
         grads = [None, None]
 
-        if mat1_is_sparse:
-            m2 = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
-            grad_mat1 = gnp @ m2.T
-            grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
-        else:
-            m2 = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
-            grad_mat1 = gnp @ m2.T
-            grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
+        mat2_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+        grad_mat1 = gnp @ mat2_np.T
+        grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
 
         if mat2_is_sparse:
             grads[1] = None
         else:
-            m1 = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
-            grad_mat2 = m1.T @ gnp
+            mat1_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1.to_dense().data)
+            grad_mat2 = mat1_np.T @ gnp
             grads[1] = Tensor(grad_mat2, dtype=mat2.dtype)
         return grads
 

@@ -249,7 +249,11 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
 
             # Distribute gradients to inputs
             for inp, ig in zip(t.grad_fn.inputs, grad_list):
-                if not isinstance(inp, Tensor) or ig is None:
+                if ig is None:
+                    continue
+                # Duck-typed: accept any object with is_leaf / grad / requires_grad
+                # (covers Tensor and SparseTensor).
+                if not hasattr(inp, "is_leaf") or not hasattr(inp, "requires_grad"):
                     continue
                 if inp.is_leaf:
                     if return_grads:
