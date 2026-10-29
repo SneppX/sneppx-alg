@@ -376,13 +376,14 @@ def jvp(func, inputs, tangents):
 
 def _tensor_inputs(args):
     """Extract only the Tensor objects from an argument list."""
+    from .sparse import SparseTensor
     result = []
     for a in args:
-        if isinstance(a, Tensor):
+        if isinstance(a, (Tensor, SparseTensor)):
             result.append(a)
         elif isinstance(a, (list, tuple)):
             for item in a:
-                if isinstance(item, Tensor):
+                if isinstance(item, (Tensor, SparseTensor)):
                     result.append(item)
     return result
 
