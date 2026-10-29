@@ -104,7 +104,7 @@ COMPATIBILITY.md
 !docs/assets/sneppx_py.zip
 
 # External
-/.kilo
+.kilo/
 
 # mkdocs social plugin cache (PNGs only)
 .cache/*.png
