@@ -53,6 +53,9 @@ node_modules/
 # opencode
 .opencode/
 
+# kilo
+.kilo/
+
 # Local dev-tools data (lint logs, stats)
 .sneppx/
 
