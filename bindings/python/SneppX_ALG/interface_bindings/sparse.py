@@ -415,14 +415,8 @@ def sparse_addmm(input, mat1, mat2, beta=1.0, alpha=1.0):
 
 def sparse_sum(input, dim=None, dtype=None):
     """Sum of a sparse tensor. Single dim -> dense Tensor; None -> scalar."""
-    dense = input.to_dense()
-    if dtype is not None and dtype != input.dtype:
-        dense = Tensor(dense.data.astype(_numpy_dtype(dtype)), dtype=dtype,
-                       device=input.device)
-    if dim is None:
-        return np.sum(np.asarray(dense.data, dtype=dense.dtype_name),
-                      dtype=dense.dtype_name if dtype is None else _numpy_dtype(dtype))
-    return dense.sum(dim)
+    from .autograd_ops import SparseSum
+    return SparseSum.apply(input, dim, dtype=dtype)
 
 
 def sparse_softmax(input, dim):

@@ -574,14 +574,18 @@ class SparseSum(Function):
     """
 
     @staticmethod
-    def forward(ctx, input, dim=None):
+    def forward(ctx, input, dim=None, dtype=None):
         from .sparse import SparseTensor
         ctx.save_for_backward(input=input)
-        ctx.save_attr(dim=dim, input_shape=tuple(input.size))
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size),
+                      dtype=dtype)
         dense = input.to_dense()
+        if dtype is not None and dtype != input.dtype:
+            dense = Tensor(dense.data.astype(_numpy_dtype(dtype)), dtype=dtype,
+                           device=input.device)
         if dim is None:
-            return Tensor(float(dense.data.sum()), dtype=input.dtype)
-        return Tensor(dense.data.sum(axis=dim), dtype=input.dtype)
+            return Tensor(float(dense.data.sum()), dtype=dense.dtype_name)
+        return Tensor(dense.data.sum(axis=dim), dtype=dense.dtype_name)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
