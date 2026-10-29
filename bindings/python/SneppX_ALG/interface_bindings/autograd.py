@@ -290,11 +290,13 @@ def _acc_grad(tensor, grad, create_graph=False):
 
 def _wrap_tensor_backward(tensor, grad_output=None, create_graph=False):
     """Replace Tensor.backward() so it clears and traverses."""
-    if grad_output is None and getattr(tensor, "numel", 0) == 1:
+    if grad_output is None:
         import numpy as np
         if hasattr(tensor, "_values"):
-            grad_output = Tensor(np.ones_like(tensor._values), dtype=tensor.dtype)
-        else:
+            # SparseTensor: grad_output must match full dense shape, not just values
+            grad_output = Tensor(np.ones(tensor.size, dtype=np.float32),
+                                 dtype=tensor.dtype)
+        elif getattr(tensor, "numel", 0) == 1:
             grad_output = Tensor(np.ones_like(tensor.data), dtype=tensor.dtype)
 
     _backward(tensor, grad_output, create_graph=create_graph)
