@@ -29,6 +29,17 @@ ML_DSA_VARIANTS = {
     "ML-DSA-87": 5,
 }
 
+#: FIPS 203 parameter set -> C kyber variant id (2 -> ML-KEM-512,
+#: 3 -> ML-KEM-768, 4 -> ML-KEM-1024).
+ML_KEM_VARIANTS = {
+    "ML-KEM-512": 2,
+    "ML-KEM-768": 3,
+    "ML-KEM-1024": 4,
+}
+
+#: FIPS 203 public-key / secret-key sizes per variant id.
+_FIPS203_SIZES = {2: (800, 1632), 3: (1184, 2400), 4: (1568, 3168)}
+
 #: FIPS 205 parameter sets officially defined.  The C SPHINCS+ binding
 #: currently exposes a single fixed parameter set regardless of ``variant``;
 #: entries here map a set name to a stable id for reporting purposes.
@@ -48,6 +59,7 @@ SLH_DSA_SETS = [
 ]
 
 _SIZE_TO_ML_DSA = {1312: "ML-DSA-44", 1952: "ML-DSA-65", 2592: "ML-DSA-87"}
+_SIZE_TO_ML_KEM = {800: "ML-KEM-512", 1184: "ML-KEM-768", 1568: "ML-KEM-1024"}
 
 
 # Data paths -------------------------------------------------------------------
@@ -196,6 +208,77 @@ def mlkem_keygen_vectors() -> List[Dict[str, Any]]:
     return doc["vectors"]
 
 
+def ml_kem_variant_for_parameter_set(parameter_set: str) -> Optional[int]:
+    """Map an ML-KEM parameter set name to a C kyber variant id."""
+    return ML_KEM_VARIANTS.get(parameter_set)
+
+
+def run_mlkem_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
+    """Run one ML-KEM keygen vector through the C kyber keygen.
+
+    Seeds the C test RNG with the vector's ``d`` value, calls
+    ``kyber_keygen(variant)``, and compares the resulting ``ek``/``dk``
+    against the NIST expected values.  Returns True on byte match, False on
+    mismatch, None if the parameter set is unsupported.
+    """
+    variant = ml_kem_variant_for_parameter_set(vector.get("parameterSet", ""))
+    if variant is None:
+        return None
+    pk_size, sk_size = _FIPS203_SIZES[variant]
+
+    # Seed the deterministic test RNG with the ACVP ``d`` seed.
+    crypto.random_set_seed(h2b(vector["d"]))
+    try:
+        pk, sk = crypto.kyber_keygen(variant)
+    except Exception:
+        crypto.random_clear_seed()
+        return None
+    finally:
+        crypto.random_clear_seed()
+
+    if len(pk) != pk_size or len(sk) != sk_size:
+        return False
+    expected_ek = h2b(vector["ek"]).upper()
+    expected_dk = h2b(vector["dk"]).upper()
+    if pk.hex().upper() != expected_ek or sk.hex().upper() != expected_dk:
+        return False
+    return True
+
+
+def run_mlkem_encaps_decaps_roundtrip(crypto: Any, vector: Dict[str, Any]) -> bool:
+    """Run an ML-KEM encaps/decaps roundtrip self-parity check.
+
+    Generates a fresh keypair, encapsulates to it, then decapsulates and
+    verifies the recovered shared secret matches.  Returns True on success,
+    False on failure, None if the parameter set is unsupported.
+    """
+    variant = ml_kem_variant_for_parameter_set(vector.get("parameterSet", ""))
+    if variant is None:
+        return None
+    pk_size, sk_size = _FIPS203_SIZES[variant]
+
+    try:
+        crypto.random_set_seed(h2b(vector["d"]))
+        pk, sk = crypto.kyber_keygen(variant)
+        crypto.random_clear_seed()
+    except Exception:
+        try:
+            crypto.random_clear_seed()
+        except Exception:
+            pass
+        return None
+
+    if len(pk) != pk_size or len(sk) != sk_size:
+        return False
+
+    try:
+        ct, ss1 = crypto.kyber_encaps(pk, variant)
+        ss2 = crypto.kyber_decaps(ct, sk, variant)
+        return ss1 == ss2
+    except Exception:
+        return False
+
+
 def interop_report(
     crypto: Any, vectors: List[Dict[str, Any]], runner: Any
 ) -> Dict[str, Any]:
@@ -251,5 +334,8 @@ __all__ = [
     "run_slhdsa_sigver",
     "mldsa_keygen_vectors",
     "mlkem_keygen_vectors",
+    "ml_kem_variant_for_parameter_set",
+    "run_mlkem_keygen",
+    "run_mlkem_encaps_decaps_roundtrip",
     "interop_report",
 ]

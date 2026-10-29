@@ -19,6 +19,7 @@
 
 #include "neural_core/security/sphincsplus.h"
 #include "neural_core/security/dilithium.h"
+#include "neural_core/security/kyber.h"
 
 static void init_crypto(py::module& m) {
     py::module_ crypto = m.def_submodule("crypto", "Cryptographic functions");
@@ -234,5 +235,59 @@ static void init_crypto(py::module& m) {
         return SNEPPX_dilithium_verify((const uint8_t*)s.data(), s.size(),
                                        (const uint8_t*)m.data(), m.size(),
                                        (const uint8_t*)pk.data(), variant);
+    });
+
+    // ---- Kyber (ML-KEM, FIPS 203) -------------------------------------------
+    // variant: 2 -> ML-KEM-512, 3 -> ML-KEM-768, 4 -> ML-KEM-1024
+    // pk sizes: 800 / 1184 / 1568; sk sizes: 1632 / 2400 / 3168; ct: 768 / 1088 / 1568
+    crypto.def("kyber_keygen", [](int variant) {
+        std::map<int, std::pair<int, int>> sizes = {
+            {2, {800, 1632}}, {3, {1184, 2400}}, {4, {1568, 3168}}};
+        auto it = sizes.find(variant);
+        if (it == sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int pk_size = it->second.first, sk_size = it->second.second;
+        std::vector<uint8_t> pk(pk_size), sk(sk_size);
+        if (SNEPPX_kyber_keygen(pk.data(), sk.data(), variant) != 0)
+            throw std::runtime_error("kyber_keygen failed");
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(pk.data()), pk_size),
+            py::bytes(reinterpret_cast<char*>(sk.data()), sk_size));
+    });
+
+    crypto.def("kyber_encaps", [](py::bytes pk_bytes, int variant) {
+        std::map<int, std::pair<int, int>> ct_sizes = {
+            {2, {768, 800}}, {3, {1088, 1184}}, {4, {1568, 1568}}};
+        auto it = ct_sizes.find(variant);
+        if (it == ct_sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int ct_size = it->second.first, pk_size = it->second.second;
+        std::string pk = pk_bytes;
+        if ((int)pk.size() != pk_size)
+            throw std::runtime_error("kyber public key wrong size for variant");
+        std::vector<uint8_t> ct(ct_size), ss(32);
+        if (SNEPPX_kyber_encaps(ct.data(), ss.data(),
+                                (const uint8_t*)pk.data(), variant) != 0)
+            throw std::runtime_error("kyber_encaps failed");
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(ct.data()), ct_size),
+            py::bytes(reinterpret_cast<char*>(ss.data()), 32));
+    });
+
+    crypto.def("kyber_decaps", [](py::bytes ct_bytes, py::bytes sk_bytes, int variant) {
+        std::map<int, std::pair<int, int>> ct_sk_sizes = {
+            {2, {768, 1632}}, {3, {1088, 2400}}, {4, {1568, 3168}}};
+        auto it = ct_sk_sizes.find(variant);
+        if (it == ct_sk_sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int ct_size = it->second.first, sk_size = it->second.second;
+        std::string ct = ct_bytes, sk = sk_bytes;
+        if ((int)ct.size() != ct_size)
+            throw std::runtime_error("kyber ciphertext wrong size for variant");
+        if ((int)sk.size() != sk_size)
+            throw std::runtime_error("kyber secret key wrong size for variant");
+        std::vector<uint8_t> ss(32);
+        if (SNEPPX_kyber_decaps(ss.data(),
+                                (const uint8_t*)ct.data(),
+                                (const uint8_t*)sk.data(), variant) != 0)
+            throw std::runtime_error("kyber_decaps failed");
+        return py::bytes(reinterpret_cast<char*>(ss.data()), 32);
     });
 }
