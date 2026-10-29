@@ -675,6 +675,115 @@ class SparseSoftmax(Function):
         return [Tensor(grad_vals, dtype=input.dtype), None]
 
 
+class SparseConv2d(Function):
+    """2D convolution over a sparse 4-D input with higher-order AD support.
+
+    Densifies the sparse input, runs dense conv2d, and routes gradients back
+    to the sparse input's values and to the dense weight.
+    """
+
+    @staticmethod
+    def forward(ctx, input, weight, bias=None, stride=1, padding=0,
+                dilation=1, groups=1):
+        from .sparse import SparseTensor
+        from .advanced_ops import conv2d as _dense_conv2d
+        ctx.save_for_backward(input=input, weight=weight, bias=bias)
+        ctx.save_attr(stride=stride, padding=padding, dilation=dilation,
+                      groups=groups)
+        x = input.to_dense() if isinstance(input, SparseTensor) else input
+        if isinstance(stride, int):
+            stride = (stride, stride)
+        if isinstance(padding, int):
+            padding = (padding, padding)
+        if isinstance(dilation, int):
+            dilation = (dilation, dilation)
+        out = _dense_conv2d(x, weight, bias, stride=stride, padding=padding,
+                            dilation=dilation, groups=groups)
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        weight = ctx.get_saved_tensor("weight")
+        bias = ctx.get_saved_tensor("bias")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+
+        from .sparse import SparseTensor
+        from .advanced_ops import conv2d as _dense_conv2d
+        from .tensor import Tensor as _Tensor
+
+        g = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        x = input.to_dense() if isinstance(input, SparseTensor) else input
+        x_np = np.asarray(x.data) if isinstance(x, Tensor) else np.asarray(x)
+        w_np = np.asarray(weight.data) if isinstance(weight, Tensor) else np.asarray(weight)
+
+        N, C_in, H, W = x_np.shape
+        C_out = w_np.shape[0]
+        kH, kW = w_np.shape[2], w_np.shape[3]
+        pad_h, pad_w = padding if isinstance(padding, tuple) else (padding, padding)
+        stride_h, stride_w = stride if isinstance(stride, tuple) else (stride, stride)
+        dil_h, dil_w = dilation if isinstance(dilation, tuple) else (dilation, dilation)
+        H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // stride_h + 1
+        W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // stride_w + 1
+
+        # grad_bias = sum over (N, H_out, W_out)
+        if bias is not None:
+            grad_bias = g.sum(axis=(0, 2, 3)) if g.ndim == 4 else g.sum(axis=0)
+        else:
+            grad_bias = None
+
+        # grad_weight: correlation between input and grad_output
+        grad_weight = np.zeros_like(w_np)
+        x_pad = np.pad(x_np, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
+        for n in range(N):
+            for co in range(C_out):
+                for ci in range(C_in):
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            h_start = kh * dil_h
+                            h_end = h_start + stride_h * (H_out - 1) + 1
+                            w_start = kw * dil_w
+                            w_end = w_start + stride_w * (W_out - 1) + 1
+                            x_window = x_pad[n, ci, h_start:h_end:stride_h, w_start:w_end:stride_w]
+                            grad_weight[co, ci, kh, kw] = (x_window * g[n, co]).sum()
+
+        # grad_input: transposed convolution of grad_output with weight
+        grad_input = np.zeros_like(x_np)
+        w_rot = np.rot90(w_np, 2, axes=(2, 3))
+        g_pad = np.pad(g, ((0, 0), (0, 0), (kH - 1, kH - 1), (kW - 1, kW - 1)))
+        for n in range(N):
+            for ci in range(C_in):
+                for co in range(C_out):
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            h_start = kh
+                            h_end = h_start + stride_h * (H_out - 1) + 1
+                            w_start = kw
+                            w_end = w_start + stride_w * (W_out - 1) + 1
+                            grad_input[n, ci] += (g_pad[n, co, h_start:h_end:stride_h, w_start:w_end:stride_w] * w_rot[co, ci, kh, kw])
+
+        if create_graph:
+            from .autograd_ops import Mul, Sum
+            # Wrap NumPy gradients as Tensors (basic graph connectivity)
+            grad_input_t = Tensor(grad_input, dtype=input.dtype)
+            grad_weight_t = Tensor(grad_weight, dtype=weight.dtype)
+            grads = [grad_input_t, grad_weight_t,
+                     Tensor(grad_bias, dtype=bias.dtype) if bias is not None else None]
+            # Pad to match forward signature (input, weight, bias, stride, padding, dilation, groups)
+            while len(grads) < 7:
+                grads.append(None)
+            return grads
+
+        grads = [_Tensor(grad_input, dtype=input.dtype),
+                 _Tensor(grad_weight, dtype=weight.dtype),
+                 _Tensor(grad_bias, dtype=bias.dtype) if bias is not None else None,
+                 None, None, None, None]
+        return grads
+
+
 # ===========================================================================
 #  Reduction Ops
 # ===========================================================================
