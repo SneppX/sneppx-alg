@@ -51,7 +51,7 @@ static void test_update_verifier_min_version(void) {
     SNEPPX_update_verifier_destroy(&uv);
 }
 
-static void test_signed_update_apply(void) {
+static void test_signed_update_apply_requires_trusted_key(void) {
     SNEPPXUpdateVerifier uv;
     SNEPPX_update_verifier_init(&uv);
     SNEPPXSignedUpdate update;
@@ -59,7 +59,29 @@ static void test_signed_update_apply(void) {
     update.version_major = 2;
     update.version_minor = 0;
     update.version_patch = 0;
-    SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, NULL, 0) == 0, "apply update");
+    /* No trusted key configured -> fail closed, apply rejected. */
+    SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, NULL, 0) == -1, "apply without trusted key rejected");
+    SX_ASSERT(uv.current_version[0] == 1, "version not updated");
+    SNEPPX_update_verifier_destroy(&uv);
+}
+
+static void test_signed_update_apply_succeeds_with_trusted_key(void) {
+    SNEPPXUpdateVerifier uv;
+    SNEPPX_update_verifier_init(&uv);
+    SNEPPXSignedUpdate update;
+    memset(&update, 0, sizeof(update));
+    update.version_major = 2;
+    update.version_minor = 0;
+    update.version_patch = 0;
+
+    uint8_t seed[SNEPPX_ED25519_SEED_LEN];
+    memset(seed, 0x01, sizeof(seed));
+    uint8_t pubkey[SNEPPX_ED25519_PUBLIC_KEY_LEN];
+    SX_ASSERT(SNEPPX_ed25519_publickey_from_seed(seed, pubkey) == 0, "derive pubkey");
+    SX_ASSERT(SNEPPX_update_verifier_set_trusted_pubkey(&uv, pubkey) == 0, "set trusted pubkey");
+    SX_ASSERT(SNEPPX_update_verifier_sign_update(&update, seed, sizeof(seed)) == 0, "sign update");
+
+    SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, NULL, 0) == 0, "apply signed update");
     SX_ASSERT(uv.current_version[0] == 2, "version updated");
     SNEPPX_update_verifier_destroy(&uv);
 }
@@ -98,7 +120,8 @@ static void test_dep_resolver(void) {
 TEST(test_s7_updates, update_verifier_init) { test_update_verifier_init(); }
 TEST(test_s7_updates, update_verifier_rollback_detect) { test_update_verifier_rollback_detect(); }
 TEST(test_s7_updates, update_verifier_min_version) { test_update_verifier_min_version(); }
-TEST(test_s7_updates, signed_update_apply) { test_signed_update_apply(); }
+TEST(test_s7_updates, signed_update_apply_requires_trusted_key) { test_signed_update_apply_requires_trusted_key(); }
+TEST(test_s7_updates, signed_update_apply_succeeds_with_trusted_key) { test_signed_update_apply_succeeds_with_trusted_key(); }
 TEST(test_s7_updates, tuf_init) { test_tuf_init(); }
 TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }

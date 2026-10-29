@@ -95,7 +95,7 @@ int SNEPPX_update_verifier_set_min_version(SNEPPXUpdateVerifier* uv,
  */
 int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update) {
     if (!uv || !update) return 0;
-    if (!uv->verification_enabled) return 1;
+    if (!uv->verification_enabled) return 0;
 
     if (uv->rollback_protection_enabled) {
         uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
@@ -113,25 +113,14 @@ int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
     SNEPPX_blake3_update(&ctx, (const uint8_t*)&update->timestamp, sizeof(uint64_t));
     SNEPPX_blake3_finish(&ctx, computed_hash);
 
-    /* Verify signature over computed hash using trusted key if present */
-    if (uv->has_trusted_key) {
-        SNEPPXEd25519Signature sig;
-        memcpy(sig.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
-        int rc = SNEPPX_ed25519_verify(uv->trusted_pubkey, computed_hash, SNEPPX_UPDATE_HASH_LEN, &sig);
-        if (rc != 1) return 0;
-        /* Hash matches signed content */
-        return 1;
-    }
+    /* Fail-closed: a trusted public key must be configured to verify. */
+    if (!uv->has_trusted_key) return 0;
 
-    /* No trusted key configured - require valid Ed25519 signature against update_hash */
-    SNEPPXEd25519Signature sig_fallback;
-    memcpy(sig_fallback.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
-    int rc_fb = SNEPPX_ed25519_verify((const uint8_t*)uv->trusted_pubkey, update->update_hash, SNEPPX_UPDATE_HASH_LEN, &sig_fallback);
-    if (rc_fb == 1) return 1;
-
-    /* Last resort: constant-time hash equality (dev only) */
-    int sig_ok = SNEPPX_ct_equal(computed_hash, update->update_hash, SNEPPX_UPDATE_HASH_LEN) ? 1 : 0;
-    return sig_ok;
+    /* Verify Ed25519 signature over BLAKE3(update) hash against trusted key. */
+    SNEPPXEd25519Signature sig;
+    memcpy(sig.data, update->signature, SNEPPX_ED25519_SIGNATURE_LEN);
+    int rc = SNEPPX_ed25519_verify(uv->trusted_pubkey, computed_hash, SNEPPX_UPDATE_HASH_LEN, &sig);
+    return (rc == 1) ? 1 : 0;
 }
 
 /**
@@ -147,6 +136,8 @@ int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
                                  const uint8_t* update_data, size_t data_len) {
     (void)update_data; (void)data_len;
     if (!uv || !update) return -1;
+    if (!uv->verification_enabled) return -1;
+    if (SNEPPX_update_verifier_check(uv, update) != 1) return -1;
     uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
     if (SNEPPX_update_verifier_rollback_check(uv, target) != 0) return -1;
     uv->current_version[0] = update->version_major;
