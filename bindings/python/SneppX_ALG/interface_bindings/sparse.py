@@ -13,6 +13,24 @@ their inputs and derive the COO view. All ops run in NumPy and return dense
 existing ``Tensor``/``nn`` code, which receives a lazy ``to_sparse`` hook.
 """
 
+__all__ = [
+    "Strided",
+    "SparseCOO",
+    "SparseCSR",
+    "SparseCSC",
+    "SparseBSR",
+    "SparseTensor",
+    "sparse_coo_tensor",
+    "sparse_csr_tensor",
+    "sparse_csc_tensor",
+    "sparse_bsr_tensor",
+    "sparse_mm",
+    "sparse_addmm",
+    "sparse_sum",
+    "sparse_softmax",
+    "sparse_conv2d",
+]
+
 import numpy as np
 
 from .tensor import Tensor, _numpy_dtype, _resolve_dtype
