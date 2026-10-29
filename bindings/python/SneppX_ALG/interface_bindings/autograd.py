@@ -188,7 +188,8 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
     `.grad`.
     """
 
-    if not isinstance(root, Tensor):
+    from .sparse import SparseTensor
+    if not isinstance(root, (Tensor, SparseTensor)):
         return None
     if root.grad_fn is None:
         return None
