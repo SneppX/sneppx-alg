@@ -118,6 +118,10 @@ class SparseTensor:
         self._grad_fn = fn
         self.is_leaf_flag = False
 
+    def backward(self, grad_output=None, create_graph=False):
+        from .autograd import _wrap_tensor_backward
+        _wrap_tensor_backward(self, grad_output, create_graph=create_graph)
+
     @property
     def is_sparse(self) -> bool:
         return True

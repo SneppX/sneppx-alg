@@ -290,8 +290,12 @@ def _acc_grad(tensor, grad, create_graph=False):
 
 def _wrap_tensor_backward(tensor, grad_output=None, create_graph=False):
     """Replace Tensor.backward() so it clears and traverses."""
-    if grad_output is None and tensor.numel == 1:
-        grad_output = Tensor(np.ones_like(tensor.data), dtype=tensor.dtype)
+    if grad_output is None and getattr(tensor, "numel", 0) == 1:
+        import numpy as np
+        if hasattr(tensor, "_values"):
+            grad_output = Tensor(np.ones_like(tensor._values), dtype=tensor.dtype)
+        else:
+            grad_output = Tensor(np.ones_like(tensor.data), dtype=tensor.dtype)
 
     _backward(tensor, grad_output, create_graph=create_graph)
 
