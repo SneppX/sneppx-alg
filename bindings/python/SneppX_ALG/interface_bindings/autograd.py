@@ -389,14 +389,15 @@ def _tensor_inputs(args):
 
 
 def _tensor_positions(args):
-    """Return the positional indices of top-level Tensor args.
+    """Return the positional indices of top-level Tensor/SparseTensor args.
 
     Returns ``None`` when any arg is a nested list/tuple (ambiguous mapping),
     so callers fall back to assuming backward output is already in Tensor order.
     """
+    from .sparse import SparseTensor
     positions = []
     for i, a in enumerate(args):
-        if isinstance(a, Tensor):
+        if isinstance(a, (Tensor, SparseTensor)):
             positions.append(i)
         elif isinstance(a, (list, tuple)):
             return None
