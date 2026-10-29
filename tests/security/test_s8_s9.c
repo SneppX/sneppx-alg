@@ -156,6 +156,60 @@ static void test_bugbounty(void) {
     SX_ASSERT(bt.severity >= 0, "severity assigned");
 }
 
+static void test_model_get_counterexample(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_state(&model, 2, 0, 1);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPX_model_add_transition(&model, 1, 2);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(result.property_satisfied == 0, "error state reachable, property violated");
+    SX_ASSERT(result.error_states == 1, "one error state");
+
+    uint32_t trace[16];
+    int len = SNEPPX_model_get_counterexample(&model, trace, 16);
+    SX_ASSERT(len == 3, "counterexample trace length");
+    SX_ASSERT(trace[0] == 0, "trace starts at initial");
+    SX_ASSERT(trace[1] == 1, "trace middle state");
+    SX_ASSERT(trace[2] == 2, "trace ends at error state");
+}
+
+static void test_model_get_counterexample_no_error(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(result.property_satisfied == 1, "no error state, property satisfied");
+
+    uint32_t trace[16];
+    int len = SNEPPX_model_get_counterexample(&model, trace, 16);
+    SX_ASSERT(len == 0, "no counterexample when no error state");
+}
+
+static void test_model_counterexample_string(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 1);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(strstr(result.counterexample, "0") != NULL, "counterexample contains state 0");
+    SX_ASSERT(strstr(result.counterexample, "1") != NULL, "counterexample contains state 1");
+}
+
+static void test_model_check_deadlock(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    int deadlocks = SNEPPX_model_check_deadlock(&model);
+    SX_ASSERT(deadlocks == 1, "state 1 is a deadlock");
+}
 
 TEST(test_s8_s9, model_init) { test_model_init(); }
 TEST(test_s8_s9, model_simple_graph) { test_model_simple_graph(); }
@@ -173,3 +227,7 @@ TEST(test_s8_s9, fuzz_harness) { test_fuzz_harness(); }
 TEST(test_s8_s9, redteam) { test_redteam(); }
 TEST(test_s8_s9, compliance) { test_compliance(); }
 TEST(test_s8_s9, bugbounty) { test_bugbounty(); }
+TEST(test_s8_s9, model_get_counterexample) { test_model_get_counterexample(); }
+TEST(test_s8_s9, model_get_counterexample_no_error) { test_model_get_counterexample_no_error(); }
+TEST(test_s8_s9, model_counterexample_string) { test_model_counterexample_string(); }
+TEST(test_s8_s9, model_check_deadlock) { test_model_check_deadlock(); }

@@ -94,17 +94,24 @@ SNEPPXModelCheckResult SNEPPX_model_check(SNEPPXFormalModel* model) {
 
     result.total_states = model->state_count;
     int visited[SNEPPX_MODEL_MAX_STATES] = {0};
+    int parent[SNEPPX_MODEL_MAX_STATES];
+    for (int i = 0; i < SNEPPX_MODEL_MAX_STATES; i++) parent[i] = -1;
     int stack[SNEPPX_MODEL_MAX_STATES];
     int stack_top = 0;
     stack[stack_top++] = model->initial_state;
     visited[model->initial_state] = 1;
+
+    int first_error = -1;
 
     while (stack_top > 0) {
         int cur = stack[--stack_top];
         result.reachable_states++;
         for (int i = 0; i < model->state_count; i++) {
             if (model->states[i].state_id != (uint32_t)cur) continue;
-            if (model->states[i].is_error) result.error_states++;
+            if (model->states[i].is_error) {
+                result.error_states++;
+                if (first_error < 0) first_error = (int)model->states[i].state_id;
+            }
             if (model->states[i].next_count == 0) result.deadlock_states++;
             for (int j = 0; j < model->states[i].next_count; j++) {
                 uint32_t next = model->states[i].next_states[j];
@@ -114,6 +121,7 @@ SNEPPXModelCheckResult SNEPPX_model_check(SNEPPXFormalModel* model) {
                 }
                 if (found && !visited[next]) {
                     visited[next] = 1;
+                    parent[next] = cur;
                     if (stack_top < SNEPPX_MODEL_MAX_STATES) stack[stack_top++] = next;
                 }
             }
@@ -121,7 +129,30 @@ SNEPPXModelCheckResult SNEPPX_model_check(SNEPPXFormalModel* model) {
     }
 
     result.property_satisfied = (result.error_states == 0) ? 1 : 0;
-    snprintf(result.counterexample, sizeof(result.counterexample), "%s", result.property_satisfied ? "ok" : "error state reachable");
+
+    if (result.property_satisfied) {
+        snprintf(result.counterexample, sizeof(result.counterexample), "ok");
+    } else if (first_error >= 0) {
+        uint32_t path[SNEPPX_MODEL_MAX_STATES];
+        int path_len = 0;
+        int node = first_error;
+        while (node >= 0 && path_len < SNEPPX_MODEL_MAX_STATES) {
+            path[path_len++] = (uint32_t)node;
+            node = parent[node];
+        }
+        for (int i = 0; i < path_len / 2; i++) {
+            uint32_t t = path[i]; path[i] = path[path_len - 1 - i]; path[path_len - 1 - i] = t;
+        }
+        int pos = 0;
+        for (int i = 0; i < path_len; i++) {
+            pos += snprintf(result.counterexample + pos, (size_t)(sizeof(result.counterexample) - pos), "%u", path[i]);
+            if (i < path_len - 1 && (size_t)(pos + 4) < sizeof(result.counterexample)) {
+                pos += snprintf(result.counterexample + pos, (size_t)(sizeof(result.counterexample) - pos), " -> ");
+            }
+        }
+    } else {
+        snprintf(result.counterexample, sizeof(result.counterexample), "error state reachable");
+    }
     return result;
 }
 
@@ -164,6 +195,62 @@ int SNEPPX_model_check_reachability(SNEPPXFormalModel* model, uint32_t from_stat
         }
     }
     return 0;
+}
+
+/**
+ * @brief Perform Model Get Counterexample.
+ *
+ * @param model [in] Model value.
+ * @param trace [out] Trace array of state IDs (initial -> error).
+ * @param max_len [in] Max length of trace array.
+ *
+ * @return Number of states in trace, or 0 if no counterexample, -1 on error.
+ */
+int SNEPPX_model_get_counterexample(SNEPPXFormalModel* model, uint32_t* trace, int max_len) {
+    if (!model || !trace || max_len <= 0) return -1;
+
+    int visited[SNEPPX_MODEL_MAX_STATES] = {0};
+    int parent[SNEPPX_MODEL_MAX_STATES];
+    for (int i = 0; i < SNEPPX_MODEL_MAX_STATES; i++) parent[i] = -1;
+    int stack[SNEPPX_MODEL_MAX_STATES];
+    int stack_top = 0;
+    stack[stack_top++] = model->initial_state;
+    visited[model->initial_state] = 1;
+
+    int error_state = -1;
+    int found = 0;
+    while (stack_top > 0 && !found) {
+        int cur = stack[--stack_top];
+        for (int i = 0; i < model->state_count; i++) {
+            if (model->states[i].state_id != (uint32_t)cur) continue;
+            if (model->states[i].is_error) {
+                error_state = (int)model->states[i].state_id;
+                found = 1;
+                break;
+            }
+            for (int j = 0; j < model->states[i].next_count; j++) {
+                uint32_t next = model->states[i].next_states[j];
+                if (!visited[next]) {
+                    visited[next] = 1;
+                    parent[next] = cur;
+                    if (stack_top < SNEPPX_MODEL_MAX_STATES) stack[stack_top++] = next;
+                }
+            }
+        }
+    }
+
+    if (!found) return 0;
+
+    int path_len = 0;
+    int node = error_state;
+    while (node >= 0 && path_len < max_len) {
+        trace[path_len++] = (uint32_t)node;
+        node = parent[node];
+    }
+    for (int i = 0; i < path_len / 2; i++) {
+        uint32_t t = trace[i]; trace[i] = trace[path_len - 1 - i]; trace[path_len - 1 - i] = t;
+    }
+    return path_len;
 }
 
 /**
