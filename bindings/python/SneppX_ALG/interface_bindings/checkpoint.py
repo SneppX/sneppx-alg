@@ -1,12 +1,16 @@
 import time
 import struct
 import json
+import base64
 import threading
 import os
 import tempfile
 import numpy as np
 from dataclasses import dataclass, field
 from typing import Optional, Callable, List
+
+from .crypto_sign import Ed25519
+from .crypto_hash import Blake3
 
 # Map between tensor dtype codes (matching bindings/python tensor Dtype) and numpy dtypes
 _DTYPE_CODE_TO_NP = {
@@ -106,13 +110,14 @@ def _unpack_tensor_record(data: bytes, offset: int = 0) -> TensorRecord:
 
 
 class CheckpointWriter:
-    def __init__(self, path: str):
+    def __init__(self, path: str, signing_key: Optional[bytes] = None):
         self.path = path
         self.file = open(path, "wb")
         self.header = CheckpointHeader()
         self.records: List[TensorRecord] = []
         self._data_parts: List[bytes] = []
         self._meta = {}
+        self._signing_key = signing_key
 
     def write_tensor(
         self, data: bytes, shape: tuple = (), dtype: int = 0, strides: tuple = ()
@@ -132,7 +137,7 @@ class CheckpointWriter:
         self._meta.update(meta)
 
     def close(self):
-        # Layout: header | records | tensor_data | metadata
+        # Layout: header | records | tensor_data | metadata [| signature]
         records_offset = CHECKPOINT_HEADER_SIZE
         data_offset = records_offset + len(self.records) * TENSOR_RECORD_SIZE
 
@@ -146,15 +151,31 @@ class CheckpointWriter:
         self.file.seek(0)
         self.file.write(_pack_header(self.header))
 
-        # Write records
+        # Write records + tensor data, capturing body bytes for hashing
+        body = bytearray()
         for rec in self.records:
-            self.file.write(_pack_tensor_record(rec))
-
-        # Write tensor data
+            rec_bytes = _pack_tensor_record(rec)
+            self.file.write(rec_bytes)
+            body.extend(rec_bytes)
         for part in self._data_parts:
             self.file.write(part)
+            body.extend(part)
 
-        # Write metadata
+        # Integrity: BLAKE3(body) + Ed25519 signature over the digest
+        body_digest = Blake3().hash(bytes(body))
+        signature = None
+        if self._signing_key is not None:
+            signature = Ed25519.sign(self._signing_key, body_digest)
+
+        # Write metadata (integrity folded into the JSON so the region is a
+        # single valid document)
+        if signature is not None:
+            self._meta["_integrity"] = {
+                "hash_alg": "blake3",
+                "hash": body_digest.hex(),
+                "sig_alg": "ed25519",
+                "signature": base64.b64encode(signature).decode("ascii"),
+            }
         meta_data = json.dumps(self._meta).encode("utf-8") if self._meta else b""
         meta_offset = self.file.tell()
         self.header.metadata_offset = meta_offset
@@ -172,7 +193,7 @@ class CheckpointWriter:
 
 
 class CheckpointReader:
-    def __init__(self, path: str):
+    def __init__(self, path: str, trusted_public_key: Optional[bytes] = None):
         self.path = path
         self.file = open(path, "rb")
         header_data = self.file.read(CHECKPOINT_HEADER_SIZE)
@@ -192,6 +213,58 @@ class CheckpointReader:
             rec = _unpack_tensor_record(rec_data, 0)
             self.records.append(rec)
 
+        self.trusted_public_key = trusted_public_key
+        self.verified = False
+        self._verify_integrity()
+
+    def _verify_integrity(self) -> None:
+        """Recompute BLAKE3 over the body and verify the embedded Ed25519
+        signature against ``trusted_public_key``. Fail-closed: a configured
+        trusted key with a missing or invalid signature raises ValueError."""
+        if self.trusted_public_key is None:
+            return
+
+        body = bytearray()
+        for rec in self.records:
+            body.extend(_pack_tensor_record(rec))
+            self.file.seek(rec.data_offset)
+            body.extend(self.file.read(rec.data_size))
+
+        body_digest = Blake3().hash(bytes(body))
+
+        meta = {}
+        if self.header.metadata_size > 0:
+            self.file.seek(self.header.metadata_offset)
+            raw = self.file.read(self.header.metadata_size)
+            try:
+                meta = json.loads(raw.decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                meta = {}
+
+        integrity = meta.get("_integrity") if isinstance(meta, dict) else None
+        signature_b64 = None
+        stored_hash = None
+        if isinstance(integrity, dict):
+            signature_b64 = integrity.get("signature")
+            stored_hash = integrity.get("hash")
+
+        if signature_b64 is None or stored_hash is None:
+            raise ValueError(
+                "Checkpoint is signed but no integrity record found; refusing to load"
+            )
+
+        if stored_hash != body_digest.hex():
+            raise ValueError("Checkpoint integrity hash mismatch; refusing to load")
+
+        try:
+            signature = base64.b64decode(signature_b64)
+        except Exception:
+            signature = b""
+        if not Ed25519.verify(self.trusted_public_key, body_digest, signature):
+            raise ValueError("Checkpoint signature verification failed; refusing to load")
+
+        self.verified = True
+
     def read_tensor(self, idx: int) -> bytes:
         rec = self.records[idx]
         self.file.seek(rec.data_offset)
@@ -208,9 +281,9 @@ class CheckpointReader:
         self.file.close()
 
 
-def validate_checkpoint(path: str) -> bool:
+def validate_checkpoint(path: str, trusted_public_key: Optional[bytes] = None) -> bool:
     try:
-        r = CheckpointReader(path)
+        r = CheckpointReader(path, trusted_public_key=trusted_public_key)
         r.close()
         return True
     except Exception:

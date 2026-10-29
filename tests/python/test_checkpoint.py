@@ -24,6 +24,7 @@ from SneppX_ALG.interface_bindings.checkpoint import (
     CHECKPOINT_HEADER_SIZE,
     TENSOR_RECORD_SIZE,
 )
+from SneppX_ALG.interface_bindings.crypto_sign import Ed25519
 
 failed = []
 
@@ -263,6 +264,106 @@ def test_coordinated_save():
         check("barrier called twice", barrier_called[0] == 2)
 
 
+def test_signed_roundtrip_verified():
+    sk, pk = Ed25519.keypair()
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        w = CheckpointWriter(path, signing_key=sk)
+        w.write_tensor(b"\x09" * 100, shape=(100,), dtype=0)
+        w.write_metadata({"step": 9})
+        w.close()
+
+        r = CheckpointReader(path, trusted_public_key=pk)
+        check("signed verified flag", r.verified is True)
+        check("signed data roundtrip", r.read_tensor(0) == b"\x09" * 100)
+        check("signed metadata", r.read_metadata().get("step") == 9)
+        check("validate signed", validate_checkpoint(path, trusted_public_key=pk) is True)
+        r.close()
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_signed_wrong_key_rejected():
+    sk, pk = Ed25519.keypair()
+    _, wrong_pk = Ed25519.keypair()
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        w = CheckpointWriter(path, signing_key=sk)
+        w.write_tensor(b"\x09" * 100, shape=(100,), dtype=0)
+        w.close()
+
+        try:
+            CheckpointReader(path, trusted_public_key=wrong_pk)
+            check("wrong key rejected", False)
+        except ValueError:
+            check("wrong key rejected", True)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_signed_tampered_data_rejected():
+    sk, pk = Ed25519.keypair()
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        w = CheckpointWriter(path, signing_key=sk)
+        w.write_tensor(b"\x09" * 100, shape=(100,), dtype=0)
+        w.close()
+
+        # Flip a byte inside the tensor data region (after header + one record)
+        with open(path, "r+b") as f:
+            f.seek(CHECKPOINT_HEADER_SIZE + TENSOR_RECORD_SIZE + 50)
+            f.write(b"\xFF")
+
+        try:
+            CheckpointReader(path, trusted_public_key=pk)
+            check("tampered data rejected", False)
+        except ValueError:
+            check("tampered data rejected", True)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_signed_no_trusted_key_loads_unverified():
+    sk, pk = Ed25519.keypair()
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        w = CheckpointWriter(path, signing_key=sk)
+        w.write_tensor(b"\x09" * 100, shape=(100,), dtype=0)
+        w.close()
+
+        # No trusted key -> loads without verification (backward compatible)
+        r = CheckpointReader(path)
+        check("no-trusted-key verified flag", r.verified is False)
+        check("no-trusted-key data", r.read_tensor(0) == b"\x09" * 100)
+        r.close()
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_validate_signed_without_key_false():
+    sk, pk = Ed25519.keypair()
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        w = CheckpointWriter(path, signing_key=sk)
+        w.write_tensor(b"\x09" * 100, shape=(100,), dtype=0)
+        w.close()
+
+        check("validate without key false", validate_checkpoint(path) is False)
+        check("validate with key true", validate_checkpoint(path, trusted_public_key=pk) is True)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
 if __name__ == "__main__":
     test_write_read_roundtrip()
     test_multiple_tensors()
@@ -280,6 +381,11 @@ if __name__ == "__main__":
     test_invalid_checkpoint()
     test_empty_metadata()
     test_coordinated_save()
+    test_signed_roundtrip_verified()
+    test_signed_wrong_key_rejected()
+    test_signed_tampered_data_rejected()
+    test_signed_no_trusted_key_loads_unverified()
+    test_validate_signed_without_key_false()
 
     print(
         f"\n{'All checkpoint tests passed!' if not failed else f'{len(failed)} failures: {failed}'}"
