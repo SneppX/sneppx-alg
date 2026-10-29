@@ -1855,6 +1855,26 @@ __all__ = [
     "CheckpointManager",
     "DistributedWrapper",
     "estimate_flops",
+    # differential privacy
+    "LaplaceMech",
+    "GaussianMech",
+    "PrivacyBudget",
+    "RDPAccountant",
+    "DPSGD",
+    # adversarial robustness
+    "Attack",
+    "FGSM",
+    "PGD",
+    "AdversarialExample",
+    "AdversarialTrainer",
+    # model watermarking
+    "ModelHasher",
+    "WeightWatermark",
+    "BackdoorWatermark",
+    # s5 ai safety
+    "S5PromptFilter",
+    "S5OutputVerifier",
+    "S5RLHFSafety",
     # Phase 6 experiment tracking
     "ExperimentRun",
     "LocalBackend",
