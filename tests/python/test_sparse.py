@@ -29,6 +29,8 @@ from SneppX_ALG.interface_bindings.sparse import (
     sparse_mm,
     sparse_addmm,
     sparse_sum,
+    sparse_softmax,
+    sparse_conv2d,
 )
 
 
@@ -150,7 +152,7 @@ def test_sparse_addmm():
 def test_sparse_sum():
     arr = np.array([[0.0, 0.0, 5.0], [0.0, 7.0, 0.0], [0.0, 0.0, 8.0]])
     sp = Tensor(arr.astype("float32")).to_sparse()
-    assert abs(sp.sum() - 20.0) < 1e-6
+    assert abs(float(np.asarray(sp.sum().data)) - 20.0) < 1e-6
     row_sums = np.asarray(sp.sum(dim=1).data)
     assert np.allclose(row_sums, arr.sum(axis=1))
     col_sums = np.asarray(sp.sum(dim=0).data)
@@ -243,3 +245,116 @@ def test_sparse_adam_updates_only_nonzero_grad_indices():
     p2.grad = Tensor(np.full((2, 2), 1.0, dtype=np.float32))
     SparseAdam([p2], lr=0.1).step()
     assert np.all(np.asarray(p2.data) != 1.0)
+
+
+# ---- Higher-order AD (create_graph) tests for sparse ops ----
+
+
+def _sp(size, inds, vals, dtype="float32"):
+    return sparse_coo_tensor(np.asarray(inds, dtype=np.int64),
+                             np.asarray(vals, dtype=dtype), size=size)
+
+
+def test_sparse_mm_backward_create_graph():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    b = Tensor(np.eye(2, dtype=np.float32))
+    b.requires_grad_(True)
+    out = sparse_mm(sp, b)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert b.grad is not None
+    # grad sp = out_grad @ b^T; out_grad = ones for scalar-like output
+    expected_sp_grad = np.ones((2, 2)) @ np.eye(2).T
+    assert np.allclose(np.asarray(sp.grad.data), expected_sp_grad)
+
+
+def test_sparse_mm_second_order():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    b = Tensor(np.eye(2, dtype=np.float32))
+    b.requires_grad_(True)
+    out = sparse_mm(sp, b)
+    # first backward with create_graph
+    grad1 = out.backward(create_graph=True)
+    # second backward on grad sp
+    assert sp.grad is not None
+    sp.grad.backward(create_graph=True)
+    # After second backward, grad_fn graph should still be connected
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+def test_sparse_addmm_backward_create_graph():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [1.0, 2.0])
+    sp.requires_grad_(True)
+    inp = Tensor(np.full((2, 2), 10.0, dtype=np.float32))
+    inp.requires_grad_(True)
+    b = Tensor(np.eye(2, dtype=np.float32))
+    b.requires_grad_(True)
+    out = sparse_addmm(inp, sp, b, beta=0.5, alpha=2.0)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert inp.grad is not None
+    assert b.grad is not None
+
+
+def test_sparse_sum_backward_create_graph():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    out = sparse_sum(sp)
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    # d(sum)/d(values) = 1 for each value
+    assert np.allclose(np.asarray(sp.grad.data), [1.0, 1.0])
+
+
+def test_sparse_sum_backward_dim_create_graph():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    out = sparse_sum(sp, dim=0)
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    # sum over dim 0: grad w.r.t. values[i] = grad_output[index[1][i]]
+    expected = np.array([1.0, 1.0])  # grad_output is ones, all indices covered
+    assert np.allclose(np.asarray(sp.grad.data), expected)
+
+
+def test_sparse_softmax_backward_create_graph():
+    sp = _sp((2, 2), [[0, 1], [0, 1]], [1.0, 2.0])
+    sp.requires_grad_(True)
+    out = sparse_softmax(sp, dim=0)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert sp.grad.data.shape == (2,)
+
+
+def test_sparse_conv2d_backward_create_graph():
+    x = np.zeros((1, 1, 4, 4), dtype=np.float32)
+    x[0, 0, 1, 1] = 1.0
+    x[0, 0, 2, 3] = 2.0
+    sp = Tensor(x).to_sparse()
+    sp.requires_grad_(True)
+    w = Tensor(np.array([[[[1.0]]]], dtype=np.float32))
+    w.requires_grad_(True)
+    out = sparse_conv2d(sp, w)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert w.grad is not None
+
+
+def test_sparse_ops_leaf_grad_accumulation():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    b = Tensor(np.eye(2, dtype=np.float32))
+    out1 = sparse_mm(sp, b)
+    out2 = sparse_mm(sp, b)
+    loss = (out1 + out2).sum()
+    loss.backward(create_graph=True)
+    assert sp.grad is not None
+    # gradient should be accumulated from both paths
+    expected = np.ones((2, 2)) @ np.eye(2).T * 2.0
+    assert np.allclose(np.asarray(sp.grad.data), expected)
