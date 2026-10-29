@@ -409,11 +409,8 @@ def sparse_mm(mat1, mat2):
 
 def sparse_addmm(input, mat1, mat2, beta=1.0, alpha=1.0):
     """beta*input + alpha*(mat1 @ mat2); mat1 may be sparse."""
-    res = sparse_mm(mat1, mat2)
-    res_np = np.asarray(res.data)
-    inp = np.asarray(input.data) if isinstance(input, Tensor) else np.asarray(input)
-    return Tensor(beta * inp + alpha * res_np,
-                  dtype=res.dtype_name, device=res.device)
+    from .autograd_ops import SparseAddMM
+    return SparseAddMM.apply(input, mat1, mat2, beta=beta, alpha=alpha)
 
 
 def sparse_sum(input, dim=None, dtype=None):
