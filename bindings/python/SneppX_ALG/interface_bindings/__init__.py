@@ -1376,7 +1376,7 @@ __all__ = [
     "launch",
     # algorithm bindings (ARC/FM/HSS/NPE/SER)
     "ARCAttackSim",
-    "ARCForward",
+    "ARCFForward",
     "ARCGradientObfuscator",
     "ARCInputGuard",
     "ARCOutputVerifier",
