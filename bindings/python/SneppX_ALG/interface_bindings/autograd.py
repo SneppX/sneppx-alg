@@ -408,9 +408,16 @@ def _any_requires_grad(args):
     for a in args:
         if isinstance(a, Tensor) and (a.requires_grad or a._grad_fn is not None):
             return True
+        from .sparse import SparseTensor
+        if isinstance(a, SparseTensor) and (a.requires_grad or a._grad_fn is not None):
+            return True
         if isinstance(a, (list, tuple)):
             for item in a:
                 if isinstance(item, Tensor) and (
+                    item.requires_grad or item._grad_fn is not None
+                ):
+                    return True
+                if isinstance(item, SparseTensor) and (
                     item.requires_grad or item._grad_fn is not None
                 ):
                     return True

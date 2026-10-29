@@ -444,4 +444,10 @@ def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
                              dilation=dilation, groups=groups)
     if not was_sparse:
         return out
-    return SparseTensor.from_tensor(out, layout=SparseCOO)
+    sp_out = SparseTensor.from_tensor(out, layout=SparseCOO)
+    # Transfer autograd metadata from dense output to sparse output
+    sp_out.requires_grad = out.requires_grad
+    sp_out._grad_fn = out._grad_fn
+    sp_out.is_leaf_flag = out.is_leaf
+    sp_out.grad = None
+    return sp_out
