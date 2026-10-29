@@ -1,5 +1,25 @@
 """Optimizer Module — pure Python optimizers for pybind11-backed Tensor."""
 
+__all__ = [
+    "Optimizer",
+    "SGD",
+    "NesterovSGD",
+    "AdamW",
+    "RMSprop",
+    "Adagrad",
+    "Adadelta",
+    "Adamax",
+    "Adam",
+    "NAdam",
+    "Rprop",
+    "ASGD",
+    "LBFGS",
+    "SparseAdam",
+    "CosineAnnealingLR",
+    "Lion",
+    "LAMB",
+]
+
 from typing import Callable, List, Optional, Iterator, Dict, Any
 from .tensor import Tensor
 from .nn import Module
