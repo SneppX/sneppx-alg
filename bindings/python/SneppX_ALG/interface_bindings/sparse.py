@@ -421,10 +421,8 @@ def sparse_sum(input, dim=None, dtype=None):
 
 def sparse_softmax(input, dim):
     """Softmax over one dimension of a sparse tensor (dense result)."""
-    ex = np.exp(np.asarray(input.to_dense().data) -
-                np.expand_dims(np.max(np.asarray(input.to_dense().data), axis=dim), axis=dim))
-    return Tensor(ex / ex.sum(axis=dim, keepdims=True), dtype=input.dtype,
-                  device=input.device)
+    from .autograd_ops import SparseSoftmax
+    return SparseSoftmax.apply(input, dim)
 
 
 def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
