@@ -87,11 +87,31 @@ class SparseTensor:
                     values = sums
         self._indices = indices.reshape(self.ndim, 0) if indices.size == 0 else indices
         self._values = values
+        # ---- autograd integration ----
+        self._grad_fn = None
+        self.grad = None
+        self.is_leaf_flag = True
 
     # ---- shape / introspection ----
     @property
     def shape(self):
         return self.size
+
+    @property
+    def grad_fn(self):
+        return self._grad_fn
+
+    @property
+    def is_leaf(self):
+        return self.is_leaf_flag
+
+    def requires_grad_(self, val=True):
+        self.requires_grad = bool(val)
+        return self
+
+    def _attach_grad_fn(self, fn):
+        self._grad_fn = fn
+        self.is_leaf_flag = False
 
     @property
     def is_sparse(self) -> bool:
