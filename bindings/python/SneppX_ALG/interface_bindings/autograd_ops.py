@@ -566,6 +566,57 @@ class SparseAddMM(Function):
         return [grad_input, grad_mat1, grad_mat2, None, None]
 
 
+class SparseSum(Function):
+    """Sum over a SparseTensor with higher-order AD support.
+
+    Gradients flow to the sparse tensor's ``.values`` at the corresponding
+    index positions.
+    """
+
+    @staticmethod
+    def forward(ctx, input, dim=None):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input)
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size))
+        dense = input.to_dense()
+        if dim is None:
+            return Tensor(float(dense.data.sum()), dtype=input.dtype)
+        return Tensor(dense.data.sum(axis=dim), dtype=input.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        dim = ctx.get_attr("dim")
+        from .sparse import SparseTensor
+        from .autograd_ops import Mul, Unsqueeze, Squeeze
+
+        if create_graph:
+            g = grad_output
+            if dim is None:
+                # scalar output: grad w.r.t. values = broadcast grad to values shape
+                grad_values = Mul.apply(g, _as_const(1.0, g.dtype))  # just pass through
+                grad_values = Unsqueeze.apply(grad_values, 0) if g.data.ndim == 0 else g
+                # scatter to full values shape (all ones since every value contributes 1)
+                ones = _as_const(np.ones(input._nnz), g.dtype)
+                grad_values = Mul.apply(grad_values, ones)
+            else:
+                # sum along dim: grad w.r.t. values = grad_output[index[dim_pos]]
+                g_np = g.data if isinstance(g, Tensor) else np.asarray(g)
+                idx = input._indices[dim] if dim < input.ndim else input._indices[0]
+                grad_vals = g_np[idx] if g_np.ndim > 0 else np.full(input._nnz, float(g_np))
+                grad_values = Tensor(grad_vals, dtype=g.dtype)
+            return [grad_values, None]
+
+        # Non-create_graph path
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        if dim is None:
+            grad_vals = np.full(input._nnz, float(gnp), dtype=np.float32)
+        else:
+            idx = input._indices[dim] if dim < input.ndim else input._indices[0]
+            grad_vals = gnp[idx] if gnp.ndim > 0 else np.full(input._nnz, float(gnp))
+        return [Tensor(grad_vals, dtype=input.dtype), None]
+
+
 # ===========================================================================
 #  Reduction Ops
 # ===========================================================================
