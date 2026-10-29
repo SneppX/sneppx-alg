@@ -387,6 +387,113 @@ class MatMul(Function):
         return [Tensor(grad_a, dtype=a.dtype), Tensor(grad_b, dtype=b.dtype)]
 
 
+class SparseMM(Function):
+    """Sparse @ dense matrix product with higher-order AD support.
+
+    Forward mirrors :func:`sparse.sparse_mm`: first operand may be a
+    :class:`SparseTensor`, second operand must be a dense ``Tensor``.
+    Gradients are computed via the dense matmul backward so the result
+    stays connected to the autograd graph when ``create_graph=True``.
+    """
+
+    @staticmethod
+    def forward(ctx, mat1, mat2):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(mat1=mat1, mat2=mat2)
+        ctx.save_attr(mat1_is_sparse=isinstance(mat1, SparseTensor),
+                      mat2_is_sparse=isinstance(mat2, SparseTensor))
+
+        # Compute forward result (dense path, matching sparse_mm semantics)
+        if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
+            d1 = np.asarray(mat1.to_dense().data)
+            d2 = np.asarray(mat2.to_dense().data)
+            out = d1 @ d2
+            out_dtype = mat1.dtype
+        elif isinstance(mat1, SparseTensor):
+            a = mat1
+            b = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            n, k = a.size
+            out = np.zeros((n,) + b.shape[1:], dtype=np.float32)
+            r, c = a._indices
+            v = a._values
+            np.add.at(out, r, (v[:, None] * b[c]).astype(np.float32))
+            out_dtype = mat2.dtype_name if isinstance(mat2, Tensor) else "float32"
+        elif isinstance(mat2, SparseTensor):
+            raise ValueError("second operand of sparse mm must be dense")
+        else:
+            a_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
+            b_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            out = a_np @ b_np
+            out_dtype = mat1.dtype_name if isinstance(mat1, Tensor) else "float32"
+
+        out_t = Tensor(out, dtype=out_dtype)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mat1 = ctx.get_saved_tensor("mat1")
+        mat2 = ctx.get_saved_tensor("mat2")
+        mat1_is_sparse = ctx.get_attr("mat1_is_sparse")
+        mat2_is_sparse = ctx.get_attr("mat2_is_sparse")
+
+        from .autograd_ops import MatMul, Transpose, Unsqueeze, Squeeze
+
+        if create_graph:
+            g_t = grad_output
+            grads = [None, None]
+
+            if mat1_is_sparse:
+                # grad_mat1 = g @ mat2^T
+                if mat2.data.ndim == 2:
+                    mat2_t = Transpose.apply(mat2, -1, -2)
+                else:
+                    mat2_t = mat2
+                if g_t.data.ndim == 1:
+                    g_row = Unsqueeze.apply(g_t, 0)
+                    grad_mat1 = MatMul.apply(g_row, mat2_t)
+                    grad_mat1 = Squeeze.apply(grad_mat1, 0)
+                else:
+                    grad_mat1 = MatMul.apply(g_t, mat2_t)
+                grads[0] = grad_mat1
+            else:
+                if mat2.data.ndim == 2:
+                    mat2_t = Transpose.apply(mat2, -1, -2)
+                else:
+                    mat2_t = mat2
+                grads[0] = MatMul.apply(g_t, mat2_t)
+
+            if mat2_is_sparse:
+                grads[1] = None
+            else:
+                if mat1.data.ndim == 2:
+                    mat1_t = Transpose.apply(mat1, -1, -2)
+                else:
+                    mat1_t = mat1
+                grads[1] = MatMul.apply(mat1_t, g_t)
+            return grads
+
+        # Non-create_graph path: raw NumPy gradients
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        grads = [None, None]
+
+        if mat1_is_sparse:
+            m2 = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            grad_mat1 = gnp @ m2.T
+            grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
+        else:
+            m2 = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            grad_mat1 = gnp @ m2.T
+            grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
+
+        if mat2_is_sparse:
+            grads[1] = None
+        else:
+            m1 = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
+            grad_mat2 = m1.T @ gnp
+            grads[1] = Tensor(grad_mat2, dtype=mat2.dtype)
+        return grads
+
+
 # ===========================================================================
 #  Reduction Ops
 # ===========================================================================
