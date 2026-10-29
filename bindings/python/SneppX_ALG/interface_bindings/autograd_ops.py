@@ -494,6 +494,78 @@ class SparseMM(Function):
         return grads
 
 
+class SparseAddMM(Function):
+    """beta * input + alpha * (mat1 @ mat2) with higher-order AD support."""
+
+    @staticmethod
+    def forward(ctx, input, mat1, mat2, beta=1.0, alpha=1.0):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input, mat1=mat1, mat2=mat2)
+        ctx.save_attr(beta=beta, alpha=alpha,
+                      mat1_is_sparse=isinstance(mat1, SparseTensor),
+                      input_is_sparse=isinstance(input, SparseTensor))
+
+        # Compute mat1 @ mat2 result directly
+        if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
+            d1 = np.asarray(mat1.to_dense().data)
+            d2 = np.asarray(mat2.to_dense().data)
+            mm = d1 @ d2
+        elif isinstance(mat1, SparseTensor):
+            a = mat1
+            b = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            n, k = a.size
+            mm = np.zeros((n,) + b.shape[1:], dtype=np.float32)
+            r, c = a._indices
+            v = a._values
+            np.add.at(mm, r, (v[:, None] * b[c]).astype(np.float32))
+        elif isinstance(mat2, SparseTensor):
+            raise ValueError("second operand of sparse mm must be dense")
+        else:
+            a_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
+            b_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            mm = a_np @ b_np
+
+        inp_np = np.asarray(input.data) if isinstance(input, Tensor) else np.asarray(input)
+        out = beta * inp_np + alpha * mm
+        out_dtype = input.dtype_name if isinstance(input, Tensor) else "float32"
+        out_t = Tensor(out, dtype=out_dtype)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        mat1 = ctx.get_saved_tensor("mat1")
+        mat2 = ctx.get_saved_tensor("mat2")
+        beta = ctx.get_attr("beta")
+        alpha = ctx.get_attr("alpha")
+        mat1_is_sparse = ctx.get_attr("mat1_is_sparse")
+        input_is_sparse = ctx.get_attr("input_is_sparse")
+
+        from .autograd_ops import SparseMM, Add, Mul
+        from .tensor import Tensor as _Tensor
+
+        g = grad_output
+
+        if create_graph:
+            # grad_input = beta * g  (graph-aware)
+            grad_input = Mul.apply(g, _as_const(beta, g.dtype)) if beta != 1.0 else g
+            # grad_mat1, grad_mat2 from sparse_mm backward of (alpha * g)
+            g_scaled = Mul.apply(g, _as_const(alpha, g.dtype)) if alpha != 1.0 else g
+            mm_grads = SparseMM.backward(ctx, g_scaled, create_graph=True)
+            grad_mat1 = mm_grads[0]
+            grad_mat2 = mm_grads[1]
+            return [grad_input, grad_mat1, grad_mat2, None, None]
+
+        # Non-create_graph path
+        gnp = g.data if isinstance(g, Tensor) else np.asarray(g)
+        grad_input = _Tensor(beta * gnp, dtype=input.dtype) if beta != 1.0 else _Tensor(gnp, dtype=input.dtype)
+        g_scaled_np = alpha * gnp if alpha != 1.0 else gnp
+        mm_grads = SparseMM.backward(ctx, _Tensor(g_scaled_np, dtype=g.dtype if hasattr(g, 'dtype') else "float32"), create_graph=False)
+        grad_mat1 = mm_grads[0]
+        grad_mat2 = mm_grads[1]
+        return [grad_input, grad_mat1, grad_mat2, None, None]
+
+
 # ===========================================================================
 #  Reduction Ops
 # ===========================================================================
