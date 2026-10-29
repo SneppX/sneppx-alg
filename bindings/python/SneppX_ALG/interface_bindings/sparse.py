@@ -403,54 +403,8 @@ def sparse_bsr_tensor(crow_indices, col_indices, values, size, blocksize,
 
 def sparse_mm(mat1, mat2):
     """Matrix product. mat1 may be SparseTensor or Tensor; mat2 either."""
-    if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
-        d1 = np.asarray(mat1.to_dense().data)
-        d2 = np.asarray(mat2.to_dense().data)
-        return Tensor(d1 @ d2, dtype=mat1.dtype, device=mat1.device)
-    if isinstance(mat2, SparseTensor):
-        raise ValueError("second operand of sparse mm must be dense")
-
-    if isinstance(mat1, SparseTensor):
-        a = mat1
-        if isinstance(mat2, Tensor):
-            b = np.asarray(mat2.data, dtype=_numpy_dtype(mat2.dtype_name))
-            b_dtype = mat2.dtype_name
-            out_device = mat1.device
-        else:
-            b = np.asarray(mat2)
-            b_dtype = _resolve_dtype(str(b.dtype))
-            out_device = mat1.device
-        n, k = a.size
-        if b.ndim == 1:
-            if k != b.shape[0]:
-                raise ValueError(f"matmul size mismatch: {a.size} vs dense {b.shape}")
-            out = np.zeros((n,), dtype=_numpy_dtype(b_dtype))
-            r, c = a._indices
-            v = a._values
-            np.add.at(out, r, v * b[c])
-        else:
-            if k != b.shape[0]:
-                raise ValueError(f"matmul size mismatch: {a.size} vs dense {b.shape}")
-            out = np.zeros((n,) + b.shape[1:], dtype=_numpy_dtype(b_dtype))
-            r, c = a._indices
-            v = a._values
-            np.add.at(out, r, (v[:, None] * b[c]).astype(_numpy_dtype(b_dtype)))
-        return Tensor(out, dtype=b_dtype, device=out_device)
-
-    # both dense
-    if isinstance(mat1, Tensor):
-        a_np = np.asarray(mat1.data)
-        a_dtype = mat1.dtype_name
-        out_device = mat1.device
-    else:
-        a_np = np.asarray(mat1)
-        a_dtype = _resolve_dtype(str(a_np.dtype))
-        out_device = "cpu"
-    if isinstance(mat2, Tensor):
-        b_np = np.asarray(mat2.data)
-    else:
-        b_np = np.asarray(mat2)
-    return Tensor(a_np @ b_np, dtype=a_dtype, device=out_device)
+    from .autograd_ops import SparseMM
+    return SparseMM.apply(mat1, mat2)
 
 
 def sparse_addmm(input, mat1, mat2, beta=1.0, alpha=1.0):
