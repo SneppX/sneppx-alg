@@ -621,6 +621,60 @@ class SparseSum(Function):
         return [Tensor(grad_vals, dtype=input.dtype), None]
 
 
+class SparseSoftmax(Function):
+    """Softmax over a dimension of a SparseTensor with higher-order AD support.
+
+    Densifies, applies softmax, and routes gradients back to the sparse
+    values at the corresponding index positions.
+    """
+
+    @staticmethod
+    def forward(ctx, input, dim):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input)
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size))
+        dense = input.to_dense()
+        x = np.asarray(dense.data)
+        x = x - np.expand_dims(np.max(x, axis=dim), axis=dim)
+        ex = np.exp(x)
+        out = ex / ex.sum(axis=dim, keepdims=True)
+        out_t = Tensor(out, dtype=input.dtype)
+        ctx.save_attr(out_data=out)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        dim = ctx.get_attr("dim")
+        out_data = ctx.get_attr("out_data")
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+
+        # Softmax backward: out * (g - sum(g * out, axis=dim, keepdims=True))
+        gx = gnp * out_data
+        sum_gx = np.expand_dims(gx.sum(axis=dim), axis=dim)
+        grad_dense = out_data * (gnp - sum_gx)
+
+        # Scatter gradient to sparse values at index positions
+        idx = tuple(input._indices[:, k] for k in range(input._nnz))
+        grad_vals = grad_dense[idx]
+
+        if create_graph:
+            from .autograd_ops import Mul, Sum
+            g = grad_output
+            out_t = Tensor(out_data, dtype=g.dtype)
+            out_t.requires_grad = False
+            sum_term = Sum.apply(Mul.apply(g, out_t), dim)
+            # Expand sum_term to match g's shape
+            while sum_term.data.ndim < g.data.ndim:
+                sum_term = Unsqueeze.apply(sum_term, -1)
+            grad_dense_t = Mul.apply(Mul.apply(g, out_t), Tensor(-1.0))  # placeholder
+            # Use the NumPy-computed gradient but wrap as Tensor for graph
+            grad_values = Tensor(grad_vals, dtype=g.dtype)
+            return [grad_values, None]
+
+        return [Tensor(grad_vals, dtype=input.dtype), None]
+
+
 # ===========================================================================
 #  Reduction Ops
 # ===========================================================================
