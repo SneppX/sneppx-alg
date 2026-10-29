@@ -152,7 +152,7 @@ def test_sparse_addmm():
 def test_sparse_sum():
     arr = np.array([[0.0, 0.0, 5.0], [0.0, 7.0, 0.0], [0.0, 0.0, 8.0]])
     sp = Tensor(arr.astype("float32")).to_sparse()
-    assert abs(float(np.asarray(sp.sum().data)) - 20.0) < 1e-6
+    assert abs(float(np.asarray(sp.sum().data).reshape(-1)[0]) - 20.0) < 1e-6
     row_sums = np.asarray(sp.sum(dim=1).data)
     assert np.allclose(row_sums, arr.sum(axis=1))
     col_sums = np.asarray(sp.sum(dim=0).data)
