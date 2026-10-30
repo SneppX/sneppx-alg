@@ -1,6 +1,7 @@
 ﻿#!/usr/bin/env python3
 import os
 import sys
+import json
 from pathlib import Path
 from collections import defaultdict
 
@@ -48,11 +49,43 @@ def count_loc_by_language(root='.'):
     return stats, files
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else '.'
+    args = sys.argv[1:]
+    fmt = 'text'
+    output = None
+    root = '.'
+    i = 0
+    while i < len(args):
+        if args[i] == '--format' and i+1 < len(args):
+            fmt = args[i+1]
+            i += 2
+            continue
+        if args[i] == '--output' and i+1 < len(args):
+            output = args[i+1]
+            i += 2
+            continue
+        if not args[i].startswith('-'):
+            root = args[i]
+        i += 1
+    
     stats, files = count_loc_by_language(root)
-    # sort by lines desc
+    result = {'tool': 'ctm_count_loc_by_language', 'root': str(Path(root).resolve()), 'languages': []}
     for lang, lines in sorted(stats.items(), key=lambda x: x[1], reverse=True):
-        print(f'{lines:8d} {files[lang]:6d} {lang}')
+        result['languages'].append({'language': lang, 'files': files[lang], 'loc': lines})
+    
+    if fmt == 'json':
+        out = json.dumps(result, indent=2)
+    elif fmt == 'csv':
+        out = 'language,files,loc\n'
+        for item in result['languages']:
+            out += f'{item["language"]},{item["files"]},{item["loc"]}\n'
+    else:
+        out = '\n'.join(f'{lines:8d} {files[lang]:6d} {lang}' for lang, lines in sorted(stats.items(), key=lambda x: x[1], reverse=True))
+    
+    if output:
+        with open(output, 'w', encoding='utf-8') as f:
+            f.write(out)
+    else:
+        print(out)
 
 if __name__ == '__main__':
     main()
