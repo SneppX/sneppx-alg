@@ -338,3 +338,16 @@ PRs are welcome.
 ## License
 
 MIT — see [`LICENSE`](./LICENSE). Maintained by **Ammar**.
+
+## CTM Tools (Codebase Metrics)
+
+Custom tools for analyzing codebase metrics (LOC, files, dirs, languages). Available in `ctm_tools/` with both C and Python implementations.
+
+```bash
+# Quick usage
+python ctm_tools/py/ctm_count_total_files.py .
+python ctm_tools/py/ctm_count_total_loc.py .
+python ctm_tools/py/ctm_count_loc_by_language.py . --format json
+```
+
+See [ctm_tools/README.md](ctm_tools/README.md) and [docs/ctm_tools/](docs/ctm_tools/) for full documentation.
