@@ -72,7 +72,7 @@ HSS → SER → ARC → NPE → FM. Each stage independently testable.
 
 <div class="sx-card" markdown>
 ### Security S0–S9
-Post-quantum crypto (Kyber/Dilithium/SPHINCS+), memory hardening, signed updates.
+Post-quantum crypto (Kyber/Dilithium/SPHINCS+) with NIST ACVP KAT validation, memory hardening, signed updates.
 [Security layers →](security_layers.md)
 </div>
 

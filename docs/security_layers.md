@@ -19,6 +19,12 @@
 
 **Files:** `security/crypto/c/`
 
+**PQC KAT validation:** Official NIST ACVP known-answer-test vectors are vendored
+under `tests/data/acvp/` and validated via `SneppX_ALG.interface_bindings.acvp_kat`.
+Covered suites: SHA3-256 (FIPS 202), ML-KEM keyGen/encapsDecaps (FIPS 203),
+ML-DSA keyGen/sigVer (FIPS 204), SLH-DSA keyGen/sigVer (FIPS 205). See
+`docs/pqc_kat.md` for the full interop report.
+
 ---
 
 ## S1 — Memory Hardening
