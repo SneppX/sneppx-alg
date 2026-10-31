@@ -384,6 +384,46 @@ def interop_report(
     }
 
 
+def run_all_pqc_kats(crypto: Any) -> Dict[str, Any]:
+    """Run every PQC KAT suite and return an aggregate interop report.
+
+    Returns ``{"sha3_256", "mlkem_keygen", "mlkem_encaps_decaps",
+    "mldsa_sigver", "mldsa_keygen", "slhdsa_sigver", "slhdsa_keygen",
+    "overall"}`` where each entry is an ``interop_report()`` dict and
+    ``overall`` is the merged report across all suites.
+    """
+    runners = {
+        "sha3_256": (sha3_256_vectors(), run_sha3_256),
+        "mlkem_keygen": (mlkem_keygen_vectors(), run_mlkem_keygen),
+        "mlkem_encaps_decaps": (
+            load_kat("mlkem_encaps_decaps_kat.json")["vectors"],
+            run_mlkem_encaps_decaps_roundtrip,
+        ),
+        "mldsa_sigver": (mldsa_sigver_vectors(), run_mldsa_sigver),
+        "mldsa_keygen": (mldsa_keygen_vectors(), run_mldsa_keygen),
+        "slhdsa_sigver": (slhdsa_sigver_vectors(), run_slhdsa_sigver),
+        "slhdsa_keygen": (slhdsa_keygen_vectors(), run_slhdsa_keygen),
+    }
+    reports: Dict[str, Any] = {}
+    all_total = all_agreed = all_skipped = 0
+    all_mismatches: List[str] = []
+    for name, (vectors, runner) in runners.items():
+        rep = interop_report(crypto, vectors, runner)
+        reports[name] = rep
+        all_total += rep["total"]
+        all_agreed += rep["agreed"]
+        all_skipped += rep["skipped"]
+        all_mismatches.extend(rep["mismatches"])
+    reports["overall"] = {
+        "total": all_total,
+        "agreed": all_agreed,
+        "mismatches": all_mismatches,
+        "skipped": all_skipped,
+        "agreement": (all_agreed / all_total) if all_total else 0.0,
+    }
+    return reports
+
+
 __all__ = [
     "ML_DSA_VARIANTS",
     "SLH_DSA_SETS",
@@ -411,4 +451,5 @@ __all__ = [
     "run_mlkem_keygen",
     "run_mlkem_encaps_decaps_roundtrip",
     "interop_report",
+    "run_all_pqc_kats",
 ]
