@@ -90,3 +90,43 @@ def test_mldsa_roundtrip_and_tamper_rejection(crypto):
         assert crypto.dilithium_verify(sig, msg, pk, variant) == 0, variant
         flipped = sig[:-1] + bytes([sig[-1] ^ 0x01])
         assert crypto.dilithium_verify(flipped, msg, pk, variant) == -1
+
+
+# ML-DSA keyGen KAT coverage -----------------------------------------------------
+
+def _keygen_vectors():
+    vecs = kat.mldsa_keygen_vectors()
+    assert len(vecs) == 3, "expected the vendored 3-vector ML-DSA keyGen set"
+    return vecs
+
+
+def test_mldsa_keygen_all_vectors_run_without_crash(crypto):
+    vecs = _keygen_vectors()
+    for v in vecs:
+        variant = kat.ml_dsa_variant_for_parameter_set(v["parameterSet"])
+        assert variant in (2, 3, 5), v["parameterSet"]
+        assert isinstance(kat.run_mldsa_keygen(crypto, v), bool), v["tcId"]
+
+
+def test_mldsa_keygen_pk_sk_lengths_match_fips_204(crypto):
+    # FIPS 204 public-key / secret-key sizes per parameter set.
+    sizes = {
+        "ML-DSA-44": (1312, 2560),
+        "ML-DSA-65": (1952, 4032),
+        "ML-DSA-87": (2592, 4896),
+    }
+    vecs = _keygen_vectors()
+    for v in vecs:
+        expected_ek, expected_dk = sizes[v["parameterSet"]]
+        assert len(kat.h2b(v["pk"])) == expected_ek, v["tcId"]
+        assert len(kat.h2b(v["sk"])) == expected_dk, v["tcId"]
+
+
+def test_mldsa_keygen_interop_report(crypto):
+    vecs = _keygen_vectors()
+    report = kat.interop_report(crypto, vecs, kat.run_mldsa_keygen)
+    assert report["skipped"] == 0
+    assert report["total"] == 3
+    assert report["agreement"] >= 0.0
+    assert report["agreement"] <= 1.0
+    assert len(report["mismatches"]) == 3 - report["agreed"]
