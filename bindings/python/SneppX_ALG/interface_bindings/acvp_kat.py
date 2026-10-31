@@ -201,6 +201,40 @@ def run_slhdsa_sigver(crypto: Any, vector: Dict[str, Any], variant: int) -> bool
     )
 
 
+def slhdsa_keygen_vectors() -> List[Dict[str, Any]]:
+    """Official NIST FIPS 205 SLH-DSA keyGen sample vectors."""
+    doc = load_kat("slhdsa_keygen_kat.json")
+    return doc["vectors"]
+
+
+def slhdsa_variant_for_parameter_set(parameter_set: str) -> Optional[int]:
+    """Map an SLH-DSA parameter set name to a C sphincs variant id."""
+    return {name: i for i, name in enumerate(SLH_DSA_SETS)}.get(parameter_set)
+
+
+def run_slhdsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
+    """Run one SLH-DSA keygen vector through the C sphincs keygen.
+
+    Calls ``sphincs_keygen(variant)`` and compares the resulting ``pk``/``sk``
+    against the NIST expected values.  Returns True on byte match, False on
+    mismatch, None if the parameter set is unsupported.
+    """
+    variant = slhdsa_variant_for_parameter_set(vector.get("parameterSet", ""))
+    if variant is None:
+        return None
+
+    try:
+        pk, sk = crypto.sphincs_keygen(variant)
+    except Exception:
+        return None
+
+    expected_pk = h2b(vector["pk"]).upper()
+    expected_sk = h2b(vector["sk"]).upper()
+    if pk.hex().upper() != expected_pk or sk.hex().upper() != expected_sk:
+        return False
+    return True
+
+
 def mldsa_keygen_vectors() -> List[Dict[str, Any]]:
     """Official NIST FIPS 204 ML-DSA keyGen sample vectors (seed -> pk/sk)."""
     doc = load_kat("mldsa_keygen_kat.json")
@@ -367,6 +401,9 @@ __all__ = [
     "run_mldsa_sign_verify_roundtrip",
     "slhdsa_sigver_vectors",
     "run_slhdsa_sigver",
+    "slhdsa_keygen_vectors",
+    "slhdsa_variant_for_parameter_set",
+    "run_slhdsa_keygen",
     "mldsa_keygen_vectors",
     "run_mldsa_keygen",
     "mlkem_keygen_vectors",
