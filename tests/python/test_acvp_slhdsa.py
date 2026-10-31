@@ -51,7 +51,8 @@ def test_slhdsa_no_false_accepts_on_invalid_nist_vectors(crypto):
     invalid = [v for v in vecs if not bool(v["testPassed"])]
     assert len(invalid) == 12
     for v in invalid:
-        assert kat.run_slhdsa_sigver(crypto, v, 0) is False, (
+        variant = kat.slhdsa_variant_for_parameter_set(v["parameterSet"])
+        assert kat.run_slhdsa_sigver(crypto, v, variant) is False, (
             f"C verifier accepted an invalid NIST SLH-DSA sig (tcId={v['tcId']}, "
             f"{v['parameterSet']})"
         )
@@ -60,13 +61,15 @@ def test_slhdsa_no_false_accepts_on_invalid_nist_vectors(crypto):
 def test_slhdsa_all_vectors_run_without_crash(crypto):
     vecs = _vectors()
     for v in vecs:
-        assert isinstance(kat.run_slhdsa_sigver(crypto, v, 0), bool), v["tcId"]
+        variant = kat.slhdsa_variant_for_parameter_set(v["parameterSet"])
+        assert isinstance(kat.run_slhdsa_sigver(crypto, v, variant), bool), v["tcId"]
 
 
 def test_slhdsa_interop_report_shape_and_honest_agreement(crypto):
     vecs = _vectors()
     report = kat.interop_report(
-        crypto, vecs, lambda c, v: kat.run_slhdsa_sigver(c, v, 0)
+        crypto, vecs,
+        lambda c, v: kat.run_slhdsa_sigver(c, v, kat.slhdsa_variant_for_parameter_set(v["parameterSet"]))
     )
     assert report["skipped"] == 0
     assert report["total"] == 24
