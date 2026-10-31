@@ -159,6 +159,11 @@ def ml_dsa_variant_for_pk(pk: bytes) -> Optional[int]:
     )
 
 
+def ml_dsa_variant_for_parameter_set(parameter_set: str) -> Optional[int]:
+    """Map an ML-DSA parameter set name to a C dilithium variant id."""
+    return {"ML-DSA-44": 2, "ML-DSA-65": 3, "ML-DSA-87": 5}.get(parameter_set)
+
+
 def run_mldsa_sigver(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     """Run one ML-DSA sigVer vector through the C verifier.
 
@@ -200,6 +205,35 @@ def mldsa_keygen_vectors() -> List[Dict[str, Any]]:
     """Official NIST FIPS 204 ML-DSA keyGen sample vectors (seed -> pk/sk)."""
     doc = load_kat("mldsa_keygen_kat.json")
     return doc["vectors"]
+
+
+def run_mldsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
+    """Run one ML-DSA keygen vector through the C dilithium keygen.
+
+    Seeds the C test RNG with the vector's ``seed`` value, calls
+    ``dilithium_keygen(variant)``, and compares the resulting ``pk``/``sk``
+    against the NIST expected values.  Returns True on byte match, False on
+    mismatch, None if the parameter set is unsupported.
+    """
+    variant = ml_dsa_variant_for_parameter_set(vector.get("parameterSet", ""))
+    if variant is None:
+        return None
+
+    # Seed the deterministic test RNG with the ACVP seed.
+    crypto.random_set_seed(h2b(vector["seed"]))
+    try:
+        pk, sk = crypto.dilithium_keygen(variant)
+    except Exception:
+        crypto.random_clear_seed()
+        return None
+    finally:
+        crypto.random_clear_seed()
+
+    expected_pk = h2b(vector["pk"]).upper()
+    expected_sk = h2b(vector["sk"]).upper()
+    if pk.hex().upper() != expected_pk or sk.hex().upper() != expected_sk:
+        return False
+    return True
 
 
 def mlkem_keygen_vectors() -> List[Dict[str, Any]]:
@@ -328,11 +362,13 @@ __all__ = [
     "run_sha3_256",
     "mldsa_sigver_vectors",
     "ml_dsa_variant_for_pk",
+    "ml_dsa_variant_for_parameter_set",
     "run_mldsa_sigver",
     "run_mldsa_sign_verify_roundtrip",
     "slhdsa_sigver_vectors",
     "run_slhdsa_sigver",
     "mldsa_keygen_vectors",
+    "run_mldsa_keygen",
     "mlkem_keygen_vectors",
     "ml_kem_variant_for_parameter_set",
     "run_mlkem_keygen",
