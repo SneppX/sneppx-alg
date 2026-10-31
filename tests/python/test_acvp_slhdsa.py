@@ -94,3 +94,29 @@ def test_slhdsa_seeded_deterministic_keygen(crypto):
     crypto.random_set_seed(bytes(32))
     p2, s2 = crypto.sphincs_keygen(0)
     assert p1 == p2 and s1 == s2
+
+
+# SLH-DSA keyGen KAT coverage ---------------------------------------------------
+
+def _slhdsa_keygen_vectors():
+    vecs = kat.slhdsa_keygen_vectors()
+    assert vecs, "expected SLH-DSA keyGen vectors"
+    return vecs
+
+
+def test_slhdsa_keygen_all_vectors_run_without_crash(crypto):
+    vecs = _slhdsa_keygen_vectors()
+    for v in vecs:
+        variant = kat.slhdsa_variant_for_parameter_set(v["parameterSet"])
+        assert variant is not None, v["parameterSet"]
+        assert isinstance(kat.run_slhdsa_keygen(crypto, v), bool), v["tcId"]
+
+
+def test_slhdsa_keygen_interop_report(crypto):
+    vecs = _slhdsa_keygen_vectors()
+    report = kat.interop_report(crypto, vecs, kat.run_slhdsa_keygen)
+    assert report["skipped"] == 0
+    assert report["total"] == len(vecs)
+    assert report["agreement"] >= 0.0
+    assert report["agreement"] <= 1.0
+    assert len(report["mismatches"]) == len(vecs) - report["agreed"]
