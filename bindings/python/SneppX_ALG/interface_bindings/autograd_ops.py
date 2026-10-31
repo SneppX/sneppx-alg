@@ -671,17 +671,35 @@ class SparseSoftmax(Function):
         grad_vals = grad_dense[idx]
 
         if create_graph:
-            from .autograd_ops import Mul, Sum
+            from .autograd_ops import Mul, Sum, Unsqueeze, Reshape, MatMul, Sub
             g = grad_output
-            out_t = Tensor(out_data, dtype=g.dtype)
-            out_t.requires_grad = False
+            out_t = _as_const(out_data, g.dtype)
+            # Softmax backward: grad_input = out * (g - sum(g * out, dim, keepdims=True))
             sum_term = Sum.apply(Mul.apply(g, out_t), dim)
-            # Expand sum_term to match g's shape
+            # Expand sum_term to match g's shape for broadcasting
             while sum_term.data.ndim < g.data.ndim:
                 sum_term = Unsqueeze.apply(sum_term, -1)
-            grad_dense_t = Mul.apply(Mul.apply(g, out_t), Tensor(-1.0))  # placeholder
-            # Use the NumPy-computed gradient but wrap as Tensor for graph
-            grad_values = Tensor(grad_vals, dtype=g.dtype)
+            grad_dense = Mul.apply(out_t, Sub.apply(g, sum_term))
+
+            # Scatter grad_dense to sparse values at index positions
+            # Build scatter matrix: S[k, flat_idx[k]] = 1
+            strides = [1] * input.ndim
+            for i in range(input.ndim - 2, -1, -1):
+                strides[i] = strides[i + 1] * input.size[i + 1]
+
+            flat_idx = np.zeros(input._nnz, dtype=np.int64)
+            for d in range(input.ndim):
+                flat_idx += input._indices[d] * strides[d]
+
+            output_size = 1
+            for s in input.size:
+                output_size *= s
+
+            scatter = np.zeros((input._nnz, output_size))
+            scatter[np.arange(input._nnz), flat_idx] = 1.0
+
+            g_flat = Reshape.apply(grad_dense, (output_size,))
+            grad_values = MatMul.apply(_as_const(scatter, g.dtype), g_flat)
             return [grad_values, None]
 
         return [Tensor(grad_vals, dtype=input.dtype), None]
