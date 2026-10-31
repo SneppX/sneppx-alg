@@ -589,23 +589,38 @@ class SparseSum(Function):
         input = ctx.get_saved_tensor("input")
         dim = ctx.get_attr("dim")
         from .sparse import SparseTensor
-        from .autograd_ops import Mul, Unsqueeze, Squeeze
+        from .autograd_ops import Mul, MatMul, Reshape
 
         if create_graph:
             g = grad_output
             if dim is None:
-                # scalar output: grad w.r.t. values = broadcast grad to values shape
-                grad_values = Mul.apply(g, _as_const(1.0, g.dtype))  # just pass through
-                grad_values = Unsqueeze.apply(grad_values, 0) if g.data.ndim == 0 else g
-                # scatter to full values shape (all ones since every value contributes 1)
-                ones = _as_const(np.ones(input._nnz), g.dtype)
-                grad_values = Mul.apply(grad_values, ones)
+                # scalar output: grad w.r.t. each value = g (broadcast to nnz)
+                grad_values = Mul.apply(g, _as_const(np.ones(input._nnz), g.dtype))
             else:
-                # sum along dim: grad w.r.t. values = grad_output[index[dim_pos]]
-                g_np = g.data if isinstance(g, Tensor) else np.asarray(g)
-                idx = input._indices[dim] if dim < input.ndim else input._indices[0]
-                grad_vals = g_np[idx] if g_np.ndim > 0 else np.full(input._nnz, float(g_np))
-                grad_values = Tensor(grad_vals, dtype=g.dtype)
+                # sum along dim: grad w.r.t. value k = g[flat_index_of_output_position_k]
+                # Build a one-hot scatter matrix: S[k, flat_idx[k]] = 1
+                output_shape = list(input.size)
+                del output_shape[dim]
+                strides = [1] * len(output_shape)
+                for i in range(len(output_shape) - 2, -1, -1):
+                    strides[i] = strides[i + 1] * output_shape[i + 1]
+                output_size = 1
+                for s in output_shape:
+                    output_size *= s
+
+                flat_idx = np.zeros(input._nnz, dtype=np.int64)
+                output_dim_pos = 0
+                for d in range(input.ndim):
+                    if d == dim:
+                        continue
+                    flat_idx += input._indices[d] * strides[output_dim_pos]
+                    output_dim_pos += 1
+
+                scatter = np.zeros((input._nnz, output_size))
+                scatter[np.arange(input._nnz), flat_idx] = 1.0
+
+                g_flat = Reshape.apply(g, (output_size,))
+                grad_values = MatMul.apply(_as_const(scatter, g.dtype), g_flat)
             return [grad_values, None]
 
         # Non-create_graph path
