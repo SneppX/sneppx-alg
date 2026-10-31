@@ -14,13 +14,14 @@ Test suites (all green):
 | suite | tests | what it proves |
 |---|---|---|
 | `tests/python/test_acvp_sha3.py` | 4 | **C `sha3_256` == NIST official KATs** (40 byte-aligned SHA3-256 AFT vectors from `SHA3-256-2.0`), C==hashlib on the same messages, FIPS 202 empty-string KAT |
-| `tests/python/test_acvp_mlkem.py` | 5 | **C `kyber_keygen` vs NIST ML-KEM keyGen KATs** (3 vectors: ML-KEM-512/768/1024 — FIPS 203), PK/SK sizes match FIPS 203, encaps/decaps roundtrip recovers shared secret |
-| `tests/python/test_acvp_slhdsa.py` | 5 | SPHINCS+ robustness on all 12 SLH-DSA parameter sets (24 sigVer vectors): zero false accepts, no crashes, C sign/verify roundtrip + tamper rejection, seeded-deterministic keygen |
-| `tests/python/test_acvp_mldsa.py` | 5 | Dilithium on ML-DSA-44/65/87 (18 sigVer vectors): zero false accepts, no crashes, roundtrip + tamper rejection for variants 2/3, FIPS-204-sized PKs |
+| `tests/python/test_acvp_mlkem.py` | 6 | **C `kyber_keygen` vs NIST ML-KEM keyGen KATs** (3 vectors: ML-KEM-512/768/1024 — FIPS 203), PK/SK sizes match FIPS 203, encaps/decaps roundtrip recovers shared secret, ML-KEM encaps/decaps KAT vectors |
+| `tests/python/test_acvp_slhdsa.py` | 6 | SPHINCS+ robustness on all 12 SLH-DSA parameter sets (24 sigVer vectors): zero false accepts, no crashes, C sign/verify roundtrip + tamper rejection, seeded-deterministic keygen, SLH-DSA keyGen KAT vectors |
+| `tests/python/test_acvp_mldsa.py` | 6 | Dilithium on ML-DSA-44/65/87 (18 sigVer vectors): zero false accepts, no crashes, roundtrip + tamper rejection for variants 2/3, FIPS-204-sized PKs, ML-DSA keyGen KAT vectors |
 
 Vector provenance: `usnistgov/ACVP-Server` `gen-val/json-files/` sample
 vector sets (NIST, public domain): `SHA3-256-2.0`, `ML-KEM-keyGen-FIPS203`,
-`ML-DSA-sigVer-FIPS204`, `ML-DSA-keyGen-FIPS204`, `SLH-DSA-sigVer-FIPS205`.
+`ML-KEM-encapsDecaps-FIPS203`, `ML-DSA-sigVer-FIPS204`, `ML-DSA-keyGen-FIPS204`,
+`SLH-DSA-sigVer-FIPS205`, `SLH-DSA-keyGen-FIPS205`.
 
 ## Bit-level vector policy (why SHA3-256 subset is byte-aligned)
 
@@ -60,6 +61,16 @@ decisions against NIST's `testPassed` flags.
   14592 bytes vs FIPS 205's 7856/17088/…). Byte-compatibility upgrades are
   tracked as C work: upgrading both to the finalized FIPS 204/205 wire
   formats is the path to full 100 % cross-validation.
+
+Keygen coverage:
+- **ML-KEM keyGen**: `run_mlkem_keygen()` seeds the C test RNG with each
+  vector's `d` value and compares `ek`/`dk` byte-for-byte against FIPS 203
+  expected values.
+- **ML-DSA keyGen**: `run_mldsa_keygen()` seeds the C test RNG with each
+  vector's `seed` value and compares `pk`/`sk` against FIPS 204 expected
+  values.
+- **SLH-DSA keyGen**: `run_slhdsa_keygen()` compares `pk`/`sk` against FIPS
+  205 expected values.
 
 No invalid signature is ever accepted and no vector crashes the
 implementation — the C verifiers fail closed on foreign formats.
