@@ -134,4 +134,22 @@ def test_mlkem_encaps_decaps_interop_report(crypto):
     assert report["agreement"] == 1.0, (
         f"encaps/decaps self-parity should be 1.0, got {report['agreement']}"
     )
+
+
+# Aggregate PQC KAT runner -------------------------------------------------------
+
+def test_run_all_pqc_kats(crypto):
+    report = kat.run_all_pqc_kats(crypto)
+    assert "overall" in report
+    assert "sha3_256" in report
+    assert "mlkem_keygen" in report
+    assert "mlkem_encaps_decaps" in report
+    assert "mldsa_sigver" in report
+    assert "mldsa_keygen" in report
+    assert "slhdsa_sigver" in report
+    assert "slhdsa_keygen" in report
+    overall = report["overall"]
+    assert overall["total"] >= 0
+    assert 0.0 <= overall["agreement"] <= 1.0
+    assert len(overall["mismatches"]) == overall["total"] - overall["agreed"]
     assert report["mismatches"] == []
