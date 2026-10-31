@@ -104,3 +104,34 @@ def test_mlkem_interop_report(crypto):
     assert report["agreement"] >= 0.0
     assert report["agreement"] <= 1.0
     assert len(report["mismatches"]) == 3 - report["agreed"]
+
+
+# ML-KEM encaps/decaps KAT vector coverage ---------------------------------------
+
+def _encaps_decaps_vectors():
+    doc = kat.load_kat("mlkem_encaps_decaps_kat.json")
+    vecs = doc["vectors"]
+    assert vecs, "expected ML-KEM encaps/decaps KAT vectors"
+    return vecs
+
+
+def test_mlkem_encaps_decaps_all_vectors_run_without_crash(crypto):
+    vecs = _encaps_decaps_vectors()
+    for v in vecs:
+        variant = kat.ml_kem_variant_for_parameter_set(v["parameterSet"])
+        assert variant in (2, 3, 4), v["parameterSet"]
+        assert kat.run_mlkem_encaps_decaps_roundtrip(crypto, v) is True, (
+            f"ML-KEM encaps/decaps roundtrip failed "
+            f"(tcId={v['tcId']}, {v['parameterSet']})"
+        )
+
+
+def test_mlkem_encaps_decaps_interop_report(crypto):
+    vecs = _encaps_decaps_vectors()
+    report = kat.interop_report(crypto, vecs, kat.run_mlkem_encaps_decaps_roundtrip)
+    assert report["skipped"] == 0
+    assert report["total"] == len(vecs)
+    assert report["agreement"] == 1.0, (
+        f"encaps/decaps self-parity should be 1.0, got {report['agreement']}"
+    )
+    assert report["mismatches"] == []
