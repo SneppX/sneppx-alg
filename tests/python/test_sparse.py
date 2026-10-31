@@ -358,3 +358,63 @@ def test_sparse_ops_leaf_grad_accumulation():
     # gradient should be accumulated from both paths
     expected = np.ones((2, 2)) @ np.eye(2).T * 2.0
     assert np.allclose(np.asarray(sp.grad.data), expected)
+
+
+# Second-order AD tests for sparse ops with create_graph fixes ----------------
+
+
+def test_sparse_sum_second_order():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    out = sparse_sum(sp)
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    # grad_fn graph should remain connected through second backward
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+def test_sparse_sum_dim_second_order():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    out = sparse_sum(sp, dim=0)
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+def test_sparse_softmax_second_order():
+    sp = _sp((2, 2), [[0, 1], [0, 1]], [1.0, 2.0])
+    sp.requires_grad_(True)
+    out = sparse_softmax(sp, dim=0)
+    assert out.requires_grad
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+def test_sparse_conv2d_second_order():
+    x = np.zeros((1, 1, 4, 4), dtype=np.float32)
+    x[0, 0, 1, 1] = 1.0
+    x[0, 0, 2, 3] = 2.0
+    sp = Tensor(x).to_sparse()
+    sp.requires_grad_(True)
+    w = Tensor(np.array([[[[1.0]]]], dtype=np.float32))
+    w.requires_grad_(True)
+    out = sparse_conv2d(sp, w)
+    assert out.requires_grad
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert w.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
