@@ -3242,6 +3242,33 @@ class PReluFn(Function):
         if rax:
             gw = gw.sum(axis=tuple(rax), keepdims=True)
         gw = gw.reshape(wv.shape)
+
+        if create_graph:
+            from .autograd_ops import Mul, Sub, Add, Sum, Unsqueeze, _as_const
+            dt = grad_output.dtype
+            x_t = _as_const(x, dt)
+            w_t = _as_const(wv, dt)
+            mask_t = _as_const(mask_x.astype(np.float64), dt)
+            ones = _as_const(1.0, dt)
+            neg_mask = Sub.apply(ones, mask_t)
+            # grad_x = grad_output * (mask_x * 1 + (1-mask_x) * w)
+            d_out_dx = Add.apply(mask_t, Mul.apply(neg_mask, w_t))
+            grad_x = Mul.apply(grad_output, d_out_dx)
+            # grad_w_raw = grad_output * (1-mask_x) * x
+            grad_w_raw = Mul.apply(Mul.apply(grad_output, neg_mask), x_t)
+            # Sum-reduce over leading dims (x.ndim - wv.ndim), always axis 0
+            grad_w = grad_w_raw
+            for _ in range(nlead):
+                grad_w = Sum.apply(grad_w, 0)
+            # Sum-reduce over broadcast dims (wv.shape[j]==1 but gw.shape[j]>1),
+            # from highest to lowest to avoid index shifting; Unsqueeze after each Sum
+            gw_shape = list(grad_w.data.shape)
+            for j in range(wv.ndim - 1, -1, -1):
+                if wv.shape[j] == 1 and gw_shape[j] > 1:
+                    grad_w = Sum.apply(grad_w, j)
+                    grad_w = Unsqueeze.apply(grad_w, j)
+            return [grad_x, grad_w]
+
         return [
             Tensor(gx, dtype=grad_output.dtype),
             Tensor(gw, dtype=grad_output.dtype),
