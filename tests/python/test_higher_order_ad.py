@@ -88,3 +88,74 @@ if __name__ == "__main__":
     test_double_backward_mlp()
     test_grad_functional_matches_backward()
     print("ALL HIGHER-ORDER AD TESTS PASSED")
+
+
+# Second-order AD tests for element-wise ops with create_graph fixes ---------
+
+
+def test_glu_second_order():
+    """GLU backward must produce graph-connected gradients for second-order AD."""
+    np.random.seed(11)
+    x = Tensor(np.random.randn(4, 8).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.GLU.apply(x, -1)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_prelu_second_order():
+    """PReluFn backward must produce graph-connected gradients for second-order AD."""
+    np.random.seed(12)
+    x = Tensor(np.random.randn(4, 4).astype("float32"))
+    x.requires_grad_(True)
+    w = Tensor(np.full((4,), 0.25, dtype="float32"))
+    w.requires_grad_(True)
+    out = ops.PReluFn.apply(x, w)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    assert w.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_logsigmoid_second_order():
+    """LogSigmoidFn backward must produce graph-connected gradients."""
+    np.random.seed(13)
+    x = Tensor(np.random.randn(4, 4).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.LogSigmoidFn.apply(x)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_log1p_second_order():
+    """Log1p backward must produce graph-connected gradients for second-order AD."""
+    np.random.seed(14)
+    x = Tensor(np.random.randn(4, 4).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.Log1p.apply(x)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_expm1_second_order():
+    """Expm1 backward must produce graph-connected gradients for second-order AD."""
+    np.random.seed(15)
+    x = Tensor(np.random.randn(4, 4).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.Expm1.apply(x)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
