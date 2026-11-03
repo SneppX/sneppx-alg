@@ -418,3 +418,41 @@ def test_sparse_conv2d_second_order():
     # second backward on grad sp
     sp.grad.backward(create_graph=True)
     assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+# sparse_mm / sparse_addmm second-order AD tests ------------------------------
+
+
+def test_sparse_mm_second_order():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    b = Tensor(np.array([[1.0, 0.0], [0.0, 1.0]], dtype=np.float32))
+    b.requires_grad_(True)
+    out = sparse_mm(sp, b)
+    assert out.requires_grad
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert b.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
+
+
+def test_sparse_addmm_second_order():
+    sp = _sp((2, 2), [[0, 1], [1, 0]], [2.0, 3.0])
+    sp.requires_grad_(True)
+    mat2 = Tensor(np.array([[1.0, 0.0], [0.0, 1.0]], dtype=np.float32))
+    mat2.requires_grad_(True)
+    inp = Tensor(np.zeros((2, 2), dtype=np.float32))
+    inp.requires_grad_(True)
+    out = sparse_addmm(inp, sp, mat2, beta=1.0, alpha=1.0)
+    assert out.requires_grad
+    # first backward with create_graph
+    out.backward(create_graph=True)
+    assert sp.grad is not None
+    assert mat2.grad is not None
+    assert inp.grad is not None
+    # second backward on grad sp
+    sp.grad.backward(create_graph=True)
+    assert sp.grad.grad_fn is not None or sp.grad.requires_grad
