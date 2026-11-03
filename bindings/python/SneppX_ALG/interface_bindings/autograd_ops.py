@@ -2310,7 +2310,7 @@ class EmbeddingFn(Function):
         return Tensor(weight.data[idx], dtype=weight.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         weight = ctx.get_saved_tensor("weight")
         indices = ctx.get_attr("indices")
         g = grad_output.data
