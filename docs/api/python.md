@@ -248,6 +248,62 @@ cfg.extend_context(131072)
 output = cfg.forward_mha(hidden_states, attention_mask, position_ids)
 ```
 
+## Autograd & Higher-Order AD
+
+The `SneppX_ALG.interface_bindings.autograd_ops` module provides a tape-based
+autograd engine with support for first- and higher-order derivatives via
+`create_graph=True` on `Tensor.backward()`.
+
+```python
+from SneppX_ALG.interface_bindings import autograd_ops as ops
+from SneppX_ALG import Tensor
+import numpy as np
+
+x = Tensor(np.random.randn(4, 4).astype(np.float32))
+x.requires_grad_(True)
+
+# First-order backward (default)
+out = ops.Relu.apply(x)
+out.backward()                      # grad w.r.t. x, no graph retained
+
+# Higher-order backward (create_graph retains the graph)
+out.backward(create_graph=True)     # grad w.r.t. x, graph retained for 2nd order
+x.grad.backward(create_graph=True)  # second-order gradient
+```
+
+### create_graph support
+
+Most element-wise, shape, normalization, and loss ops support `create_graph=True`
+in their `backward()` method, enabling second-order and higher derivatives:
+
+**Supported with graph-connected gradients:** Add, Sub, Mul, Div, MatMul,
+Pow, Neg, Relu, Sigmoid, Tanh, Gelu, Swish, Softplus, Softsign, Hardswish,
+Hardtanh, Mish, SELU, Hardsigmoid, Abs, Sqrt, Exp, Log, SmoothL1Loss, HuberLoss,
+BCELoss, BCEWithLogitsLoss, CrossEntropyLoss, NLLLoss, KLDivLoss, LayerNorm,
+RMSNorm, DropoutFn, LinearFn, Sqrt, Reciprocal, Clamp, Remainder, Sign, Log1p,
+Expm1, Trace, Diagonal, Square, Reshape, Transpose, Permute, Expand, Squeeze,
+Unsqueeze, GetItem, Stack, Cat, Mean, Sum, Prod, MinDim, MaxDim, LogSumExp,
+GLU, PReluFn, LogSigmoidFn, Softmax, LogSoftmax, SparseMM, SparseAddMM,
+SparseSum, SparseSoftmax, SparseConv2d.
+
+**Graph-connected but falls back to NumPy for complex indexing:** Conv1d, Conv2d,
+Conv3d, ConvTranspose2d, ConvTranspose3d, MaxPool2d, AdaptiveAvgPoolFn,
+AdaptiveMaxPoolFn, MaxUnpoolFn, UpsampleNearestFn, UpsampleBilinearFn,
+UpsampleLinearNdFn, UnfoldFn, FoldFn, PadNdFn, EmbeddingFn, EmbeddingBagFn,
+BilinearFn, FocalLoss.
+
+For ops without graph-connected backward, calling `backward(create_graph=True)`
+produces a NumPy-computed gradient wrapped as a Tensor — first-order values are
+correct, but second-order AD will not propagate through that op.
+
+### Sparse autograd
+
+Sparse tensor operations (`SparseMM`, `SparseAddMM`, `SparseSum`, `SparseSoftmax`,
+`SparseConv2d`) support `create_graph=True` with graph-connected gradient routing
+via scatter-matrix multiplication, enabling second-order AD through sparse
+networks.
+
+
 ## Running Tests
 
 The full Python suite uses `pytest` and runs against the same code paths exercised
