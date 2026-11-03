@@ -1403,6 +1403,33 @@ class GLU(Function):
                 return np.concatenate([a_, b_], axis=-1)
             return np.concatenate([a_, b_], axis=dim)
 
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Sigmoid, Mul, Sub, Cat, _as_const
+            )
+            # Split grad_output into ga (first half) and gb (second half)
+            key_a = [slice(None)] * grad_output.ndim
+            key_a[dim] = slice(0, half)
+            ga_t = GetItem.apply(grad_output, tuple(key_a))
+            key_b = [slice(None)] * grad_output.ndim
+            key_b[dim] = slice(half, None)
+            gb_t = GetItem.apply(grad_output, tuple(key_b))
+
+            # Split input into x_a and x_b
+            key_xa = [slice(None)] * a.ndim
+            key_xa[dim] = slice(0, half)
+            x_a_t = GetItem.apply(a, tuple(key_xa))
+            key_xb = [slice(None)] * a.ndim
+            key_xb[dim] = slice(half, None)
+            x_b_t = GetItem.apply(a, tuple(key_xb))
+
+            # sig = sigmoid(x_b); grad_xa = ga * sig; grad_xb = ga * x_a * sig * (1 - sig)
+            sig_t = Sigmoid.apply(x_b_t)
+            one_minus = Sub.apply(_as_const(1.0, grad_output.dtype), sig_t)
+            grad_xa = Mul.apply(ga_t, sig_t)
+            grad_xb = Mul.apply(Mul.apply(gb_t, x_a_t), Mul.apply(sig_t, one_minus))
+            return [Cat.apply(grad_xa, grad_xb, dim)]
+
         return [Tensor(cat(da, db), dtype=grad_output.dtype)]
 
 
