@@ -4523,7 +4523,7 @@ class Prod(Function):
         return Tensor(np.asarray(out), dtype=x.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         axes = ctx.get_attr("axes")
         keepdim = ctx.get_attr("keepdim")
@@ -4647,11 +4647,16 @@ class Log1p(Function):
         return Tensor(out, dtype=x.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         xd = np.asarray(x.data)
         g = np.asarray(grad_output.data)
         grad = g / (1.0 + xd)
+        if create_graph:
+            from .autograd_ops import Add, Div, _as_const
+            x_t = Tensor(xd, dtype=grad_output.dtype)
+            den = Add.apply(x_t, _as_const(1.0, grad_output.dtype))
+            return [Div.apply(grad_output, den)]
         return [Tensor(grad, dtype=grad_output.dtype)]
 
 
@@ -4665,11 +4670,15 @@ class Expm1(Function):
         return Tensor(out, dtype=x.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         xd = np.asarray(x.data)
         g = np.asarray(grad_output.data)
         grad = g * np.exp(xd)
+        if create_graph:
+            from .autograd_ops import Exp, Mul
+            x_t = Tensor(xd, dtype=grad_output.dtype)
+            return [Mul.apply(grad_output, Exp.apply(x_t))]
         return [Tensor(grad, dtype=grad_output.dtype)]
 
 
