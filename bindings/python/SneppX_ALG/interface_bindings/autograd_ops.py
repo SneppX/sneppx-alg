@@ -3353,7 +3353,7 @@ class MaxPool2d(Function):
         return Tensor(out, dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         k_h = ctx.get_attr("k_h")
         k_w = ctx.get_attr("k_w")
