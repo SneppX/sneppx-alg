@@ -3290,6 +3290,11 @@ class LogSigmoidFn(Function):
         x = ctx.get_attr("x")
         g = np.asarray(grad_output.data, dtype=np.float64)
         sig_neg = 1.0 / (1.0 + np.exp(x))
+        if create_graph:
+            from .autograd_ops import Sigmoid, Neg, Mul
+            x_t = Tensor(np.asarray(x), dtype=grad_output.dtype)
+            sig_neg_t = Sigmoid.apply(Neg.apply(x_t))
+            return [Mul.apply(grad_output, sig_neg_t)]
         return [Tensor(g * sig_neg, dtype=grad_output.dtype)]
 
 
