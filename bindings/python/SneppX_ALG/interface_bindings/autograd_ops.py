@@ -3795,7 +3795,7 @@ class FocalLoss(Function):
         )
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         logits = ctx.get_saved_tensor("logits")
         target = ctx.get_saved_tensor("target")
         gamma = ctx.get_attr("gamma")
