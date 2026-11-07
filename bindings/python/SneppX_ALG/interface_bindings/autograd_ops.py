@@ -1649,7 +1649,7 @@ class UpsampleNearestFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const, Tensor,
+                Reshape, MatMul, _as_const,
             )
             dt = grad_output.dtype
             lead = in_shape[:-ndim]
@@ -1768,7 +1768,7 @@ class UnfoldFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const, Tensor, GetItem,
+                Reshape, MatMul, _as_const, GetItem,
             )
             dt = grad_output.dtype
             n_col_per_channel = kH * kW * L
@@ -1871,7 +1871,7 @@ class FoldFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, Div, GetItem, Stack, Unsqueeze, _as_const, Tensor, Cat,
+                Reshape, Div, GetItem, Stack, Unsqueeze, _as_const, Cat,
             )
             dt = grad_output.dtype
             # Pad g to (N, C, Hp, Wp)
@@ -1990,7 +1990,7 @@ class UpsampleBilinearFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const, Tensor,
+                Reshape, MatMul, _as_const,
             )
             dt = grad_output.dtype
             lead = a.data.shape[:-2]
@@ -2091,7 +2091,7 @@ class UpsampleLinearNdFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const, Tensor,
+                Reshape, MatMul, _as_const,
             )
             dt = grad_output.dtype
             in_sp = a.data.shape[-nd:]
@@ -2184,7 +2184,7 @@ class AdaptiveAvgPoolFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, Mul, Add, Unsqueeze, _as_const, Tensor,
+                GetItem, Mul, Add, Unsqueeze, _as_const,
             )
             dt = grad_output.dtype
             spatial_shape = in_shape[lead_nd:]
@@ -2785,7 +2785,7 @@ class Conv2d(Function):
         if create_graph and groups == 1:
             from .autograd_ops import (
                 GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Tensor, Stack,
+                Squeeze, Cat, _as_const, Stack,
             )
             dt = grad_output.dtype
             N, C_in, H, W = x.shape
@@ -3027,7 +3027,7 @@ class Conv3d(Function):
         if create_graph and groups == 1:
             from .autograd_ops import (
                 GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Tensor, Stack,
+                Squeeze, Cat, _as_const, Stack,
             )
             dt = grad_output.dtype
             N, C_in, D, H, W = x.shape
@@ -3279,7 +3279,7 @@ class ConvTranspose2d(Function):
         if create_graph:
             from .autograd_ops import (
                 GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Tensor, Stack,
+                Squeeze, Cat, _as_const, Stack,
             )
             dt = grad_output.dtype
             x_graph = inp if x.ndim == 4 else Unsqueeze.apply(inp, 0)
@@ -3448,7 +3448,7 @@ class ConvTransposeNd(Function):
         if create_graph and groups == 1:
             from .autograd_ops import (
                 GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                _as_const, Tensor,
+                _as_const,
             )
             dt = grad_output.dtype
             xa = (slice(None), slice(None))
@@ -3607,7 +3607,7 @@ class AdaptiveMaxPoolFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, _as_const, Tensor,
+                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, _as_const,
             )
             dt = grad_output.dtype
             lead_sl = (slice(None),) * nlead
@@ -3691,7 +3691,7 @@ class MaxUnpoolFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, Unsqueeze, Squeeze, MatMul, _as_const, Tensor,
+                Reshape, Unsqueeze, Squeeze, MatMul, _as_const,
             )
             dt = grad_output.dtype
             N, C = in_shape[0], in_shape[1]
@@ -3776,7 +3776,7 @@ class EmbeddingBagFn(Function):
         if create_graph:
             from .autograd_ops import (
                 GetItem, Mul, Add, Div, Cat, Unsqueeze, Transpose, MatMul,
-                _as_const, Tensor,
+                _as_const,
             )
             dt = grad_output.dtype
 
@@ -3888,7 +3888,7 @@ class PadNdFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, Mul, Add, Reshape, _as_const, Tensor,
+                GetItem, Mul, Add, Reshape, _as_const,
             )
             dt = grad_output.dtype
             imap_flat = imap.reshape(-1)
@@ -4029,7 +4029,7 @@ class BilinearFn(Function):
         if create_graph:
             from .autograd_ops import (
                 GetItem, MatMul, Transpose, Mul, Add, Sum, Unsqueeze,
-                Stack, _as_const, Tensor,
+                Stack, _as_const,
             )
             dt = grad_output.dtype
             B = g.shape[0]
