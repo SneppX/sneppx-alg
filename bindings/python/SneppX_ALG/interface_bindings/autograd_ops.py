@@ -3257,6 +3257,78 @@ class ConvTransposeNd(Function):
         cin_g = C_in // groups
         cout_g = C_out // groups
 
+        if create_graph and groups == 1:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            xa = (slice(None), slice(None))
+            x_graph = inp
+            g_graph = grad_output
+
+            # ---- grad_x[sidx] = sum_{c_out,kidx} g[c_out,oidx] * w[c_in,c_out,kidx] ----
+            grad_x_acc = None
+            for sidx in np.ndindex(*spatial_in):
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
+                    w_slice = GetItem.apply(kernel, (slice(None), slice(None)) + kidx)  # (C_in,C_out)
+                    contrib = MatMul.apply(g_slice, w_slice)  # (N,C_in)
+                    mask_np = np.zeros(spatial_in, dtype=np.float64)
+                    mask_np[sidx] = 1.0
+                    mask_t = _as_const(mask_np, dt)
+                    contrib_nd = contrib
+                    for _ in range(ndim):
+                        contrib_nd = Unsqueeze.apply(contrib_nd, -1)
+                    contrib_full = Mul.apply(contrib_nd, mask_t)  # (N,C_in,*spatial_in)
+                    if grad_x_acc is None:
+                        grad_x_acc = contrib_full
+                    else:
+                        grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+            grad_x = grad_x_acc
+
+            # ---- grad_w[kidx] = sum_{n,c_in,sidx} x[c_in,sidx] * g[c_out,oidx] ----
+            grad_w_acc = None
+            for sidx in np.ndindex(*spatial_in):
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    x_slice = GetItem.apply(x_graph, xa + (slice(None),) + sidx)  # (N,C_in)
+                    g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
+                    contrib = MatMul.apply(Transpose.apply(x_slice, -1, -2), g_slice)  # (C_in,C_out)
+                    mask_np = np.zeros(kshape, dtype=np.float64)
+                    mask_np[kidx] = 1.0
+                    mask_t = _as_const(mask_np, dt)
+                    contrib_nd = contrib
+                    for _ in range(ndim):
+                        contrib_nd = Unsqueeze.apply(contrib_nd, -1)
+                    contrib_full = Mul.apply(contrib_nd, mask_t)  # (C_in,C_out,*kshape)
+                    if grad_w_acc is None:
+                        grad_w_acc = contrib_full
+                    else:
+                        grad_w_acc = Add.apply(grad_w_acc, contrib_full)
+            grad_w = grad_w_acc
+
+            # ---- grad_b[c_out] = sum over batch + spatial dims ----
+            if has_bias:
+                grad_b = Sum.apply(g_graph, 0)  # (C_out,*spatial_out)
+                for _ in range(ndim):
+                    grad_b = Sum.apply(grad_b, 1)  # sum each spatial dim -> (C_out,)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_w, grad_b]
+
         grad_x = np.zeros_like(x)
         grad_w = np.zeros_like(w)
         grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
