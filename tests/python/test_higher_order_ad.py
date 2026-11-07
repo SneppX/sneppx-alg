@@ -191,3 +191,16 @@ def test_convtranspose2d_second_order():
     assert w.grad is not None
     x.grad.backward(create_graph=True)
     assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_maxpool2d_second_order():
+    """MaxPool2d backward must produce graph-connected gradients."""
+    np.random.seed(18)
+    x = Tensor(np.random.randn(1, 2, 6, 6).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.MaxPool2d.apply(x, 2, 2)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
