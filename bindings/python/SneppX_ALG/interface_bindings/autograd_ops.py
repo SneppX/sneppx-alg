@@ -2295,11 +2295,25 @@ class GetItem(Function):
     def backward(ctx, grad_output, create_graph=False):
         key = ctx.get_attr("key")
         if create_graph:
-            mask = np.zeros(
-                ctx.get_attr("orig_shape"), dtype=_numpy_dtype(grad_output.dtype)
-            )
-            mask[key] = 1.0
-            return [Mul.apply(grad_output, _as_const(mask, grad_output.dtype))]
+            from .autograd_ops import Reshape, MatMul, _as_const
+            dt = grad_output.dtype
+            orig_shape = ctx.get_attr("orig_shape")
+            # Determine flat positions in orig_shape selected by key
+            mask_np = np.zeros(orig_shape, dtype=bool)
+            mask_np[key] = True
+            selected_flat = np.flatnonzero(mask_np)
+            n_selected = int(selected_flat.size)
+            n_in = int(np.prod(orig_shape))
+            # Build scatter.T matrix: (n_in, n_selected), result[j] = g_flat[i]
+            # where selected_flat[i] == j; result[j] = 0 if j not selected
+            scatter_t_np = np.zeros((n_in, n_selected), dtype=np.float64)
+            for i in range(n_selected):
+                scatter_t_np[selected_flat[i], i] = 1.0
+            scatter_t = _as_const(scatter_t_np, dt)
+            g_flat = Reshape.apply(grad_output, (n_selected,))
+            result_flat = MatMul.apply(scatter_t, g_flat)  # (n_in,)
+            result = Reshape.apply(result_flat, orig_shape)
+            return [result]
         g = np.zeros(ctx.get_attr("orig_shape"), dtype=_numpy_dtype(grad_output.dtype))
         g[key] = grad_output.data
         return [Tensor(g, dtype=grad_output.dtype)]
