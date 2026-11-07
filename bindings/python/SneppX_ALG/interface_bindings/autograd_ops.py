@@ -2836,6 +2836,122 @@ class Conv3d(Function):
         w = np.asarray(kernel.data, dtype=np.float64)
         g = np.asarray(grad_output.data, dtype=np.float64)
 
+        if create_graph and groups == 1:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                Squeeze, Cat, _as_const, Tensor, Stack,
+            )
+            dt = grad_output.dtype
+            N, C_in, D, H, W = x.shape
+            C_out, _, kD, kH, kW = w.shape
+            Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
+            Dp = D + 2 * pd
+            Hp = H + 2 * ph
+            Wp = W + 2 * pw
+
+            # graph-connected tensors (add batch dim if needed)
+            x_graph = inp if x.ndim == 5 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 5 else Unsqueeze.apply(grad_output, 0)
+
+            # ---- pad input with zeros using Cat (graph-connected) ----
+            if pd > 0 or ph > 0 or pw > 0:
+                z_front = _as_const(np.zeros((N, C_in, pd, H, W), dtype=np.float64), dt)
+                z_back = _as_const(np.zeros((N, C_in, pd, H, W), dtype=np.float64), dt)
+                xd_pad = Cat.apply(z_front, x_graph, z_back, 2)
+                z_top = _as_const(np.zeros((N, C_in, Dp, ph, W), dtype=np.float64), dt)
+                z_bottom = _as_const(np.zeros((N, C_in, Dp, ph, W), dtype=np.float64), dt)
+                xdh_pad = Cat.apply(z_top, xd_pad, z_bottom, 3)
+                z_left = _as_const(np.zeros((N, C_in, Dp, Hp, pw), dtype=np.float64), dt)
+                z_right = _as_const(np.zeros((N, C_in, Dp, Hp, pw), dtype=np.float64), dt)
+                xp = Cat.apply(z_left, xdh_pad, z_right, 4)
+            else:
+                xp = x_graph
+
+            # ---- grad_k[c_out,c_in,kD,kH,kW] = sum_n,d,h,w g[n,c_out,d,h,w] * xp[n,c_in,d*sd+kD*dd,h*sh+kH*dh,w*sw+kW*dw] ----
+            grad_k_parts = [[[[None for _ in range(kW)] for _ in range(kH)] for _ in range(kD)]]
+            for d in range(Do):
+                for h in range(Ho):
+                    for w_idx in range(Wo):
+                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        for kd in range(kD):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    x_dhw = GetItem.apply(
+                                        xp,
+                                        (slice(None), slice(None), d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw),
+                                    )  # (N,C_in)
+                                    contrib = MatMul.apply(Transpose.apply(g_dhw, -1, -2), x_dhw)  # (C_out,C_in)
+                                    if grad_k_parts[0][kd][kh][kw] is None:
+                                        grad_k_parts[0][kd][kh][kw] = contrib
+                                    else:
+                                        grad_k_parts[0][kd][kh][kw] = Add.apply(
+                                            grad_k_parts[0][kd][kh][kw], contrib
+                                        )
+
+            # Build grad_k by stacking
+            kw_slices = []
+            for kd in range(kD):
+                kh_slices = []
+                for kh in range(kH):
+                    kw_row = []
+                    for kw in range(kW):
+                        kw_row.append(grad_k_parts[0][kd][kh][kw])
+                    kh_slices.append(Stack.apply(*kw_row, -1))
+                kw_slices.append(Stack.apply(*kh_slices, -1))
+            grad_k = Stack.apply(*kw_slices, -1)  # (C_out,C_in,kD,kH,kW)
+
+            # ---- grad_x[n,c_in,d,h,w] = sum_{c_out,kD,kH,kW} g[n,c_out,(d-kD*dd)/sd,...] * w[c_out,c_in,kD,kH,kW] ----
+            grad_x_acc = None
+            for d in range(Do):
+                for h in range(Ho):
+                    for w_idx in range(Wo):
+                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        for kd in range(kD):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    w_kkk = GetItem.apply(
+                                        kernel, (slice(None), slice(None), kd, kh, kw)
+                                    )  # (C_out,C_in)
+                                    # contrib[n,c_in] = sum_cout w[c_out,c_in] * g[n,c_out]
+                                    contrib = Transpose.apply(
+                                        MatMul.apply(
+                                            Transpose.apply(w_kkk, -1, -2),
+                                            Transpose.apply(g_dhw, -1, -2),
+                                        ),
+                                        -1, -2,
+                                    )  # (N,C_in)
+                                    # scatter to (d*sd+kd*dd, h*sh+kh*dh, w*sw+kw*dw) via mask
+                                    mask_np = np.zeros((Dp, Hp, Wp), dtype=np.float64)
+                                    mask_np[d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw] = 1.0
+                                    mask_t = _as_const(mask_np, dt)
+                                    contrib_5d = Unsqueeze.apply(
+                                        Unsqueeze.apply(Unsqueeze.apply(contrib, -1), -1), -1
+                                    )  # (N,C_in,1,1,1)
+                                    contrib_full = Mul.apply(contrib_5d, mask_t)  # (N,C_in,Dp,Hp,Wp)
+                                    if grad_x_acc is None:
+                                        grad_x_acc = contrib_full
+                                    else:
+                                        grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+
+            # crop padding
+            if pd > 0 or ph > 0 or pw > 0:
+                grad_x = GetItem.apply(
+                    grad_x_acc,
+                    (slice(None), slice(None), slice(pd, D + pd), slice(ph, H + ph), slice(pw, W + pw)),
+                )
+            else:
+                grad_x = grad_x_acc
+            if x.ndim == 4:
+                grad_x = Squeeze.apply(grad_x, 0)
+
+            # ---- grad_b[c_out] = sum_n,d,h,w g[n,c_out,d,h,w] ----
+            if has_bias:
+                grad_b = Sum.apply(Sum.apply(Sum.apply(Sum.apply(g_graph, 0), 1), 1), 1)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_k, grad_b]
+
         if groups == 1:
             grad_x, grad_k, grad_b = _conv3d_backward_single(
                 x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bias
