@@ -2215,8 +2215,11 @@ class AdaptiveAvgPoolFn(Function):
                 else:
                     grad_acc = Add.apply(grad_acc, contrib)
 
-    return [grad_acc]
+            return [grad_acc]
 
+        gi = np.zeros(in_shape, dtype=np.float64)
+        lead_nd = len(in_shape) - nd
+        lead_sl = (slice(None),) * lead_nd
         for idx in itertools.product(*[range(o) for o in osz]):
             sizes = tuple(
                 ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
