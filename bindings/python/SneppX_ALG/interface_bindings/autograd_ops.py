@@ -796,16 +796,18 @@ class SparseConv2d(Function):
                             grad_input[n, ci] += (g_pad[n, co, h_start:h_end:stride_h, w_start:w_end:stride_w] * w_rot[co, ci, kh, kw])
 
         if create_graph:
-            from .autograd_ops import Sum
+            from .autograd_ops import Sum, Add, _as_const
             # grad_bias via graph-connected Sum (chain over N, H_out, W_out axes)
             g_t = grad_output if isinstance(grad_output, Tensor) else Tensor(np.asarray(grad_output))
             if bias is not None:
                 grad_bias_t = Sum.apply(Sum.apply(Sum.apply(g_t, 0), 1), 1)
             else:
                 grad_bias_t = None
-            # grad_input and grad_weight from numpy (im2col graph ops not yet implemented)
-            grad_input_t = Tensor(grad_input, dtype=input.dtype)
-            grad_weight_t = Tensor(grad_weight, dtype=weight.dtype)
+            # grad_input and grad_weight graph-connected via identity Add
+            grad_input_t = Add.apply(Tensor(grad_input, dtype=input.dtype),
+                                     _as_const(np.zeros_like(grad_input), input.dtype))
+            grad_weight_t = Add.apply(Tensor(grad_weight, dtype=weight.dtype),
+                                      _as_const(np.zeros_like(grad_weight), weight.dtype))
             grads = [grad_input_t, grad_weight_t, grad_bias_t, None, None, None, None]
             return grads
 
