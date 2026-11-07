@@ -1646,6 +1646,32 @@ class UpsampleNearestFn(Function):
         out_shape = ctx.get_attr("out_shape")
         ndim = ctx.get_attr("ndim")
         g = np.asarray(grad_output.data, np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            lead = in_shape[:-ndim]
+            lead_size = int(np.prod(lead)) if lead else 1
+            in_sp = in_shape[-ndim:]
+            out_sp = out_shape[-ndim:]
+            n_in = int(np.prod(in_sp))
+            n_out = int(np.prod(out_sp))
+            # Build scatter matrix: (n_out, n_in), scatter[o_flat, i_flat] = 1
+            # if output position o_flat comes from input position i_flat
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            for o_flat in range(n_out):
+                o_idx = np.unravel_index(o_flat, out_sp)
+                i_idx = tuple(idxs[k][o_idx[k]] for k in range(ndim))
+                i_flat = np.ravel_multi_index(i_idx, in_sp)
+                scatter[o_flat, i_flat] = 1.0
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)  # (lead_size, n_in)
+            gi = Reshape.apply(gi_flat, in_shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
         gi = np.zeros(in_shape, np.float64)
         lead = in_shape[:-ndim]
         lead_size = int(np.prod(lead)) if lead else 1
