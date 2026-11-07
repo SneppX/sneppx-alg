@@ -159,3 +159,19 @@ def test_expm1_second_order():
     assert x.grad is not None
     x.grad.backward(create_graph=True)
     assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_conv3d_second_order():
+    """Conv3d backward must produce graph-connected gradients for second-order AD."""
+    np.random.seed(16)
+    x = Tensor(np.random.randn(1, 2, 4, 4, 4).astype("float32"))
+    x.requires_grad_(True)
+    w = Tensor(np.random.randn(3, 2, 2, 2, 2).astype("float32"))
+    w.requires_grad_(True)
+    out = ops.Conv3d.apply(x, w)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    assert w.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
