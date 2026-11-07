@@ -2215,7 +2215,7 @@ class AdaptiveAvgPoolFn(Function):
                 else:
                     grad_acc = Add.apply(grad_acc, contrib)
 
-            return [Tensor(grad_acc, dtype=grad_output.dtype)]
+    return [grad_acc]
 
         for idx in itertools.product(*[range(o) for o in osz]):
             sizes = tuple(
