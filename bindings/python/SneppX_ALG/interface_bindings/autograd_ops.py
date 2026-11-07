@@ -3453,6 +3453,47 @@ class AdaptiveMaxPoolFn(Function):
         lead_shape = x.shape[:nlead]
         lead_idx = np.indices(lead_shape) if nlead else None
         gx = np.zeros(x.shape, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            lead_sl = (slice(None),) * nlead
+            spatial_shape = x.shape[nlead:]
+
+            grad_acc = None
+            for idx in itertools.product(*[range(o) for o in osz]):
+                sl = tuple(
+                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+                )
+                if any(s.stop <= s.start for s in sl):
+                    continue
+                binshape = tuple(s.stop - s.start for s in sl)
+                win = GetItem.apply(a, lead_sl + sl)  # lead_shape + binshape
+                max_val = win
+                for d in range(nlead + nd - 1, nlead - 1, -1):
+                    max_val = MaxDim.apply(max_val, d, True)
+                diff = Sub.apply(win, max_val)
+                mask = Add.apply(_as_const(1.0, dt), Sign.apply(diff))
+                gv = GetItem.apply(grad_output, lead_sl + idx)  # lead_shape
+                gv_reshaped = gv
+                for _ in range(nd):
+                    gv_reshaped = Unsqueeze.apply(gv_reshaped, -1)
+                contrib = Mul.apply(
+                    Mul.apply(mask, gv_reshaped), _as_const(1.0, dt)
+                )  # lead_shape + binshape
+                mask_np = np.zeros((1,) * nlead + spatial_shape, dtype=np.float64)
+                mask_np[lead_sl + sl] = 1.0
+                mask_t = _as_const(mask_np, dt)
+                contrib_full = Mul.apply(contrib, mask_t)  # x.shape
+                if grad_acc is None:
+                    grad_acc = contrib_full
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib_full)
+
+            return [Tensor(grad_acc, dtype=grad_output.dtype)]
+
         for idx in itertools.product(*[range(o) for o in osz]):
             sl = tuple(
                 slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
