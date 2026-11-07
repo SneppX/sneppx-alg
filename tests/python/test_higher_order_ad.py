@@ -204,3 +204,16 @@ def test_maxpool2d_second_order():
     assert x.grad is not None
     x.grad.backward(create_graph=True)
     assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_adaptiveavgpool2d_second_order():
+    """AdaptiveAvgPoolFn backward must produce graph-connected gradients."""
+    np.random.seed(19)
+    x = Tensor(np.random.randn(1, 2, 8, 8).astype("float32"))
+    x.requires_grad_(True)
+    out = ops.AdaptiveAvgPoolFn.apply(x, (4, 4))
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
