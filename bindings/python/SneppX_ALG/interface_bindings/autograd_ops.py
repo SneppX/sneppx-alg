@@ -3821,6 +3821,36 @@ class PadNdFn(Function):
         mask = ctx.get_attr("mask")
         in_shape = ctx.get_attr("in_shape")
         g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Reshape, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            imap_flat = imap.reshape(-1)
+            mask_flat = mask.reshape(-1)
+            n_in = int(np.prod(in_shape))
+            n_out = imap_flat.size
+            g_1d = Reshape.apply(grad_output, (n_out,))
+            grad_acc = None
+            for o_flat in range(n_out):
+                if not mask_flat[o_flat]:
+                    continue
+                i_flat = int(imap_flat[o_flat])
+                g_val = GetItem.apply(g_1d, (o_flat,))
+                one_hot = np.zeros((1, n_in), dtype=np.float64)
+                one_hot[0, i_flat] = 1.0
+                one_hot_t = _as_const(one_hot, dt)
+                contrib = Mul.apply(g_val, one_hot_t)
+                if grad_acc is None:
+                    grad_acc = contrib
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib)
+            if grad_acc is None:
+                grad_acc = _as_const(np.zeros((1, n_in), dtype=np.float64), dt)
+            gi = Reshape.apply(grad_acc, in_shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
         gi = np.zeros(int(np.prod(in_shape)), dtype=np.float64)
         np.add.at(gi, imap[mask], g[mask])
         return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
