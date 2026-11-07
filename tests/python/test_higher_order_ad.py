@@ -175,3 +175,19 @@ def test_conv3d_second_order():
     assert w.grad is not None
     x.grad.backward(create_graph=True)
     assert x.grad.grad_fn is not None or x.grad.requires_grad
+
+
+def test_convtranspose2d_second_order():
+    """ConvTranspose2d backward must produce graph-connected gradients."""
+    np.random.seed(17)
+    x = Tensor(np.random.randn(1, 2, 4, 4).astype("float32"))
+    x.requires_grad_(True)
+    w = Tensor(np.random.randn(2, 3, 2, 2).astype("float32"))
+    w.requires_grad_(True)
+    out = ops.ConvTranspose2d.apply(x, w, stride=1, padding=0, output_padding=0)
+    assert out.requires_grad
+    out.backward(create_graph=True)
+    assert x.grad is not None
+    assert w.grad is not None
+    x.grad.backward(create_graph=True)
+    assert x.grad.grad_fn is not None or x.grad.requires_grad
