@@ -2030,6 +2030,43 @@ class AdaptiveAvgPoolFn(Function):
         lead_nd = len(in_shape) - nd
         lead_sl = (slice(None),) * lead_nd
         lead_shape = in_shape[:lead_nd]
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Unsqueeze, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            spatial_shape = in_shape[lead_nd:]
+
+            grad_acc = None
+            for idx in itertools.product(*[range(o) for o in osz]):
+                sizes = tuple(
+                    ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
+                )
+                area = int(np.prod(sizes))
+                if area == 0:
+                    continue
+                sl = tuple(
+                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+                )
+                g_val = GetItem.apply(grad_output, lead_sl + idx)  # lead_shape
+                g_val_reshaped = g_val
+                for _ in range(nd):
+                    g_val_reshaped = Unsqueeze.apply(g_val_reshaped, -1)
+                # mask: (1,)*lead_nd + spatial_shape, with 1s in region sl
+                mask_np = np.zeros((1,) * lead_nd + spatial_shape, dtype=np.float64)
+                mask_np[lead_sl + sl] = 1.0
+                mask_t = _as_const(mask_np, dt)
+                contrib = Mul.apply(
+                    Mul.apply(g_val_reshaped, _as_const(1.0 / area, dt)), mask_t
+                )  # in_shape
+                if grad_acc is None:
+                    grad_acc = contrib
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib)
+
+            return [Tensor(grad_acc, dtype=grad_output.dtype)]
+
         for idx in itertools.product(*[range(o) for o in osz]):
             sizes = tuple(
                 ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
