@@ -132,7 +132,7 @@ def grad(f):
             p.requires_grad_(True)
         out = f(*ps)
         _zeros_grad(ps)
-        out.backward()
+        out.backward(create_graph=True)
         return [p.grad if p.grad is not None else Tensor(np.zeros_like(p.data)) for p in ps]
     return _g
 
