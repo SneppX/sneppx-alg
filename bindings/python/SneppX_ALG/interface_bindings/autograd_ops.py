@@ -2023,6 +2023,36 @@ class UpsampleLinearNdFn(Function):
         lead = g.shape[:-nd]
         nlead = len(lead)
         total_nd = nlead + nd
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            in_sp = a.data.shape[-nd:]
+            lead_shape = a.data.shape[:-nd]
+            lead_size = int(np.prod(lead_shape)) if lead_shape else 1
+            n_in = int(np.prod(in_sp))
+            n_out = int(np.prod(out_sp))
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            for o_flat in range(n_out):
+                o_idx = np.unravel_index(o_flat, out_sp)
+                for corner in itertools.product((0, 1), repeat=nd):
+                    i_idx = []
+                    wgt = 1.0
+                    for k in range(nd):
+                        sel_arr = idx1[k] if corner[k] else idx0[k]
+                        w_arr = w1[k] if corner[k] else w0[k]
+                        i_idx.append(int(sel_arr[o_idx[k]]))
+                        wgt *= float(w_arr[o_idx[k]])
+                    i_flat = np.ravel_multi_index(tuple(i_idx), in_sp)
+                    scatter[o_flat, i_flat] += wgt
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)
+            gi = Reshape.apply(gi_flat, a.data.shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
         gi = np.zeros(a.data.shape, dtype=np.float64)
         lead_idx = []
         for k in range(nlead):
