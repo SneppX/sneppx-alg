@@ -3772,6 +3772,70 @@ class EmbeddingBagFn(Function):
         groups = ctx.get_attr("groups")
         n_emb, D = ctx.get_attr("weight_shape")
         g = np.asarray(grad_output.data, dtype=np.float64).reshape(len(groups), D)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Div, Cat, Unsqueeze, Transpose, MatMul,
+                _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+
+            # Build scatter matrix S: (n_emb, total_rows), S[src_idx, row_pos] = 1
+            total_rows = 0
+            for rows in groups:
+                total_rows += int(rows.size)
+            scatter = np.zeros((n_emb, total_rows), dtype=np.float64)
+            row_pos = 0
+            contrib_parts = []
+            for gi, rows in enumerate(groups):
+                rows_size = int(rows.size)
+                if rows_size == 0:
+                    continue
+                g_val = GetItem.apply(grad_output, (gi,))  # (D,)
+                if mode == "sum":
+                    factor = _as_const(1.0, dt)
+                elif mode == "mean":
+                    factor = _as_const(1.0 / rows_size, dt)
+                else:  # max
+                    factor = None
+                am = argmax[gi] if argmax else None
+                for j in range(rows_size):
+                    src_idx = int(idx[int(rows[j])])
+                    scatter[src_idx, row_pos] = 1.0
+                    if factor is not None:
+                        contrib = Mul.apply(g_val, factor)  # (D,)
+                        if psw is not None:
+                            contrib = Mul.apply(
+                                contrib, _as_const(float(psw[int(rows[j])]), dt)
+                            )
+                    else:
+                        # max mode: only dimensions where am[d] == j contribute
+                        mask_row = np.zeros(D, dtype=np.float64)
+                        if am is not None:
+                            for d in range(D):
+                                if int(am[d]) == j:
+                                    mask_row[d] = 1.0
+                        contrib = Mul.apply(
+                            g_val, _as_const(mask_row, dt)
+                        )
+                        if psw is not None:
+                            contrib = Mul.apply(
+                                contrib, _as_const(float(psw[int(rows[j])]), dt)
+                            )
+                    contrib_parts.append(Unsqueeze.apply(contrib, 0))  # (1, D)
+                    row_pos += 1
+
+            if row_pos == 0:
+                return [
+                    Tensor(np.zeros((n_emb, D), dtype=np.float64), dtype=grad_output.dtype),
+                    None,
+                ]
+
+            contrib_all = Cat.apply(*contrib_parts, 0)  # (total_rows, D)
+            scatter_t = _as_const(scatter, dt)
+            gw = MatMul.apply(scatter_t, contrib_all)  # (n_emb, D)
+            return [Tensor(gw, dtype=grad_output.dtype)]
+
         gw = np.zeros((n_emb, D), dtype=np.float64)
         for gi, rows in enumerate(groups):
             if rows.size == 0:
