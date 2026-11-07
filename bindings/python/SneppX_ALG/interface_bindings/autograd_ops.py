@@ -3696,7 +3696,6 @@ class MaxUnpoolFn(Function):
             dt = grad_output.dtype
             N, C = in_shape[0], in_shape[1]
             n_in = int(np.prod(in_shape[2:]))
-            # Build constant selection matrix: (N*C, n_out, n_in)
             sel = np.zeros((N * C, n_out, n_in), dtype=np.float64)
             idxf_flat = idxf.reshape(N * C, n_in)
             for k in range(N * C):
@@ -3705,13 +3704,14 @@ class MaxUnpoolFn(Function):
             sel_t = _as_const(sel, dt)
             g_reshaped = Reshape.apply(grad_output, (N, C, n_out))
             g_2d = Reshape.apply(g_reshaped, (N * C, n_out))
-            g_3d = Unsqueeze.apply(g_2d, 1)  # (N*C, 1, n_out)
-            gx_2d = MatMul.apply(g_3d, sel_t)  # (N*C, 1, n_in)
-            gx_2d = Squeeze.apply(gx_2d, 1)  # (N*C, n_in)
-            gx = Reshape.apply(gx_2d, in_shape)  # in_shape
+            g_3d = Unsqueeze.apply(g_2d, 1)
+            gx_2d = MatMul.apply(g_3d, sel_t)
+            gx_2d = Squeeze.apply(gx_2d, 1)
+            gx = Reshape.apply(gx_2d, in_shape)
             return [Tensor(gx, dtype=grad_output.dtype), None]
 
         gx = np.take_along_axis(g, idxf, axis=2).reshape(in_shape)
+        return [Tensor(gx, dtype=grad_output.dtype), None]
 
 
 class EmbeddingBagFn(Function):
