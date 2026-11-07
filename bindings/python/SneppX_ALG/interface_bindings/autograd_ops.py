@@ -4196,7 +4196,7 @@ class MaxPool2d(Function):
             grad = grad_acc
             if arr.ndim == 3:
                 grad = Squeeze.apply(grad, 0)
-            return [Tensor(grad, dtype=inp.dtype)]
+            return [grad]
 
         grad = np.zeros_like(arr)
         for i in range(0, arr.shape[-2] - k_h + 1, s_h):
