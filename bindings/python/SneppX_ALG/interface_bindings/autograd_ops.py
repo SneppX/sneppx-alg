@@ -1765,6 +1765,35 @@ class UnfoldFn(Function):
         hi = ctx.get_attr("hi")
         wi = ctx.get_attr("wi")
         N = g.shape[0]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const, Tensor, GetItem,
+            )
+            dt = grad_output.dtype
+            n_col_per_channel = kH * kW * L
+            n_pos = Hp * Wp
+            scatter = np.zeros((n_col_per_channel, n_pos), dtype=np.float64)
+            for o in range(L):
+                for kh in range(kH):
+                    for kw in range(kW):
+                        kpos = kh * kW + kw
+                        pos_flat = int(hi[o, kh, kw]) * Wp + int(wi[o, kh, kw])
+                        scatter[kpos * L + o, pos_flat] = 1.0
+            scatter_t = _as_const(scatter, dt)
+            gcol = Reshape.apply(grad_output, (N, C, n_col_per_channel))
+            gcol_2d = Reshape.apply(gcol, (N * C, n_col_per_channel))
+            gxp_2d = MatMul.apply(gcol_2d, scatter_t)
+            gxp = Reshape.apply(gxp_2d, (N, C, Hp, Wp))
+            if padH or padW:
+                gx = GetItem.apply(
+                    gxp,
+                    (slice(None), slice(None), slice(padH, padH + H), slice(padW, padW + W)),
+                )
+            else:
+                gx = gxp
+            return [Tensor(gx, dtype=grad_output.dtype)]
+
         gcol = g.reshape(N, C, kH * kW, L)
         gxp = np.zeros((N, C, Hp, Wp), dtype=np.float64)
         for o in range(L):
