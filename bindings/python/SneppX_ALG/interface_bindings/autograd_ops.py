@@ -1920,6 +1920,36 @@ class UpsampleBilinearFn(Function):
         wx1 = ctx.get_attr("wx1")
         g = np.asarray(grad_output.data, dtype=np.float64)
         N, C = g.shape[0], g.shape[1]
+        H, W = a.data.shape[-2], a.data.shape[-1]
+        Ho, Wo = g.shape[-2], g.shape[-1]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            lead = a.data.shape[:-2]
+            lead_size = int(np.prod(lead)) if lead else 1
+            n_in = H * W
+            n_out = Ho * Wo
+            # Build scatter matrix: (n_out, n_in) mapping output positions to input
+            # positions with bilinear weights
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            corners = [(y0, x0, wy0, wx0), (y0, x1, wy0, wx1),
+                       (y1, x0, wy1, wx0), (y1, x1, wy1, wx1)]
+            for o_flat in range(n_out):
+                ho, wo = np.unravel_index(o_flat, (Ho, Wo))
+                for yy, xx, wy, wx in corners:
+                    i = int(yy[ho])
+                    j = int(xx[wo])
+                    i_flat = i * W + j
+                    scatter[o_flat, i_flat] += float(wy[ho] * wx[wo])
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)  # (lead_size, n_in)
+            gi = Reshape.apply(gi_flat, a.data.shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
         gi = np.zeros(a.data.shape, dtype=np.float64)
         nidx = np.broadcast_to(np.arange(N)[:, None, None, None], g.shape)
         cidx = np.broadcast_to(np.arange(C)[None, :, None, None], g.shape)
