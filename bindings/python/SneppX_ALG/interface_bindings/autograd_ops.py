@@ -3722,6 +3722,55 @@ class MaxPool2d(Function):
         s_w = ctx.get_attr("s_w")
         arr = inp.data
         g = grad_output.data
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, Squeeze, _as_const,
+            )
+            dt = grad_output.dtype
+            x_graph = inp if arr.ndim == 4 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
+            N, C, H, W = arr.shape
+            Ho = (H - k_h) // s_h + 1
+            Wo = (W - k_w) // s_w + 1
+
+            grad_acc = None
+            for gi in range(Ho):
+                for gj in range(Wo):
+                    i = gi * s_h
+                    j = gj * s_w
+                    patch = GetItem.apply(
+                        x_graph,
+                        (slice(None), slice(None), slice(i, i + k_h), slice(j, j + k_w)),
+                    )  # (N,C,k_h,k_w)
+                    max_val = MaxDim.apply(MaxDim.apply(patch, -2, True), -1, True)  # (N,C,1,1)
+                    diff = Sub.apply(patch, max_val)
+                    mask = Add.apply(_as_const(1.0, dt), Sign.apply(diff))  # (N,C,k_h,k_w)
+                    g_val = GetItem.apply(
+                        g_graph, (slice(None), slice(None), gi, gj)
+                    )  # (N,C)
+                    for di in range(k_h):
+                        for dj in range(k_w):
+                            contrib_d = GetItem.apply(
+                                mask, (slice(None), slice(None), di, dj)
+                            )  # (N,C)
+                            contrib_d = Mul.apply(contrib_d, g_val)  # (N,C)
+                            mask_np = np.zeros((H, W), dtype=np.float64)
+                            mask_np[i + di, j + dj] = 1.0
+                            mask_t = _as_const(mask_np, dt)
+                            contrib_full = Mul.apply(
+                                Unsqueeze.apply(Unsqueeze.apply(contrib_d, -1), -1),
+                                mask_t,
+                            )  # (N,C,H,W)
+                            if grad_acc is None:
+                                grad_acc = contrib_full
+                            else:
+                                grad_acc = Add.apply(grad_acc, contrib_full)
+            grad = grad_acc
+            if arr.ndim == 3:
+                grad = Squeeze.apply(grad, 0)
+            return [Tensor(grad, dtype=inp.dtype)]
+
         grad = np.zeros_like(arr)
         for i in range(0, arr.shape[-2] - k_h + 1, s_h):
             for j in range(0, arr.shape[-1] - k_w + 1, s_w):
