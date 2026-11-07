@@ -4025,6 +4025,75 @@ class BilinearFn(Function):
         x2 = np.asarray(ctx.get_saved_tensor("input2").data, dtype=np.float64)
         w = np.asarray(ctx.get_saved_tensor("weight").data, dtype=np.float64)
         g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Mul, Add, Sum, Unsqueeze,
+                Stack, _as_const, Tensor,
+            )
+            dt = grad_output.dtype
+            B = g.shape[0]
+            K = g.shape[1]
+            I = x1.shape[1]
+            J = x2.shape[1]
+            x1_graph = ctx.get_saved_tensor("input1")
+            x2_graph = ctx.get_saved_tensor("input2")
+            weight_graph = ctx.get_saved_tensor("weight")
+            g_graph = grad_output
+
+            x2_T = Transpose.apply(x2_graph, -1, -2)  # (J, B)
+            x1_T = Transpose.apply(x1_graph, -1, -2)  # (I, B)
+
+            # gx1[b,i] = sum_{k,j} g[b,k] * w[k,i,j] * x2[b,j]
+            gx1_acc = None
+            for k in range(K):
+                w_k = GetItem.apply(weight_graph, (k, slice(None), slice(None)))  # (I, J)
+                tmp_k = MatMul.apply(w_k, x2_T)  # (I, B)
+                tmp_k_T = Transpose.apply(tmp_k, -1, -2)  # (B, I)
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                contrib = Mul.apply(g_k_2d, tmp_k_T)  # (B, I)
+                if gx1_acc is None:
+                    gx1_acc = contrib
+                else:
+                    gx1_acc = Add.apply(gx1_acc, contrib)
+            gx1 = gx1_acc
+
+            # gx2[b,j] = sum_{k,i} g[b,k] * w[k,i,j] * x1[b,i]
+            gx2_acc = None
+            for k in range(K):
+                w_k = GetItem.apply(weight_graph, (k, slice(None), slice(None)))  # (I, J)
+                w_k_T = Transpose.apply(w_k, -1, -2)  # (J, I)
+                tmp_k = MatMul.apply(w_k_T, x1_T)  # (J, B)
+                tmp_k_T = Transpose.apply(tmp_k, -1, -2)  # (B, J)
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                contrib = Mul.apply(g_k_2d, tmp_k_T)  # (B, J)
+                if gx2_acc is None:
+                    gx2_acc = contrib
+                else:
+                    gx2_acc = Add.apply(gx2_acc, contrib)
+            gx2 = gx2_acc
+
+            # gw[k,i,j] = sum_b g[b,k] * x1[b,i] * x2[b,j]
+            gw_parts = []
+            for k in range(K):
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                x2_scaled = Mul.apply(x2_graph, g_k_2d)  # (B, J)
+                gw_k = MatMul.apply(x1_T, x2_scaled)  # (I, B) @ (B, J) = (I, J)
+                gw_parts.append(Unsqueeze.apply(gw_k, 0))  # (1, I, J)
+            gw = Stack.apply(*gw_parts, 0)  # (K, I, J)
+
+            # gb[k] = sum_b g[b,k]
+            has_bias = ctx.get_attr("has_bias")
+            if has_bias:
+                gb = Sum.apply(g_graph, 0)  # (K,)
+            else:
+                gb = None
+
+            return [gx1, gx2, gw, gb]
+
         gx1 = np.einsum("bk,kij,bj->bi", g, w, x2)
         gx2 = np.einsum("bk,kij,bi->bj", g, w, x1)
         gw = np.einsum("bk,bi,bj->kij", g, x1, x2)
