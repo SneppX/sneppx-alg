@@ -1407,14 +1407,6 @@ class GLU(Function):
             from .autograd_ops import (
                 GetItem, Sigmoid, Mul, Sub, Cat, _as_const
             )
-            # Split grad_output into ga (first half) and gb (second half)
-            key_a = [slice(None)] * grad_output.ndim
-            key_a[dim] = slice(0, half)
-            ga_t = GetItem.apply(grad_output, tuple(key_a))
-            key_b = [slice(None)] * grad_output.ndim
-            key_b[dim] = slice(half, None)
-            gb_t = GetItem.apply(grad_output, tuple(key_b))
-
             # Split input into x_a and x_b
             key_xa = [slice(None)] * a.ndim
             key_xa[dim] = slice(0, half)
@@ -1423,11 +1415,13 @@ class GLU(Function):
             key_xb[dim] = slice(half, None)
             x_b_t = GetItem.apply(a, tuple(key_xb))
 
-            # sig = sigmoid(x_b); grad_xa = ga * sig; grad_xb = ga * x_a * sig * (1 - sig)
+            # sig = sigmoid(x_b); grad_xa = g * sig; grad_xb = g * x_a * sig * (1 - sig)
+            # grad_output has the same shape as the forward output (x_a * sig(x_b)),
+            # so use it in full for both gradient branches (do not split grad_output).
             sig_t = Sigmoid.apply(x_b_t)
             one_minus = Sub.apply(_as_const(1.0, grad_output.dtype), sig_t)
-            grad_xa = Mul.apply(ga_t, sig_t)
-            grad_xb = Mul.apply(Mul.apply(gb_t, x_a_t), Mul.apply(sig_t, one_minus))
+            grad_xa = Mul.apply(grad_output, sig_t)
+            grad_xb = Mul.apply(Mul.apply(grad_output, x_a_t), Mul.apply(sig_t, one_minus))
             return [Cat.apply(grad_xa, grad_xb, dim)]
 
         return [Tensor(cat(da, db), dtype=grad_output.dtype)]
