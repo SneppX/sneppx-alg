@@ -3312,7 +3312,7 @@ class ConvTranspose2d(Function):
                                 continue
                             g_slice = GetItem.apply(g_graph, (slice(None), slice(None), ah, aw))  # (N,C_out_g)
                             w_slice = GetItem.apply(kernel, (slice(None), slice(None), kh, kw))  # (C_in,C_out_g)
-                            contrib = MatMul.apply(g_slice, w_slice)  # (N,C_in)
+                            contrib = MatMul.apply(g_slice, Transpose.apply(w_slice, -1, -2))  # (N,C_in)
                             mask_np = np.zeros((H, W), dtype=np.float64)
                             mask_np[i, j] = 1.0
                             mask_t = _as_const(mask_np, dt)
