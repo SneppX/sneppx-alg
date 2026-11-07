@@ -17,7 +17,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings
 from SneppX_ALG.interface_bindings import crypto_sign as _cs
 from SneppX_ALG.interface_bindings import Dilithium, SphincsPlus
 
-_C = _cs._C
+import pytest
+
+try:
+    from SneppX_ALG import _SNEPPX_c as _ext
+    _C = getattr(_ext, "crypto", None)
+except ImportError:
+    _C = None
+
+pytestmark = pytest.mark.skipif(_C is None, reason="_SNEPPX_c extension not built")
 _DATA = os.path.join(os.path.dirname(__file__), "data", "kat_vectors.json")
 
 
