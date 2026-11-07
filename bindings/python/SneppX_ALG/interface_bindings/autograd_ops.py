@@ -229,7 +229,10 @@ class Mul(Function):
         if a is None or b is None:
             return _broadcast_grad(grad_output, None, None)
         if create_graph:
-            return [Mul.apply(grad_output, b), Mul.apply(grad_output, a)]
+            return [
+                _cg_broadcast(Mul.apply(grad_output, b), a.shape),
+                _cg_broadcast(Mul.apply(grad_output, a), b.shape),
+            ]
         ga = Tensor(
             _reduce_to_shape(grad_output.data * b.data, _get_attr(ctx, "a_shape")),
             dtype=grad_output.dtype,
