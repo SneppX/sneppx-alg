@@ -1868,6 +1868,42 @@ class FoldFn(Function):
         wi = ctx.get_attr("wi")
         cnt = ctx.get_attr("cnt")
         N = g.shape[0]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, Div, GetItem, Stack, Unsqueeze, _as_const, Tensor, Cat,
+            )
+            dt = grad_output.dtype
+            # Pad g to (N, C, Hp, Wp)
+            if padH or padW:
+                z_top = _as_const(np.zeros((N, C, padH, W), dtype=np.float64), dt)
+                z_bottom = _as_const(np.zeros((N, C, padH, W), dtype=np.float64), dt)
+                gf_h = Cat.apply(z_top, grad_output, z_bottom, 2)
+                z_left = _as_const(np.zeros((N, C, Hp, padW), dtype=np.float64), dt)
+                z_right = _as_const(np.zeros((N, C, Hp, padW), dtype=np.float64), dt)
+                gf = Cat.apply(z_left, gf_h, z_right, 3)
+            else:
+                gf = grad_output
+            cnt_t = _as_const(cnt, dt)
+            dacc = Div.apply(gf, cnt_t)  # (N, C, Hp, Wp)
+            # Build gcol: (N, C, kH*kW, L) by gathering dacc at (hi, wi) positions
+            gcol_parts = []
+            for kh in range(kH):
+                for kw in range(kW):
+                    o_cols = []
+                    for o in range(L):
+                        dacc_slice = GetItem.apply(
+                            dacc,
+                            (slice(None), slice(None), int(hi[o, kh, kw]), int(wi[o, kh, kw])),
+                        )  # (N, C)
+                        o_cols.append(dacc_slice)
+                    kw_col = Stack.apply(*o_cols, -1)  # (N, C, L)
+                    gcol_parts.append(kw_col)
+            gcol_parts = [Unsqueeze.apply(p, 2) for p in gcol_parts]  # (N, C, 1, L)
+            gcol = Stack.apply(*gcol_parts, 2)  # (N, C, kH*kW, L)
+            gcol = Reshape.apply(gcol, (N, C * kH * kW, L))
+            return [Tensor(gcol, dtype=grad_output.dtype)]
+
         gf = np.zeros((N, C, Hp, Wp), dtype=np.float64)
         if padH or padW:
             gf[:, :, padH : padH + H, padW : padW + W] = g
