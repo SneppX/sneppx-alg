@@ -325,24 +325,3 @@ def from_pretrained(
             f"{len(named)} params for {model_id}"
         )
     return model
-
-    params = dict(model.named_parameters())
-    loaded = 0
-    for hf_name, arr in state.items():
-        sneppx_name = _remap_hf_weight_name(hf_name, family)
-        if sneppx_name and sneppx_name in params:
-            param = params[sneppx_name]
-            if param.shape == arr.shape:
-                param.data = np.ascontiguousarray(arr, dtype=param.data.dtype)
-                loaded += 1
-            elif verbose:
-                print(
-                    f"  shape mismatch {sneppx_name}: "
-                    f"model {param.shape} vs weight {arr.shape}"
-                )
-    if verbose:
-        print(
-            f"[SNEPPX from_pretrained] loaded {loaded}/"
-            f"{len(params)} params from {model_id} ({family}/{size})"
-        )
-    return model
