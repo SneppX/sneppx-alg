@@ -1,4 +1,10 @@
-"""Tests for inference_server.py — FastAPI serving."""
+"""Tests for inference_server.py — FastAPI serving.
+
+NOTE (AGENTS.md): this file is listed under "NEVER attempt/run" (LLM/inference
+server tests) on this machine. This edit aligns the test with the intentional
+P1 contract: text generation endpoints require a registered tokenizer (422 if
+missing). Do not run this test here; validate via CPU-safe tests only.
+"""
 
 import json
 import pytest
@@ -13,6 +19,7 @@ except ImportError:
 
 from SneppX_ALG.interface_bindings import Tensor, Module
 from SneppX_ALG.interface_bindings.generation import GenerationConfig
+from SneppX_ALG.interface_bindings.tokenizer import Tokenizer
 from SneppX_ALG.interface_bindings.inference_server import (
     app,
     register_model,
@@ -22,7 +29,7 @@ from SneppX_ALG.interface_bindings.inference_server import (
 
 
 class DummyGenModel(Module):
-    def __init__(self, vocab_size=100):
+    def __init__(self, vocab_size=32000):
         super().__init__()
         self.vocab_size = vocab_size
 
@@ -43,7 +50,7 @@ class DummyGenModel(Module):
 
         logits = npp.random.randn(batch, seq, self.vocab_size).astype(npp.float32)
         logits[:, -1, :] = -100.0
-        logits[:, -1, 42] = 100.0
+        logits[:, -1, min(42, self.vocab_size - 1)] = 100.0
         return {
             "logits": Tensor(logits),
             "past_key_values": (
@@ -61,6 +68,7 @@ def setup():
     register_model(
         model_id="test-model",
         model=model,
+        tokenizer=Tokenizer(vocab_size=model.vocab_size),
         default_config=GenerationConfig(max_new_tokens=5, do_sample=False),
         meta={"vocab_size": model.vocab_size},
     )
