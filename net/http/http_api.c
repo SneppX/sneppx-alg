@@ -382,7 +382,9 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     char out[49152];
     snprintf(out, sizeof(out),
         "{\"generated_text\":\"%s\",\"token_ids\":%s,\"prompt_tokens\":%zu,"
-        "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld}",
+        "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld,"
+        "\"mode\":\"reference_scaffold\","
+        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference.\"}",
         esc_text, token_ids, prompt_len, gen_len,
         (int)(prompt_len + (size_t)gen_len), preset->id, (long)time(NULL));
     SNEPPX_http_response_set_json(resp, out);
@@ -446,7 +448,9 @@ static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* res
         "{\"id\":\"cmpl-%ld\",\"object\":\"text_completion\",\"created\":%ld,"
         "\"model\":\"%s\",\"choices\":[{\"text\":\"%s\",\"index\":0,"
         "\"logprobs\":null,\"finish_reason\":\"length\"}],"
-        "\"usage\":{\"prompt_tokens\":%zu,\"completion_tokens\":%d,\"total_tokens\":%d}}",
+        "\"usage\":{\"prompt_tokens\":%zu,\"completion_tokens\":%d,\"total_tokens\":%d},"
+        "\"mode\":\"reference_scaffold\","
+        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference.\"}",
         (long)time(NULL), (long)time(NULL), preset->id, esc_text,
         prompt_len, gen_len, (int)(prompt_len + (size_t)gen_len));
     SNEPPX_http_response_set_json(resp, out);

@@ -29,10 +29,12 @@ extern "C" {
  *   GET  /v1/health          - liveness + version + uptime
  *   GET  /v1/models          - list known model presets
  *   GET  /v1/models/{id}     - single model configuration
- *   POST /v1/generate        - generate text from a prompt
+ *   POST /v1/generate        - generate text from a prompt (reference scaffold)
  *
  * The generate handler parses the JSON request body and produces a
- * deterministic continuation (no LLM weights are required to serve).
+ * deterministic continuation (char-code/LCG reference path). It does NOT run
+ * a trained model forward pass or load weights; responses include mode/warning
+ * metadata so callers can detect scaffold behavior.
  */
 
 typedef struct SNEPPX_HttpApi SNEPPX_HttpApi;
