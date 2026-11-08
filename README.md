@@ -123,11 +123,10 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | FM (Fractal Memory) | 🟢 Stable | Memory-bank read/write + EWM combine (`algorithms/fm/core`) |
 | CUDA kernels | 🟡 Experimental | Real `.cu` files; compiled only with `-DSNEPPX_BUILD_CUDA=ON` (OFF by default) |
 | Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
-| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented, with deterministic self-generated regression vectors in `tests/python/test_crypto_kat.py`; **not yet validated against official NIST ACVP / FIPS 203-205 known-answer vectors** |
-| Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
-| Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock scan + invariant walk; bounded safety LTL (`G !deadlock`, `AG !deadlock`, `F deadlock`) — unsupported properties report "not verified" rather than false-positiving; state-space minimization is a stub |
-| Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
-| Model Zoo `from_pretrained()` | 🟡 Experimental | Resolves architecture configs + builds skeleton; weight download unwired |
+| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | C implementations with vendored NIST ACVP harness/tests (`tests/data/acvp`, `test_acvp_*`, `docs/pqc_kat.md`). SHA3-256 matches official byte-aligned KATs; ML-KEM/ML-DSA/SLH-DSA have keyGen/robustness coverage with documented byte-compat/interop gaps (round-3-era vs finalized FIPS 203/204/205 wire formats in places) — **not claimed as fully FIPS-validated**. |
+| Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash; verification is fail-closed when no trusted key is configured. Review/production hardening of key provisioning and rollout policy remains. |
+| Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock/invariant checks + bounded safety-oriented LTL handling; `model_minimize` performs reachable-state reduction (not full bisimulation minimization). Unsupported/full LTL properties are not claimed as verified. |
+| Model Zoo `from_pretrained()` | 🟡 Experimental | `model_zoo.from_pretrained` resolves known IDs to config/skeleton metadata (local-only, no downloads). Local HF snapshot weight loading is available via `hf_integration.from_pretrained(..., cache_dir=<local snapshot>)` with clear errors when files are missing. |
 | C HTTP REST API | 🟡 Experimental | `/v1/health`, `/v1/models` real; `/v1/generate` is a demo scaffold |
 | Distributed training | 🟡 Experimental | Gradient collectives in DDP/ZeRO/TP/PP/EP/grad-comm are wired to the NCCL binding (`net/distributed/nccl.c`), which falls back to a CPU path so single-process runs stay correct; control-plane pieces (checkpoint/elastic/heartbeat/sampler) remain scaffolded |
 | Python bindings | 🟢 Stable | NumPy-backed `Tensor`/`nn`/`Trainer`; C `_Tensor` reachable via pybind |
@@ -163,11 +162,11 @@ Ten layers wrap the pipeline:
 | S4 | Network security | 🟡 |
 | S5 | AI sanitizer (prompt filter, DP) | 🟡 |
 | S6 | Key vault & audit logging | 🟢 |
-| S7 | Signed updates | 🟡 (Ed25519 live; dev fallback pending removal) |
-| S8 | Formal verification | 🟡 (bounded safety LTL; full LTL pending) |
+| S7 | Signed updates | 🟡 (Ed25519 over BLAKE3; fail-closed without trusted key) |
+| S8 | Formal verification | 🟡 (bounded checks/reachable-state reduction; full LTL/bisimulation pending) |
 | S9 | Penetration testing / self-audit | 🟢 |
 
-> Honest note: several layers are substantial, and the project openly tracks what is still partial — **S7 signed-update verification and S8 formal verification are implemented but bounded** (Ed25519 with a dev-build fallback; safety-LTL properties only), and the post-quantum primitives are not yet FIPS-KAT validated. See `docs/security_layers.md` for the full mapping.
+> Honest note: several layers are substantial, and the project openly tracks what is still partial — **S7 signed-update verification and S8 formal verification are implemented but bounded** (Ed25519 with fail-closed behavior when no trusted key is configured; bounded/safety-oriented property checks and reachable-state reduction rather than full LTL/bisimulation), and ML-DSA/SLH-DSA C wire formats have documented KAT/interop gaps. See `docs/security_layers.md` and `docs/pqc_kat.md`.
 
 ## Model Zoo
 

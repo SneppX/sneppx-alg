@@ -131,9 +131,11 @@ ML-DSA keyGen/sigVer (FIPS 204), SLH-DSA keyGen/sigVer (FIPS 205). See
 
 **Components:**
 - Container security: OCI layer verification, manifest integrity, image signing
-- Signed update bundles: Ed25519-signed payloads with version rolling
-- Rollback protection: monotonic version counter preventing downgrade attacks
+- Signed update bundles: Ed25519-signed payloads (signature over BLAKE3 update hash) with version rolling
+- Rollback protection: monotonic version/min-version checks preventing downgrade attacks
 - Staged rollout: gradual distribution with health-check gating
+
+**Status notes:** `SNEPPX_update_verifier_check` is fail-closed when no trusted public key is configured and verifies Ed25519 signatures against the configured trusted key. Production key provisioning, trust distribution, and rollout policy remain review items (see maturity notes in README).
 
 **Files:** `security/updates/`
 
@@ -141,13 +143,15 @@ ML-DSA keyGen/sigVer (FIPS 204), SLH-DSA keyGen/sigVer (FIPS 205). See
 
 ## S8 — Formal Verification
 
-**Purpose:** Mathematical guarantees of critical algorithm properties.
+**Purpose:** Mathematical guarantees of critical algorithm properties (bounded/pragmatic).
 
 **Components:**
 - Model checking: bounded state-space exploration for critical paths
 - Invariant verification: pre/post-condition checking on memory safety
-- Symbolic execution: path constraint generation for NPE bytecode
-- Container breakout detection: state-machine-based rule engine
+- LTL/safety checks: bounded safety-oriented handling (e.g., deadlock-oriented properties); unsupported/full LTL formulas are not claimed as verified
+- State reduction: `SNEPPX_model_minimize` performs reachable-state reduction (not full bisimulation minimization)
+
+**Status notes:** S8 provides bounded, fail-closed-oriented checks for supported properties; it is not a complete formal proof system for all LTL/properties.
 
 **Files:** `security/formal/`
 

@@ -458,7 +458,10 @@ int SNEPPX_model_get_cycle(SNEPPXFormalModel* model, uint32_t* cycle, int max_le
 }
 
 /**
- * @brief Perform Model Minimize.
+ * @brief Reduce the model to reachable states (reachable-state reduction).
+ *
+ * Note: this is not full bisimulation minimization; it removes/prunes states not
+ * reachable from the initial state while preserving the explored reachable graph.
  *
  * @return 0 on success, -1 on error.
  */
