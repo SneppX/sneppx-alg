@@ -1,6 +1,6 @@
 from .. import _neural_engine_bridge
 
-__version__ = "0.9.5.937"
+__version__ = "1.5.2"
 
 # PyTorch-like high-level API
 from .pytorch_api import (

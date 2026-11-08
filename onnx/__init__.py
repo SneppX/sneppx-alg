@@ -9,7 +9,7 @@ Only ``numpy`` is required; the ``onnx``/``onnxruntime`` PyPI packages are
 optional and detected at runtime.
 """
 
-__version__ = "0.9.5.937"
+__version__ = "1.5.2"
 
 from .model import (
     Attribute,

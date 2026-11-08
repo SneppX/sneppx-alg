@@ -144,7 +144,7 @@ class ModelListResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "0.9.5.748"
+    version: str = "1.5.2"
     models_loaded: int = 0
     uptime_seconds: float = 0.0
 
