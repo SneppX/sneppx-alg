@@ -217,11 +217,18 @@ def _load_model(args):
     from .tokenizer import Tokenizer
     from .generation import GenerationConfig
 
-    logging.info(f"Loading model config from {args.model_config}")
-    with open(args.model_config) as f:
-        if args.model_config.endswith((".yaml", ".yml")):
-            import yaml
+    if not os.path.isfile(args.model_config):
+        raise FileNotFoundError(f"--model-config not found: {args.model_config}")
 
+    logging.info(f"Loading model config from {args.model_config}")
+    with open(args.model_config, encoding="utf-8") as f:
+        if args.model_config.endswith((".yaml", ".yml")):
+            try:
+                import yaml
+            except ImportError as e:
+                raise ImportError(
+                    "YAML model config requires PyYAML (`pip install pyyaml`)."
+                ) from e
             config = yaml.safe_load(f)
         else:
             config = json.load(f)
@@ -232,18 +239,27 @@ def _load_model(args):
     elif isinstance(config, dict):
         model = build_transformer_from_config(config)
     else:
-        logging.error("Invalid model config format")
-        return
+        raise ValueError(f"Invalid model config format in {args.model_config}: expected object/dict")
+
+    if args.checkpoint:
+        if not os.path.exists(args.checkpoint):
+            raise FileNotFoundError(f"--checkpoint not found: {args.checkpoint}")
+        logging.warning(
+            "Checkpoint loading is not wired in serve_cli; model is initialized from config only. "
+            "Load weights via a model-specific loader before serving."
+        )
 
     tokenizer = None
     if args.tokenizer:
+        if not os.path.exists(args.tokenizer):
+            raise FileNotFoundError(f"--tokenizer not found: {args.tokenizer}")
         tokenizer = Tokenizer(args.tokenizer)
 
     gen_config = GenerationConfig(
-        max_new_tokens=config.get("max_new_tokens", 256),
-        temperature=config.get("temperature", 1.0),
-        top_k=config.get("top_k", 0),
-        top_p=config.get("top_p", 1.0),
+        max_new_tokens=config.get("max_new_tokens", 256) if isinstance(config, dict) else 256,
+        temperature=config.get("temperature", 1.0) if isinstance(config, dict) else 1.0,
+        top_k=config.get("top_k", 0) if isinstance(config, dict) else 0,
+        top_p=config.get("top_p", 1.0) if isinstance(config, dict) else 1.0,
     )
 
     register_model(
@@ -253,7 +269,7 @@ def _load_model(args):
         default_config=gen_config,
         meta={"config": config, "checkpoint": args.checkpoint},
     )
-    logging.info(f"Model '{args.model_id}' loaded")
+    logging.info(f"Model '{args.model_id}' loaded (config-initialized; tokenizer={'yes' if tokenizer else 'no'})")
 
 
 def _run_server(args):

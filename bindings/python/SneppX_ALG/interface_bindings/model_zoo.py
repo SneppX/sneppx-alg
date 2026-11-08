@@ -1399,15 +1399,18 @@ def from_pretrained(
     force_download: bool = False,
     verbose: bool = True,
 ) -> dict:
-    """Load a pretrained model configuration.
+    """Resolve a known model ID to a SneppX config/architecture skeleton (local-only metadata).
 
-    This is a simplified version that returns a config dict. In production,
-    this would download weights from HuggingFace and build the full model.
+    This does **not** download weights or contact HuggingFace. It returns a config
+    dict produced by :func:`build_model_from_config`. To load local HF-format
+    weights from a snapshot directory, use
+    :func:`SneppX_ALG.interface_bindings.hf_integration.from_pretrained` with
+    ``cache_dir=<local snapshot path>``.
 
     Args:
         model_id: HF-style model ID (e.g., 'meta-llama/Llama-2-7b-hf')
-        cache_dir: Cache directory for downloaded files
-        force_download: Re-download even if cached
+        cache_dir: Unused (retained for API compatibility; local-only).
+        force_download: Unused (local-only).
         verbose: Print progress
 
     Returns:
@@ -1441,7 +1444,7 @@ def from_pretrained(
 
     config = get_model_config(family, size)
     if verbose:
-        print(f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size}")
+        print(f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size} (config only; no weights downloaded)")
         print(
             f"  hidden_size={config['hidden_size']}, "
             f"layers={config['num_hidden_layers']}, "
