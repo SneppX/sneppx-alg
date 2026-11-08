@@ -116,21 +116,20 @@ def load_hf_model(model: Module, model_id: str, cache_dir: Optional[str] = None)
             f"~/.cache/huggingface/hub/models--{model_id.replace('/', '--')}/snapshots"
         )
     if not os.path.exists(cache_dir):
-        print(f"Cache directory not found: {cache_dir}")
-        print("Download the model first using huggingface_hub:")
-        print(f"  from huggingface_hub import snapshot_download")
-        print(f"  snapshot_download('{model_id}')")
-        return
+        raise FileNotFoundError(
+            f"Local snapshot cache not found: {cache_dir}. "
+            "This loader is local-only and does not download models. "
+            "Provide cache_dir pointing to a directory containing weight files (.safetensors/.bin)."
+        )
     snapshots = os.listdir(cache_dir)
     if not snapshots:
-        return
+        raise FileNotFoundError(f"No snapshots found in local cache: {cache_dir}")
     snapshot = os.path.join(cache_dir, snapshots[0])
     bin_files = [
         f for f in os.listdir(snapshot) if f.endswith((".bin", ".safetensors"))
     ]
     if not bin_files:
-        print(f"No weight files found in {snapshot}")
-        return
+        raise FileNotFoundError(f"No weight files (.safetensors/.bin) found in {snapshot}")
     state = {}
     for fname in bin_files:
         path = os.path.join(snapshot, fname)
@@ -142,7 +141,7 @@ def load_hf_model(model: Module, model_id: str, cache_dir: Optional[str] = None)
         except Exception as e:
             print(f"  Warning: could not load {fname}: {e}")
     if not state:
-        return
+        raise FileNotFoundError(f"No loadable weights in {snapshot}")
     hf_to_sneppx = {}
     for name, _ in _named_parameters(model):
         hf_name = name.replace("_modules.", "").replace("_parameters.", "")
@@ -234,26 +233,20 @@ def _resolve_family_size(model_id: str):
 
 
 def _find_snapshot(model_id: str, cache_dir: Optional[str]) -> Optional[str]:
-    """Locate an existing snapshot directory, downloading it if possible.
+    """Locate an existing local snapshot directory (local-only; never downloads).
 
     Returns the snapshot path or None if no local weights are available.
     """
-    if cache_dir is None:
-        cache_dir = os.path.expanduser(
-            f"~/.cache/huggingface/hub/models--{model_id.replace('/', '--')}/snapshots"
-        )
-    if os.path.isdir(cache_dir) and os.listdir(cache_dir):
-        return cache_dir if os.listdir(cache_dir)[0] else cache_dir
-
-    # Try to download via huggingface_hub if available.
-    try:
-        from huggingface_hub import snapshot_download  # type: ignore
-
-        local = snapshot_download(model_id, cache_dir=cache_dir)
-        return local
-    except Exception as e:  # network/unavailable — fall back to None
-        print(f"[SNEPPX from_pretrained] could not download '{model_id}': {e}")
+    if cache_dir is not None:
+        if os.path.isdir(cache_dir) and os.listdir(cache_dir):
+            return cache_dir
         return None
+    cache_dir = os.path.expanduser(
+        f"~/.cache/huggingface/hub/models--{model_id.replace('/', '--')}/snapshots"
+    )
+    if os.path.isdir(cache_dir) and os.listdir(cache_dir):
+        return cache_dir
+    return None
 
 
 def from_pretrained(
@@ -262,21 +255,25 @@ def from_pretrained(
     force_download: bool = False,
     verbose: bool = True,
 ):
-    """Load a pretrained LLM from HuggingFace and build a SneppX model.
+    """Load a pretrained LLM from a local HuggingFace-format snapshot (local-only).
 
     Supported families: LLaMA-2/3, Mistral, Qwen2, DeepSeek-V2.
+
+    This function never downloads models. Provide ``cache_dir`` pointing to a
+    local snapshot directory containing ``.safetensors``/``.bin`` weight files
+    (e.g. a HuggingFace cache snapshot path).
 
     Args:
         model_id: HF-style model ID (e.g. ``meta-llama/Llama-2-7b-hf``).
         cache_dir: Local snapshot/cache directory. If omitted, the canonical
-            HuggingFace cache location is used and a download is attempted.
-        force_download: Re-download even if a local snapshot exists.
+            HuggingFace local cache location is checked only (no download).
+        force_download: Ignored (local-only; retained for API compatibility).
         verbose: Print progress.
 
     Returns:
         A :class:`~SneppX_ALG.interface_bindings.nn.Transformer` with weights
-        loaded from the HF checkpoint (or an uninitialized model if no weights
-        could be located).
+        loaded from the local checkpoint. Raises ``FileNotFoundError`` if no
+        local snapshot/weights are found.
     """
     from .model_zoo import (
         get_model_config,
@@ -288,16 +285,13 @@ def from_pretrained(
     config = get_model_config(family, size)
     model = build_transformer_from_config(config)
 
-    if force_download:
-        cache_dir = None
     snapshot = _find_snapshot(model_id, cache_dir)
-    if snapshot is None or not os.listdir(snapshot):
-        if verbose:
-            print(
-                f"[SNEPPX from_pretrained] no local weights for '{model_id}'; "
-                "returning uninitialized model."
-            )
-        return model
+    if snapshot is None or not os.path.isdir(snapshot) or not os.listdir(snapshot):
+        raise FileNotFoundError(
+            f"[SNEPPX from_pretrained] no local snapshot/weights for '{model_id}'. "
+            "This loader is local-only and does not download models. "
+            "Pass cache_dir=<local snapshot dir with .safetensors/.bin files>."
+        )
 
     # Gather weights from every safetensors/bin file in the snapshot.
     state: Dict[str, np.ndarray] = {}
@@ -313,9 +307,24 @@ def from_pretrained(
                 print(f"  Warning: could not load {fname}: {e}")
 
     if not state:
-        if verbose:
-            print(f"[SNEPPX from_pretrained] no weight files in {snapshot}")
-        return model
+        raise FileNotFoundError(f"[SNEPPX from_pretrained] no loadable weight files in {snapshot}")
+
+    # Remap HF tensor names -> SneppX names and copy.
+    named = dict(_named_parameters(model))
+    loaded = 0
+    for hf_name, arr in state.items():
+        mapped = _remap_hf_weight_name(hf_name, family)
+        if mapped and mapped in named:
+            param = named[mapped]
+            if param.shape == arr.shape:
+                param.data = np.ascontiguousarray(arr, dtype=np.float32)
+                loaded += 1
+    if verbose:
+        print(
+            f"[SNEPPX from_pretrained] loaded {loaded}/"
+            f"{len(named)} params for {model_id}"
+        )
+    return model
 
     params = dict(model.named_parameters())
     loaded = 0
