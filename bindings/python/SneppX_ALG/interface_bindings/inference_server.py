@@ -229,8 +229,25 @@ def list_models() -> List[ModelEntry]:
     return list(_models.values())
 
 
-def _count_tokens(token_ids: List[int]) -> int:
-    return len(token_ids)
+def _encode_prompt(entry: "ModelEntry", prompt: str) -> List[int]:
+    """Encode prompt to token IDs. Requires a tokenizer for real text generation."""
+    if entry.tokenizer:
+        return entry.tokenizer.encode(prompt)
+    raise HTTPException(
+        422,
+        "No tokenizer registered for this model. Register a tokenizer to encode text prompts, "
+        "or provide pre-tokenized input via a custom integration.",
+    )
+
+
+def _decode_tokens(entry: "ModelEntry", token_ids: List[int]) -> str:
+    """Decode token IDs to text. Requires a tokenizer."""
+    if entry.tokenizer:
+        return entry.tokenizer.decode(token_ids)
+    raise HTTPException(
+        422,
+        "No tokenizer registered for this model. Register a tokenizer to decode generated tokens.",
+    )
 
 
 def _make_generation_config(req: GenerateRequest) -> GenerationConfig:
@@ -349,7 +366,7 @@ def _key_hash(raw_key: str) -> str:
 
 app = FastAPI(
     title="SneppX Inference API",
-    version="1.1.1",
+    version="1.5.2",
 )
 
 app.include_router(auth_router)
@@ -392,7 +409,7 @@ async def usage_middleware(request: callable, call_next):
 async def health_endpoint():
     return HealthResponse(
         status="ok",
-        version="1.1.1",
+        version="1.5.2",
         models_loaded=len(_models),
         uptime_seconds=time.time() - _start_time,
     )
@@ -490,10 +507,7 @@ async def generate_endpoint(req: GenerateRequest):
     entry = get_model(req.model)
     gen_config = _make_generation_config(req)
 
-    if entry.tokenizer:
-        input_ids = entry.tokenizer.encode(prompt_to_use)
-    else:
-        input_ids = [ord(c) % entry.model.vocab_size for c in prompt_to_use]
+    input_ids = _encode_prompt(entry, prompt_to_use)
 
     result = generate(
         entry.model,
@@ -504,10 +518,7 @@ async def generate_endpoint(req: GenerateRequest):
     prompt_len = len(input_ids)
     completion_len = len(output_ids) - prompt_len
 
-    if entry.tokenizer:
-        generated_text = entry.tokenizer.decode(output_ids[prompt_len:])
-    else:
-        generated_text = "".join(chr(t % 128) for t in output_ids[prompt_len:])
+    generated_text = _decode_tokens(entry, output_ids[prompt_len:])
 
     verify_status, verified_text = _verify_output(generated_text)
     if verify_status == "blocked":
@@ -545,10 +556,7 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
 
     all_prompts = []
     for prompt in sanitized_prompts:
-        if entry.tokenizer:
-            ids = entry.tokenizer.encode(prompt)
-        else:
-            ids = [ord(c) % entry.model.vocab_size for c in prompt]
+        ids = _encode_prompt(entry, prompt)
         all_prompts.append(np.array(ids, dtype=np.int64))
 
     result = batch_generate(entry.model, all_prompts, generation_config=gen_config)
@@ -558,10 +566,7 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
         output_ids = outputs[i].tolist() if outputs.ndim > 1 else outputs.tolist()
         prompt_len = len(all_prompts[i])
         completion_len = len(output_ids) - prompt_len
-        if entry.tokenizer:
-            generated_text = entry.tokenizer.decode(output_ids[prompt_len:])
-        else:
-            generated_text = "".join(chr(t % 128) for t in output_ids[prompt_len:])
+        generated_text = _decode_tokens(entry, output_ids[prompt_len:])
         results_list.append(
             GenerateResponse(
                 generated_text=generated_text,
@@ -593,10 +598,7 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     scheduler = get_scheduler()
     req_ids = []
     for prompt in sanitized_prompts:
-        if entry.tokenizer:
-            ids = entry.tokenizer.encode(prompt)
-        else:
-            ids = [ord(c) % entry.model.vocab_size for c in prompt]
+        ids = _encode_prompt(entry, prompt)
         req_id = scheduler.submit(
             prompt=prompt, prompt_tokens=ids,
             max_new_tokens=req.max_new_tokens,
@@ -615,9 +617,7 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
         return output_ids, None
 
     def decode_fn(token_ids):
-        if entry.tokenizer:
-            return entry.tokenizer.decode(token_ids)
-        return "".join(chr(t % 128) for t in token_ids)
+        return _decode_tokens(entry, token_ids)
 
     for batch_result in continuous_generate_loop(model_fn, scheduler, decode_fn, max_steps=req.max_new_tokens * len(req.prompts)):
         pass
@@ -683,10 +683,7 @@ async def generate_stream_endpoint(req: GenerateRequest):
     entry = get_model(req.model)
     gen_config = _make_generation_config(req)
 
-    if entry.tokenizer:
-        input_ids = entry.tokenizer.encode(prompt_to_use)
-    else:
-        input_ids = [ord(c) % entry.model.vocab_size for c in prompt_to_use]
+    input_ids = _encode_prompt(entry, prompt_to_use)
 
     async def event_stream() -> AsyncGenerator[str, None]:
         token_buffer = []
@@ -767,7 +764,7 @@ async def chat_completions(req: ChatCompletionRequest):
     if entry.tokenizer:
         input_ids = entry.tokenizer.encode(prompt_to_use)
     else:
-        input_ids = [ord(c) % entry.model.vocab_size for c in prompt_to_use]
+        input_ids = _encode_prompt(entry, prompt_to_use)
 
     if req.stream:
         return await _chat_stream(entry, prompt_to_use, input_ids, gen_config)
@@ -777,10 +774,7 @@ async def chat_completions(req: ChatCompletionRequest):
     prompt_len = len(input_ids)
     completion_len = len(output_ids) - prompt_len
 
-    if entry.tokenizer:
-        content = entry.tokenizer.decode(output_ids[prompt_len:])
-    else:
-        content = ",".join(str(t) for t in output_ids[prompt_len:])
+    content = _decode_tokens(entry, output_ids[prompt_len:])
 
     verify_status, verified_content = _verify_output(content)
     if verify_status == "blocked":
@@ -834,7 +828,7 @@ async def _chat_stream(entry, prompt: str, input_ids, gen_config):
 
         prompt_len = len(input_ids)
         for i, tid in enumerate(token_buffer):
-            token_text = entry.tokenizer.decode([tid]) if entry.tokenizer else str(tid)
+            token_text = _decode_tokens(entry, [tid])
             chunk = {
                 "choices": [
                     {
