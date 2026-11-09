@@ -4,6 +4,7 @@ file(GLOB_RECURSE SECURITY_TEST_SRCS ../tests/security/*.c)
 
 # Tests excluded because they reference APIs that were never implemented
 set(EXCLUDED_TESTS
+    test_secure_allocator
 )
 
 # --- GoogleTest discovery -------------------------------------------------

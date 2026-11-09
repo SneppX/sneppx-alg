@@ -255,9 +255,11 @@ static int health_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, vo
     SNEPPX_HttpApi* api = (SNEPPX_HttpApi*)userdata;
     long uptime = (long)(time(NULL) - api->start_time);
     if (uptime < 0) uptime = 0;
-    char body[1024];
+    char body[1280];
     snprintf(body, sizeof(body),
-        "{\"status\":\"ok\",\"version\":\"%s\",\"models_loaded\":%d,\"uptime_seconds\":%ld}",
+        "{\"status\":\"ok\",\"version\":\"%s\",\"models_loaded\":%d,\"uptime_seconds\":%ld,"
+        "\"runtime\":\"c_reference_no_weights\",\"generation_mode\":\"reference_scaffold\","
+        "\"note\":\"C HTTP generation is a deterministic reference path (no trained weights/forward). Use sneppx-serve (Python) with a tokenizer+model for real generation.\"}",
         api->version, NUM_PRESETS, uptime);
     SNEPPX_http_response_set_json(resp, body);
     return 0;
@@ -383,8 +385,8 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     snprintf(out, sizeof(out),
         "{\"generated_text\":\"%s\",\"token_ids\":%s,\"prompt_tokens\":%zu,"
         "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld,"
-        "\"mode\":\"reference_scaffold\","
-        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference.\"}",
+        "\"mode\":\"reference_scaffold\",\"runtime\":\"c_reference_no_weights\","
+        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference. Use Python inference_server with a registered tokenizer+model for real generation.\"}",
         esc_text, token_ids, prompt_len, gen_len,
         (int)(prompt_len + (size_t)gen_len), preset->id, (long)time(NULL));
     SNEPPX_http_response_set_json(resp, out);
@@ -449,7 +451,7 @@ static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* res
         "\"model\":\"%s\",\"choices\":[{\"text\":\"%s\",\"index\":0,"
         "\"logprobs\":null,\"finish_reason\":\"length\"}],"
         "\"usage\":{\"prompt_tokens\":%zu,\"completion_tokens\":%d,\"total_tokens\":%d},"
-        "\"mode\":\"reference_scaffold\","
+        "\"mode\":\"reference_scaffold\",\"runtime\":\"c_reference_no_weights\","
         "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference.\"}",
         (long)time(NULL), (long)time(NULL), preset->id, esc_text,
         prompt_len, gen_len, (int)(prompt_len + (size_t)gen_len));

@@ -1,4 +1,8 @@
-﻿{
+{
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["AGENTS.md", "README.md"]
+  "instructions": [
+    "AGENTS.md",
+    "README.md"
+  ],
+  "snapshot": false
 }

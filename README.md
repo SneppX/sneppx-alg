@@ -170,15 +170,21 @@ Ten layers wrap the pipeline:
 
 ## Model Zoo
 
-The model zoo provides architecture presets and a `from_pretrained()` entry point.
+The model zoo provides architecture presets and local-only loading helpers.
 
 - **Supported families (config presets):** LLaMA 2 / 3, Mistral, Qwen 2, DeepSeek V2 — resolved via `SNEPPX_llm_config_from_name` (`algorithms/model_zoo/`).
-- **`from_pretrained()`** (`bindings/python/.../model_zoo.py`): maps a model id → (family, size), builds the architecture skeleton, and returns a config. End-to-end pretrained-weight download/conversion is **in progress**; the safetensors / PyTorch `.bin` parsers in `hf_integration.py` are real but not yet wired into the loader.
+- **`model_zoo.from_pretrained()`** (`bindings/python/.../model_zoo.py`): maps a known model id → (family, size) and returns **config/skeleton metadata only**. It does **not** download weights or contact HuggingFace.
+- **`hf_integration.from_pretrained()`** (`bindings/python/.../hf_integration.py`): loads from a **local** HuggingFace-format snapshot (`.safetensors`/`.bin`) when `cache_dir` points to that snapshot; raises clear `FileNotFoundError` if local weights are missing. **No network downloads.**
 
 ```python
-# Illustrative — resolves config + builds skeleton (weights download in progress)
+# Config/skeleton metadata only (no weights download)
 from SneppX_ALG.interface_bindings.model_zoo import from_pretrained
-model = from_pretrained("meta-llama/Llama-3-8b")
+info = from_pretrained("meta-llama/Llama-3-8b", verbose=False)
+print(info["family"], info["size"])
+
+# Load local HF snapshot weights (local-only; no download)
+from SneppX_ALG.interface_bindings.hf_integration import from_pretrained as hf_from_pretrained
+# model = hf_from_pretrained("meta-llama/Llama-3-8b", cache_dir=r"C:\path\to\local\snapshot")
 ```
 
 ## C HTTP REST API
@@ -190,7 +196,8 @@ A real cross-platform socket server (`net/http/http_server.c`) with a route tabl
 | `GET /v1/health` | 🟢 | Liveness check |
 | `GET /v1/models` | 🟢 | List preset model configs |
 | `GET /v1/models/{id}` | 🟢 | Fetch one model config |
-| `POST /v1/generate` | 🟡 | **Demo scaffold** — deterministic token generator, no model forward pass yet |
+| `POST /v1/generate` | 🟡 | **Reference scaffold** — deterministic char-code/LCG generator, **no trained model weights/forward pass**. JSON includes `mode:"reference_scaffold"` + warning. Not for production inference. |
+| `POST /v1/completions` | 🟡 | **Reference scaffold** — same deterministic reference path; includes `mode`/`warning` metadata. |
 
 Run the demo:
 

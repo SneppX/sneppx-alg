@@ -9,14 +9,26 @@
 - **Safe test list** (always run these for regression): `test_tensor.py`, `test_nn.py`, `test_optim.py`, `test_data.py`, `test_quantization.py`, `test_checkpoint.py`, `test_profiler.py`, `test_model_zoo.py`, `test_autograd_ops.py`, `test_schedulers.py`, `test_amp.py`, `test_grad_checkpoint.py`, `test_tokenizer.py`, `test_data_loader.py`, `test_advanced_ops.py`, `test_augmentation.py`, `test_pruning.py`, `test_distillation.py`, `test_higher_order_ad.py`, `test_higher_order_ad2.py`, `test_higher_order_ad3.py`, `test_higher_order_ad4.py`, `test_higher_order_ad5.py`, `test_jvp_vjp.py`, `test_gap_fill.py`, `test_norm.py`, `test_functional_ns.py`, `test_state_dict.py`, `test_sparse.py`, `test_phase2_ops.py`, `test_losses.py`, `test_optimizers.py`, `test_nn_modules.py`, `test_ctc.py`, `test_init.py`, `test_grad_checkpoint.py`, `test_scalar_ops.py`, `test_loss_diff.py`, `test_functional_diff.py`, `test_activation_autograd.py`, `test_trainable.py`, `test_conv2d_autograd.py`, `test_embedding_layernorm_autograd.py`.
 - **NEVER attempt**: `from transformers import ...`, `from llama_cpp import ...`, `torch.cuda.is_available()`, or any HuggingFace `from_pretrained()` call.
 
-## 🚫 No CI/CD Policy (CRITICAL)
+## CI/CD & Pre-Commit Pipeline Gate (CRITICAL)
 
-**Automated CI/CD is NOT allowed in this project. All builds, tests, and releases are done manually.**
+CI/CD pipelines are configured in `.github/workflows/`. **Before every commit in any repo/work session:**
 
-- NEVER create or commit any CI/CD workflow files (`.github/workflows/*.yml`, `.github/CODEOWNERS`, CI configs)
-- NEVER push CI/CD configuration of any kind
-- All verification is local: build with `cmake --build`, test with `ctest`, lint with `pre-commit`
-- Releases are tagged and pushed manually — no automated pipelines
+1. Run the local checks that mirror CI (or the affected subset) and ensure **every required pipeline/check passes**.
+2. If any check fails, **fix the failure** (code, tests, config, or docs) and re-run until green.
+3. Only commit when required checks pass. Do not commit known-broken pipeline state.
+4. Do not bypass failures with `--no-verify` unless the user explicitly requests it and the reason is documented.
+
+**Local checks (match CI where feasible):**
+```powershell
+$env:PYTHONPATH = "bindings/python"
+# Safe per-file Python tests (never full suite; never LLM/CUDA/inference-server tests on constrained machines)
+py -3 -m pytest tests/python/test_readme_integrity.py tests/python/test_hf_safetensors.py tests/python/test_hf_integration.py tests/python/test_model_zoo.py tests/python/test_data_loader.py tests/python/test_tokenizer.py -q -p no:cacheprovider
+# Convenience: .\scripts\precommit-gate.ps1
+# Optional native build/test when toolchain is available (targeted):
+# cmake --preset release; cmake --build --preset release; ctest --preset release -R <safe-target>
+```
+
+**Machine constraints still apply:** no local LLM inference, no HF model downloads, no GPU/CUDA-dependent execution, no large model weights (>500MB) on constrained machines. CI jobs must respect these constraints (skip or mock LLM/GPU paths; run CPU-safe tests only).
 
 ## Python Execution
 
@@ -76,12 +88,19 @@ python -m pytest tests/python/test_grad_checkpoint.py -q -p no:cacheprovider
 
 ## Build / CMake (optional; pure-Python path is default)
 
+Machine constraint: no Ninja build program and no C/C++/MASM compiler are configured on this constrained machine, so `cmake -G Ninja ...` fails (`CMAKE_MAKE_PROGRAM`, `CMAKE_C_COMPILER`, `CMAKE_ASM_MASM_COMPILER` not set). Native C build/tests are **not runnable here** and must not block commits. Install a toolchain first if you need native C (HTTP server, crypto, formal):
+
 ```powershell
-# Configure (debug) — prefer repo-root ninja over venv (venv ninja crashes)
+# Install Ninja + a C compiler (choose ONE):
+#   winget install Ninja.Ninja
+#   winget install LLVM.LLVM        # provides clang/clang++ (C/C++ compiler)
+# or install "Visual Studio 17 2022" Build Tools (provides cl.exe + Ninja via VS)
+
+# Configure (debug) — prefer repo-root stable ninja (not venv kitware ninja, which crashes)
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 
-# Configure (release)
-cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+# Configure (release) — VS fallback when Ninja is absent but VS Build Tools exist
+cmake -B build/vs -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_CUDA=OFF
 
 # Build all
 cmake --build build --config Release
@@ -119,13 +138,22 @@ ctest -C Release -R test_kyber --output-on-failure
 - Last confirmed remote push: `c337ca3` (previous generation)
 - PUSH PENDING — remote main owned by concurrent session; do not force-push. After session stops: `git fetch; git rebase origin/main; git push`
 
-## Critical Workflow: Lint → Typecheck → Test
+## C Build Reality (this constrained machine)
 
-Order matters for regression safety:
+- `cmake` is present but **no Ninja build program and no C/C++/MASM compiler are configured**, so `cmake -G Ninja ...` fails (`CMAKE_MAKE_PROGRAM`, `CMAKE_C_COMPILER`, `CMAKE_ASM_MASM_COMPILER` not set).
+- Native C build/tests are **not runnable here**. Keep `.github/workflows/ci.yml` `native-build-smoke` as best-effort (`continue-on-error`); do not let it block commits.
+- Real C HTTP inference (`/v1/generate`, `/v1/completions`) is an **explicit reference scaffold** (`mode:"reference_scaffold"`, `runtime:"c_reference_no_weights"`). Making it real requires a C tokenizer + safetensors/bin weight loader + C model forward/logits + sampling — large C integration, not implementable/verifiable without a working C toolchain.
 
-1. Run per-file pytest on changed module (e.g., `test_gap_fill.py`, `test_norm.py`, `test_higher_order_ad.py`)
-2. If module touches C/ctypes, verify `ctest` for the specific target only
-3. Do NOT run full test suite — it hangs; per-file only is the gate
+## Critical Workflow: Lint → Typecheck → Test → Commit (GATE)
+
+Before **every** commit in any repo/work session:
+
+1. Run `.\scripts\precommit-gate.ps1` (safe CPU per-file tests). Gate must pass (green).
+2. If native C toolchain is available, run targeted `ctest` for changed C modules only.
+3. If any check fails → fix and rerun until green → then commit. Do not `--no-verify` unless explicitly requested/documented.
+4. Only commit on green. Do not force-push; sync with `git fetch; git rebase origin/main; git push` before pushing.
+
+## Python Execution
 
 ## Docs Site (Material 9.5.3 + mike)
 

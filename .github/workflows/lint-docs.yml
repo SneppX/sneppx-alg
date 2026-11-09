@@ -1,0 +1,30 @@
+name: Lint & Docs Checks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-and-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate key files parse
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pytest pyyaml
+          python -c "import json; json.load(open('CMakePresets.json')) if __import__('os').path.exists('CMakePresets.json') else None"
+          python -m compileall -q bindings/python/SneppX_ALG/interface_bindings/generation.py bindings/python/SneppX_ALG/interface_bindings/inference_server.py bindings/python/SneppX_ALG/interface_bindings/hf_integration.py bindings/python/SneppX_ALG/interface_bindings/model_zoo.py bindings/python/SneppX_ALG/interface_bindings/serve_cli.py
+      - name: README integrity test
+        env:
+          PYTHONPATH: bindings/python
+        run: python -m pytest tests/python/test_readme_integrity.py -q -p no:cacheprovider

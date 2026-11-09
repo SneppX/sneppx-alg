@@ -30,9 +30,13 @@ All notable changes to SNEPPX-Algo.
 
 ## [Unreleased]
 
-- distributed_sampler: deterministic splitmix64 shuffle (was srand/rand)
-- Higher-order AD (create_graph) extended across autograd ops + JVP/VJP helpers
-- nn gap-fill: InstanceNorm/BatchNorm3d, Conv3d, ConvTranspose*, Unfold/Fold, Upsample, sparse tensors, F.* namespace
+- **P0 version alignment:** CMake, Python bindings `__version__`, inference server health/app version, ONNX, README/bindings badges aligned to 1.5.2.
+- **P1 Python inference:** `inference_server` requires a registered tokenizer for text encode/decode (HTTP 422 with clear message); removed silent `ord/chr` char-code fallbacks. `serve_cli` validates local config/tokenizer/checkpoint paths and reports checkpoint-loading status clearly.
+- **P2 HF/model zoo (local-only):** `hf_integration` loaders no longer call `huggingface_hub.snapshot_download` and raise clear `FileNotFoundError` for missing local snapshots (`cache_dir=<local .safetensors/.bin dir>`). `model_zoo.from_pretrained` documented as config/skeleton metadata only (no weights download/network).
+- **P3 PQC/S7/S8 truthfulness:** docs/README aligned to implementation — PQC ACVP harness/tests with documented FIPS wire/interop gaps (not overclaimed); S7 Ed25519 over BLAKE3 fail-closed without trusted key; S8 `model_minimize` clarified as reachable-state reduction (not full bisimulation), bounded/safety-oriented LTL scope documented.
+- **P4 C HTTP truthfulness (edit-only, no C build here):** `/v1/generate` and `/v1/completions` responses include `mode:"reference_scaffold"` + warning (deterministic char-code/LCG reference, no trained weights/forward pass). Demo version aligned to 1.5.2.
+- **Tests (edited, not run per AGENTS):** `tests/python/test_inference_server.py` aligned with tokenizer-required contract.
+- **Validation (CPU-safe):** `test_readme_integrity`, `test_hf_safetensors`, `test_hf_integration`, `test_model_zoo`, `test_data_loader` passed in-session; ACVP/crypto KAT suites skip-safe without built `_SNEPPX_c` extension. LLM/CUDA/inference-server tests not run (AGENTS constraints).
 
 ### Build
 - Standardized on the **Ninja** generator across all CMake presets

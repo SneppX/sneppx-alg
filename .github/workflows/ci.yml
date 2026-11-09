@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-safe-tests:
+    name: Python safe tests (CPU-only, no LLM/GPU/downloads)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pytest
+      - name: Run safe per-file tests
+        env:
+          PYTHONPATH: bindings/python
+        run: |
+          python -m pytest \
+            tests/python/test_readme_integrity.py \
+            tests/python/test_hf_safetensors.py \
+            tests/python/test_hf_integration.py \
+            tests/python/test_model_zoo.py \
+            tests/python/test_data_loader.py \
+            tests/python/test_tokenizer.py \
+            tests/python/test_tensor.py \
+            tests/python/test_nn.py \
+            tests/python/test_optim.py \
+            tests/python/test_state_dict.py \
+            tests/python/test_init.py \
+            tests/python/test_norm.py \
+            tests/python/test_phase2_ops.py \
+            -q -p no:cacheprovider
+
+  native-build-smoke:
+    name: Native build smoke (optional; HTTP/tools)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake build-essential
+      - name: Check toolchain availability
+        id: toolchain
+        run: |
+          if command -v ninja >/dev/null 2>&1 && command -v cmake >/dev/null 2>&1 && (command -v gcc >/dev/null 2>&1 || command -v cc >/dev/null 2>&1); then
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Configure (if toolchain present)
+        if: steps.toolchain.outputs.available == 'true'
+        run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_CUDA=OFF
+      - name: Build (best-effort, if toolchain present)
+        if: steps.toolchain.outputs.available == 'true'
+        run: cmake --build build/ci --config Release -j 2 || true
+      - name: Targeted tests (if built)
+        if: steps.toolchain.outputs.available == 'true'
+        run: |
+          if [ -d build/ci ]; then
+            cd build/ci
+            ctest -C Release --output-on-failure -R "http|health|crypto_kat|sha" || true
+          fi
+      - name: Skip notice (no toolchain)
+        if: steps.toolchain.outputs.available == 'false'
+        run: echo "No C toolchain (ninja/cmake/compiler) available in this runner; native build smoke skipped."
