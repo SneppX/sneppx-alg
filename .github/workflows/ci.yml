@@ -45,10 +45,9 @@ jobs:
             -q -p no:cacheprovider
 
   native-build-smoke:
-    name: Native build smoke (optional; HTTP/tools)
+    name: Native build and targeted tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Install build deps
@@ -66,15 +65,15 @@ jobs:
       - name: Configure (if toolchain present)
         if: steps.toolchain.outputs.available == 'true'
         run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_CUDA=OFF
-      - name: Build (best-effort, if toolchain present)
+      - name: Build (if toolchain present)
         if: steps.toolchain.outputs.available == 'true'
-        run: cmake --build build/ci --config Release -j 2 || true
+        run: cmake --build build/ci --config Release -j 2
       - name: Targeted tests (if built)
         if: steps.toolchain.outputs.available == 'true'
         run: |
           if [ -d build/ci ]; then
             cd build/ci
-            ctest -C Release --output-on-failure -R "http|health|crypto_kat|sha" || true
+            ctest -C Release --output-on-failure -R "http|health|crypto_kat|sha"
           fi
       - name: Skip notice (no toolchain)
         if: steps.toolchain.outputs.available == 'false'
