@@ -73,7 +73,7 @@ def main():
         "--checkpoint",
         type=str,
         default=None,
-        help="Path to .sneppx checkpoint to load weights from",
+        help="Reserved: checkpoint loading is not implemented; use a model-specific loader",
     )
     parser.add_argument(
         "--tokenizer",
@@ -286,9 +286,10 @@ def _load_model(args):
     if args.checkpoint:
         if not os.path.exists(args.checkpoint):
             raise FileNotFoundError(f"--checkpoint not found: {args.checkpoint}")
-        logging.warning(
-            "Checkpoint loading is not wired in serve_cli; model is initialized from config only. "
-            "Load weights via a model-specific loader before serving."
+        raise NotImplementedError(
+            "--checkpoint is not supported by serve_cli yet. The model would otherwise "
+            "serve config-initialized weights only; load weights with a model-specific "
+            "loader before registering the model."
         )
 
     tokenizer = None
