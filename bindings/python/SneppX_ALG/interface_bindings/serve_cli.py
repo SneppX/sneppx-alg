@@ -5,6 +5,40 @@ import sys
 import json
 import argparse
 import logging
+import ipaddress
+
+
+
+def _is_loopback_host(host):
+    """Return whether a bind host is explicitly loopback-only."""
+    normalized = host.strip().strip("[]").lower()
+    if normalized == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(normalized).is_loopback
+    except ValueError:
+        # Hostnames other than localhost may resolve to public interfaces.
+        return False
+
+
+def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
+    """Reject unauthenticated remote binds and empty enabled auth modes."""
+    if auth_mode == "none" and not _is_loopback_host(host):
+        raise ValueError(
+            "Authentication cannot be disabled on a non-loopback bind address. "
+            "Use --auth-mode bearer or api_key with --api-keys or --key-store-path, "
+            "or bind to 127.0.0.1/::1 for local-only access."
+        )
+    has_environment_keys = (
+        auth_mode == "api_key" and bool(os.environ.get("SNEPPX_API_KEYS", "").strip())
+    )
+    if auth_mode in {"bearer", "api_key"} and not (
+        api_keys or key_store_path or has_environment_keys
+    ):
+        raise ValueError(
+            f"--auth-mode {auth_mode} requires --api-keys, --key-store-path"
+            + (" or SNEPPX_API_KEYS." if auth_mode == "api_key" else ".")
+        )
 
 
 def main():
@@ -134,6 +168,14 @@ def main():
     )
     args = parser.parse_args()
 
+    auth_mode = args.auth_mode or "none"
+    try:
+        _validate_auth_settings(
+            args.host, auth_mode, args.api_keys, args.key_store_path
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
+
     logging.basicConfig(
         level=getattr(logging, args.log_level.upper()),
         format="%(asctime)s %(levelname)s %(message)s",
@@ -171,7 +213,7 @@ def main():
         firewall_overrides["knock_ports"] = [int(p.strip()) for p in args.firewall_knock_ports.split(",")]
 
     auth = AuthConfig(
-        mode=args.auth_mode or "none",
+        mode=auth_mode,
         api_keys=(
             [k.strip() for k in args.api_keys.split(",")]
             if args.api_keys
