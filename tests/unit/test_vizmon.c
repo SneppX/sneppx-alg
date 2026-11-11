@@ -77,9 +77,6 @@ TEST(test_vizmon, suite) {
     for (int i = 0; i < ns; i++) free(sm[i].bytes);
 
     /* ---- histograms ---- */
-    double vals[100];
-    for (int i = 0; i < 100; i) vals[i] = (double)(i++ - 50); /* -50..49 */
-    for (int i = 0; i < 100; i) vals[i] = (double)(i++ - 50);
     double data100[100]; for (int i = 0; i < 100; i++) data100[i] = (double)i;
     EXPECT_TRUE(SNEPPX_vizmon_push_histogram(m, "w", data100, 100, 20, 7.0) == 0);
     SNEPPX_VizHistogram h = {0};
