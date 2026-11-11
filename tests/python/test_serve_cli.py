@@ -36,6 +36,8 @@ def test_serve_cli_requires_credentials_for_enabled_auth():
 
     with pytest.raises(ValueError, match="requires"):
         _validate_auth_settings("0.0.0.0", "bearer", None, None)
+    with pytest.raises(ValueError, match="requires"):
+        _validate_auth_settings("0.0.0.0", "bearer", " , ", None)
     _validate_auth_settings("0.0.0.0", "bearer", "token", None)
     _validate_auth_settings("0.0.0.0", "api_key", None, "keys.sqlite")
 
