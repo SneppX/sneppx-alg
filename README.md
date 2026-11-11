@@ -285,6 +285,8 @@ from SneppX_ALG import sampling, regularization, ...
 
 ## Build & Quickstart
 
+**Build requirements:** CMake 3.16 or newer for direct `cmake -S . -B build` configuration, plus a C11/C++17-capable compiler. The checked-in CMake preset file uses preset schema version 6, which requires CMake 3.25 or newer when using `cmake --preset`.
+
 ```powershell
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
