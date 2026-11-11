@@ -29,11 +29,14 @@ def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
             "Use --auth-mode bearer or api_key with --api-keys or --key-store-path, "
             "or bind to 127.0.0.1/::1 for local-only access."
         )
+    configured_keys = [
+        key.strip() for key in (api_keys or "").split(",") if key.strip()
+    ]
     has_environment_keys = (
         auth_mode == "api_key" and bool(os.environ.get("SNEPPX_API_KEYS", "").strip())
     )
     if auth_mode in {"bearer", "api_key"} and not (
-        api_keys or key_store_path or has_environment_keys
+        configured_keys or key_store_path or has_environment_keys
     ):
         raise ValueError(
             f"--auth-mode {auth_mode} requires --api-keys, --key-store-path"
@@ -167,6 +170,12 @@ def main():
         help="Path to SQLite database for usage tracking",
     )
     args = parser.parse_args()
+
+    if args.checkpoint:
+        parser.error(
+            "--checkpoint is not implemented by serve_cli; the option is rejected "
+            "to prevent serving config-initialized weights by mistake."
+        )
 
     auth_mode = args.auth_mode or "none"
     try:
