@@ -34,6 +34,8 @@ jobs:
             tests/python/test_auth_header.py \
             tests/python/test_route_auth_contract.py \
             tests/python/test_autograd_regressions.py \
+            tests/python/test_autograd_grad_api.py \
+            tests/python/test_autograd_grad_mode.py \
             tests/python/test_hf_safetensors.py \
             tests/python/test_hf_integration.py \
             tests/python/test_model_zoo.py \
