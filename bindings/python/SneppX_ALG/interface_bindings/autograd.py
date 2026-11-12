@@ -322,8 +322,13 @@ def grad(outputs, inputs, create_graph=False, allow_unused=False):
         if grads is None:
             continue
         for idx, inp in enumerate(inputs):
-            if grads.get(id(inp)) is not None:
-                result[idx] = grads[id(inp)]
+            contribution = grads.get(id(inp))
+            if contribution is not None:
+                result[idx] = _merge_grads(
+                    result[idx],
+                    contribution,
+                    create_graph,
+                )
 
     if not allow_unused:
         for idx, r in enumerate(result):
