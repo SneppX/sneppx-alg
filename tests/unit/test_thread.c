@@ -49,9 +49,15 @@ static void inc_func(void* arg) {
 /* ── Pool create / destroy ────────────────────────────────── */
 
 static void test_pool_create_destroy(void) {
-    SNEPPXThreadPool* pool = SNEPPX_threadpool_create(2);
-    SX_ASSERT(pool != NULL, "pool created");
-    SNEPPX_threadpool_destroy(pool);
+    /*
+     * Destroy immediately after creation to exercise the worker startup /
+     * condition-variable wait race. Repeat to make lost wakeups reproducible.
+     */
+    for (int i = 0; i < 32; i++) {
+        SNEPPXThreadPool* pool = SNEPPX_threadpool_create(2);
+        SX_ASSERT(pool != NULL, "pool created");
+        SNEPPX_threadpool_destroy(pool);
+    }
 }
 
 /* ── Default count at least 2 ─────────────────────────────── */
