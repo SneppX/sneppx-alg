@@ -32,6 +32,7 @@ jobs:
             tests/python/test_readme_integrity.py \
             tests/python/test_serve_cli.py \
             tests/python/test_auth_header.py \
+            tests/python/test_route_auth_contract.py \
             tests/python/test_hf_safetensors.py \
             tests/python/test_hf_integration.py \
             tests/python/test_model_zoo.py \
