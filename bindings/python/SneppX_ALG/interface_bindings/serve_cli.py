@@ -26,6 +26,15 @@ def _parse_api_keys(api_keys):
     return [key.strip() for key in (api_keys or "").split(",") if key.strip()]
 
 
+def _resolve_rate_limit(rpm):
+    """Return (enabled, requests_per_minute), preserving an explicit zero."""
+    if rpm is None:
+        return True, 60
+    if rpm < 0:
+        raise ValueError("--rate-limit-rpm must be zero or a positive integer.")
+    return rpm > 0, rpm
+
+
 def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
     """Reject unauthenticated remote binds and empty enabled auth modes."""
     if auth_mode == "none" and not _is_loopback_host(host):
@@ -230,9 +239,15 @@ def main():
             _parse_api_keys(args.api_keys)
         ),
     )
+    try:
+        rate_limit_enabled, requests_per_minute = _resolve_rate_limit(
+            args.rate_limit_rpm
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
     rate_limit = RateLimitConfig(
-        enabled=(args.rate_limit_rpm or 60) > 0,
-        requests_per_minute=args.rate_limit_rpm or 60,
+        enabled=rate_limit_enabled,
+        requests_per_minute=requests_per_minute,
     )
     prompt_filter = PromptFilterConfig(enabled=not args.no_prompt_filter)
     output_verifier = OutputVerifierConfig(enabled=not args.no_output_verifier)
