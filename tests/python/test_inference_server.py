@@ -316,6 +316,29 @@ def test_admin_keys_reject_query_credentials_and_accept_header():
         set_security(SecurityConfig())
 
 
+def test_admin_authentication_attempts_are_rate_limited():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(
+        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1))
+    )
+    try:
+        client = TestClient(app)
+        first = client.get("/v1/admin/keys")
+        second = client.get("/v1/admin/keys")
+        assert first.status_code == 401
+        assert second.status_code == 429
+        assert second.headers["Retry-After"] == "60"
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_admin_bearer_scheme_is_case_insensitive():
     from SneppX_ALG.interface_bindings.inference_server import (
         _verify_admin_auth,
