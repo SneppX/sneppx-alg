@@ -327,6 +327,18 @@ def require_auth(request: "Request"):
     info = auth.authenticate(header)
     if info is None:
         raise HTTPException(status_code=401, detail="Authentication required")
+    user_id = info.get("user_id") or info.get("id") or "authenticated"
+    allowed, reason = sec.check_rate_limit(
+        user_id,
+        tier=info.get("tier", "free"),
+        rpm_override=info.get("rate_limit_rpm"),
+    )
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail=reason,
+            headers={"Retry-After": "60"},
+        )
     return info
 
 
