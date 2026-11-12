@@ -36,9 +36,11 @@ sneppx-serve --host 0.0.0.0 --auth-mode bearer \
 ```
 
 The Python server enforces authentication on generation, continuous-batch
-generation, model quantization, deployment/traffic controls, and the metrics
-endpoint. Admin key-management endpoints read credentials from the
-`Authorization` HTTP header; do not put credentials in query strings.
+generation, and the metrics endpoint. Model quantization and deployment/traffic
+changes require the separate admin credential supplied with `--admin-key`.
+Admin key-management endpoints also require that admin credential. All admin
+credentials are read from the `Authorization` HTTP header; do not put secrets
+in query strings. A normal API key cannot mutate the serving control plane.
 
 Authenticated requests are rate-limited per user or API key. Managed API keys
 use their stored per-key RPM limit; static keys use `--rate-limit-rpm`.
