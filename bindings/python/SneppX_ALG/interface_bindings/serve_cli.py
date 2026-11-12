@@ -11,7 +11,7 @@ import ipaddress
 
 def _is_loopback_host(host):
     """Return whether a bind host is explicitly loopback-only."""
-    normalized = host.strip().strip("[]").lower()
+    normalized = host.strip().strip("[]").lower().split("%", 1)[0]
     if normalized == "localhost":
         return True
     try:
@@ -19,6 +19,11 @@ def _is_loopback_host(host):
     except ValueError:
         # Hostnames other than localhost may resolve to public interfaces.
         return False
+
+
+def _parse_api_keys(api_keys):
+    """Parse comma-separated API keys, discarding empty entries."""
+    return [key.strip() for key in (api_keys or "").split(",") if key.strip()]
 
 
 def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
@@ -29,9 +34,7 @@ def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
             "Use --auth-mode bearer or api_key with --api-keys or --key-store-path, "
             "or bind to 127.0.0.1/::1 for local-only access."
         )
-    configured_keys = [
-        key.strip() for key in (api_keys or "").split(",") if key.strip()
-    ]
+    configured_keys = _parse_api_keys(api_keys)
     has_environment_keys = (
         auth_mode == "api_key" and bool(os.environ.get("SNEPPX_API_KEYS", "").strip())
     )
@@ -224,9 +227,7 @@ def main():
     auth = AuthConfig(
         mode=auth_mode,
         api_keys=(
-            [k.strip() for k in args.api_keys.split(",")]
-            if args.api_keys
-            else []
+            _parse_api_keys(args.api_keys)
         ),
     )
     rate_limit = RateLimitConfig(
