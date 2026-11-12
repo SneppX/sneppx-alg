@@ -364,7 +364,10 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
     return bool(value) and value == _admin_key
 
 
-def require_admin(request: "Request"):
+def require_admin(
+    request: "Request",
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     """Require the admin credential and throttle attempts by client IP."""
     sec = get_security()
     if sec is not None:
@@ -379,7 +382,6 @@ def require_admin(request: "Request"):
                 detail=reason,
                 headers={"Retry-After": "60"},
             )
-    authorization = request.headers.get("authorization")
     if not _verify_admin_auth(authorization):
         raise HTTPException(status_code=401, detail="Admin authentication required")
     return True
@@ -890,25 +892,20 @@ async def _chat_stream(entry, prompt: str, input_ids, gen_config):
     )
 
 
-@app.get("/v1/admin/keys")
-async def admin_list_keys(authorization: Optional[str] = Header(default=None, alias="Authorization")):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
+@app.get("/v1/admin/keys", dependencies=[Depends(require_admin)])
+async def admin_list_keys():
     km = get_key_manager()
     keys = km.list_keys()
     return {"keys": keys, "count": len(keys)}
 
 
-@app.post("/v1/admin/keys")
+@app.post("/v1/admin/keys", dependencies=[Depends(require_admin)])
 async def admin_create_key(
     name: str = Query(default=""),
     tier: str = Query(default="free"),
     expires_in_days: Optional[int] = Query(default=None),
     user_id: Optional[str] = Query(default=None),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
     result = km.create_key(
         name=name, tier=tier,
@@ -919,10 +916,8 @@ async def admin_create_key(
     return result
 
 
-@app.get("/v1/admin/keys/{key_id}")
-async def admin_get_key(key_id: str, authorization: Optional[str] = Header(default=None, alias="Authorization")):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
+@app.get("/v1/admin/keys/{key_id}", dependencies=[Depends(require_admin)])
+async def admin_get_key(key_id: str):
     km = get_key_manager()
     key = km.get_key(key_id)
     if not key:
@@ -930,27 +925,22 @@ async def admin_get_key(key_id: str, authorization: Optional[str] = Header(defau
     return key
 
 
-@app.delete("/v1/admin/keys/{key_id}")
-async def admin_revoke_key(key_id: str, authorization: Optional[str] = Header(default=None, alias="Authorization")):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
+@app.delete("/v1/admin/keys/{key_id}", dependencies=[Depends(require_admin)])
+async def admin_revoke_key(key_id: str):
     km = get_key_manager()
     if not km.revoke_key(key_id):
         raise HTTPException(404, "Key not found")
     return {"status": "revoked", "key_id": key_id}
 
 
-@app.patch("/v1/admin/keys/{key_id}")
+@app.patch("/v1/admin/keys/{key_id}", dependencies=[Depends(require_admin)])
 async def admin_update_key(
     key_id: str,
     name: Optional[str] = Query(default=None),
     tier: Optional[str] = Query(default=None),
     rate_limit_rpm: Optional[int] = Query(default=None),
     expires_in_days: Optional[int] = Query(default=None),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
     if not km.update_key(key_id, name=name, tier=tier,
                          rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days):
@@ -958,14 +948,11 @@ async def admin_update_key(
     return {"status": "updated", "key_id": key_id}
 
 
-@app.get("/v1/admin/keys/{key_id}/usage")
+@app.get("/v1/admin/keys/{key_id}/usage", dependencies=[Depends(require_admin)])
 async def admin_key_usage(
     key_id: str,
     since: Optional[float] = Query(default=None),
-    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    if not _verify_admin_auth(authorization):
-        raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
     stats = km.get_usage_stats(key_id, since=since)
     if not stats:
