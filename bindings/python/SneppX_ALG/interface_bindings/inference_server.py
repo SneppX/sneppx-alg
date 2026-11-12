@@ -331,16 +331,14 @@ def require_auth(request: "Request"):
 
 
 def _verify_admin_auth(authorization: Optional[str]) -> bool:
-    if not authorization:
+    """Validate an admin credential supplied in the Authorization header."""
+    if not authorization or not _admin_key:
         return False
-    if _admin_key and authorization.strip() == _admin_key:
-        return True
-    token = authorization.strip()
-    if token.startswith("Bearer "):
-        token = token[7:]
-    if _admin_key and token == _admin_key:
-        return True
-    return False
+    value = authorization.strip()
+    scheme, separator, credential = value.partition(" ")
+    if separator and scheme.casefold() == "bearer":
+        value = credential.strip()
+    return bool(value) and value == _admin_key
 
 
 @asynccontextmanager
@@ -383,8 +381,9 @@ async def usage_middleware(request: callable, call_next):
         auth_header = request.headers.get("authorization") or request.headers.get("Authorization")
         if auth_header:
             key = auth_header.strip()
-            if key.startswith("Bearer "):
-                key = key[7:]
+            scheme, separator, credential = key.partition(" ")
+            if separator and scheme.casefold() == "bearer":
+                key = credential.strip()
             if key.startswith("sk-sneppx-"):
                 tracker = get_usage_tracker()
                 kh = _key_hash(key)
@@ -848,7 +847,7 @@ async def _chat_stream(entry, prompt: str, input_ids, gen_config):
 
 
 @app.get("/v1/admin/keys")
-async def admin_list_keys(authorization: Optional[str] = Query(default=None, alias="Authorization")):
+async def admin_list_keys(authorization: Optional[str] = Header(default=None, alias="Authorization")):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
@@ -862,7 +861,7 @@ async def admin_create_key(
     tier: str = Query(default="free"),
     expires_in_days: Optional[int] = Query(default=None),
     user_id: Optional[str] = Query(default=None),
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
@@ -877,7 +876,7 @@ async def admin_create_key(
 
 
 @app.get("/v1/admin/keys/{key_id}")
-async def admin_get_key(key_id: str, authorization: Optional[str] = Query(default=None, alias="Authorization")):
+async def admin_get_key(key_id: str, authorization: Optional[str] = Header(default=None, alias="Authorization")):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
@@ -888,7 +887,7 @@ async def admin_get_key(key_id: str, authorization: Optional[str] = Query(defaul
 
 
 @app.delete("/v1/admin/keys/{key_id}")
-async def admin_revoke_key(key_id: str, authorization: Optional[str] = Query(default=None, alias="Authorization")):
+async def admin_revoke_key(key_id: str, authorization: Optional[str] = Header(default=None, alias="Authorization")):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
     km = get_key_manager()
@@ -904,7 +903,7 @@ async def admin_update_key(
     tier: Optional[str] = Query(default=None),
     rate_limit_rpm: Optional[int] = Query(default=None),
     expires_in_days: Optional[int] = Query(default=None),
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
@@ -919,7 +918,7 @@ async def admin_update_key(
 async def admin_key_usage(
     key_id: str,
     since: Optional[float] = Query(default=None),
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     if not _verify_admin_auth(authorization):
         raise HTTPException(401, "Admin authentication required")
