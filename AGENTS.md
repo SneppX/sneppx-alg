@@ -90,7 +90,7 @@ python -m pytest tests/python/test_grad_checkpoint.py -q -p no:cacheprovider
 
 ## Build / CMake (optional; pure-Python path is default)
 
-Machine constraint: no Ninja build program and no C/C++/MASM compiler are configured on this constrained machine, so `cmake -G Ninja ...` fails (`CMAKE_MAKE_PROGRAM`, `CMAKE_C_COMPILER`, `CMAKE_ASM_MASM_COMPILER` not set). Native C build/tests are **not runnable here** and must not block commits. Install a toolchain first if you need native C (HTTP server, crypto, formal):
+Toolchain availability is environment-specific. Check `cmake --version`, `ninja --version`, and the C/C++ compiler before deciding that native tests cannot run. The GitHub Actions workflow `.github/workflows/ci.yml` installs CMake, Ninja, and build-essential, configures the native project, builds its configured targets, and runs the complete CTest suite. A local machine without a native toolchain may skip local C tests, but the CI native build and test result must still be green before considering native changes verified.
 
 ```powershell
 # Install Ninja + a C compiler (choose ONE):
@@ -131,30 +131,25 @@ ctest -C Release -R test_kyber --output-on-failure
 - C: No VLAs (MSVC C11 doesn't support them — use `calloc`/`free`); No `__int128` on MSVC without `#ifndef NO_UINT128` guards
 - Python: `sx.functional` is reserved — use `F` alias; `Tensor.reshape(*shape)` uses splat, not tuple
 
-## Repo History (Last Committed State)
+## Remote Branch and History Policy
 
-- `8dc8846` — repo relocated `C:\Users\PC\sneppx-ultra\ARIX_Algo` → `C:\Users\PC\SneppX\sneppx-alg` (git + uncommitted work preserved)
-- `c9a0a9f` — P3 Phase-2 ops: `Square`/`Reciprocal`/`Sign`/`Clamp`/`Remainder`/`Prod` + `tensor.py` methods; scalar `(1,)` quirk fix
-- `39cdb1a` — P3 sparse: N-D `from_tensor`, `sparse_conv2d`, `to_sparse_coe/csr/csc/bsr` methods, `SparseAdam` real sparse-step
-- `9ba674d` — remote `origin/main` merge resolve (resolved `README.md` conflict + harmless dep bumps); all 235 regression tests green post-merge
-- Last confirmed remote push: `c337ca3` (previous generation)
-- PUSH PENDING — remote main owned by concurrent session; do not force-push. After session stops: `git fetch; git rebase origin/main; git push`
+- Treat the current remote `main` branch as the authoritative project state; historical commit IDs and local notes in this file are not a substitute for inspecting the live branch.
+- Before writing, read the current branch head and the exact files being changed. Never overwrite a newer remote update with a stale snapshot.
+- Preserve existing history. Do not force-push, rewrite shared history, or reset the default branch.
+- Keep commits focused and meaningful, with tests or documentation that demonstrate the change.
+## C Build Reality
 
-## C Build Reality (this constrained machine)
-
-- `cmake` is present but **no Ninja build program and no C/C++/MASM compiler are configured**, so `cmake -G Ninja ...` fails (`CMAKE_MAKE_PROGRAM`, `CMAKE_C_COMPILER`, `CMAKE_ASM_MASM_COMPILER` not set).
-- Native C build/tests are **not runnable here**. Keep `.github/workflows/ci.yml` `native-build-smoke` as best-effort (`continue-on-error`); do not let it block commits.
-- Real C HTTP inference (`/v1/generate`, `/v1/completions`) is an **explicit reference scaffold** (`mode:"reference_scaffold"`, `runtime:"c_reference_no_weights"`). Making it real requires a C tokenizer + safetensors/bin weight loader + C model forward/logits + sampling — large C integration, not implementable/verifiable without a working C toolchain.
-
+- The CI workflow currently installs its native toolchain and runs the configured native build plus the complete CTest suite. Do not describe this job as best-effort or suppress its failures.
+- Local native build capability depends on the developer environment. Verify the available compiler, CMake, and Ninja rather than assuming they are missing based on an old machine snapshot.
+- Real C HTTP inference (`/v1/generate`, `/v1/completions`) remains an explicit reference scaffold (`mode:"reference_scaffold"`, `runtime:"c_reference_no_weights"`). Making it real requires a C tokenizer, safetensors/bin weight loader, C model forward/logits, and sampling; do not claim that it loads model weights.
 ## Critical Workflow: Lint → Typecheck → Test → Commit (GATE)
 
 Before **every** commit in any repo/work session:
 
-1. Run `.\scripts\precommit-gate.ps1` (safe CPU per-file tests). Gate must pass (green).
-2. If native C toolchain is available, run targeted `ctest` for changed C modules only.
-3. If any check fails → fix and rerun until green → then commit. Do not `--no-verify` unless explicitly requested/documented.
-4. Only commit on green. Do not force-push; sync with `git fetch; git rebase origin/main; git push` before pushing.
-
+1. When a local checkout is available, run `.\\scripts\\precommit-gate.ps1` or the affected safe CPU-only test subset. Run targeted native tests when the local toolchain supports them.
+2. If work is performed through a remote GitHub API because no local checkout is available, do not claim local tests were run. Include regression coverage in the change, push the focused commit to the authorized branch, and immediately inspect the resulting GitHub Actions runs.
+3. Treat failed checks as blockers: diagnose the failure, fix it, push a corrective commit, and rerun the checks. Never hide failures with `continue-on-error`, `|| true`, or `--no-verify` without explicit justification.
+4. Preserve shared history. Never force-push or reset `main`; use the current branch head as the expected parent for direct updates.
 ## Python Execution
 
 ## Docs Site (Material 9.5.3 + mike)
