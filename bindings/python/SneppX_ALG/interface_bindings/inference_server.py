@@ -322,6 +322,17 @@ def require_auth(request: "Request"):
         return None
     auth = sec.authenticator
     if not auth.enabled:
+        client_host = request.client.host if request.client else "unknown"
+        allowed, reason = sec.check_rate_limit(
+            f"ip:{client_host}",
+            tier="static",
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail=reason,
+                headers={"Retry-After": "60"},
+            )
         return None
     header = request.headers.get("authorization") or request.headers.get("Authorization")
     info = auth.authenticate(header)
