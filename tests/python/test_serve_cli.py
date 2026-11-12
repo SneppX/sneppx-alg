@@ -30,6 +30,18 @@ def test_serve_cli_rejects_remote_bind_without_auth():
         _validate_auth_settings("192.0.2.10", "none", None, None)
 
 
+
+def test_serve_cli_rejects_unsupported_checkpoint(monkeypatch):
+    import sys
+    import pytest
+    from SneppX_ALG.interface_bindings import serve_cli
+
+    monkeypatch.setattr(sys, "argv", ["sneppx-serve", "--checkpoint", "model.sneppx"])
+    with pytest.raises(SystemExit) as exc:
+        serve_cli.main()
+    assert exc.value.code == 2
+
+
 def test_serve_cli_requires_credentials_for_enabled_auth():
     import pytest
     from SneppX_ALG.interface_bindings.serve_cli import _validate_auth_settings
