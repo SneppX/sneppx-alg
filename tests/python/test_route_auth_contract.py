@@ -56,7 +56,11 @@ def test_inference_routes_require_authentication():
     routes = _route_definitions()
     protected = (
         ("GET", "/metrics"),
+        ("POST", "/v1/generate"),
+        ("POST", "/v1/generate/batch"),
         ("POST", "/v1/generate/continuous-batch"),
+        ("POST", "/v1/generate/stream"),
+        ("POST", "/v1/chat/completions"),
     )
     for key in protected:
         assert key in routes, f"Missing expected route: {key}"
@@ -77,6 +81,27 @@ def test_serving_mutations_require_admin_authentication():
         assert _has_dependency(routes[key], "require_admin"), (
             f"{key} must enforce require_admin"
         )
+
+
+def test_admin_routes_validate_the_admin_credential():
+    routes = _route_definitions()
+    admin_routes = (
+        ("GET", "/v1/admin/keys"),
+        ("POST", "/v1/admin/keys"),
+        ("GET", "/v1/admin/keys/{key_id}"),
+        ("DELETE", "/v1/admin/keys/{key_id}"),
+        ("PATCH", "/v1/admin/keys/{key_id}"),
+        ("GET", "/v1/admin/keys/{key_id}/usage"),
+    )
+    for key in admin_routes:
+        route = routes[key]
+        validates_admin = any(
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "_verify_admin_auth"
+            for node in ast.walk(route)
+        )
+        assert validates_admin, f"{key} must validate the admin credential"
 
 
 def test_admin_credentials_are_header_parameters():
