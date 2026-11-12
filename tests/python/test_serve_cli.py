@@ -18,6 +18,16 @@ def test_serve_cli_allows_loopback_without_auth():
     _validate_auth_settings("127.0.0.1", "none", None, None)
     _validate_auth_settings("::1", "none", None, None)
     _validate_auth_settings("localhost", "none", None, None)
+    _validate_auth_settings("::1%lo0", "none", None, None)
+    _validate_auth_settings("[::1%lo0]", "none", None, None)
+
+
+
+def test_serve_cli_filters_empty_api_key_entries():
+    from SneppX_ALG.interface_bindings.serve_cli import _parse_api_keys
+
+    assert _parse_api_keys("key1,, key2, ,") == ["key1", "key2"]
+    assert _parse_api_keys(None) == []
 
 
 def test_serve_cli_rejects_remote_bind_without_auth():
