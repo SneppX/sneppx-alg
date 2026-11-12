@@ -83,7 +83,7 @@ def test_serving_mutations_require_admin_authentication():
         )
 
 
-def test_admin_routes_validate_the_admin_credential():
+def test_admin_routes_use_central_admin_dependency():
     routes = _route_definitions()
     admin_routes = (
         ("GET", "/v1/admin/keys"),
@@ -94,44 +94,34 @@ def test_admin_routes_validate_the_admin_credential():
         ("GET", "/v1/admin/keys/{key_id}/usage"),
     )
     for key in admin_routes:
-        route = routes[key]
-        validates_admin = any(
-            isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Name)
-            and node.func.id == "_verify_admin_auth"
-            for node in ast.walk(route)
+        assert _has_dependency(routes[key], "require_admin"), (
+            f"{key} must use the centralized require_admin dependency"
         )
-        assert validates_admin, f"{key} must validate the admin credential"
 
 
-def test_admin_credentials_are_header_parameters():
-    routes = _route_definitions()
-    admin_routes = (
-        ("GET", "/v1/admin/keys"),
-        ("POST", "/v1/admin/keys"),
-        ("GET", "/v1/admin/keys/{key_id}"),
-        ("DELETE", "/v1/admin/keys/{key_id}"),
-        ("PATCH", "/v1/admin/keys/{key_id}"),
-        ("GET", "/v1/admin/keys/{key_id}/usage"),
+def test_admin_dependency_reads_authorization_from_header():
+    tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
+    require_admin = next(
+        node for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == "require_admin"
     )
-    for key in admin_routes:
-        route = routes[key]
-        authorization = next(
-            (arg for arg in route.args.args if arg.arg == "authorization"),
-            None,
-        )
-        assert authorization is not None, f"{key} is missing Authorization"
-        position = route.args.args.index(authorization)
-        default_index = position - (
-            len(route.args.args) - len(route.args.defaults)
-        )
-        assert default_index >= 0, f"{key} Authorization must have a default"
-        default = route.args.defaults[default_index]
-        assert (
-            isinstance(default, ast.Call)
-            and isinstance(default.func, ast.Name)
-            and default.func.id == "Header"
-        ), f"{key} must read Authorization from an HTTP header, not a query string"
+    authorization = next(
+        (arg for arg in require_admin.args.args if arg.arg == "authorization"),
+        None,
+    )
+    assert authorization is not None
+    position = require_admin.args.args.index(authorization)
+    default_index = position - (
+        len(require_admin.args.args) - len(require_admin.args.defaults)
+    )
+    assert default_index >= 0
+    default = require_admin.args.defaults[default_index]
+    assert (
+        isinstance(default, ast.Call)
+        and isinstance(default.func, ast.Name)
+        and default.func.id == "Header"
+    ), "require_admin must read Authorization from an HTTP header"
 
 
 def test_auth_dependency_enforces_rate_limiting():
