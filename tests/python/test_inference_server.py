@@ -226,6 +226,33 @@ def test_no_models():
 # ===========================================================================
 
 
+def test_serving_control_and_batch_routes_require_authentication():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-protected"])))
+    try:
+        client = TestClient(app)
+        requests = [
+            client.post(
+                "/v1/generate/continuous-batch",
+                json={"prompts": ["hello"], "max_new_tokens": 1},
+            ),
+            client.post("/v1/models/quantize?model_id=test-model"),
+            client.post("/v1/deploy?model=test-model"),
+            client.post("/v1/traffic?model=test-model&split=v1:100"),
+            client.get("/metrics"),
+        ]
+        assert [response.status_code for response in requests] == [401] * len(requests)
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_admin_auth_uses_authorization_header_not_query_parameter():
     if not _HAS_TEST_CLIENT:
         pytest.skip("TestClient not available")
