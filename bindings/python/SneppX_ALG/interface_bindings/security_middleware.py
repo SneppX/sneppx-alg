@@ -355,9 +355,14 @@ class Authenticator:
 
     @staticmethod
     def _extract_bearer(authorization: str) -> Optional[str]:
-        if authorization.startswith("Bearer "):
-            return authorization[7:].strip()
-        return None
+        """Extract a Bearer credential using case-insensitive scheme matching."""
+        scheme, separator, credential = authorization.partition(" ")
+        if not separator or scheme.casefold() != "bearer":
+            return None
+        token = credential.strip()
+        if not token or any(character.isspace() for character in token):
+            return None
+        return token
 
 
 # ===========================================================================
