@@ -32,7 +32,7 @@ def _route_definitions():
     return routes
 
 
-def _has_require_auth_dependency(route):
+def _has_dependency(route, dependency_name):
     for decorator in route.decorator_list:
         if not isinstance(decorator, ast.Call):
             continue
@@ -46,25 +46,36 @@ def _has_require_auth_dependency(route):
                     and dependency.func.id == "Depends"
                     and dependency.args
                     and isinstance(dependency.args[0], ast.Name)
-                    and dependency.args[0].id == "require_auth"
+                    and dependency.args[0].id == dependency_name
                 ):
                     return True
     return False
 
 
-def test_serving_control_routes_require_authentication():
+def test_inference_routes_require_authentication():
     routes = _route_definitions()
     protected = (
         ("GET", "/metrics"),
+        ("POST", "/v1/generate/continuous-batch"),
+    )
+    for key in protected:
+        assert key in routes, f"Missing expected route: {key}"
+        assert _has_dependency(routes[key], "require_auth"), (
+            f"{key} must enforce require_auth"
+        )
+
+
+def test_serving_mutations_require_admin_authentication():
+    routes = _route_definitions()
+    protected = (
         ("POST", "/v1/deploy"),
         ("POST", "/v1/traffic"),
-        ("POST", "/v1/generate/continuous-batch"),
         ("POST", "/v1/models/quantize"),
     )
     for key in protected:
         assert key in routes, f"Missing expected route: {key}"
-        assert _has_require_auth_dependency(routes[key]), (
-            f"{key} must enforce require_auth"
+        assert _has_dependency(routes[key], "require_admin"), (
+            f"{key} must enforce require_admin"
         )
 
 
