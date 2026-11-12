@@ -9,6 +9,8 @@ Typical usage (via the op subclasses in autograd_ops.py):
 """
 
 import inspect
+from threading import local
+
 import numpy as np
 
 from .tensor import Tensor
@@ -17,8 +19,23 @@ from .tensor import Tensor
 # Grad-enabled flag — controls whether operations build a backward graph.
 # ---------------------------------------------------------------------------
 
-_GRAD_ENABLED = [True]
-_CREATE_GRAPH = [False]
+_GRAD_STATE = local()
+
+
+def _grad_enabled() -> bool:
+    return getattr(_GRAD_STATE, "enabled", True)
+
+
+def _set_grad_enabled(mode: bool) -> None:
+    _GRAD_STATE.enabled = bool(mode)
+
+
+def _create_graph_enabled() -> bool:
+    return getattr(_GRAD_STATE, "create_graph", False)
+
+
+def _set_create_graph_enabled(mode: bool) -> None:
+    _GRAD_STATE.create_graph = bool(mode)
 
 
 def _invoke_backward(op_cls, ctx, grad, create_graph):
@@ -35,21 +52,21 @@ def _invoke_backward(op_cls, ctx, grad, create_graph):
 
 
 def is_grad_enabled() -> bool:
-    return _GRAD_ENABLED[0]
+    return _grad_enabled()
 
 
 class _SetGradEnabled:
     """Set gradient mode immediately and restore it when the context exits."""
 
     def __init__(self, mode: bool):
-        self._prev = _GRAD_ENABLED[0]
-        _GRAD_ENABLED[0] = bool(mode)
+        self._prev = _grad_enabled()
+        _set_grad_enabled(mode)
 
     def __enter__(self):
         return self
 
     def __exit__(self, *exc):
-        _GRAD_ENABLED[0] = self._prev
+        _set_grad_enabled(self._prev)
 
 
 def set_grad_enabled(mode: bool):
@@ -59,22 +76,22 @@ def set_grad_enabled(mode: bool):
 
 class enable_grad:
     def __enter__(self):
-        self._prev = _GRAD_ENABLED[0]
-        _GRAD_ENABLED[0] = True
+        self._prev = _grad_enabled()
+        _set_grad_enabled(True)
         return self
 
     def __exit__(self, *exc):
-        _GRAD_ENABLED[0] = self._prev
+        _set_grad_enabled(self._prev)
 
 
 class no_grad:
     def __enter__(self):
-        self._prev = _GRAD_ENABLED[0]
-        _GRAD_ENABLED[0] = False
+        self._prev = _grad_enabled()
+        _set_grad_enabled(False)
         return self
 
     def __exit__(self, *exc):
-        _GRAD_ENABLED[0] = self._prev
+        _set_grad_enabled(self._prev)
 
 
 # ---------------------------------------------------------------------------
@@ -134,11 +151,11 @@ class Function:
         # Determine whether any input requires gradient. Under create_graph the
         # gradient tensors themselves carry grad_fn, so treat those as needing
         # grad too (this is what wires up higher-order derivatives).
-        needs_grad = _any_requires_grad(args) or (_CREATE_GRAPH[0] and _GRAD_ENABLED[0])
+        needs_grad = _any_requires_grad(args) or (_create_graph_enabled() and _grad_enabled())
 
         output = cls.forward(ctx, *args, **kwargs)
 
-        if needs_grad and _GRAD_ENABLED[0] and isinstance(output, Tensor):
+        if needs_grad and _grad_enabled() and isinstance(output, Tensor):
             output.requires_grad = True
             positions = _tensor_positions(args)
             fn = _GradFn(cls, ctx, _tensor_inputs(args), positions, len(args))
@@ -212,8 +229,8 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
             return {id(root): grad_output}
         return {} if return_grads else None
 
-    prev_cg = _CREATE_GRAPH[0]
-    _CREATE_GRAPH[0] = create_graph
+    prev_cg = _create_graph_enabled()
+    _set_create_graph_enabled(create_graph)
     try:
         # ---- 1. Topological sort (reverse order: children before parents) ----
         order = []
@@ -282,7 +299,7 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
                     grads[id(inp)] = _merge_grads(grads.get(id(inp)), ig, create_graph)
         return out_grads if return_grads else None
     finally:
-        _CREATE_GRAPH[0] = prev_cg
+        _set_create_graph_enabled(prev_cg)
 
 
 def _acc_grad(tensor, grad, create_graph=False):
