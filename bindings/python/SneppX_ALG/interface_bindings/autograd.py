@@ -38,11 +38,23 @@ def is_grad_enabled() -> bool:
     return _GRAD_ENABLED[0]
 
 
+class _SetGradEnabled:
+    """Set gradient mode immediately and restore it when the context exits."""
+
+    def __init__(self, mode: bool):
+        self._prev = _GRAD_ENABLED[0]
+        _GRAD_ENABLED[0] = bool(mode)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        _GRAD_ENABLED[0] = self._prev
+
+
 def set_grad_enabled(mode: bool):
-    """Enable or disable gradient tracking. Returns a context manager that
-    restores the previous state on exit."""
-    _GRAD_ENABLED[0] = bool(mode)
-    return enable_grad() if mode else no_grad()
+    """Set gradient tracking and return a context manager that restores it."""
+    return _SetGradEnabled(mode)
 
 
 class enable_grad:
