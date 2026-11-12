@@ -31,14 +31,14 @@ def test_serve_cli_rejects_remote_bind_without_auth():
 
 
 
-def test_serve_cli_rejects_unsupported_checkpoint(monkeypatch):
-    import sys
+def test_serve_cli_rejects_unsupported_checkpoint():
+    from unittest.mock import patch
     import pytest
     from SneppX_ALG.interface_bindings import serve_cli
 
-    monkeypatch.setattr(sys, "argv", ["sneppx-serve", "--checkpoint", "model.sneppx"])
-    with pytest.raises(SystemExit) as exc:
-        serve_cli.main()
+    with patch("sys.argv", ["sneppx-serve", "--checkpoint", "model.sneppx"]):
+        with pytest.raises(SystemExit) as exc:
+            serve_cli.main()
     assert exc.value.code == 2
 
 
