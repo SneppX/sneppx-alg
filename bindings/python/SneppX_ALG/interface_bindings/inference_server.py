@@ -365,7 +365,20 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
 
 
 def require_admin(request: "Request"):
-    """Require the configured admin credential for serving control operations."""
+    """Require the admin credential and throttle attempts by client IP."""
+    sec = get_security()
+    if sec is not None:
+        client_host = request.client.host if request.client else "unknown"
+        allowed, reason = sec.check_rate_limit(
+            f"admin-ip:{client_host}",
+            tier="static",
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail=reason,
+                headers={"Retry-After": "60"},
+            )
     authorization = request.headers.get("authorization")
     if not _verify_admin_auth(authorization):
         raise HTTPException(status_code=401, detail="Admin authentication required")
