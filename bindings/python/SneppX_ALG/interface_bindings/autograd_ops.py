@@ -378,7 +378,12 @@ class MatMul(Function):
                     grad_a = Squeeze.apply(grad_a, 0)
             return [grad_a, grad_b]
         gnp = grad_output.data
-        if a_data.ndim == 1:
+        if a_data.ndim == 1 and b_data.ndim == 1:
+            # Vector-vector matmul is a scalar dot product. Its gradients are
+            # the opposite vector scaled by the upstream scalar gradient.
+            grad_a = gnp * b_data
+            grad_b = gnp * a_data
+        elif a_data.ndim == 1:
             grad_a = gnp @ b_data.T
             grad_b = np.outer(a_data, gnp)
         elif b_data.ndim == 1:
