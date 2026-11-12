@@ -191,11 +191,14 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
     from .sparse import SparseTensor
     if not isinstance(root, (Tensor, SparseTensor)):
         return None
-    if root.grad_fn is None:
-        return None
 
     if grad_output is None:
         grad_output = Tensor(np.ones_like(root.data), dtype=root.dtype)
+
+    if root.grad_fn is None:
+        if return_grads and getattr(root, "requires_grad", False):
+            return {id(root): grad_output}
+        return {} if return_grads else None
 
     prev_cg = _CREATE_GRAPH[0]
     _CREATE_GRAPH[0] = create_graph
@@ -256,12 +259,12 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
                 # (covers Tensor and SparseTensor).
                 if not hasattr(inp, "is_leaf") or not hasattr(inp, "requires_grad"):
                     continue
+                if return_grads:
+                    out_grads[id(inp)] = _merge_grads(
+                        out_grads.get(id(inp)), ig, create_graph
+                    )
                 if inp.is_leaf:
-                    if return_grads:
-                        out_grads[id(inp)] = _merge_grads(
-                            out_grads.get(id(inp)), ig, create_graph
-                        )
-                    else:
+                    if not return_grads:
                         _acc_grad(inp, ig, create_graph)
                 else:
                     grads[id(inp)] = _merge_grads(grads.get(id(inp)), ig, create_graph)
