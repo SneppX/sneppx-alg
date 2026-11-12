@@ -123,3 +123,19 @@ def test_auth_dependency_enforces_rate_limiting():
         for node in ast.walk(require_auth)
     )
     assert calls_rate_limiter, "require_auth must enforce the configured rate limiter"
+
+
+def test_admin_dependency_throttles_authentication_attempts():
+    tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
+    require_admin = next(
+        node for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == "require_admin"
+    )
+    calls_rate_limiter = any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "check_rate_limit"
+        for node in ast.walk(require_admin)
+    )
+    assert calls_rate_limiter, "require_admin must throttle attempts by client IP"
