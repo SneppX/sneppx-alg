@@ -433,6 +433,54 @@ def test_rate_limiter():
     set_security(SecurityConfig())
 
 
+def test_authenticated_requests_enforce_configured_rate_limit():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(
+        SecurityConfig(
+            auth=AuthConfig(mode="bearer", api_keys=["sk-rate-limited"]),
+            rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1),
+        )
+    )
+    try:
+        client = TestClient(app)
+        headers = {"Authorization": "Bearer sk-rate-limited"}
+        payload = {"prompt": "hello", "max_new_tokens": 1}
+        assert client.post("/v1/generate", json=payload, headers=headers).status_code == 200
+        limited = client.post("/v1/generate", json=payload, headers=headers)
+        assert limited.status_code == 429
+        assert limited.headers["Retry-After"] == "60"
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_loopback_unauthenticated_requests_are_rate_limited():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1)))
+    try:
+        client = TestClient(app)
+        payload = {"prompt": "hello", "max_new_tokens": 1}
+        assert client.post("/v1/generate", json=payload).status_code == 200
+        limited = client.post("/v1/generate", json=payload)
+        assert limited.status_code == 429
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_auth_noop_when_disabled():
     if not _HAS_TEST_CLIENT:
         pytest.skip("TestClient not available")
