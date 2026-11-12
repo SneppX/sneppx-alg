@@ -226,6 +226,35 @@ def test_no_models():
 # ===========================================================================
 
 
+def test_admin_auth_uses_authorization_header_not_query_parameter():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    schema = app.openapi()
+    for method in ("get", "post"):
+        parameters = schema["paths"]["/v1/admin/keys"][method].get("parameters", [])
+        auth_parameters = [p for p in parameters if p["name"] == "Authorization"]
+        assert len(auth_parameters) == 1
+        assert auth_parameters[0]["in"] == "header"
+
+
+def test_admin_bearer_scheme_is_case_insensitive():
+    from SneppX_ALG.interface_bindings.inference_server import (
+        _verify_admin_auth,
+        set_security,
+    )
+    from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
+
+    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    try:
+        assert _verify_admin_auth("Bearer test-admin-secret")
+        assert _verify_admin_auth("bearer test-admin-secret")
+        assert _verify_admin_auth("BEARER test-admin-secret")
+        assert not _verify_admin_auth("Basic test-admin-secret")
+        assert not _verify_admin_auth(None)
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_auth_bearer_required():
     if not _HAS_TEST_CLIENT:
         pytest.skip("TestClient not available")
