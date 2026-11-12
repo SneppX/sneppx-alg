@@ -37,6 +37,22 @@ def test_grad_of_tensor_with_respect_to_itself_is_identity():
     np.testing.assert_array_equal(result.data, np.ones_like(source.data))
 
 
+
+def test_grad_create_graph_supports_second_derivative():
+    source = Tensor([1.5, -2.0, 0.25], requires_grad=True)
+    loss = (source * source * source).sum()
+
+    first = grad(loss, source, create_graph=True)[0]
+    second = grad(first.sum(), source)[0]
+
+    np.testing.assert_allclose(
+        second.data,
+        6.0 * source.data,
+        rtol=1e-5,
+        atol=1e-6,
+    )
+
+
 def test_grad_allow_unused_returns_none_for_unrelated_input():
     output_source = Tensor([1.0, 2.0], requires_grad=True)
     unrelated = Tensor([3.0, 4.0], requires_grad=True)
