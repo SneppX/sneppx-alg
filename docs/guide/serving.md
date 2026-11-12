@@ -25,6 +25,27 @@ server.start(port=8080)
 - `POST /v1/generate`: Text generation with streaming and token counts.
 - `POST /v1/generate/continuous-batch`: Continuous batching generation queue.
 
+## Python Server Security
+
+For remote access, bind the server with authentication enabled:
+
+```bash
+sneppx-serve --host 0.0.0.0 --auth-mode bearer \
+  --api-keys "replace-with-a-long-random-secret" \
+  --rate-limit-rpm 120
+```
+
+The Python server enforces authentication on generation, continuous-batch
+generation, model quantization, deployment/traffic controls, and the metrics
+endpoint. Admin key-management endpoints read credentials from the
+`Authorization` HTTP header; do not put credentials in query strings.
+
+Authenticated requests are rate-limited per user or API key. Managed API keys
+use their stored per-key RPM limit; static keys use `--rate-limit-rpm`.
+When authentication is disabled, protected local endpoints are rate-limited
+by client IP. Set `--rate-limit-rpm 0` to disable rate limiting. The CLI
+rejects unauthenticated non-loopback binds.
+
 ## C HTTP Control Plane
 
 Built in C (`net/http/http_api.c`) with zero external dependencies (Winsock / BSD sockets):
