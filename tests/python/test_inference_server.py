@@ -253,6 +253,29 @@ def test_serving_control_and_batch_routes_require_authentication():
         set_security(SecurityConfig())
 
 
+def test_regular_api_key_cannot_mutate_serving_control_plane():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-user"])))
+    try:
+        client = TestClient(app)
+        headers = {"Authorization": "Bearer sk-user"}
+        responses = [
+            client.post("/v1/deploy?model=test-model", headers=headers),
+            client.post("/v1/traffic?model=test-model&split=v1:100", headers=headers),
+            client.post("/v1/models/quantize?model_id=test-model", headers=headers),
+        ]
+        assert [response.status_code for response in responses] == [401, 401, 401]
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_admin_auth_uses_authorization_header_not_query_parameter():
     if not _HAS_TEST_CLIENT:
         pytest.skip("TestClient not available")
