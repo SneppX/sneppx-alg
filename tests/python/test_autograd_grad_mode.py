@@ -1,5 +1,7 @@
 """Regression tests for gradient-mode context restoration."""
 
+from threading import Thread
+
 from SneppX_ALG.interface_bindings.autograd import (
     is_grad_enabled,
     set_grad_enabled,
@@ -25,6 +27,22 @@ def test_set_grad_enabled_restores_nested_modes():
         assert is_grad_enabled() is False
 
     assert is_grad_enabled() is previous
+
+
+
+def test_grad_mode_is_isolated_between_threads():
+    worker_modes = []
+
+    with set_grad_enabled(False):
+        assert is_grad_enabled() is False
+        worker = Thread(target=lambda: worker_modes.append(is_grad_enabled()))
+        worker.start()
+        worker.join(timeout=5)
+
+        assert not worker.is_alive()
+        assert is_grad_enabled() is False
+
+    assert worker_modes == [True]
 
 
 def test_set_grad_enabled_sets_mode_when_used_without_with():
