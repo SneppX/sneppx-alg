@@ -7,6 +7,7 @@ import logging
 import re
 from typing import Optional, List, Dict, Any, Tuple, Set
 from dataclasses import dataclass, field
+from threading import Lock
 from .api_key_manager import ApiKeyManager, get_key_manager
 
 # S5 AI-safety backend is imported lazily to avoid a hard dependency at
@@ -145,27 +146,34 @@ class SecurityConfig:
 
 
 class _SlidingWindowCounter:
-    """Per-key sliding window counter for rate limiting."""
+    """Per-key thread-safe sliding window counter for rate limiting."""
 
     def __init__(self, max_requests: int, window_seconds: float):
         self._max = max_requests
         self._window = window_seconds
         self._timestamps: List[float] = []
+        self._lock = Lock()
+
+    def update_limit(self, max_requests: int) -> None:
+        with self._lock:
+            self._max = max_requests
 
     def allow(self) -> bool:
-        now = time.time()
-        cutoff = now - self._window
-        self._timestamps = [t for t in self._timestamps if t > cutoff]
-        if len(self._timestamps) >= self._max:
-            return False
-        self._timestamps.append(now)
-        return True
+        with self._lock:
+            now = time.monotonic()
+            cutoff = now - self._window
+            self._timestamps = [t for t in self._timestamps if t > cutoff]
+            if len(self._timestamps) >= self._max:
+                return False
+            self._timestamps.append(now)
+            return True
 
     @property
     def remaining(self) -> int:
-        cutoff = time.time() - self._window
-        active = sum(1 for t in self._timestamps if t > cutoff)
-        return max(0, self._max - active)
+        with self._lock:
+            cutoff = time.monotonic() - self._window
+            active = sum(1 for t in self._timestamps if t > cutoff)
+            return max(0, self._max - active)
 
 
 # ===========================================================================
@@ -337,7 +345,7 @@ class Authenticator:
                     return info
             if token in self._key_set:
                 return {"user_id": f"user_{hashlib.sha256(token.encode()).hexdigest()[:16]}",
-                        "tier": "static", "rate_limit_rpm": self._config.rate_limit_rpm if hasattr(self._config, 'rate_limit_rpm') else 60}
+                        "tier": "static"}
             return None
         if self._config.mode == "api_key":
             key = authorization.strip()
@@ -349,7 +357,7 @@ class Authenticator:
                     return info
             if key in self._key_set:
                 return {"user_id": f"user_{hashlib.sha256(key.encode()).hexdigest()[:16]}",
-                        "tier": "static", "rate_limit_rpm": self._config.rate_limit_rpm if hasattr(self._config, 'rate_limit_rpm') else 60}
+                        "tier": "static"}
             return None
         return None
 
@@ -395,8 +403,9 @@ class SecurityMiddleware:
         self.prompt_filter = PromptFilter(self.config.prompt_filter)
         self.output_verifier = OutputVerifier(self.config.output_verifier)
         self._rate_limiters: Dict[str, _SlidingWindowCounter] = {}
+        self._rate_limiters_lock = Lock()
         self._tier_limits: Dict[str, int] = {
-            "free": 60, "pro": 1000, "enterprise": 10000, "static": 60,
+            "free": 60, "pro": 1000, "enterprise": 10000,
         }
         self._firewall = None
 
@@ -437,14 +446,29 @@ class SecurityMiddleware:
         """Authenticate request. Returns key info dict or ``None``."""
         return self.authenticator.authenticate(authorization)
 
-    def check_rate_limit(self, user_id: str, tier: str = "free") -> Tuple[bool, str]:
-        """Check rate limit for user. Returns ``(allowed: bool, reason: str)``."""
+    def check_rate_limit(
+        self,
+        user_id: str,
+        tier: str = "free",
+        rpm_override: Optional[int] = None,
+    ) -> Tuple[bool, str]:
+        """Check a user's configured or key-specific requests-per-minute limit."""
         if not self.config.rate_limit.enabled:
             return True, ""
-        rpm = self._tier_limits.get(tier, self.config.rate_limit.requests_per_minute)
-        if user_id not in self._rate_limiters:
-            self._rate_limiters[user_id] = _SlidingWindowCounter(rpm, 60.0)
-        limiter = self._rate_limiters[user_id]
+        rpm = (
+            rpm_override
+            if rpm_override is not None
+            else self._tier_limits.get(tier, self.config.rate_limit.requests_per_minute)
+        )
+        if rpm <= 0:
+            return False, "Rate limit is configured to allow no requests"
+        with self._rate_limiters_lock:
+            limiter = self._rate_limiters.get(user_id)
+            if limiter is None:
+                limiter = _SlidingWindowCounter(rpm, 60.0)
+                self._rate_limiters[user_id] = limiter
+            else:
+                limiter.update_limit(rpm)
         if not limiter.allow():
             return False, f"Rate limit exceeded ({rpm}/minute)"
         return True, ""
