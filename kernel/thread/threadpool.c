@@ -296,7 +296,7 @@ static void* worker_entry(void* arg)
     free(arg);
 
     SNEPPXTask task;
-    while (!pool->shutdown) {
+    for (;;) {
         int got = 0;
 
         /* 1. Try own queue (pop back — LIFO) */
@@ -321,14 +321,20 @@ static void* worker_entry(void* arg)
             continue;
         }
 
-        /* 3. No work — sleep until signaled (predicate check avoids lost wakeup) */
+        /*
+         * Check shutdown and wait under the same mutex used by destroy().
+         * This prevents a broadcast from being lost between the predicate
+         * check and the condition-variable wait.
+         */
         SNEPPX_mutex_lock(&pool->global_lock);
         pool->waiting_count++;
         while (!pool->shutdown && pool->active_tasks == 0) {
             SNEPPX_cond_wait(&pool->global_cond, &pool->global_lock);
         }
+        int should_shutdown = pool->shutdown;
         pool->waiting_count--;
         SNEPPX_mutex_unlock(&pool->global_lock);
+        if (should_shutdown) break;
     }
     return 0;
 }
@@ -397,8 +403,10 @@ fail:
  */
 void SNEPPX_threadpool_destroy(SNEPPXThreadPool* pool) {
     if (!pool) return;
+    SNEPPX_mutex_lock(&pool->global_lock);
     pool->shutdown = 1;
     SNEPPX_cond_broadcast(&pool->global_cond);
+    SNEPPX_mutex_unlock(&pool->global_lock);
     for (size_t i = 0; i < pool->num_threads; i++) {
         SNEPPX_thread_join(pool->threads[i]);
         deque_destroy(&pool->queues[i]);
@@ -492,7 +500,10 @@ void SNEPPX_threadpool_wait(SNEPPXThreadPool* pool) {
                 break;
             }
         }
-        if (all_empty && pool->active_tasks == 0) break;
+        SNEPPX_mutex_lock(&pool->global_lock);
+        int active_tasks = pool->active_tasks;
+        SNEPPX_mutex_unlock(&pool->global_lock);
+        if (all_empty && active_tasks == 0) break;
 #ifdef _WIN32
         SwitchToThread();
 #else

@@ -257,6 +257,19 @@ print("final loss:", round(float(np.asarray(loss.data).reshape(-1)[0]), 4))  # ~
 
 Run with `PYTHONPATH=bindings/python python quickstart.py`. More runnable examples in [`examples/python_api/`](examples/python_api/).
 
+## Inference Server Security
+
+The serving CLI binds to `127.0.0.1` by default and permits unauthenticated access only on loopback addresses. A non-loopback bind requires an enabled authentication mode and configured credentials.
+
+For API-key authentication, provide keys through the `SNEPPX_API_KEYS` environment variable rather than putting secrets directly in shell history:
+
+```bash
+export SNEPPX_API_KEYS="replace-with-a-long-random-secret"
+sneppx-serve --host 0.0.0.0 --auth-mode api_key
+```
+
+Send the key in the HTTP `Authorization` header. Put the server behind TLS when exposing it beyond a trusted local network. The `--checkpoint` option is not implemented and is rejected; load weights with a model-specific loader before serving.
+
 ## Extended Python Utilities
 
 Additional pragmatic packages (pure NumPy/Python, fully tested):
@@ -284,6 +297,8 @@ from SneppX_ALG import sampling, regularization, ...
 - **Distributed C kernels**: NCCL-wired DDP/tensor/expert/pipeline/ZeRO/gradient-comm; deterministic distributed sampler.
 
 ## Build & Quickstart
+
+**Build requirements:** CMake 3.16 or newer for direct `cmake -S . -B build` configuration, plus a C11/C++17-capable compiler. The checked-in CMake preset file uses preset schema version 6, which requires CMake 3.25 or newer when using `cmake --preset`.
 
 ```powershell
 cmake -B build -DCMAKE_BUILD_TYPE=Release
