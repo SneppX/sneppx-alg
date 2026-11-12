@@ -237,6 +237,35 @@ def test_admin_auth_uses_authorization_header_not_query_parameter():
         assert auth_parameters[0]["in"] == "header"
 
 
+def test_admin_keys_reject_query_credentials_and_accept_header():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from unittest.mock import patch
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
+
+    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    try:
+        with patch(
+            "SneppX_ALG.interface_bindings.inference_server.get_key_manager"
+        ) as get_key_manager:
+            get_key_manager.return_value.list_keys.return_value = []
+            client = TestClient(app)
+            query_auth = client.get(
+                "/v1/admin/keys?Authorization=test-admin-secret"
+            )
+            assert query_auth.status_code == 401
+
+            header_auth = client.get(
+                "/v1/admin/keys",
+                headers={"Authorization": "Bearer test-admin-secret"},
+            )
+            assert header_auth.status_code == 200
+            assert header_auth.json() == {"keys": [], "count": 0}
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_admin_bearer_scheme_is_case_insensitive():
     from SneppX_ALG.interface_bindings.inference_server import (
         _verify_admin_auth,
