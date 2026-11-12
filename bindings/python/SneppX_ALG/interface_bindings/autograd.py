@@ -52,11 +52,12 @@ def _invoke_backward(op_cls, ctx, grad, create_graph):
 
 
 def is_grad_enabled() -> bool:
+    """Return whether autograd graph construction is enabled in this thread."""
     return _grad_enabled()
 
 
 class _SetGradEnabled:
-    """Set gradient mode immediately and restore it when the context exits."""
+    """Set this thread's gradient mode and restore it when the context exits."""
 
     def __init__(self, mode: bool):
         self._prev = _grad_enabled()
@@ -70,11 +71,13 @@ class _SetGradEnabled:
 
 
 def set_grad_enabled(mode: bool):
-    """Set gradient tracking and return a context manager that restores it."""
+    """Set this thread's gradient mode and return a restoring context manager."""
     return _SetGradEnabled(mode)
 
 
 class enable_grad:
+    """Temporarily enable graph construction in the current thread."""
+
     def __enter__(self):
         self._prev = _grad_enabled()
         _set_grad_enabled(True)
@@ -85,6 +88,8 @@ class enable_grad:
 
 
 class no_grad:
+    """Temporarily disable graph construction in the current thread."""
+
     def __enter__(self):
         self._prev = _grad_enabled()
         _set_grad_enabled(False)
