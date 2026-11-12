@@ -433,7 +433,7 @@ async def readyz_endpoint():
     return {"ready": True, "uptime_ms": int((time.time() - _start_time) * 1000)}
 
 
-@app.get("/metrics")
+@app.get("/metrics", dependencies=[Depends(require_auth)])
 async def metrics_endpoint(format: str = Query(default=""), accept: Optional[str] = Header(default=None)):
     from fastapi.responses import PlainTextResponse
     eng = get_serving_engine()
@@ -452,7 +452,7 @@ async def model_versions_endpoint(model_id: str):
     return {"name": model_id, "versions": versions}
 
 
-@app.post("/v1/deploy")
+@app.post("/v1/deploy", dependencies=[Depends(require_auth)])
 async def deploy_endpoint(model: str = Query(...), version: str = Query("v1"),
                           description: str = Query(""), promote: bool = Query(False)):
     eng = get_serving_engine()
@@ -460,7 +460,7 @@ async def deploy_endpoint(model: str = Query(...), version: str = Query("v1"),
     return {"status": "deployed" if ok else "error"}
 
 
-@app.post("/v1/traffic")
+@app.post("/v1/traffic", dependencies=[Depends(require_auth)])
 async def traffic_endpoint(model: str = Query(...), split: str = Query(...)):
     eng = get_serving_engine()
     legs = []
@@ -584,7 +584,7 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
     )
 
 
-@app.post("/v1/generate/continuous-batch", response_model=BatchGenerateResponse)
+@app.post("/v1/generate/continuous-batch", response_model=BatchGenerateResponse, dependencies=[Depends(require_auth)])
 async def continuous_batch_endpoint(req: BatchGenerateRequest):
     sanitized_prompts = []
     for prompt in req.prompts:
@@ -643,7 +643,7 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     )
 
 
-@app.post("/v1/models/quantize")
+@app.post("/v1/models/quantize", dependencies=[Depends(require_auth)])
 async def quantize_model_endpoint(model_id: str = Query(...), quant_mode: str = Query("int4")):
     entry = get_model(model_id)
     mode_map = {"int4": "INT4_SYM", "int8": "INT8_SYM", "fp8": "INT4_SYM"}
