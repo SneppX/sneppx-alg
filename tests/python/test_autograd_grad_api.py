@@ -1,0 +1,46 @@
+"""API-level regression tests for autograd.grad target handling."""
+
+import numpy as np
+
+from SneppX_ALG import Tensor
+from SneppX_ALG.interface_bindings.autograd import grad
+
+
+def test_grad_returns_gradient_for_non_leaf_intermediate():
+    source = Tensor([2.0, 3.0], requires_grad=True)
+    intermediate = source * source
+    output = intermediate * 3.0
+
+    result = grad(output, intermediate)[0]
+
+    np.testing.assert_allclose(result.data, [3.0, 3.0], rtol=1e-6, atol=1e-7)
+    assert source.grad is None
+    assert intermediate.grad is None
+
+
+def test_grad_still_propagates_through_intermediate_to_leaf():
+    source = Tensor([2.0, 3.0], requires_grad=True)
+    intermediate = source * source
+    output = intermediate * 3.0
+
+    result = grad(output, source)[0]
+
+    np.testing.assert_allclose(result.data, [12.0, 18.0], rtol=1e-6, atol=1e-7)
+    assert source.grad is None
+
+
+def test_grad_of_tensor_with_respect_to_itself_is_identity():
+    source = Tensor([[1.0, 2.0], [3.0, 4.0]], requires_grad=True)
+
+    result = grad(source, source)[0]
+
+    np.testing.assert_array_equal(result.data, np.ones_like(source.data))
+
+
+def test_grad_allow_unused_returns_none_for_unrelated_input():
+    output_source = Tensor([1.0, 2.0], requires_grad=True)
+    unrelated = Tensor([3.0, 4.0], requires_grad=True)
+
+    result = grad(output_source, unrelated, allow_unused=True)
+
+    assert result == [None]
