@@ -38,6 +38,19 @@ def test_grad_of_tensor_with_respect_to_itself_is_identity():
 
 
 
+
+def test_grad_accumulates_multiple_outputs_for_non_leaf_input():
+    source = Tensor([1.0, 2.0], requires_grad=True)
+    intermediate = source * 2.0
+    first_output = (intermediate * 3.0).sum()
+    second_output = (intermediate * 4.0).sum()
+
+    result = grad([first_output, second_output], intermediate)[0]
+
+    np.testing.assert_allclose(result.data, [7.0, 7.0], rtol=1e-6, atol=1e-7)
+    assert source.grad is None
+
+
 def test_grad_create_graph_supports_second_derivative():
     source = Tensor([1.5, -2.0, 0.25], requires_grad=True)
     loss = (source * source * source).sum()
