@@ -329,7 +329,6 @@ def grad(outputs, inputs, create_graph=False, allow_unused=False):
     if not isinstance(inputs, (list, tuple)):
         inputs = [inputs]
 
-    input_ids = {id(i) for i in inputs}
     result = [None] * len(inputs)
 
     for out in outputs:
