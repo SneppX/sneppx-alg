@@ -364,6 +364,14 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
     return bool(value) and value == _admin_key
 
 
+def require_admin(request: "Request"):
+    """Require the configured admin credential for serving control operations."""
+    authorization = request.headers.get("authorization")
+    if not _verify_admin_auth(authorization):
+        raise HTTPException(status_code=401, detail="Admin authentication required")
+    return True
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting SneppX inference server")
@@ -475,7 +483,7 @@ async def model_versions_endpoint(model_id: str):
     return {"name": model_id, "versions": versions}
 
 
-@app.post("/v1/deploy", dependencies=[Depends(require_auth)])
+@app.post("/v1/deploy", dependencies=[Depends(require_admin)])
 async def deploy_endpoint(model: str = Query(...), version: str = Query("v1"),
                           description: str = Query(""), promote: bool = Query(False)):
     eng = get_serving_engine()
@@ -483,7 +491,7 @@ async def deploy_endpoint(model: str = Query(...), version: str = Query("v1"),
     return {"status": "deployed" if ok else "error"}
 
 
-@app.post("/v1/traffic", dependencies=[Depends(require_auth)])
+@app.post("/v1/traffic", dependencies=[Depends(require_admin)])
 async def traffic_endpoint(model: str = Query(...), split: str = Query(...)):
     eng = get_serving_engine()
     legs = []
@@ -666,7 +674,7 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     )
 
 
-@app.post("/v1/models/quantize", dependencies=[Depends(require_auth)])
+@app.post("/v1/models/quantize", dependencies=[Depends(require_admin)])
 async def quantize_model_endpoint(model_id: str = Query(...), quant_mode: str = Query("int4")):
     entry = get_model(model_id)
     mode_map = {"int4": "INT4_SYM", "int8": "INT8_SYM", "fp8": "INT4_SYM"}
