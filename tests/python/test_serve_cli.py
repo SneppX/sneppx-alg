@@ -30,6 +30,22 @@ def test_serve_cli_filters_empty_api_key_entries():
     assert _parse_api_keys(None) == []
 
 
+def test_serve_cli_rate_limit_zero_disables_without_defaulting():
+    from SneppX_ALG.interface_bindings.serve_cli import _resolve_rate_limit
+
+    assert _resolve_rate_limit(None) == (True, 60)
+    assert _resolve_rate_limit(0) == (False, 0)
+    assert _resolve_rate_limit(25) == (True, 25)
+
+
+def test_serve_cli_rejects_negative_rate_limit():
+    import pytest
+    from SneppX_ALG.interface_bindings.serve_cli import _resolve_rate_limit
+
+    with pytest.raises(ValueError, match="zero or a positive"):
+        _resolve_rate_limit(-1)
+
+
 def test_serve_cli_rejects_remote_bind_without_auth():
     import pytest
     from SneppX_ALG.interface_bindings.serve_cli import _validate_auth_settings
