@@ -4,12 +4,13 @@ Stable as of **v1.1.1**. All algorithm wrappers are complete and delegate to the
 compiled C backend (`_SNEPPX_c` / `_arix_c`) when available, falling back to a
 pure-NumPy engine otherwise (exposed via the `_HAS_C` flag).
 
-> **Security note (S0 — Post-Quantum Crypto).** The Dilithium / ML-DSA
-> implementation in `security/crypto/c/dilithium.c` is verified against the
-> official **FIPS 204** known-answer tests shipped in
-> `tests/python/data/kat_vectors.json` (see `tests/python/test_crypto_kat.py`).
-> Signing of releases and updates uses these primitives, and the KAT suite runs
-> in CI and via `pytest tests/python`.
+> **Security note (S0 — Post-Quantum Crypto).** The PQC implementations are
+> experimental and are not yet fully interoperable with the finalized FIPS
+> standards. The official ACVP report in [`docs/pqc_kat.md`](../pqc_kat.md)
+> records SHA3-256 agreement, ML-KEM key-generation checks, and the current
+> ML-DSA / SLH-DSA signature-format gaps. Do not treat these implementations as
+> production-certified or use them as the sole protection for sensitive data.
+> Release/update signing currently uses Ed25519, not ML-DSA.
 
 ## Installation
 
