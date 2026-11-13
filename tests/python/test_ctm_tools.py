@@ -39,7 +39,7 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
 
 def test_line_reader_handles_universal_newlines(tmp_path):
     source = tmp_path / "mixed.txt"
-    source.write_bytes(b"one\\rtwo\\r\\nthree")
+    source.write_bytes(b"one\rtwo\r\nthree")
     assert ctm._read_text_lines(source) == 3
 
 
