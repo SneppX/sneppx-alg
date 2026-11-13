@@ -1,7 +1,7 @@
 """Comprehensive tests for Tensor operations (pure NumPy or C backend)."""
 
 import numpy as np
-from SneppX_ALG.interface_bindings import Tensor, Dtype, Device, _HAS_C_BACKEND
+from SneppX_ALG.interface_bindings import Tensor, Dtype, Device, Layout, _HAS_C_BACKEND
 from SneppX_ALG.interface_bindings.tensor import DTYPE_MAP
 
 
@@ -13,9 +13,12 @@ def test_dtype_and_device_enum_contract():
     )
     assert all(hasattr(Dtype, name) for name in expected_dtype_names)
     assert all(hasattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU"))
+    assert all(hasattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED"))
+    assert Layout.DENSE == Layout.ROW_MAJOR
     if not _HAS_C_BACKEND:
         assert [getattr(Dtype, name) for name in expected_dtype_names] == list(range(13))
         assert [getattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")] == list(range(6))
+        assert [getattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")] == list(range(4))
 
 
 def test_complex_scalar_construction():
