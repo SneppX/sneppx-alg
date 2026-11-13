@@ -795,6 +795,14 @@ class Tensor:
             dims = tuple(dims[0])
         return Permute.apply(self, dims)
 
+    def gather(self, dim, index):
+        """Gather values using an index tensor with the same rank as the input."""
+        from .autograd_ops import Gather
+
+        if isinstance(index, Tensor):
+            index = index.data
+        return Gather.apply(self, dim, np.asarray(index))
+
     def index_select(self, dim, index):
         """Select entries along one dimension using a one-dimensional index."""
         from .autograd_ops import IndexSelect
