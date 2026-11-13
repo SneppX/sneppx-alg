@@ -39,6 +39,7 @@ def check(name, cond):
     if not cond:
         print(f"  FAIL {name}")
         failed.append(name)
+        assert cond, name
     else:
         print(f"  PASS {name}")
 
