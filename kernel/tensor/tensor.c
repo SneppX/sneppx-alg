@@ -166,34 +166,6 @@ static SNEPPXStorage* ensure_storage(SNEPPXTensor* t) {
  *
  * @param t [out] T value.
  */
-static void SNEPPX_tensor_fill_scalar(SNEPPXTensor* t, double value) {
-    unsigned char* data = (unsigned char*)t->data;
-    size_t n = t->size;
-    switch (t->dtype) {
-        case SNEPPX_FLOAT32: { float v = (float)value; for (size_t i = 0; i < n; i++) ((float*)data)[i] = v; break; }
-        case SNEPPX_FLOAT64: { double v = value; for (size_t i = 0; i < n; i++) ((double*)data)[i] = v; break; }
-        case SNEPPX_FLOAT16:
-        case SNEPPX_BFLOAT16:
-        case SNEPPX_FLOAT8:  { float v = (float)value; for (size_t i = 0; i < n; i++) ((float*)data)[i] = v; break; }
-        case SNEPPX_INT32:   { int32_t v = (int32_t)value; for (size_t i = 0; i < n; i++) ((int32_t*)data)[i] = v; break; }
-        case SNEPPX_INT64:   { int64_t v = (int64_t)value; for (size_t i = 0; i < n; i++) ((int64_t*)data)[i] = v; break; }
-        case SNEPPX_INT16:   { int16_t v = (int16_t)value; for (size_t i = 0; i < n; i++) ((int16_t*)data)[i] = v; break; }
-        case SNEPPX_INT8:    { int8_t v = (int8_t)value; for (size_t i = 0; i < n; i++) ((int8_t*)data)[i] = v; break; }
-        case SNEPPX_UINT8:   { uint8_t v = (uint8_t)value; for (size_t i = 0; i < n; i++) ((uint8_t*)data)[i] = v; break; }
-        case SNEPPX_BOOL:    { uint8_t v = value != 0.0 ? 1 : 0; for (size_t i = 0; i < n; i++) ((uint8_t*)data)[i] = v; break; }
-        case SNEPPX_COMPLEX64:
-        case SNEPPX_COMPLEX128: { memset(data, 0, n * t->item_size); break; }
-    }
-}
-
-/**
- * @brief Create Tensor.
- *
- * @param shape [in] Shape value.
- * @param ndim [in] Ndim value.
- *
- * @return Pointer on success, NULL on error.
- */
 SNEPPXTensor* SNEPPX_tensor_create(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
     if (ndim > 0 && !shape) return NULL;
     SNEPPXTensor* tensor = (SNEPPXTensor*)aligned_alloc_wrapper(sizeof(SNEPPXTensor), 64);
@@ -442,21 +414,80 @@ SNEPPXTensor* SNEPPX_tensor_zeros(const size_t* shape, size_t ndim, SNEPPXDtype 
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_ones(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
+    /* FLOAT8 has no single declared encoding (E4M3 and E5M2 differ). */
+    if (dtype == SNEPPX_FLOAT8) return NULL;
+
     SNEPPXTensor* tensor = SNEPPX_tensor_create(shape, ndim, dtype);
     if (!tensor) return NULL;
-    size_t n = tensor->size;
-    if (dtype == SNEPPX_FLOAT32 || dtype == SNEPPX_FLOAT16 || dtype == SNEPPX_BFLOAT16 || dtype == SNEPPX_FLOAT8) {
-        float* data = (float*)tensor->data;
-        for (size_t i = 0; i < n; i++) data[i] = 1.0f;
-    } else if (dtype == SNEPPX_FLOAT64) {
-        double* data = (double*)tensor->data;
-        for (size_t i = 0; i < n; i++) data[i] = 1.0;
-    } else if (dtype == SNEPPX_INT32 || dtype == SNEPPX_INT64 || dtype == SNEPPX_INT16 || dtype == SNEPPX_INT8 || dtype == SNEPPX_UINT8 || dtype == SNEPPX_BOOL) {
-        memset(tensor->data, 1, n * tensor->item_size);
+
+    switch (dtype) {
+        case SNEPPX_FLOAT32: {
+            float* data = (float*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1.0f;
+            break;
+        }
+        case SNEPPX_FLOAT64: {
+            double* data = (double*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1.0;
+            break;
+        }
+        case SNEPPX_FLOAT16: {
+            uint16_t* data = (uint16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = UINT16_C(0x3c00);
+            break;
+        }
+        case SNEPPX_BFLOAT16: {
+            uint16_t* data = (uint16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = UINT16_C(0x3f80);
+            break;
+        }
+        case SNEPPX_INT32: {
+            int32_t* data = (int32_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT64: {
+            int64_t* data = (int64_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT16: {
+            int16_t* data = (int16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT8: {
+            int8_t* data = (int8_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_UINT8:
+        case SNEPPX_BOOL:
+            memset(tensor->data, 1, tensor->size * tensor->item_size);
+            break;
+        case SNEPPX_COMPLEX64: {
+            float* data = (float*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) {
+                data[2 * i] = 1.0f;
+                data[2 * i + 1] = 0.0f;
+            }
+            break;
+        }
+        case SNEPPX_COMPLEX128: {
+            double* data = (double*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) {
+                data[2 * i] = 1.0;
+                data[2 * i + 1] = 0.0;
+            }
+            break;
+        }
+        case SNEPPX_FLOAT8:
+        default:
+            SNEPPX_tensor_destroy(tensor);
+            return NULL;
     }
     return tensor;
 }
-
 /**
  * @brief Perform Tensor Full.
  *
