@@ -5639,9 +5639,12 @@ class IndexSelect(Function):
             dim += a.ndim
         if dim < 0 or dim >= a.ndim:
             raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
-        indices = np.asarray(index, dtype=np.int64)
+        indices = np.asarray(index)
         if indices.ndim != 1:
             raise ValueError("index_select expects a one-dimensional index")
+        if indices.dtype.kind not in "iu":
+            raise TypeError("index_select indices must have an integer dtype")
+        indices = indices.astype(np.int64, copy=False)
         if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
             raise IndexError("index_select index is out of range")
         ctx.save_attr(dim=dim, indices=indices.copy(), input_shape=a.shape)
