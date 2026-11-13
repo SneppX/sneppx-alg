@@ -7,6 +7,7 @@ backed by SNEPPX-Alg's C/C++ cognitive processing engine and autograd tape.
 import math
 import random
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Tuple, Optional, Callable, Dict, Any, Union
 import numpy as np
 
@@ -428,37 +429,92 @@ class Dataset:
 
 
 class DataLoader:
-    """DataLoader supporting batching, shuffling, and multi-threaded prefetching."""
-    def __init__(self, dataset: Dataset, batch_size: int = 32, shuffle: bool = False, num_workers: int = 0):
+    """Batch a Dataset with deterministic optional shuffling and threaded loading.
+
+    num_workers uses a thread pool (not subprocesses) to fetch samples.
+    Supply collate_fn for custom or variable-length batch collation.
+    """
+
+    def __init__(
+        self,
+        dataset: Dataset,
+        batch_size: int = 32,
+        shuffle: bool = False,
+        num_workers: int = 0,
+        drop_last: bool = False,
+        collate_fn: Optional[Callable] = None,
+        seed: Optional[int] = None,
+    ):
+        if isinstance(batch_size, (bool, np.bool_)):
+            raise ValueError("batch_size must be a positive integer")
+        try:
+            normalized_batch_size = int(batch_size)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("batch_size must be a positive integer") from exc
+        if normalized_batch_size <= 0 or normalized_batch_size != batch_size:
+            raise ValueError("batch_size must be a positive integer")
+        if isinstance(num_workers, (bool, np.bool_)):
+            raise ValueError("num_workers must be a non-negative integer")
+        try:
+            normalized_workers = int(num_workers)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("num_workers must be a non-negative integer") from exc
+        if normalized_workers < 0 or normalized_workers != num_workers:
+            raise ValueError("num_workers must be a non-negative integer")
+        if not hasattr(dataset, "__len__") or not hasattr(dataset, "__getitem__"):
+            raise TypeError("dataset must implement __len__ and __getitem__")
+
         self.dataset = dataset
-        self.batch_size = batch_size
-        self.shuffle = shuffle
-        self.num_workers = num_workers
+        self.batch_size = normalized_batch_size
+        self.shuffle = bool(shuffle)
+        self.num_workers = normalized_workers
+        self.drop_last = bool(drop_last)
+        self.collate_fn = collate_fn
+        self.seed = seed
+        self._epoch = 0
 
     def __iter__(self):
         indices = list(range(len(self.dataset)))
         if self.shuffle:
-            random.shuffle(indices)
-        
-        batch = []
-        for idx in indices:
-            batch.append(self.dataset[idx])
-            if len(batch) == self.batch_size:
-                yield self._collate(batch)
-                batch = []
-        if batch:
-            yield self._collate(batch)
+            rng = random.Random(None if self.seed is None else self.seed + self._epoch)
+            rng.shuffle(indices)
+        self._epoch += 1
+
+        if self.drop_last:
+            indices = indices[: (len(indices) // self.batch_size) * self.batch_size]
+
+        chunks = [
+            indices[start : start + self.batch_size]
+            for start in range(0, len(indices), self.batch_size)
+        ]
+
+        if self.num_workers > 0:
+            with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
+                for chunk in chunks:
+                    samples = list(executor.map(self.dataset.__getitem__, chunk))
+                    yield self._collate(samples)
+        else:
+            for chunk in chunks:
+                yield self._collate([self.dataset[index] for index in chunk])
 
     def _collate(self, batch):
-        # Collate list of tuples (x, y) into batched Tensors
+        if self.collate_fn is not None:
+            return self.collate_fn(batch)
+        if not batch:
+            return batch
         elem = batch[0]
         if isinstance(elem, tuple):
+            if not all(isinstance(sample, tuple) and len(sample) == len(elem) for sample in batch):
+                raise ValueError("all tuple samples must have the same structure")
             zipped = list(zip(*batch))
-            return tuple(Tensor(np.array(z)) for z in zipped)
+            return tuple(Tensor(np.array(values)) for values in zipped)
         return Tensor(np.array(batch))
 
     def __len__(self) -> int:
-        return math.ceil(len(self.dataset) / self.batch_size)
+        n = len(self.dataset)
+        if self.drop_last:
+            return n // self.batch_size
+        return (n + self.batch_size - 1) // self.batch_size
 
 
 # ============================================================================
