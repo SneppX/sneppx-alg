@@ -1,25 +1,14 @@
-﻿cmake_minimum_required(VERSION 3.16)
-project(ctm_tools LANGUAGES C)
+cmake_minimum_required(VERSION 3.16)
+project(ctm_tools LANGUAGES NONE)
 
-# CTM Tools - Custom Codebase Metrics Tools
-# Build with: cmake -B build -DSNEPPX_BUILD_CTM_TOOLS=ON && cmake --build build
+# The historical C implementations are incomplete prototypes: several
+# platforms return placeholder values instead of performing a real scan.
+# Do not build or distribute those executables until the C implementations
+# have a shared, tested cross-platform filesystem walker.
+message(STATUS "CTM: the supported implementation is the Python standard-library scanner.")
+message(STATUS "CTM: legacy C prototypes are intentionally not exposed as build targets.")
 
-add_executable(ctm_count_total_files c/ctm_count_total_files.c)
-target_include_directories(ctm_count_total_files PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/c")
-set_target_properties(ctm_count_total_files PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-
-add_executable(ctm_count_total_dirs c/ctm_count_total_dirs.c)
-target_include_directories(ctm_count_total_dirs PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/c")
-set_target_properties(ctm_count_total_dirs PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-
-add_executable(ctm_count_total_loc c/ctm_count_total_loc.c)
-target_include_directories(ctm_count_total_loc PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/c")
-set_target_properties(ctm_count_total_loc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-
-add_executable(ctm_count_loc_by_file c/ctm_count_loc_by_file.c)
-target_include_directories(ctm_count_loc_by_file PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/c")
-set_target_properties(ctm_count_loc_by_file PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
-
-add_executable(ctm_count_loc_by_language c/ctm_count_loc_by_language.c)
-target_include_directories(ctm_count_loc_by_language PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/c")
-set_target_properties(ctm_count_loc_by_language PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+add_custom_target(ctm-help
+    COMMAND ${CMAKE_COMMAND} -E echo "Run: python ${CMAKE_CURRENT_SOURCE_DIR}/py/ctm.py ."
+    VERBATIM
+)
