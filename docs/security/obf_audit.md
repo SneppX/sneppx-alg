@@ -20,6 +20,8 @@ changed in several areas:
 | Bogus control-flow redirect | **Disabled, not fixed** | Add/redirect APIs now fail closed; redirect does not modify the caller's code buffer. A safe reversible implementation does not exist yet. |
 | Whitebox AES placeholder | **Disabled, not fixed** | Init returns -1 and encryption zeroes output. A standards-compliant constant-time AES implementation is not provided. |
 | IAT protection concurrency | **Open** | The shared-entry synchronization issue requires a separate design and test. |
+| TLS callback pointer mangling | **Disabled, not fixed** | The previous implementation modified function pointers without a safe restore path; the API now returns -1 without mutation. |
+| Anti-dump image mutation | **Disabled, not fixed** | The previous POSIX path treated a `dlopen()` handle as an image base and modified live executable memory; all anti-dump APIs now fail closed. |
 
 The S2 implementation remains experimental and must not be treated as a
 security boundary. A fix to one source file does not establish the security
