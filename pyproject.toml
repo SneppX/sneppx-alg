@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sneppx-alg"
 version = "1.5.2"
-description = "Next-generation AI architecture with security built into the foundation"
+description = "Experimental AI framework in C/C++ and Python with tensor, autograd, model, and security research components"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Ammar [SNEPPX]", email = "algoSNEPPX@gmail.com"},
 ]
@@ -28,7 +28,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
