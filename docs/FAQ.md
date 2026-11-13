@@ -24,7 +24,7 @@ from SneppX_ALG import F
 ```
 
 ### "Can I migrate models from PyTorch?"
-Yes. SNEPPX-Alg supports `state_dict` weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See [`docs/from_pytorch.md`](from_pytorch.md).
+Yes. SNEPPX-Alg supports `state_dict` weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See [`migration/from_pytorch.md`](migration/from_pytorch.md).
 
 ## Installation & Build
 
@@ -88,7 +88,7 @@ $env:WORLD_SIZE=2; $env:RANK=0; $env:LOCAL_RANK=0
 ## Security
 
 ### "How do I report a security vulnerability?"
-See [`SECURITY.md`](../SECURITY.md). Do **not** open public issues for security vulnerabilities — report them privately via GitHub Security Advisories or email `algoSNEPPX@gmail.com`.
+See [repository security policy](https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md). Do **not** open public issues for security vulnerabilities — report them privately via GitHub Security Advisories or email `algoSNEPPX@gmail.com`.
 
 ## Still stuck?
 
