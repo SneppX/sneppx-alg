@@ -235,6 +235,21 @@ static void test_ones_dtype_correctness(void) {
 
 TEST(test_tensor_creation, empty_2d) { test_empty_2d(); }
 TEST(test_tensor_creation, ones_dtype_correctness) { test_ones_dtype_correctness(); }
+static void test_create_rejects_invalid_dtype_and_size_overflow(void) {
+    size_t shape[] = {2, 3};
+    SNEPPXTensor* t = SNEPPX_tensor_create(shape, 2, (SNEPPXDtype)999);
+    SX_ASSERT_NULL(t, "unknown dtype rejected");
+
+    size_t overflowing_shape[] = {SIZE_MAX, 2};
+    t = SNEPPX_tensor_create(overflowing_shape, 2, SNEPPX_FLOAT32);
+    SX_ASSERT_NULL(t, "shape element count overflow rejected");
+
+    size_t byte_overflow_shape[] = {SIZE_MAX / sizeof(double) + 1};
+    t = SNEPPX_tensor_create(byte_overflow_shape, 1, SNEPPX_FLOAT64);
+    SX_ASSERT_NULL(t, "tensor byte size overflow rejected");
+}
+
+TEST(test_tensor_creation, reject_invalid_dtype_and_overflow) { test_create_rejects_invalid_dtype_and_size_overflow(); }
 TEST(test_tensor_creation, empty_3d) { test_empty_3d(); }
 TEST(test_tensor_creation, empty_NULL_shape) { test_empty_null_shape(); }
 TEST(test_tensor_creation, empty_zero_ndim) { test_empty_zero_ndim(); }
