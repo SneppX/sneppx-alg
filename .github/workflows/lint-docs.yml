@@ -37,3 +37,9 @@ jobs:
           python -m compileall -q ctm_tools/py
           python ctm_tools/py/ctm.py . --format json > /tmp/ctm-report.json
           python -c "import json; r=json.load(open('/tmp/ctm-report.json', encoding='utf-8')); assert r['schema_version'] == 1 and r['files'] > 0"
+          python ctm_tools/py/ctm_summary_report.py . --format json > /tmp/ctm-summary.json
+          python -c "import json; r=json.load(open('/tmp/ctm-summary.json', encoding='utf-8')); assert r['tool'] == 'ctm_summary_report' and r['files'] > 0"
+          python ctm_tools/py/ctm_find_large_files.py . --min-size 999999999 --format json > /tmp/ctm-large.json
+          python -c "import json; r=json.load(open('/tmp/ctm-large.json', encoding='utf-8')); assert 'files' in r"
+          cmake -S ctm_tools -B /tmp/ctm-build
+          cmake --build /tmp/ctm-build --target ctm-help
