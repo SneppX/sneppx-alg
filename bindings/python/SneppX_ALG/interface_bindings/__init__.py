@@ -22,6 +22,7 @@ from .pytorch_api import (
     TensorDataset as PyTorchTensorDataset,
     Subset as PyTorchSubset,
     ConcatDataset as PyTorchConcatDataset,
+    random_split as pytorch_random_split,
     accuracy as py_accuracy,
     precision_recall_f1 as py_f1,
     Trainer as PyTorchTrainer,
