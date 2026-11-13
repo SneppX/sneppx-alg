@@ -468,7 +468,6 @@ class ConcatDataset(Dataset):
     """Concatenate multiple datasets into one indexable dataset."""
 
     def __init__(self, datasets):
-        from bisect import accumulate
         datasets = tuple(datasets)
         if not datasets:
             raise ValueError("ConcatDataset requires at least one dataset")
