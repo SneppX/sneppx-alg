@@ -5178,10 +5178,10 @@ accelerator/distributed paths are optional or incomplete.</p>
   storage bounds, and narrow views no longer have a fixed 16-dimension stack limit.</li>
 <li>Fill operations traverse logical indices using view strides rather than assuming
   contiguous storage.</li>
-<li>Added differentiable <code>flip</code>, <code>roll</code>, <code>tril</code>, <code>triu</code> and <code>index_select</code>
-  tensor operations with forward and reverse-mode gradient tests. Duplicate
-  index selections accumulate gradients; invalid index dtype and bounds are
-  rejected.</li>
+<li>Added differentiable <code>flip</code>, <code>roll</code>, <code>tril</code>, <code>triu</code>, <code>index_select</code> and
+  <code>gather</code> tensor operations with forward and reverse-mode gradient tests.
+  Duplicate index selections accumulate gradients; invalid index dtype, bounds
+  and non-gather dimensions are rejected.</li>
 <li>FLOAT8 remains intentionally limited: the repository does not yet select one
   encoding (E4M3 or E5M2), so operations that need a numeric one-value encoding
   fail closed instead of guessing.</li>
