@@ -1,0 +1,14 @@
+/* Command palette */
+.sx-palette { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.45); align-items: flex-start; justify-content: center; padding-top: 10vh; }
+.sx-palette--open { display: flex; }
+.sx-palette__box { width: min(560px, 92vw); background: var(--md-default-bg-color, #fff); border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); overflow: hidden; }
+.sx-palette__input { width: 100%; padding: 0.85rem 1rem; font-size: 1rem; border: none; border-bottom: 1px solid rgba(127,127,127,0.25); background: transparent; color: inherit; outline: none; }
+.sx-palette__list { list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow: auto; }
+.sx-palette__item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1rem; cursor: pointer; }
+.sx-palette__item--active { background: rgba(120,80,220,0.15); }
+.sx-palette__kind { font-size: 0.65rem; text-transform: uppercase; opacity: 0.6; min-width: 48px; }
+.sx-palette__title { flex: 1; }
+.sx-palette__empty { padding: 0.8rem 1rem; opacity: 0.6; }
+.sx-palette__hint { padding: 0.4rem 1rem; font-size: 0.72rem; opacity: 0.5; border-top: 1px solid rgba(127,127,127,0.2); }
+.sx-palette-trigger { margin-left: 0.5rem; padding: 0.2rem 0.5rem; font-size: 0.72rem; border: 1px solid rgba(127,127,127,0.35); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .sx-palette { transition: none; } }
