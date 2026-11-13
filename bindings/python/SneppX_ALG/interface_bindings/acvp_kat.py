@@ -213,32 +213,31 @@ def slhdsa_variant_for_parameter_set(parameter_set: str) -> Optional[int]:
 
 
 def run_slhdsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
-    """Run one SLH-DSA keygen vector through the C sphincs keygen.
+    """Mark SLH-DSA keyGen vectors unsupported when no reproducible seed is supplied.
 
-    Calls ``sphincs_keygen(variant)`` and compares the resulting ``pk``/``sk``
-    against the NIST expected values.  Returns True on byte match, False on
-    mismatch, None if the parameter set is unsupported.
+    The vendored samples contain expected key material but no deterministic
+    entropy input accepted by the current C key-generation API. Comparing a
+    fresh OS-random keypair to those fixed outputs would be a false test.
     """
-    variant = slhdsa_variant_for_parameter_set(vector.get("parameterSet", ""))
-    if variant is None:
-        return None
-
-    try:
-        pk, sk = crypto.sphincs_keygen(variant)
-    except Exception:
-        return None
-
-    expected_pk = h2b(vector["pk"]).upper()
-    expected_sk = h2b(vector["sk"]).upper()
-    if pk.hex().upper() != expected_pk or sk.hex().upper() != expected_sk:
-        return False
-    return True
+    return None
 
 
 def mldsa_keygen_vectors() -> List[Dict[str, Any]]:
     """Official NIST FIPS 204 ML-DSA keyGen sample vectors (seed -> pk/sk)."""
     doc = load_kat("mldsa_keygen_kat.json")
     return doc["vectors"]
+
+
+def _require_test_rng(crypto: Any) -> None:
+    """Require deterministic entropy hooks from an explicitly test-built extension."""
+    if not callable(getattr(crypto, "random_set_seed", None)) or not callable(
+        getattr(crypto, "random_clear_seed", None)
+    ):
+        raise RuntimeError(
+            "deterministic ACVP key-generation requires an extension built with "
+            "SNEPPX_ENABLE_TEST_RNG=ON; this hook is intentionally absent from "
+            "production builds"
+        )
 
 
 def run_mldsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
@@ -249,6 +248,7 @@ def run_mldsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     against the NIST expected values.  Returns True on byte match, False on
     mismatch, None if the parameter set is unsupported.
     """
+    _require_test_rng(crypto)
     variant = ml_dsa_variant_for_parameter_set(vector.get("parameterSet", ""))
     if variant is None:
         return None
@@ -289,6 +289,7 @@ def run_mlkem_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     against the NIST expected values.  Returns True on byte match, False on
     mismatch, None if the parameter set is unsupported.
     """
+    _require_test_rng(crypto)
     variant = ml_kem_variant_for_parameter_set(vector.get("parameterSet", ""))
     if variant is None:
         return None
@@ -320,6 +321,7 @@ def run_mlkem_encaps_decaps_roundtrip(crypto: Any, vector: Dict[str, Any]) -> bo
     verifies the recovered shared secret matches.  Returns True on success,
     False on failure, None if the parameter set is unsupported.
     """
+    _require_test_rng(crypto)
     variant = ml_kem_variant_for_parameter_set(vector.get("parameterSet", ""))
     if variant is None:
         return None
