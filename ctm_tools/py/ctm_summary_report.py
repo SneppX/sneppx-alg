@@ -1,70 +1,72 @@
-﻿#!/usr/bin/env python3
-import os
-import sys
+#!/usr/bin/env python3
+"""Compatibility summary report built on the unified CTM scanner."""
+import argparse
 import json
-import subprocess
 from pathlib import Path
-from collections import defaultdict
 
-IGNORE_DIRS = {'.git', '.svn', '.hg', '__pycache__', 'node_modules', '.venv', 'venv', 'build', 'dist', '.next', '.cache', '.pytest_cache', '.ruff_cache'}
-IGNORE_EXTS = {'.pyc', '.pyo', '.o', '.obj', '.exe', '.dll', '.so', '.dylib', '.class', '.jar'}
+from ctm import scan
+
 
 def count_files_dirs_loc(root):
-    root = Path(root).resolve()
-    files = dirs = loc = 0
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
-        dirs += 1
-        for fn in filenames:
-            full = Path(dirpath) / fn
-            if full.suffix.lower() in IGNORE_EXTS: continue
-            files += 1
-            try:
-                with open(full, 'r', encoding='utf-8', errors='ignore') as f:
-                    loc += sum(1 for _ in f)
-            except: pass
-    return {'files': files, 'dirs': dirs, 'loc': loc}
+    report = scan(root, include_other_text=True)
+    return {
+        "files": report["files"],
+        "dirs": report["directories"] + 1,
+        "loc": report["lines_of_code"],
+        "bytes": report["bytes"],
+        "skipped_binary_or_symlink": report["skipped_binary_or_symlink"],
+        "unreadable_files": report["unreadable_files"],
+    }
+
 
 def main():
-    args = sys.argv[1:]
-    fmt = 'text'
-    output = None
-    root = '.'
-    i = 0
-    while i < len(args):
-        if args[i] == '--format' and i+1 < len(args):
-            fmt = args[i+1]
-            i += 2
-            continue
-        if args[i] == '--output' and i+1 < len(args):
-            output = args[i+1]
-            i += 2
-            continue
-        if not args[i].startswith('-'):
-            root = args[i]
-        i += 1
-    
-    stats = count_files_dirs_loc(root)
-    try:
-        r = subprocess.run(['git', '-C', root, 'ls-files'], stdout=subprocess.PIPE)
-        tracked = len(r.stdout.decode('utf-8', errors='ignore').splitlines())
-    except:
-        tracked = 0
-    result = {'tool': 'ctm_summary_report', 'root': str(Path(root).resolve()), **stats, 'tracked_files': tracked}
-    
-    if fmt == 'json':
-        out = json.dumps(result, indent=2)
-    elif fmt == 'csv':
-        out = 'files,dirs,loc,tracked_files\n'
-        out += f'{stats["files"]},{stats["dirs"]},{stats["loc"]},{tracked}\n'
-    else:
-        out = f'Root: {result["root"]}\nFiles: {stats["files"]}\nDirs: {stats["dirs"]}\nLOC: {stats["loc"]}\nTracked files (git): {tracked}\n'
-    
-    if output:
-        with open(output, 'w', encoding='utf-8') as f:
-            f.write(out)
-    else:
-        print(out)
+    parser = argparse.ArgumentParser(description="Create a CTM repository summary")
+    parser.add_argument("root", nargs="?", default=".")
+    parser.add_argument("--format", choices=("text", "json", "csv"), default="text")
+    parser.add_argument("--output")
+    args = parser.parse_args()
 
-if __name__ == '__main__':
+    report = scan(args.root, include_other_text=True)
+    git = report.get("git", {})
+    result = {
+        "tool": "ctm_summary_report",
+        "root": report["root"],
+        "files": report["files"],
+        "dirs": report["directories"] + 1,
+        "loc": report["lines_of_code"],
+        "bytes": report["bytes"],
+        "tracked_files": git.get("tracked_files"),
+        "untracked_files": git.get("untracked_files"),
+        "skipped_binary_or_symlink": report["skipped_binary_or_symlink"],
+        "unreadable_files": report["unreadable_files"],
+        "languages": report["languages"],
+    }
+
+    if args.format == "json":
+        rendered = json.dumps(result, indent=2, ensure_ascii=False)
+    elif args.format == "csv":
+        rendered = "files,dirs,loc,bytes,tracked_files,untracked_files\\n"
+        rendered += (
+            f"{result['files']},{result['dirs']},{result['loc']},{result['bytes']},"
+            f"{result['tracked_files']},{result['untracked_files']}\\n"
+        )
+    else:
+        rendered = (
+            f"Root: {result['root']}\\nFiles: {result['files']}\\n"
+            f"Dirs (including root): {result['dirs']}\\nLOC: {result['loc']}\\n"
+            f"Bytes: {result['bytes']}\\n"
+            f"Tracked files (git): {result['tracked_files']}\\n"
+            f"Untracked files (git): {result['untracked_files']}\\n"
+            f"Skipped binary/symlink: {result['skipped_binary_or_symlink']}\\n"
+            f"Unreadable files: {result['unreadable_files']}\\n"
+        )
+
+    if args.output:
+        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:
+            output_file.write(rendered)
+    else:
+        print(rendered, end="")
+
+
+if __name__ == "__main__":
     main()
