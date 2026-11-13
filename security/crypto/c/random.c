@@ -126,22 +126,46 @@ int SNEPPX_random_bytes(uint8_t* buffer, size_t len) {
  *
  * @return 0 on success, -1 on error.
  */
+int SNEPPX_random_uint32_checked(uint32_t* value) {
+    if (!value) return -1;
+    return SNEPPX_random_bytes((uint8_t*)value, sizeof(*value));
+}
+
 uint32_t SNEPPX_random_uint32(void) {
-    uint32_t val;
-    if (SNEPPX_random_bytes((uint8_t*)&val, 4) != 0) return 0;
-    return val;
+    uint32_t value = 0;
+    (void)SNEPPX_random_uint32_checked(&value);
+    return value;
 }
 
 /**
- * @brief Perform Random Uniform.
+ * @brief Generate a uniformly distributed integer below upper_bound.
  *
- * @return 0 on success, -1 on error.
+ * @param upper_bound Exclusive upper bound; must be non-zero.
+ * @param value [out] Receives the generated value on success.
+ *
+ * @return 0 on success, -1 on invalid arguments or entropy failure.
+ */
+int SNEPPX_random_uniform_checked(uint32_t upper_bound, uint32_t* value) {
+    if (upper_bound == 0 || !value) return -1;
+    const uint32_t threshold = (uint32_t)(-upper_bound % upper_bound);
+    for (;;) {
+        uint32_t random_value = 0;
+        if (SNEPPX_random_uint32_checked(&random_value) != 0) return -1;
+        if (random_value >= threshold) {
+            *value = random_value % upper_bound;
+            return 0;
+        }
+    }
+}
+
+/**
+ * @brief Compatibility wrapper for bounded random values.
+ *
+ * Returns 0 if the bound is invalid or the system entropy source fails.
+ * Call SNEPPX_random_uniform_checked when the caller must distinguish errors.
  */
 uint32_t SNEPPX_random_uniform(uint32_t upper_bound) {
-    if (upper_bound == 0) return 0;
-    uint32_t threshold = -upper_bound % upper_bound;
-    while (1) {
-        uint32_t r = SNEPPX_random_uint32();
-        if (r >= threshold) return r % upper_bound;
-    }
+    uint32_t value = 0;
+    (void)SNEPPX_random_uniform_checked(upper_bound, &value);
+    return value;
 }
