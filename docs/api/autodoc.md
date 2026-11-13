@@ -5,11 +5,12 @@ This page is produced automatically from the `SneppX_ALG` source by
 mirrors the curated [Python API](python.md) guide and is always in sync with the
 installed package.
 
-The C backend (`_SNEPPX_c` / `_arix_c`) is built and available on this install,
-so every wrapper delegates to native compute where present and falls back to the
-pure-NumPy engine otherwise. The post-quantum crypto layer (S0) — including the
-Dilithium / ML-DSA signatures used to sign releases and updates — is verified
-against the FIPS 204 known-answer tests shipped in `tests/python/data/`.
+The C backend (`_SNEPPX_c` / `_arix_c`) is optional: wrappers use native
+compute where an implementation is available and otherwise fall back to the
+pure-NumPy engine. The post-quantum crypto implementations are experimental
+and are not yet fully interoperable with finalized FIPS 203–205. See
+[`docs/pqc_kat.md`](../pqc_kat.md) for measured ACVP coverage and known
+signature-format gaps. Release/update signing currently uses Ed25519.
 
 For the full method-level reference, see the curated
 [Python API](python.md) guide. The blocks below surface each public class's
