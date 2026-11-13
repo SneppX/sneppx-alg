@@ -329,7 +329,7 @@ void SNEPPX_tensor_destroy(SNEPPXTensor* tensor) {
  * @return The result value, or 0 on error.
  */
 float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_FLOAT32) return 0.0f;
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return 0.0f;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return 0.0f;
     return ((float*)tensor->data)[offset];
@@ -342,7 +342,7 @@ float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float value) {
-    if (tensor->dtype != SNEPPX_FLOAT32) return;
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((float*)tensor->data)[offset] = value;
@@ -356,7 +356,7 @@ void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float va
  * @return The result value, or 0 on error.
  */
 double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_FLOAT64) return 0.0;
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return 0.0;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return 0.0;
     return ((double*)tensor->data)[offset];
@@ -369,7 +369,7 @@ double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) 
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double value) {
-    if (tensor->dtype != SNEPPX_FLOAT64) return;
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((double*)tensor->data)[offset] = value;
@@ -383,7 +383,7 @@ void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double v
  * @return 0 on success, -1 on error.
  */
 int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_INT32) return 0;
+    if (!tensor || tensor->dtype != SNEPPX_INT32) return 0;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int32_t*)tensor->data)[offset];
@@ -396,7 +396,7 @@ int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices)
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t value) {
-    if (tensor->dtype != SNEPPX_INT32) return;
+    if (!tensor || tensor->dtype != SNEPPX_INT32) return;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int32_t*)tensor->data)[offset] = value;
@@ -410,7 +410,7 @@ void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t 
  * @return 0 on success, -1 on error.
  */
 int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_INT64) return 0;
+    if (!tensor || tensor->dtype != SNEPPX_INT64) return 0;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int64_t*)tensor->data)[offset];
@@ -423,7 +423,7 @@ int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices)
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t value) {
-    if (tensor->dtype != SNEPPX_INT64) return;
+    if (!tensor || tensor->dtype != SNEPPX_INT64) return;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int64_t*)tensor->data)[offset] = value;
@@ -437,7 +437,7 @@ void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t 
  * @return 0 on success, -1 on error.
  */
 uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_BOOL) return 0;
+    if (!tensor || tensor->dtype != SNEPPX_BOOL) return 0;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((uint8_t*)tensor->data)[offset];
@@ -450,7 +450,7 @@ uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t value) {
-    if (tensor->dtype != SNEPPX_BOOL) return;
+    if (!tensor || tensor->dtype != SNEPPX_BOOL) return;
     size_t offset = 0;
     if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((uint8_t*)tensor->data)[offset] = value ? 1 : 0;
