@@ -27,7 +27,6 @@ Use the documentation extra and install the RSS plugin configured in
 
 ```powershell
 python -m pip install -e ".[docs]"
-python -m pip install "mkdocs-rss-plugin>=1.3"
 ```
 
 The Material social-card feature may require platform image libraries. If a
