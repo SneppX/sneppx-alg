@@ -59,7 +59,7 @@ def main():
     else:
         out = f'Max depth: {stats["max_depth"]}\n'
         for k,v in sorted(stats['depth_distribution'].items()):
-            out += f'Depth {k}: {v} dirs\n'
+            out += f'Depth {k}: {v} directories\n'
     
     if output:
         with open(output, 'w', encoding='utf-8') as f:
