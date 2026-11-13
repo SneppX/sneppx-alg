@@ -795,6 +795,16 @@ class Tensor:
             dims = tuple(dims[0])
         return Permute.apply(self, dims)
 
+    def scatter_add(self, dim, index, src):
+        """Return a copy with source values added at indexed destinations."""
+        from .autograd_ops import ScatterAdd
+
+        if isinstance(index, Tensor):
+            index = index.data
+        if not isinstance(src, Tensor):
+            src = Tensor(src, dtype=self.dtype)
+        return ScatterAdd.apply(self, dim, np.asarray(index), src)
+
     def gather(self, dim, index):
         """Gather values using an index tensor with the same rank as the input."""
         from .autograd_ops import Gather
