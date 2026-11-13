@@ -4,8 +4,7 @@
 #include <cstdio>
 #include <vector>
 #include <algorithm>
-#include <chrono>
-#include <random>
+#include "neural_core/security/cryptographic_random_generator.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -31,6 +30,10 @@
  *
  */
 
+
+static bool SNEPPX_obf_random_u32(uint32_t* value) {
+    return value && SNEPPX_random_bytes(reinterpret_cast<uint8_t*>(value), sizeof(*value)) == 0;
+}
 
 int SNEPPX_binary_subst_init(SNEPPXBinarySubst* bs) { if (!bs) return -1; memset(bs,0,sizeof(*bs)); return 0; }
 
@@ -128,15 +131,24 @@ int SNEPPX_junk_code_add_pattern(SNEPPXJunkCodeGen* jcg, const uint8_t* pattern,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_junk_code_insert(SNEPPXJunkCodeGen* jcg, uint8_t* code, size_t* code_len, size_t max_len, int position) {
-    if (!jcg||!code||!code_len||jcg->junk_count==0) return -1;
-    int idx=rand()%jcg->junk_count;
-    size_t junk_len=0;
-    for (int i=0;i<16;i++) if (jcg->junk_code[idx][i]) junk_len=i+1;
-    if (*code_len+junk_len>max_len) return -1;
-    int pos=(position<0||(size_t)position>*code_len)?(int)*code_len:position;
-    memmove(code+pos+junk_len,code+pos,*code_len-pos);
-    memcpy(code+pos,jcg->junk_code[idx],junk_len);
-    *code_len+=junk_len;
+    if (!jcg || !code || !code_len || jcg->junk_count <= 0 ||
+        jcg->junk_count > 64 || *code_len > max_len) return -1;
+
+    uint32_t random_index = 0;
+    if (!SNEPPX_obf_random_u32(&random_index)) return -1;
+    const size_t idx = static_cast<size_t>(random_index) % static_cast<size_t>(jcg->junk_count);
+
+    size_t junk_len = 0;
+    for (size_t i = 0; i < sizeof(jcg->junk_code[idx]); ++i) {
+        if (jcg->junk_code[idx][i]) junk_len = i + 1;
+    }
+    if (junk_len > max_len - *code_len) return -1;
+
+    size_t pos = position < 0 ? *code_len : static_cast<size_t>(position);
+    if (pos > *code_len) pos = *code_len;
+    memmove(code + pos + junk_len, code + pos, *code_len - pos);
+    memcpy(code + pos, jcg->junk_code[idx], junk_len);
+    *code_len += junk_len;
     return 0;
 }
 
@@ -196,109 +208,31 @@ int SNEPPX_array_obfuscate_indices(const size_t* dims, int ndim, size_t* lineari
     return 0;
 }
 
-#define SNEPPX_FAKE_BLOCK_MAX 32
-#define SNEPPX_FAKE_BLOCK_SIZE 128
-
-static struct {
-    uint8_t blocks[SNEPPX_FAKE_BLOCK_MAX][SNEPPX_FAKE_BLOCK_SIZE];
-    size_t sizes[SNEPPX_FAKE_BLOCK_MAX];
-    uint8_t patterns[SNEPPX_FAKE_BLOCK_MAX][SNEPPX_FAKE_BLOCK_SIZE];
-    int count;
-    int seeded;
-} SNEPPX_bogus_int;
-
-/**
- * @brief Perform Bogus Seed.
- */
-static void SNEPPX_bogus_seed(void) {
-    if (SNEPPX_bogus_int.seeded) return;
-    SNEPPX_bogus_int.seeded=1;
-    unsigned seed=(unsigned)std::chrono::steady_clock::now().time_since_epoch().count();
-    srand(seed);
-}
-
-/**
- * @brief Initialize Bogus Cf.
- *
- * @return 0 on success, -1 on error.
+/*
+ * Bogus control-flow rewriting is deliberately disabled. The previous
+ * implementation overwrote the caller's code buffer, emitted a trampoline
+ * whose displacement was based on the temporary trampoline address, and
+ * XOR-transformed bytes without a restore operation. Returning an error is
+ * safer than silently corrupting executable code.
  */
 int SNEPPX_bogus_cf_init(SNEPPXBogusCF* bcf) {
     if (!bcf) return -1;
-    memset(bcf,0,sizeof(*bcf));
-    memset(&SNEPPX_bogus_int,0,sizeof(SNEPPX_bogus_int));
-    SNEPPX_bogus_seed();
-    for (int i=0;i<4;i++) {
-        size_t len=(size_t)(rand()%12+2);
-        for (size_t j=0;j<len;j++) {
-            uint8_t v=(uint8_t)(rand()&0xFF);
-            SNEPPX_bogus_int.patterns[i][j]=v;
-        }
-        SNEPPX_bogus_int.sizes[i]=len;
-        SNEPPX_bogus_int.count++;
-    }
+    memset(bcf, 0, sizeof(*bcf));
     return 0;
 }
 
-/**
- * @brief Perform Bogus Cf Add Fake Block.
- *
- * @param bcf [out] Bcf value.
- * @param fake_code [in] Fake Code value.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_bogus_cf_add_fake_block(SNEPPXBogusCF* bcf, const uint8_t* fake_code, size_t fake_len) {
-    if (!bcf||!fake_code||!fake_len||fake_len>SNEPPX_FAKE_BLOCK_SIZE) return -1;
-    SNEPPX_bogus_seed();
-    if (SNEPPX_bogus_int.count>=SNEPPX_FAKE_BLOCK_MAX) return -1;
-    int idx=SNEPPX_bogus_int.count;
-    memcpy(SNEPPX_bogus_int.blocks[idx],fake_code,fake_len);
-    SNEPPX_bogus_int.sizes[idx]=fake_len;
-    for (size_t i=0;i<fake_len;i++) {
-        uint8_t pat=(uint8_t)((i*0x9E3779B9)^(fake_code[i]<<3));
-        SNEPPX_bogus_int.patterns[idx][i]=pat;
-    }
-    SNEPPX_bogus_int.count++;
-    bcf->fake_entry=(uintptr_t)SNEPPX_bogus_int.blocks[idx];
-    uint8_t synthetic[SNEPPX_FAKE_BLOCK_SIZE];
-    size_t slen=fake_len<SNEPPX_FAKE_BLOCK_SIZE?fake_len:SNEPPX_FAKE_BLOCK_SIZE;
-    for (size_t i=0;i<slen;i++) synthetic[i]=(uint8_t)((i*0x37)^0x90);
-    memcpy(SNEPPX_bogus_int.blocks[SNEPPX_bogus_int.count-1],synthetic,slen);
-    SNEPPX_bogus_int.sizes[SNEPPX_bogus_int.count-1]=slen;
-    return 0;
+    (void)fake_code;
+    (void)fake_len;
+    if (!bcf) return -1;
+    return -1;
 }
 
-/**
- * @brief Perform Bogus Cf Redirect.
- *
- * @param bcf [out] Bcf value.
- * @param code [out] Code value.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_bogus_cf_redirect(SNEPPXBogusCF* bcf, uint8_t* code, size_t code_len) {
-    if (!bcf||!code||!code_len) return -1;
-    SNEPPX_bogus_seed();
-    bcf->real_entry=(uintptr_t)code;
-    uint8_t trampoline[32];
-    size_t tp=0;
-    int fake_idx=SNEPPX_bogus_int.count>0?rand()%SNEPPX_bogus_int.count:0;
-    size_t flen=SNEPPX_bogus_int.sizes[fake_idx];
-    if (flen>0&&flen<code_len) {
-        memcpy(trampoline+tp,SNEPPX_bogus_int.blocks[fake_idx],flen);
-        tp+=flen;
-    }
-    size_t jmp_ofs=tp;
-    trampoline[tp++]=0xE9;
-    int32_t disp=(int32_t)((intptr_t)code-(intptr_t)(trampoline+jmp_ofs+5));
-    memcpy(trampoline+tp,&disp,4);
-    tp+=4;
-    size_t copy_len=tp<code_len?tp:code_len;
-    memcpy(code,trampoline,copy_len);
-    for (size_t i=flen;i<code_len;i++) {
-        code[i]^=(uint8_t)((i*0x5A)^(fake_idx+1));
-    }
-    return 0;
+    (void)code;
+    (void)code_len;
+    if (!bcf) return -1;
+    return -1;
 }
 
 int SNEPPX_iat_protect_init(SNEPPXIATProtect* iat) { if (!iat) return -1; memset(iat,0,sizeof(*iat)); return 0; }
