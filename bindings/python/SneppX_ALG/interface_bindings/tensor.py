@@ -176,12 +176,12 @@ class Tensor:
         self.requires_grad = requires_grad
         self.grad = None
         self._grad_fn = None
-        if isinstance(data, (int, float, np.integer, np.floating)):
+        if isinstance(data, (int, float, complex, np.integer, np.floating, np.complexfloating)):
             shape = shape or (1,)
             self._data = _CTensorData(
                 shape, self.dtype, is_cuda=(device.startswith("cuda"))
             )
-            arr = np.full(shape, float(data), dtype=_numpy_dtype(self.dtype))
+            arr = np.full(shape, data, dtype=_numpy_dtype(self.dtype))
             self._data._copy_from(arr)
             self.shape = shape
         elif isinstance(data, (list, tuple)):
