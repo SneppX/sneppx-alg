@@ -44,10 +44,10 @@ The tensor foundation is being hardened before broader API expansion:
   storage bounds, and narrow views no longer have a fixed 16-dimension stack limit.
 - Fill operations traverse logical indices using view strides rather than assuming
   contiguous storage.
-- Added differentiable `flip`, `roll`, `tril`, `triu`, `index_select` and
-  `gather` tensor operations with forward and reverse-mode gradient tests.
-  Duplicate index selections accumulate gradients; invalid index dtype, bounds
-  and non-gather dimensions are rejected.
+- Added differentiable `flip`, `roll`, `tril`, `triu`, `index_select`, `gather`
+  and `scatter_add` tensor operations with forward and reverse-mode gradient tests.
+  Duplicate index selections and scatter destinations accumulate gradients;
+  invalid index dtype, bounds, dtype mismatches and non-gather dimensions are rejected.
 - Expanded Python DataLoader behavior with seeded shuffling, drop-last batches,
   custom collation and ordered thread-pool fetching. Multiprocessing workers,
   prefetch queues, pinned memory and distributed sharding remain planned.
