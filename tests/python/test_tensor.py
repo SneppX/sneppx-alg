@@ -65,6 +65,29 @@ def test_create():
     print("  test_create PASS")
 
 
+def test_index_select_forward_and_duplicate_index_gradients():
+    values = np.arange(6, dtype=np.float32).reshape(2, 3)
+    tensor = Tensor(values)
+    selected = tensor.index_select(1, [2, 0, 2])
+    assert np.array_equal(selected.data, values[:, [2, 0, 2]])
+
+    tracked = Tensor(values, requires_grad=True)
+    tracked.index_select(1, [2, 0, 2]).sum().backward()
+    expected_grad = np.array([[1, 0, 2], [1, 0, 2]], dtype=np.float32)
+    assert np.array_equal(tracked.grad.data, expected_grad)
+
+
+def test_index_select_rejects_invalid_indices():
+    tensor = Tensor(np.arange(6, dtype=np.float32).reshape(2, 3))
+    for dim, index in ((2, [0]), (1, [[0, 1]]), (1, [3]), (1, [-1])):
+        try:
+            tensor.index_select(dim, index)
+        except (IndexError, ValueError):
+            pass
+        else:
+            raise AssertionError(f"invalid index_select input accepted: {(dim, index)!r}")
+
+
 def test_flip_roll_and_triangular_tensor_ops():
     values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
     tensor = Tensor(values)
