@@ -5712,6 +5712,8 @@ class ScatterAdd(Function):
         indices = np.asarray(index)
         if indices.ndim != a.ndim or indices.shape != src.shape:
             raise ValueError("scatter_add index and source must have the same shape and rank")
+        if src.dtype != a.dtype:
+            raise TypeError("scatter_add source dtype must match input dtype")
         if indices.dtype.kind not in "iu":
             raise TypeError("scatter_add indices must have an integer dtype")
         indices = indices.astype(np.int64, copy=False)
