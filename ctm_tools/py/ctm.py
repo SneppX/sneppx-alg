@@ -54,7 +54,7 @@ def _read_text_lines(path: Path) -> int | None:
         if not data:
             return 0
         text = data.decode("utf-8")
-        return len(text.splitlines()) + (1 if text.endswith(("\n", "\r")) and text.splitlines() else 0)
+        return len(text.splitlines())
     except (OSError, UnicodeError):
         return None
 
