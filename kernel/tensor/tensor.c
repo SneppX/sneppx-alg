@@ -59,6 +59,36 @@ static int compute_offset_checked(
     return 1;
 }
 
+static int compute_offset_flat_checked(
+    const SNEPPXTensor* tensor,
+    size_t flat_index,
+    size_t* out_offset
+) {
+    if (!tensor || !out_offset || !tensor->data || flat_index >= tensor->size ||
+        (tensor->ndim > 0 && (!tensor->shape || !tensor->strides))) return 0;
+
+    size_t remaining = flat_index;
+    size_t offset = 0;
+    for (size_t i = tensor->ndim; i > 0; --i) {
+        const size_t dim = tensor->shape[i - 1];
+        if (dim == 0) return 0;
+        const size_t coordinate = remaining % dim;
+        remaining /= dim;
+        const size_t stride = tensor->strides[i - 1];
+        if (stride != 0 && coordinate > (SIZE_MAX - offset) / stride) return 0;
+        offset += coordinate * stride;
+    }
+
+    if (tensor->item_size == 0) return 0;
+    if (tensor->storage) {
+        if (tensor->storage->num_bytes % tensor->item_size != 0) return 0;
+        const size_t capacity = tensor->storage->num_bytes / tensor->item_size;
+        if (tensor->offset > capacity || offset >= capacity - tensor->offset) return 0;
+    }
+    *out_offset = offset;
+    return 1;
+}
+
 static void* aligned_alloc_wrapper(size_t size, size_t alignment) {
     return SNEPPX_malloc(size, alignment);
 }
@@ -465,7 +495,11 @@ void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t
 void SNEPPX_tensor_fill_f32(SNEPPXTensor* tensor, float value) {
     if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return;
     float* data = (float*)tensor->data;
-    for (size_t i = 0; i < tensor->size; i++) data[i] = value;
+    for (size_t i = 0; i < tensor->size; ++i) {
+        size_t offset = 0;
+        if (!compute_offset_flat_checked(tensor, i, &offset)) return;
+        data[offset] = value;
+    }
 }
 
 /**
@@ -476,7 +510,11 @@ void SNEPPX_tensor_fill_f32(SNEPPXTensor* tensor, float value) {
 void SNEPPX_tensor_fill_f64(SNEPPXTensor* tensor, double value) {
     if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return;
     double* data = (double*)tensor->data;
-    for (size_t i = 0; i < tensor->size; i++) data[i] = value;
+    for (size_t i = 0; i < tensor->size; ++i) {
+        size_t offset = 0;
+        if (!compute_offset_flat_checked(tensor, i, &offset)) return;
+        data[offset] = value;
+    }
 }
 
 /**
