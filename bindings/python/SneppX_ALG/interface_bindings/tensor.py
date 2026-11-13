@@ -271,7 +271,30 @@ class Tensor:
         return self.transpose(0, 1)
 
     def numpy(self) -> np.ndarray:
+        """Return an independent NumPy copy of this tensor's values."""
         return self._data.to_numpy()
+
+    def __array__(self, dtype=None, copy=None):
+        """Expose tensor storage through NumPy's array protocol.
+
+        A matching dtype returns a view backed by this tensor's byte buffer.
+        A dtype conversion requires a copy; explicit copy=False rejects it.
+        """
+        array = np.frombuffer(
+            self._data._data, dtype=_numpy_dtype(self.dtype)
+        ).reshape(self.shape)
+        if dtype is not None:
+            requested_dtype = np.dtype(dtype)
+            if requested_dtype != array.dtype:
+                if copy is False:
+                    raise ValueError(
+                        "Unable to avoid a copy when converting tensor dtype "
+                        f"from {array.dtype} to {requested_dtype}"
+                    )
+                array = array.astype(requested_dtype, copy=True)
+        if copy is True:
+            array = array.copy()
+        return array
 
     def cuda(self):
         return self.to("cuda")
