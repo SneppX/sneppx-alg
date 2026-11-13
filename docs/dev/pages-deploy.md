@@ -16,8 +16,7 @@ This repository contains three GitHub Actions workflows:
 - `.github/workflows/lint-docs.yml`: selected source parsing, README integrity,
   and MkDocs YAML parsing.
 - `.github/workflows/docs-pages.yml`: installs the documentation extra, runs
-  `mkdocs build --strict`, then publishes to `gh-pages` without requesting a
-  force push.
+  `mkdocs build --strict`, then publishes the current package version plus the `latest` alias through `mike`, preserving older version directories and avoiding a force push.
 
 The deployment workflow is triggered by documentation/configuration changes
 on `main` or manually through **Actions → Publish documentation to GitHub Pages**.
@@ -66,14 +65,14 @@ Publishing requires repository write access and the correct Pages source
 configuration. The GitHub Pages settings are not inferred from this document;
 confirm them in **Settings → Pages** before deploying.
 
-The deployment workflow publishes to the `gh-pages` branch. GitHub Pages must be configured to publish from that branch at its root. For a manual publish, use:
+The deployment workflow publishes versioned documentation to the `gh-pages` branch using `mike`. GitHub Pages must be configured to publish from that branch at its root. For a manual publish, first build strictly, then use:
 
 ```powershell
-mkdocs gh-deploy
+VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+mike deploy --push --update-aliases "$VERSION" latest
 ```
 
-Do not add `--force` as a routine workaround. Inspect the target branch and
-deployment configuration first. Confirm the resulting Pages deployment in
+Do not use `mkdocs gh-deploy --force` for this versioned site: it can replace the version history managed by `mike`. Confirm the resulting Pages deployment in
 **Actions → Deployments** (or the Pages environment) and open the canonical
 URL after GitHub reports deployment success.
 
