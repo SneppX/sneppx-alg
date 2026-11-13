@@ -187,7 +187,8 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     if args.output:
-        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:\n            output_file.write(rendered)
+        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:
+            output_file.write(rendered)
     else:
         sys.stdout.write(rendered)
     return 0
