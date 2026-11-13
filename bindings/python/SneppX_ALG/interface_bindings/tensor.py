@@ -795,6 +795,14 @@ class Tensor:
             dims = tuple(dims[0])
         return Permute.apply(self, dims)
 
+    def index_select(self, dim, index):
+        """Select entries along one dimension using a one-dimensional index."""
+        from .autograd_ops import IndexSelect
+
+        if isinstance(index, Tensor):
+            index = index.data
+        return IndexSelect.apply(self, dim, np.asarray(index))
+
     def flip(self, dims=None):
         """Reverse tensor elements along one or more dimensions."""
         from .autograd_ops import Flip
