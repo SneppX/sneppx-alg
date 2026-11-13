@@ -24,23 +24,16 @@ import pytest
 import SneppX_ALG.interface_bindings.acvp_kat as kat
 
 
+try:
+    from SneppX_ALG import _SNEPPX_c as _extension
+    _HAS_TEST_RNG = hasattr(_extension.crypto, "random_set_seed")
+except ImportError:
+    _HAS_TEST_RNG = False
+
 pytestmark = pytest.mark.skipif(
-    kat.data_dir() is None, reason="vendored ACVP vectors not present"
+    kat.data_dir() is None or not _HAS_TEST_RNG,
+    reason="ML-KEM ACVP keygen tests require vectors and SNEPPX_ENABLE_TEST_RNG=ON",
 )
-
-
-def pytest_collection_modifyitems(config, items):
-    """Keep deterministic keygen KATs out of production-extension test runs."""
-    try:
-        from SneppX_ALG import _SNEPPX_c as ext
-        available = hasattr(ext.crypto, "random_set_seed")
-    except ImportError:
-        available = False
-    if not available:
-        skip = pytest.mark.skip(reason="deterministic ML-KEM KATs require SNEPPX_ENABLE_TEST_RNG=ON")
-        for item in items:
-            if item.module.__name__ == __name__:
-                item.add_marker(skip)
 
 
 @pytest.fixture(scope="module")
