@@ -27,6 +27,7 @@ set(BUILD_TESTING ${SNEPPX_BUILD_TESTS})
 option(SNEPPX_BUILD_BENCHMARKS "Build benchmarks" ON)
 option(SNEPPX_USE_GTEST "Build the C test suite against GoogleTest (FetchContent when not installed)" ON)
 option(SNEPPX_BUILD_PYTHON "Build Python bindings" OFF)
+option(SNEPPX_ENABLE_TEST_RNG "Enable deterministic RNG hooks for test-only builds (never for production)" OFF)
 option(SNEPPX_BUILD_CUDA "Build CUDA kernels" OFF)
 option(SNEPPX_BUILD_TOOLS "Build CLI tools" OFF)
 # Opt-in accelerator backends (OFF by default).
@@ -247,6 +248,10 @@ add_subdirectory(algorithms/model_zoo)
 
 if(CORE_SECURITY_C_SRC)
     add_library(neural_security_c STATIC ${CORE_SECURITY_C_SRC})
+    if(SNEPPX_ENABLE_TEST_RNG)
+        target_compile_definitions(neural_security_c PUBLIC SNEPPX_ENABLE_TEST_RNG)
+        message(WARNING "SNEPPX_ENABLE_TEST_RNG is ON: deterministic RNG controls are compiled in. Do not ship this build.")
+    endif()
     target_include_directories(neural_security_c PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
