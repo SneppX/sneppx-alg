@@ -26,6 +26,7 @@ jobs:
           python -m pip install numpy pytest pyyaml
           python -c "import json; json.load(open('CMakePresets.json')) if __import__('os').path.exists('CMakePresets.json') else None"
           python -c "import yaml; yaml.safe_load(open('mkdocs.yml', encoding='utf-8'))"
+          python -c "import glob, yaml; [yaml.safe_load(open(p, encoding='utf-8')) for p in glob.glob('.github/workflows/*.yml')]"
           python -m compileall -q bindings/python/SneppX_ALG/interface_bindings/generation.py bindings/python/SneppX_ALG/interface_bindings/inference_server.py bindings/python/SneppX_ALG/interface_bindings/hf_integration.py bindings/python/SneppX_ALG/interface_bindings/model_zoo.py bindings/python/SneppX_ALG/interface_bindings/serve_cli.py
       - name: README integrity test
         env:
