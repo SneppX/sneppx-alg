@@ -428,6 +428,71 @@ class Dataset:
         raise NotImplementedError
 
 
+class TensorDataset(Dataset):
+    """Dataset that indexes one or more arrays along their first dimension."""
+
+    def __init__(self, *tensors):
+        if not tensors:
+            raise ValueError("TensorDataset requires at least one tensor")
+        arrays = tuple(np.asarray(tensor) for tensor in tensors)
+        if any(array.ndim == 0 for array in arrays):
+            raise ValueError("TensorDataset inputs must have a batch dimension")
+        length = arrays[0].shape[0]
+        if any(array.shape[0] != length for array in arrays[1:]):
+            raise ValueError("all TensorDataset inputs must have the same first dimension")
+        self.tensors = arrays
+        self._length = length
+
+    def __len__(self) -> int:
+        return self._length
+
+    def __getitem__(self, index: int):
+        return tuple(tensor[index] for tensor in self.tensors)
+
+
+class Subset(Dataset):
+    """View a Dataset through a fixed sequence of indices."""
+
+    def __init__(self, dataset: Dataset, indices):
+        self.dataset = dataset
+        self.indices = tuple(int(index) for index in indices)
+
+    def __len__(self) -> int:
+        return len(self.indices)
+
+    def __getitem__(self, index: int):
+        return self.dataset[self.indices[index]]
+
+
+class ConcatDataset(Dataset):
+    """Concatenate multiple datasets into one indexable dataset."""
+
+    def __init__(self, datasets):
+        from bisect import accumulate
+        datasets = tuple(datasets)
+        if not datasets:
+            raise ValueError("ConcatDataset requires at least one dataset")
+        self.datasets = datasets
+        self.cumulative_sizes = []
+        total = 0
+        for dataset in datasets:
+            total += len(dataset)
+            self.cumulative_sizes.append(total)
+
+    def __len__(self) -> int:
+        return self.cumulative_sizes[-1]
+
+    def __getitem__(self, index: int):
+        from bisect import bisect_right
+        if index < 0:
+            index += len(self)
+        if index < 0 or index >= len(self):
+            raise IndexError("ConcatDataset index out of range")
+        dataset_index = bisect_right(self.cumulative_sizes, index)
+        previous_end = 0 if dataset_index == 0 else self.cumulative_sizes[dataset_index - 1]
+        return self.datasets[dataset_index][index - previous_end]
+
+
 class DataLoader:
     """Batch a Dataset with deterministic optional shuffling and threaded loading.
 
