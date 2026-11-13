@@ -5627,3 +5627,34 @@ class Triu(Function):
         if create_graph:
             return [Mul.apply(grad_output, Tensor(mask, dtype=grad_output.dtype))]
         return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
+
+
+class IndexSelect(Function):
+    """Select one dimension by a 1-D index array; backward accumulates duplicates."""
+
+    @staticmethod
+    def forward(ctx, a, dim, index):
+        dim = int(dim)
+        if dim < 0:
+            dim += a.ndim
+        if dim < 0 or dim >= a.ndim:
+            raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
+        indices = np.asarray(index, dtype=np.int64)
+        if indices.ndim != 1:
+            raise ValueError("index_select expects a one-dimensional index")
+        if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
+            raise IndexError("index_select index is out of range")
+        ctx.save_attr(dim=dim, indices=indices.copy(), input_shape=a.shape)
+        return Tensor(np.take(a.data, indices, axis=dim), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dim = ctx.get_attr("dim")
+        indices = ctx.get_attr("indices")
+        input_shape = ctx.get_attr("input_shape")
+        grad = np.zeros(input_shape, dtype=_numpy_dtype(grad_output.dtype))
+        for output_index in np.ndindex(grad_output.shape):
+            input_index = list(output_index)
+            input_index[dim] = int(indices[output_index[dim]])
+            grad[tuple(input_index)] += grad_output.data[output_index]
+        return [Tensor(grad, dtype=grad_output.dtype)]
