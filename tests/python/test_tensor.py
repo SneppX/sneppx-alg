@@ -65,6 +65,36 @@ def test_create():
     print("  test_create PASS")
 
 
+def test_flip_roll_and_triangular_tensor_ops():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    tensor = Tensor(values)
+
+    assert np.array_equal(tensor.flip((1,)).data, np.flip(values, axis=1))
+    assert np.array_equal(tensor.roll(1, dims=1).data, np.roll(values, 1, axis=1))
+    assert np.array_equal(tensor.roll(2).data, np.roll(values, 2))
+    assert np.array_equal(tensor.tril().data, np.tril(values))
+    assert np.array_equal(tensor.triu().data, np.triu(values))
+    assert np.array_equal(tensor.tril(diagonal=-1).data, np.tril(values, k=-1))
+    assert np.array_equal(tensor.triu(diagonal=1).data, np.triu(values, k=1))
+
+
+def test_flip_roll_and_triangular_ops_autograd():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    weights = Tensor(np.arange(1, 7, dtype=np.float32).reshape(2, 3))
+
+    x = Tensor(values, requires_grad=True)
+    (x.flip((1,)) * weights).sum().backward()
+    assert np.array_equal(x.grad.data, np.flip(weights.data, axis=1))
+
+    x = Tensor(values, requires_grad=True)
+    (x.roll(1, dims=1) * weights).sum().backward()
+    assert np.array_equal(x.grad.data, np.roll(weights.data, -1, axis=1))
+
+    x = Tensor(values, requires_grad=True)
+    (x.tril() * weights).sum().backward()
+    assert np.array_equal(x.grad.data, weights.data * np.tril(np.ones_like(values)))
+
+
 def test_numpy_array_protocol_shares_storage_and_converts_dtype():
     tensor = Tensor([1.0, 2.0, 3.0])
     view = np.asarray(tensor)
