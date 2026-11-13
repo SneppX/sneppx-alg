@@ -37,6 +37,12 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     assert report["skipped_binary_or_symlink"] == 1
 
 
+def test_line_reader_handles_universal_newlines(tmp_path):
+    source = tmp_path / "mixed.txt"
+    source.write_bytes(b"one\\rtwo\\r\\nthree")
+    assert ctm._read_text_lines(source) == 3
+
+
 def test_unknown_utf8_text_is_opt_in(tmp_path):
     (tmp_path / "notes.custom").write_text("first\nsecond", encoding="utf-8")
 
