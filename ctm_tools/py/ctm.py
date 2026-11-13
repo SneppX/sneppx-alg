@@ -47,15 +47,15 @@ LANGUAGES = {
 
 
 def _read_text_lines(path: Path) -> int | None:
-    """Return line count for UTF-8 text, or None for binary/undecodable files."""
+    """Stream-count UTF-8 physical lines; return None for binary/undecodable files."""
     try:
-        data = path.read_bytes()
-        if b"\x00" in data:
-            return None
-        if not data:
-            return 0
-        text = data.decode("utf-8")
-        return len(text.splitlines())
+        line_count = 0
+        with path.open("r", encoding="utf-8", errors="strict", newline=None) as stream:
+            for line in stream:
+                if "\x00" in line:
+                    return None
+                line_count += 1
+        return line_count
     except UnicodeError:
         return None
 
