@@ -2869,6 +2869,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tensor&#702;core&#702;correctness&#702;follow-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tensor core correctness follow-up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#validation&#702;evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4913,6 +4924,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tensor&#702;core&#702;correctness&#702;follow-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tensor core correctness follow-up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#validation&#702;evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5052,6 +5074,17 @@ certification is claimed. See the <a href="../../pqc_kat/">PQC interoperability 
   production-readiness claims.</li>
 <li>Added a strict MkDocs build and version-preserving GitHub Pages publishing
   workflow using <code>mike</code>. Existing <code>gh-pages</code> version history is preserved.</li>
+</ul>
+<h2 id="tensor&#702;core&#702;correctness&#702;follow-up">Tensor core correctness follow-up<a class="headerlink" href="#tensor&#702;core&#702;correctness&#702;follow-up" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Aligned fallback dtype, device and layout identifiers with the native C ABI.</li>
+<li>Added NumPy array-protocol support, complex scalar construction and strict
+  one-element scalar conversion.</li>
+<li>Rejected invalid native dtypes and tensor allocation-size overflow.</li>
+<li>Corrected integer, half, bfloat16 and complex initialization in the native
+  <code>ones</code> factory; FLOAT8 ones remain unsupported until the encoding is fixed.</li>
+<li>Added bounds-checked typed element access and safer strided/narrow views.</li>
+<li>Made fill operations honor non-contiguous strides and empty-view semantics.</li>
 </ul>
 <h2 id="validation&#702;evidence">Validation evidence<a class="headerlink" href="#validation&#702;evidence" title="Permanent link">&para;</a></h2>
 <p>The GitHub Actions run for commit <code>5db66926</code> completed successfully with:</p>
