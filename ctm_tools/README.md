@@ -61,9 +61,9 @@ check `schema_version` before assuming future fields are compatible.
 - Unknown extensions are ignored unless `--include-other-text` is supplied.
 - Reads UTF-8 text. Non-UTF-8 files are counted as skipped, not silently
   decoded with lossy replacement.
-- Scans can still consume I/O and memory proportional to the size of text
-  files. Do not point it at untrusted network mounts without considering that
-  operational cost.
+- Scanning time and I/O scale with the repository size; file contents are
+  counted incrementally to avoid loading an entire large file into memory.
+  Do not point it at untrusted network mounts without considering the I/O cost.
 
 ## Regression tests
 
