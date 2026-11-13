@@ -48,7 +48,8 @@ The tensor foundation is being hardened before broader API expansion:
   and `scatter_add` tensor operations with forward and reverse-mode gradient tests.
   Duplicate index selections and scatter destinations accumulate gradients;
   invalid index dtype, bounds, dtype mismatches and non-gather dimensions are rejected.
-- Added PyTorch-style TensorDataset, Subset and ConcatDataset composition helpers.
+- Added PyTorch-style TensorDataset, Subset, ConcatDataset and seeded random_split
+  dataset composition helpers.
 - Expanded Python DataLoader behavior with seeded shuffling, drop-last batches,
   custom collation and ordered thread-pool fetching. Multiprocessing workers,
   prefetch queues, pinned memory and distributed sharding remain planned.
