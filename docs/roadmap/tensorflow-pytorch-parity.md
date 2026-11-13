@@ -31,6 +31,23 @@ These surfaces are not yet equivalent to TensorFlow or PyTorch. Some backends
 are experimental, some operations have partial gradient coverage, and several
 accelerator/distributed paths are optional or incomplete.
 
+## Recent correctness work
+
+The tensor foundation is being hardened before broader API expansion:
+
+- Python fallback dtype, device and dense-layout enum values now follow the
+  native C ABI.
+- The Python tensor supports NumPy's array protocol with explicit copy behavior,
+  complex scalar construction and scalar-only `item()` semantics.
+- Native tensor creation checks invalid dtypes and allocation-size overflow.
+- Typed element access validates null pointers and indices; strided views validate
+  storage bounds, and narrow views no longer have a fixed 16-dimension stack limit.
+- Fill operations traverse logical indices using view strides rather than assuming
+  contiguous storage.
+- FLOAT8 remains intentionally limited: the repository does not yet select one
+  encoding (E4M3 or E5M2), so operations that need a numeric one-value encoding
+  fail closed instead of guessing.
+
 ## Capability matrix
 
 | Area | Existing foundation | Required work before parity |
