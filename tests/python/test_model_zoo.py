@@ -305,6 +305,9 @@ def test_model_config_c_round_trip():
     assert legacy_config.max_position_embeddings == 4096
     assert legacy_config.max_seq_len == 4096
 
+    layer_alias = ModelConfig(num_hidden_layers=6).to_c_config()
+    assert layer_alias["num_layers"] == 6
+
     # The C schema exposes a base positional limit and a runtime sequence
     # limit. They must remain independent when both are supplied.
     distinct = ModelConfig(
