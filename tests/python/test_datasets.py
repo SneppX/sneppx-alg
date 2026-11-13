@@ -21,6 +21,46 @@ def test_batch_indices():
     assert sorted(covered.tolist()) == list(range(10))
 
 
+def test_batching_rejects_invalid_sizes_and_scalar_inputs():
+    for invalid_size in (0, -1, 1.5, True):
+        try:
+            ds.ArrayDataLoader(np.arange(4), batch_size=invalid_size)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid batch_size accepted: {invalid_size!r}")
+
+    for invalid_size in (0, -1, 1.5, True):
+        try:
+            ds.batch_indices(4, invalid_size)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"batch_indices accepted invalid size: {invalid_size!r}")
+
+    for invalid_n in (-1, 1.5, True):
+        try:
+            ds.batch_indices(invalid_n, 2)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"batch_indices accepted invalid n: {invalid_n!r}")
+
+    try:
+        ds.ArrayDataLoader(np.array(3), batch_size=1)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("scalar X must be rejected")
+
+    try:
+        ds.ArrayDataLoader(np.arange(3), y=np.array(1), batch_size=1)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("scalar y must be rejected")
+
+
 def test_k_fold_indices():
     folds = ds.k_fold_indices(10, 5, seed=0)
     assert len(folds) == 5
