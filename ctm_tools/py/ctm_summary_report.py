@@ -45,20 +45,20 @@ def main():
     if args.format == "json":
         rendered = json.dumps(result, indent=2, ensure_ascii=False)
     elif args.format == "csv":
-        rendered = "files,dirs,loc,bytes,tracked_files,untracked_files\\n"
+        rendered = "files,dirs,loc,bytes,tracked_files,untracked_files\n"
         rendered += (
             f"{result['files']},{result['dirs']},{result['loc']},{result['bytes']},"
-            f"{result['tracked_files']},{result['untracked_files']}\\n"
+            f"{result['tracked_files']},{result['untracked_files']}\n"
         )
     else:
         rendered = (
-            f"Root: {result['root']}\\nFiles: {result['files']}\\n"
-            f"Dirs (including root): {result['dirs']}\\nLOC: {result['loc']}\\n"
-            f"Bytes: {result['bytes']}\\n"
-            f"Tracked files (git): {result['tracked_files']}\\n"
-            f"Untracked files (git): {result['untracked_files']}\\n"
-            f"Skipped binary/symlink: {result['skipped_binary_or_symlink']}\\n"
-            f"Unreadable files: {result['unreadable_files']}\\n"
+            f"Root: {result['root']}\nFiles: {result['files']}\n"
+            f"Dirs (including root): {result['dirs']}\nLOC: {result['loc']}\n"
+            f"Bytes: {result['bytes']}\n"
+            f"Tracked files (git): {result['tracked_files']}\n"
+            f"Untracked files (git): {result['untracked_files']}\n"
+            f"Skipped binary/symlink: {result['skipped_binary_or_symlink']}\n"
+            f"Unreadable files: {result['unreadable_files']}\n"
         )
 
     if args.output:
