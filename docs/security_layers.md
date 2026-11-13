@@ -2,16 +2,16 @@
 
 ## S0 — Cryptographic Core
 
-**Purpose:** Production-grade cryptographic primitives for signing, encryption, hashing, and key exchange.
+**Purpose:** Experimental cryptographic primitives for signing, encryption, hashing, and key exchange. Presence of an implementation does not establish production readiness, constant-time behavior, certification, or independent review.
 
 **Components:**
-- Ed25519 (RFC 8032) signatures: 304/306 vectors pass
+- Ed25519 (RFC 8032) signatures: historical documentation reports 304/306 vectors passing; current vector coverage must be reconciled before claiming full conformance
 - X25519 (RFC 7748) key exchange: Full DH exchange
 - ChaCha20-Poly1305 (RFC 8439) AEAD: encrypt/decrypt
 - SHA-3 (FIPS 202): 224/256/384/512
 - SHA-256 (FIPS 180-4): General-purpose hashing
 - BLAKE3: Fast hashing
-- Argon2id (RFC 9106): Secure KDF with timing defense
+- Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation
 - Secure Random: OS CPRNG (Windows CNG / Linux getrandom)
 - Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation
 - Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures
@@ -49,6 +49,8 @@ experimental until those gaps are closed and independently reviewed.
 ---
 
 ## S2 — Obfuscation Engine
+
+> **Security warning:** The S2 audit records unresolved RNG, timing-side-channel, code-transformation, and memory-safety findings. Do not rely on obfuscation as a security boundary or as protection for secrets. See [the detailed audit](security/obf_audit.md).
 
 **Purpose:** Protect against reverse engineering and static analysis.
 
