@@ -1,7 +1,7 @@
 # Documentation Site: Build, Validate, and Publish
 
 The public documentation is a Material for MkDocs site configured by
-[`mkdocs.yml`](../../mkdocs.yml). Its canonical URL is:
+[`mkdocs.yml`](https://github.com/SneppX/sneppx-alg/blob/main/mkdocs.yml). Its canonical URL is:
 
 `https://SneppX.github.io/sneppx-alg/`
 
