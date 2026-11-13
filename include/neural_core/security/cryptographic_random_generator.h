@@ -51,17 +51,29 @@ void SNEPPX_random_bytes_set_seed(const uint8_t seed[32]);
  */
 void SNEPPX_random_bytes_clear_seed(void);
 /**
- * @brief Perform Random Uint32.
+ * @brief Generate a random uint32_t with explicit error reporting.
  *
- * @return 0 on success, -1 on error.
+ * @param value [out] Receives the random value on success.
+ * @return 0 on success, -1 on invalid arguments or entropy failure.
+ */
+int SNEPPX_random_uint32_checked(uint32_t* value);
+
+/**
+ * @brief Generate a bounded uniform integer with explicit error reporting.
+ *
+ * @param upper_bound [in] Exclusive upper bound; must be non-zero.
+ * @param value [out] Receives a value in [0, upper_bound) on success.
+ * @return 0 on success, -1 on invalid arguments or entropy failure.
+ */
+int SNEPPX_random_uniform_checked(uint32_t upper_bound, uint32_t* value);
+
+/**
+ * @brief Compatibility wrapper; returns zero if entropy retrieval fails.
  */
 uint32_t SNEPPX_random_uint32(void);
+
 /**
- * @brief Perform Random Uniform.
- *
- * @param upper_bound [in] Upper Bound value.
- *
- * @return 0 on success, -1 on error.
+ * @brief Compatibility wrapper; returns zero for invalid bounds or entropy failure.
  */
 uint32_t SNEPPX_random_uniform(uint32_t upper_bound);
 
