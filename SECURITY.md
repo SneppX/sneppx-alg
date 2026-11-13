@@ -15,7 +15,7 @@ Report security vulnerabilities privately. Do NOT open public issues.
 - **GitHub Security Advisory (Preferred):** [Open a private advisory](https://github.com/SneppX/sneppx-alg/security/advisories/new)
 - **Direct Maintainer Contact:** `algoSNEPPX@gmail.com`
 
-GPG key: Available from S0 key infrastructure (Ed25519).
+Do not send secrets, private keys, or production credentials with a report. An authenticated disclosure channel is preferred.
 
 Please include:
 - Description of the vulnerability
@@ -37,20 +37,20 @@ Please include:
 
 | Phase | Status | Components |
 |-------|--------|------------|
-| S0 | Complete | Ed25519, ChaCha20-Poly1305, SHA-3, BLAKE3, secure random, Argon2id |
-| S1 | Complete | Guard pages, canaries, ASLR, locked memory, constant-time operations |
-| S2 | Partial | Control flow flattening, string encryption, instruction substitution, opaque predicates, VM obfuscation, anti-debug |
-| S3 | Partial | Behavioral monitor structure, anomaly detection, API hooking, syscall filtering stubs |
-| S4 | Planned v0.5.0 | Network security: TLS 1.3, QUIC, certificate pinning |
-| S5 | Planned v0.5.0 | AI sanitizer: prompt injection filter, output verification |
-| S6 | Planned v1.0 | Security UI: key management vault, audit viewer |
-| S7 | Planned v1.0 | Secure updates: signed delta updates, rollback protection |
-| S8 | Planned v1.0 | Formal verification: Lean 4 proofs of crypto correctness |
-| S9 | Planned v1.0 | Penetration testing: third-party audit, bug bounty |
+| S0 | Experimental / partial | Classical primitives and PQC code exist; PQC interoperability is incomplete and no FIPS validation is claimed |
+| S1 | Partial; independent audit required | Memory-hardening and constant-time helpers exist, but the complete layer is not certified or proven safe |
+| S2 | Known high-risk findings | RNG, timing, code-transformation, and memory-safety findings are documented; do not rely on S2 as a security boundary |
+| S3 | Partial | Monitoring and anomaly-detection components exist; syscall filtering and runtime enforcement are incomplete |
+| S4 | Experimental / partial | Network-security components exist; protocol configuration and deployment hardening require independent review |
+| S5 | Partial | AI input/output filtering components exist; they are not a complete prompt-injection or data-loss prevention boundary |
+| S6 | Incomplete / verify per component | Key-management and audit-viewer capabilities are not a complete managed security service |
+| S7 | Incomplete / verify per component | Signed-update and rollback controls require end-to-end release and recovery validation |
+| S8 | Not formally verified | Formal-methods scaffolding is not equivalent to machine-checked proofs of the cryptographic implementation |
+| S9 | Not independently audited | Test and pentest tooling does not replace an external penetration test or security certification |
 
 ## Known Issues
 
-No reported vulnerabilities at this time.
+No coordinated vulnerability disclosures are recorded in this policy. This does not mean the codebase has no known security weaknesses. The audit findings below remain open until fixes and regression tests are merged.
 
 ### Test Suite Edge Cases
 
@@ -61,10 +61,10 @@ No reported vulnerabilities at this time.
 ### S2 Obfuscation — Audit Findings (2026-08-16)
 
 See `docs/security/obf_audit.md` for the full audit report. Key findings:
-- **Critical:** S2 uses `rand()` (CWE-338) for obfuscation decisions — predictable seed makes all choices reproducible
+- **Critical:** S2 uses `rand()` (CWE-338) for obfuscation decisions — predictable PRNG state can make choices reproducible
 - **High:** Whitebox AES table lookups are timing-variable (CWE-208)
-- **Medium:** `bogus_cf_redirect` has no restore path; XOR with hardcoded `0xDEADBEEF` is trivially reversible (CWE-327)
-- Known issues tracked in `docs/security/obf_audit.md`
+- **Medium:** `bogus_cf_redirect` has no restore path; its reversible XOR transformation is not cryptographic protection
+- These findings are not resolved merely by documenting them. S2 must not be treated as a defense against a capable attacker until the issues are fixed and independently validated. See `docs/security/obf_audit.md`.
 
 ## Hall of Fame
 
