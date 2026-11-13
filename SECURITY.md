@@ -39,7 +39,7 @@ Please include:
 |-------|--------|------------|
 | S0 | Experimental / partial | Classical primitives and PQC code exist; PQC interoperability is incomplete and no FIPS validation is claimed |
 | S1 | Partial; independent audit required | Memory-hardening and constant-time helpers exist, but the complete layer is not certified or proven safe |
-| S2 | Experimental; high-risk findings remain | Predictable PRNG use in `obfuscation_advanced.cpp` was replaced; unsafe bogus control-flow rewriting is disabled. Whitebox AES timing, alignment, and IAT concurrency findings remain open; do not rely on S2 as a security boundary |
+| S2 | Experimental; high-risk findings remain | Predictable PRNG use in `obfuscation_advanced.cpp` was replaced; unsafe bogus control-flow rewriting is disabled. whitebox AES is disabled because it was not standards-compliant; IAT concurrency remains open. Do not rely on S2 as a security boundary |
 | S3 | Partial | Monitoring and anomaly-detection components exist; syscall filtering and runtime enforcement are incomplete |
 | S4 | Experimental / partial | Network-security components exist; protocol configuration and deployment hardening require independent review |
 | S5 | Partial | AI input/output filtering components exist; they are not a complete prompt-injection or data-loss prevention boundary |
@@ -64,7 +64,7 @@ See `docs/security/obf_audit.md` for the full audit report. Key findings:
 - **Remediated in `obfuscation_advanced.cpp`:** `rand()` / `srand()` were replaced with the OS-backed `SNEPPX_random_bytes` interface for junk-pattern selection. This is not a repository-wide RNG audit.
 - **High:** Whitebox AES table lookups are timing-variable (CWE-208)
 - **Medium:** `bogus_cf_redirect` has no restore path; its reversible XOR transformation is not cryptographic protection
-- The bogus control-flow redirect API now fails closed without modifying the caller's buffer; the feature is disabled, not functionally fixed. Whitebox AES timing, alignment, and IAT concurrency findings remain open. S2 must not be treated as a defense against a capable attacker. See `docs/security/obf_audit.md`.
+- The bogus control-flow redirect API now fails closed without modifying the caller's buffer; the feature is disabled, not functionally fixed. The whitebox AES placeholder is disabled; IAT concurrency remains open. S2 must not be treated as a defense against a capable attacker. See `docs/security/obf_audit.md`.
 
 ## Hall of Fame
 
