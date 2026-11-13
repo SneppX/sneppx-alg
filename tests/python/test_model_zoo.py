@@ -301,7 +301,23 @@ def test_model_config_c_round_trip():
     assert restored.hidden_size == original.hidden_size
 
     legacy_config = ModelConfig.from_c_config({"max_seq_len": 4096})
+    assert legacy_config.max_position_embeddings == 4096
     assert legacy_config.max_seq_len == 4096
+
+    # The C schema exposes a base positional limit and a runtime sequence
+    # limit. They must remain independent when both are supplied.
+    distinct = ModelConfig(
+        name="distinct-context",
+        max_position_embeddings=4096,
+        max_seq_len=16384,
+    )
+    distinct_c = distinct.to_c_config()
+    assert distinct_c["max_position_embeddings"] == 4096
+    assert distinct_c["max_seq_len"] == 16384
+
+    restored_distinct = ModelConfig.from_c_config(distinct_c)
+    assert restored_distinct.max_position_embeddings == 4096
+    assert restored_distinct.max_seq_len == 16384
 
 
 
