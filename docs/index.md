@@ -70,7 +70,7 @@ Tensor, autograd, neural-network, and utility APIs. Backend coverage and maturit
 <div class="sx-card" markdown>
 ### Releases
 Browse version history, changes, and compatibility notes.
-[Release notes →](release_notes/v1.5.0.md)
+[Release notes →](release_notes/v1.5.2.md)
 </div>
 
 </div>
