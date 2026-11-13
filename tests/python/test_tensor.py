@@ -84,7 +84,7 @@ def test_gather_rejects_invalid_indices():
         (2, np.array([[0], [0]])),
         (1, np.array([[0.5], [1.0]])),
         (1, np.array([[3], [0]], dtype=np.int64)),
-        (1, np.array([[0, 0, 0, 0], [0, 0, 0, 0]], dtype=np.int64)),
+        (1, np.array([[0], [0], [0]], dtype=np.int64)),
     )
     for dim, index in invalid_inputs:
         try:
