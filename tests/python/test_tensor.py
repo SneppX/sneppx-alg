@@ -1,7 +1,30 @@
 """Comprehensive tests for Tensor operations (pure NumPy or C backend)."""
 
 import numpy as np
-from SneppX_ALG.interface_bindings import Tensor, _HAS_C_BACKEND
+from SneppX_ALG.interface_bindings import Tensor, Dtype, Device, _HAS_C_BACKEND
+from SneppX_ALG.interface_bindings.tensor import DTYPE_MAP
+
+
+def test_dtype_and_device_enum_contract():
+    expected_dtype_names = (
+        "FLOAT32", "FLOAT64", "FLOAT16", "BFLOAT16", "FLOAT8",
+        "INT32", "INT64", "INT16", "INT8", "UINT8", "BOOL",
+        "COMPLEX64", "COMPLEX128",
+    )
+    assert all(hasattr(Dtype, name) for name in expected_dtype_names)
+    assert all(hasattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU"))
+    if not _HAS_C_BACKEND:
+        assert [getattr(Dtype, name) for name in expected_dtype_names] == list(range(13))
+        assert [getattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")] == list(range(6))
+
+
+def test_float8_storage_roundtrip():
+    assert DTYPE_MAP["float8"][1] == 1
+    values = np.array([0, 1, 127, 255], dtype=np.uint8)
+    tensor = Tensor(values, dtype="float8")
+    assert tensor.dtype_name == "float8"
+    assert tensor.data.dtype == np.uint8
+    assert np.array_equal(tensor.data, values)
 
 
 def test_create():
