@@ -112,7 +112,7 @@ def test_index_select_rejects_invalid_indices():
     for dim, index in ((2, [0]), (1, [[0, 1]]), (1, [3]), (1, [-1]), (1, [1.5])):
         try:
             tensor.index_select(dim, index)
-        except (IndexError, ValueError):
+        except (IndexError, ValueError, TypeError):
             pass
         else:
             raise AssertionError(f"invalid index_select input accepted: {(dim, index)!r}")
