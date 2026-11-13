@@ -25,7 +25,10 @@ try:
 except ImportError:
     _C = None
 
-pytestmark = pytest.mark.skipif(_C is None, reason="_SNEPPX_c extension not built")
+pytestmark = pytest.mark.skipif(
+    _C is None or not hasattr(_C, "random_set_seed"),
+    reason="requires _SNEPPX_c built with SNEPPX_ENABLE_TEST_RNG=ON",
+)
 _DATA = os.path.join(os.path.dirname(__file__), "data", "kat_vectors.json")
 
 
