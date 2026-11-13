@@ -137,11 +137,15 @@ static void init_crypto(py::module& m) {
     });
 
     crypto.def("random_bytes", [](size_t n) {
+        if (n == 0) return py::bytes();
         std::string out(n, 0);
-        SNEPPX_random_bytes((uint8_t*)out.data(), n);
+        if (SNEPPX_random_bytes((uint8_t*)out.data(), n) != 0)
+            throw std::runtime_error("system cryptographic random source unavailable");
         return py::bytes(out);
     });
 
+#ifdef SNEPPX_ENABLE_TEST_RNG
+    // Available only in explicit test builds; never ship deterministic RNG controls.
     crypto.def("random_set_seed", [](py::bytes seed) {
         std::string s = seed;
         if (s.size() < 32) throw std::runtime_error("seed must be >= 32 bytes");
@@ -151,6 +155,7 @@ static void init_crypto(py::module& m) {
     crypto.def("random_clear_seed", []() {
         SNEPPX_random_bytes_clear_seed();
     });
+#endif
 
     crypto.def("secure_zero", [](py::bytes data) {
         std::string d = data;
