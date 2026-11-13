@@ -5555,3 +5555,75 @@ class MaxDim(Function):
             g_exp = g if keepdim else np.expand_dims(g, axis=dim)
             np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
         return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+# ===========================================================================
+# Tensor indexing transforms — flip, roll and triangular masks
+# ===========================================================================
+
+
+class Flip(Function):
+    @staticmethod
+    def forward(ctx, a, dims=None):
+        normalized_dims = None if dims is None else tuple(int(d) for d in dims)
+        ctx.save_attr(dims=normalized_dims)
+        return Tensor(np.flip(a.data, axis=normalized_dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dims = ctx.get_attr("dims")
+        if create_graph:
+            return [Flip.apply(grad_output, dims)]
+        return [Tensor(np.flip(grad_output.data, axis=dims), dtype=grad_output.dtype)]
+
+
+class Roll(Function):
+    @staticmethod
+    def forward(ctx, a, shifts, dims=None):
+        normalized_shifts = tuple(int(v) for v in shifts) if isinstance(shifts, (tuple, list)) else int(shifts)
+        normalized_dims = tuple(int(v) for v in dims) if isinstance(dims, (tuple, list)) else dims
+        if normalized_dims is not None:
+            normalized_dims = int(normalized_dims) if isinstance(normalized_dims, (int, np.integer)) else normalized_dims
+        ctx.save_attr(shifts=normalized_shifts, dims=normalized_dims)
+        return Tensor(np.roll(a.data, shift=normalized_shifts, axis=normalized_dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        shifts = ctx.get_attr("shifts")
+        dims = ctx.get_attr("dims")
+        inverse = tuple(-v for v in shifts) if isinstance(shifts, tuple) else -shifts
+        if create_graph:
+            return [Roll.apply(grad_output, inverse, dims)]
+        return [Tensor(np.roll(grad_output.data, shift=inverse, axis=dims), dtype=grad_output.dtype)]
+
+
+class Tril(Function):
+    @staticmethod
+    def forward(ctx, a, diagonal=0):
+        diagonal = int(diagonal)
+        mask = np.tril(np.ones(a.shape[-2:], dtype=bool), k=diagonal)
+        ctx.save_attr(diagonal=diagonal, mask=mask)
+        return Tensor(np.tril(a.data, k=diagonal), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask = ctx.get_attr("mask")
+        if create_graph:
+            return [Mul.apply(grad_output, Tensor(mask, dtype=grad_output.dtype))]
+        return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
+
+
+class Triu(Function):
+    @staticmethod
+    def forward(ctx, a, diagonal=0):
+        diagonal = int(diagonal)
+        mask = np.triu(np.ones(a.shape[-2:], dtype=bool), k=diagonal)
+        ctx.save_attr(diagonal=diagonal, mask=mask)
+        return Tensor(np.triu(a.data, k=diagonal), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask = ctx.get_attr("mask")
+        if create_graph:
+            return [Mul.apply(grad_output, Tensor(mask, dtype=grad_output.dtype))]
+        return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
