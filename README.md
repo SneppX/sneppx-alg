@@ -13,7 +13,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
 
-> **SneppX-ALG** — A secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed-training primitives, quantization, and advanced architectures.
+ > **SneppX-ALG** — An experimental, open-source AI framework with a C/C++ core, Python APIs, model components, distributed-computing experiments, quantization utilities, and security research modules. Feature maturity varies by subsystem.
 
 **⭐ Star this repo** to support the project and help us reach 1,000+ stars!
 
@@ -37,7 +37,7 @@
 
 ## Overview
 
-SNEPPX-Alg (under the SneppX organization) is a universal, MIT-licensed AI algorithm framework written primarily in **C11 / C++20 with CUDA**. It organizes model construction and inference as a composable, secure **5-stage pipeline** and wraps it with a layered security model (S0–S9). The codebase is large (~183K LOC) and spans a core tensor/autograd substrate, algorithm implementations, accelerator drivers, a security stack, an HTTP serving layer, and Python bindings.
+SNEPPX-Alg is an MIT-licensed experimental AI framework written primarily in **C11 / C++20**, with Python APIs and optional accelerator work. It explores a composable five-stage pipeline and a layered security architecture (S0–S9). The repository includes a tensor/autograd substrate, algorithm implementations, backend experiments, security components, HTTP serving code, Python bindings, and CTM repository metrics tooling.
 
 Design goals:
 - **Auditable native core** — the hot path lives in C/CUDA you can read and verify.
@@ -45,18 +45,17 @@ Design goals:
 - **Security by design** — ten layers from crypto to pentest are built into the framework.
 - **Open & extensible** — opt-in backends, a model zoo, and a Python API on top of the native core.
 
-## By the numbers
+## Project scope
 
-- **~183K lines** of C11 / C++20 / CUDA / Python across a single auditable codebase
-- **300+ tests** (Python autograd, NN, optimizers, losses, sparse, higher-order AD, security)
-- **10 security layers** (S0–S9): classical + post-quantum crypto, memory hardening, obfuscation, monitoring, network, AI sanitizer, key vault, signed updates, formal verification, pentest
-- **5-stage pipeline**: HSS → SER → ARC → NPE → FM
-- **40+ autograd ops** with higher-order AD (`create_graph=True`), plus `jvp` / `vjp`
-- **~70 differentiable functional ops** (`F.*`), 14 loss Module wrappers, 30+ optimizers
-- **Quantization**: INT8 / INT4 / FP8 / AWQ / GPTQ
-- **Distributed**: DDP, ZeRO-1/2/3, tensor / pipeline / expert parallelism (NCCL + CPU fallback)
-- **Model zoo**: LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2 presets
-- **MIT licensed**, maintained by Ammar [SNEPPX]
+The repository includes tensor and autograd APIs, neural-network components,
+model utilities, experimental backend integrations, security modules, and
+developer tooling. Use the [CTM scanner](ctm_tools/README.md) to generate
+current repository metrics rather than relying on manually maintained LOC
+or test-count estimates.
+
+Implementation and validation status are documented per subsystem. A source
+file or public API is not evidence of feature completeness, production
+readiness, cryptographic certification, or independent security review.
 
 ## Why SNEPPX-Alg?
 
@@ -66,14 +65,14 @@ Honest positioning — SNEPPX-Alg is **not** a PyTorch replacement for training 
 |---|---|---|---|
 | Core implementation | C / C++ / CUDA (auditable) | C++ / Python | Python → XLA |
 | Python API | NumPy-backed `Tensor` / `nn` | Native tensors | `jax.numpy` |
-| Built-in security | 10 layers (S0–S9) + PQC | none | none |
-| Post-quantum crypto | Kyber / Dilithium / SPHINCS+ (FIPS 203/204/205) | none | none |
+| Security modules | Experimental S0–S9 components; maturity varies | No direct equivalent | No direct equivalent |
+| Post-quantum crypto | Experimental implementations; finalized FIPS interoperability incomplete | No direct equivalent | No direct equivalent |
 | Signed model updates | Ed25519 over BLAKE3 | none | none |
 | Quantization | INT8 / INT4 / FP8 / AWQ / GPTQ | INT8 / FP8 | limited |
 | Distributed | DDP / ZeRO / TP / PP / EP (NCCL) | DDP / FSDP | pmap / pjit |
 | License | MIT | BSD-3 | Apache 2.0 |
 
-If you want a drop-in PyTorch experience today, use PyTorch. If you want a **readable native core with security built in**, SNEPPX-Alg is for you.
+If you want a drop-in PyTorch experience today, use PyTorch. If you want to study an experimental native AI framework and its security research components, explore SNEPPX-Alg. Do not treat its security layers as a production security guarantee.
 
 ## Architecture
 
