@@ -63,13 +63,13 @@ Layered security research with documented limitations. PQC interoperability is i
 
 <div class="sx-card" markdown>
 ### Python API
-Fully differentiable `nn`, higher-order autograd, functional API, 14 extra packages.
+Tensor, autograd, neural-network, and utility APIs. Backend coverage and maturity vary by component.
 [Python API →](api/python.md)
 </div>
 
 <div class="sx-card" markdown>
-### v1.5.0
-Every `nn` module now trains. Higher-order autograd. New ecosystem packages.
+### Releases
+Browse version history, changes, and compatibility notes.
 [Release notes →](release_notes/v1.5.0.md)
 </div>
 
@@ -86,7 +86,7 @@ Every `nn` module now trains. Higher-order autograd. New ecosystem packages.
 
 ## Overview
 
-SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 security layers. The v1.5.x codebase includes a Python tensor and autograd API, sparse tensor utilities, model components, and additional packages. Native backend coverage and feature maturity vary; consult the relevant tests and API notes. The repository also contains the Model Zoo, Model Hub (`sneppx-hub`), C HTTP serving control plane, distributed training (ZeRO-1/2/3, pipeline/tensor/expert parallelism), advanced architectures (Differential Attention, Mamba-2, FlexAttention, MoD), quantization (INT8/INT4/FP8/AWQ/GPTQ), async checkpointing, profiling & debugging tools, and weight converters for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2.
+SneppX-ALG explores a five-stage algorithm pipeline and layered security architecture. The repository includes Python tensor and autograd APIs, sparse tensor utilities, model components, serving and distributed-computing experiments, quantization utilities, profiling tools, and model conversion code. Native backend coverage and feature maturity vary; consult component-specific tests and API notes before relying on a feature.
 
 ## Developer tooling
 
