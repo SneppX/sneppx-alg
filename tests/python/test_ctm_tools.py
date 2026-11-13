@@ -72,7 +72,7 @@ def test_cli_json_output_is_machine_readable(tmp_path):
 
 def test_html_dashboard_escapes_untrusted_root_path(tmp_path):
     report_root = tmp_path / 'repo<script>alert(1)</script>'
-    report_root.mkdir()
+    report_root.mkdir(parents=True)
     (report_root / 'main.py').write_text('pass\\n', encoding='utf-8')
 
     rendered = ctm.render_html(ctm.scan(report_root))
