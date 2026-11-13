@@ -46,6 +46,7 @@ class ModelConfig:
     num_key_value_heads: int = 0
     intermediate_size: int = 0
     vocab_size: int = 0
+    max_position_embeddings: int = 0
     max_seq_len: int = 0
 
     # Normalization
@@ -170,8 +171,8 @@ class ModelConfig:
             "num_heads": self.num_attention_heads,
             "num_kv_heads": self.num_key_value_heads,
             "intermediate_size": self.intermediate_size,
-            "max_position_embeddings": self.max_seq_len,
-            "max_seq_len": self.max_seq_len,
+            "max_position_embeddings": self.max_position_embeddings or self.max_seq_len,
+            "max_seq_len": self.max_seq_len or self.max_position_embeddings,
             "layer_norm_eps": self.layer_norm_eps,
             "rms_norm_eps": self.rms_norm_eps,
             "use_rms_norm": self.use_rms_norm,
@@ -224,8 +225,11 @@ class ModelConfig:
                 "num_kv_heads", c_config.get("num_heads", 32)
             ),
             intermediate_size=c_config.get("intermediate_size", 11008),
-            max_seq_len=c_config.get(
+            max_position_embeddings=c_config.get(
                 "max_position_embeddings", c_config.get("max_seq_len", 2048)
+            ),
+            max_seq_len=c_config.get(
+                "max_seq_len", c_config.get("max_position_embeddings", 2048)
             ),
             layer_norm_eps=c_config.get("layer_norm_eps", 1e-5),
             rms_norm_eps=c_config.get("rms_norm_eps", 1e-6),
