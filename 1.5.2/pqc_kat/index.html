@@ -4922,14 +4922,15 @@
 
 <h1 id="post-quantum&#702;crypto&#702;known-answer&#702;testing&#702;pqc&#702;kat&#702;status&#702;and&#702;write-up">Post-Quantum Crypto Known-Answer Testing (PQC KAT) — status and write-up<a class="headerlink" href="#post-quantum&#702;crypto&#702;known-answer&#702;testing&#702;pqc&#702;kat&#702;status&#702;and&#702;write-up" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p>2026-10 edition. Companion to issue <strong>#16</strong> (official NIST ACVP vector
-harness) in the SneppX/sneppx-alg tracker.</p>
+<p>2026-11-13 update. Companion to issue <strong>#16</strong> (official NIST ACVP vector
+harness) in the SneppX/sneppx-alg tracker. The deterministic RNG used by
+seeded key-generation tests is now compiled only into explicit test builds.</p>
 </blockquote>
 <h2 id="what&#702;was&#702;implemented">What was implemented<a class="headerlink" href="#what&#702;was&#702;implemented" title="Permanent link">&para;</a></h2>
 <p><code>SneppX_ALG.interface_bindings.acvp_kat</code> — a NIST ACVP harness for the C
 crypto backend (<code>_SNEPPX_c.crypto</code>), plus vendored official vectors:
 <code>tests/data/acvp/*.json</code>.</p>
-<p>Test suites (all green):</p>
+<p>Test suites (availability depends on build configuration):</p>
 <table>
 <thead>
 <tr>
@@ -4946,18 +4947,18 @@ crypto backend (<code>_SNEPPX_c.crypto</code>), plus vendored official vectors:
 </tr>
 <tr>
 <td><code>tests/python/test_acvp_mlkem.py</code></td>
-<td>6</td>
-<td><strong>C <code>kyber_keygen</code> vs NIST ML-KEM keyGen KATs</strong> (3 vectors: ML-KEM-512/768/1024 — FIPS 203), PK/SK sizes match FIPS 203, encaps/decaps roundtrip recovers shared secret, ML-KEM encaps/decaps KAT vectors</td>
+<td>conditional</td>
+<td>Deterministic keyGen and encaps/decaps tests require a test-only extension built with <code>SNEPPX_ENABLE_TEST_RNG=ON</code>; production builds skip this module. No FIPS validation is claimed.</td>
 </tr>
 <tr>
 <td><code>tests/python/test_acvp_slhdsa.py</code></td>
-<td>6</td>
-<td>SPHINCS+ robustness on all 12 SLH-DSA parameter sets (24 sigVer vectors): zero false accepts, no crashes, C sign/verify roundtrip + tamper rejection, seeded-deterministic keygen, SLH-DSA keyGen KAT vectors</td>
+<td>conditional</td>
+<td>Signature-verification vectors and C roundtrip/tamper tests; seeded determinism requires a test-only build. KeyGen vectors are explicitly skipped because they provide no reproducible entropy input accepted by the current C API.</td>
 </tr>
 <tr>
 <td><code>tests/python/test_acvp_mldsa.py</code></td>
-<td>6</td>
-<td>Dilithium on ML-DSA-44/65/87 (18 sigVer vectors): zero false accepts, no crashes, roundtrip + tamper rejection for variants 2/3, FIPS-204-sized PKs, ML-DSA keyGen KAT vectors</td>
+<td>conditional</td>
+<td>Signature-verification and roundtrip/tamper tests; deterministic keyGen vectors require a test-only extension built with <code>SNEPPX_ENABLE_TEST_RNG=ON</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -4984,20 +4985,13 @@ decisions against NIST's <code>testPassed</code> flags.</p>
 <ul>
 <li><strong>SHA3-256</strong>: 100 % KAT agreement (C digest == NIST <code>md</code> == <code>hashlib</code>
   on all vendored vectors).</li>
-<li><strong>ML-KEM (Kyber)</strong>: agreement depends on bit-compatibility of the C
-  keygen with NIST's <code>ek</code>/<code>dk</code>.  Seeds the C test RNG with each vector's
-  <code>d</code> value and compares byte-for-byte.  If the C implementation matches
-  FIPS 203 keygen output, agreement is 1.0; otherwise the gap is
-  documented per-vector in the interop report.  Encaps/decaps roundtrip
-  self-parity is always asserted.</li>
-<li><strong>ML-DSA (Dilithium) &amp; SLH-DSA (SPHINCS+)</strong>: agreement <code>0.5</code> — every
-  <em>invalid</em> NIST vector is correctly rejected (zero false accepts), while
-  NIST's <em>valid</em> signatures cannot verify verbatim because the C
-  implementations are round-3-era structures (Dilithium: zeroed <code>tr</code> slot,
-  no <code>key</code> domain separation; SPHINCS+: fixed single parameter set, sig
-  14592 bytes vs FIPS 205's 7856/17088/…). Byte-compatibility upgrades are
-  tracked as C work: upgrading both to the finalized FIPS 204/205 wire
-  formats is the path to full 100 % cross-validation.</li>
+<li><strong>ML-KEM (Kyber)</strong>: deterministic keygen and encaps/decaps KATs require
+  the test-only RNG hook. That hook is not compiled into production builds.
+  Keygen agreement is measured byte-for-byte against NIST <code>ek</code>/<code>dk</code>; the
+  implementation remains experimental and is not FIPS validated.</li>
+<li><strong>ML-DSA &amp; SLH-DSA</strong>: invalid foreign signatures are rejected, but valid
+  finalized FIPS signatures are not fully interoperable with the current C
+  wire formats. These implementations remain experimental.</li>
 </ul>
 <p>Keygen coverage:
 - <strong>ML-KEM keyGen</strong>: <code>run_mlkem_keygen()</code> seeds the C test RNG with each
@@ -5006,10 +5000,13 @@ decisions against NIST's <code>testPassed</code> flags.</p>
 - <strong>ML-DSA keyGen</strong>: <code>run_mldsa_keygen()</code> seeds the C test RNG with each
   vector's <code>seed</code> value and compares <code>pk</code>/<code>sk</code> against FIPS 204 expected
   values.
-- <strong>SLH-DSA keyGen</strong>: <code>run_slhdsa_keygen()</code> compares <code>pk</code>/<code>sk</code> against FIPS
-  205 expected values.</p>
-<p>No invalid signature is ever accepted and no vector crashes the
-implementation — the C verifiers fail closed on foreign formats.</p>
+- <strong>SLH-DSA keyGen</strong>: explicitly marked unsupported by the harness because
+  the vendored sample set does not provide reproducible entropy inputs that
+  can be passed to the current key-generation API. Those vectors are counted
+  as skipped, not as successful interoperability.</p>
+<p>The harness reports unsupported suites as skipped. It is a regression and
+interoperability tool, not a FIPS validation certificate. No invalid signature
+is accepted by the tested signature-verification paths.</p>
 <h2 id="how&#702;to&#702;reproduce">How to reproduce<a class="headerlink" href="#how&#702;to&#702;reproduce" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_sha3</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span> <span class="n">-p</span> <span class="n">no</span><span class="p">:</span><span class="n">cacheprovider</span>
@@ -5017,8 +5014,11 @@ implementation — the C verifiers fail closed on foreign formats.</p>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_slhdsa</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span> <span class="n">-p</span> <span class="n">no</span><span class="p">:</span><span class="n">cacheprovider</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_mldsa</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span> <span class="n">-p</span> <span class="n">no</span><span class="p">:</span><span class="n">cacheprovider</span>
 </code></pre></div>
-<p>The <code>_SNEPPX_c</code> extension must be built (cmake target <code>neural_security_c</code> /
-pybind module); otherwise each suite skips with a clear reason.</p>
+<p>The <code>_SNEPPX_c</code> extension must be built. Production builds omit deterministic
+RNG controls. To run seeded key-generation tests, configure a separate test
+build with <code>-DSNEPPX_ENABLE_TEST_RNG=ON</code> and build the Python extension. Never
+ship or distribute that test build. Signature-verification tests that do not
+need deterministic key generation can run against a production extension.</p>
 
 
 
