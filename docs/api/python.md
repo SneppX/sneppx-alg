@@ -1,8 +1,11 @@
 # Python API Reference
 
-Stable as of **v1.1.1**. All algorithm wrappers are complete and delegate to the
-compiled C backend (`_SNEPPX_c` / `_arix_c`) when available, falling back to a
-pure-NumPy engine otherwise (exposed via the `_HAS_C` flag).
+This reference describes the public Python API. The package currently uses a
+NumPy-backed implementation for much of the public `Tensor` / `nn` surface;
+the optional compiled C backend is exposed through separate bridge APIs and
+selected wrappers where native implementations are available. Backend coverage
+is not uniform, so consult each component's status before assuming native
+execution or production readiness.
 
 > **Security note (S0 — Post-Quantum Crypto).** The PQC implementations are
 > experimental and are not yet fully interoperable with the finalized FIPS
