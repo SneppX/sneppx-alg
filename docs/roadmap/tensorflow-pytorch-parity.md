@@ -48,6 +48,10 @@ The tensor foundation is being hardened before broader API expansion:
   `gather` tensor operations with forward and reverse-mode gradient tests.
   Duplicate index selections accumulate gradients; invalid index dtype, bounds
   and non-gather dimensions are rejected.
+- Expanded Python DataLoader behavior with seeded shuffling, drop-last batches,
+  custom collation and ordered thread-pool fetching. Multiprocessing workers,
+  prefetch queues, pinned memory and distributed sharding remain planned.
+- Added validation for ArrayDataLoader batch dimensions and batch-index inputs.
 - FLOAT8 remains intentionally limited: the repository does not yet select one
   encoding (E4M3 or E5M2), so operations that need a numeric one-value encoding
   fail closed instead of guessing.
