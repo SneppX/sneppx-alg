@@ -41,6 +41,21 @@ def test_create():
     print("  test_create PASS")
 
 
+def test_numpy_array_protocol_shares_storage_and_converts_dtype():
+    tensor = Tensor([1.0, 2.0, 3.0])
+    view = np.asarray(tensor)
+    view[0] = 9.0
+    assert tensor.data[0] == 9.0
+
+    converted = np.asarray(tensor, dtype=np.float64)
+    assert converted.dtype == np.float64
+    assert np.allclose(converted, [9.0, 2.0, 3.0])
+
+    independent = np.array(tensor, copy=True)
+    independent[1] = 77.0
+    assert tensor.data[1] == 2.0
+
+
 def test_numpy_roundtrip():
     arr = np.random.randn(3, 4).astype(np.float32)
     t = Tensor.from_numpy(arr)
