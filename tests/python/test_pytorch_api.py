@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module
+from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader
 
 
 def test_tensor_shape():
@@ -32,3 +32,55 @@ def test_accuracy():
 
     a = accuracy(np.array([0, 1, 2]), np.array([0, 1, 3]))
     assert 0 <= a <= 1
+
+
+
+class _ToyDataset(Dataset):
+    def __len__(self):
+        return 5
+
+    def __getitem__(self, index):
+        return np.array([index], dtype=np.float32), index
+
+
+def test_dataloader_batching_drop_last_and_threaded_fetch():
+    dataset = _ToyDataset()
+    loader = DataLoader(dataset, batch_size=2, num_workers=2, drop_last=True)
+    assert len(loader) == 2
+    batches = list(loader)
+    assert len(batches) == 2
+    assert batches[0][0].shape == (2, 1)
+    assert batches[0][1].shape == (2,)
+    assert np.array_equal(batches[0][1].data, np.array([0, 1]))
+    assert np.array_equal(batches[1][1].data, np.array([2, 3]))
+
+
+def test_dataloader_seeded_shuffle_and_custom_collate():
+    dataset = _ToyDataset()
+    first = DataLoader(dataset, batch_size=5, shuffle=True, seed=123)
+    second = DataLoader(dataset, batch_size=5, shuffle=True, seed=123)
+    first_order = list(first)[0][1].data
+    second_order = list(second)[0][1].data
+    assert np.array_equal(first_order, second_order)
+
+    custom = DataLoader(
+        dataset, batch_size=2, collate_fn=lambda samples: [sample[1] for sample in samples]
+    )
+    assert list(custom)[0] == [0, 1]
+
+
+def test_dataloader_rejects_invalid_configuration():
+    dataset = _ToyDataset()
+    for kwargs in (
+        {"batch_size": 0},
+        {"batch_size": -1},
+        {"batch_size": 1.5},
+        {"num_workers": -1},
+        {"num_workers": 1.5},
+    ):
+        try:
+            DataLoader(dataset, **kwargs)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid DataLoader configuration accepted: {kwargs!r}")
