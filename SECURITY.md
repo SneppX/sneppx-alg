@@ -54,7 +54,7 @@ No coordinated vulnerability disclosures are recorded in this policy. This does 
 
 ### Test Suite Edge Cases
 
-- Ed25519: Fixed to full RFC 8032 compliance (all 4 test vectors pass). The base-point T-ordering bug (init_base_point computed B.T before parity negation) has been resolved.
+- Ed25519: repository tests cover a subset of RFC 8032 vectors. This is not a claim of complete RFC conformance or independent cryptographic review.
 - Argon2: 1/4 timing test fails on certain hardware
 - These are pre-existing S0 limitations and do not represent security vulnerabilities
 
@@ -62,8 +62,8 @@ No coordinated vulnerability disclosures are recorded in this policy. This does 
 
 See `docs/security/obf_audit.md` for the full audit report. Key findings:
 - **Remediated in `obfuscation_advanced.cpp`:** `rand()` / `srand()` were replaced with the OS-backed `SNEPPX_random_bytes` interface for junk-pattern selection. This is not a repository-wide RNG audit.
-- **High:** Whitebox AES table lookups are timing-variable (CWE-208)
-- **Medium:** `bogus_cf_redirect` has no restore path; its reversible XOR transformation is not cryptographic protection
+- **Disabled:** the former whitebox AES placeholder was not AES and used secret-dependent table lookups; init now returns -1 and encrypt zeroes output.
+- **Disabled:** bogus control-flow add/redirect APIs return -1; redirect leaves the caller's code buffer unchanged.
 - The bogus control-flow redirect API now fails closed without modifying the caller's buffer; the feature is disabled, not functionally fixed. The whitebox AES placeholder is disabled; IAT concurrency remains open. S2 must not be treated as a defense against a capable attacker. See `docs/security/obf_audit.md`.
 
 ## Hall of Fame
