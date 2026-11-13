@@ -65,6 +65,36 @@ def test_create():
     print("  test_create PASS")
 
 
+def test_gather_forward_and_duplicate_index_gradients():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    indices = np.array([[2, 0], [1, 1]], dtype=np.int64)
+    tensor = Tensor(values)
+    gathered = tensor.gather(1, indices)
+    assert np.array_equal(gathered.data, np.array([[3, 1], [5, 5]], dtype=np.float32))
+
+    tracked = Tensor(values, requires_grad=True)
+    tracked.gather(1, indices).sum().backward()
+    expected_grad = np.array([[1, 0, 1], [0, 2, 0]], dtype=np.float32)
+    assert np.array_equal(tracked.grad.data, expected_grad)
+
+
+def test_gather_rejects_invalid_indices():
+    tensor = Tensor(np.arange(6, dtype=np.float32).reshape(2, 3))
+    invalid_inputs = (
+        (2, np.array([[0], [0]])),
+        (1, np.array([[0.5], [1.0]])),
+        (1, np.array([[3], [0]], dtype=np.int64)),
+        (1, np.array([[0, 0, 0, 0], [0, 0, 0, 0]], dtype=np.int64)),
+    )
+    for dim, index in invalid_inputs:
+        try:
+            tensor.gather(dim, index)
+        except (IndexError, ValueError, TypeError):
+            pass
+        else:
+            raise AssertionError(f"invalid gather input accepted: {(dim, index)!r}")
+
+
 def test_index_select_forward_and_duplicate_index_gradients():
     values = np.arange(6, dtype=np.float32).reshape(2, 3)
     tensor = Tensor(values)
