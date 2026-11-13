@@ -157,6 +157,11 @@ nav:
             - ARC: walkthrough-arc.md
             - NPE: walkthrough-npe.md
             - FM: walkthrough-fm.md
+    - Security:
+        - Security Overview: security.md
+        - Security Layers: security_layers.md
+        - PQC Interoperability: pqc_kat.md
+        - Obfuscation Audit: security/obf_audit.md
     - Tutorials:
         - Tutorial Index: tutorials/index.md
         - Classification: tutorials/classification.md
