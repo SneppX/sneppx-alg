@@ -133,6 +133,13 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 
 ## S2 — Obfuscation Engine (known high-risk findings)
 
+> **Current remediation:** `obfuscation_advanced.cpp` no longer uses
+> `rand()` / `srand()` for junk-pattern selection; it uses the S0
+> `SNEPPX_random_bytes` interface. The unsafe bogus control-flow rewrite
+> APIs now fail closed and do not modify the supplied code buffer. This
+> disables that feature rather than making it functional. Whitebox AES
+> timing/alignment concerns and IAT concurrency findings remain open.
+
 **Status**: Known high-risk findings remain open
 **Source**: `security/obfuscation/` and `security/cpp/`
 
