@@ -98,3 +98,21 @@ TEST(test_tensor, test_ones) { test_ones(); }
 TEST(test_tensor, test_set_get) { test_set_get(); }
 TEST(test_tensor, test_randn_range) { test_randn_range(); }
 TEST(test_tensor, test_print) { test_print(); }
+static void test_element_access_bounds_and_null_safety(void) {
+    size_t shape[] = {2, 2};
+    SNEPPXTensor* tensor = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
+    SX_ASSERT_NOT_NULL(tensor, "bounds tensor");
+    size_t valid[] = {1, 1};
+    size_t invalid[] = {2, 0};
+    SNEPPX_tensor_set_f32(tensor, valid, 7.0f);
+    SNEPPX_tensor_set_f32(tensor, invalid, 99.0f);
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(tensor, valid), 7.0f, 1e-6f, "valid access preserved");
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(tensor, invalid), 0.0f, 1e-6f, "invalid read returns zero");
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(tensor, NULL), 0.0f, 1e-6f, "null indices return zero");
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(NULL, valid), 0.0f, 1e-6f, "null tensor returns zero");
+    SNEPPX_tensor_set_f32(NULL, valid, 1.0f);
+    SNEPPX_tensor_set_f32(tensor, NULL, 1.0f);
+    SNEPPX_tensor_destroy(tensor);
+}
+
+TEST(test_tensor, element_access_bounds_and_null_safety) { test_element_access_bounds_and_null_safety(); }
