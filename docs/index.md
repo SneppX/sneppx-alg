@@ -2,9 +2,9 @@
 
 # The Universal Open-Source AI Algorithm
 
-Secure, composable, production-grade AI in C/C++ & CUDA — tensor engine,
-autograd, MoE/SSM transformers, quantization, distributed training, and 10
-security layers (S0–S9). MIT licensed.
+An experimental, open-source AI framework in C/C++ and Python. Explore its
+tensor and autograd APIs, model components, developer tooling, and layered
+security research. Implementation maturity varies by subsystem. MIT licensed.
 
 <div class="sx-hero-art" role="img" aria-label="SNEPPX pipeline: HSS to SER to ARC to NPE to FM, observed by security layers S0-S9">
 <svg viewBox="0 0 640 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -38,29 +38,14 @@ security layers (S0–S9). MIT licensed.
 </svg>
 </div>
 
-<div class="sx-stats" markdown>
+<div class="sx-status-note" markdown>
 
-<span class="sx-stat">
-<span class="sx-stat-value" data-count="253" data-suffix="K+">253K+</span>
-<span class="sx-stat-label">Lines of code</span>
-</span>
-
-<span class="sx-stat">
-<span class="sx-stat-value" data-count="300" data-suffix="+">300+</span>
-<span class="sx-stat-label">Python tests</span>
-</span>
-
-<span class="sx-stat">
-<span class="sx-stat-value" data-count="40" data-suffix="+">40+</span>
-<span class="sx-stat-label">Autograd ops</span>
-</span>
-
-<span class="sx-stat">
-<span class="sx-stat-value" data-count="10">10</span>
-<span class="sx-stat-label">Security layers</span>
-</span>
+**Project maturity:** Experimental. APIs, native backends, and security controls
+have different levels of implementation and validation. Read the component
+status and security notes before using this project in production.
 
 </div>
+
 
 <div class="sx-cards" markdown>
 
@@ -72,7 +57,7 @@ HSS → SER → ARC → NPE → FM. Each stage independently testable.
 
 <div class="sx-card" markdown>
 ### Security S0–S9
-Post-quantum crypto (Kyber/Dilithium/SPHINCS+) with NIST ACVP KAT validation, memory hardening, signed updates.
+Layered security research with documented limitations. PQC interoperability is incomplete and is not FIPS validated.
 [Security layers →](security_layers.md)
 </div>
 
@@ -101,7 +86,11 @@ Every `nn` module now trains. Higher-order autograd. New ecosystem packages.
 
 ## Overview
 
-SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 security layers. v1.5.0 delivers a production-stable pipeline with a fully differentiable `nn` stack (every layer trains), higher-order autograd, a PyTorch-style functional API, sparse tensors, and fourteen extended Python packages — alongside the Model Zoo, Model Hub (`sneppx-hub`), C HTTP serving control plane, distributed training (ZeRO-1/2/3, pipeline/tensor/expert parallelism), advanced architectures (Differential Attention, Mamba-2, FlexAttention, MoD), quantization (INT8/INT4/FP8/AWQ/GPTQ), async checkpointing, profiling & debugging tools, and weight converters for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2.
+SneppX-ALG is a composable 5-component AI algorithm pipeline wrapped in 10 security layers. The v1.5.x codebase includes a Python tensor and autograd API, sparse tensor utilities, model components, and additional packages. Native backend coverage and feature maturity vary; consult the relevant tests and API notes. The repository also contains the Model Zoo, Model Hub (`sneppx-hub`), C HTTP serving control plane, distributed training (ZeRO-1/2/3, pipeline/tensor/expert parallelism), advanced architectures (Differential Attention, Mamba-2, FlexAttention, MoD), quantization (INT8/INT4/FP8/AWQ/GPTQ), async checkpointing, profiling & debugging tools, and weight converters for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2.
+
+## Developer tooling
+
+CTM (Codebase Telemetry & Metrics) provides repository scanning utilities for file counts, line counts, language breakdowns, and machine-readable reports. Start with the [CTM tooling guide](ctm_tools/README.md).
 
 ## Quickstart
 
