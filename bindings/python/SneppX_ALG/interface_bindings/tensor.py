@@ -122,14 +122,16 @@ class _TensorData(np.ndarray):
     """ndarray subclass that allows ``float()`` and ``item()`` on size-1 arrays."""
 
     def __float__(self):
-        if self.size == 1:
-            return float(self.item())
-        return float(self.flat[0])
+        if self.size != 1:
+            raise TypeError("only size-1 tensors can be converted to Python scalars")
+        return float(super().item())
 
     def item(self, *args):
-        if self.size == 1:
+        if args:
             return super().item(*args)
-        return float(self)
+        if self.size != 1:
+            raise ValueError("can only convert an array of size 1 to a Python scalar")
+        return super().item()
 
 
 class _CTensorData:
@@ -377,8 +379,14 @@ class Tensor:
         """Dense tensors are already dense; returns a copy."""
         return Tensor(np.asarray(self.data), dtype=self.dtype, device=self.device)
 
-    def item(self) -> float:
-        return float(self.data.flat[0])
+    def item(self):
+        """Return the Python scalar value; the tensor must contain one element."""
+        if self.numel != 1:
+            raise ValueError(
+                f"only one-element tensors can be converted to Python scalars; "
+                f"got {self.numel} elements"
+            )
+        return self.data.item()
 
     def view(self, *shape):
         from .autograd_ops import Reshape
