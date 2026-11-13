@@ -232,17 +232,17 @@ typedef struct {
 } SNEPPXWhiteBoxAES;
 
 /**
- * @brief Initialize Whitebox Aes.
+ * @brief Disabled whitebox AES placeholder.
  *
- * @param wb [out] Wb value.
- *
- * @return 0 on success, -1 on error.
+ * The former lookup-table implementation was not standards-compliant AES
+ * and had secret-dependent memory access. The structure is zeroed and -1
+ * is returned until a reviewed constant-time implementation is available.
  */
 int  SNEPPX_whitebox_aes_init(SNEPPXWhiteBoxAES* wb, const uint8_t key[16]);
 /**
- * @brief Encrypt Whitebox Aes.
+ * @brief Disabled whitebox AES placeholder.
  *
- * @param wb [out] Wb value.
+ * The output buffer is zeroed when non-NULL. This function does not encrypt.
  */
 void SNEPPX_whitebox_aes_encrypt(SNEPPXWhiteBoxAES* wb, const uint8_t in[16], uint8_t out[16]);
 
