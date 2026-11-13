@@ -37,5 +37,14 @@ int main() {
     assert(SNEPPX_bogus_cf_redirect(&control_flow, executable_bytes, sizeof(executable_bytes)) == -1);
     assert(std::memcmp(executable_bytes, executable_before, sizeof(executable_before)) == 0);
 
+    SNEPPXWhiteBoxAES whitebox{};
+    const uint8_t key[16] = {0};
+    const uint8_t input[16] = {1};
+    uint8_t output[16];
+    std::memset(output, 0xA5, sizeof(output));
+    assert(SNEPPX_whitebox_aes_init(&whitebox, key) == -1);
+    SNEPPX_whitebox_aes_encrypt(&whitebox, input, output);
+    for (uint8_t byte : output) assert(byte == 0);
+
     return 0;
 }
