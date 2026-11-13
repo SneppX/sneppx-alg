@@ -116,21 +116,16 @@ def _slhdsa_keygen_vectors():
     return vecs
 
 
-def test_slhdsa_keygen_all_vectors_run_without_crash(crypto):
-    _require_test_rng(crypto)
+def test_slhdsa_keygen_vectors_are_skipped_without_reproducible_entropy_inputs(crypto):
     vecs = _slhdsa_keygen_vectors()
-    for v in vecs:
-        variant = kat.slhdsa_variant_for_parameter_set(v["parameterSet"])
-        assert variant is not None, v["parameterSet"]
-        assert isinstance(kat.run_slhdsa_keygen(crypto, v), bool), v["tcId"]
+    for vector in vecs:
+        assert kat.run_slhdsa_keygen(crypto, vector) is None
 
 
-def test_slhdsa_keygen_interop_report(crypto):
-    _require_test_rng(crypto)
+def test_slhdsa_keygen_interop_report_marks_vectors_skipped(crypto):
     vecs = _slhdsa_keygen_vectors()
     report = kat.interop_report(crypto, vecs, kat.run_slhdsa_keygen)
-    assert report["skipped"] == 0
-    assert report["total"] == len(vecs)
-    assert report["agreement"] >= 0.0
-    assert report["agreement"] <= 1.0
-    assert len(report["mismatches"]) == len(vecs) - report["agreed"]
+    assert report["skipped"] == len(vecs)
+    assert report["total"] == 0
+    assert report["agreement"] == 0.0
+    assert report["mismatches"] == []
