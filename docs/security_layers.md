@@ -19,11 +19,15 @@
 
 **Files:** `security/crypto/c/`
 
-**PQC KAT validation:** Official NIST ACVP known-answer-test vectors are vendored
-under `tests/data/acvp/` and validated via `SneppX_ALG.interface_bindings.acvp_kat`.
-Covered suites: SHA3-256 (FIPS 202), ML-KEM keyGen/encapsDecaps (FIPS 203),
-ML-DSA keyGen/sigVer (FIPS 204), SLH-DSA keyGen/sigVer (FIPS 205). See
-`docs/pqc_kat.md` for the full interop report.
+**PQC ACVP status:** Official NIST ACVP sample vectors are vendored under
+`tests/data/acvp/` and exercised through
+`SneppX_ALG.interface_bindings.acvp_kat`. Coverage is partial, not a claim of
+FIPS validation or certification: SHA3-256 vectors match; ML-KEM key-generation
+and encapsulation/decapsulation checks are present; ML-DSA and SLH-DSA currently
+reject invalid signature vectors but do not yet verify all valid finalized
+FIPS signatures because their C wire formats remain pre-finalization. See
+`docs/pqc_kat.md` for the interop report and limitations. Treat PQC support as
+experimental until those gaps are closed and independently reviewed.
 
 ---
 
