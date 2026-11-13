@@ -42,4 +42,5 @@ jobs:
         run: mkdocs build --strict
 
       - name: Publish without rewriting gh-pages history
-        run: mkdocs gh-deploy --message "docs: publish ${GITHUB_SHA}"
+        run: |
+          mkdocs gh-deploy --message "docs: publish ${GITHUB_SHA}"
