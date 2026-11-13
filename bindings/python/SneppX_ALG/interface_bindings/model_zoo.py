@@ -219,7 +219,10 @@ class ModelConfig:
             architecture=c_config.get("architecture", "transformer"),
             vocab_size=c_config.get("vocab_size", 32000),
             hidden_size=c_config.get("hidden_size", 4096),
-            num_layers=c_config.get("num_layers", 32),
+            num_layers=c_config.get("num_layers", c_config.get("num_hidden_layers", 32)),
+            num_hidden_layers=c_config.get(
+                "num_hidden_layers", c_config.get("num_layers", 32)
+            ),
             num_attention_heads=c_config.get("num_heads", 32),
             num_key_value_heads=c_config.get(
                 "num_kv_heads", c_config.get("num_heads", 32)
