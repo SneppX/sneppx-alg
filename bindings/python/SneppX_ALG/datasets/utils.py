@@ -79,6 +79,12 @@ def batch_indices(
     seed: Optional[int] = None,
 ) -> List[np.ndarray]:
     """Yield index arrays for minibatch iteration."""
+    if isinstance(n, (bool, np.bool_)) or int(n) != n or n < 0:
+        raise ValueError("n must be a non-negative integer")
+    if isinstance(batch_size, (bool, np.bool_)) or int(batch_size) != batch_size or batch_size <= 0:
+        raise ValueError("batch_size must be a positive integer")
+    n = int(n)
+    batch_size = int(batch_size)
     idx = np.arange(n)
     if shuffle:
         rng = np.random.default_rng(seed)
