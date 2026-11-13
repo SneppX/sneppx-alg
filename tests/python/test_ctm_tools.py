@@ -70,6 +70,18 @@ def test_cli_json_output_is_machine_readable(tmp_path):
     assert report["lines_of_code"] == 1
 
 
+def test_html_dashboard_escapes_untrusted_root_path(tmp_path):
+    report_root = tmp_path / 'repo<script>alert(1)</script>'
+    report_root.mkdir()
+    (report_root / 'main.py').write_text('pass\\n', encoding='utf-8')
+
+    rendered = ctm.render_html(ctm.scan(report_root))
+
+    assert '&lt;script&gt;' in rendered
+    assert '<script>alert(1)</script>' not in rendered
+    assert 'Language breakdown' in rendered
+
+
 def test_symlink_files_are_not_followed_when_supported(tmp_path):
     target = tmp_path / "target.py"
     target.write_text("x = 1\n", encoding="utf-8")
