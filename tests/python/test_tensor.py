@@ -65,6 +65,42 @@ def test_create():
     print("  test_create PASS")
 
 
+def test_scatter_add_forward_and_gradients():
+    base_values = np.ones((2, 3), dtype=np.float32)
+    source_values = np.array([[2, 3], [4, 5]], dtype=np.float32)
+    indices = np.array([[2, 0], [1, 1]], dtype=np.int64)
+
+    base = Tensor(base_values)
+    source = Tensor(source_values)
+    result = base.scatter_add(1, indices, source)
+    expected = np.array([[4, 1, 3], [1, 10, 1]], dtype=np.float32)
+    assert np.array_equal(result.data, expected)
+
+    tracked_base = Tensor(base_values, requires_grad=True)
+    tracked_source = Tensor(source_values, requires_grad=True)
+    tracked_base.scatter_add(1, indices, tracked_source).sum().backward()
+    assert np.array_equal(tracked_base.grad.data, np.ones_like(base_values))
+    assert np.array_equal(tracked_source.grad.data, np.ones_like(source_values))
+
+
+def test_scatter_add_rejects_invalid_inputs():
+    base = Tensor(np.zeros((2, 3), dtype=np.float32))
+    source = Tensor(np.ones((2, 2), dtype=np.float32))
+    invalid = (
+        (2, np.zeros((2, 2), dtype=np.int64), source),
+        (1, np.zeros((2, 2), dtype=np.float32), source),
+        (1, np.full((2, 2), 3, dtype=np.int64), source),
+        (1, np.zeros((2, 2), dtype=np.int64), Tensor(np.ones((2, 2), dtype=np.float64), dtype="float64")),
+    )
+    for dim, index, values in invalid:
+        try:
+            base.scatter_add(dim, index, values)
+        except (IndexError, ValueError, TypeError):
+            pass
+        else:
+            raise AssertionError("invalid scatter_add input accepted")
+
+
 def test_gather_forward_and_duplicate_index_gradients():
     values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
     indices = np.array([[2, 0], [1, 1]], dtype=np.int64)
