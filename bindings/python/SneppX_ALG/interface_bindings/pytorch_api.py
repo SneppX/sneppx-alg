@@ -492,6 +492,53 @@ class ConcatDataset(Dataset):
         return self.datasets[dataset_index][index - previous_end]
 
 
+def random_split(dataset: Dataset, lengths, generator=None):
+    """Split a Dataset into non-overlapping Subsets using a seeded permutation.
+
+    Integer lengths must sum to the dataset length. Fractional lengths must
+    sum to one; leftover samples are assigned by largest fractional remainder.
+    generator may be an integer seed or random.Random instance.
+    """
+    lengths = tuple(lengths)
+    if not lengths:
+        raise ValueError("lengths must not be empty")
+    if all(isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_)) for value in lengths):
+        normalized = tuple(int(value) for value in lengths)
+        if any(value < 0 for value in normalized):
+            raise ValueError("split lengths must be non-negative")
+        if sum(normalized) != len(dataset):
+            raise ValueError("integer split lengths must sum to dataset length")
+    elif all(isinstance(value, (float, np.floating)) for value in lengths):
+        fractions = tuple(float(value) for value in lengths)
+        if any(value < 0 for value in fractions) or not np.isclose(sum(fractions), 1.0):
+            raise ValueError("fractional split lengths must be non-negative and sum to 1")
+        exact = [len(dataset) * value for value in fractions]
+        normalized_list = [int(value) for value in exact]
+        remainder = len(dataset) - sum(normalized_list)
+        order = sorted(range(len(exact)), key=lambda i: exact[i] - normalized_list[i], reverse=True)
+        for i in order[:remainder]:
+            normalized_list[i] += 1
+        normalized = tuple(normalized_list)
+    else:
+        raise TypeError("split lengths must be all integers or all fractions")
+
+    if isinstance(generator, random.Random):
+        rng = generator
+    elif generator is None:
+        rng = random.Random()
+    else:
+        rng = random.Random(int(generator))
+    indices = list(range(len(dataset)))
+    rng.shuffle(indices)
+
+    result = []
+    start = 0
+    for length in normalized:
+        result.append(Subset(dataset, indices[start : start + length]))
+        start += length
+    return result
+
+
 class DataLoader:
     """Batch a Dataset with deterministic optional shuffling and threaded loading.
 
