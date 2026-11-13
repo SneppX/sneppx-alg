@@ -21,12 +21,33 @@ def test_dtype_and_device_enum_contract():
         assert [getattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")] == list(range(4))
 
 
+def test_item_requires_exactly_one_element():
+    scalar = Tensor([4.5])
+    assert scalar.item() == 4.5
+
+    multi = Tensor([1.0, 2.0])
+    try:
+        multi.item()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Tensor.item() must reject multi-element tensors")
+
+    try:
+        float(multi.data)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("float() must reject multi-element tensor data")
+
+
 def test_complex_scalar_construction():
     value = 2.5 - 3.0j
     tensor = Tensor(value, dtype="complex64")
     assert tensor.shape == (1,)
     assert tensor.data.dtype == np.complex64
     assert np.allclose(tensor.data, np.array([value], dtype=np.complex64))
+    assert tensor.item() == np.complex64(value)
 
 
 def test_float8_storage_roundtrip():
