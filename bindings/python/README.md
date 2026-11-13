@@ -123,7 +123,7 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | FM (Fractal Memory) | 🟢 Stable | Memory-bank read/write + EWM combine (`algorithms/fm/core`) |
 | CUDA kernels | 🟡 Experimental | Real `.cu` files; compiled only with `-DSNEPPX_BUILD_CUDA=ON` (OFF by default) |
 | Crypto core (S0, classical) | 🟢 Stable | Ed25519, X25519, ChaCha20-Poly1305, SHA-3, AES-GCM, Argon2id, HMAC-DRBG |
-| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Implemented, with deterministic self-generated regression vectors in `tests/python/test_crypto_kat.py`; **not yet validated against official NIST ACVP / FIPS 203-205 known-answer vectors** |
+| PQC (Kyber/Dilithium/SPHINCS+) | 🟡 Experimental | Official ACVP sample-vector harness exists: SHA3-256 matches; ML-KEM has keygen/encaps-decaps checks; ML-DSA/SLH-DSA reject invalid signatures but valid finalized FIPS signature interoperability is incomplete. Not FIPS-validated; see `docs/pqc_kat.md` |
 | Signed updates (S7) | 🟡 Partial | Ed25519 sign/verify over a BLAKE3 update hash, enforced when a trusted key is configured; a constant-time unsigned hash-equality fallback remains for dev builds |
 | Formal verification (S8) | 🟡 Partial | Reachable-state graph + deadlock scan + invariant walk; bounded safety LTL (`G !deadlock`, `AG !deadlock`, `F deadlock`) — unsupported properties report "not verified" rather than false-positiving; state-space minimization is a stub |
 | Memory / Obfuscation / Monitor / Vault / Pentest | 🟢 Stable | Substantial implementations in `security/` |
