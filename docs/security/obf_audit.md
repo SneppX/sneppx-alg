@@ -18,7 +18,7 @@ changed in several areas:
 | Predictable `rand()` / `srand()` choices | **Remediated in `obfuscation_advanced.cpp`** | The file now uses `SNEPPX_random_bytes` for junk-pattern selection and contains no `rand()` / `srand()` calls. This is not a repository-wide RNG audit. |
 | Junk-code insertion bounds | **Hardened** | The current implementation validates the pattern count and uses subtraction-based capacity checks before moving bytes. Regression coverage is in `tests/security/cpp/test_obf_hardening.cpp`. |
 | Bogus control-flow redirect | **Disabled, not fixed** | Add/redirect APIs now fail closed; redirect does not modify the caller's code buffer. A safe reversible implementation does not exist yet. |
-| Whitebox AES timing and alignment | **Open** | Secret-indexed table access and portability concerns remain; do not use this code for secrecy. |
+| Whitebox AES placeholder | **Disabled, not fixed** | Init returns -1 and encryption zeroes output. A standards-compliant constant-time AES implementation is not provided. |
 | IAT protection concurrency | **Open** | The shared-entry synchronization issue requires a separate design and test. |
 
 The S2 implementation remains experimental and must not be treated as a
@@ -76,7 +76,7 @@ This makes the obfuscation **deterministic and reproducible**, completely defeat
 
 ---
 
-## 3. `SNEPPX_whitebox_aes_init` (lines 355-367) — **CWE-1041 Type-Punning / Alignment**
+## 3. `SNEPPX_whitebox_aes_init` — **CWE-1041 Type-Punning / Alignment** (disabled)
 
 ```cpp
 wb->te0[i]=s<<24|s<<16|s<<8|s;  // line 362
@@ -104,7 +104,7 @@ for (size_t i=flen;i<code_len;i++) {
 
 ---
 
-## 5. `SNEPPX_whitebox_aes_encrypt` (lines 374-381+) — **CWE-208 Timing Side-Channel**
+## 5. `SNEPPX_whitebox_aes_encrypt` — **CWE-208 Timing Side-Channel** (disabled)
 
 ```cpp
 for (int r=1;r<=10;r++) {
