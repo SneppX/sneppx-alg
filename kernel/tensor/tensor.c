@@ -31,26 +31,6 @@ static size_t compute_offset(const SNEPPXTensor* tensor, const size_t* indices) 
     return offset;
 }
 
-static size_t compute_offset_flat(const SNEPPXTensor* tensor, size_t flat_idx) {
-    size_t offset = 0;
-    size_t remaining = flat_idx;
-    for (size_t i = 0; i < tensor->ndim; i++) {
-        size_t idx = remaining / (tensor->size / (tensor->strides[i] * tensor->shape[i]));
-        if (tensor->size > 0 && tensor->strides[i] > 0) {
-            size_t dim_stride = tensor->strides[i];
-            size_t dim_size = tensor->shape[i];
-            idx = (flat_idx / dim_stride) % dim_size;
-        }
-        offset += idx * tensor->strides[i];
-        if (tensor->strides[i] > 0) {
-            remaining = flat_idx % tensor->strides[i];
-        } else {
-            remaining = 0;
-        }
-    }
-    return offset;
-}
-
 static void* aligned_alloc_wrapper(size_t size, size_t alignment) {
     return SNEPPX_malloc(size, alignment);
 }
