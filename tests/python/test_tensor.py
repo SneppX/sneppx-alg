@@ -18,6 +18,14 @@ def test_dtype_and_device_enum_contract():
         assert [getattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")] == list(range(6))
 
 
+def test_complex_scalar_construction():
+    value = 2.5 - 3.0j
+    tensor = Tensor(value, dtype="complex64")
+    assert tensor.shape == (1,)
+    assert tensor.data.dtype == np.complex64
+    assert np.allclose(tensor.data, np.array([value], dtype=np.complex64))
+
+
 def test_float8_storage_roundtrip():
     assert DTYPE_MAP["float8"][1] == 1
     values = np.array([0, 1, 127, 255], dtype=np.uint8)
