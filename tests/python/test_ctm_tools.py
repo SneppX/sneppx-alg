@@ -13,6 +13,11 @@ SPEC = importlib.util.spec_from_file_location("sneppx_ctm", MODULE_PATH)
 ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
+LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
+LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
+ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
+LARGE_SPEC.loader.exec_module(ctm_large_files)
+
 
 def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_path):
     (tmp_path / "src").mkdir()
@@ -80,6 +85,19 @@ def test_html_dashboard_escapes_untrusted_root_path(tmp_path):
     assert '&lt;script&gt;' in rendered
     assert '<script>alert(1)</script>' not in rendered
     assert 'Language breakdown' in rendered
+
+
+def test_large_file_scanner_filters_threshold_and_sorts(tmp_path):
+    (tmp_path / "small.bin").write_bytes(b"123")
+    (tmp_path / "large-a.bin").write_bytes(b"a" * 16)
+    (tmp_path / "large-b.bin").write_bytes(b"b" * 32)
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.bin").write_bytes(b"x" * 128)
+
+    report = ctm_large_files.find_large_files(tmp_path, min_size=8)
+
+    assert [item["path"] for item in report["files"]] == ["large-b.bin", "large-a.bin"]
+    assert [item["bytes"] for item in report["files"]] == [32, 16]
 
 
 def test_symlink_files_are_not_followed_when_supported(tmp_path):
