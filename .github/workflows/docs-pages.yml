@@ -41,6 +41,11 @@ jobs:
       - name: Validate and build the site
         run: mkdocs build --strict
 
+      - name: Configure deployment commit identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Publish versioned documentation without rewriting history
         run: |
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
