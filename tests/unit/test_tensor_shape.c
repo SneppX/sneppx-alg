@@ -360,6 +360,23 @@ static void test_as_strided_bounds_and_aliasing(void) {
     SNEPPX_tensor_destroy(source);
 }
 
+static void test_fill_non_contiguous_view_respects_strides(void) {
+    size_t shape[] = {2, 3};
+    SNEPPXTensor* source = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
+    SX_ASSERT_NOT_NULL(source, "fill view source");
+    size_t view_shape[] = {2, 2};
+    size_t view_strides[] = {3, 1};
+    SNEPPXTensor* view = SNEPPX_tensor_as_strided(source, 0, view_shape, 2, view_strides);
+    SX_ASSERT_NOT_NULL(view, "fill non-contiguous view");
+    SNEPPX_tensor_fill_f32(view, 5.0f);
+    const float expected[] = {5.0f, 5.0f, 0.0f, 5.0f, 5.0f, 0.0f};
+    for (size_t i = 0; i < 6; ++i) {
+        SX_ASSERT_NEAR(((float*)source->data)[i], expected[i], 1e-6f, "strided fill preserves skipped elements");
+    }
+    SNEPPX_tensor_destroy(view);
+    SNEPPX_tensor_destroy(source);
+}
+
 static void test_narrow_rank_above_sixteen(void) {
     size_t shape[17];
     for (size_t i = 0; i < 17; ++i) shape[i] = 1;
@@ -377,3 +394,4 @@ static void test_narrow_rank_above_sixteen(void) {
 
 TEST(test_tensor_shape, as_strided_bounds_and_aliasing) { test_as_strided_bounds_and_aliasing(); }
 TEST(test_tensor_shape, narrow_rank_above_sixteen) { test_narrow_rank_above_sixteen(); }
+TEST(test_tensor_shape, fill_non_contiguous_view_respects_strides) { test_fill_non_contiguous_view_respects_strides(); }
