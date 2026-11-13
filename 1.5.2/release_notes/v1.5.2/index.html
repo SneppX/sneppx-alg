@@ -2880,6 +2880,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python&#702;framework&#702;api&#702;additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python framework API additions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#validation&#702;evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4935,6 +4946,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#python&#702;framework&#702;api&#702;additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python framework API additions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#validation&#702;evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5085,6 +5107,17 @@ certification is claimed. See the <a href="../../pqc_kat/">PQC interoperability 
   <code>ones</code> factory; FLOAT8 ones remain unsupported until the encoding is fixed.</li>
 <li>Added bounds-checked typed element access and safer strided/narrow views.</li>
 <li>Made fill operations honor non-contiguous strides and empty-view semantics.</li>
+</ul>
+<h2 id="python&#702;framework&#702;api&#702;additions">Python framework API additions<a class="headerlink" href="#python&#702;framework&#702;api&#702;additions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added differentiable <code>flip</code>, <code>roll</code>, <code>tril</code>, <code>triu</code>, <code>index_select</code> and
+  <code>gather</code> operations. Duplicate index selections accumulate gradients and
+  invalid index dtypes/shapes/bounds are rejected.</li>
+<li>Expanded the PyTorch-style DataLoader with deterministic seeded shuffling,
+  drop-last batching, custom collation, and ordered threaded sample fetching.
+  Threaded loading is explicitly not multiprocessing worker parity.</li>
+<li>Hardened the NumPy-backed ArrayDataLoader and batch-index utilities against
+  zero/negative/non-integral batch sizes and scalar dataset inputs.</li>
 </ul>
 <h2 id="validation&#702;evidence">Validation evidence<a class="headerlink" href="#validation&#702;evidence" title="Permanent link">&para;</a></h2>
 <p>The GitHub Actions run for commit <code>5db66926</code> completed successfully with:</p>
