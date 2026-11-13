@@ -100,7 +100,13 @@ def _keygen_vectors():
     return vecs
 
 
+def _require_test_rng(crypto):
+    if not hasattr(crypto, "random_set_seed"):
+        pytest.skip("deterministic ML-DSA keygen KATs require SNEPPX_ENABLE_TEST_RNG=ON")
+
+
 def test_mldsa_keygen_all_vectors_run_without_crash(crypto):
+    _require_test_rng(crypto)
     vecs = _keygen_vectors()
     for v in vecs:
         variant = kat.ml_dsa_variant_for_parameter_set(v["parameterSet"])
@@ -109,6 +115,7 @@ def test_mldsa_keygen_all_vectors_run_without_crash(crypto):
 
 
 def test_mldsa_keygen_pk_sk_lengths_match_fips_204(crypto):
+    _require_test_rng(crypto)
     # FIPS 204 public-key / secret-key sizes per parameter set.
     sizes = {
         "ML-DSA-44": (1312, 2560),
@@ -123,6 +130,7 @@ def test_mldsa_keygen_pk_sk_lengths_match_fips_204(crypto):
 
 
 def test_mldsa_keygen_interop_report(crypto):
+    _require_test_rng(crypto)
     vecs = _keygen_vectors()
     report = kat.interop_report(crypto, vecs, kat.run_mldsa_keygen)
     assert report["skipped"] == 0
