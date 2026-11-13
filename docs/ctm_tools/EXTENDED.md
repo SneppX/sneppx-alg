@@ -18,4 +18,4 @@ The legacy scripts in `ctm_tools/py/` remain available for focused reports:
 These scripts predate the unified scanner and may have different exclusions,
 output contracts, and platform behavior. Treat heuristic results as estimates,
 not authoritative source analysis. For consistent metrics and automation,
-prefer [`ctm_tools/py/ctm.py`](../../ctm_tools/README.md).
+prefer [`ctm_tools/py/ctm.py`](https://github.com/SneppX/sneppx-alg/blob/main/ctm_tools/py/ctm.py).
