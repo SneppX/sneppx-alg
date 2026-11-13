@@ -56,9 +56,12 @@ if not _HAS_C_BACKEND:
         NPU = 5
 
     class Layout:
-        DENSE = 0
-        CSR = 1
-        COO = 2
+        # Native SNEPPXLayout values. Sparse storage formats are separate APIs.
+        ROW_MAJOR = 0
+        COL_MAJOR = 1
+        CHANNELS_LAST = 2
+        TILED = 3
+        DENSE = ROW_MAJOR  # Backward-compatible alias.
 
 
 DTYPE_MAP = {
