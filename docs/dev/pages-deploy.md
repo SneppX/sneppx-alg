@@ -10,15 +10,19 @@ branch. Do not edit generated site output as a substitute for source changes.
 
 ## Current automation
 
-This repository contains two GitHub Actions workflows:
+This repository contains three GitHub Actions workflows:
 
-- `.github/workflows/ci.yml`: CPU-safe Python tests and an optional native build/test job.
+- `.github/workflows/ci.yml`: CPU-safe Python tests and a native build/test job.
 - `.github/workflows/lint-docs.yml`: selected source parsing, README integrity,
   and MkDocs YAML parsing.
+- `.github/workflows/docs-pages.yml`: installs the documentation extra, runs
+  `mkdocs build --strict`, then publishes to `gh-pages` without requesting a
+  force push.
 
-There is currently no GitHub Pages deployment workflow in this repository.
-A green lint job validates YAML syntax, not the full MkDocs build, external
-links, generated Doxygen output, or the live Pages deployment.
+The deployment workflow is triggered by documentation/configuration changes
+on `main` or manually through **Actions → Publish documentation to GitHub Pages**.
+A successful YAML lint is not a successful site build; check the deployment
+workflow and the published URL separately.
 
 ## Build prerequisites
 
@@ -62,8 +66,7 @@ Publishing requires repository write access and the correct Pages source
 configuration. The GitHub Pages settings are not inferred from this document;
 confirm them in **Settings → Pages** before deploying.
 
-If Pages is configured to publish from the `gh-pages` branch at its root,
-the maintainer can publish with:
+The deployment workflow publishes to the `gh-pages` branch. GitHub Pages must be configured to publish from that branch at its root. For a manual publish, use:
 
 ```powershell
 mkdocs gh-deploy
