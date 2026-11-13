@@ -308,6 +308,14 @@ def test_model_config_c_round_trip():
     layer_alias = ModelConfig(num_hidden_layers=6).to_c_config()
     assert layer_alias["num_layers"] == 6
 
+    restored_layers = ModelConfig.from_c_config({"num_layers": 6})
+    assert restored_layers.num_layers == 6
+    assert restored_layers.num_hidden_layers == 6
+
+    restored_hidden_alias = ModelConfig.from_c_config({"num_hidden_layers": 8})
+    assert restored_hidden_alias.num_layers == 8
+    assert restored_hidden_alias.num_hidden_layers == 8
+
     # The C schema exposes a base positional limit and a runtime sequence
     # limit. They must remain independent when both are supplied.
     distinct = ModelConfig(
