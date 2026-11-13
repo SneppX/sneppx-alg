@@ -41,6 +41,7 @@ jobs:
       - name: Validate and build the site
         run: mkdocs build --strict
 
-      - name: Publish without rewriting gh-pages history
+      - name: Publish versioned documentation without rewriting history
         run: |
-          mkdocs gh-deploy --message "docs: publish ${GITHUB_SHA}"
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          mike deploy --push --update-aliases "$VERSION" latest
