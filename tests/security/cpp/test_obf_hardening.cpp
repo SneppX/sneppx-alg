@@ -4,6 +4,12 @@
 #include <cstdint>
 #include <cstring>
 
+static int callback_invocations = 0;
+
+static void test_callback(void*, int, void*) {
+    ++callback_invocations;
+}
+
 int main() {
     SNEPPXJunkCodeGen generator{};
     assert(SNEPPX_junk_code_init(&generator) == 0);
@@ -45,6 +51,29 @@ int main() {
     assert(SNEPPX_whitebox_aes_init(&whitebox, key) == -1);
     SNEPPX_whitebox_aes_encrypt(&whitebox, input, output);
     for (uint8_t byte : output) assert(byte == 0);
+
+    callback_invocations = 0;
+    assert(SNEPPX_tls_callback_register(test_callback) == 1);
+    assert(callback_invocations == 1);
+    assert(SNEPPX_tls_callback_obfuscate() == -1);
+    assert(SNEPPX_tls_callback_register(test_callback) == 2);
+    assert(callback_invocations == 3);
+
+    SNEPPXAntiDump anti_dump{};
+    anti_dump.image_base = reinterpret_cast<uintptr_t>(executable_bytes);
+    anti_dump.image_size = sizeof(executable_bytes);
+    anti_dump.is_protected = 1;
+    assert(SNEPPX_antidump_init(&anti_dump) == -1);
+    for (uint8_t byte : anti_dump.section_hash) assert(byte == 0);
+    assert(anti_dump.image_base == 0 && anti_dump.image_size == 0);
+    anti_dump.image_base = reinterpret_cast<uintptr_t>(executable_bytes);
+    anti_dump.image_size = sizeof(executable_bytes);
+    anti_dump.is_protected = 0;
+    const SNEPPXAntiDump anti_dump_before = anti_dump;
+    assert(SNEPPX_antidump_protect(&anti_dump) == -1);
+    assert(std::memcmp(&anti_dump, &anti_dump_before, sizeof(anti_dump)) == 0);
+    assert(SNEPPX_antidump_verify(&anti_dump) == -1);
+    assert(std::memcmp(&anti_dump, &anti_dump_before, sizeof(anti_dump)) == 0);
 
     return 0;
 }
