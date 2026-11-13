@@ -334,3 +334,39 @@ TEST(test_tensor_shape, where_basic) { test_where_basic(); }
 TEST(test_tensor_shape, gather_basic) { test_gather_basic(); }
 TEST(test_tensor_shape, tile_basic) { test_tile_basic(); }
 TEST(test_tensor_shape, repeat_basic) { test_repeat_basic(); }
+static void test_as_strided_bounds_and_aliasing(void) {
+    size_t shape[] = {2, 3};
+    SNEPPXTensor* source = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
+    SX_ASSERT_NOT_NULL(source, "as_strided source");
+    size_t view_shape[] = {2, 2};
+    size_t view_strides[] = {3, 1};
+    SNEPPXTensor* view = SNEPPX_tensor_as_strided(source, 0, view_shape, 2, view_strides);
+    SX_ASSERT_NOT_NULL(view, "valid strided view");
+    size_t index[] = {1, 1};
+    SNEPPX_tensor_set_f32(view, index, 9.0f);
+    SX_ASSERT_NEAR(((float*)source->data)[4], 9.0f, 1e-6f, "view aliases source storage");
+    SNEPPX_tensor_destroy(view);
+
+    size_t invalid_strides[] = {3, 2};
+    view = SNEPPX_tensor_as_strided(source, 0, view_shape, 2, invalid_strides);
+    SX_ASSERT_NULL(view, "out-of-bounds strided view rejected");
+    SNEPPX_tensor_destroy(source);
+}
+
+static void test_narrow_rank_above_sixteen(void) {
+    size_t shape[17];
+    for (size_t i = 0; i < 17; ++i) shape[i] = 1;
+    shape[16] = 3;
+    SNEPPXTensor* source = SNEPPX_tensor_ones(shape, 17, SNEPPX_FLOAT32);
+    SX_ASSERT_NOT_NULL(source, "17D source");
+    SNEPPXTensor* view = SNEPPX_tensor_narrow(source, 16, 1, 2);
+    SX_ASSERT_NOT_NULL(view, "17D narrow view");
+    SX_ASSERT_EQ(view->ndim, 17, "narrow preserves rank");
+    SX_ASSERT_EQ(view->shape[16], 2, "narrow updates selected dimension");
+    SX_ASSERT_EQ(view->size, 2, "narrow computes view size");
+    SNEPPX_tensor_destroy(view);
+    SNEPPX_tensor_destroy(source);
+}
+
+TEST(test_tensor_shape, as_strided_bounds_and_aliasing) { test_as_strided_bounds_and_aliasing(); }
+TEST(test_tensor_shape, narrow_rank_above_sixteen) { test_narrow_rank_above_sixteen(); }
