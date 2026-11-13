@@ -144,6 +144,7 @@ SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, c
     for (size_t i = 0; i < ndim; ++i) {
         if (shape[i] == 0) {
             is_empty = 1;
+            view_size = 0;
         } else {
             if (view_size > SIZE_MAX / shape[i]) return NULL;
             view_size *= shape[i];
