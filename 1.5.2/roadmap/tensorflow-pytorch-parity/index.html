@@ -5182,7 +5182,8 @@ accelerator/distributed paths are optional or incomplete.</p>
   and <code>scatter_add</code> tensor operations with forward and reverse-mode gradient tests.
   Duplicate index selections and scatter destinations accumulate gradients;
   invalid index dtype, bounds, dtype mismatches and non-gather dimensions are rejected.</li>
-<li>Added PyTorch-style TensorDataset, Subset and ConcatDataset composition helpers.</li>
+<li>Added PyTorch-style TensorDataset, Subset, ConcatDataset and seeded random_split
+  dataset composition helpers.</li>
 <li>Expanded Python DataLoader behavior with seeded shuffling, drop-last batches,
   custom collation and ordered thread-pool fetching. Multiprocessing workers,
   prefetch queues, pinned memory and distributed sharding remain planned.</li>
