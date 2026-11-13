@@ -31,7 +31,19 @@ class ArrayDataLoader:
     ):
         self.X = np.asarray(X)
         self.y = None if y is None else np.asarray(y)
-        self.batch_size = int(batch_size)
+        if self.X.ndim == 0:
+            raise ValueError("X must include a batch dimension")
+        if self.y is not None and self.y.ndim == 0:
+            raise ValueError("y must include a batch dimension")
+        if isinstance(batch_size, (bool, np.bool_)):
+            raise ValueError("batch_size must be a positive integer")
+        try:
+            normalized_batch_size = int(batch_size)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("batch_size must be a positive integer") from exc
+        if normalized_batch_size <= 0 or normalized_batch_size != batch_size:
+            raise ValueError("batch_size must be a positive integer")
+        self.batch_size = normalized_batch_size
         self.shuffle = bool(shuffle)
         self.drop_last = bool(drop_last)
         self.seed = seed
