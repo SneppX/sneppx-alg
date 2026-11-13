@@ -5110,8 +5110,9 @@ certification is claimed. See the <a href="../../pqc_kat/">PQC interoperability 
 </ul>
 <h2 id="python&#702;framework&#702;api&#702;additions">Python framework API additions<a class="headerlink" href="#python&#702;framework&#702;api&#702;additions" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added differentiable <code>flip</code>, <code>roll</code>, <code>tril</code>, <code>triu</code>, <code>index_select</code> and
-  <code>gather</code> operations. Duplicate index selections accumulate gradients and
+<li>Added differentiable <code>flip</code>, <code>roll</code>, <code>tril</code>, <code>triu</code>, <code>index_select</code>, <code>gather</code>
+  and <code>scatter_add</code> operations. Duplicate index selections and scatter updates
+  accumulate gradients and
   invalid index dtypes/shapes/bounds are rejected.</li>
 <li>Expanded the PyTorch-style DataLoader with deterministic seeded shuffling,
   drop-last batching, custom collation, and ordered threaded sample fetching.
