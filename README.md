@@ -13,7 +13,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)]() [![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]() [![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]() [![CUDA](https://img.shields.io/badge/CUDA-ff00e6.svg)]() [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SneppX/sneppx-alg/pulls) [![Discussions](https://img.shields.io/badge/Join-Discussions-ff66cc)](https://github.com/SneppX/sneppx-alg/discussions) [![Awesome](https://img.shields.io/badge/awesome-SNEPPX-99ccff)](https://github.com/SneppX/sneppx-alg)
 
- > **SneppX-ALG** — An experimental, open-source AI framework with a C/C++ core, Python APIs, model components, distributed-computing experiments, quantization utilities, and security research modules. Feature maturity varies by subsystem.
+> **SneppX-ALG** — An experimental, open-source AI framework with a C/C++ core, Python APIs, model components, distributed-computing experiments, quantization utilities, and security research modules. Feature maturity varies by subsystem.
 
 **⭐ Star this repo** to support the project and help us reach 1,000+ stars!
 
