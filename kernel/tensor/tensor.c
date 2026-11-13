@@ -168,57 +168,69 @@ static SNEPPXStorage* ensure_storage(SNEPPXTensor* t) {
  */
 SNEPPXTensor* SNEPPX_tensor_create(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
     if (ndim > 0 && !shape) return NULL;
+
+    const size_t item_size = SNEPPX_tensor_dtype_size(dtype);
+    if (item_size == 0) return NULL;
+
+    size_t total = 1;
+    for (size_t i = 0; i < ndim; ++i) {
+        if (shape[i] != 0 && total > SIZE_MAX / shape[i]) return NULL;
+        total *= shape[i];
+    }
+
+    /* Validate row-major stride products independently, including zero-sized shapes. */
+    size_t stride = 1;
+    for (size_t i = ndim; i > 0; --i) {
+        const size_t dim = shape[i - 1];
+        if (dim != 0 && stride > SIZE_MAX / dim) return NULL;
+        stride *= dim;
+    }
+
+    if (total != 0 && item_size > SIZE_MAX / total) return NULL;
+    const size_t num_bytes = total * item_size;
+    const size_t safe_ndim = ndim > 0 ? ndim : 1;
+    if (safe_ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t metadata_bytes = safe_ndim * sizeof(size_t);
+
     SNEPPXTensor* tensor = (SNEPPXTensor*)aligned_alloc_wrapper(sizeof(SNEPPXTensor), 64);
     if (!tensor) return NULL;
+    memset(tensor, 0, sizeof(*tensor));
+
+    tensor->shape = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    tensor->strides = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    if (!tensor->shape || !tensor->strides) {
+        SNEPPX_free(tensor->shape, metadata_bytes);
+        SNEPPX_free(tensor->strides, metadata_bytes);
+        SNEPPX_free(tensor, sizeof(SNEPPXTensor));
+        return NULL;
+    }
 
     tensor->ndim = ndim;
+    tensor->size = total;
     tensor->dtype = dtype;
-    tensor->item_size = SNEPPX_tensor_dtype_size(dtype);
+    tensor->item_size = item_size;
     tensor->device = SNEPPX_DEVICE_CPU;
     tensor->device_id = 0;
     tensor->layout = SNEPPX_LAYOUT_ROW_MAJOR;
     tensor->owns_data = 1;
-    tensor->backend_handle = NULL;
-    tensor->storage = NULL;
-    tensor->offset = 0;
 
-    size_t safe_ndim = ndim > 0 ? ndim : 1;
-    tensor->shape = (size_t*)aligned_alloc_wrapper(safe_ndim * sizeof(size_t), 64);
-    tensor->strides = (size_t*)aligned_alloc_wrapper(safe_ndim * sizeof(size_t), 64);
-    if (!tensor->shape || !tensor->strides) {
-        SNEPPX_free(tensor->shape, safe_ndim * sizeof(size_t));
-        SNEPPX_free(tensor->strides, safe_ndim * sizeof(size_t));
-        SNEPPX_free(tensor, sizeof(SNEPPXTensor));
-        return NULL;
-    }
-
-    size_t total = 1;
-    for (size_t i = 0; i < ndim; i++) {
-        tensor->shape[i] = shape[i];
-        total *= shape[i];
-    }
-    if (ndim == 0) total = 1;
-    tensor->size = total;
-
-    size_t stride = 1;
-    for (size_t i = ndim; i > 0; i--) {
+    stride = 1;
+    for (size_t i = ndim; i > 0; --i) {
+        tensor->shape[i - 1] = shape[i - 1];
         tensor->strides[i - 1] = stride;
         stride *= shape[i - 1];
     }
 
-    size_t num_bytes = total * tensor->item_size;
     tensor->storage = SNEPPX_storage_create(num_bytes);
     if (!tensor->storage) {
-        SNEPPX_free(tensor->shape, ndim * sizeof(size_t));
-        SNEPPX_free(tensor->strides, ndim * sizeof(size_t));
+        SNEPPX_free(tensor->shape, metadata_bytes);
+        SNEPPX_free(tensor->strides, metadata_bytes);
         SNEPPX_free(tensor, sizeof(SNEPPXTensor));
         return NULL;
     }
     tensor->data = tensor->storage->data;
-
     return tensor;
 }
-
 /**
  * @brief Destroy Tensor.
  */
