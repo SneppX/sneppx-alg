@@ -2,7 +2,7 @@
 
 ## Overview
 
-SNEPPX-Algo implements security in ten phases (S0-S9). All ten phases (S0-S9) are complete and use real cryptographic primitives, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure.
+SNEPPX-Algo organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.
 
 Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.
 
