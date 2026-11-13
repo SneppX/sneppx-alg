@@ -1,21 +1,21 @@
-﻿# CTM Tools Suite - Extended Documentation
+# CTM Extended Tools
 
-## Additional Tools
+The legacy scripts in `ctm_tools/py/` remain available for focused reports:
 
-- ctm_count_files_by_ext.py - Count files grouped by extension
-- ctm_largest_files.py - Find largest files by size
-- ctm_count_empty_files.py - Count empty files
-- ctm_dir_sizes.py - Directory sizes (top N)
+- `ctm_count_comments_blank_code.py`: comment, blank, and code-line estimates
+- `ctm_count_empty_files.py`: empty-file inventory
+- `ctm_count_files_by_ext.py`: extension distribution
+- `ctm_count_functions.py`: heuristic function-declaration count
+- `ctm_count_headers.py`: header-file inventory
+- `ctm_count_includes.py`: include/import inventory
+- `ctm_diff_loc.py`: compare LOC snapshots
+- `ctm_dir_sizes.py`: directory-size summary
+- `ctm_find_large_files.py`, `ctm_largest_files.py`, `ctm_list_large_files.py`: large-file discovery
+- `ctm_git_tracked_vs_untracked.py`: Git index/worktree counts
+- `ctm_recent_files.py`: recently modified file listing
+- `ctm_tree_stats.py`: directory-depth distribution
 
-All tools support passing root directory as first argument. Defaults to current directory.
-
-## Usage Examples
-`ash
-python ctm_tools/py/ctm_count_files_by_ext.py .
-python ctm_tools/py/ctm_largest_files.py . 30
-python ctm_tools/py/ctm_count_empty_files.py .
-python ctm_tools/py/ctm_dir_sizes.py . 
-`
-
-## Ignored Patterns
-.git, .svn, .hg, __pycache__, node_modules, .venv, venv, build, dist, .next, .cache, .pytest_cache, .ruff_cache, plus binary extensions.
+These scripts predate the unified scanner and may have different exclusions,
+output contracts, and platform behavior. Treat heuristic results as estimates,
+not authoritative source analysis. For consistent metrics and automation,
+prefer [`ctm_tools/py/ctm.py`](../../ctm_tools/README.md).
