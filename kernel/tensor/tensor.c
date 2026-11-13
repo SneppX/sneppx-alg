@@ -501,7 +501,9 @@ SNEPPXTensor* SNEPPX_tensor_empty(const size_t* shape, size_t ndim, SNEPPXDtype 
 SNEPPXTensor* SNEPPX_tensor_zeros(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
     SNEPPXTensor* tensor = SNEPPX_tensor_create(shape, ndim, dtype);
     if (!tensor) return NULL;
-    memset(tensor->data, 0, tensor->size * tensor->item_size);
+    if (tensor->size > 0) {
+        memset(tensor->data, 0, tensor->size * tensor->item_size);
+    }
     return tensor;
 }
 
@@ -563,7 +565,9 @@ SNEPPXTensor* SNEPPX_tensor_ones(const size_t* shape, size_t ndim, SNEPPXDtype d
         }
         case SNEPPX_UINT8:
         case SNEPPX_BOOL:
-            memset(tensor->data, 1, tensor->size * tensor->item_size);
+            if (tensor->size > 0) {
+                memset(tensor->data, 1, tensor->size * tensor->item_size);
+            }
             break;
         case SNEPPX_COMPLEX64: {
             float* data = (float*)tensor->data;
