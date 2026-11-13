@@ -13,5 +13,5 @@ It reports included text files, descendant directories, physical lines,
 bytes, language breakdowns, skipped binary/symlink files, and optional Git
 tracked/untracked counts. It does not execute scanned files.
 
-See the [complete CTM guide](../../ctm_tools/README.md) for metric definitions,
+See the [complete CTM guide](https://github.com/SneppX/sneppx-alg/blob/main/ctm_tools/README.md) for metric definitions,
 exclusions, JSON schema, output formats, limitations, and tests.
