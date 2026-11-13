@@ -20,12 +20,13 @@ def tree_stats(root='.'):
     depth_count = defaultdict(int)
     maxd = 0
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
+        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not (Path(dirpath) / d).is_symlink()]
         rel = Path(dirpath).relative_to(root)
         d = len(rel.parts) if str(rel) != '.' else 0
         if d > maxd: maxd = d
-        depth_count[d] += len([f for f in filenames if Path(dirpath)/f not in []])
-    return {'max_depth': maxd, 'depth_distribution': dict(depth_count)}
+        depth_count[d] += 1
+    distribution = dict(sorted(depth_count.items()))
+    return {'max_depth': maxd, 'directories_by_depth': distribution, 'depth_distribution': distribution}
 
 def main():
     args = sys.argv[1:]
