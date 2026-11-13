@@ -1245,7 +1245,7 @@
   <span class="md-ellipsis">
     
   
-    Tutorials
+    Security
   
 
     
@@ -1258,6 +1258,358 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_22_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_22">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pqc_kat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PQC Interoperability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obfuscation Audit
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obfuscation Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#remediation&#702;update&#702;6-11-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation update (2026-11-13)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary&#702;of&#702;original&#702;findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary of Original Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1&#702;sneppx_junk_code_insert&#702;historical&#702;bounds&#702;review&#702;hardened" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. SNEPPX_junk_code_insert — historical bounds review (hardened)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#&#702;use&#702;of&#702;rand&#702;for&#702;obfuscation&#702;decisions&#702;cwe-338&#702;insecure&#702;rng&#702;remediated&#702;in&#702;this&#702;file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Use of rand() for obfuscation decisions — CWE-338 Insecure RNG (remediated in this file)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3&#702;sneppx_whitebox_aes_init&#702;cwe-1&#702;41&#702;type-punning&#702;alignment&#702;disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. SNEPPX_whitebox_aes_init — CWE-1041 Type-Punning / Alignment (disabled)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4&#702;sneppx_bogus_cf_redirect&#702;cwe-&#702;1&#702;incorrect&#702;code&#702;transformation&#702;disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. SNEPPX_bogus_cf_redirect — CWE-717 Incorrect Code Transformation (disabled)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5&#702;sneppx_whitebox_aes_encrypt&#702;cwe-&#702;8&#702;timing&#702;side-channel&#702;disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SNEPPX_whitebox_aes_encrypt — CWE-208 Timing Side-Channel (disabled)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6&#702;sneppx_iat_protect_scan&#702;lines&#702;3&#702;8-335&#702;cwe-36&#702;race&#702;condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. SNEPPX_iat_protect_scan (lines 328-335) — CWE-362 Race Condition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#&#702;sneppx_array_obfuscate_indices&#702;lines&#702;18&#702;-19&#702;cwe-3&#702;reversible&#702;obfuscation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. SNEPPX_array_obfuscate_indices (lines 187-197) — CWE-327 Reversible Obfuscation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8&#702;dead&#702;code&#702;in&#702;sneppx_array_obfuscate_indices&#702;lines&#702;19&#702;-196&#702;cwe-563" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dead code in SNEPPX_array_obfuscate_indices (lines 190-196) — CWE-563
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s&#702;-s9&#702;model&#702;alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S0-S9 Model Alignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files&#702;reviewed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Reviewed
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_23" >
+        
+          
+          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_23">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1632,10 +1984,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="">
             
   
   
@@ -1653,8 +2005,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1805,10 +2157,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_24" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_25" >
         
           
-          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="">
+          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
             
   
   
@@ -1826,8 +2178,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_24">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_25">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2258,10 +2610,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_25" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_26" checked>
         
           
-          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
+          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
             
   
   
@@ -2279,8 +2631,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_25">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2332,7 +2684,7 @@
   <span class="md-ellipsis">
     
   
-    Security Layers (S0-S9)
+    Security Layers
   
 
     
@@ -2694,10 +3046,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_26" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
         
           
-          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
+          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
             
   
   
@@ -2715,8 +3067,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_26">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_27">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2895,10 +3247,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
         
           
-          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
+          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
             
   
   
@@ -2916,8 +3268,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_27">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_28">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3096,10 +3448,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
         
           
-          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
+          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
             
   
   
@@ -3117,8 +3469,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_28">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_29">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3241,10 +3593,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
         
           
-          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
+          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
             
   
   
@@ -3262,8 +3614,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_29">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_30">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3582,10 +3934,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
         
           
-          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
+          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
             
   
   
@@ -3603,8 +3955,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_30">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_31">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3923,10 +4275,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_32" >
         
           
-          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
+          <label class="md-nav__link" for="__nav_32" id="__nav_32_label" tabindex="">
             
   
   
@@ -3944,8 +4296,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_31">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_32_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_32">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4375,10 +4727,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_33" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_34" >
         
           
-          <label class="md-nav__link" for="__nav_33" id="__nav_33_label" tabindex="">
+          <label class="md-nav__link" for="__nav_34" id="__nav_34_label" tabindex="">
             
   
   
@@ -4396,8 +4748,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_33_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_33">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_34_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_34">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4518,10 +4870,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_36" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_37" >
         
           
-          <label class="md-nav__link" for="__nav_36" id="__nav_36_label" tabindex="">
+          <label class="md-nav__link" for="__nav_37" id="__nav_37_label" tabindex="">
             
   
   
@@ -4539,8 +4891,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_36_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_36">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_37_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_37">
             <span class="md-nav__icon md-icon"></span>
             
   
