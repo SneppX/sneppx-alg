@@ -14,9 +14,9 @@ Core  Secure Engine  Engine  Sec   San    Sec   Sec    Verif  Report
       Mem
 ```
 
-## S0 — Cryptographic Core ✅
+## S0 — Cryptographic Core (experimental)
 
-**Status**: Complete
+**Status**: Experimental / partial
 **Source**: `security/crypto/c/` and `include/neural_core/security/`
 
 All crypto source files follow the four-layer commenting standard in [COMMENTING.md](COMMENTING.md): Layer 1 file headers, Layer 2 concept blocks, Layer 3 inline "why" comments, and Layer 4 Doxygen API docs on every public `SNEPPX_*` function.
@@ -81,11 +81,11 @@ SNEPPX_sphincsplus_verify(sig, siglen, msg, msglen, pk, variant);
 
 ### Known Issues
 
-1. **Ed25519 verification**: 2 of 306 test vectors fail under specific edge conditions (batch verification edge cases). These do not represent security vulnerabilities.
-2. **Argon2 timing**: 1 of 4 timing tests shows variation on certain hardware. Mitigated by noise injection.
-3. **PQ primitives**: Kyber, Dilithium, and SPHINCS+ implementations are reference-style and may not be optimized for constant-time execution on all platforms.
+1. **Ed25519 verification**: historical documentation records 304/306 vectors passing. Re-run the current RFC 8032 vector suite and reconcile the remaining failures before claiming full compliance.
+2. **Argon2 timing**: historical tests reported timing variation on some hardware. Noise injection is not a substitute for constant-time design or side-channel analysis.
+3. **PQ primitives**: the ML-KEM checks are partial; ML-DSA and SLH-DSA valid-signature interoperability remains incomplete for finalized FIPS formats.
 
-## S1 — Secure Memory ✅
+## S1 — Secure Memory (partial)
 
 **Status**: Complete
 **Source**: `security/memory/` and `include/neural_core/security/`
@@ -131,7 +131,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - **Windows**: Automatic via `VirtualLock`
 - **macOS**: Not fully supported (limited mlock)
 
-## S2 — Obfuscation Engine ✅
+## S2 — Obfuscation Engine (known high-risk findings)
 
 **Status**: Complete
 **Source**: `security/obfuscation/` and `security/cpp/`
@@ -154,7 +154,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - Multi-VM diversity: multiple bytecode handlers with slot switching
 - Instruction scheduling randomization: basic-block-level instruction reordering
 
-## S3 — Behavioral Monitor ✅
+## S3 — Behavioral Monitor (partial)
 
 **Status**: Complete
 **Source**: `security/monitor/`
@@ -167,7 +167,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - Timing analysis: detect side-channel probing via rdtsc and execution time measurement
 - Anomaly detection: statistical baseline comparison for runtime behavior
 
-## S4 — Network Security ✅
+## S4 — Network Security (experimental)
 
 **Status**: Complete
 **Source**: `security/network/`
@@ -198,7 +198,7 @@ SNEPPX_transport_sec_init(&ts);
 SNEPPX_transport_sec_handshake(&ts, cert, cert_len, key);
 ```
 
-## S5 — AI Sanitizer ✅
+## S5 — AI Sanitizer (partial)
 
 **Status**: Complete
 **Source**: `security/ai/`
@@ -235,7 +235,7 @@ SNEPPX_poison_detect_feed_gradient(&pd, grad, grad_len);
 int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 ```
 
-## S6 — Security UI ✅
+## S6 — Security UI (incomplete)
 
 **Status**: Complete
 **Source**: `security/ui/`
@@ -246,7 +246,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - Key vault: in-memory encrypted key store with PIN-protected access
 - Dashboard: (see `docs/api/c.md` for C API or `bindings/python/` for Python bindings)
 
-## S7 — Secure Updates ✅
+## S7 — Secure Updates (incomplete)
 
 **Status**: Complete
 **Source**: `security/updates/`
@@ -277,7 +277,7 @@ SNEPPX_signed_update_init(&su, signing_sk);
 SNEPPX_signed_update_create(&su, update_data, update_len, &bundle, &bundle_len);
 ```
 
-## S8 — Formal Verification ✅
+## S8 — Formal Verification (not fully verified)
 
 **Status**: Complete
 **Source**: `security/formal/`
@@ -307,7 +307,7 @@ SNEPPX_breakout_detect_init(&bd);
 SNEPPX_breakout_detect_watch_syscall(&bd, "mount", BREAKOUT_FLAG_NAMESPACE_ESCAPE);
 ```
 
-## S9 — Penetration Testing ✅
+## S9 — Penetration Testing (tooling only; no independent audit)
 
 **Status**: Complete
 **Source**: `security/pentest/`
