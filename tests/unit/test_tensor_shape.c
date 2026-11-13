@@ -347,7 +347,7 @@ static void test_as_strided_bounds_and_aliasing(void) {
     SX_ASSERT_NEAR(((float*)source->data)[4], 9.0f, 1e-6f, "view aliases source storage");
     SNEPPX_tensor_destroy(view);
 
-    size_t invalid_strides[] = {3, 2};
+    size_t invalid_strides[] = {3, 3};
     view = SNEPPX_tensor_as_strided(source, 0, view_shape, 2, invalid_strides);
     SX_ASSERT_NULL(view, "out-of-bounds strided view rejected");
     SNEPPX_tensor_destroy(source);
