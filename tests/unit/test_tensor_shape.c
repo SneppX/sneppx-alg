@@ -350,6 +350,13 @@ static void test_as_strided_bounds_and_aliasing(void) {
     size_t invalid_strides[] = {3, 3};
     view = SNEPPX_tensor_as_strided(source, 0, view_shape, 2, invalid_strides);
     SX_ASSERT_NULL(view, "out-of-bounds strided view rejected");
+
+    size_t empty_shape[] = {2, 0};
+    size_t empty_strides[] = {3, 1};
+    view = SNEPPX_tensor_as_strided(source, 0, empty_shape, 2, empty_strides);
+    SX_ASSERT_NOT_NULL(view, "empty strided view is valid");
+    SX_ASSERT_EQ(view->size, 0, "empty view has zero elements");
+    SNEPPX_tensor_destroy(view);
     SNEPPX_tensor_destroy(source);
 }
 
