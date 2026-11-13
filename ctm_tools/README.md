@@ -71,8 +71,16 @@ check `schema_version` before assuming future fields are compatible.
 python -m pytest tests/python/test_ctm_tools.py -q
 ```
 
-## Existing focused tools
+## Legacy implementations
 
-The older scripts in `ctm_tools/py/` remain available for compatibility.
-The unified `ctm.py` command is the recommended starting point for new
-automation because it provides one schema and consistent exclusion behavior.
+The older focused Python scripts remain available for compatibility, but their
+output contracts and exclusions are not uniform. The C files under `ctm_tools/c/`
+are legacy prototypes and are not built: several implementations return
+placeholder values on non-Windows systems or unconditionally return zero.
+Do not use those C binaries for measurements. The standalone CMake project
+exposes only a help target until a shared, tested cross-platform C scanner is
+implemented.
+
+The unified `ctm.py` command is the supported implementation for new
+automation because it provides consistent exclusions, machine-readable output,
+and regression tests.
