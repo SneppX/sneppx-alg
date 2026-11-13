@@ -79,7 +79,7 @@ def test_index_select_forward_and_duplicate_index_gradients():
 
 def test_index_select_rejects_invalid_indices():
     tensor = Tensor(np.arange(6, dtype=np.float32).reshape(2, 3))
-    for dim, index in ((2, [0]), (1, [[0, 1]]), (1, [3]), (1, [-1])):
+    for dim, index in ((2, [0]), (1, [[0, 1]]), (1, [3]), (1, [-1]), (1, [1.5])):
         try:
             tensor.index_select(dim, index)
         except (IndexError, ValueError):
