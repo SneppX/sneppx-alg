@@ -286,37 +286,28 @@ int SNEPPX_iat_protect_restore(SNEPPXIATProtect* iat) {
  *
  * @return 0 on success, -1 on error.
  */
+/*
+ * The former "whitebox AES" routine was not an AES implementation: its
+ * lookup tables were placeholders and its secret-indexed accesses were
+ * timing-variable. Keep the ABI but fail closed until a real, reviewed
+ * constant-time block primitive is provided.
+ */
 int SNEPPX_whitebox_aes_init(SNEPPXWhiteBoxAES* wb, const uint8_t key[16]) {
-    if (!wb||!key) return -1;
-    memset(wb,0,sizeof(*wb));
-    memcpy(wb->embedded_key,key,16);
-    for (int i=0;i<256;i++) {
-        uint32_t s=i;
-        uint32_t x=((uint32_t*)key)[i%4];
-        wb->te0[i]=s<<24|s<<16|s<<8|s; wb->te1[i]=wb->te0[i];
-        wb->te2[i]=wb->te0[i]; wb->te3[i]=wb->te0[i];
-    }
-    wb->initialized=1;
-    return 0;
+    (void)key;
+    if (!wb) return -1;
+    memset(wb, 0, sizeof(*wb));
+    return -1;
 }
 
 /**
- * @brief Encrypt Whitebox Aes.
+ * @brief Disabled placeholder for whitebox AES encryption.
  *
- * @param wb [out] Wb value.
+ * The output is zeroed. This API must not be used for encryption or secrecy.
  */
 void SNEPPX_whitebox_aes_encrypt(SNEPPXWhiteBoxAES* wb, const uint8_t in[16], uint8_t out[16]) {
-    if (!wb||!wb->initialized||!in||!out) { if (out) memset(out,0,16); return; }
-    uint32_t s[4],tk[4];
-    for (int i=0;i<4;i++) s[i]=((uint32_t*)in)[i]^((uint32_t*)wb->embedded_key)[i];
-    for (int r=1;r<=10;r++) {
-        for (int i=0;i<4;i++) tk[i]=s[i];
-        s[0]=wb->te0[(tk[0]>>24)&0xFF]^wb->te1[(tk[1]>>16)&0xFF]^wb->te2[(tk[2]>>8)&0xFF]^wb->te3[tk[3]&0xFF];
-        s[1]=wb->te0[(tk[1]>>24)&0xFF]^wb->te1[(tk[2]>>16)&0xFF]^wb->te2[(tk[3]>>8)&0xFF]^wb->te3[tk[0]&0xFF];
-        s[2]=wb->te0[(tk[2]>>24)&0xFF]^wb->te1[(tk[3]>>16)&0xFF]^wb->te2[(tk[0]>>8)&0xFF]^wb->te3[tk[1]&0xFF];
-        s[3]=wb->te0[(tk[3]>>24)&0xFF]^wb->te1[(tk[0]>>16)&0xFF]^wb->te2[(tk[1]>>8)&0xFF]^wb->te3[tk[2]&0xFF];
-    }
-    for (int i=0;i<4;i++) ((uint32_t*)out)[i]=s[i];
+    (void)wb;
+    (void)in;
+    if (out) memset(out, 0, 16);
 }
 
 int SNEPPX_iat_obfuscation_init(SNEPPXIATObfuscation* io) { if (!io) return -1; memset(io,0,sizeof(*io)); return 0; }
