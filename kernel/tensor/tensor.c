@@ -76,14 +76,19 @@ void SNEPPX_storage_release(SNEPPXStorage* s) {
 /* ===== View creation helpers ===== */
 
 static SNEPPXTensor* tensor_view_alloc(const SNEPPXTensor* src, size_t view_ndim) {
+    (void)src;
+    const size_t ndim = view_ndim > 0 ? view_ndim : 1;
+    if (ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t metadata_bytes = ndim * sizeof(size_t);
+
     SNEPPXTensor* t = (SNEPPXTensor*)aligned_alloc_wrapper(sizeof(SNEPPXTensor), 64);
     if (!t) return NULL;
-    size_t ndim = view_ndim > 0 ? view_ndim : 1;
-    t->shape = (size_t*)aligned_alloc_wrapper(ndim * sizeof(size_t), 64);
-    t->strides = (size_t*)aligned_alloc_wrapper(ndim * sizeof(size_t), 64);
+    memset(t, 0, sizeof(*t));
+    t->shape = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    t->strides = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
     if (!t->shape || !t->strides) {
-        SNEPPX_free(t->shape, ndim * sizeof(size_t));
-        SNEPPX_free(t->strides, ndim * sizeof(size_t));
+        SNEPPX_free(t->shape, metadata_bytes);
+        SNEPPX_free(t->strides, metadata_bytes);
         SNEPPX_free(t, sizeof(SNEPPXTensor));
         return NULL;
     }
@@ -101,19 +106,43 @@ static SNEPPXTensor* tensor_view_alloc(const SNEPPXTensor* src, size_t view_ndim
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, const size_t* shape, size_t ndim, const size_t* strides) {
-    if (!src) return NULL;
+    if (!src || !src->storage || src->item_size == 0 ||
+        (ndim > 0 && (!shape || !strides))) return NULL;
+    if (src->storage->num_bytes % src->item_size != 0) return NULL;
+
+    size_t view_size = 1;
+    size_t max_offset = offset;
+    int is_empty = 0;
+    for (size_t i = 0; i < ndim; ++i) {
+        if (shape[i] == 0) {
+            is_empty = 1;
+        } else {
+            if (view_size > SIZE_MAX / shape[i]) return NULL;
+            view_size *= shape[i];
+            const size_t last_index = shape[i] - 1;
+            if (strides[i] != 0 && last_index > SIZE_MAX / strides[i]) return NULL;
+            const size_t delta = last_index * strides[i];
+            if (max_offset > SIZE_MAX - delta) return NULL;
+            max_offset += delta;
+        }
+    }
+
+    const size_t capacity = src->storage->num_bytes / src->item_size;
+    if (offset > capacity) return NULL;
+    if (!is_empty && max_offset >= capacity) return NULL;
+
     SNEPPXTensor* t = tensor_view_alloc(src, ndim);
     if (!t) return NULL;
+    for (size_t i = 0; i < ndim; ++i) {
+        t->shape[i] = shape[i];
+        t->strides[i] = strides[i];
+    }
+
     SNEPPX_storage_retain(src->storage);
     t->storage = src->storage;
     t->offset = offset;
     t->ndim = ndim;
-    t->size = 1;
-    for (size_t i = 0; i < ndim; i++) {
-        t->shape[i] = shape[i];
-        t->strides[i] = strides[i];
-        t->size *= shape[i];
-    }
+    t->size = view_size;
     t->dtype = src->dtype;
     t->item_size = src->item_size;
     t->device = src->device;
@@ -121,10 +150,11 @@ SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, c
     t->layout = src->layout;
     t->owns_data = 0;
     t->backend_handle = NULL;
-    t->data = (unsigned char*)src->storage->data + offset * t->item_size;
+    t->data = src->storage->data
+        ? (unsigned char*)src->storage->data + offset * t->item_size
+        : NULL;
     return t;
 }
-
 /**
  * @brief Perform Tensor Narrow.
  *
@@ -135,17 +165,37 @@ SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, c
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_narrow(const SNEPPXTensor* src, size_t dim, size_t start, size_t size) {
-    if (!src || dim >= src->ndim || start + size > src->shape[dim]) return NULL;
-    size_t new_shape[16], new_strides[16];
-    for (size_t i = 0; i < src->ndim; i++) {
-        new_shape[i] = src->shape[i];
-        new_strides[i] = src->strides[i];
-    }
-    new_shape[dim] = size;
-    size_t offset = src->offset + start * src->strides[dim];
-    return SNEPPX_tensor_as_strided(src, offset, new_shape, src->ndim, new_strides);
-}
+    if (!src || !src->shape || !src->strides || dim >= src->ndim) return NULL;
+    if (start > src->shape[dim] || size > src->shape[dim] - start) return NULL;
+    if (start != 0 && src->strides[dim] > SIZE_MAX / start) return NULL;
 
+    const size_t ndim = src->ndim;
+    if (ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t bytes = ndim * sizeof(size_t);
+    size_t* new_shape = (size_t*)SNEPPX_malloc(bytes, 64);
+    size_t* new_strides = (size_t*)SNEPPX_malloc(bytes, 64);
+    if (!new_shape || !new_strides) {
+        SNEPPX_free(new_shape, bytes);
+        SNEPPX_free(new_strides, bytes);
+        return NULL;
+    }
+
+    memcpy(new_shape, src->shape, bytes);
+    memcpy(new_strides, src->strides, bytes);
+    new_shape[dim] = size;
+
+    const size_t delta = start * src->strides[dim];
+    if (src->offset > SIZE_MAX - delta) {
+        SNEPPX_free(new_shape, bytes);
+        SNEPPX_free(new_strides, bytes);
+        return NULL;
+    }
+    const size_t offset = src->offset + delta;
+    SNEPPXTensor* view = SNEPPX_tensor_as_strided(src, offset, new_shape, ndim, new_strides);
+    SNEPPX_free(new_shape, bytes);
+    SNEPPX_free(new_strides, bytes);
+    return view;
+}
 /* ===== Backward-compat: ensure storage exists for legacy code paths ===== */
 static SNEPPXStorage* ensure_storage(SNEPPXTensor* t) {
     if (!t->storage) {
