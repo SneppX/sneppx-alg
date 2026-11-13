@@ -34,22 +34,16 @@ extern "C" {
  */
 int SNEPPX_random_bytes(uint8_t* buffer, size_t len);
 
+#ifdef SNEPPX_ENABLE_TEST_RNG
 /**
- * @brief Seed the test-only deterministic RNG.
+ * @brief Test-only deterministic RNG hooks.
  *
- * When seeded, all SNEPPX_random_bytes output becomes reproducible from the
- * given 32-byte seed (SHA-512 hash-chain). Intended for known-answer tests;
- * production code must NOT call this. Call SNEPPX_random_bytes_clear_seed to
- * restore OS/CSPRNG randomness.
- *
- * @param seed [in] 32-byte seed value.
+ * These declarations exist only when the library is explicitly compiled with
+ * SNEPPX_ENABLE_TEST_RNG. Never enable this option in production builds.
  */
 void SNEPPX_random_bytes_set_seed(const uint8_t seed[32]);
-
-/**
- * @brief Disable the test-only deterministic RNG and restore OS randomness.
- */
 void SNEPPX_random_bytes_clear_seed(void);
+#endif
 /**
  * @brief Generate a random uint32_t with explicit error reporting.
  *
