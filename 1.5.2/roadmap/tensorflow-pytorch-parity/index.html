@@ -1475,6 +1475,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#recent&#702;correctness&#702;work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent correctness work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#capability&#702;matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4963,6 +4974,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#recent&#702;correctness&#702;work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent correctness work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#capability&#702;matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5144,6 +5166,22 @@ and error handling must be tested.</p>
 <p>These surfaces are not yet equivalent to TensorFlow or PyTorch. Some backends
 are experimental, some operations have partial gradient coverage, and several
 accelerator/distributed paths are optional or incomplete.</p>
+<h2 id="recent&#702;correctness&#702;work">Recent correctness work<a class="headerlink" href="#recent&#702;correctness&#702;work" title="Permanent link">&para;</a></h2>
+<p>The tensor foundation is being hardened before broader API expansion:</p>
+<ul>
+<li>Python fallback dtype, device and dense-layout enum values now follow the
+  native C ABI.</li>
+<li>The Python tensor supports NumPy's array protocol with explicit copy behavior,
+  complex scalar construction and scalar-only <code>item()</code> semantics.</li>
+<li>Native tensor creation checks invalid dtypes and allocation-size overflow.</li>
+<li>Typed element access validates null pointers and indices; strided views validate
+  storage bounds, and narrow views no longer have a fixed 16-dimension stack limit.</li>
+<li>Fill operations traverse logical indices using view strides rather than assuming
+  contiguous storage.</li>
+<li>FLOAT8 remains intentionally limited: the repository does not yet select one
+  encoding (E4M3 or E5M2), so operations that need a numeric one-value encoding
+  fail closed instead of guessing.</li>
+</ul>
 <h2 id="capability&#702;matrix">Capability matrix<a class="headerlink" href="#capability&#702;matrix" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
