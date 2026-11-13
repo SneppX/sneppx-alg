@@ -5697,3 +5697,50 @@ class Gather(Function):
         coordinates[dim] = indices
         np.add.at(grad, tuple(coordinates), grad_output.data)
         return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class ScatterAdd(Function):
+    """Add source values into indexed destinations, accumulating duplicate indices."""
+
+    @staticmethod
+    def forward(ctx, a, dim, index, src):
+        dim = int(dim)
+        if dim < 0:
+            dim += a.ndim
+        if dim < 0 or dim >= a.ndim:
+            raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
+        indices = np.asarray(index)
+        if indices.ndim != a.ndim or indices.shape != src.shape:
+            raise ValueError("scatter_add index and source must have the same shape and rank")
+        if indices.dtype.kind not in "iu":
+            raise TypeError("scatter_add indices must have an integer dtype")
+        indices = indices.astype(np.int64, copy=False)
+        for axis, (index_size, input_size) in enumerate(zip(indices.shape, a.shape)):
+            if axis != dim and index_size > input_size:
+                raise ValueError("scatter_add index shape exceeds input on a non-scatter axis")
+        if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
+            raise IndexError("scatter_add index is out of range")
+
+        ctx.save_attr(dim=dim, indices=indices.copy())
+        ctx.save_attr(input_shape=a.shape, source_shape=src.shape)
+        result = a.data.copy()
+        coordinates = np.indices(indices.shape, sparse=False)
+        coordinates[dim] = indices
+        np.add.at(result, tuple(coordinates), src.data)
+        return Tensor(result, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            dim = ctx.get_attr("dim")
+            indices = ctx.get_attr("indices")
+            return [grad_output, None, None, Gather.apply(grad_output, dim, indices)]
+        dim = ctx.get_attr("dim")
+        indices = ctx.get_attr("indices")
+        grad_src = np.take_along_axis(grad_output.data, indices, axis=dim)
+        return [
+            Tensor(grad_output.data.copy(), dtype=grad_output.dtype),
+            None,
+            None,
+            Tensor(grad_src, dtype=grad_output.dtype),
+        ]
