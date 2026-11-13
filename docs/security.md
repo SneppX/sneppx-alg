@@ -87,7 +87,7 @@ SNEPPX_sphincsplus_verify(sig, siglen, msg, msglen, pk, variant);
 
 ## S1 — Secure Memory (partial)
 
-**Status**: Complete
+**Status**: Partial; independent audit required
 **Source**: `security/memory/` and `include/neural_core/security/`
 
 ### Features
@@ -133,7 +133,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 
 ## S2 — Obfuscation Engine (known high-risk findings)
 
-**Status**: Complete
+**Status**: Known high-risk findings remain open
 **Source**: `security/obfuscation/` and `security/cpp/`
 
 ### Implemented
@@ -156,7 +156,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 
 ## S3 — Behavioral Monitor (partial)
 
-**Status**: Complete
+**Status**: Partial
 **Source**: `security/monitor/`
 
 ### Implemented
@@ -169,7 +169,7 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 
 ## S4 — Network Security (experimental)
 
-**Status**: Complete
+**Status**: Experimental / partial
 **Source**: `security/network/`
 
 ### Implemented
@@ -200,7 +200,7 @@ SNEPPX_transport_sec_handshake(&ts, cert, cert_len, key);
 
 ## S5 — AI Sanitizer (partial)
 
-**Status**: Complete
+**Status**: Partial
 **Source**: `security/ai/`
 
 ### Implemented
@@ -237,7 +237,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 
 ## S6 — Security UI (incomplete)
 
-**Status**: Complete
+**Status**: Incomplete
 **Source**: `security/ui/`
 
 ### Implemented
@@ -248,7 +248,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 
 ## S7 — Secure Updates (incomplete)
 
-**Status**: Complete
+**Status**: Incomplete
 **Source**: `security/updates/`
 
 ### Implemented
@@ -279,7 +279,7 @@ SNEPPX_signed_update_create(&su, update_data, update_len, &bundle, &bundle_len);
 
 ## S8 — Formal Verification (not fully verified)
 
-**Status**: Complete
+**Status**: Not formally verified
 **Source**: `security/formal/`
 
 ### Implemented
@@ -309,7 +309,7 @@ SNEPPX_breakout_detect_watch_syscall(&bd, "mount", BREAKOUT_FLAG_NAMESPACE_ESCAP
 
 ## S9 — Penetration Testing (tooling only; no independent audit)
 
-**Status**: Complete
+**Status**: Not independently audited
 **Source**: `security/pentest/`
 
 ### Implemented
