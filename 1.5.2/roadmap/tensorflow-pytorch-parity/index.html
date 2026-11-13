@@ -16,6 +16,10 @@
         <link rel="canonical" href="https://SneppX.github.io/sneppx-alg/1.5.2/roadmap/tensorflow-pytorch-parity/">
       
       
+        <link rel="prev" href="../../security/obf_audit/">
+      
+      
+        <link rel="next" href="../../tutorials/">
       
       
         
@@ -29,7 +33,7 @@
     
     
       
-        <title>TensorFlow and PyTorch Feature Parity Roadmap - SNEPPX-Algo</title>
+        <title>Framework Roadmap - SNEPPX-Algo</title>
       
     
     
@@ -84,7 +88,7 @@
   
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SNEPPX-Alg">
-  <meta property="og:title" content="TensorFlow and PyTorch Feature Parity Roadmap | SNEPPX-Alg">
+  <meta property="og:title" content="Framework Roadmap | SNEPPX-Alg">
   <meta property="og:description" content="The universal open-source AI + security framework: HSS, SER, ARC, NPE and FM wrapped in 10 security layers.">
   <meta property="og:url" content="https://SneppX.github.io/sneppx-alg/1.5.2/roadmap/tensorflow-pytorch-parity/">
   <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
@@ -93,14 +97,14 @@
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="SNEPPX-Alg — the universal open-source AI + security framework">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="TensorFlow and PyTorch Feature Parity Roadmap | SNEPPX-Alg">
+  <meta name="twitter:title" content="Framework Roadmap | SNEPPX-Alg">
   <meta name="twitter:description" content="The universal open-source AI + security framework: HSS, SER, ARC, NPE and FM wrapped in 10 security layers.">
   <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
   <meta name="twitter:image:alt" content="SNEPPX-Alg — the universal open-source AI + security framework">
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="TensorFlow and PyTorch Feature Parity Roadmap - SNEPPX-Algo" />
+<meta property="og:title" content="Framework Roadmap - SNEPPX-Algo" />
 <meta property="og:description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
 " />
 <meta property="og:image" content="https://SneppX.github.io/sneppx-alg/1.5.2/assets/images/social/roadmap/tensorflow-pytorch-parity.png" />
@@ -109,7 +113,7 @@
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="https://SneppX.github.io/sneppx-alg/1.5.2/roadmap/tensorflow-pytorch-parity/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="TensorFlow and PyTorch Feature Parity Roadmap - SNEPPX-Algo" />
+<meta property="twitter:title" content="Framework Roadmap - SNEPPX-Algo" />
 <meta property="twitter:description" content="Secure neural algorithm pipeline: HSS -> SER -> ARC -> NPE -> FM wrapped in 10 security layers (S0-S9). Post-quantum crypto, distributed training (ZeRO/TP/PP/EP), quantization (INT8/INT4/FP8/AWQ/GPTQ), and a NumPy-fallback Python API.
 " />
 <meta property="twitter:image" content="https://SneppX.github.io/sneppx-alg/1.5.2/assets/images/social/roadmap/tensorflow-pytorch-parity.png" />
@@ -180,7 +184,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              TensorFlow and PyTorch Feature Parity Roadmap
+              Framework Roadmap
             
           </span>
         </div>
@@ -1386,6 +1390,229 @@
       
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Roadmap
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#goal&#702;and&#702;compatibility&#702;policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal and compatibility policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current&#702;baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current baseline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability&#702;matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capability matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation&#702;phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation phases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p&#702;correctness&#702;and&#702;contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P0 — Correctness and contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p1&#702;tensor&#702;api&#702;completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P1 — Tensor API completeness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p&#702;autograd&#702;parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P2 — Autograd parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p3&#702;neural-network&#702;and&#702;optimization&#702;stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P3 — Neural-network and optimization stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p4&#702;data&#702;and&#702;model&#702;ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P4 — Data and model ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p5&#702;performance&#702;and&#702;accelerators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P5 — Performance and accelerators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p6&#702;distributed&#702;and&#702;production&#702;runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P6 — Distributed and production runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#definition&#702;of&#702;done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition of done
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility&#702;labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
   
   
     
@@ -1404,10 +1631,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_24" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="">
+          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="">
             
   
   
@@ -1425,8 +1652,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_24">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1801,10 +2028,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_24" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_25" >
         
           
-          <label class="md-nav__link" for="__nav_24" id="__nav_24_label" tabindex="">
+          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
             
   
   
@@ -1822,8 +2049,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_24_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_24">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_25">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1974,10 +2201,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_25" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_26" >
         
           
-          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
+          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
             
   
   
@@ -1995,8 +2222,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_25">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2427,10 +2654,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_26" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
         
           
-          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
+          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
             
   
   
@@ -2448,8 +2675,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_26">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_27">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2684,10 +2911,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
         
           
-          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
+          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
             
   
   
@@ -2705,8 +2932,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_27">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_28">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2913,10 +3140,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
         
           
-          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
+          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
             
   
   
@@ -2934,8 +3161,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_28">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_29">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3114,10 +3341,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
         
           
-          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
+          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
             
   
   
@@ -3135,8 +3362,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_29">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_30">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3259,10 +3486,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
         
           
-          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
+          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
             
   
   
@@ -3280,8 +3507,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_30">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_31">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3600,10 +3827,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_32" >
         
           
-          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
+          <label class="md-nav__link" for="__nav_32" id="__nav_32_label" tabindex="">
             
   
   
@@ -3621,8 +3848,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_31">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_32_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_32">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3941,10 +4168,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_32" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_33" >
         
           
-          <label class="md-nav__link" for="__nav_32" id="__nav_32_label" tabindex="">
+          <label class="md-nav__link" for="__nav_33" id="__nav_33_label" tabindex="">
             
   
   
@@ -3962,8 +4189,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_32_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_32">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_33_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_33">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4393,10 +4620,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_34" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_35" >
         
           
-          <label class="md-nav__link" for="__nav_34" id="__nav_34_label" tabindex="">
+          <label class="md-nav__link" for="__nav_35" id="__nav_35_label" tabindex="">
             
   
   
@@ -4414,8 +4641,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_34_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_34">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_35_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_35">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4536,10 +4763,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_37" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_38" >
         
           
-          <label class="md-nav__link" for="__nav_37" id="__nav_37_label" tabindex="">
+          <label class="md-nav__link" for="__nav_38" id="__nav_38_label" tabindex="">
             
   
   
@@ -4557,8 +4784,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_37_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_37">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_38_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_38">
             <span class="md-nav__icon md-icon"></span>
             
   
