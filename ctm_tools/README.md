@@ -12,6 +12,7 @@ From the repository root:
 python ctm_tools/py/ctm.py .
 python ctm_tools/py/ctm.py . --format json --output ctm-report.json
 python ctm_tools/py/ctm.py . --format csv
+python ctm_tools/py/ctm.py . --format html --output ctm-report.html
 python ctm_tools/py/ctm.py . --include-other-text
 ```
 
@@ -39,6 +40,7 @@ name; the exact default exclusions are defined in `ctm_tools/py/ctm.py`.
 - `text`: human-readable summary (default)
 - `json`: stable top-level schema with `schema_version: 1`
 - `csv`: language rows followed by a TOTAL row
+- `html`: self-contained responsive dashboard with escaped content and no external assets
 
 JSON is the preferred format for dashboards and automation. Consumers should
 check `schema_version` before assuming future fields are compatible.
