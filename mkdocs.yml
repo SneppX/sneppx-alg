@@ -162,6 +162,7 @@ nav:
         - Security Layers: security_layers.md
         - PQC Interoperability: pqc_kat.md
         - Obfuscation Audit: security/obf_audit.md
+    - Framework Roadmap: roadmap/tensorflow-pytorch-parity.md
     - Tutorials:
         - Tutorial Index: tutorials/index.md
         - Classification: tutorials/classification.md
