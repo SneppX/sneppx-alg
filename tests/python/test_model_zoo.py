@@ -11,6 +11,7 @@ else:
     sys.path.insert(0, os.path.join(os.getcwd(), "tests/python/../../bindings/python"))
 
 from SneppX_ALG.interface_bindings.model_zoo import (
+    ModelConfig,
     ModelFamily,
     LlamaConfig,
     MistralConfig,
@@ -280,6 +281,30 @@ def test_mha_forward_not_null():
     print("  [PASS] mha_forward_not_null")
 
 
+
+def test_model_config_c_round_trip():
+    """C config conversion must round-trip context length without unknown fields."""
+    original = ModelConfig(
+        name="round-trip",
+        hidden_size=128,
+        num_layers=4,
+        num_attention_heads=4,
+        vocab_size=256,
+        max_seq_len=8192,
+    )
+    c_config = original.to_c_config()
+    check("C config context length", c_config["max_position_embeddings"] == 8192)
+
+    restored = ModelConfig.from_c_config(c_config)
+    check("C config round-trip context length", restored.max_seq_len == 8192)
+    check("C config round-trip identity", restored.name == original.name)
+    check("C config round-trip hidden size", restored.hidden_size == original.hidden_size)
+
+    legacy_config = ModelConfig.from_c_config({"max_seq_len": 4096})
+    check("legacy max_seq_len fallback", legacy_config.max_seq_len == 4096)
+
+
+
 def test_dataclass_defaults():
     lc = LlamaConfig()
     check("LlamaConfig default hidden", lc.hidden_size == 4096)
@@ -308,6 +333,7 @@ if __name__ == "__main__":
     test_from_pretrained_all()
     test_build_transformer()
     test_safetensors_reader_invalid()
+    test_model_config_c_round_trip()
     test_dataclass_defaults()
     test_extend_context()
     test_context_extension_all_models()
