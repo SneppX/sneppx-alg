@@ -795,6 +795,38 @@ class Tensor:
             dims = tuple(dims[0])
         return Permute.apply(self, dims)
 
+    def flip(self, dims=None):
+        """Reverse tensor elements along one or more dimensions."""
+        from .autograd_ops import Flip
+
+        if isinstance(dims, (int, np.integer)):
+            dims = (int(dims),)
+        elif dims is not None:
+            dims = tuple(dims)
+        return Flip.apply(self, dims)
+
+    def roll(self, shifts, dims=None):
+        """Roll tensor elements along dimensions, or over the flattened tensor."""
+        from .autograd_ops import Roll
+
+        if isinstance(dims, (int, np.integer)):
+            dims = int(dims)
+        elif dims is not None:
+            dims = tuple(dims)
+        return Roll.apply(self, shifts, dims)
+
+    def tril(self, diagonal=0):
+        """Return the lower-triangular part of the last two dimensions."""
+        from .autograd_ops import Tril
+
+        return Tril.apply(self, diagonal)
+
+    def triu(self, diagonal=0):
+        """Return the upper-triangular part of the last two dimensions."""
+        from .autograd_ops import Triu
+
+        return Triu.apply(self, diagonal)
+
     def squeeze(self, dim=None):
         from .autograd_ops import Squeeze
 
