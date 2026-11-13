@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader
+from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader, TensorDataset, Subset, ConcatDataset
 
 
 def test_tensor_shape():
@@ -84,3 +84,43 @@ def test_dataloader_rejects_invalid_configuration():
             pass
         else:
             raise AssertionError(f"invalid DataLoader configuration accepted: {kwargs!r}")
+
+
+
+def test_tensor_dataset_subset_and_concat_dataset():
+    features = np.arange(10, dtype=np.float32).reshape(5, 2)
+    labels = np.arange(5, dtype=np.int64)
+    dataset = TensorDataset(features, labels)
+    assert len(dataset) == 5
+    assert np.array_equal(dataset[2][0], features[2])
+    assert dataset[2][1] == 2
+
+    subset = Subset(dataset, [4, 1])
+    assert len(subset) == 2
+    assert subset[0][1] == 4
+    assert subset[1][1] == 1
+
+    combined = ConcatDataset([dataset, subset])
+    assert len(combined) == 7
+    assert combined[5][1] == 4
+    assert combined[-1][1] == 1
+    try:
+        combined[7]
+    except IndexError:
+        pass
+    else:
+        raise AssertionError("ConcatDataset must reject out-of-range indices")
+
+    batches = list(DataLoader(dataset, batch_size=3))
+    assert batches[0][0].shape == (3, 2)
+    assert batches[1][1].shape == (2,)
+
+
+def test_tensor_dataset_rejects_invalid_inputs():
+    for args in ((), (np.array(1),), (np.arange(3), np.arange(4))):
+        try:
+            TensorDataset(*args)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid TensorDataset inputs accepted: {args!r}")
