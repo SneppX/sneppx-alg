@@ -32,3 +32,8 @@ jobs:
         env:
           PYTHONPATH: bindings/python
         run: python -m pytest tests/python/test_readme_integrity.py -q -p no:cacheprovider
+      - name: CTM compile and smoke test
+        run: |
+          python -m compileall -q ctm_tools/py
+          python ctm_tools/py/ctm.py . --format json > /tmp/ctm-report.json
+          python -c "import json; r=json.load(open('/tmp/ctm-report.json', encoding='utf-8')); assert r['schema_version'] == 1 and r['files'] > 0"
