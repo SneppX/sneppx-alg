@@ -53,6 +53,11 @@ developer tooling. Use the [CTM scanner](ctm_tools/README.md) to generate
 current repository metrics rather than relying on manually maintained LOC
 or test-count estimates.
 
+The long-term TensorFlow/PyTorch capability target and phased implementation
+plan are tracked in the [framework parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md).
+Current compatibility is partial and experimental; this is not a drop-in
+replacement for either framework.
+
 Implementation and validation status are documented per subsystem. A source
 file or public API is not evidence of feature completeness, production
 readiness, cryptographic certification, or independent security review.
@@ -128,7 +133,8 @@ We label maturity honestly so contributors know where to focus. Status: 🟢 Sta
 | Model Zoo `from_pretrained()` | 🟡 Experimental | `model_zoo.from_pretrained` resolves known IDs to config/skeleton metadata (local-only, no downloads). Local HF snapshot weight loading is available via `hf_integration.from_pretrained(..., cache_dir=<local snapshot>)` with clear errors when files are missing. |
 | C HTTP REST API | 🟡 Experimental | `/v1/health`, `/v1/models` real; `/v1/generate` is a demo scaffold |
 | Distributed training | 🟡 Experimental | Gradient collectives in DDP/ZeRO/TP/PP/EP/grad-comm are wired to the NCCL binding (`net/distributed/nccl.c`), which falls back to a CPU path so single-process runs stay correct; control-plane pieces (checkpoint/elastic/heartbeat/sampler) remain scaffolded |
-| Python bindings | 🟢 Stable | NumPy-backed `Tensor`/`nn`/`Trainer`; C `_Tensor` reachable via pybind |
+| Tensor / autograd parity | 🟡 Experimental | Tensor creation, arithmetic, autograd and common indexing/NN ops exist; broad PyTorch/TensorFlow operator and backend parity remains incomplete. See the [parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md). |
+| Python bindings | 🟢 Stable API | NumPy-backed `Tensor`/`nn`/`Trainer` surface; feature completeness and accelerator semantics vary by subsystem. |
 
 ## The 5-Stage Pipeline
 
