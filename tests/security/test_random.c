@@ -54,12 +54,18 @@ void test_no_duplicates(void) {
 void test_uniform_bounded(void) {
     printf("\n--- test_uniform_bounded ---\n");
     uint32_t bound = 100;
+    uint32_t value = 123;
+    SX_TEST("zero bound rejected", SNEPPX_random_uniform_checked(0, &value) == -1);
+    SX_TEST("invalid bound leaves output unchanged", value == 123);
+    SX_TEST("null output rejected", SNEPPX_random_uniform_checked(bound, NULL) == -1);
     int ok = 1;
     for (int i = 0; i < 10000; i++) {
-        uint32_t v = SNEPPX_random_uniform(bound);
-        if (v >= bound) { ok = 0; break; }
+        if (SNEPPX_random_uniform_checked(bound, &value) != 0 || value >= bound) {
+            ok = 0;
+            break;
+        }
     }
-    SX_TEST("all values in [0, bound)", ok == 1);
+    SX_TEST("checked values in [0, bound)", ok == 1);
 }
 
 
