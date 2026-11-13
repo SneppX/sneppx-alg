@@ -165,23 +165,20 @@ typedef struct {
  */
 int  SNEPPX_bogus_cf_init(SNEPPXBogusCF* bcf);
 /**
- * @brief Perform Bogus Cf Add Fake Block.
+ * @brief Add a fake control-flow block.
  *
- * @param bcf [out] Bcf value.
- * @param fake_code [in] Fake Code value.
- * @param fake_len [in] Fake Len value.
- *
- * @return 0 on success, -1 on error.
+ * @warning Disabled until a reversible, relocation-safe transformation is
+ *          implemented. The current implementation always returns -1.
+ * @return -1 while the feature is disabled.
  */
 int  SNEPPX_bogus_cf_add_fake_block(SNEPPXBogusCF* bcf, const uint8_t* fake_code, size_t fake_len);
 /**
- * @brief Perform Bogus Cf Redirect.
+ * @brief Apply a bogus control-flow redirect.
  *
- * @param bcf [out] Bcf value.
- * @param code [out] Code value.
- * @param code_len [in] Code Len value.
- *
- * @return 0 on success, -1 on error.
+ * @warning Disabled because the former implementation could corrupt caller
+ *          code and had no safe restoration path. The input buffer is not
+ *          modified; this function always returns -1.
+ * @return -1 while the feature is disabled.
  */
 int  SNEPPX_bogus_cf_redirect(SNEPPXBogusCF* bcf, uint8_t* code, size_t code_len);
 
