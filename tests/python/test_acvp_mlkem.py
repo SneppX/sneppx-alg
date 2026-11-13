@@ -29,6 +29,20 @@ pytestmark = pytest.mark.skipif(
 )
 
 
+def pytest_collection_modifyitems(config, items):
+    """Keep deterministic keygen KATs out of production-extension test runs."""
+    try:
+        from SneppX_ALG import _SNEPPX_c as ext
+        available = hasattr(ext.crypto, "random_set_seed")
+    except ImportError:
+        available = False
+    if not available:
+        skip = pytest.mark.skip(reason="deterministic ML-KEM KATs require SNEPPX_ENABLE_TEST_RNG=ON")
+        for item in items:
+            if item.module.__name__ == __name__:
+                item.add_marker(skip)
+
+
 @pytest.fixture(scope="module")
 def crypto():
     try:
