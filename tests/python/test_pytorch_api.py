@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader, TensorDataset, Subset, ConcatDataset
+from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader, TensorDataset, Subset, ConcatDataset, random_split
 
 
 def test_tensor_shape():
@@ -124,3 +124,27 @@ def test_tensor_dataset_rejects_invalid_inputs():
             pass
         else:
             raise AssertionError(f"invalid TensorDataset inputs accepted: {args!r}")
+
+
+
+def test_random_split_integer_fractional_and_seeded():
+    dataset = TensorDataset(np.arange(10, dtype=np.int64))
+    train_a, val_a = random_split(dataset, [8, 2], generator=123)
+    train_b, val_b = random_split(dataset, [8, 2], generator=123)
+    assert len(train_a) == 8 and len(val_a) == 2
+    assert [train_a[i][0].item() for i in range(len(train_a))] == [
+        train_b[i][0].item() for i in range(len(train_b))
+    ]
+    assert [val_a[i][0].item() for i in range(len(val_a))] == [
+        val_b[i][0].item() for i in range(len(val_b))
+    ]
+
+    fractional = random_split(dataset, [0.7, 0.2, 0.1], generator=7)
+    assert [len(part) for part in fractional] == [7, 2, 1]
+
+    try:
+        random_split(dataset, [3, 3])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("random_split must reject lengths with wrong total")
