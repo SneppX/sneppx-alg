@@ -36,13 +36,14 @@
  *
  * @return 0 on success, -1 on error.
  */
-/* Test-only deterministic RNG (SHA-512 hash-chain). Disabled by default;
- * enabled via SNEPPX_random_bytes_set_seed for reproducible known-answer tests. */
+#ifdef SNEPPX_ENABLE_TEST_RNG
+/* Deterministic SHA-512 hash-chain RNG exists only in explicit test builds. */
 static int g_test_rng = 0;
 static uint8_t g_test_state[64];
 static size_t g_test_state_used = 64;
 
 void SNEPPX_random_bytes_set_seed(const uint8_t seed[32]) {
+    if (!seed) return;
     SNEPPXSHA512Context ctx;
     SNEPPX_sha512_init(&ctx);
     SNEPPX_sha512_update(&ctx, seed, 32);
@@ -54,6 +55,7 @@ void SNEPPX_random_bytes_set_seed(const uint8_t seed[32]) {
 void SNEPPX_random_bytes_clear_seed(void) {
     g_test_rng = 0;
     g_test_state_used = 64;
+    memset(g_test_state, 0, sizeof(g_test_state));
 }
 
 static int test_rng_generate(uint8_t* out, size_t len) {
@@ -74,10 +76,13 @@ static int test_rng_generate(uint8_t* out, size_t len) {
     }
     return 0;
 }
+#endif
 
 int SNEPPX_random_bytes(uint8_t* buffer, size_t len) {
     if (!buffer || !len) return -1;
+#ifdef SNEPPX_ENABLE_TEST_RNG
     if (g_test_rng) return test_rng_generate(buffer, len);
+#endif
 #ifdef _WIN32
     NTSTATUS status = BCryptGenRandom(NULL, buffer, (ULONG)len, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
     if (status < 0) return -1;
