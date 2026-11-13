@@ -315,11 +315,17 @@ $env:PYTHONPATH = "bindings/python"
 python -m pytest tests/python -q
 ```
 
-Crypto correctness is pinned by known-answer tests:
+Cryptographic regression and interoperability tests are available. The
+self-generated regression suite is distinct from the official ACVP sample
+vectors; neither test suite constitutes a FIPS validation certificate. The
+official-vector harness currently reports incomplete ML-DSA / SLH-DSA
+interoperability. See [the PQC KAT report](../pqc_kat.md) before relying on
+these experimental algorithms.
 
 ```powershell
 $env:PYTHONPATH = "bindings/python"
-python -m pytest tests/python/test_crypto_kat.py -q   # Dilithium (FIPS 204) + SPHINCS+ KAT
+python -m pytest tests/python/test_crypto_kat.py -q
+python -m pytest tests/python/test_acvp_sha3.py tests/python/test_acvp_mlkem.py tests/python/test_acvp_mldsa.py tests/python/test_acvp_slhdsa.py -q
 ```
 
 ## Extended utilities
