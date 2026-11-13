@@ -1,13 +1,31 @@
 # S2 Obfuscation Layer Security Audit
 
-**Date:** 2026-08-16  
+**Original audit date:** 2026-08-16  
+**Remediation review:** 2026-11-13  
 **Scope:** `security/obfuscation/obfuscation_advanced.cpp`, `obfuscation_advanced.h`  
 **Classification:** S2 — Obfuscation (Code transformation, string encryption, anti-debug)  
 **Auditor:** Automated review of S2 layer
 
 ---
 
-## Summary of Findings
+## Remediation update (2026-11-13)
+
+The findings below are the historical audit record. The current source has
+changed in several areas:
+
+| Finding | Current status | Evidence |
+|---|---|---|
+| Predictable `rand()` / `srand()` choices | **Remediated in `obfuscation_advanced.cpp`** | The file now uses `SNEPPX_random_bytes` for junk-pattern selection and contains no `rand()` / `srand()` calls. This is not a repository-wide RNG audit. |
+| Junk-code insertion bounds | **Hardened** | The current implementation validates the pattern count and uses subtraction-based capacity checks before moving bytes. Regression coverage is in `tests/security/cpp/test_obf_hardening.cpp`. |
+| Bogus control-flow redirect | **Disabled, not fixed** | Add/redirect APIs now fail closed; redirect does not modify the caller's code buffer. A safe reversible implementation does not exist yet. |
+| Whitebox AES timing and alignment | **Open** | Secret-indexed table access and portability concerns remain; do not use this code for secrecy. |
+| IAT protection concurrency | **Open** | The shared-entry synchronization issue requires a separate design and test. |
+
+The S2 implementation remains experimental and must not be treated as a
+security boundary. A fix to one source file does not establish the security
+of other obfuscation, string-encryption, or runtime-monitoring modules.
+
+## Summary of Original Findings
 
 | Severity | Count | Description |
 |----------|-------|-------------|
@@ -18,7 +36,7 @@
 
 ---
 
-## 1. `SNEPPX_junk_code_insert` (lines 130-141) — **CWE-787 Buffer Overflow**
+## 1. `SNEPPX_junk_code_insert` — historical bounds review (hardened)
 
 ```cpp
 size_t junk_len=0;
@@ -37,7 +55,7 @@ This correctly checks against `max_len`. However, `memcpy(code+pos, jcg->junk_co
 
 ---
 
-## 2. Use of `rand()` for obfuscation decisions — **CWE-338 Insecure RNG**
+## 2. Use of `rand()` for obfuscation decisions — **CWE-338 Insecure RNG** (remediated in this file)
 
 ```cpp
 SNEPPX_bogus_seed();  // line 217: srand(seed)
@@ -68,7 +86,7 @@ wb->te0[i]=s<<24|s<<16|s<<8|s;  // line 362
 
 ---
 
-## 4. `SNEPPX_bogus_cf_redirect` (lines 279-302) — **CWE-717 Incorrect Code Transformation**
+## 4. `SNEPPX_bogus_cf_redirect` — **CWE-717 Incorrect Code Transformation** (disabled)
 
 ```cpp
 bcf->real_entry=(uintptr_t)code;  // saved
