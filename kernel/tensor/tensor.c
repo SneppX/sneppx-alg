@@ -31,6 +31,34 @@ static size_t compute_offset(const SNEPPXTensor* tensor, const size_t* indices) 
     return offset;
 }
 
+static int compute_offset_checked(
+    const SNEPPXTensor* tensor,
+    const size_t* indices,
+    size_t* out_offset
+) {
+    if (!tensor || !out_offset || !tensor->data ||
+        (tensor->ndim > 0 && (!indices || !tensor->shape || !tensor->strides))) {
+        return 0;
+    }
+
+    size_t offset = 0;
+    for (size_t i = 0; i < tensor->ndim; ++i) {
+        if (indices[i] >= tensor->shape[i]) return 0;
+        if (tensor->strides[i] != 0 &&
+            indices[i] > (SIZE_MAX - offset) / tensor->strides[i]) return 0;
+        offset += indices[i] * tensor->strides[i];
+    }
+
+    if (tensor->item_size == 0) return 0;
+    if (tensor->storage) {
+        if (tensor->storage->num_bytes % tensor->item_size != 0) return 0;
+        const size_t capacity = tensor->storage->num_bytes / tensor->item_size;
+        if (tensor->offset > capacity || offset >= capacity - tensor->offset) return 0;
+    }
+    *out_offset = offset;
+    return 1;
+}
+
 static void* aligned_alloc_wrapper(size_t size, size_t alignment) {
     return SNEPPX_malloc(size, alignment);
 }
@@ -302,7 +330,8 @@ void SNEPPX_tensor_destroy(SNEPPXTensor* tensor) {
  */
 float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
     if (tensor->dtype != SNEPPX_FLOAT32) return 0.0f;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0.0f;
     return ((float*)tensor->data)[offset];
 }
 
@@ -314,7 +343,8 @@ float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
  */
 void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float value) {
     if (tensor->dtype != SNEPPX_FLOAT32) return;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((float*)tensor->data)[offset] = value;
 }
 
@@ -327,7 +357,8 @@ void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float va
  */
 double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) {
     if (tensor->dtype != SNEPPX_FLOAT64) return 0.0;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0.0;
     return ((double*)tensor->data)[offset];
 }
 
@@ -339,7 +370,8 @@ double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) 
  */
 void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double value) {
     if (tensor->dtype != SNEPPX_FLOAT64) return;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((double*)tensor->data)[offset] = value;
 }
 
@@ -352,7 +384,8 @@ void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double v
  */
 int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices) {
     if (tensor->dtype != SNEPPX_INT32) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int32_t*)tensor->data)[offset];
 }
 
@@ -364,7 +397,8 @@ int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices)
  */
 void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t value) {
     if (tensor->dtype != SNEPPX_INT32) return;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int32_t*)tensor->data)[offset] = value;
 }
 
@@ -377,7 +411,8 @@ void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t 
  */
 int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices) {
     if (tensor->dtype != SNEPPX_INT64) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int64_t*)tensor->data)[offset];
 }
 
@@ -389,7 +424,8 @@ int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices)
  */
 void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t value) {
     if (tensor->dtype != SNEPPX_INT64) return;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int64_t*)tensor->data)[offset] = value;
 }
 
@@ -402,7 +438,8 @@ void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t 
  */
 uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices) {
     if (tensor->dtype != SNEPPX_BOOL) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((uint8_t*)tensor->data)[offset];
 }
 
@@ -414,7 +451,8 @@ uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices
  */
 void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t value) {
     if (tensor->dtype != SNEPPX_BOOL) return;
-    size_t offset = compute_offset(tensor, indices);
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((uint8_t*)tensor->data)[offset] = value ? 1 : 0;
 }
 
