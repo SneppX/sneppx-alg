@@ -327,6 +327,8 @@ def test_dataclass_defaults():
     check("LlamaConfig default hidden", lc.hidden_size == 4096)
     mc = MistralConfig()
     check("MistralConfig default sliding", mc.sliding_window == 4096)
+    check("MistralConfig default RMS epsilon", abs(mc.rms_norm_eps - 1e-5) < 1e-12)
+    check("MistralConfig default attention dropout", mc.attention_dropout == 0.0)
     qc = Qwen2Config()
     check("Qwen2Config default rope_theta", abs(qc.rope_theta - 1000000.0) < 0.1)
     dc = DeepSeekV2Config()
