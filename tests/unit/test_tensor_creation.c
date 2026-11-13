@@ -190,7 +190,51 @@ static void test_eye_f64(void) {
 }
 
 
+static void test_ones_dtype_correctness(void) {
+    size_t shape[] = {3};
+
+    SNEPPXTensor* t = SNEPPX_tensor_ones(shape, 1, SNEPPX_INT32);
+    SX_ASSERT_NOT_NULL(t, "int32 ones not null");
+    for (size_t i = 0; i < 3; ++i) SX_ASSERT_EQ(((int32_t*)t->data)[i], 1, "int32 ones value");
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_INT16);
+    SX_ASSERT_NOT_NULL(t, "int16 ones not null");
+    for (size_t i = 0; i < 3; ++i) SX_ASSERT_EQ(((int16_t*)t->data)[i], 1, "int16 ones value");
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_FLOAT16);
+    SX_ASSERT_NOT_NULL(t, "float16 ones not null");
+    for (size_t i = 0; i < 3; ++i) SX_ASSERT_EQ(((uint16_t*)t->data)[i], UINT16_C(0x3c00), "float16 one encoding");
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_BFLOAT16);
+    SX_ASSERT_NOT_NULL(t, "bfloat16 ones not null");
+    for (size_t i = 0; i < 3; ++i) SX_ASSERT_EQ(((uint16_t*)t->data)[i], UINT16_C(0x3f80), "bfloat16 one encoding");
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_COMPLEX64);
+    SX_ASSERT_NOT_NULL(t, "complex64 ones not null");
+    for (size_t i = 0; i < 3; ++i) {
+        SX_ASSERT_NEAR(((float*)t->data)[2 * i], 1.0f, 1e-6f, "complex64 real part");
+        SX_ASSERT_NEAR(((float*)t->data)[2 * i + 1], 0.0f, 1e-6f, "complex64 imaginary part");
+    }
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_COMPLEX128);
+    SX_ASSERT_NOT_NULL(t, "complex128 ones not null");
+    for (size_t i = 0; i < 3; ++i) {
+        SX_ASSERT_NEAR(((double*)t->data)[2 * i], 1.0, 1e-12, "complex128 real part");
+        SX_ASSERT_NEAR(((double*)t->data)[2 * i + 1], 0.0, 1e-12, "complex128 imaginary part");
+    }
+    SNEPPX_tensor_destroy(t);
+
+    t = SNEPPX_tensor_ones(shape, 1, SNEPPX_FLOAT8);
+    SX_ASSERT_NULL(t, "float8 ones rejected until encoding is specified");
+}
+
 TEST(test_tensor_creation, empty_2d) { test_empty_2d(); }
+TEST(test_tensor_creation, ones_dtype_correctness) { test_ones_dtype_correctness(); }
 TEST(test_tensor_creation, empty_3d) { test_empty_3d(); }
 TEST(test_tensor_creation, empty_NULL_shape) { test_empty_null_shape(); }
 TEST(test_tensor_creation, empty_zero_ndim) { test_empty_zero_ndim(); }
