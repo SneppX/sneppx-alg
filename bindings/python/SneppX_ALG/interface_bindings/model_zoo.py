@@ -451,17 +451,12 @@ class MistralConfig:
     num_parameters: int = 0
     max_seq_len: int = 32768
     layer_norm_eps: float = 1e-5
-    rms_norm_eps: float = 1e-6
     use_rms_norm: bool = True
     ffn_act: str = "silu"
     gated_ffn: bool = True
     attention_type: str = "causal"
-    attention_dropout: float = 0.0
-    hidden_dropout: float = 0.0
     use_flash_attention: bool = True
-    sliding_window: int = 4096
     pos_encoding: str = "rope"
-    rope_theta: float = 10000.0
     rope_scaling: int = 0
     initializer_range: float = 0.02
     tie_word_embeddings: bool = False
