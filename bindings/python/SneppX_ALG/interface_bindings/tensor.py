@@ -31,22 +31,29 @@ else:
 if not _HAS_C_BACKEND:
 
     class Dtype:
+        # Keep these numeric values identical to SNEPPXDtype in the C ABI.
         FLOAT32 = 0
         FLOAT64 = 1
         FLOAT16 = 2
         BFLOAT16 = 3
-        INT32 = 4
-        INT64 = 5
-        INT16 = 6
-        INT8 = 7
-        UINT8 = 8
-        BOOL = 9
+        FLOAT8 = 4
+        INT32 = 5
+        INT64 = 6
+        INT16 = 7
+        INT8 = 8
+        UINT8 = 9
+        BOOL = 10
+        COMPLEX64 = 11
+        COMPLEX128 = 12
 
     class Device:
+        # Keep these numeric values identical to SNEPPXDevice in the C ABI.
         CPU = 0
         CUDA = 1
         METAL = 2
         VULKAN = 3
+        TPU = 4
+        NPU = 5
 
     class Layout:
         DENSE = 0
@@ -59,6 +66,9 @@ DTYPE_MAP = {
     "float64": (ctypes.c_double, 8, np.float64),
     "float16": (ctypes.c_uint16, 2, np.float16),
     "bfloat16": (ctypes.c_uint16, 2, np.uint16),
+    # NumPy has no universally available float8 scalar dtype; store the raw
+    # one-byte representation and leave numeric encoding to explicit codecs.
+    "float8": (ctypes.c_uint8, 1, np.uint8),
     "int32": (ctypes.c_int32, 4, np.int32),
     "int64": (ctypes.c_int64, 8, np.int64),
     "int16": (ctypes.c_int16, 2, np.int16),
