@@ -57,24 +57,24 @@ theme:
     exclude_docs: README.md
 extra_css:
     - stylesheets/extra.css
-  - stylesheets/run-snippet.css
-  - stylesheets/command-palette.css
-  - stylesheets/shortcuts.css
-  - stylesheets/visualizers.css
-  - stylesheets/progress.css
+    - stylesheets/run-snippet.css
+    - stylesheets/command-palette.css
+    - stylesheets/shortcuts.css
+    - stylesheets/visualizers.css
+    - stylesheets/progress.css
 extra_javascript:
     - javascripts/extra.js
     - javascripts/playground.js
-  - javascripts/run-snippet.js
-  - javascripts/command-palette.js
-  - javascripts/shortcuts.js
-  - javascripts/autograd-core.js
-  - javascripts/autograd-graph.js
-  - javascripts/matmul-viz.js
-  - javascripts/conv-viz.js
-  - javascripts/optimizer-race.js
-  - javascripts/loss-gallery.js
-  - javascripts/progress.js
+    - javascripts/run-snippet.js
+    - javascripts/command-palette.js
+    - javascripts/shortcuts.js
+    - javascripts/autograd-core.js
+    - javascripts/autograd-graph.js
+    - javascripts/matmul-viz.js
+    - javascripts/conv-viz.js
+    - javascripts/optimizer-race.js
+    - javascripts/loss-gallery.js
+    - javascripts/progress.js
 extra:
     social:
         - icon: fontawesome/brands/github
@@ -210,6 +210,10 @@ nav:
         - From PyTorch: migration/from_pytorch.md
         - From TensorFlow: migration/from_tensorflow.md
         - From JAX: migration/from_jax.md
+    - CTM Tooling:
+        - CTM Overview: ctm_tools/README.md
+        - Extended CTM Tools: ctm_tools/EXTENDED.md
+        - CTM Tool Reference: tools/ctm-tools.md
     - Development:
         - Development Workflow: DEVELOPMENT.md
         - Testing: TESTING.md
