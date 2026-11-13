@@ -167,7 +167,7 @@ class ModelConfig:
             "architecture": self.architecture,
             "vocab_size": self.vocab_size,
             "hidden_size": self.hidden_size,
-            "num_layers": self.num_layers,
+            "num_layers": self.num_layers or self.num_hidden_layers,
             "num_heads": self.num_attention_heads,
             "num_kv_heads": self.num_key_value_heads,
             "intermediate_size": self.intermediate_size,
