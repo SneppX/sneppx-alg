@@ -293,15 +293,15 @@ def test_model_config_c_round_trip():
         max_seq_len=8192,
     )
     c_config = original.to_c_config()
-    check("C config context length", c_config["max_position_embeddings"] == 8192)
+    assert c_config["max_position_embeddings"] == 8192
 
     restored = ModelConfig.from_c_config(c_config)
-    check("C config round-trip context length", restored.max_seq_len == 8192)
-    check("C config round-trip identity", restored.name == original.name)
-    check("C config round-trip hidden size", restored.hidden_size == original.hidden_size)
+    assert restored.max_seq_len == 8192
+    assert restored.name == original.name
+    assert restored.hidden_size == original.hidden_size
 
     legacy_config = ModelConfig.from_c_config({"max_seq_len": 4096})
-    check("legacy max_seq_len fallback", legacy_config.max_seq_len == 4096)
+    assert legacy_config.max_seq_len == 4096
 
 
 
