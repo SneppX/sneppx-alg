@@ -270,6 +270,61 @@ int SNEPPX_onnx_get_input_info(void* model, int idx, char* name, size_t name_max
 /* ---- small inference engine ---- */
 static size_t ort_total(const ORTensor* t) { size_t s=1; for(size_t i=0;i<t->ndim;i++) s*=t->shape[i]?t->shape[i]:1; return s?s:1; }
 
+static int transpose_tensor(const ORTensor* input, const ORNode* node, ORTensor* output) {
+    if (!input || !node || !output || input->ndim > 8) return -1;
+
+    const size_t ndim = input->ndim;
+    if (node->nperm != 0 && node->nperm != ndim) return -1;
+
+    size_t seen[8] = {0};
+    size_t permutation[8] = {0};
+    for (size_t i = 0; i < ndim; ++i) {
+        const int axis = node->nperm ? node->perm[i] : (int)(ndim - 1 - i);
+        if (axis < 0 || (size_t)axis >= ndim || seen[(size_t)axis]) return -1;
+        permutation[i] = (size_t)axis;
+        seen[(size_t)axis] = 1;
+        output->shape[i] = input->shape[permutation[i]];
+    }
+    output->ndim = ndim;
+
+    const size_t total = ort_total(input);
+    output->data = (float*)malloc(total * sizeof(float));
+    size_t* source_coords = ndim ? (size_t*)malloc(ndim * sizeof(size_t)) : NULL;
+    size_t* output_coords = ndim ? (size_t*)malloc(ndim * sizeof(size_t)) : NULL;
+    if (!output->data || (ndim && (!source_coords || !output_coords))) {
+        free(output->data);
+        free(source_coords);
+        free(output_coords);
+        output->data = NULL;
+        return -1;
+    }
+
+    for (size_t index = 0; index < total; ++index) {
+        size_t remainder = index;
+        for (long axis = (long)ndim - 1; axis >= 0; --axis) {
+            const size_t dimension = output->shape[axis] ? output->shape[axis] : 1;
+            output_coords[axis] = remainder % dimension;
+            remainder /= dimension;
+        }
+
+        for (size_t axis = 0; axis < ndim; ++axis) {
+            source_coords[permutation[axis]] = output_coords[axis];
+        }
+
+        size_t source_index = 0;
+        size_t stride = 1;
+        for (long axis = (long)ndim - 1; axis >= 0; --axis) {
+            source_index += source_coords[axis] * stride;
+            stride *= input->shape[axis] ? input->shape[axis] : 1;
+        }
+        output->data[index] = input->data[source_index];
+    }
+
+    free(source_coords);
+    free(output_coords);
+    return 0;
+}
+
 static void bcast_index(size_t idx, const size_t* shape, size_t ndim, size_t* out) {
     size_t s = 1; for (size_t i=0;i<ndim;i++) s*=shape[i]?shape[i]:1;
     for (long i=(long)ndim-1;i>=0;i--) { out[i]=idx%s; idx/=s>1?shape[i]:1; s/= (shape[i]?shape[i]:1); }
@@ -329,7 +384,16 @@ static void exec_node(ONNXModel* m, ORNode* n) {
     if (!strcmp(n->op,"Gelu") || !strcmp(n->op,"Erf")) { ORTensor* a=ort_get(m,n->in[0]); if(a&&n->nout){ORTensor r=*a; r.data=(float*)malloc(ort_total(a)*sizeof(float)); for(size_t i=0;i<ort_total(a);i++){ float x=a->data[i]; float c=0.7978845608f*(x+0.044715f*x*x*x); r.data[i]=0.5f*x*(1.0f+(float)tanh(c)); } ort_put(m,n->out[0],&r);} return; }
     if (!strcmp(n->op,"ReduceMean")) { ORTensor* a=ort_get(m,n->in[0]); if(a&&n->nout){ float s=0; for(size_t i=0;i<ort_total(a);i++) s+=a->data[i]; ORTensor r; r.ndim=0; r.data=(float*)malloc(sizeof(float)); r.data[0]=s/(float)ort_total(a); ort_put(m,n->out[0],&r);} return; }
     if (!strcmp(n->op,"Softmax")) { ORTensor* a=ort_get(m,n->in[0]); if(a&&n->nout){ORTensor r=*a; r.data=(float*)malloc(ort_total(a)*sizeof(float)); size_t dim=r.ndim?(r.ndim-1):0; size_t rows=1,cols=1; for(size_t i=0;i<dim;i++) rows*=r.shape[i]; for(size_t i=dim;i<r.ndim;i++) cols*=r.shape[i]; for(size_t row=0;row<rows;row++){ float mx=-1e30f; for(size_t c=0;c<cols;c++) mx=a->data[row*cols+c]>mx?a->data[row*cols+c]:mx; float sum=0; for(size_t c=0;c<cols;c++){ r.data[row*cols+c]=(float)exp(a->data[row*cols+c]-mx); sum+=r.data[row*cols+c]; } for(size_t c=0;c<cols;c++) r.data[row*cols+c]/=sum; } ort_put(m,n->out[0],&r);} return; }
-    if (!strcmp(n->op,"Transpose")) { ORTensor* a=ort_get(m,n->in[0]); if(a&&n->nout){ORTensor r; memset(&r,0,sizeof(r)); r.ndim=a->ndim; if(n->nperm==a->ndim){ for(size_t i=0;i<r.ndim;i++) r.shape[i]=a->shape[n->perm[i]]; } else { for(size_t i=0;i<r.ndim;i++) r.shape[i]=a->shape[r.ndim-1-i]; } size_t total=ort_total(a); r.data=(float*)malloc(total*sizeof(float)); size_t* src=(size_t*)malloc(r.ndim*sizeof(size_t)); size_t* dst=(size_t*)malloc(r.ndim*sizeof(size_t)); for(size_t i=0;i<total;i++){ size_t rem=i,acc=1; size_t* perms=n->perm; for(long k=(long)r.ndim-1;k>=0;k--){ size_t d=r.shape[k]?r.shape[k]:1; dst[k]=rem%d; rem/=d; } if(n->nperm==a->ndim){ for(size_t k=0;k<r.ndim;k++) src[perms[k]]=dst[k]; } else { for(size_t k=0;k<r.ndim;k++) src[k]=dst[r.ndim-1-k]; } size_t si=0,acc2=1; for(long k=(long)a->ndim-1;k>=0;k--){ si+=src[k]*acc2; acc2*=a->shape[k]?a->shape[k]:1; } r.data[i]=a->data[si]; } free(src); free(dst); ort_put(m,n->out[0],&r);} return; }
+    if (!strcmp(n->op, "Transpose")) {
+        ORTensor* input = n->nin ? ort_get(m, n->in[0]) : NULL;
+        if (!input || !n->nout) return;
+        ORTensor output;
+        memset(&output, 0, sizeof(output));
+        if (transpose_tensor(input, n, &output) == 0) {
+            ort_put(m, n->out[0], &output);
+        }
+        return;
+    }
     if (!strcmp(n->op,"Reshape")) { ORTensor* a=ort_get(m,n->in[0]); ORTensor* sh= n->nin>1? ort_get(m,n->in[1]):NULL; if(a&&n->nout){ORTensor r; memset(&r,0,sizeof(r)); if(sh){ r.ndim=sh->ndim? sh->ndim : (sh->data?(size_t)(*sh->data):1); for(size_t i=0;i<(size_t)r.ndim;i++) r.shape[i]=(size_t)sh->data[i]; } else { r.ndim=a->ndim; for(size_t i=0;i<a->ndim;i++) r.shape[i]=a->shape[i]; } size_t total=ort_total(a); size_t rt=1; for(size_t i=0;i<r.ndim;i++) rt*=r.shape[i]?r.shape[i]:1; if(rt!=total) rt=total; r.data=(float*)malloc(rt*sizeof(float)); memcpy(r.data,a->data,total*sizeof(float)); for(size_t i=total;i<rt;i++) r.data[i]=0; ort_put(m,n->out[0],&r);} return; }
     if (!strcmp(n->op,"Concat")) { /* concat along axis 0 */ ORTensor* a=ort_get(m,n->in[0]); ORTensor* b= n->nin>1?ort_get(m,n->in[1]):NULL; if(a&&b&&n->nout){ORTensor r; memset(&r,0,sizeof(r)); r.ndim=2; r.shape[0]=0; r.shape[1]=a->shape[1]>0?a->shape[1]:ort_total(a); r.shape[0]=ort_total(a)/r.shape[1]+ort_total(b)/r.shape[1]; size_t total=ort_total(a)+ort_total(b); r.data=(float*)malloc(total*sizeof(float)); size_t p=0; for(size_t i=0;i<ort_total(a);i++) r.data[p++]=a->data[i]; for(size_t i=0;i<ort_total(b);i++) r.data[p++]=b->data[i]; ort_put(m,n->out[0],&r);} return; }
     /* unknown op: pass through first input */

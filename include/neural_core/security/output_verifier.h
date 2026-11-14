@@ -54,6 +54,8 @@ typedef struct {
 int  SNEPPX_output_verifier_init(SNEPPXS5Verifier* ov);
 void SNEPPX_output_verifier_destroy(SNEPPXS5Verifier* ov);
 int  SNEPPX_output_verifier_check(SNEPPXS5Verifier* ov, const char* output, size_t len);
+int  SNEPPX_output_verifier_add_blocked_topic(SNEPPXS5Verifier* ov, const char* topic);
+int  SNEPPX_output_verifier_sanitize(SNEPPXS5Verifier* ov, const char* output, size_t len, char* safe_output, size_t* safe_len);
 
 /**
  * @brief Initialize S5 Verifier.
