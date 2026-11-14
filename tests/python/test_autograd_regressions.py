@@ -236,8 +236,10 @@ def test_mean_create_graph_uses_reduced_element_count_for_tuple_axes():
     np.testing.assert_allclose(first.data, expected, rtol=1e-6, atol=1e-7)
     assert first.grad_fn is not None
 
-    second = grad(first.sum(), source)[0]
-    np.testing.assert_allclose(second.data, np.zeros_like(values), atol=1e-7)
+    # The mean gradient is constant with respect to the input, so its
+    # second derivative is mathematically zero and the input is unused.
+    second = grad(first.sum(), source, allow_unused=True)[0]
+    assert second is None
 
 
 def test_sum_create_graph_expands_reduced_axes_in_original_positions():
