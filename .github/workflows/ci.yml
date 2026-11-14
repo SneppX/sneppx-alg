@@ -57,6 +57,7 @@ jobs:
             tests/python/test_firewall_transport.py \
             tests/python/test_firewall_network_hardening.py \
             tests/python/test_firewall_application_hardening.py \
+            tests/python/test_firewall_asgi.py \
             -q -p no:cacheprovider
 
   native-build-smoke:

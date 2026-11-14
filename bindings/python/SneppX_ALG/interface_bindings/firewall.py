@@ -38,6 +38,14 @@ class FirewallRunner:
     def config(self) -> FirewallConfig:
         return self._cfg
 
+    @property
+    def max_body_size(self) -> int:
+        return self._application.max_body_size
+
+    @property
+    def max_header_count(self) -> int:
+        return self._application.max_header_count
+
     def check_request(
         self,
         client_ip: str = "",

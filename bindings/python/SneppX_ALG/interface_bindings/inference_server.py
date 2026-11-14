@@ -31,6 +31,7 @@ from .generation import (
 )
 from .tokenizer import Tokenizer
 from .security_middleware import SecurityConfig, SecurityMiddleware
+from .firewall_asgi import FirewallASGIMiddleware
 from .api_key_manager import ApiKeyManager, get_key_manager
 from .usage_tracker import UsageTracker, get_usage_tracker, set_usage_tracker
 from .api_gateway import router as auth_router, self_service_router as keys_router
@@ -412,6 +413,10 @@ app = FastAPI(
     title="SneppX Inference API",
     version="1.5.2",
 )
+
+# Enforce the transport, network, and application firewall rings before any
+# route handler or authentication dependency receives an HTTP request.
+app.add_middleware(FirewallASGIMiddleware, security_getter=get_security)
 
 app.include_router(auth_router)
 app.include_router(keys_router)
