@@ -5,6 +5,7 @@ import time
 import hashlib
 import logging
 import re
+from collections import OrderedDict, deque
 from typing import Optional, List, Dict, Any, Tuple, Set
 from dataclasses import dataclass, field
 from threading import Lock
@@ -146,23 +147,28 @@ class SecurityConfig:
 
 
 class _SlidingWindowCounter:
-    """Per-key thread-safe sliding window counter for rate limiting."""
+    """Per-key thread-safe sliding window counter with bounded event storage."""
 
     def __init__(self, max_requests: int, window_seconds: float):
-        self._max = max_requests
-        self._window = window_seconds
-        self._timestamps: List[float] = []
+        if max_requests < 1 or window_seconds <= 0:
+            raise ValueError("rate limit and window must be positive")
+        self._max = int(max_requests)
+        self._window = float(window_seconds)
+        self._timestamps = deque()
         self._lock = Lock()
 
     def update_limit(self, max_requests: int) -> None:
+        if max_requests < 1:
+            raise ValueError("max_requests must be at least 1")
         with self._lock:
-            self._max = max_requests
+            self._max = int(max_requests)
 
     def allow(self) -> bool:
         with self._lock:
             now = time.monotonic()
             cutoff = now - self._window
-            self._timestamps = [t for t in self._timestamps if t > cutoff]
+            while self._timestamps and self._timestamps[0] <= cutoff:
+                self._timestamps.popleft()
             if len(self._timestamps) >= self._max:
                 return False
             self._timestamps.append(now)
@@ -172,8 +178,9 @@ class _SlidingWindowCounter:
     def remaining(self) -> int:
         with self._lock:
             cutoff = time.monotonic() - self._window
-            active = sum(1 for t in self._timestamps if t > cutoff)
-            return max(0, self._max - active)
+            while self._timestamps and self._timestamps[0] <= cutoff:
+                self._timestamps.popleft()
+            return max(0, self._max - len(self._timestamps))
 
 
 # ===========================================================================
@@ -283,7 +290,7 @@ class OutputVerifier:
             return text
         result = text
         for topic in self._config.blocked_topics:
-            result = result.replace(topic, "[redacted]")
+            result = re.sub(re.escape(topic), "[redacted]", result, flags=re.IGNORECASE)
         if self._s5 is not None:
             result = self._s5.sanitize(result)
         return result
@@ -412,13 +419,17 @@ class SecurityMiddleware:
 """
 
     def __init__(self, config: Optional[SecurityConfig] = None,
-                 key_manager: Optional[ApiKeyManager] = None):
+                 key_manager: Optional[ApiKeyManager] = None,
+                 max_rate_limiters: int = 100_000):
         self.config = config or SecurityConfig()
         self._key_manager = key_manager
         self.authenticator = Authenticator(self.config.auth, key_manager=key_manager)
         self.prompt_filter = PromptFilter(self.config.prompt_filter)
         self.output_verifier = OutputVerifier(self.config.output_verifier)
-        self._rate_limiters: Dict[str, _SlidingWindowCounter] = {}
+        if max_rate_limiters < 1:
+            raise ValueError("max_rate_limiters must be at least 1")
+        self._rate_limiters: OrderedDict[str, _SlidingWindowCounter] = OrderedDict()
+        self._max_rate_limiters = int(max_rate_limiters)
         self._rate_limiters_lock = Lock()
         self._tier_limits: Dict[str, int] = {
             "free": 60, "pro": 1000, "enterprise": 10000,
@@ -478,12 +489,19 @@ class SecurityMiddleware:
         )
         if rpm <= 0:
             return False, "Rate limit is configured to allow no requests"
+        if not isinstance(user_id, str) or not user_id:
+            return False, "A valid rate-limit identity is required"
+        if rpm > 100_000:
+            return False, "Configured rate limit exceeds the supported maximum"
         with self._rate_limiters_lock:
             limiter = self._rate_limiters.get(user_id)
             if limiter is None:
+                if len(self._rate_limiters) >= self._max_rate_limiters:
+                    return False, "Rate-limiter capacity reached; request rejected"
                 limiter = _SlidingWindowCounter(rpm, 60.0)
                 self._rate_limiters[user_id] = limiter
             else:
+                self._rate_limiters.move_to_end(user_id)
                 limiter.update_limit(rpm)
         if not limiter.allow():
             return False, f"Rate limit exceeded ({rpm}/minute)"

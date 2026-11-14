@@ -2,6 +2,8 @@
 
 import time
 import hmac
+import threading
+from collections import OrderedDict
 import logging
 from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import dataclass, field
@@ -26,20 +28,34 @@ class KeyCacheEntry:
 class ApiKeyManager:
     """High-level API key manager with in-memory cache and tier validation."""
 
-    def __init__(self, store: Optional[ApiKeyStore] = None, cache_ttl: float = 60.0):
+    def __init__(
+        self,
+        store: Optional[ApiKeyStore] = None,
+        cache_ttl: float = 60.0,
+        max_cache_entries: int = 100_000,
+    ):
+        if cache_ttl <= 0 or max_cache_entries < 1:
+            raise ValueError("cache_ttl and max_cache_entries must be positive")
         self._store = store or ApiKeyStore()
-        self._cache_ttl = cache_ttl
-        self._cache: Dict[str, KeyCacheEntry] = {}
+        self._cache_ttl = float(cache_ttl)
+        self._max_cache_entries = int(max_cache_entries)
+        self._cache: OrderedDict[str, KeyCacheEntry] = OrderedDict()
+        self._lock = threading.RLock()
         self._admin_key: Optional[str] = None
 
     def set_admin_key(self, key: str):
-        self._admin_key = key
+        if not isinstance(key, str) or not key:
+            raise ValueError("admin key must be a non-empty string")
+        with self._lock:
+            self._admin_key = key
 
     def is_admin_key(self, raw_key: str) -> bool:
+        with self._lock:
+            admin_key = self._admin_key
         return (
-            self._admin_key is not None
+            admin_key is not None
             and isinstance(raw_key, str)
-            and hmac.compare_digest(raw_key.encode('utf-8'), self._admin_key.encode('utf-8'))
+            and hmac.compare_digest(raw_key.encode("utf-8"), admin_key.encode("utf-8"))
         )
 
     def create_key(
@@ -64,21 +80,34 @@ class ApiKeyManager:
         return result
 
     def validate_key(self, raw_key: str) -> Optional[Dict[str, Any]]:
-        if raw_key in self._cache:
-            entry = self._cache[raw_key]
-            if time.time() < entry.expires_at:
-                return entry.key_info
-            del self._cache[raw_key]
-        key_info = self._store.validate_key(raw_key)
-        if key_info:
+        if not isinstance(raw_key, str) or not raw_key:
+            return None
+        now = time.monotonic()
+        with self._lock:
+            entry = self._cache.get(raw_key)
+            if entry is not None:
+                if now < entry.expires_at:
+                    self._cache.move_to_end(raw_key)
+                    return dict(entry.key_info)
+                del self._cache[raw_key]
+            key_info = self._store.validate_key(raw_key)
+            if not key_info:
+                return None
+            if len(self._cache) >= self._max_cache_entries:
+                self._cache.popitem(last=False)
+            cached = dict(key_info)
             self._cache[raw_key] = KeyCacheEntry(
-                key_info=key_info, expires_at=time.time() + self._cache_ttl
+                key_info=cached, expires_at=now + self._cache_ttl
             )
-        return key_info
+            return dict(cached)
 
     def revoke_key(self, key_id: str) -> bool:
-        self._cache = {k: v for k, v in self._cache.items() if v.key_info.get("id") != key_id}
-        return self._store.revoke_key(key_id)
+        with self._lock:
+            result = self._store.revoke_key(key_id)
+            for raw_key, entry in list(self._cache.items()):
+                if entry.key_info.get("id") == key_id:
+                    del self._cache[raw_key]
+            return result
 
     def list_keys(self, include_inactive: bool = False) -> List[Dict[str, Any]]:
         return self._store.list_keys(include_inactive=include_inactive)
@@ -94,11 +123,15 @@ class ApiKeyManager:
         rate_limit_rpm: Optional[int] = None,
         expires_in_days: Optional[int] = None,
     ) -> bool:
-        self._cache = {k: v for k, v in self._cache.items() if v.key_info.get("id") != key_id}
-        return self._store.update_key(
-            key_id, name=name, tier=tier,
-            rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days,
-        )
+        with self._lock:
+            result = self._store.update_key(
+                key_id, name=name, tier=tier,
+                rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days,
+            )
+            for raw_key, entry in list(self._cache.items()):
+                if entry.key_info.get("id") == key_id:
+                    del self._cache[raw_key]
+            return result
 
     def get_usage_stats(
         self, key_id: str, since: Optional[float] = None
@@ -111,7 +144,7 @@ class ApiKeyManager:
         self._store.record_usage(raw_key, tokens_in=tokens_in, tokens_out=tokens_out, endpoint=endpoint)
 
     def get_tier_config(self, tier: str) -> Dict[str, Any]:
-        return _TIER_CONFIGS.get(tier.lower(), _TIER_CONFIGS["free"])
+        return dict(_TIER_CONFIGS.get(tier.lower(), _TIER_CONFIGS["free"]))
 
 
 _GLOBAL_MANAGER: Optional[ApiKeyManager] = None

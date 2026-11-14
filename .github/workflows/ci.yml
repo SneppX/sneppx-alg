@@ -64,6 +64,7 @@ jobs:
             tests/python/test_user_store_sessions.py \
             tests/python/test_session_authentication.py \
             tests/python/test_api_gateway_security.py \
+            tests/python/test_security_runtime_hardening.py \
             -q -p no:cacheprovider
 
   native-build-smoke:
