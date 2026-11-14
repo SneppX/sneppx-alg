@@ -103,37 +103,45 @@ static void snepx_ckpt_io_thread_fn(void* arg) {
 static int snepx_ckpt_write_file(const char* path, const void* data,
                                   size_t data_size, int step) {
     SNEPPXCheckpointHeader hdr;
+    SNEPPXTensorRecord rec;
+    char metadata[64];
+    int metadata_len;
+    void* handle = NULL;
+    int write_result;
+
+    if (!path || !data || data_size == 0 || step < 0 ||
+        data_size > UINT64_MAX) return -1;
+
     memset(&hdr, 0, sizeof(hdr));
     hdr.magic_lo = SNEPPX_CKPT_MAGIC;
     hdr.magic_hi = SNEPPX_CKPT_MAGIC_HI;
     hdr.version = SNEPPX_CKPT_VERSION;
     hdr.num_tensors = 1;
-    hdr.metadata_offset = 0;
-    hdr.metadata_size = 0;
 
-    void* handle = NULL;
-    if (SNEPPX_ckpt_write_open(path, &hdr, &handle) != 0) {
-        /* Fallback: raw write */
-        FILE* f = fopen(path, "wb");
-        if (!f) return -1;
-        fwrite(&step, sizeof(int), 1, f);
-        fwrite(&data_size, sizeof(size_t), 1, f);
-        fwrite(data, 1, data_size, f);
-        fclose(f);
-        return 0;
-    }
+    /* Never silently change formats: callers must see every write failure. */
+    if (SNEPPX_ckpt_write_open(path, &hdr, &handle) != 0 || !handle)
+        return -1;
 
-    SNEPPXTensorRecord rec;
     memset(&rec, 0, sizeof(rec));
     rec.shape[0] = (uint64_t)data_size;
     rec.ndim = 1;
     rec.dtype = 0; /* float32 */
-    rec.data_offset = 0;
     rec.data_size = (uint64_t)data_size;
 
-    SNEPPX_ckpt_write_tensor(handle, data, &rec);
-    SNEPPX_ckpt_write_close(handle);
-    return 0;
+    write_result = SNEPPX_ckpt_write_tensor(handle, data, &rec);
+    if (write_result == 0) {
+        metadata_len = snprintf(metadata, sizeof(metadata),
+                                "{\\"step\\":%d}", step);
+        if (metadata_len < 0 || (size_t)metadata_len >= sizeof(metadata) ||
+            SNEPPX_ckpt_write_metadata(handle, metadata,
+                                       (size_t)metadata_len) != 0)
+            write_result = -1;
+    }
+
+    /* Close always releases the writer; its result is part of save success. */
+    if (SNEPPX_ckpt_write_close(handle) != 0)
+        write_result = -1;
+    return write_result;
 }
 
 /* =========================================================================
