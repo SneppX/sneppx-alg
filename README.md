@@ -1,65 +1,47 @@
 # SneppX-ALG
 
-SneppX-ALG is an open-source AI and machine-learning framework with a native C/C++ core and Python APIs. It brings together tensor operations, automatic differentiation, neural-network components, model utilities, and security tooling.
+SneppX-ALG is an open-source AI and machine-learning framework built around a native C/C++ core and Python APIs.
+
+It provides tensor operations, automatic differentiation, neural-network components, model utilities, and security tools.
 
 ## Features
 
-- Tensor and automatic differentiation APIs
+- Tensor operations and automatic differentiation
 - Neural-network layers, losses, and optimizers
-- Transformer and other model components
-- Quantization and distributed-computing components
+- Transformer and model components
+- Quantization and distributed-computing tools
 - Python bindings and developer utilities
-- Security modules for cryptography, monitoring, network controls, and firewall policies
+- Security, monitoring, and firewall components
 
-Feature coverage varies across subsystems. TensorFlow and PyTorch compatibility is incomplete; SneppX-ALG is not a drop-in replacement for either framework. See the [parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md).
+Feature coverage varies by subsystem. SneppX-ALG is not a drop-in replacement for TensorFlow or PyTorch. See the [parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md).
 
 ## Requirements
 
 - CMake 3.16 or newer
 - A C11 and C++17 compatible compiler
-- Python and NumPy for the Python package
+- Python and NumPy for Python support
 
 ## Build
 
-Build the native library:
+Configure the project with `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release`.
 
-\`\`\`bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-\`\`\`
+Build with `cmake --build build --config Release`.
 
-Run the native tests:
+Run native tests with `ctest --test-dir build -C Release --output-on-failure`.
 
-\`\`\`bash
-ctest --test-dir build -C Release --output-on-failure
-\`\`\`
-
-Optional backends can be enabled with their CMake options. See the [quick-start guide](QUICKSTART.md).
+For optional backends and additional setup, see the [quick-start guide](QUICKSTART.md).
 
 ## Python
 
-The Python package is in \`bindings/python/\`. Example:
+The Python package is located in `bindings/python/`.
 
-\`\`\`python
-import numpy as np
-from SneppX_ALG import Tensor
-
-a = Tensor(np.array([[1.0, 2.0]], dtype=np.float32))
-b = Tensor(np.array([[3.0], [4.0]], dtype=np.float32))
-print((a @ b).data)
-\`\`\`
-
-Run examples with:
-
-\`\`\`bash
-PYTHONPATH=bindings/python python examples/python_api/ex_01_linear_regression.py
-\`\`\`
+Run the linear regression example with `PYTHONPATH=bindings/python python examples/python_api/ex_01_linear_regression.py`.
 
 ## Security
 
-The project includes cryptography, memory-hardening, monitoring, network-security, audit, and firewall components. The Python firewall supports request filtering, rate limits, and configurable default-deny route policies.
+The project includes cryptography, memory-hardening, monitoring, network-security, audit, and firewall components.
 
-Security features have different implementation and validation levels. They are not a guarantee of protection, a substitute for deployment security controls, or a claim of independent security certification. Review [security documentation](docs/security_layers.md) before deployment.
+Security features have different implementation and validation levels. Review the [security documentation](docs/security_layers.md) before deployment.
 
 ## Documentation
 
@@ -73,11 +55,11 @@ Security features have different implementation and validation levels. They are 
 
 ## Contributing
 
-Contributions, bug reports, and feature requests are welcome. Please read the [development guide](docs/DEVELOPMENT.md) before submitting changes.
+Bug reports, feature requests, and contributions are welcome. Read the [development guide](docs/DEVELOPMENT.md) before contributing.
 
 - [Issues](https://github.com/SneppX/sneppx-alg/issues)
 - [Discussions](https://github.com/SneppX/sneppx-alg/discussions)
 
 ## License
 
-SneppX-ALG is released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE).
