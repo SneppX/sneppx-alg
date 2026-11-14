@@ -115,11 +115,25 @@ int main(void) {
         free(bytes);
         return 2;
     }
-    if (SNEPPX_ckpt_read_tensor(reader, 0, output, NULL) != 0 ||
+    SNEPPXTensorRecord queried = {0};
+    unsigned char guarded[sizeof(output)];
+    memset(guarded, 0xA5, sizeof(guarded));
+    if (SNEPPX_ckpt_get_tensor_record(reader, 0, &queried) != 0 ||
+        queried.data_size != sizeof(output) ||
+        SNEPPX_ckpt_read_tensor_sized(reader, 0, guarded, sizeof(guarded) - 1, NULL) == 0 ||
+        guarded[0] != 0xA5 || guarded[sizeof(guarded) - 1] != 0xA5 ||
+        SNEPPX_ckpt_read_tensor_sized(reader, 0, output, sizeof(output), NULL) != 0 ||
         memcmp(output, (uint32_t[]){11u, 22u, 33u, 44u}, sizeof(output)) != 0) {
         SNEPPX_ckpt_read_close(reader);
         free(bytes);
         return 3;
+    }
+    unsigned char oversized[sizeof(output) + 8] = {0};
+    if (SNEPPX_ckpt_read_tensor_sized(reader, 0, oversized, sizeof(oversized), NULL) != 0 ||
+        memcmp(oversized, output, sizeof(output)) != 0) {
+        SNEPPX_ckpt_read_close(reader);
+        free(bytes);
+        return 8;
     }
     SNEPPX_ckpt_read_close(reader);
 

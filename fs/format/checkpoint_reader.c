@@ -232,17 +232,40 @@ int SNEPPX_ckpt_read_open(const char* path, SNEPPXCheckpointHeader* header, void
     return 0;
 }
 
-int SNEPPX_ckpt_read_tensor(void* handle, size_t tensor_idx, void* tensor_data, SNEPPXTensorRecord* record) {
+int SNEPPX_ckpt_get_tensor_record(void* handle, size_t tensor_idx,
+                                      SNEPPXTensorRecord* record) {
+    SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
+    if (!h || !record || !h->records || tensor_idx >= h->header.num_tensors)
+        return -1;
+    memcpy(record, &h->records[tensor_idx], sizeof(*record));
+    return 0;
+}
+
+int SNEPPX_ckpt_read_tensor_sized(void* handle, size_t tensor_idx, void* tensor_data,
+                                  size_t buffer_size, SNEPPXTensorRecord* record) {
     SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
     const SNEPPXTensorRecord *entry;
-    if (!h || !tensor_data || tensor_idx >= h->header.num_tensors) return -1;
+    size_t required;
+    if (!h || !h->records || tensor_idx >= h->header.num_tensors) return -1;
     entry = &h->records[tensor_idx];
-    if (entry->data_size > SIZE_MAX ||
-        FSEEK64(h->fp, (OFF64_T)entry->data_offset, SEEK_SET) != 0 ||
-        fread(tensor_data, 1, (size_t)entry->data_size, h->fp) !=
-            (size_t)entry->data_size) return -1;
+    if (entry->data_size > SIZE_MAX) return -1;
+    required = (size_t)entry->data_size;
+    if (buffer_size < required || (required != 0 && !tensor_data)) return -1;
+    if (required != 0 &&
+        (FSEEK64(h->fp, (OFF64_T)entry->data_offset, SEEK_SET) != 0 ||
+         fread(tensor_data, 1, required, h->fp) != required)) return -1;
     if (record) memcpy(record, entry, sizeof(*record));
     return 0;
+}
+
+int SNEPPX_ckpt_read_tensor(void* handle, size_t tensor_idx, void* tensor_data,
+                            SNEPPXTensorRecord* record) {
+    SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
+    if (!h || !h->records || tensor_idx >= h->header.num_tensors ||
+        h->records[tensor_idx].data_size > SIZE_MAX) return -1;
+    /* Compatibility wrapper; capacity remains the legacy caller's precondition. */
+    return SNEPPX_ckpt_read_tensor_sized(handle, tensor_idx, tensor_data,
+        (size_t)h->records[tensor_idx].data_size, record);
 }
 
 int SNEPPX_ckpt_read_metadata(void* handle, char** metadata_json, size_t* json_len) {
