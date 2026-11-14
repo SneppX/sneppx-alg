@@ -83,7 +83,7 @@ static void test_self_audit_add_check_validation(void) {
     SNEPPX_self_audit_init(&audit);
     SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "sample", SNEPPX_AUDIT_INFO, NULL) == 0, "info check accepted");
     SX_ASSERT(audit.check_count == 1, "one check recorded");
-    SX_ASSERT(audit.checks[0].details[0] == '\\0', "null details are initialized");
+    SX_ASSERT(audit.checks[0].details[0] == '\0', "null details are initialized");
     SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "", SNEPPX_AUDIT_PASS, "invalid") == -1, "empty name rejected");
     SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "bad-status", (SNEPPXAuditStatus)99, "invalid") == -1, "invalid status rejected");
     SX_ASSERT(SNEPPX_self_audit_add_check_ex(&audit, "key rotation", SNEPPX_AUDIT_WARN, "not tested", "updates") == 0, "category-aware add");
