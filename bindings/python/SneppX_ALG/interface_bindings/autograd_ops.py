@@ -2360,7 +2360,12 @@ class GetItem(Function):
         g = np.zeros(ctx.get_attr("orig_shape"), dtype=_numpy_dtype(grad_output.dtype))
         # np.add.at is required here: ordinary advanced-index assignment drops
         # all but one contribution when an index appears more than once.
-        np.add.at(g, key, grad_output.data)
+        # Basic scalar indexing can expose a one-element gradient Tensor even
+        # though the selected NumPy value is scalar. Match the indexed shape
+        # before scatter-add while preserving duplicate advanced-index entries.
+        selected_shape = np.asarray(g[key]).shape
+        grad_values = np.asarray(grad_output.data).reshape(selected_shape)
+        np.add.at(g, key, grad_values)
         return [Tensor(g, dtype=grad_output.dtype)]
 
 

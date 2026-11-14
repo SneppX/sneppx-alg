@@ -130,6 +130,14 @@ def test_getitem_duplicate_indices_match_with_create_graph():
     np.testing.assert_array_equal(result.data, [2.0, 0.0, 1.0])
     assert result.grad_fn is not None
 
+
+def test_getitem_backward_handles_scalar_selection_shape():
+    source = Tensor([1.0, 2.0, 3.0], requires_grad=True)
+
+    source[1].sum().backward()
+
+    np.testing.assert_array_equal(source.grad.data, [0.0, 1.0, 0.0])
+
 def test_prod_backward_handles_single_and_multiple_zeros():
     single_zero = Tensor([0.0, 2.0, 3.0], requires_grad=True)
     single_zero.prod().backward()
