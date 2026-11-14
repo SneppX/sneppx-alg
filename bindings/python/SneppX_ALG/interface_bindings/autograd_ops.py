@@ -2340,24 +2340,27 @@ class GetItem(Function):
             from .autograd_ops import Reshape, MatMul, _as_const
             dt = grad_output.dtype
             orig_shape = ctx.get_attr("orig_shape")
-            # Determine flat positions in orig_shape selected by key
-            mask_np = np.zeros(orig_shape, dtype=bool)
-            mask_np[key] = True
-            selected_flat = np.flatnonzero(mask_np)
-            n_selected = int(selected_flat.size)
+            # Index a flat-position tensor with the original key. Unlike a
+            # boolean mask, this preserves repeated advanced indices and their
+            # output order, so the VJP accumulates every selected contribution.
             n_in = int(np.prod(orig_shape))
-            # Build scatter.T matrix: (n_in, n_selected), result[j] = g_flat[i]
-            # where selected_flat[i] == j; result[j] = 0 if j not selected
+            selected_flat = np.arange(n_in, dtype=np.int64).reshape(orig_shape)[key]
+            selected_flat = np.asarray(selected_flat).reshape(-1)
+            n_selected = int(selected_flat.size)
+            # Build scatter.T: repeated input positions occupy distinct columns;
+            # matrix multiplication therefore sums their gradient contributions.
             scatter_t_np = np.zeros((n_in, n_selected), dtype=np.float64)
-            for i in range(n_selected):
-                scatter_t_np[selected_flat[i], i] = 1.0
+            if n_selected:
+                scatter_t_np[selected_flat, np.arange(n_selected)] = 1.0
             scatter_t = _as_const(scatter_t_np, dt)
             g_flat = Reshape.apply(grad_output, (n_selected,))
             result_flat = MatMul.apply(scatter_t, g_flat)  # (n_in,)
             result = Reshape.apply(result_flat, orig_shape)
             return [result]
         g = np.zeros(ctx.get_attr("orig_shape"), dtype=_numpy_dtype(grad_output.dtype))
-        g[key] = grad_output.data
+        # np.add.at is required here: ordinary advanced-index assignment drops
+        # all but one contribution when an index appears more than once.
+        np.add.at(g, key, grad_output.data)
         return [Tensor(g, dtype=grad_output.dtype)]
 
 

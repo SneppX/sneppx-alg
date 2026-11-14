@@ -100,3 +100,33 @@ def test_batched_matmul_create_graph_preserves_second_order_dependencies():
         second_right.data, expected, rtol=1e-5, atol=1e-5
     )
 
+def test_getitem_backward_accumulates_duplicate_advanced_indices():
+    source = Tensor([1.0, 2.0, 3.0], requires_grad=True)
+
+    source[[0, 0, 2]].sum().backward()
+
+    np.testing.assert_array_equal(source.grad.data, [2.0, 0.0, 1.0])
+
+
+def test_getitem_backward_accumulates_duplicate_multidimensional_indices():
+    source = Tensor(
+        np.arange(1, 10, dtype=np.float32).reshape(3, 3),
+        requires_grad=True,
+    )
+
+    source[[0, 0, 2], [1, 1, 0]].sum().backward()
+
+    expected = np.zeros((3, 3), dtype=np.float32)
+    expected[0, 1] = 2.0
+    expected[2, 0] = 1.0
+    np.testing.assert_array_equal(source.grad.data, expected)
+
+
+def test_getitem_duplicate_indices_match_with_create_graph():
+    source = Tensor([1.0, 2.0, 3.0], requires_grad=True)
+
+    result = grad(source[[0, 0, 2]].sum(), source, create_graph=True)[0]
+
+    np.testing.assert_array_equal(result.data, [2.0, 0.0, 1.0])
+    assert result.grad_fn is not None
+
