@@ -1,6 +1,7 @@
 """High-level API key manager — wraps ApiKeyStore with caching and business logic."""
 
 import time
+import hmac
 import logging
 from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import dataclass, field
@@ -35,7 +36,11 @@ class ApiKeyManager:
         self._admin_key = key
 
     def is_admin_key(self, raw_key: str) -> bool:
-        return self._admin_key is not None and raw_key == self._admin_key
+        return (
+            self._admin_key is not None
+            and isinstance(raw_key, str)
+            and hmac.compare_digest(raw_key.encode('utf-8'), self._admin_key.encode('utf-8'))
+        )
 
     def create_key(
         self,

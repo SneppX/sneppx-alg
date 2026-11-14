@@ -25,7 +25,7 @@ jobs:
       - name: Install minimal deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install numpy pytest pyyaml
+          python -m pip install numpy pytest pyyaml fastapi
       - name: Run safe per-file tests
         env:
           PYTHONPATH: bindings/python
@@ -58,6 +58,12 @@ jobs:
             tests/python/test_firewall_network_hardening.py \
             tests/python/test_firewall_application_hardening.py \
             tests/python/test_firewall_asgi.py \
+            tests/python/test_user_store.py \
+            tests/python/test_api_key_manager.py \
+            tests/python/test_api_gateway.py \
+            tests/python/test_user_store_sessions.py \
+            tests/python/test_session_authentication.py \
+            tests/python/test_api_gateway_security.py \
             -q -p no:cacheprovider
 
   native-build-smoke:

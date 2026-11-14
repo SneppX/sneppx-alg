@@ -325,6 +325,16 @@ class Authenticator:
     def mode(self) -> str:
         return self._config.mode
 
+    @staticmethod
+    def _validate_session_token(token: str) -> Optional[Dict[str, Any]]:
+        if not token.startswith("sxs_"):
+            return None
+        try:
+            from .user_store import get_user_store
+            return get_user_store().validate_session_token(token)
+        except (ImportError, OSError):
+            return None
+
     def authenticate(self, authorization: Optional[str]) -> Optional[Dict[str, Any]]:
         """Return key info dict if authenticated, ``None`` otherwise.
 
@@ -339,6 +349,9 @@ class Authenticator:
             token = self._extract_bearer(authorization)
             if not token:
                 return None
+            session = self._validate_session_token(token)
+            if session is not None:
+                return session
             if self._key_manager and token.startswith("sk-sneppx-"):
                 info = self._key_manager.validate_key(token)
                 if info:
@@ -348,9 +361,12 @@ class Authenticator:
                         "tier": "static"}
             return None
         if self._config.mode == "api_key":
-            key = authorization.strip()
+            key = self._extract_bearer(authorization) or authorization.strip()
             if not key:
                 return None
+            session = self._validate_session_token(key)
+            if session is not None:
+                return session
             if self._key_manager:
                 info = self._key_manager.validate_key(key)
                 if info:

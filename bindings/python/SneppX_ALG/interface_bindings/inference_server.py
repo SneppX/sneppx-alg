@@ -362,7 +362,7 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
     scheme, separator, credential = value.partition(" ")
     if separator and scheme.casefold() == "bearer":
         value = credential.strip()
-    return bool(value) and value == _admin_key
+    return bool(value) and hmac.compare_digest(value.encode('utf-8'), _admin_key.encode('utf-8'))
 
 
 def require_admin(
@@ -403,6 +403,7 @@ async def lifespan(app: FastAPI):
 
 
 import hashlib
+import hmac
 
 
 def _key_hash(raw_key: str) -> str:
