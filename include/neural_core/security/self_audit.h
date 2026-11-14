@@ -81,6 +81,19 @@ void SNEPPX_self_audit_destroy(SNEPPXSelfAudit* audit);
 int  SNEPPX_self_audit_add_check(SNEPPXSelfAudit* audit, const char* name,
                                  SNEPPXAuditStatus status, const char* details);
 /**
+ * Add a check with an explicit category. The category is one of the
+ * canonical self-audit category identifiers (crypto, memory, ... pentest).
+ */
+int  SNEPPX_self_audit_add_check_ex(SNEPPXSelfAudit* audit, const char* name,
+                                   SNEPPXAuditStatus status, const char* details,
+                                   const char* category);
+/** Return the number of checks recorded for a canonical category, or -1. */
+int  SNEPPX_self_audit_get_category_count(SNEPPXSelfAudit* audit, const char* category);
+/** Return the percentage of PASS checks in a category, or -1 for invalid input. */
+int  SNEPPX_self_audit_get_category_score(SNEPPXSelfAudit* audit, const char* category);
+/** Format the current audit summary into the caller-provided buffer. */
+int  SNEPPX_self_audit_get_summary(SNEPPXSelfAudit* audit, char* summary_out, size_t size);
+/**
  * @brief Perform Self Audit Run All.
  *
  * @param audit [out] Audit value.
