@@ -54,6 +54,30 @@ static int write_bytes(const unsigned char *bytes, size_t length) {
 }
 
 
+static int test_step_metadata(void) {
+    char buffer[32];
+    size_t written = 0;
+    int step = -1;
+    const char valid[] = "{\"step\":12345}";
+    const char overflow[] = "{\"step\":2147483648}";
+    const char malformed[] = "{\"step\":\"12345\"}";
+    if (SNEPPX_ckpt_format_step_metadata(12345, buffer, sizeof(buffer),
+                                         &written) != 0 ||
+        written != sizeof(valid) - 1 ||
+        memcmp(buffer, valid, written) != 0 ||
+        SNEPPX_ckpt_parse_step_metadata(buffer, written, &step) != 0 ||
+        step != 12345) return 1;
+    if (SNEPPX_ckpt_parse_step_metadata(malformed, sizeof(malformed) - 1,
+                                        &step) == 0 ||
+        SNEPPX_ckpt_parse_step_metadata(overflow, sizeof(overflow) - 1,
+                                        &step) == 0 ||
+        SNEPPX_ckpt_format_step_metadata(-1, buffer, sizeof(buffer),
+                                         &written) == 0 ||
+        SNEPPX_ckpt_format_step_metadata(1, buffer, 2, &written) == 0)
+        return 2;
+    return 0;
+}
+
 static int test_writer_contract(void) {
     SNEPPXCheckpointHeader header = {0};
     SNEPPXTensorRecord record = {0};
@@ -155,6 +179,7 @@ int main(void) {
 
     free(bytes);
     if (test_writer_contract() != 0) return 7;
+    if (test_step_metadata() != 0) return 9;
     remove(TEST_PATH);
     return 0;
 }

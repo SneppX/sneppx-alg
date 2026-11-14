@@ -105,7 +105,7 @@ static int snepx_ckpt_write_file(const char* path, const void* data,
     SNEPPXCheckpointHeader hdr;
     SNEPPXTensorRecord rec;
     char metadata[64];
-    int metadata_len;
+    size_t metadata_len = 0;
     void* handle = NULL;
     int write_result;
 
@@ -130,11 +130,10 @@ static int snepx_ckpt_write_file(const char* path, const void* data,
 
     write_result = SNEPPX_ckpt_write_tensor(handle, data, &rec);
     if (write_result == 0) {
-        metadata_len = snprintf(metadata, sizeof(metadata),
-                                "{\\"step\\":%d}", step);
-        if (metadata_len < 0 || (size_t)metadata_len >= sizeof(metadata) ||
-            SNEPPX_ckpt_write_metadata(handle, metadata,
-                                       (size_t)metadata_len) != 0)
+        if (SNEPPX_ckpt_format_step_metadata(step, metadata,
+                                                sizeof(metadata),
+                                                &metadata_len) != 0 ||
+            SNEPPX_ckpt_write_metadata(handle, metadata, metadata_len) != 0)
             write_result = -1;
     }
 
@@ -330,23 +329,46 @@ int sneppx_checkpoint_load(SNEPPX_CheckpointCoord* cp,
 
     int step = ckpt->current_step;
 
-    /* Check if it's the new format */
+    /* New-format checkpoints are staged in host memory and copied to the device. */
     if (SNEPPX_ckpt_validate(path) == 0) {
         void* handle = NULL;
         SNEPPXCheckpointHeader header;
-        if (SNEPPX_ckpt_read_open(path, &header, &handle) != 0) {
+        char* host_buffer = NULL;
+        char* metadata = NULL;
+        size_t metadata_len = 0;
+        size_t offset = 0;
+        int read_result = 0;
+        if (state_size == 0 ||
+            SNEPPX_ckpt_read_open(path, &header, &handle) != 0) return -1;
+        host_buffer = (char*)malloc(state_size);
+        if (!host_buffer) {
+            SNEPPX_ckpt_read_close(handle);
             return -1;
         }
-        size_t offset = 0;
-        for (uint32_t i = 0; i < header.num_tensors; i++) {
+        for (uint32_t i = 0; i < header.num_tensors; ++i) {
             SNEPPXTensorRecord rec;
-            if (SNEPPX_ckpt_read_tensor(handle, i, (uint8_t*)model_state + offset, &rec) != 0) {
-                SNEPPX_ckpt_read_close(handle);
-                return -1;
+            if (SNEPPX_ckpt_get_tensor_record(handle, i, &rec) != 0 ||
+                rec.data_size > state_size - offset ||
+                SNEPPX_ckpt_read_tensor_sized(handle, i, host_buffer + offset,
+                                               state_size - offset, NULL) != 0) {
+                read_result = -1;
+                break;
             }
             offset += (size_t)rec.data_size;
         }
-        SNEPPX_ckpt_read_close(handle);
+        if (read_result == 0 && offset != state_size) read_result = -1;
+        if (read_result == 0 &&
+            (SNEPPX_ckpt_read_metadata(handle, &metadata, &metadata_len) != 0 ||
+             SNEPPX_ckpt_parse_step_metadata(metadata, metadata_len, &step) != 0))
+            read_result = -1;
+        free(metadata);
+        if (SNEPPX_ckpt_read_close(handle) != 0) read_result = -1;
+        if (read_result == 0 &&
+            cudaMemcpy(model_state, host_buffer, state_size,
+                       cudaMemcpyHostToDevice) != cudaSuccess)
+            read_result = -1;
+        free(host_buffer);
+        if (read_result != 0) return -1;
     } else {
         /* Fallback: raw binary */
         FILE* f = fopen(path, "rb");
@@ -358,9 +380,15 @@ int sneppx_checkpoint_load(SNEPPX_CheckpointCoord* cp,
         if (saved_size > state_size) { fclose(f); return -1; }
         char* host_buf = (char*)malloc(saved_size);
         if (!host_buf) { fclose(f); return -1; }
-        fread(host_buf, 1, saved_size, f);
-        fclose(f);
-        cudaMemcpy(model_state, host_buf, saved_size, cudaMemcpyHostToDevice);
+        if (fread(host_buf, 1, saved_size, f) != saved_size || fclose(f) != 0) {
+            free(host_buf);
+            return -1;
+        }
+        if (cudaMemcpy(model_state, host_buf, saved_size,
+                       cudaMemcpyHostToDevice) != cudaSuccess) {
+            free(host_buf);
+            return -1;
+        }
         free(host_buf);
         step = file_step;
     }

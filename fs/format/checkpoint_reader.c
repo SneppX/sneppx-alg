@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 
 #if defined(_WIN32) || defined(_WIN64)
     #define FSEEK64(fp, offset, origin) _fseeki64(fp, offset, origin)
@@ -105,6 +106,37 @@ static int ckpt_validate_layout(FILE *fp, const SNEPPXCheckpointHeader *header,
         }
     }
     *records_out = records;
+    return 0;
+}
+
+int SNEPPX_ckpt_format_step_metadata(int step, char* buffer, size_t capacity,
+                                     size_t* written) {
+    int length;
+    if (!buffer || capacity == 0 || step < 0) return -1;
+    length = snprintf(buffer, capacity, "{\"step\":%d}", step);
+    if (length < 0 || (size_t)length >= capacity) return -1;
+    if (written) *written = (size_t)length;
+    return 0;
+}
+
+int SNEPPX_ckpt_parse_step_metadata(const char* metadata, size_t length,
+                                    int* step) {
+    static const char prefix[] = "{\"step\":";
+    size_t i = sizeof(prefix) - 1;
+    unsigned int value = 0;
+    if (!metadata || !step || length < i + 2 ||
+        memcmp(metadata, prefix, i) != 0 || metadata[length - 1] != '}')
+        return -1;
+    if (metadata[i] < '0' || metadata[i] > '9') return -1;
+    while (i < length - 1) {
+        unsigned int digit;
+        if (metadata[i] < '0' || metadata[i] > '9') return -1;
+        digit = (unsigned int)(metadata[i] - '0');
+        if (value > ((unsigned int)INT_MAX - digit) / 10u) return -1;
+        value = value * 10u + digit;
+        ++i;
+    }
+    *step = (int)value;
     return 0;
 }
 

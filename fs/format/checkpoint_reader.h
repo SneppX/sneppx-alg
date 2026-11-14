@@ -153,6 +153,12 @@ int SNEPPX_ckpt_read_metadata(void* handle, char** metadata_json, size_t* json_l
  */
 int SNEPPX_ckpt_read_close(void* handle);
 
+/* Canonical training-step metadata helpers used by distributed checkpoints. */
+int SNEPPX_ckpt_format_step_metadata(int step, char* buffer, size_t capacity,
+                                     size_t* written);
+int SNEPPX_ckpt_parse_step_metadata(const char* metadata, size_t length,
+                                    int* step);
+
 /* ---------- Utility ---------- */
 /**
  * @brief Perform Ckpt Validate.
