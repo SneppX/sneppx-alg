@@ -182,3 +182,12 @@ target_include_directories(test_fuzz_tensor_native PRIVATE
 )
 target_compile_features(test_fuzz_tensor_native PRIVATE c_std_11)
 add_test(NAME fuzz_tensor_native COMMAND test_fuzz_tensor_native)
+
+# Checkpoint parser integrity regression tests (independent of GoogleTest).
+add_executable(test_checkpoint_integrity_native ../tests/fuzz/fuzz_checkpoint.c)
+target_link_libraries(test_checkpoint_integrity_native PRIVATE neural_core_kernel)
+target_include_directories(test_checkpoint_integrity_native PRIVATE
+    ${CMAKE_SOURCE_DIR}/fs/format
+)
+target_compile_features(test_checkpoint_integrity_native PRIVATE c_std_11)
+add_test(NAME checkpoint_integrity_native COMMAND test_checkpoint_integrity_native)
