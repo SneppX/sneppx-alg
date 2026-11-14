@@ -21,6 +21,15 @@
  */
 
 
+/* Portable string duplication for MSVC and POSIX toolchains. */
+static char* safetensorssafetensors_strdup(const char* value) {
+    if (!value) return NULL;
+    const size_t length = strlen(value) + 1;
+    char* copy = (char*)malloc(length);
+    if (copy) memcpy(copy, value, length);
+    return copy;
+}
+
 /* Minimal safetensors implementation (little-endian).
  *
  * Layout: uint64 header_length | utf-8 JSON header | byte buffer
@@ -199,7 +208,7 @@ static STEntry* find_entry(STHandle* h, const char* name) {
 void* SNEPPX_safetensors_open(const char* path, const char* mode) {
     STHandle* h = (STHandle*)calloc(1, sizeof(STHandle));
     if (!h) return NULL;
-    h->path = _strdup(path);
+    h->path = safetensors_strdup(path);
     h->mode = (mode && *mode == 'w') ? 'w' : 'r';
     if (h->mode == 'r') {
         FILE* f = fopen(path, "rb");
@@ -254,7 +263,7 @@ void* SNEPPX_safetensors_open(const char* path, const char* mode) {
             if (*p != '{') break;
             STEntry e;
             memset(&e, 0, sizeof(e));
-            e.name = _strdup(key);
+            e.name = safetensors_strdup(key);
             p++;
             /* parse inner fields */
             for (;;) {
@@ -362,7 +371,7 @@ int SNEPPX_safetensors_get_tensor_names(void* st, char*** names, size_t* count) 
     char** out = (char**)malloc(h->n_entries * sizeof(char*));
     if (!out) return -1;
     for (size_t i = 0; i < h->n_entries; i++)
-        out[i] = _strdup(h->entries[i].name);
+        out[i] = safetensors_strdup(h->entries[i].name);
     *names = out;
     return 0;
 }
@@ -425,7 +434,7 @@ int SNEPPX_safetensors_write_tensor(void* st, const char* name, const void* data
     }
     STEntry* e = &h->w_entries[h->w_count++];
     memset(e, 0, sizeof(*e));
-    e->name = _strdup(name);
+    e->name = safetensors_strdup(name);
     e->dtype = dtype;
     e->ndim = ndim > 8 ? 8 : ndim;
     size_t total = 1;
