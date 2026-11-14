@@ -22,7 +22,7 @@
 
 
 /* Portable string duplication for MSVC and POSIX toolchains. */
-static char* safetensorssafetensors_strdup(const char* value) {
+static char* safetensors_strdup(const char* value) {
     if (!value) return NULL;
     const size_t length = strlen(value) + 1;
     char* copy = (char*)malloc(length);
