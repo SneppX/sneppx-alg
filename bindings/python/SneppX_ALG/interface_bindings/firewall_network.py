@@ -219,11 +219,11 @@ class FirewallNetwork:
             del self._blocked_ips[key]
         return None
 
-    def _check_rate_limit(self, ip_str: str) -> Optional[FirewallResult]:
-        if not self._rate_limit_enabled or self._rate_limiter.allow(ip_str):
+    def _check_rate_limit(self, ip_str: str, now: float) -> Optional[FirewallResult]:
+        if not self._rate_limit_enabled or self._rate_limiter.allow(ip_str, now=now):
             return None
         with self._state_lock:
-            self._blocked_ips[ip_str] = time.monotonic() + self._block_duration
+            self._blocked_ips[ip_str] = now + self._block_duration
         return FirewallResult(False, 429, "rate limit exceeded", 2)
 
     def _check_port_knock(self, ip_str: str, knock_header: str) -> Optional[FirewallResult]:
@@ -275,7 +275,7 @@ class FirewallNetwork:
             result = self._check_port_knock(key, knock_header)
             if result is not None:
                 return result
-        result = self._check_rate_limit(key)
+        result = self._check_rate_limit(key, current)
         if result is not None:
             return result
         result = self._check_geoip(key)
@@ -283,6 +283,11 @@ class FirewallNetwork:
             return result
         self._conn_tracker.check(key, current)
         return FirewallResult(True)
+
+    def _check_connection_tracker(self, ip_int: object) -> Optional[FirewallResult]:
+        """Backward-compatible hook for callers using the original tracker API."""
+        self._conn_tracker.check(ip_int)
+        return None
 
     @property
     def summary(self) -> dict:
@@ -301,4 +306,5 @@ class FirewallNetwork:
             "tracked_connections": self._conn_tracker.size,
             "knock_ports": list(self._knock_ports),
             "geoip_enabled": self._geoip_enabled,
+            "has_asm": False,
         }

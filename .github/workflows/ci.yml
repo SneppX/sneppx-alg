@@ -51,6 +51,12 @@ jobs:
             tests/python/test_init.py \
             tests/python/test_norm.py \
             tests/python/test_phase2_ops.py \
+            tests/python/test_firewall.py \
+            tests/python/test_firewall_network.py \
+            tests/python/test_firewall_application.py \
+            tests/python/test_firewall_transport.py \
+            tests/python/test_firewall_network_hardening.py \
+            tests/python/test_firewall_application_hardening.py \
             -q -p no:cacheprovider
 
   native-build-smoke:
