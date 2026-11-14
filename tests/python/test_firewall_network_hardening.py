@@ -103,3 +103,12 @@ def test_legacy_http_header_port_knocking_is_not_trusted():
     )
     assert not result.allowed
     assert result.status_code == 501
+
+
+def test_rate_limiter_does_not_evict_active_client_history_at_capacity():
+    limiter = SlidingWindowCounter(1, 10, max_keys=1)
+    assert limiter.allow("client-a", now=1)
+    assert not limiter.allow("client-b", now=2)
+    assert not limiter.allow("client-a", now=2)
+    assert limiter.allow("client-b", now=12)
+    assert limiter.tracked_keys == 1

@@ -58,6 +58,8 @@ jobs:
             tests/python/test_firewall_network_hardening.py \
             tests/python/test_firewall_application_hardening.py \
             tests/python/test_firewall_asgi.py \
+            tests/python/test_firewall_policy.py \
+            tests/python/test_firewall_transport_hardening.py \
             tests/python/test_user_store.py \
             tests/python/test_api_key_manager.py \
             tests/python/test_api_gateway.py \

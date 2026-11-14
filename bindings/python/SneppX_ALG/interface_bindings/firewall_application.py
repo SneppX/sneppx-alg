@@ -82,6 +82,7 @@ class FirewallApplication:
         max_query_length: int = 16384,
         max_header_count: int = 100,
         max_header_value_length: int = 8192,
+        allowed_paths: Optional[list[str]] = None,
         **kwargs,
     ):
         if max_body_size < 0:
@@ -99,6 +100,27 @@ class FirewallApplication:
         self.max_query_length = int(max_query_length)
         self.max_header_count = int(max_header_count)
         self.max_header_value_length = int(max_header_value_length)
+        if allowed_paths is not None and not isinstance(allowed_paths, (list, tuple)):
+            raise ValueError("allowed_paths must be a list or tuple of path patterns")
+        self.allowed_paths = list(allowed_paths or [])
+        self._allowed_exact = set()
+        self._allowed_prefixes = []
+        for pattern in self.allowed_paths:
+            if not isinstance(pattern, str) or not pattern.startswith("/"):
+                raise ValueError("allowed path patterns must be absolute paths")
+            wildcard = pattern.endswith("/*")
+            base = pattern[:-2] if wildcard else pattern
+            if wildcard and not base:
+                base = "/"
+            if "*" in base or (not wildcard and "*" in pattern):
+                raise ValueError("only a trailing /* path wildcard is supported")
+            normalized = self._normalize_path(base)
+            if normalized is None:
+                raise ValueError(f"invalid allowed path pattern: {pattern!r}")
+            if wildcard:
+                self._allowed_prefixes.append(normalized.rstrip("/") or "/")
+            else:
+                self._allowed_exact.add(normalized)
         self._concurrent = ConcurrentLimiter(self.max_concurrent_per_ip)
         self._suspicious_headers = {
             "x-forwarded-for",
@@ -200,6 +222,18 @@ class FirewallApplication:
         if not normalized.startswith("/"):
             return None
         return normalized
+
+    def is_path_allowed(self, path: str) -> bool:
+        """Match a canonical path against exact routes and trailing /* prefixes."""
+        normalized = self._normalize_path(path)
+        if normalized is None:
+            return False
+        if normalized in self._allowed_exact:
+            return True
+        for prefix in self._allowed_prefixes:
+            if prefix == "/" or normalized == prefix or normalized.startswith(prefix + "/"):
+                return True
+        return False
 
     def _check_path(self, path: str) -> Optional[FirewallResult]:
         normalized = self._normalize_path(path)

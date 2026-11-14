@@ -182,3 +182,16 @@ The engine evaluates packet metadata supplied by a network adapter. It does not
 install Windows Filtering Platform, Linux netfilter/eBPF, or macOS Network
 Extension hooks, and it does not capture packets itself. Those platform adapters
 must be implemented and deployed separately before it can filter host traffic.
+
+
+## Python Firewall Deployment
+
+The Python firewall can enforce a default-deny route policy with exact paths and
+trailing-prefix patterns such as `/health` and `/v1/*`. Configure these under
+`firewall.application.allowed_paths` and set `block_all_by_default: true`.
+An empty route list intentionally denies every HTTP path. Body buffering, header
+count, and per-client concurrency limits are enforced before inference handlers
+receive a request.
+
+TLS configuration accepts explicit TLS 1.2 or TLS 1.3 minimums. Older TLS
+versions and malformed certificate fingerprints are rejected during startup.

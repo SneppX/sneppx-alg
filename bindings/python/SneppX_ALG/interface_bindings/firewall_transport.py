@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import os
 import ssl
 from dataclasses import dataclass
@@ -32,13 +33,62 @@ class FirewallTransport:
         self.keyfile = keyfile
         self.cafile = cafile
         self.require_client_cert = require_client_cert
-        self.min_version = min_version
+        self.min_version = self._normalize_tls_version(min_version)
         self.ciphers = ciphers
-        self.pinned_fingerprints = pinned_cert_fingerprints or []
+        self.pinned_fingerprints = self._normalize_pins(pinned_cert_fingerprints or [])
+        if self.require_client_cert and not self.tls_enabled:
+            raise ValueError("client-certificate verification requires TLS to be enabled")
+        if self.pinned_fingerprints and not self.tls_enabled:
+            raise ValueError("certificate pinning requires TLS to be enabled")
         self.alpn_protocols = alpn_protocols or ["h2", "http/1.1"]
         self._ssl_context = None
         if self.tls_enabled and self.certfile and self.keyfile:
             self._build_context()
+
+    @staticmethod
+    def _normalize_tls_version(value):
+        if isinstance(value, ssl.TLSVersion):
+            version = value
+        elif isinstance(value, int):
+            legacy = {
+                1: ssl.TLSVersion.TLSv1,
+                2: ssl.TLSVersion.TLSv1_2,
+                3: ssl.TLSVersion.TLSv1_3,
+            }
+            try:
+                version = legacy[value] if value in legacy else ssl.TLSVersion(value)
+            except ValueError as exc:
+                raise ValueError(f"unsupported TLS minimum version: {value!r}") from exc
+        elif isinstance(value, str):
+            normalized = value.strip().lower().replace(".", "_").replace("-", "_")
+            aliases = {
+                "tlsv1_2": ssl.TLSVersion.TLSv1_2,
+                "tls1_2": ssl.TLSVersion.TLSv1_2,
+                "1_2": ssl.TLSVersion.TLSv1_2,
+                "tlsv1_3": ssl.TLSVersion.TLSv1_3,
+                "tls1_3": ssl.TLSVersion.TLSv1_3,
+                "1_3": ssl.TLSVersion.TLSv1_3,
+            }
+            if normalized not in aliases:
+                raise ValueError(f"unsupported TLS minimum version: {value!r}")
+            version = aliases[normalized]
+        else:
+            raise ValueError(f"unsupported TLS minimum version: {value!r}")
+        if version < ssl.TLSVersion.TLSv1_2:
+            raise ValueError("TLS 1.2 or newer is required")
+        return version
+
+    @staticmethod
+    def _normalize_pins(pins):
+        normalized = []
+        for fingerprint in pins:
+            if not isinstance(fingerprint, str):
+                raise ValueError("certificate fingerprints must be hexadecimal strings")
+            value = fingerprint.replace(":", "").strip().lower()
+            if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
+                raise ValueError("certificate fingerprints must be 64 hexadecimal characters")
+            normalized.append(value)
+        return normalized
 
     def _build_context(self) -> ssl.SSLContext:
         if not self.certfile or not os.path.isfile(self.certfile):
@@ -77,7 +127,7 @@ class FirewallTransport:
             )
         fp = self._pinned_fingerprint(cert_der)
         if self.pinned_fingerprints:
-            if fp not in self.pinned_fingerprints:
+            if not any(hmac.compare_digest(fp, pinned) for pinned in self.pinned_fingerprints):
                 return FirewallResult(
                     allowed=False,
                     status_code=403,

@@ -58,7 +58,13 @@ class SlidingWindowCounter:
             timestamps = self._buckets.get(key)
             if timestamps is None:
                 if len(self._buckets) >= self.max_keys:
-                    self._buckets.popitem(last=False)
+                    oldest_key, oldest_timestamps = next(iter(self._buckets.items()))
+                    while oldest_timestamps and oldest_timestamps[0] <= cutoff:
+                        oldest_timestamps.popleft()
+                    if oldest_timestamps:
+                        # Never evict an active client's history to admit a new key.
+                        return False
+                    self._buckets.pop(oldest_key)
                 timestamps = deque()
                 self._buckets[key] = timestamps
             else:
@@ -128,6 +134,7 @@ class FirewallNetwork:
         knock_window_ms: int = 5000,
         geoip_enabled: bool = False,
         geoip_db_path: Optional[str] = None,
+        max_blocked_ips: int = 100_000,
         **kwargs,
     ):
         rate_config = rate_limit or {}
@@ -146,7 +153,10 @@ class FirewallNetwork:
         self._rate_limit_enabled = bool(rate_limit_enabled)
         self._rate_limiter = SlidingWindowCounter(rate_limit_max, rate_window_seconds)
         self._conn_tracker = ConnectionTracker(max_connections, block_duration_seconds)
-        self._blocked_ips: Dict[str, float] = {}
+        if max_blocked_ips < 1:
+            raise ValueError("max_blocked_ips must be at least 1")
+        self._blocked_ips: OrderedDict[str, float] = OrderedDict()
+        self._max_blocked_ips = int(max_blocked_ips)
         self._block_duration = int(block_duration_seconds)
         if self._block_duration < 1:
             raise ValueError("block_duration_seconds must be at least 1")
@@ -215,6 +225,7 @@ class FirewallNetwork:
             if expiry is None:
                 return None
             if now < expiry:
+                self._blocked_ips.move_to_end(key)
                 return FirewallResult(False, 429, "IP temporarily blocked", 2)
             del self._blocked_ips[key]
         return None
@@ -223,7 +234,11 @@ class FirewallNetwork:
         if not self._rate_limit_enabled or self._rate_limiter.allow(ip_str, now=now):
             return None
         with self._state_lock:
-            self._blocked_ips[ip_str] = now + self._block_duration
+            if ip_str in self._blocked_ips:
+                self._blocked_ips[ip_str] = now + self._block_duration
+                self._blocked_ips.move_to_end(ip_str)
+            elif len(self._blocked_ips) < self._max_blocked_ips:
+                self._blocked_ips[ip_str] = now + self._block_duration
         return FirewallResult(False, 429, "rate limit exceeded", 2)
 
     def _check_port_knock(self, ip_str: str, knock_header: str) -> Optional[FirewallResult]:
@@ -299,6 +314,7 @@ class FirewallNetwork:
             "allowlist_enabled": self._allowlist_enabled,
             "denylist_enabled": self._denylist_enabled,
             "blocked_ips": blocked_count,
+            "max_blocked_ips": self._max_blocked_ips,
             "rate_limit_enabled": self._rate_limit_enabled,
             "rate_limit_max": self._rate_limiter.max_requests,
             "rate_window_seconds": self._rate_limiter.window_seconds,

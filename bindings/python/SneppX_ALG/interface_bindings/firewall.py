@@ -1,4 +1,5 @@
 import os
+import threading
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -33,6 +34,7 @@ class FirewallRunner:
         self._allowed_count = 0
         self._denied_count = 0
         self._by_ring = {1: 0, 2: 0, 3: 0}
+        self._stats_lock = threading.Lock()
 
     @property
     def config(self) -> FirewallConfig:
@@ -72,26 +74,30 @@ class FirewallRunner:
             self._deny(result)
             return result
 
+        if self._cfg.block_all_by_default and not self._application.is_path_allowed(path):
+            result = self._make_result(
+                False, 403, "blocked by default: path is not allowlisted", 3
+            )
+            self._deny(result)
+            return result
+
         result = self._application.check_request(method, path, headers, body, query, client_ip)
         if not result.allowed:
             self._deny(result)
             return result
 
-        if self._cfg.block_all_by_default:
-            result = self._make_result(False, 403, "blocked by default", 2)
-            self._deny(result)
-            return result
-
-        self._allowed_count += 1
+        with self._stats_lock:
+            self._allowed_count += 1
         return self._make_result(True)
 
     def release_concurrent(self, client_ip: str):
         self._application.release_concurrent(client_ip)
 
     def _deny(self, result):
-        self._denied_count += 1
         ring = getattr(result, "ring", 2)
-        self._by_ring[ring] = self._by_ring.get(ring, 0) + 1
+        with self._stats_lock:
+            self._denied_count += 1
+            self._by_ring[ring] = self._by_ring.get(ring, 0) + 1
 
     @staticmethod
     def _make_result(allowed: bool, status_code: int = 200, reason: str = "", ring: int = 2) -> Any:
@@ -109,11 +115,17 @@ class FirewallRunner:
 
     @property
     def summary(self) -> dict:
+        with self._stats_lock:
+            allowed = self._allowed_count
+            denied = self._denied_count
+            by_ring = {str(k): v for k, v in self._by_ring.items()}
         return {
             "enabled": self._cfg.enabled,
-            "allowed": self._allowed_count,
-            "denied": self._denied_count,
-            "by_ring": {str(k): v for k, v in self._by_ring.items()},
+            "block_all_by_default": self._cfg.block_all_by_default,
+            "allowed_paths": list(self._application.allowed_paths),
+            "allowed": allowed,
+            "denied": denied,
+            "by_ring": by_ring,
             "transport": self._transport.tls_enabled,
             "network": self._network.summary,
         }
@@ -177,8 +189,12 @@ def _apply_env_overrides(cfg: FirewallConfig):
         cfg.network["denylist"] = [x.strip() for x in env["FIREWALL_DENYLIST"].split(",") if x.strip()]
     if "FIREWALL_RATE_LIMIT" in env:
         cfg.network.setdefault("rate_limit", {})["max_requests"] = int(env["FIREWALL_RATE_LIMIT"])
+    if "FIREWALL_MAX_BLOCKED_IPS" in env:
+        cfg.network["max_blocked_ips"] = int(env["FIREWALL_MAX_BLOCKED_IPS"])
     if "FIREWALL_BODY_SIZE" in env:
         cfg.application["max_body_size"] = int(env["FIREWALL_BODY_SIZE"])
+    if "FIREWALL_ALLOWED_PATHS" in env:
+        cfg.application["allowed_paths"] = [x.strip() for x in env["FIREWALL_ALLOWED_PATHS"].split(",") if x.strip()]
 
 
 def _apply_cli_overrides(cfg: FirewallConfig, overrides: dict):
@@ -191,7 +207,7 @@ def _apply_cli_overrides(cfg: FirewallConfig, overrides: dict):
             cfg.block_all_by_default = value
         elif key in ("tls_enabled", "certfile", "keyfile", "cafile", "require_client_cert", "min_version", "ciphers", "alpn_protocols"):
             cfg.transport[key] = value
-        elif key in ("max_connections", "rate_limit_max", "rate_window_seconds", "block_duration_seconds", "knock_ports", "knock_window_ms", "geoip_enabled", "geoip_db_path", "allowlist", "denylist", "allowlist_enabled", "denylist_enabled"):
+        elif key in ("max_connections", "rate_limit_max", "rate_window_seconds", "block_duration_seconds", "max_blocked_ips", "knock_ports", "knock_window_ms", "geoip_enabled", "geoip_db_path", "allowlist", "denylist", "allowlist_enabled", "denylist_enabled"):
             cfg.network[key] = value
-        elif key in ("max_body_size", "allowed_methods", "max_concurrent_per_ip", "enable_injection_filter"):
+        elif key in ("max_body_size", "allowed_methods", "max_concurrent_per_ip", "enable_injection_filter", "allowed_paths"):
             cfg.application[key] = value
