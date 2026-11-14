@@ -67,10 +67,28 @@ static void test_self_audit_run(void) {
     SNEPPXSelfAudit audit;
     SNEPPX_self_audit_init(&audit);
     SX_ASSERT(SNEPPX_self_audit_run_all(&audit) == 0, "run all");
-    SX_ASSERT(audit.total_passed > 0, "checks passed");
-    SX_ASSERT(audit.total_failed >= 0, "checks run");
-    double score = SNEPPX_self_audit_score(&audit);
-    SX_ASSERT(score > 0.0, "positive score");
+    SX_ASSERT(audit.total_passed == 0, "unverified capabilities are never marked passed");
+    SX_ASSERT(audit.total_warnings == audit.check_count, "all declared-only checks are warnings");
+    SX_ASSERT(audit.total_failed == 0, "no false failures");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "crypto") == 12, "crypto category count");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "memory") == 8, "memory category count");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "unknown") == -1, "unknown category rejected");
+    SX_ASSERT(SNEPPX_self_audit_get_category_score(&audit, "crypto") == 0, "unverified crypto score is zero");
+    SX_ASSERT(SNEPPX_self_audit_score(&audit) == 0.0, "unverified checks do not inflate score");
+    SNEPPX_self_audit_destroy(&audit);
+}
+
+static void test_self_audit_add_check_validation(void) {
+    SNEPPXSelfAudit audit;
+    SNEPPX_self_audit_init(&audit);
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "sample", SNEPPX_AUDIT_INFO, NULL) == 0, "info check accepted");
+    SX_ASSERT(audit.check_count == 1, "one check recorded");
+    SX_ASSERT(audit.checks[0].details[0] == '\\0', "null details are initialized");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "", SNEPPX_AUDIT_PASS, "invalid") == -1, "empty name rejected");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "bad-status", (SNEPPXAuditStatus)99, "invalid") == -1, "invalid status rejected");
+    SX_ASSERT(SNEPPX_self_audit_add_check_ex(&audit, "key rotation", SNEPPX_AUDIT_WARN, "not tested", "updates") == 0, "category-aware add");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "updates") == 1, "explicit category is retained in name");
+    SX_ASSERT(SNEPPX_self_audit_add_check_ex(&audit, "x", SNEPPX_AUDIT_WARN, "bad", "invalid") == -1, "invalid category rejected");
     SNEPPX_self_audit_destroy(&audit);
 }
 
@@ -216,6 +234,7 @@ TEST(test_s8_s9, model_simple_graph) { test_model_simple_graph(); }
 TEST(test_s8_s9, model_invariant) { test_model_invariant(); }
 TEST(test_s8_s9, self_audit_init) { test_self_audit_init(); }
 TEST(test_s8_s9, self_audit_run) { test_self_audit_run(); }
+TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }
 TEST(test_s8_s9, tla_parse) { test_tla_parse(); }
 TEST(test_s8_s9, ltl_init_check) { test_ltl_init_check(); }
 TEST(test_s8_s9, symex_init_explore) { test_symex_init_explore(); }
