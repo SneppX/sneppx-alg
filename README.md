@@ -1,8 +1,8 @@
 # SneppX-ALG
 
-SneppX-ALG is an experimental AI and machine-learning framework with a native C/C++ core and Python APIs. It includes tensor operations, automatic differentiation, neural-network components, model utilities, and optional backend integrations.
+SneppX-ALG is an open-source AI and machine-learning framework built around a native C/C++ core and Python APIs. It provides tensor operations, automatic differentiation, neural-network components, model utilities, and optional backend integrations.
 
-The project is under active development. Feature coverage and maturity vary by subsystem. SneppX-ALG is not currently a drop-in replacement for PyTorch or TensorFlow.
+The framework is actively developed, and feature coverage varies by subsystem. Its TensorFlow and PyTorch compatibility is still incomplete, so it is not currently a drop-in replacement for either framework.
 
 ## Features
 
@@ -10,9 +10,9 @@ The project is under active development. Feature coverage and maturity vary by s
 - Neural-network layers, loss functions, and optimizers
 - Transformer and other model components
 - Model configuration and local checkpoint utilities
-- Quantization and distributed-computing experiments
+- Quantization and distributed-computing capabilities
 - Optional accelerator and serving backends
-- Experimental security and cryptography components
+- Security and cryptography components
 - Python bindings and developer tools
 
 See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md) for compatibility goals and known gaps.
