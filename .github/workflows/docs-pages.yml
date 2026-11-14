@@ -2,7 +2,7 @@ name: Publish documentation to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
     paths:
       - "docs/**"
       - "mkdocs.yml"
@@ -48,6 +48,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Publish versioned documentation without rewriting history
+        if: github.ref == 'refs/heads/main'
         run: |
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
           mike deploy --push --update-aliases "$VERSION" latest
