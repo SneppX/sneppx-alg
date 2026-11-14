@@ -53,6 +53,52 @@ static int write_bytes(const unsigned char *bytes, size_t length) {
     return ok ? 0 : -1;
 }
 
+
+static int test_writer_contract(void) {
+    SNEPPXCheckpointHeader header = {0};
+    SNEPPXTensorRecord record = {0};
+    const uint32_t value = 99u;
+    const char metadata[] = "{\"epoch\":1}";
+    void *writer = NULL;
+    void *reader = NULL;
+    char *read_metadata = NULL;
+    size_t metadata_len = 0;
+
+    header.num_tensors = 1;
+    if (SNEPPX_ckpt_write_open(TEST_PATH, &header, &writer) != 0) return 1;
+    if (SNEPPX_ckpt_write_metadata(writer, metadata, sizeof(metadata) - 1) == 0) {
+        SNEPPX_ckpt_write_close(writer);
+        return 2;
+    }
+    record.ndim = 1;
+    record.shape[0] = 1;
+    record.data_size = sizeof(value);
+    if (SNEPPX_ckpt_write_tensor(writer, &value, &record) != 0 ||
+        SNEPPX_ckpt_write_metadata(writer, metadata, sizeof(metadata) - 1) != 0 ||
+        SNEPPX_ckpt_write_metadata(writer, metadata, sizeof(metadata) - 1) == 0 ||
+        SNEPPX_ckpt_write_close(writer) != 0 ||
+        SNEPPX_ckpt_validate(TEST_PATH) != 0) return 3;
+
+    if (SNEPPX_ckpt_read_open(TEST_PATH, &header, &reader) != 0 ||
+        SNEPPX_ckpt_read_metadata(reader, &read_metadata, &metadata_len) != 0 ||
+        metadata_len != sizeof(metadata) - 1 ||
+        memcmp(read_metadata, metadata, metadata_len) != 0) {
+        if (reader) SNEPPX_ckpt_read_close(reader);
+        free(read_metadata);
+        return 4;
+    }
+    free(read_metadata);
+    SNEPPX_ckpt_read_close(reader);
+
+    /* An incomplete checkpoint must never be finalized as valid. */
+    memset(&header, 0, sizeof(header));
+    header.num_tensors = 1;
+    if (SNEPPX_ckpt_write_open(TEST_PATH, &header, &writer) != 0) return 5;
+    if (SNEPPX_ckpt_write_close(writer) == 0 ||
+        SNEPPX_ckpt_validate(TEST_PATH) == 0) return 6;
+    return 0;
+}
+
 int main(void) {
     unsigned char *bytes = NULL;
     size_t length = 0;
@@ -94,6 +140,7 @@ int main(void) {
         SNEPPX_ckpt_validate(TEST_PATH) == 0) { free(bytes); return 6; }
 
     free(bytes);
+    if (test_writer_contract() != 0) return 7;
     remove(TEST_PATH);
     return 0;
 }

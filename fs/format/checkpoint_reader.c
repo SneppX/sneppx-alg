@@ -34,6 +34,8 @@ typedef struct {
     SNEPPXCheckpointHeader header;
     SNEPPXTensorRecord* records;
     uint32_t num_records;
+    int failed;
+    int metadata_written;
 } SNEPPXCkptHandle;
 
 #define SNEPPX_CKPT_MAX_METADATA_SIZE (64u * 1024u * 1024u)
@@ -115,117 +117,93 @@ static int ckpt_validate_layout(FILE *fp, const SNEPPXCheckpointHeader *header,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ckpt_write_open(const char* path, SNEPPXCheckpointHeader* header, void** handle) {
-    if (!path || !header || !handle) return -1;
-    FILE* fp = fopen(path, "wb");
+    SNEPPXCkptHandle *h;
+    if (!path || !header || !handle || header->num_tensors > SNEPPX_CKPT_MAX_RECORDS) return -1;
+    *handle = NULL;
+    FILE *fp = fopen(path, "wb");
     if (!fp) return -1;
-    SNEPPXCkptHandle* h = (SNEPPXCkptHandle*)calloc(1, sizeof(SNEPPXCkptHandle));
+    h = (SNEPPXCkptHandle *)calloc(1, sizeof(*h));
     if (!h) { fclose(fp); return -1; }
     h->fp = fp;
-    memcpy(&h->header, header, sizeof(SNEPPXCheckpointHeader));
+    h->header = *header;
     h->header.magic_lo = SNEPPX_CKPT_MAGIC;
     h->header.magic_hi = SNEPPX_CKPT_MAGIC_HI;
     h->header.version = SNEPPX_CKPT_VERSION;
-    
-    // Write header
-    fwrite(&h->header, sizeof(SNEPPXCheckpointHeader), 1, fp);
-    
-    // Write placeholder records (will be filled in write_tensor)
-    if (header->num_tensors > 0) {
-        h->records = (SNEPPXTensorRecord*)calloc(header->num_tensors, sizeof(SNEPPXTensorRecord));
-        if (!h->records) { fclose(fp); return -1; }
-        h->num_records = header->num_tensors;
-        // Write placeholder records
-        fwrite(h->records, sizeof(SNEPPXTensorRecord), header->num_tensors, fp);
+    h->header.metadata_offset = 0;
+    h->header.metadata_size = 0;
+    h->header.total_size = 0;
+    h->num_records = h->header.num_tensors;
+    if (h->num_records != 0) {
+        h->records = (SNEPPXTensorRecord *)calloc(h->num_records, sizeof(SNEPPXTensorRecord));
+        if (!h->records) { fclose(fp); free(h); return -1; }
+    }
+    if (fwrite(&h->header, sizeof(h->header), 1, fp) != 1 ||
+        (h->num_records != 0 && fwrite(h->records, sizeof(SNEPPXTensorRecord), h->num_records, fp) != h->num_records)) {
+        fclose(fp); free(h->records); free(h); return -1;
     }
     *handle = h;
     return 0;
 }
-
-/**
- * @brief Perform Ckpt Write Tensor.
- *
- * @param handle [out] Handle value.
- * @param tensor_data [in] Tensor Data value.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_ckpt_write_tensor(void* handle, const void* tensor_data, const SNEPPXTensorRecord* record) {
-    if (!handle || !tensor_data || !record) return -1;
-    SNEPPXCkptHandle* h = (SNEPPXCkptHandle*)handle;
-    if (h->num_records == 0) return -1;
-    uint32_t idx = h->header.num_tensors - h->num_records;
-    
-    // Get current file position (this is where tensor data will be written)
-    FSEEK64(h->fp, 0, SEEK_END);
-    OFF64_T data_offset = ftell(h->fp);
-    
-    // Update the record in memory with the data offset
-    h->records[idx] = *record;
-    h->records[idx].data_offset = (uint64_t)data_offset;
-    
-    // Update the record in the file (seek to record position in the records array)
-    uint64_t record_pos = sizeof(SNEPPXCheckpointHeader) + idx * sizeof(SNEPPXTensorRecord);
-    FSEEK64(h->fp, (OFF64_T)record_pos, SEEK_SET);
-    fwrite(&h->records[idx], sizeof(SNEPPXTensorRecord), 1, h->fp);
-    
-    // Seek back to end and write tensor data
-    FSEEK64(h->fp, 0, SEEK_END);
-    fwrite(tensor_data, 1, record->data_size, h->fp);
-    
+    SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
+    uint32_t index;
+    uint64_t record_pos;
+    OFF64_T data_offset;
+    if (!h || !tensor_data || !record || h->failed || h->metadata_written ||
+        h->num_records == 0 || record->ndim > 8 || record->data_size > SIZE_MAX) return -1;
+    index = h->header.num_tensors - h->num_records;
+    if (FSEEK64(h->fp, 0, SEEK_END) != 0 || (data_offset = FTELL64(h->fp)) < 0 ||
+        (uint64_t)data_offset > UINT64_MAX - record->data_size) {
+        h->failed = 1; return -1;
+    }
+    h->records[index] = *record;
+    h->records[index].data_offset = (uint64_t)data_offset;
+    if (record->data_size != 0 && fwrite(tensor_data, 1, (size_t)record->data_size, h->fp) != (size_t)record->data_size) {
+        h->failed = 1; return -1;
+    }
+    record_pos = (uint64_t)sizeof(SNEPPXCheckpointHeader) + (uint64_t)index * sizeof(SNEPPXTensorRecord);
+    if (FSEEK64(h->fp, (OFF64_T)record_pos, SEEK_SET) != 0 ||
+        fwrite(&h->records[index], sizeof(SNEPPXTensorRecord), 1, h->fp) != 1 ||
+        FSEEK64(h->fp, 0, SEEK_END) != 0) {
+        h->failed = 1; return -1;
+    }
     h->num_records--;
     return 0;
 }
-
-/**
- * @brief Perform Ckpt Write Metadata.
- *
- * @param handle [out] Handle value.
- * @param metadata_json [in] Metadata Json value.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_ckpt_write_metadata(void* handle, const char* metadata_json, size_t json_len) {
-    if (!handle || !metadata_json) return -1;
-    SNEPPXCkptHandle* h = (SNEPPXCkptHandle*)handle;
-    FSEEK64(h->fp, 0, SEEK_END);
-    h->header.metadata_offset = (uint64_t)ftell(h->fp);
+    SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
+    OFF64_T offset;
+    if (!h || h->failed || h->metadata_written || h->num_records != 0 ||
+        (json_len != 0 && !metadata_json) || json_len > SNEPPX_CKPT_MAX_METADATA_SIZE) return -1;
+    if (FSEEK64(h->fp, 0, SEEK_END) != 0 || (offset = FTELL64(h->fp)) < 0 ||
+        (json_len != 0 && fwrite(metadata_json, 1, json_len, h->fp) != json_len)) {
+        h->failed = 1; return -1;
+    }
+    h->header.metadata_offset = json_len == 0 ? 0 : (uint64_t)offset;
     h->header.metadata_size = (uint64_t)json_len;
-    fwrite(metadata_json, 1, json_len, h->fp);
+    h->metadata_written = 1;
     return 0;
 }
-
-/**
- * @brief Close Ckpt Write.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_ckpt_write_close(void* handle) {
-    if (!handle) return -1;
-    SNEPPXCkptHandle* h = (SNEPPXCkptHandle*)handle;
-    
-    // Update header with final total_size
-    FSEEK64(h->fp, 0, SEEK_END);
-    long end_pos = ftell(h->fp);
-    h->header.total_size = (uint64_t)end_pos;
-    
-    // Write final header
-    FSEEK64(h->fp, 0, SEEK_SET);
-    fwrite(&h->header, sizeof(SNEPPXCheckpointHeader), 1, h->fp);
-    
-    fclose(h->fp);
+    SNEPPXCkptHandle *h = (SNEPPXCkptHandle *)handle;
+    int result = 0;
+    if (!h) return -1;
+    if (h->failed || h->num_records != 0 || FSEEK64(h->fp, 0, SEEK_END) != 0) {
+        result = -1;
+    } else {
+        OFF64_T end_pos = FTELL64(h->fp);
+        if (end_pos < 0) result = -1;
+        else {
+            h->header.total_size = (uint64_t)end_pos;
+            if (FSEEK64(h->fp, 0, SEEK_SET) != 0 ||
+                fwrite(&h->header, sizeof(h->header), 1, h->fp) != 1 || fflush(h->fp) != 0) result = -1;
+        }
+    }
+    if (fclose(h->fp) != 0) result = -1;
     free(h->records);
     free(h);
-    return 0;
+    return result;
 }
-
-/**
- * @brief Open Ckpt Read.
- *
- * @param path [in] Path value.
- * @param header [out] Header value.
- *
- * @return 0 on success, -1 on error.
- */
 int SNEPPX_ckpt_read_open(const char* path, SNEPPXCheckpointHeader* header, void** handle) {
     SNEPPXCkptHandle *h;
     SNEPPXCheckpointHeader parsed;
