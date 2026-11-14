@@ -130,3 +130,59 @@ def test_getitem_duplicate_indices_match_with_create_graph():
     np.testing.assert_array_equal(result.data, [2.0, 0.0, 1.0])
     assert result.grad_fn is not None
 
+def test_prod_backward_handles_single_and_multiple_zeros():
+    single_zero = Tensor([0.0, 2.0, 3.0], requires_grad=True)
+    single_zero.prod().backward()
+    np.testing.assert_allclose(single_zero.grad.data, [6.0, 0.0, 0.0])
+
+    multiple_zeros = Tensor([0.0, 2.0, 0.0, 3.0], requires_grad=True)
+    multiple_zeros.prod().backward()
+    np.testing.assert_array_equal(multiple_zeros.grad.data, [0.0, 0.0, 0.0, 0.0])
+
+
+def test_prod_backward_handles_zero_groups_across_multiple_axes_and_keepdim():
+    values = np.array(
+        [
+            [[0.0, 2.0], [3.0, 4.0]],
+            [[5.0, 0.0], [0.0, 7.0]],
+        ],
+        dtype=np.float32,
+    )
+    source = Tensor(values.copy(), requires_grad=True)
+    source.prod(dim=(1, 2), keepdim=True).sum().backward()
+
+    expected = np.zeros_like(values)
+    expected[0, 0, 0] = 2.0 * 3.0 * 4.0
+    expected[1, 0, 1] = 5.0 * 0.0 * 7.0
+    np.testing.assert_allclose(source.grad.data, expected)
+
+
+def test_prod_create_graph_preserves_second_order_dependencies_at_zero():
+    source = Tensor([0.0, 2.0, 3.0], requires_grad=True)
+    first = grad(source.prod(), source, create_graph=True)[0]
+
+    np.testing.assert_allclose(first.data, [6.0, 0.0, 0.0])
+    assert first.grad_fn is not None
+
+    second = grad(first[0], source)[0]
+    np.testing.assert_allclose(second.data, [0.0, 3.0, 2.0])
+
+
+def test_prod_backward_matches_finite_differences_with_zero_inputs():
+    values = np.array([0.0, -2.0, 3.0], dtype=np.float32)
+    source = Tensor(values.copy(), requires_grad=True)
+    source.prod().backward()
+
+    epsilon = 1e-3
+    expected = np.empty_like(values)
+    for index in range(values.size):
+        plus = values.copy()
+        minus = values.copy()
+        plus[index] += epsilon
+        minus[index] -= epsilon
+        expected[index] = (
+            np.prod(plus) - np.prod(minus)
+        ) / (2.0 * epsilon)
+
+    np.testing.assert_allclose(source.grad.data, expected, rtol=2e-3, atol=2e-3)
+

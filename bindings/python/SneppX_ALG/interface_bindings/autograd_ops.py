@@ -5393,11 +5393,17 @@ class Prod(Function):
             axes = tuple(dim)
         else:
             axes = (dim,)
+
+        # Let NumPy validate the requested axes, then store normalized axes so
+        # shape reconstruction is deterministic for negative dimensions.
+        out = np.asarray(np.prod(xd, axis=axes, keepdims=keepdim))
+        normalized_axes = (
+            tuple(axis % xd.ndim for axis in axes) if axes else ()
+        )
         if ctx is not None:
             ctx.save_for_backward(x=x)
-        _save_attr(ctx, axes=axes, keepdim=keepdim)
-        out = np.asarray(np.prod(xd, axis=axes, keepdims=keepdim))
-        return Tensor(np.asarray(out), dtype=x.dtype)
+        _save_attr(ctx, axes=normalized_axes, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
@@ -5405,12 +5411,58 @@ class Prod(Function):
         axes = ctx.get_attr("axes")
         keepdim = ctx.get_attr("keepdim")
         xd = np.asarray(x.data)
-        g = np.asarray(grad_output.data)
-        prod_all = np.prod(xd, axis=axes, keepdims=True)
-        prod_excl = prod_all / xd
+        zero_mask = xd == 0
+        zero_count = np.sum(zero_mask, axis=axes, keepdims=True)
+        no_zero = zero_count == 0
+        exactly_one_zero = zero_count == 1
+
+        # Replacing zeros with ones makes division safe and gives the product
+        # of all nonzero elements in each reduction group.
+        safe_x = np.where(zero_mask, 1, xd)
+        if create_graph:
+            zero_mask_t = _as_const(zero_mask.astype(xd.dtype), x.dtype)
+            no_zero_t = _as_const(no_zero.astype(xd.dtype), x.dtype)
+            one_zero_t = _as_const(exactly_one_zero.astype(xd.dtype), x.dtype)
+            safe_x_t = Add.apply(x, zero_mask_t)
+            product_t = Prod.apply(x, axes, True)
+            nonzero_product_t = Prod.apply(safe_x_t, axes, True)
+
+            # With no zeros, d(prod)/dx_i is product/x_i. With one
+            # zero, only that zero position receives the nonzero product.
+            no_zero_term = Div.apply(
+                Mul.apply(no_zero_t, product_t), safe_x_t
+            )
+            one_zero_term = Mul.apply(
+                Mul.apply(zero_mask_t, one_zero_t), nonzero_product_t
+            )
+            derivative = Add.apply(no_zero_term, one_zero_term)
+
+            if not keepdim:
+                grad_shape = tuple(
+                    1 if axis in axes else size
+                    for axis, size in enumerate(x.shape)
+                )
+                grad = Reshape.apply(grad_output, grad_shape)
+            else:
+                grad = grad_output
+            return [Mul.apply(grad, derivative)]
+
+        product = np.prod(xd, axis=axes, keepdims=True)
+        nonzero_product = np.prod(safe_x, axis=axes, keepdims=True)
+        derivative = np.where(no_zero, product / safe_x, 0)
+        derivative += np.where(
+            zero_mask & np.broadcast_to(exactly_one_zero, xd.shape),
+            np.broadcast_to(nonzero_product, xd.shape),
+            0,
+        )
+        grad = np.asarray(grad_output.data)
         if not keepdim:
-            g = np.expand_dims(g, axis=axes)
-        return [Tensor(g * prod_excl, dtype=grad_output.dtype)]
+            grad_shape = tuple(
+                1 if axis in axes else size
+                for axis, size in enumerate(xd.shape)
+            )
+            grad = np.reshape(grad, grad_shape)
+        return [Tensor(grad * derivative, dtype=grad_output.dtype)]
 
 
 class LogSumExp(Function):
