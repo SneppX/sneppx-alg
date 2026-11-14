@@ -194,3 +194,57 @@ def test_prod_backward_matches_finite_differences_with_zero_inputs():
 
     np.testing.assert_allclose(source.grad.data, expected, rtol=2e-3, atol=2e-3)
 
+def test_logsumexp_create_graph_preserves_second_order_dependencies():
+    values = np.array(
+        [[0.2, -0.4, 1.1], [1.3, 0.1, -0.7]], dtype=np.float32
+    )
+    source = Tensor(values.copy(), requires_grad=True)
+
+    first = grad(source.logsumexp(dim=-1).sum(), source, create_graph=True)[0]
+    shifted = values - values.max(axis=-1, keepdims=True)
+    probabilities = np.exp(shifted) / np.exp(shifted).sum(axis=-1, keepdims=True)
+    np.testing.assert_allclose(first.data, probabilities, rtol=1e-5, atol=1e-6)
+    assert first.grad_fn is not None
+
+    second = grad(first[:, 0].sum(), source)[0]
+    expected = -probabilities * probabilities[:, :1]
+    expected[:, 0] += probabilities[:, 0]
+    np.testing.assert_allclose(second.data, expected, rtol=1e-5, atol=1e-6)
+
+
+def test_logsumexp_create_graph_supports_multiple_axes_and_keepdim():
+    values = np.arange(24, dtype=np.float32).reshape(2, 3, 4) / 7.0
+    source = Tensor(values.copy(), requires_grad=True)
+
+    output = source.logsumexp(dim=(0, 2), keepdim=True)
+    assert output.shape == (1, 3, 1)
+    first = grad(output.sum(), source, create_graph=True)[0]
+
+    shifted = values - values.max(axis=(0, 2), keepdims=True)
+    exp_values = np.exp(shifted)
+    expected = exp_values / exp_values.sum(axis=(0, 2), keepdims=True)
+    np.testing.assert_allclose(first.data, expected, rtol=1e-5, atol=1e-6)
+    assert first.grad_fn is not None
+
+
+def test_mean_create_graph_uses_reduced_element_count_for_tuple_axes():
+    values = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    source = Tensor(values.copy(), requires_grad=True)
+
+    first = grad(source.mean(dim=(0, 2)).sum(), source, create_graph=True)[0]
+    expected = np.full(values.shape, 1.0 / 8.0, dtype=np.float32)
+    np.testing.assert_allclose(first.data, expected, rtol=1e-6, atol=1e-7)
+    assert first.grad_fn is not None
+
+    second = grad(first.sum(), source)[0]
+    np.testing.assert_allclose(second.data, np.zeros_like(values), atol=1e-7)
+
+
+def test_sum_create_graph_expands_reduced_axes_in_original_positions():
+    values = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    source = Tensor(values.copy(), requires_grad=True)
+
+    first = grad(source.sum(dim=(0, 2)).sum(), source, create_graph=True)[0]
+    np.testing.assert_array_equal(first.data, np.ones_like(values))
+    assert first.grad_fn is not None
+

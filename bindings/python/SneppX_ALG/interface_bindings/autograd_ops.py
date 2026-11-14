@@ -872,8 +872,17 @@ class Sum(Function):
     def backward(ctx, grad_output, create_graph=False):
         shape = ctx.get_attr("shape")
         dim = ctx.get_attr("dim")
+        if dim is None:
+            dims = tuple(range(len(shape)))
+        else:
+            raw_dims = (dim,) if isinstance(dim, int) else tuple(dim)
+            dims = tuple(d % len(shape) for d in raw_dims)
+        expand_shape = list(shape)
+        for d in dims:
+            expand_shape[d] = 1
         if create_graph:
-            return [_cg_broadcast(grad_output, shape)]
+            g = Reshape.apply(grad_output, tuple(expand_shape))
+            return [Expand.apply(g, shape)]
         g = grad_output.data
         if dim is None:
             return [
@@ -884,9 +893,6 @@ class Sum(Function):
                     dtype=grad_output.dtype,
                 )
             ]
-        expand_shape = list(shape)
-        for d in [dim] if isinstance(dim, int) else dim:
-            expand_shape[d] = 1
         g_br = g.reshape(expand_shape)
         return [
             Tensor(
@@ -909,27 +915,30 @@ class Mean(Function):
         shape = ctx.get_attr("shape")
         n = ctx.get_attr("numel")
         dim = ctx.get_attr("dim")
-        if create_graph:
-            g2 = Div.apply(grad_output, _as_const(n, grad_output.dtype))
-            return [_cg_broadcast(g2, shape)]
-        g = grad_output.data
         if dim is None:
+            if create_graph:
+                g2 = Div.apply(grad_output, _as_const(n, grad_output.dtype))
+                return [_cg_broadcast(g2, shape)]
             return [
                 Tensor(
                     np.full(
-                        shape, g.flatten()[0] / n, dtype=_numpy_dtype(grad_output.dtype)
+                        shape, grad_output.data.flatten()[0] / n,
+                        dtype=_numpy_dtype(grad_output.dtype)
                     ),
                     dtype=grad_output.dtype,
                 )
             ]
-        dims = [dim] if isinstance(dim, int) else dim
-        nelem = 1
-        for d in dims:
-            nelem *= shape[d]
+        raw_dims = (dim,) if isinstance(dim, int) else tuple(dim)
+        dims = tuple(d % len(shape) for d in raw_dims)
+        nelem = int(np.prod([shape[d] for d in dims], dtype=np.int64))
         expand_shape = list(shape)
         for d in dims:
             expand_shape[d] = 1
-        g_br = g.reshape(expand_shape)
+        if create_graph:
+            g = Reshape.apply(grad_output, tuple(expand_shape))
+            g = Div.apply(g, _as_const(nelem, grad_output.dtype))
+            return [Expand.apply(g, shape)]
+        g_br = grad_output.data.reshape(expand_shape)
         return [
             Tensor(
                 np.broadcast_to(g_br, shape).astype(_numpy_dtype(grad_output.dtype))
@@ -5491,13 +5500,31 @@ class LogSumExp(Function):
         return Tensor(np.asarray(np.log(s) + m_out), dtype=x.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         axes = ctx.get_attr("axes")
         keepdim = ctx.get_attr("keepdim")
         xd = np.asarray(x.data)
-        g = np.asarray(grad_output.data)
         m = np.max(xd, axis=axes, keepdims=True)
+        if create_graph:
+            # The stabilizing maximum is a numerical constant for the
+            # softmax derivative; differentiating through it is unnecessary.
+            m_t = _as_const(m, x.dtype)
+            shifted = Sub.apply(x, m_t)
+            exp_x = Exp.apply(shifted)
+            denom = Sum.apply(exp_x, axes)
+            keep_shape = list(x.shape)
+            for axis in axes:
+                keep_shape[axis] = 1
+            denom = Reshape.apply(denom, tuple(keep_shape))
+            soft = Div.apply(exp_x, denom)
+            if not keepdim:
+                grad_shape = list(x.shape)
+                for axis in axes:
+                    grad_shape[axis] = 1
+                grad_output = Reshape.apply(grad_output, tuple(grad_shape))
+            return [Mul.apply(grad_output, soft)]
+        g = np.asarray(grad_output.data)
         soft = np.exp(xd - m)
         soft = soft / np.sum(soft, axis=axes, keepdims=True)
         if not keepdim:
