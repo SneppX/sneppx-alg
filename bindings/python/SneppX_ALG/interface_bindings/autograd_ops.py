@@ -349,50 +349,79 @@ class MatMul(Function):
     def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         b = ctx.get_saved_tensor("b")
-        a_data = a.data
-        b_data = b.data
-        g = grad_output
-        if create_graph and a_data.ndim <= 2 and b_data.ndim <= 2:
-            # grad_a = g @ b^T ; grad_b = a^T @ g  (graph-aware, 1-D safe)
-            g_nd = grad_output.data.ndim
-            b_nd = b_data.ndim
-            a_nd = a_data.ndim
-            # grad_b = a^T @ g
-            if a_nd == 1:
-                a_mat = Unsqueeze.apply(a, -1)  # (D,1)
-                g_col = Unsqueeze.apply(g, -1) if g_nd == 1 else g
-                grad_b = MatMul.apply(a_mat, g_col)
-                if g_nd == 1:
-                    grad_b = Squeeze.apply(grad_b, -1)
-            else:
-                grad_b = MatMul.apply(Transpose.apply(a, -1, -2), g)
-            # grad_a = g @ b^T
-            if b_nd == 1:
-                g_col = Unsqueeze.apply(g, -1) if g_nd == 1 else g  # (N,1)
-                b_row = Unsqueeze.apply(b, 0)  # (1,D)
-                grad_a = MatMul.apply(g_col, b_row)
-            else:
-                g_row = Unsqueeze.apply(g, 0) if g_nd == 1 else g
-                grad_a = MatMul.apply(g_row, Transpose.apply(b, -1, -2))
-                if g_nd == 1:
-                    grad_a = Squeeze.apply(grad_a, 0)
-            return [grad_a, grad_b]
-        gnp = grad_output.data
-        if a_data.ndim == 1 and b_data.ndim == 1:
-            # Vector-vector matmul is a scalar dot product. Its gradients are
-            # the opposite vector scaled by the upstream scalar gradient.
-            grad_a = gnp * b_data
-            grad_b = gnp * a_data
-        elif a_data.ndim == 1:
-            grad_a = gnp @ b_data.T
-            grad_b = np.outer(a_data, gnp)
-        elif b_data.ndim == 1:
-            grad_a = np.outer(gnp, b_data)
-            grad_b = a_data.T @ gnp
-        else:
-            grad_a = gnp @ b_data.T
-            grad_b = a_data.T @ gnp
-        return [Tensor(grad_a, dtype=a.dtype), Tensor(grad_b, dtype=b.dtype)]
+        a_data = np.asarray(a.data)
+        b_data = np.asarray(b.data)
+        a_vector = a_data.ndim == 1
+        b_vector = b_data.ndim == 1
+
+        # A vector-vector product has a scalar result and needs no matrix
+        # dimension promotion.
+        if a_vector and b_vector:
+            if create_graph:
+                return [
+                    Mul.apply(grad_output, b),
+                    Mul.apply(grad_output, a),
+                ]
+            upstream = np.asarray(grad_output.data)
+            return [
+                Tensor(upstream * b_data, dtype=a.dtype),
+                Tensor(upstream * a_data, dtype=b.dtype),
+            ]
+
+        if create_graph:
+            # Promote vectors to (..., 1, K) / (..., K, 1), then apply the
+            # standard matrix VJPs using the final two dimensions.
+            a_matrix = Unsqueeze.apply(a, -2) if a_vector else a
+            b_matrix = Unsqueeze.apply(b, -1) if b_vector else b
+            upstream = grad_output
+            if a_vector:
+                upstream = Unsqueeze.apply(upstream, -2)
+            if b_vector:
+                upstream = Unsqueeze.apply(upstream, -1)
+
+            grad_a = MatMul.apply(
+                upstream, Transpose.apply(b_matrix, -1, -2)
+            )
+            grad_b = MatMul.apply(
+                Transpose.apply(a_matrix, -1, -2), upstream
+            )
+            if a_vector:
+                grad_a = Squeeze.apply(grad_a, -2)
+            if b_vector:
+                grad_b = Squeeze.apply(grad_b, -1)
+
+            # MatMul broadcasts batch dimensions. Its VJP must undo that
+            # broadcast by summing every expanded batch axis back to the
+            # original operand shape.
+            return [
+                _cg_broadcast(grad_a, a.shape),
+                _cg_broadcast(grad_b, b.shape),
+            ]
+
+        upstream = np.asarray(grad_output.data)
+        a_matrix = np.expand_dims(a_data, axis=-2) if a_vector else a_data
+        b_matrix = np.expand_dims(b_data, axis=-1) if b_vector else b_data
+        if a_vector:
+            upstream = np.expand_dims(upstream, axis=-2)
+        if b_vector:
+            upstream = np.expand_dims(upstream, axis=-1)
+
+        grad_a = np.matmul(upstream, np.swapaxes(b_matrix, -1, -2))
+        grad_b = np.matmul(np.swapaxes(a_matrix, -1, -2), upstream)
+
+        if a_vector:
+            grad_a = np.squeeze(grad_a, axis=-2)
+        if b_vector:
+            grad_b = np.squeeze(grad_b, axis=-1)
+
+        # Reduce broadcasted batch dimensions. _reduce_to_shape follows
+        # right-aligned NumPy broadcasting semantics.
+        grad_a = _reduce_to_shape(grad_a, a.shape)
+        grad_b = _reduce_to_shape(grad_b, b.shape)
+        return [
+            Tensor(grad_a, dtype=a.dtype),
+            Tensor(grad_b, dtype=b.dtype),
+        ]
 
 
 class SparseMM(Function):
