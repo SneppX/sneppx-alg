@@ -5,6 +5,7 @@ file(GLOB_RECURSE SECURITY_TEST_SRCS ../tests/security/*.c)
 # Tests excluded because they reference APIs that were never implemented
 set(EXCLUDED_TESTS
     test_secure_allocator
+    test_firewall_engine
 )
 
 # --- GoogleTest discovery -------------------------------------------------
@@ -114,6 +115,16 @@ if(SNEPPX_USE_GTEST)
 else()
     message(WARNING "SNEPPX_USE_GTEST=OFF: C test executables are not built. "
                     "Set SNEPPX_USE_GTEST=ON to build the GoogleTest suite.")
+endif()
+
+# The firewall policy engine has a standalone C test so it runs even when
+# the optional GoogleTest migration suite is disabled.
+if(TARGET neural_security_c)
+    add_executable(test_firewall_engine_native ../tests/security/test_firewall_engine.c)
+    target_link_libraries(test_firewall_engine_native PRIVATE neural_security_c)
+    target_include_directories(test_firewall_engine_native PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    target_compile_features(test_firewall_engine_native PRIVATE c_std_11)
+    add_test(NAME firewall_engine_native COMMAND test_firewall_engine_native)
 endif()
 
 file(GLOB_RECURSE SECURITY_CPP_TEST_SRCS ../tests/security/cpp/*.cpp)

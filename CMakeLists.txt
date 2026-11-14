@@ -373,6 +373,12 @@ if(SNEPPX_S4_NETWORK_SRC)
     target_compile_definitions(neural_security_c PRIVATE SNEPPX_S4_NETWORK_SECURITY)
 endif()
 
+file(GLOB_RECURSE SNEPPX_FIREWALL_C_SRC security/firewall/c/*.c)
+if(SNEPPX_FIREWALL_C_SRC)
+    target_sources(neural_security_c PRIVATE ${SNEPPX_FIREWALL_C_SRC})
+    target_compile_definitions(neural_security_c PRIVATE SNEPPX_FIREWALL_POLICY_ENGINE)
+endif()
+
 file(GLOB_RECURSE SNEPPX_S5_AI_SRC security/ai/*.c)
 if(SNEPPX_S5_AI_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S5_AI_SRC})

@@ -163,3 +163,22 @@ Located in `crypto/asm/x86_64/`:
 - `sc_cmov.asm` — Conditional move
 - `gf256_mul.asm` — GF(256) multiplication
 - `fe25519_ops.asm` — Field element operations
+
+
+## Native Firewall Policy Engine
+
+The native policy engine is available through
+`neural_core/security/sneppx_firewall.h` and is compiled into
+`neural_security_c`.
+
+- IPv4 and IPv6 source/destination CIDR matching
+- IP protocol, ingress/egress direction, and destination-port range matching
+- Priority-based rule selection; deny wins equal-priority ties
+- Default-deny policy unless explicitly changed
+- Bounded rule table (256 rules), thread-safe evaluation, and packet/byte counters
+- Explicit rule add/remove operations and result identifiers
+
+The engine evaluates packet metadata supplied by a network adapter. It does not
+install Windows Filtering Platform, Linux netfilter/eBPF, or macOS Network
+Extension hooks, and it does not capture packets itself. Those platform adapters
+must be implemented and deployed separately before it can filter host traffic.
