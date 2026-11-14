@@ -5426,9 +5426,15 @@ class Prod(Function):
         safe_x = np.where(zero_mask, 1, xd)
         if create_graph:
             zero_mask_t = _as_const(zero_mask.astype(xd.dtype), x.dtype)
+            nonzero_mask_t = _as_const((~zero_mask).astype(xd.dtype), x.dtype)
             no_zero_t = _as_const(no_zero.astype(xd.dtype), x.dtype)
             one_zero_t = _as_const(exactly_one_zero.astype(xd.dtype), x.dtype)
-            safe_x_t = Add.apply(x, zero_mask_t)
+            # The replacement value at a zero input must be constant with
+            # respect to that input; otherwise higher-order gradients leak
+            # through the safe denominator/product branch.
+            safe_x_t = Add.apply(
+                Mul.apply(x, nonzero_mask_t), zero_mask_t
+            )
             product_t = Prod.apply(x, axes, True)
             nonzero_product_t = Prod.apply(safe_x_t, axes, True)
 
