@@ -92,6 +92,34 @@ static void test_self_audit_add_check_validation(void) {
     SNEPPX_self_audit_destroy(&audit);
 }
 
+static void test_self_audit_export_validation(void) {
+    SNEPPXSelfAudit audit;
+    const char* path = "self_audit_export_test.txt";
+    SNEPPX_self_audit_init(&audit);
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "export-check", SNEPPX_AUDIT_PASS,
+                                         "plain report detail") == 0, "add export check");
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, path) == 0, "valid report exports");
+    FILE* report = fopen(path, "r");
+    SX_ASSERT(report != NULL, "exported report can be opened");
+    if (report) {
+        char buffer[1024];
+        size_t length = fread(buffer, 1, sizeof(buffer) - 1, report);
+        buffer[length] = '\\0';
+        fclose(report);
+        SX_ASSERT(strstr(buffer, "export-check") != NULL, "report contains check name");
+        SX_ASSERT(strstr(buffer, "plain report detail") != NULL, "report contains details");
+        remove(path);
+    }
+    audit.check_count = SNEPPX_AUDIT_MAX_CHECKS + 1;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, path) == -1,
+              "corrupt check count is rejected");
+    audit.check_count = 1;
+    audit.checks[0].status = (SNEPPXAuditStatus)99;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, path) == -1,
+              "invalid status is rejected");
+    SNEPPX_self_audit_destroy(&audit);
+}
+
 static void test_tla_parse(void) {
     SNEPPXTLAParser parser;
     SX_ASSERT(SNEPPX_tla_parse(&parser, "Init == x = 0") == 0, "tla parse");
@@ -234,7 +262,7 @@ TEST(test_s8_s9, model_simple_graph) { test_model_simple_graph(); }
 TEST(test_s8_s9, model_invariant) { test_model_invariant(); }
 TEST(test_s8_s9, self_audit_init) { test_self_audit_init(); }
 TEST(test_s8_s9, self_audit_run) { test_self_audit_run(); }
-TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }
+TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }\nTEST(test_s8_s9, self_audit_export_validation) { test_self_audit_export_validation(); }
 TEST(test_s8_s9, tla_parse) { test_tla_parse(); }
 TEST(test_s8_s9, ltl_init_check) { test_ltl_init_check(); }
 TEST(test_s8_s9, symex_init_explore) { test_symex_init_explore(); }
