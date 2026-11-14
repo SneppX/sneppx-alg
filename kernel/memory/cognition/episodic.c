@@ -42,6 +42,9 @@ struct SNEPPXEpisodicBuffer {
     unsigned int* seed_ptr;
 };
 
+/* Internal helper used by record() before its definition below. */
+static int sneppx_episodic_consolidate(SNEPPXEpisodicBuffer* buf);
+
 static int compare_priority_desc(const void* a, const void* b) {
     const SNEPPXEpisodicExperience* ea = (const SNEPPXEpisodicExperience*)a;
     const SNEPPXEpisodicExperience* eb = (const SNEPPXEpisodicExperience*)b;
@@ -221,7 +224,7 @@ int sneppx_episodic_sample(SNEPPXEpisodicBuffer* buf, size_t batch_size,
     return (int)actual_batch;
 }
 
-int sneppx_episodic_consolidate(SNEPPXEpisodicBuffer* buf) {
+static int sneppx_episodic_consolidate(SNEPPXEpisodicBuffer* buf) {
     if (!buf) return -1;
     buf->last_consolidation = buf->next_timestamp;
     if (buf->count < 2) return 0;
