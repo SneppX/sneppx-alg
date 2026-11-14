@@ -104,7 +104,7 @@ static void test_self_audit_export_validation(void) {
     if (report) {
         char buffer[1024];
         size_t length = fread(buffer, 1, sizeof(buffer) - 1, report);
-        buffer[length] = '\\0';
+        buffer[length] = '\0';
         fclose(report);
         SX_ASSERT(strstr(buffer, "export-check") != NULL, "report contains check name");
         SX_ASSERT(strstr(buffer, "plain report detail") != NULL, "report contains details");
@@ -262,7 +262,8 @@ TEST(test_s8_s9, model_simple_graph) { test_model_simple_graph(); }
 TEST(test_s8_s9, model_invariant) { test_model_invariant(); }
 TEST(test_s8_s9, self_audit_init) { test_self_audit_init(); }
 TEST(test_s8_s9, self_audit_run) { test_self_audit_run(); }
-TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }\nTEST(test_s8_s9, self_audit_export_validation) { test_self_audit_export_validation(); }
+TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }
+TEST(test_s8_s9, self_audit_export_validation) { test_self_audit_export_validation(); }
 TEST(test_s8_s9, tla_parse) { test_tla_parse(); }
 TEST(test_s8_s9, ltl_init_check) { test_ltl_init_check(); }
 TEST(test_s8_s9, symex_init_explore) { test_symex_init_explore(); }
