@@ -1,30 +1,21 @@
-import ctypes
+"""Network-layer firewall controls with bounded state and IPv4/IPv6 support."""
+
+from __future__ import annotations
+
 import ipaddress
-import os
+import threading
 import time
-from dataclasses import dataclass, field
-from threading import Lock
-from typing import List, Optional, Tuple
+from collections import OrderedDict, deque
+from dataclasses import dataclass
+from typing import Deque, Dict, Optional, Union
 
-_HAS_FW_ASM = False
-_FW_DLL = None
-
-_lib_paths = [
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "build", "firewall_core.dll"),
-]
-for _p in _lib_paths:
-    if os.path.isfile(_p):
-        try:
-            _FW_DLL = ctypes.CDLL(_p)
-            _HAS_FW_ASM = True
-            break
-        except (OSError, ctypes.CError):
-            _FW_DLL = None
+IPAddress = Union[ipaddress.IPv4Address, ipaddress.IPv6Address]
+IPNetwork = Union[ipaddress.IPv4Network, ipaddress.IPv6Network]
 
 
-@dataclass
+@dataclass(frozen=True)
 class CidrRule:
-    network: ipaddress.IPv4Network
+    network: IPNetwork
     allow: bool = True
     log: bool = True
 
@@ -38,195 +29,276 @@ class FirewallResult:
 
 
 class SlidingWindowCounter:
-    def __init__(self, max_requests: int, window_seconds: float = 60.0):
-        self.max_requests = max_requests
-        self.window_seconds = window_seconds
-        self._lock = Lock()
-        self._buckets: dict = {}
+    """Thread-safe sliding-window limiter with a hard cap on tracked keys."""
 
-    def allow(self, key: str, now: float = None) -> bool:
-        if now is None:
-            now = time.time()
+    def __init__(
+        self,
+        max_requests: int,
+        window_seconds: float = 60.0,
+        max_keys: int = 100_000,
+    ):
+        if max_requests < 1:
+            raise ValueError("max_requests must be at least 1")
+        if window_seconds <= 0:
+            raise ValueError("window_seconds must be greater than 0")
+        if max_keys < 1:
+            raise ValueError("max_keys must be at least 1")
+        self.max_requests = int(max_requests)
+        self.window_seconds = float(window_seconds)
+        self.max_keys = int(max_keys)
+        self._lock = threading.Lock()
+        self._buckets: OrderedDict[str, Deque[float]] = OrderedDict()
+
+    def allow(self, key: str, now: Optional[float] = None) -> bool:
+        if not isinstance(key, str) or not key:
+            raise ValueError("rate-limit key must be a non-empty string")
+        current = time.monotonic() if now is None else float(now)
+        cutoff = current - self.window_seconds
         with self._lock:
-            ts_list = self._buckets.get(key, [])
-            cutoff = now - self.window_seconds
-            ts_list = [t for t in ts_list if t > cutoff]
-            if len(ts_list) >= self.max_requests:
-                self._buckets[key] = ts_list
+            timestamps = self._buckets.get(key)
+            if timestamps is None:
+                if len(self._buckets) >= self.max_keys:
+                    self._buckets.popitem(last=False)
+                timestamps = deque()
+                self._buckets[key] = timestamps
+            else:
+                self._buckets.move_to_end(key)
+
+            while timestamps and timestamps[0] <= cutoff:
+                timestamps.popleft()
+            if len(timestamps) >= self.max_requests:
                 return False
-            ts_list.append(now)
-            self._buckets[key] = ts_list
+            timestamps.append(current)
             return True
+
+    @property
+    def tracked_keys(self) -> int:
+        with self._lock:
+            return len(self._buckets)
 
 
 class ConnectionTracker:
-    def __init__(self, max_connections: int = 1000, timeout: int = 300):
-        self.max_connections = max_connections
-        self.timeout = timeout
-        self._lock = Lock()
-        self._table: dict = {}
-        self._order: list = []
+    """Bounded LRU-style source tracker; refreshes move entries to the newest end."""
 
-    def check(self, ip_int: int, now: int = None) -> bool:
-        if now is None:
-            now = int(time.time())
+    def __init__(self, max_connections: int = 1000, timeout: int = 300):
+        if max_connections < 1:
+            raise ValueError("max_connections must be at least 1")
+        if timeout < 1:
+            raise ValueError("timeout must be at least 1 second")
+        self.max_connections = int(max_connections)
+        self.timeout = int(timeout)
+        self._lock = threading.Lock()
+        self._table: OrderedDict[object, tuple[float, int]] = OrderedDict()
+
+    def check(self, ip_int: object, now: Optional[float] = None) -> bool:
+        current = time.monotonic() if now is None else float(now)
         with self._lock:
             entry = self._table.get(ip_int)
-            if entry is not None:
-                ts, count = entry
-                if now - ts > self.timeout:
-                    self._table[ip_int] = (now, 1)
-                    return True
-                self._table[ip_int] = (now, count + 1)
+            if entry is not None and current - entry[0] <= self.timeout:
+                self._table[ip_int] = (current, entry[1] + 1)
+                self._table.move_to_end(ip_int)
                 return True
+            if entry is not None:
+                del self._table[ip_int]
             if len(self._table) >= self.max_connections:
-                oldest = self._order.pop(0)
-                del self._table[oldest]
-            self._table[ip_int] = (now, 1)
-            self._order.append(ip_int)
+                self._table.popitem(last=False)
+            self._table[ip_int] = (current, 1)
             return True
+
+    @property
+    def size(self) -> int:
+        with self._lock:
+            return len(self._table)
 
 
 class FirewallNetwork:
     def __init__(
         self,
-        allowlist: Optional[List[str]] = None,
-        denylist: Optional[List[str]] = None,
+        allowlist: Optional[list[str]] = None,
+        denylist: Optional[list[str]] = None,
+        allowlist_enabled: Optional[bool] = None,
+        denylist_enabled: Optional[bool] = None,
         max_connections: int = 1000,
         rate_limit_max: int = 100,
         rate_window_seconds: float = 60.0,
+        rate_limit_enabled: bool = True,
+        rate_limit: Optional[dict] = None,
         block_duration_seconds: int = 300,
-        knock_ports: Optional[List[int]] = None,
+        knock_ports: Optional[list[int]] = None,
         knock_window_ms: int = 5000,
         geoip_enabled: bool = False,
         geoip_db_path: Optional[str] = None,
         **kwargs,
     ):
-        self._allowlist = [self._parse_cidr(c) for c in (allowlist or [])]
-        self._denylist = [self._parse_cidr(c) for c in (denylist or [])]
-        self._allowlist_enabled = bool(allowlist) if allowlist is not None else False
-        self._denylist_enabled = bool(denylist) if denylist is not None else False
+        rate_config = rate_limit or {}
+        rate_limit_max = rate_config.get("max_requests", rate_limit_max)
+        rate_window_seconds = rate_config.get("window_seconds", rate_window_seconds)
+        rate_limit_enabled = rate_config.get("enabled", rate_limit_enabled)
+
+        self._allowlist = [self._parse_cidr(item) for item in (allowlist or [])]
+        self._denylist = [self._parse_cidr(item) for item in (denylist or [])]
+        self._allowlist_enabled = (
+            bool(allowlist) if allowlist_enabled is None else bool(allowlist_enabled)
+        )
+        self._denylist_enabled = (
+            bool(denylist) if denylist_enabled is None else bool(denylist_enabled)
+        )
+        self._rate_limit_enabled = bool(rate_limit_enabled)
         self._rate_limiter = SlidingWindowCounter(rate_limit_max, rate_window_seconds)
         self._conn_tracker = ConnectionTracker(max_connections, block_duration_seconds)
-        self._blocked_ips: dict = {}
-        self._block_duration = block_duration_seconds
-        self._knock_ports = knock_ports or []
-        self._knock_window_ns = knock_window_ms * 1_000_000
-        self._knock_state: dict = {}
-        self._geoip_enabled = geoip_enabled
-        self._geoip_reader = None
-        self._asm_ip_match = None
-        self._asm_conn_track = None
-        self._asm_rate_check = None
-        if _HAS_FW_ASM and _FW_DLL is not None:
-            try:
-                self._asm_ip_match = _FW_DLL.firewall_ip_match
-                self._asm_ip_match.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ubyte]
-                self._asm_ip_match.restype = ctypes.c_bool
-            except AttributeError:
-                self._asm_ip_match = None
+        self._blocked_ips: Dict[str, float] = {}
+        self._block_duration = int(block_duration_seconds)
+        if self._block_duration < 1:
+            raise ValueError("block_duration_seconds must be at least 1")
+        self._state_lock = threading.Lock()
+        self._knock_ports = list(knock_ports or [])
+        if any(not isinstance(port, int) or not 1 <= port <= 65535 for port in self._knock_ports):
+            raise ValueError("knock_ports must contain valid TCP/UDP port numbers")
+        self._knock_window_ns = int(knock_window_ms) * 1_000_000
+        if self._knock_window_ns < 1:
+            raise ValueError("knock_window_ms must be greater than 0")
+        self._knock_state: Dict[str, float] = {}
+        self._geoip_enabled = bool(geoip_enabled)
+        self._geoip_db_path = geoip_db_path
 
     @staticmethod
     def _parse_cidr(text: str) -> CidrRule:
-        if text.startswith("+"):
-            return CidrRule(ipaddress.IPv4Network(text[1:]), allow=True)
-        if text.startswith("-"):
-            return CidrRule(ipaddress.IPv4Network(text[1:]), allow=False)
-        return CidrRule(ipaddress.IPv4Network(text), allow=True)
+        if not isinstance(text, str) or not text:
+            raise ValueError("CIDR rule must be a non-empty string")
+        allow = True
+        value = text
+        if value.startswith("+"):
+            value = value[1:]
+        elif value.startswith("-"):
+            value = value[1:]
+            allow = False
+        try:
+            network = ipaddress.ip_network(value, strict=False)
+        except ValueError as exc:
+            raise ValueError(f"invalid CIDR rule {text!r}: {exc}") from exc
+        return CidrRule(network=network, allow=allow)
+
+    @staticmethod
+    def _parse_ip(ip_str: str) -> IPAddress:
+        if not isinstance(ip_str, str) or not ip_str:
+            raise ValueError("client IP must be a non-empty string")
+        try:
+            return ipaddress.ip_address(ip_str.strip())
+        except ValueError as exc:
+            raise ValueError(f"invalid client IP: {ip_str!r}") from exc
 
     @staticmethod
     def _ip_to_int(ip_str: str) -> int:
-        return int(ipaddress.IPv4Address(ip_str))
+        """Backward-compatible IPv4 integer conversion."""
+        address = FirewallNetwork._parse_ip(ip_str)
+        if address.version != 4:
+            raise ValueError("IPv4 address required")
+        return int(address)
 
-    def _check_allowlist(self, ip_int: int) -> Optional[FirewallResult]:
+    def _check_allowlist(self, address: IPAddress) -> Optional[FirewallResult]:
         if not self._allowlist_enabled:
             return None
-        ip_str = str(ipaddress.IPv4Address(ip_int))
-        for rule in self._allowlist:
-            if ipaddress.IPv4Address(ip_str) in rule.network:
-                return None
-        return FirewallResult(allowed=False, status_code=403, reason="IP not in allowlist", ring=2)
+        if any(address.version == rule.network.version and address in rule.network for rule in self._allowlist):
+            return None
+        return FirewallResult(False, 403, "IP not in allowlist", 2)
 
-    def _check_denylist(self, ip_int: int) -> Optional[FirewallResult]:
+    def _check_denylist(self, address: IPAddress) -> Optional[FirewallResult]:
         if not self._denylist_enabled:
             return None
-        ip_str = str(ipaddress.IPv4Address(ip_int))
-        for rule in self._denylist:
-            if ipaddress.IPv4Address(ip_str) in rule.network:
-                return FirewallResult(allowed=False, status_code=403, reason="IP in denylist", ring=2)
+        if any(address.version == rule.network.version and address in rule.network for rule in self._denylist):
+            return FirewallResult(False, 403, "IP in denylist", 2)
         return None
 
-    def _check_blocked(self, ip_int: int, now: float) -> Optional[FirewallResult]:
-        expiry = self._blocked_ips.get(ip_int)
-        if expiry is not None:
+    def _check_blocked(self, key: str, now: float) -> Optional[FirewallResult]:
+        with self._state_lock:
+            expiry = self._blocked_ips.get(key)
+            if expiry is None:
+                return None
             if now < expiry:
-                return FirewallResult(allowed=False, status_code=429, reason="IP temporarily blocked", ring=2)
-            del self._blocked_ips[ip_int]
+                return FirewallResult(False, 429, "IP temporarily blocked", 2)
+            del self._blocked_ips[key]
         return None
 
     def _check_rate_limit(self, ip_str: str) -> Optional[FirewallResult]:
-        if not self._rate_limiter.allow(ip_str):
-            now = time.time()
-            self._blocked_ips[self._ip_to_int(ip_str)] = now + self._block_duration
-            return FirewallResult(allowed=False, status_code=429, reason="rate limit exceeded", ring=2)
-        return None
-
-    def _check_connection_tracker(self, ip_int: int) -> Optional[FirewallResult]:
-        self._conn_tracker.check(ip_int)
-        return None
+        if not self._rate_limit_enabled or self._rate_limiter.allow(ip_str):
+            return None
+        with self._state_lock:
+            self._blocked_ips[ip_str] = time.monotonic() + self._block_duration
+        return FirewallResult(False, 429, "rate limit exceeded", 2)
 
     def _check_port_knock(self, ip_str: str, knock_header: str) -> Optional[FirewallResult]:
+        # This legacy header-based mechanism is compatibility-only. HTTP headers
+        # are client-controlled and must never be treated as network-layer proof.
         if not self._knock_ports:
             return None
-        ports = [int(p.strip()) for p in knock_header.split(",") if p.strip().isdigit()]
-        if ports == self._knock_ports:
-            self._knock_state[ip_str] = time.time()
-            return None
-        return FirewallResult(allowed=False, status_code=401, reason="invalid port knock sequence", ring=2)
+        return FirewallResult(
+            False, 501,
+            "port-knock enforcement requires trusted packet metadata; HTTP headers are not trusted",
+            2,
+        )
 
     def _check_geoip(self, ip_str: str) -> Optional[FirewallResult]:
         if not self._geoip_enabled:
             return None
-        return None
+        # No GeoIP provider is currently wired into this module. Never silently
+        # report a pass when an operator has explicitly enabled this control.
+        return FirewallResult(
+            False, 503,
+            "GeoIP enforcement is enabled but no verified GeoIP provider is configured",
+            2,
+        )
 
-    def check_request(self, client_ip: str, now: float = None, knock_header: str = "") -> FirewallResult:
-        if now is None:
-            now = time.time()
+    def check_request(
+        self,
+        client_ip: str,
+        now: Optional[float] = None,
+        knock_header: str = "",
+    ) -> FirewallResult:
+        current = time.monotonic() if now is None else float(now)
         try:
-            ip_int = self._ip_to_int(client_ip)
+            address = self._parse_ip(client_ip)
         except ValueError:
-            return FirewallResult(allowed=False, status_code=400, reason="invalid client IP", ring=2)
+            return FirewallResult(False, 400, "invalid client IP", 2)
+        key = str(address)
 
-        result = self._check_blocked(ip_int, now)
+        result = self._check_blocked(key, current)
         if result is not None:
             return result
-        result = self._check_allowlist(ip_int)
+        # Deny rules always override allow rules, independent of input order.
+        result = self._check_denylist(address)
         if result is not None:
             return result
-        result = self._check_denylist(ip_int)
+        result = self._check_allowlist(address)
         if result is not None:
             return result
         if self._knock_ports:
-            result = self._check_port_knock(client_ip, knock_header)
+            result = self._check_port_knock(key, knock_header)
             if result is not None:
                 return result
-        result = self._check_rate_limit(client_ip)
+        result = self._check_rate_limit(key)
         if result is not None:
             return result
-        result = self._check_geoip(client_ip)
+        result = self._check_geoip(key)
         if result is not None:
             return result
-        self._check_connection_tracker(ip_int)
-        return FirewallResult(allowed=True)
+        self._conn_tracker.check(key, current)
+        return FirewallResult(True)
 
     @property
     def summary(self) -> dict:
+        with self._state_lock:
+            blocked_count = len(self._blocked_ips)
         return {
-            "allowlist": [str(r.network) for r in self._allowlist],
-            "denylist": [str(r.network) for r in self._denylist],
-            "blocked_ips": len(self._blocked_ips),
+            "allowlist": [str(rule.network) for rule in self._allowlist],
+            "denylist": [str(rule.network) for rule in self._denylist],
+            "allowlist_enabled": self._allowlist_enabled,
+            "denylist_enabled": self._denylist_enabled,
+            "blocked_ips": blocked_count,
+            "rate_limit_enabled": self._rate_limit_enabled,
             "rate_limit_max": self._rate_limiter.max_requests,
             "rate_window_seconds": self._rate_limiter.window_seconds,
-            "knock_ports": self._knock_ports,
-            "has_asm": _HAS_FW_ASM,
+            "tracked_rate_limit_keys": self._rate_limiter.tracked_keys,
+            "tracked_connections": self._conn_tracker.size,
+            "knock_ports": list(self._knock_ports),
+            "geoip_enabled": self._geoip_enabled,
         }
