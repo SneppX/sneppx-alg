@@ -171,3 +171,14 @@ target_include_directories(test_object_pool_native PRIVATE
 )
 target_compile_features(test_object_pool_native PRIVATE c_std_11)
 add_test(NAME object_pool_native COMMAND test_object_pool_native)
+
+# Real tensor API fuzz target. The native driver runs deterministic seeds
+# under CTest; LLVMFuzzerTestOneInput can also be linked with libFuzzer.
+add_executable(test_fuzz_tensor_native ../tests/fuzz/fuzz_tensor.c)
+target_link_libraries(test_fuzz_tensor_native PRIVATE neural_core_kernel)
+target_include_directories(test_fuzz_tensor_native PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
+)
+target_compile_features(test_fuzz_tensor_native PRIVATE c_std_11)
+add_test(NAME fuzz_tensor_native COMMAND test_fuzz_tensor_native)
