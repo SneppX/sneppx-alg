@@ -78,6 +78,45 @@ static void test_self_audit_run(void) {
     SNEPPX_self_audit_destroy(&audit);
 }
 
+static void test_self_audit_export_validation(void) {
+    SNEPPXSelfAudit audit;
+    char report_path[] = "self_audit_export_test.txt";
+    char report[2048];
+    FILE* file;
+    size_t bytes;
+
+    SX_ASSERT(SNEPPX_self_audit_init(&audit) == 0, "audit export init");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "crypto_export", SNEPPX_AUDIT_WARN,
+                                         "runtime verification pending") == 0,
+              "audit export check setup");
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == 0,
+              "valid audit export succeeds");
+    file = fopen(report_path, "r");
+    SX_ASSERT(file != NULL, "audit report can be opened");
+    if (file) {
+        bytes = fread(report, 1, sizeof(report) - 1, file);
+        report[bytes] = '\0';
+        fclose(file);
+        SX_ASSERT(strstr(report, "[WARN] crypto_export: runtime verification pending") != NULL,
+                  "audit report includes check details");
+        SX_ASSERT(strstr(report, "Summary: 0 passed, 0 failed, 1 warnings") != NULL,
+                  "audit report includes summary");
+    }
+    remove(report_path);
+
+    audit.check_count = -1;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "negative check count is rejected");
+    audit.check_count = SNEPPX_AUDIT_MAX_CHECKS + 1;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "oversized check count is rejected");
+    audit.check_count = 1;
+    memset(audit.checks[0].check_name, 'A', sizeof(audit.checks[0].check_name));
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "unterminated check name is rejected");
+    SNEPPX_self_audit_destroy(&audit);
+}
+
 static void test_self_audit_add_check_validation(void) {
     SNEPPXSelfAudit audit;
     SNEPPX_self_audit_init(&audit);
@@ -235,6 +274,7 @@ TEST(test_s8_s9, model_invariant) { test_model_invariant(); }
 TEST(test_s8_s9, self_audit_init) { test_self_audit_init(); }
 TEST(test_s8_s9, self_audit_run) { test_self_audit_run(); }
 TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }
+TEST(test_s8_s9, self_audit_export_validation) { test_self_audit_export_validation(); }
 TEST(test_s8_s9, tla_parse) { test_tla_parse(); }
 TEST(test_s8_s9, ltl_init_check) { test_ltl_init_check(); }
 TEST(test_s8_s9, symex_init_explore) { test_symex_init_explore(); }
