@@ -242,34 +242,51 @@ void sneppx_checkpoint_destroy(SNEPPX_CheckpointCoord* cp) {
     free(cp);
 }
 
-static void sneppx_build_checkpoint_path(SNEPPX_CheckpointCoord* cp,
-                                          int step, char* path, size_t path_size) {
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
-    snprintf(path, path_size, "%s/checkpoint_%d_rank_%d.sneppx",
-             ckpt->checkpoint_dir, step, cp->rank);
+static int sneppx_build_checkpoint_path(SNEPPX_CheckpointCoord* cp,
+                                         int step, char* path, size_t path_size) {
+    struct SNEPPXCkptAsync* ckpt;
+    int length;
+    if (!cp || !path || path_size == 0 || !cp->_async_state || step < 0)
+        return -1;
+    ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
+    length = snprintf(path, path_size, "%s/checkpoint_%d_rank_%d.sneppx",
+                      ckpt->checkpoint_dir, step, cp->rank);
+    return length < 0 || (size_t)length >= path_size ? -1 : 0;
 }
 
 int sneppx_checkpoint_save(SNEPPX_CheckpointCoord* cp,
                             const void* model_state, size_t state_size,
                             int current_step, cudaStream_t stream) {
-    if (!cp || !model_state) return -1;
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
-    if (!ckpt) return -1;
+    struct SNEPPXCkptAsync* ckpt;
+    SNEPPXCkptBuffer* buf;
+    cudaStream_t transfer_stream;
+    cudaError_t cuda_status;
+    char path[512];
+    int buf_idx;
+    int write_status;
 
-    ckpt->current_step = current_step;
+    if (!cp || !model_state || state_size == 0 || current_step < 0 ||
+        !cp->_async_state) return -1;
+    ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
+    if (ckpt->save_interval_steps <= 0) return -1;
     if (current_step % ckpt->save_interval_steps != 0) return 0;
 
-    /* Wait for previous save to finish */
+    /* Finish any earlier transfer before reusing its host buffer. */
     if (ckpt->io_pending) {
-        cudaStreamSynchronize(ckpt->save_stream);
+        cuda_status = cudaStreamSynchronize(ckpt->save_stream);
+        if (cuda_status != cudaSuccess) return -1;
+        if (ckpt->save_idx < 0 || ckpt->save_idx >= SNEPPX_CKPT_NUM_BUFFERS)
+            return -1;
         ckpt->buffers[ckpt->save_idx].in_use = 0;
         ckpt->io_pending = 0;
+        ckpt->save_idx = -1;
     }
 
-    int buf_idx = ckpt->write_idx;
-    SNEPPXCkptBuffer* buf = &ckpt->buffers[buf_idx];
+    buf_idx = ckpt->write_idx;
+    if (buf_idx < 0 || buf_idx >= SNEPPX_CKPT_NUM_BUFFERS) return -1;
+    buf = &ckpt->buffers[buf_idx];
+    if (buf->in_use) return -1;
 
-    /* Allocate host buffer if needed */
     if (!buf->host_buffer || buf->host_capacity < state_size) {
         char* new_buf = (char*)realloc(buf->host_buffer, state_size);
         if (!new_buf) return -1;
@@ -277,31 +294,33 @@ int sneppx_checkpoint_save(SNEPPX_CheckpointCoord* cp,
         buf->host_capacity = state_size;
     }
 
-    /* Async D2D copy via temporary device buffer, then D2H */
-    void* d_tmp = NULL;
-    cudaError_t err = cudaMalloc(&d_tmp, state_size);
-    if (err != cudaSuccess) return -1;
-    cudaMemcpyAsync(d_tmp, model_state, state_size,
-                    cudaMemcpyDeviceToDevice, ckpt->copy_stream);
-    cudaMemcpyAsync(buf->host_buffer, d_tmp, state_size,
-                    cudaMemcpyDeviceToHost, ckpt->copy_stream);
-    cudaEventRecord(buf->copy_event, ckpt->copy_stream);
-    cudaStreamWaitEvent(ckpt->save_stream, buf->copy_event, 0);
-    cudaFree(d_tmp);
+    /* Use the caller's stream when supplied; otherwise use the owned stream. */
+    transfer_stream = stream ? stream : ckpt->copy_stream;
+    cuda_status = cudaMemcpyAsync(buf->host_buffer, model_state, state_size,
+                                  cudaMemcpyDeviceToHost, transfer_stream);
+    if (cuda_status != cudaSuccess) return -1;
+    cuda_status = cudaStreamSynchronize(transfer_stream);
+    if (cuda_status != cudaSuccess) return -1;
 
-    /* Build path */
-    char path[512];
-    sneppx_build_checkpoint_path(cp, current_step, path, sizeof(path));
+    if (sneppx_build_checkpoint_path(cp, current_step, path, sizeof(path)) != 0)
+        return -1;
 
-    /* Sync save stream, then write to disk */
-    cudaStreamSynchronize(ckpt->save_stream);
-    snepx_ckpt_write_file(path, buf->host_buffer, state_size, current_step);
+    write_status = snepx_ckpt_write_file(path, buf->host_buffer,
+                                         state_size, current_step);
+    if (write_status != 0) return -1;
 
-    strncpy(ckpt->last_checkpoint_path, path, 511);
+    /* Publish success only after the complete checkpoint is on disk. */
+    if (snprintf(ckpt->last_checkpoint_path,
+                 sizeof(ckpt->last_checkpoint_path), "%s", path) >=
+        (int)sizeof(ckpt->last_checkpoint_path)) return -1;
+    if (snprintf(cp->last_checkpoint_path,
+                 sizeof(cp->last_checkpoint_path), "%s", path) >=
+        (int)sizeof(cp->last_checkpoint_path)) return -1;
+    ckpt->current_step = current_step;
+    cp->current_step = current_step;
     ckpt->write_idx = (ckpt->write_idx + 1) % SNEPPX_CKPT_NUM_BUFFERS;
     buf->in_use = 0;
 
-    cp->current_step = current_step;
     if (cp->rank == 0)
         printf("[SNEPPX Checkpoint] Saved to %s (step %d)\n", path, current_step);
     return 0;
@@ -404,10 +423,11 @@ int sneppx_checkpoint_coordinated_save(SNEPPX_CheckpointCoord* cp,
                                          const void* model_state, size_t state_size,
                                          int current_step, cudaStream_t stream,
                                          int (*barrier_fn)(void)) {
+    int ret;
     if (!cp || !model_state) return -1;
-    if (barrier_fn) barrier_fn();
-    int ret = sneppx_checkpoint_save(cp, model_state, state_size, current_step, stream);
-    if (barrier_fn) barrier_fn();
+    if (barrier_fn && barrier_fn() != 0) return -1;
+    ret = sneppx_checkpoint_save(cp, model_state, state_size, current_step, stream);
+    if (barrier_fn && barrier_fn() != 0) return -1;
     return ret;
 }
 
