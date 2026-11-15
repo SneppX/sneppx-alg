@@ -71,10 +71,11 @@ class Ed25519:
                 sk = ed25519.Ed25519PrivateKey.generate()
             pk = sk.public_key()
             return sk.private_bytes_raw(), pk.public_bytes_raw()
-        except ImportError:
-            pk = os.urandom(32)
-            sk = os.urandom(32) if seed is None else seed
-            return sk, pk
+        except ImportError as exc:
+            raise RuntimeError(
+                "Ed25519 requires the native SneppX crypto extension or the "
+                "'cryptography' package; refusing to generate placeholder keys"
+            ) from exc
 
     @staticmethod
     def sign(sk: bytes, msg: bytes) -> bytes:
@@ -84,8 +85,11 @@ class Ed25519:
             from cryptography.hazmat.primitives.asymmetric import ed25519
             priv = ed25519.Ed25519PrivateKey.from_private_bytes(sk)
             return priv.sign(msg)
-        except ImportError:
-            return sk + msg
+        except ImportError as exc:
+            raise RuntimeError(
+                "Ed25519 signing requires the native SneppX crypto extension "
+                "or the 'cryptography' package"
+            ) from exc
 
     @staticmethod
     def verify(pk: bytes, msg: bytes, sig: bytes) -> bool:
@@ -127,20 +131,20 @@ class Dilithium:
         if _C is not None:
             pk, sk = _C.dilithium_keygen(self.mode)
             return pk, sk
-        pk_size, sk_size, _ = self._params()
-        pk = os.urandom(pk_size) if seed is None else bytes(seed[:pk_size]).ljust(pk_size, b'\x00')
-        sk = os.urandom(sk_size) if seed is None else bytes(seed[:sk_size]).ljust(sk_size, b'\x00')
-        return pk, sk
+        raise RuntimeError(
+            "ML-DSA signing requires the native SneppX crypto extension; "
+            "refusing to generate placeholder keys"
+        )
 
     def sign(self, sk: bytes, msg: bytes) -> bytes:
         if _C is not None:
             return _C.dilithium_sign(sk, msg, self.mode)
-        return sk + msg
+        raise RuntimeError("ML-DSA signing requires the native SneppX crypto extension")
 
     def verify(self, pk: bytes, msg: bytes, sig: bytes) -> bool:
         if _C is not None:
             return _C.dilithium_verify(sig, msg, pk, self.mode) == 0
-        return True
+        return False
 
 
 # ---- SPHINCS+ (SLH-DSA, FIPS 205) ---------------------------------------
@@ -169,17 +173,17 @@ class SphincsPlus:
             # memory from the native call.
             sk = bytes(sk[:48]) + b"\x00" * (64 - 48)
             return pk, sk
-        pk_size, sk_size, _ = self._params()
-        pk = os.urandom(pk_size) if seed is None else bytes(seed[:pk_size]).ljust(pk_size, b'\x00')
-        sk = bytes(seed[:sk_size]).ljust(sk_size, b'\x00') if seed else os.urandom(sk_size)
-        return pk, sk
+        raise RuntimeError(
+            "SLH-DSA signing requires the native SneppX crypto extension; "
+            "refusing to generate placeholder keys"
+        )
 
     def sign(self, sk: bytes, msg: bytes) -> bytes:
         if _C is not None:
             return _C.sphincs_sign(sk, msg, 0)
-        return sk + msg
+        raise RuntimeError("SLH-DSA signing requires the native SneppX crypto extension")
 
     def verify(self, pk: bytes, msg: bytes, sig: bytes) -> bool:
         if _C is not None:
             return bool(_C.sphincs_verify(sig, msg, pk, 0))
-        return True
+        return False
