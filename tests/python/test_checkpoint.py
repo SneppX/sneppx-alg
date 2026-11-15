@@ -1,4 +1,5 @@
 import sys, os, time, json, struct, tempfile, threading, math
+import pytest
 
 _base = (
     os.path.dirname(os.path.abspath(__file__))
@@ -22,6 +23,7 @@ from SneppX_ALG.interface_bindings.checkpoint import (
     SNEPPX_CKPT_MAGIC_HI,
     SNEPPX_CKPT_VERSION,
     CHECKPOINT_HEADER_SIZE,
+    CHECKPOINT_HEADER_FMT,
     TENSOR_RECORD_SIZE,
 )
 from SneppX_ALG.interface_bindings.crypto_sign import Ed25519
@@ -390,3 +392,71 @@ if __name__ == "__main__":
     print(
         f"\n{'All checkpoint tests passed!' if not failed else f'{len(failed)} failures: {failed}'}"
     )
+
+
+def test_reader_rejects_truncated_header():
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+        f.write(b"short")
+    try:
+        with pytest.raises(ValueError, match="Truncated checkpoint header"):
+            CheckpointReader(path)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_reader_rejects_impossible_tensor_count():
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+        f.write(struct.pack(
+            CHECKPOINT_HEADER_FMT,
+            SNEPPX_CKPT_MAGIC,
+            SNEPPX_CKPT_MAGIC_HI,
+            SNEPPX_CKPT_VERSION,
+            0xFFFFFFFF,
+            CHECKPOINT_HEADER_SIZE,
+            0,
+            CHECKPOINT_HEADER_SIZE,
+        ))
+    try:
+        with pytest.raises(ValueError, match="record table exceeds file size"):
+            CheckpointReader(path)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_reader_rejects_out_of_bounds_tensor_record():
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        writer = CheckpointWriter(path)
+        writer.write_tensor(b"abc", shape=(3,), dtype=0)
+        writer.close()
+        with open(path, "r+b") as file:
+            data_offset_field = CHECKPOINT_HEADER_SIZE + 8 * 8 + 2 * 4
+            file.seek(data_offset_field)
+            file.write(struct.pack("<Q", os.path.getsize(path) + 16))
+        with pytest.raises(ValueError, match="Invalid tensor data offset"):
+            CheckpointReader(path)
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)
+
+
+def test_reader_preserves_zero_sized_dimensions():
+    with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
+        path = f.name
+    try:
+        writer = CheckpointWriter(path)
+        writer.write_tensor(b"", shape=(0, 3), dtype=0)
+        writer.close()
+        reader = CheckpointReader(path)
+        assert reader.records[0].shape == (0, 3)
+        assert reader.records[0].ndim == 2
+        assert reader.records[0].strides == ()
+        reader.close()
+    finally:
+        if os.path.exists(path):
+            os.unlink(path)

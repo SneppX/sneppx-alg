@@ -97,11 +97,13 @@ def _pack_tensor_record(r: TensorRecord) -> bytes:
 
 def _unpack_tensor_record(data: bytes, offset: int = 0) -> TensorRecord:
     vals = struct.unpack(TENSOR_RECORD_FMT, data[offset : offset + TENSOR_RECORD_SIZE])
-    shape = tuple(v for v in vals[:8] if v != 0)
-    strides = tuple(v for v in vals[12:] if v != 0)
+    ndim = vals[8]
+    shape = tuple(vals[:min(ndim, 8)])
+    stride_values = tuple(vals[12:12 + min(ndim, 8)])
+    strides = stride_values if any(stride_values) else ()
     return TensorRecord(
         shape=shape,
-        ndim=vals[8],
+        ndim=ndim,
         dtype=vals[9],
         data_offset=vals[10],
         data_size=vals[11],
@@ -196,26 +198,65 @@ class CheckpointReader:
     def __init__(self, path: str, trusted_public_key: Optional[bytes] = None):
         self.path = path
         self.file = open(path, "rb")
-        header_data = self.file.read(CHECKPOINT_HEADER_SIZE)
-        self.header = _unpack_header(header_data)
-        if (
-            self.header.magic_lo != SNEPPX_CKPT_MAGIC
-            or self.header.magic_hi != SNEPPX_CKPT_MAGIC_HI
-        ):
-            raise ValueError(f"Invalid checkpoint magic at {path}")
-        if self.header.version > SNEPPX_CKPT_VERSION:
-            raise ValueError(f"Unsupported version {self.header.version}")
-        self.records: List[TensorRecord] = []
-        for i in range(self.header.num_tensors):
-            rec_data = self.file.read(TENSOR_RECORD_SIZE)
-            if len(rec_data) < TENSOR_RECORD_SIZE:
-                raise ValueError(f"Truncated tensor record {i}")
-            rec = _unpack_tensor_record(rec_data, 0)
-            self.records.append(rec)
+        try:
+            file_size = os.fstat(self.file.fileno()).st_size
+            header_data = self.file.read(CHECKPOINT_HEADER_SIZE)
+            if len(header_data) != CHECKPOINT_HEADER_SIZE:
+                raise ValueError("Truncated checkpoint header")
+            self.header = _unpack_header(header_data)
+            if (
+                self.header.magic_lo != SNEPPX_CKPT_MAGIC
+                or self.header.magic_hi != SNEPPX_CKPT_MAGIC_HI
+            ):
+                raise ValueError(f"Invalid checkpoint magic at {path}")
+            if self.header.version != SNEPPX_CKPT_VERSION:
+                raise ValueError(f"Unsupported version {self.header.version}")
+            if self.header.total_size != file_size:
+                raise ValueError("Checkpoint total_size does not match file size")
 
-        self.trusted_public_key = trusted_public_key
-        self.verified = False
-        self._verify_integrity()
+            records_end = CHECKPOINT_HEADER_SIZE + self.header.num_tensors * TENSOR_RECORD_SIZE
+            if records_end > file_size:
+                raise ValueError("Checkpoint tensor record table exceeds file size")
+
+            if self.header.metadata_size:
+                if (
+                    self.header.metadata_offset < records_end
+                    or self.header.metadata_offset > file_size
+                    or self.header.metadata_size > file_size - self.header.metadata_offset
+                    or self.header.metadata_offset + self.header.metadata_size != file_size
+                ):
+                    raise ValueError("Checkpoint metadata region is out of bounds")
+                data_limit = self.header.metadata_offset
+            else:
+                if self.header.metadata_offset != file_size:
+                    raise ValueError("Checkpoint metadata offset is inconsistent")
+                data_limit = file_size
+
+            self.records: List[TensorRecord] = []
+            expected_data_offset = records_end
+            for i in range(self.header.num_tensors):
+                rec_data = self.file.read(TENSOR_RECORD_SIZE)
+                if len(rec_data) != TENSOR_RECORD_SIZE:
+                    raise ValueError(f"Truncated tensor record {i}")
+                rec = _unpack_tensor_record(rec_data, 0)
+                if rec.ndim > 8:
+                    raise ValueError(f"Invalid tensor rank in record {i}")
+                if rec.data_offset != expected_data_offset:
+                    raise ValueError(f"Invalid tensor data offset in record {i}")
+                if rec.data_size > data_limit - expected_data_offset:
+                    raise ValueError(f"Tensor data in record {i} exceeds data region")
+                expected_data_offset += rec.data_size
+                self.records.append(rec)
+
+            if expected_data_offset != data_limit:
+                raise ValueError("Checkpoint tensor data region has an invalid size")
+
+            self.trusted_public_key = trusted_public_key
+            self.verified = False
+            self._verify_integrity()
+        except Exception:
+            self.file.close()
+            raise
 
     def _verify_integrity(self) -> None:
         """Recompute BLAKE3 over the body and verify the embedded Ed25519
