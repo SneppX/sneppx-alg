@@ -103,12 +103,11 @@ class ModelConfig:
     custom: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary, excluding empty/zero values."""
-        return {
-            k: v
-            for k, v in asdict(self).items()
-            if v not in ("", 0, 0.0, False, None, {})
-        }
+        """Convert to a lossless dictionary representation."""
+        # False and zero are meaningful configuration values. Filtering them
+        # out makes JSON round-trips silently restore dataclass defaults, which
+        # can invert feature flags or change numeric settings.
+        return asdict(self)
 
     def to_json(self, pretty: bool = True) -> str:
         """Serialize to JSON string."""

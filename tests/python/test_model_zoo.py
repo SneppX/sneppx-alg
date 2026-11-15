@@ -333,6 +333,38 @@ def test_model_config_c_round_trip():
 
 
 
+def test_model_config_json_round_trip_preserves_false_and_zero():
+    """Serialization must preserve explicit false and zero configuration values."""
+    original = ModelConfig(
+        name="lossless-round-trip",
+        hidden_size=128,
+        num_layers=2,
+        num_attention_heads=4,
+        vocab_size=256,
+        use_rms_norm=False,
+        gated_ffn=False,
+        use_flash_attention=False,
+        tie_word_embeddings=False,
+        mixed_precision=False,
+        layer_norm_eps=0.0,
+        rope_theta=0.0,
+        attention_dropout=0.0,
+        custom={"enabled": False, "threshold": 0},
+    )
+
+    restored = ModelConfig.from_json(original.to_json())
+    assert restored == original
+    assert restored.use_flash_attention is False
+    assert restored.mixed_precision is False
+    assert restored.layer_norm_eps == 0.0
+    assert restored.rope_theta == 0.0
+
+    with tempfile.TemporaryDirectory() as directory:
+        path = os.path.join(directory, "model-config.json")
+        original.save(path)
+        assert ModelConfig.load(path) == original
+
+
 def test_dataclass_defaults():
     lc = LlamaConfig()
     check("LlamaConfig default hidden", lc.hidden_size == 4096)
