@@ -112,29 +112,49 @@ def all_reduce(tensor: Tensor, op="sum") -> Tensor:
 
 
 class DistributedSampler:
-    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True):
+    """Deterministic, evenly sized dataset shards for distributed ranks.
+
+    By default, the sampler pads a short final shard by repeating initial
+    indices so every rank receives the same number of samples. Set
+    ``drop_last=True`` to discard the incomplete tail instead.
+    """
+
+    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True,
+                 drop_last=False):
         self.dataset = dataset
-        self.num_replicas = num_replicas or get_world_size()
-        self.rank = rank or get_rank()
-        self.shuffle = shuffle
+        self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
+        self.rank = get_rank() if rank is None else int(rank)
+        if self.num_replicas < 1:
+            raise ValueError("num_replicas must be >= 1")
+        if self.rank < 0 or self.rank >= self.num_replicas:
+            raise ValueError("rank must be in [0, num_replicas)")
+        self.shuffle = bool(shuffle)
+        self.drop_last = bool(drop_last)
         self.epoch = 0
         total = len(dataset)
-        self.num_samples = total // self.num_replicas
+        if self.drop_last:
+            self.num_samples = total // self.num_replicas
+        else:
+            self.num_samples = (total + self.num_replicas - 1) // self.num_replicas
         self.total_size = self.num_samples * self.num_replicas
+
+    def set_epoch(self, epoch):
+        self.epoch = int(epoch)
 
     def __iter__(self):
         indices = list(range(len(self.dataset)))
         if self.shuffle:
             np.random.RandomState(self.epoch).shuffle(indices)
-        indices = indices[: self.total_size]
-        indices = indices[self.rank : self.total_size : self.num_replicas]
-        return iter(indices)
+        if self.drop_last:
+            indices = indices[:self.total_size]
+        elif self.total_size > len(indices) and indices:
+            padding = self.total_size - len(indices)
+            repeats = (padding + len(indices) - 1) // len(indices)
+            indices += (indices * repeats)[:padding]
+        return iter(indices[self.rank:self.total_size:self.num_replicas])
 
     def __len__(self):
         return self.num_samples
-
-    def set_epoch(self, epoch):
-        self.epoch = epoch
 
 
 class DistributedDataParallel(Module):

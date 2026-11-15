@@ -43,6 +43,7 @@ jobs:
             tests/python/test_hf_integration.py \
             tests/python/test_model_zoo.py \
             tests/python/test_data_loader.py \
+            tests/python/test_distributed_sampler_contract.py \
             tests/python/test_tokenizer.py \
             tests/python/test_tensor.py \
             tests/python/test_nn.py \
