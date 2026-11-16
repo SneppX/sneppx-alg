@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-and-test:
-    name: \${{ matrix.label }} wheel and sdist
+    name: ${{ matrix.label }} wheel and sdist
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -41,8 +41,8 @@ jobs:
 
       - name: Build wheel and source distribution
         env:
-          PROJECT_PATH: \${{ matrix.project_path }}
-          BUILD_LABEL: \${{ matrix.label }}
+          PROJECT_PATH: ${{ matrix.project_path }}
+          BUILD_LABEL: ${{ matrix.label }}
         run: |
           set -euo pipefail
           DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
@@ -52,7 +52,7 @@ jobs:
 
       - name: Rebuild a wheel from the source distribution
         env:
-          BUILD_LABEL: \${{ matrix.label }}
+          BUILD_LABEL: ${{ matrix.label }}
         run: |
           set -euo pipefail
           DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
@@ -63,7 +63,7 @@ jobs:
 
       - name: Install each built wheel and run autograd regressions
         env:
-          BUILD_LABEL: \${{ matrix.label }}
+          BUILD_LABEL: ${{ matrix.label }}
         run: |
           set -euo pipefail
           DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
