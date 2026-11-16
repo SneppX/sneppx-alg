@@ -1,0 +1,81 @@
+name: Python package artifact validation
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: \${{ matrix.label }} wheel and sdist
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: repository-root
+            project_path: .
+          - label: python-bindings
+            project_path: bindings/python
+    steps:
+      - name: Check out source
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+
+      - name: Install build and test tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build numpy pyyaml cryptography pytest
+
+      - name: Build wheel and source distribution
+        env:
+          PROJECT_PATH: \${{ matrix.project_path }}
+          BUILD_LABEL: \${{ matrix.label }}
+        run: |
+          set -euo pipefail
+          DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
+          mkdir -p "$DIST_DIR"
+          python -m build --sdist --wheel --outdir "$DIST_DIR" "$PROJECT_PATH"
+          find "$DIST_DIR" -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Rebuild a wheel from the source distribution
+        env:
+          BUILD_LABEL: \${{ matrix.label }}
+        run: |
+          set -euo pipefail
+          DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
+          SDIST="$(find "$DIST_DIR" -maxdepth 1 -name '*.tar.gz' -print -quit)"
+          test -n "$SDIST"
+          mkdir -p "$DIST_DIR/from-sdist"
+          python -m pip wheel --no-deps --wheel-dir "$DIST_DIR/from-sdist" "$SDIST"
+
+      - name: Install each built wheel and run autograd regressions
+        env:
+          BUILD_LABEL: \${{ matrix.label }}
+        run: |
+          set -euo pipefail
+          DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
+          VENV="$RUNNER_TEMP/venv-$BUILD_LABEL"
+          python -m venv "$VENV"
+          PY="$VENV/bin/python"
+          "$PY" -m pip install --upgrade pip
+          "$PY" -m pip install numpy pyyaml cryptography pytest
+
+          while IFS= read -r WHEEL; do
+            echo "Testing artifact: $WHEEL"
+            "$PY" -m pip install --force-reinstall --no-deps "$WHEEL"
+            "$PY" -c "import importlib.metadata as m, SneppX_ALG; print('version:', m.version('sneppx-alg')); print('import:', SneppX_ALG.__file__)"
+            "$PY" -m pytest tests/python/test_autograd_regressions.py -q -p no:cacheprovider
+          done < <(find "$DIST_DIR" -maxdepth 2 -name '*.whl' -type f | sort)
