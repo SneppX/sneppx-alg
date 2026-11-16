@@ -61,6 +61,41 @@ jobs:
           mkdir -p "$DIST_DIR/from-sdist"
           python -m pip wheel --no-deps --wheel-dir "$DIST_DIR/from-sdist" "$SDIST"
 
+      - name: Compare published PyPI 1.5.2 autograd source with the current bindings build
+        if: matrix.label == 'python-bindings'
+        run: |
+          set -euo pipefail
+          DIST_DIR="$RUNNER_TEMP/dist/python-bindings"
+          PYPI_DIR="$RUNNER_TEMP/pypi-1.5.2"
+          mkdir -p "$PYPI_DIR"
+          python -m pip download --no-deps --only-binary=:all: --dest "$PYPI_DIR" "sneppx-alg==1.5.2"
+          BUILT_WHEEL="$(find "$DIST_DIR" -maxdepth 1 -name '*.whl' -type f -print -quit)"
+          PYPI_WHEEL="$(find "$PYPI_DIR" -maxdepth 1 -name '*.whl' -type f -print -quit)"
+          test -n "$BUILT_WHEEL"
+          test -n "$PYPI_WHEEL"
+          python - "$BUILT_WHEEL" "$PYPI_WHEEL" <<'PY'
+          import difflib
+          import hashlib
+          import sys
+          import zipfile
+
+          member = "SneppX_ALG/interface_bindings/autograd_ops.py"
+          sources = {}
+          for label, wheel in (("current bindings build", sys.argv[1]), ("published PyPI 1.5.2", sys.argv[2])):
+              with zipfile.ZipFile(wheel) as archive:
+                  data = archive.read(member)
+              sources[label] = data
+              print(f"{label}: sha256={hashlib.sha256(data).hexdigest()} bytes={len(data)}")
+          if sources["current bindings build"] == sources["published PyPI 1.5.2"]:
+              print("RESULT: autograd_ops.py is byte-for-byte identical.")
+          else:
+              print("RESULT: published PyPI source differs from current bindings source.")
+              old = sources["published PyPI 1.5.2"].decode("utf-8", errors="replace").splitlines()
+              new = sources["current bindings build"].decode("utf-8", errors="replace").splitlines()
+              for line in list(difflib.unified_diff(old, new, fromfile="PyPI-1.5.2", tofile="current-bindings", lineterm=""))[:240]:
+                  print(line)
+          PY
+
       - name: Install each built wheel and run autograd regressions
         env:
           BUILD_LABEL: ${{ matrix.label }}
