@@ -129,7 +129,22 @@ markdown_extensions:
 nav:
     - Home: index.md
     - Playground: playground.md
-    - Cookbook: cookbook.md
+    - Cookbook:
+        - Overview: cookbook.md
+        - Cookbook Index: cookbook/index.md
+        - Tensors: cookbook/tensors.md
+        - Models & Layers: cookbook/models_layers.md
+        - Training: cookbook/training.md
+        - Optimizers: cookbook/optimizers.md
+        - Quantization: cookbook/quantization.md
+        - Distributed: cookbook/distributed.md
+        - Serving & Inference: cookbook/serving.md
+        - Data & Tokenization: cookbook/data_tokenization.md
+        - Security: cookbook/security.md
+        - Profiling: cookbook/profiling.md
+        - Checkpointing: cookbook/checkpointing.md
+        - Conversion/Plugins: cookbook/conversion.md
+        - Generation: cookbook/generation.md
     - Keyboard Shortcuts: keyboard-shortcuts.md
     - Your Progress: progress.md
     - Why SneppX-Alg: why-sneppx-alg.md
@@ -159,9 +174,13 @@ nav:
             - FM: walkthrough-fm.md
     - Security:
         - Security Overview: security.md
-        - Security Layers: security_layers.md
+        - Security Layers (S0-S9): security_layers.md
         - PQC Interoperability: pqc_kat.md
+        - Security Architecture: architecture/security_architecture_overview.md
         - Obfuscation Audit: security/obf_audit.md
+        - Threat Modeling: security/threat_modeling_overview.md
+        - Compliance: compliance/compliance_overview.md
+        - Incident Response: incident_response/ir_framework_overview.md
     - Framework Roadmap: roadmap/tensorflow-pytorch-parity.md
     - Tutorials:
         - Tutorial Index: tutorials/index.md
@@ -181,29 +200,8 @@ nav:
         - Python API (auto): api/autodoc.md
         - C API: api/c.md
         - Doxygen (C/C++): api/index.md
-    - Cookbook:
-        - Overview: cookbook/index.md
-        - Tensors: cookbook/tensors.md
-        - Models & Layers: cookbook/models_layers.md
-        - Training: cookbook/training.md
-        - Optimizers: cookbook/optimizers.md
-        - Quantization: cookbook/quantization.md
-        - Distributed: cookbook/distributed.md
-        - Serving & Inference: cookbook/serving.md
-        - Data & Tokenization: cookbook/data_tokenization.md
-        - Security: cookbook/security.md
-        - Profiling: cookbook/profiling.md
-        - Checkpointing: cookbook/checkpointing.md
-        - Conversion/Plugins: cookbook/conversion.md
-        - Generation: cookbook/generation.md
-    - Security:
-        - Security Overview: security.md
-        - Security Layers (S0-S9): security_layers.md
-        - Security Architecture: architecture/security_architecture_overview.md
-        - Obfuscation Audit: security/obf_audit.md
-        - Threat Modeling: security/threat_modeling_overview.md
-        - Compliance: compliance/compliance_overview.md
-        - Incident Response: incident_response/ir_framework_overview.md
+
+
     - Release Notes:
         - v1.5.2: release_notes/v1.5.2.md
         - v1.5.0: release_notes/v1.5.0.md
