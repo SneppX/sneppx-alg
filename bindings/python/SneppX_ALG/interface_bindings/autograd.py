@@ -386,6 +386,15 @@ def vjp(func, inputs, cotangent):
     if not isinstance(inputs, (list, tuple)):
         inputs = [inputs]
     outputs = func(*inputs)
+    if not isinstance(outputs, Tensor):
+        raise TypeError("vjp: func must return a Tensor.")
+    if not isinstance(cotangent, Tensor):
+        raise TypeError("vjp: cotangent must be a Tensor.")
+    if tuple(cotangent.shape) != tuple(outputs.shape):
+        raise ValueError(
+            "vjp: cotangent shape must match output shape; "
+            f"got {tuple(cotangent.shape)} for output {tuple(outputs.shape)}."
+        )
     inner = (outputs * cotangent).sum()
     grads = grad(inner, inputs)
     return outputs, grads
@@ -404,7 +413,22 @@ def jvp(func, inputs, tangents):
         inputs = [inputs]
     if not isinstance(tangents, (list, tuple)):
         tangents = [tangents]
+    if len(inputs) != len(tangents):
+        raise ValueError(
+            "jvp: inputs and tangents must contain the same number of tensors; "
+            f"got {len(inputs)} inputs and {len(tangents)} tangents."
+        )
+    for index, (inp, tangent) in enumerate(zip(inputs, tangents)):
+        if not isinstance(inp, Tensor) or not isinstance(tangent, Tensor):
+            raise TypeError(f"jvp: input {index} and its tangent must be Tensors.")
+        if tuple(inp.shape) != tuple(tangent.shape):
+            raise ValueError(
+                f"jvp: tangent {index} shape {tuple(tangent.shape)} does not "
+                f"match input shape {tuple(inp.shape)}."
+            )
     outputs = func(*inputs)
+    if not isinstance(outputs, Tensor):
+        raise TypeError("jvp: func must return a Tensor.")
     shape = tuple(outputs.shape)
     out_dtype = np.asarray(outputs.data).dtype
     jv = np.zeros(shape, dtype=out_dtype)

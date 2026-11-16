@@ -100,6 +100,50 @@ def test_jvp_chain_with_norm():
     )
 
 
+def test_vjp_scalar_output_accepts_scalar_cotangent():
+    source = Tensor([2.0, -3.0], requires_grad=True)
+
+    output, (result,) = vjp(lambda value: (value * value).sum(), [source], Tensor(2.0))
+
+    np.testing.assert_allclose(output.data, 13.0)
+    np.testing.assert_allclose(result.data, [8.0, -12.0])
+
+
+def test_vjp_rejects_cotangent_with_incompatible_shape():
+    source = Tensor([1.0, 2.0], requires_grad=True)
+
+    try:
+        vjp(lambda value: value * value, [source], Tensor(1.0))
+    except ValueError as exc:
+        assert "cotangent shape must match output shape" in str(exc)
+    else:
+        raise AssertionError("vjp accepted a cotangent with the wrong shape")
+
+
+def test_jvp_rejects_missing_tangent_instead_of_silently_truncating():
+    left = Tensor([1.0, 2.0], requires_grad=True)
+    right = Tensor([3.0, 4.0], requires_grad=True)
+    tangent = Tensor([0.5, 0.5])
+
+    try:
+        jvp(lambda a, b: a + b, [left, right], [tangent])
+    except ValueError as exc:
+        assert "same number of tensors" in str(exc)
+    else:
+        raise AssertionError("jvp accepted a missing tangent")
+
+
+def test_jvp_rejects_tangent_with_incompatible_shape():
+    source = Tensor([1.0, 2.0], requires_grad=True)
+
+    try:
+        jvp(lambda value: value * value, [source], [Tensor(1.0)])
+    except ValueError as exc:
+        assert "does not match input shape" in str(exc)
+    else:
+        raise AssertionError("jvp accepted a tangent with the wrong shape")
+
+
 if __name__ == "__main__":
     test_jvp_linear()
     test_vjp_linear()
