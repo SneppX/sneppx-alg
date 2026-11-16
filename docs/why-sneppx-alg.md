@@ -3,81 +3,56 @@ hide:
   - toc
 ---
 
-# Why SNEPPX-Alg?
+# Project scope and current limitations
 
-SNEPPX-Alg is a universal, open-source AI algorithm framework written in **C11 / C++20 with CUDA**.
-It organizes model construction and inference as a composable, secure **5-stage pipeline**
-(HSS → SER → ARC → NPE → FM) and wraps it with ten security layers (S0–S9).
+SneppX-ALG is an open-source project exploring tensor operations, automatic differentiation, neural-network utilities, native C/C++ components, and security-related tooling.
 
-This page is a **honest** comparison, not a marketing pitch. It lists what SNEPPX-Alg does
-today, where it is competitive, and where it is still catching up to the incumbents.
+It is an experimental codebase, not a drop-in replacement for PyTorch, TensorFlow, or JAX. The public Python tensor and neural-network APIs use NumPy-backed implementations for much of their functionality. Native code and optional backends have separate build and integration paths.
 
-## Feature matrix
+## What the repository contains
 
-| Capability | SNEPPX-Alg | PyTorch | TensorFlow | JAX |
-|---|---|---|---|---|
-| Autograd (forward + reverse) | ✅ 40+ ops, higher-order `create_graph` | ✅ | ✅ | ✅ |
-| Autograd forward mode (`jvp`/`vjp`) | ✅ (reverse-of-reverse) | ✅ | ✅ | ✅ |
-| Mixture-of-Experts routing (SER) | ✅ first-class | ➖ (via add-ons) | ➖ | ➖ |
-| State-Space Models (HSS) | ✅ first-class | ➖ | ➖ | ➖ |
-| Adversarial guard (ARC) | ✅ first-class | ➖ | ➖ | ➖ |
-| Neural VM (NPE) | ✅ 16-reg / 32-opcode | ➖ | ➖ | ➖ |
-| Fractal memory (FM) | ✅ first-class | ➖ | ➖ | ➖ |
-| Quantization (INT8/INT4/FP8/AWQ/GPTQ) | ✅ | ✅ | ✅ | ➖ |
-| Distributed training (ZeRO/TP/PP/EP) | 🟡 wired, CPU-fallback collectives | ✅ | ✅ | ✅ |
-| Post-quantum crypto (Kyber/Dilithium/SPHINCS+) | 🟡 (not FIPS-KAT validated) | ➖ | ➖ | ➖ |
-| Signed updates (S7) | 🟡 Ed25519, dev fallback | ➖ | ➖ | ➖ |
-| Formal verification (S8) | 🟡 bounded safety LTL | ➖ | ➖ | ➖ |
-| Model zoo (LLaMA/Mistral/Qwen/DeepSeek) | 🟡 config + skeleton, weights in progress | ✅ | ✅ | ✅ |
-| C/CUDA native core | ✅ C11/C++20 + CUDA | ✅ | ✅ | ➖ |
-| Python API | ✅ NumPy-backed | ✅ | ✅ | ✅ |
-| Serving / HTTP REST | 🟡 demo scaffold | ✅ | ✅ | ➖ |
-| Mobile / edge runtime | 🟡 | ➖ | ✅ | ➖ |
+- Python tensor operations and automatic differentiation.
+- Neural-network layers, losses, and optimizers.
+- Model configuration, conversion, and inference utilities.
+- Native C/C++ components and optional CUDA-related code.
+- Distributed-computing and quantization modules.
+- Security components documented across the S0–S9 architecture.
 
-✅ = shipped and usable · 🟡 = shipped but partial/experimental · ➖ = not a core feature
+This list describes repository areas, not a guarantee that every feature is complete or suitable for production. Check the API reference, implementation, and tests for the exact component you plan to use.
 
-## Where SNEPPX-Alg genuinely differs
+## Known limitations
 
-1. **Security is a first-class pipeline, not a bolt-on.** Ten layers (S0–S9) — classical + post-quantum
-   crypto, memory hardening, obfuscation, monitoring, network, AI sanitizer, key vault, signed updates,
-   formal verification, and pentesting — observe every stage of the 5-stage pipeline. Incumbents leave
-   this to you.
-2. **MoE, SSM, adversarial guard, neural VM, and fractal memory are primitives**, not libraries
-   you stitch together. HSS/SER/ARC/NPE/FM ship as composable, testable stages.
-3. **The hot path is readable C/C++/CUDA** you can audit and verify — no opaque runtime.
-4. **Open and extensible** — opt-in backends (Vulkan/TPU/HTTP/ZK/Metal/oneAPI), a model zoo, and a
-   Python API on top of the native core. MIT licensed.
+### Backend coverage
 
-## Where SNEPPX-Alg is still catching up
+The public Python API is not uniformly backed by native code. Much of the Tensor and neural-network surface uses NumPy. Do not assume that installing the Python package enables native acceleration.
 
-Be honest with yourself before choosing it:
+### Framework compatibility
 
-- **Performance.** The public Python `Tensor`/`nn` API is NumPy-backed (CPU). The real speed lives in
-  the C/CUDA core, which is not yet wired into the public Python path end-to-end. For training at scale,
-  PyTorch/JAX are ahead today.
-- **Ecosystem.** No autograd-on-GPU in Python, no `torchvision`-equivalent, no HuggingFace Hub
-  integration for weights (in progress).
-- **Maturity.** Distributed collectives run on a CPU fallback path; the post-quantum primitives are
-  not yet FIPS-KAT validated; signed updates and formal verification are implemented but bounded.
-- **Tooling.** No profiler-grade tooling, no ONNX export parity, no mobile SDK yet.
+SneppX-ALG does not provide full API or ecosystem compatibility with PyTorch, TensorFlow, or JAX. The [parity roadmap](roadmap/tensorflow-pytorch-parity.md) tracks areas that remain incomplete.
 
-## When to choose SNEPPX-Alg
+### Model support
 
-- You want an **auditable, composable pipeline** (HSS/SER/ARC/NPE/FM) you can read end-to-end.
-- You care about **AI security as a first-class concern** (PQC, signed updates, formal verification).
-- You're building **research prototypes** where MoE/SSM/adversarial primitives save you glue code.
-- You want a **small, MIT-licensed native core** you can embed or fork.
+Model configuration and model-zoo utilities do not imply that every listed model can be downloaded, loaded, trained, or served end to end. Check the relevant model guide and implementation before planning around a model.
 
-## When to choose an incumbent
+### Distributed execution and accelerators
 
-- You need **GPU training today** at scale → PyTorch / JAX.
-- You need **production serving, mobile, or edge** → TensorFlow / PyTorch.
-- You need **the ecosystem** (Hub, datasets, pretrained weights) → PyTorch / HuggingFace.
+Availability depends on the backend, build configuration, and runtime environment. Read the distributed and build documentation before assuming multi-device execution or GPU acceleration.
 
-## See also
+### Security
 
-- [Benchmarks](benchmarks.md) - measured numbers (where available).
-- [Framework comparison](comparison/ml_framework_feature_gap_analysis.md) — detailed gap analysis.
-- [Architecture overview](ARCHITECTURE.md) — the 5-stage pipeline in depth.
-- [Security layers](security_layers.md) — S0–S9 mapping.
-- [Quick Start](guide/quickstart.md) — get running in five minutes.
+Security modules have different implementation and validation levels. Experimental cryptographic code is not a substitute for a validated cryptographic library. The repository's tests and documentation do not constitute an independent security audit or certification. Start with the [security overview](security.md) and the [PQC interoperability report](pqc_kat.md).
+
+## Choosing a tool
+
+Use SneppX-ALG when you want to inspect or experiment with this codebase, work with the available Python APIs, or contribute to its native and security-related components.
+
+Choose an established framework when your project requires mature GPU training, broad hardware support, extensive pretrained-model coverage, stable production serving, or a large third-party ecosystem.
+
+## Useful references
+
+- [Getting started](getting-started.md)
+- [Python API reference](api/python.md)
+- [Build guide](build.md)
+- [Framework parity roadmap](roadmap/tensorflow-pytorch-parity.md)
+- [Security documentation](security.md)
+- [Contributing guide](contributing.md)
