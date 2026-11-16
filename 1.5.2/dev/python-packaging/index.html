@@ -4892,7 +4892,7 @@ python<span class="w"> </span>-m<span class="w"> </span>build<span class="w"> </
 <li>Rebuild a wheel from the source distribution and repeat the install and tests.</li>
 <li>Record the wheel and source archive SHA-256 hashes.</li>
 </ol>
-<p>The GitHub Actions workflow <strong>Python package artifact validation</strong> performs these build, rebuild, clean-install, and autograd regression checks for both project roots. The nested project is the release candidate; the root build is a development-workspace compatibility check.</p>
+<p>The GitHub Actions workflow <strong>Python package artifact validation</strong> first checks that the two project files agree on distribution name, version, and supported Python range, and that each package-discovery root points to the intended source tree. It then performs the build, rebuild, clean-install, and autograd regression checks for both project roots. The nested project is the release candidate; the root build is a development-workspace compatibility check.</p>
 <h2 id="versioning&#702;rules">Versioning rules<a class="headerlink" href="#versioning&#702;rules" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Keep the <code>version</code> field in both project files synchronized.</li>
