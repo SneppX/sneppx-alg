@@ -221,6 +221,7 @@ nav:
         - CTM Tool Reference: tools/ctm-tools.md
     - Development:
         - Development Workflow: DEVELOPMENT.md
+        - Python Packaging & Release: dev/python-packaging.md
         - Testing: TESTING.md
         - Build System: build.md
         - Code Walkthrough: code-walkthrough.md
