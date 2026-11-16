@@ -4924,7 +4924,7 @@ python<span class="w"> </span>-m<span class="w"> </span>build<span class="w"> </
 </tr>
 </tbody>
 </table>
-<p>The published file lacks current matrix/vector gradient and broadcast-gradient handling. The current source-built wheel and the wheel rebuilt from its source distribution both pass the 16 focused autograd regression tests. The published 1.5.2 test baseline still has two known failures in matrix multiplication gradients and multiple-output gradients.</p>
+<p>The published file lacks current matrix/vector gradient and broadcast-gradient handling. The current source-built wheel and the wheel rebuilt from its source distribution both pass the 18 focused autograd regression tests. The published 1.5.2 test baseline still has two known failures in matrix multiplication gradients and multiple-output gradients.</p>
 <p>A corrected release must use a new version number and be tested from the exact release artifacts. No replacement release has been published.</p>
 <h2 id="publishing&#702;policy">Publishing policy<a class="headerlink" href="#publishing&#702;policy" title="Permanent link">&para;</a></h2>
 <p>Publishing is a separate release action. This repository workflow validates artifacts but does not upload them to PyPI. Do not add PyPI credentials to the repository or workflow. A release must be explicitly approved, and the exact wheel and source archive must pass the release checks first.</p>
