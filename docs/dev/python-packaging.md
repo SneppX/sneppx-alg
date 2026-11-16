@@ -48,7 +48,7 @@ The current-main package validation compares the published PyPI 1.5.2 wheel with
 | Current bindings build | 227,986 bytes | `0f52d8afb175fed681cfee73f091f4e0c40e6ea378a171fd7973c585f51928c0` |
 | Published PyPI 1.5.2 | 151,545 bytes | `b896ad7c0e8655a8bc15aec7933aecd4d6b7319fe34585d5bb0ad055ca6fab21` |
 
-The published file lacks current matrix/vector gradient and broadcast-gradient handling. The current source-built wheel and the wheel rebuilt from its source distribution both pass the 16 focused autograd regression tests. The published 1.5.2 test baseline still has two known failures in matrix multiplication gradients and multiple-output gradients.
+The published file lacks current matrix/vector gradient and broadcast-gradient handling. The current source-built wheel and the wheel rebuilt from its source distribution both pass the 18 focused autograd regression tests. The published 1.5.2 test baseline still has two known failures in matrix multiplication gradients and multiple-output gradients.
 
 A corrected release must use a new version number and be tested from the exact release artifacts. No replacement release has been published.
 
