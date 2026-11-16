@@ -119,3 +119,20 @@ def test_symlink_files_are_not_followed_when_supported(tmp_path):
 
     assert report["files"] == 1
     assert report["skipped_binary_or_symlink"] == 1
+
+
+def test_symlink_directories_are_not_followed_and_are_counted(tmp_path):
+    target = tmp_path / "target_dir"
+    target.mkdir()
+    (target / "inside.py").write_text("x = 1\n", encoding="utf-8")
+    link = tmp_path / "linked_dir"
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink creation is not permitted on this platform")
+
+    report = ctm.scan(tmp_path)
+
+    assert report["files"] == 1
+    assert report["directories"] == 1
+    assert report["skipped_binary_or_symlink"] == 1

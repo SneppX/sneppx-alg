@@ -93,7 +93,9 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
         kept_dirs = []
         for dirname in sorted(dirnames):
             child = current_path / dirname
-            if dirname not in IGNORED_DIRS and not child.is_symlink():
+            if child.is_symlink():
+                skipped_binary += 1
+            elif dirname not in IGNORED_DIRS:
                 kept_dirs.append(dirname)
         dirnames[:] = kept_dirs
         dirs += len(kept_dirs)
