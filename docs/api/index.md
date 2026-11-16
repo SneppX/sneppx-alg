@@ -6,8 +6,7 @@ the `SNEPPX_*` Doxygen comments in `include/neural_core/` (Layers 1 & 4 of the
 
 ## Regenerating locally
 
-No CI is involved (see [GitHub Pages deployment](../dev/pages-deploy.md)).
-From the repository root, on any platform with Doxygen 1.9+ installed:
+The GitHub Pages workflow generates this HTML reference before MkDocs builds the site. The generated files are not committed to the source tree. For local regeneration, run the following from the repository root with Doxygen 1.9+ installed:
 
 ```powershell
 # Use the root Doxyfile (output directory = docs/api/doxygen)
@@ -55,7 +54,7 @@ navigation sidebar to jump to any `SNEPPX_*` symbol.
 ></iframe>
 
 If the frame does not render, open the reference directly:
-[`doxygen/html/index.html`](https://github.com/SneppX/sneppx-alg/blob/main/docs/api/index.md).
+[`doxygen/html/index.html`](doxygen/html/index.html).
 
 ## Key headers to start from
 
