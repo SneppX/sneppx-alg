@@ -29,7 +29,7 @@ Test both generated artifacts before publishing:
 5. Rebuild a wheel from the source distribution and repeat the install and tests.
 6. Record the wheel and source archive SHA-256 hashes.
 
-The GitHub Actions workflow **Python package artifact validation** performs these build, rebuild, clean-install, and autograd regression checks for both project roots. The nested project is the release candidate; the root build is a development-workspace compatibility check.
+The GitHub Actions workflow **Python package artifact validation** first checks that the two project files agree on distribution name, version, and supported Python range, and that each package-discovery root points to the intended source tree. It then performs the build, rebuild, clean-install, and autograd regression checks for both project roots. The nested project is the release candidate; the root build is a development-workspace compatibility check.
 
 ## Versioning rules
 

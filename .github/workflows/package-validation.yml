@@ -39,6 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install build numpy pyyaml cryptography pytest
 
+      - name: Validate package build-root metadata
+        run: python scripts/validate_python_packaging.py
+
       - name: Build wheel and source distribution
         env:
           PROJECT_PATH: ${{ matrix.project_path }}
