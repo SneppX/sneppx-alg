@@ -79,3 +79,31 @@ jobs:
             "$PY" -c "import importlib.metadata as m, SneppX_ALG; print('version:', m.version('sneppx-alg')); print('import:', SneppX_ALG.__file__)"
             "$PY" -m pytest tests/python/test_autograd_regressions.py -q -p no:cacheprovider
           done < <(find "$DIST_DIR" -maxdepth 2 -name '*.whl' -type f | sort)
+      - name: Check out external package test suite
+        if: matrix.label == 'python-bindings'
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          repository: SneppX/SneppX-ALG-Testing
+          ref: main
+          path: alg-testing
+          persist-credentials: false
+
+      - name: Run external functional, discovery, and quality suites
+        if: matrix.label == 'python-bindings'
+        env:
+          BUILD_LABEL: ${{ matrix.label }}
+        run: |
+          set -euo pipefail
+          DIST_DIR="$RUNNER_TEMP/dist/$BUILD_LABEL"
+          VENV="$RUNNER_TEMP/venv-$BUILD_LABEL"
+          PY="$VENV/bin/python"
+          WHEEL="$(find "$DIST_DIR" -maxdepth 1 -name '*.whl' -type f -print -quit)"
+          test -n "$WHEEL"
+          "$PY" -m pip install --force-reinstall --no-deps "$WHEEL"
+          "$PY" -m pip install pytest pytest-cov ruff
+          cd alg-testing
+          "$PY" run_tests.py
+          "$PY" run_discovery.py
+          "$PY" -m compileall -q tests discovery run_tests.py run_discovery.py
+          "$PY" -m ruff check run_tests.py run_discovery.py
+
