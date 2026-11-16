@@ -1,0 +1,5 @@
+<map id="SNEPPX_ed25519_sign" name="SNEPPX_ed25519_sign">
+<area shape="rect" id="Node000001" title="Sign a message with Ed25519." alt="" coords="232,13,403,38"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="5,5,184,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="218,28,184,28,184,23,218,23"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="SNEPPX_pool_size_class" name="SNEPPX_pool_size_class">
+<area shape="rect" id="Node000001" title="Perform Pool Size Class." alt="" coords="200,31,381,56"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#adc478fbf81e22cefe9cb32688da4691f" title="Perform Pool Alloc." alt="" coords="5,5,152,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,34,152,29,152,24,187,28"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a34f393300691cfdbba47c4a7c84d108e" title="Free Pool." alt="" coords="8,55,149,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="187,58,150,62,149,57,186,52"/>
+</map>

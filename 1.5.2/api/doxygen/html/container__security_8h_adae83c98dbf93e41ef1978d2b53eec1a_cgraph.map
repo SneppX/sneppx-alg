@@ -1,0 +1,7 @@
+<map id="SNEPPX_sbom_add_component" name="SNEPPX_sbom_add_component">
+<area shape="rect" id="Node000001" title="Perform Sbom Add Component." alt="" coords="5,5,232,31"/>
+<area shape="rect" id="Node000002" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="280,5,407,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,15,266,15,266,21,232,21"/>
+<area shape="rect" id="Node000003" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="455,5,595,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="407,15,441,15,441,21,407,21"/>
+</map>

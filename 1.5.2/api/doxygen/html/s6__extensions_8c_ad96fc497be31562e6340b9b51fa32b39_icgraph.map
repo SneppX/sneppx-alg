@@ -1,0 +1,9 @@
+<map id="threat_str_hash" name="threat_str_hash">
+<area shape="rect" id="Node000001" title=" " alt="" coords="557,31,680,56"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#ab04a0ece92291c1e596850483cb60ca9" title="Perform Threat Viz Add Edge." alt="" coords="295,5,509,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="543,37,509,33,510,28,544,32"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#a76191d3658d6ec7a6a011745829ec170" title=" " alt="" coords="337,55,467,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="544,54,468,63,467,57,543,49"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#ab36b48b0d1e0c4ea16358d1efa0d7604" title="Perform Threat Viz Remove Edge." alt="" coords="5,55,247,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="323,70,247,70,247,65,323,65"/>
+</map>

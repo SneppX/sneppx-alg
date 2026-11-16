@@ -1,0 +1,15 @@
+<map id="xor_block" name="xor_block">
+<area shape="rect" id="Node000001" title=" " alt="" coords="661,115,745,140"/>
+<area shape="rect" id="Node000002" href="$aes__gcm_8c.html#aa486fff90b98613fe46a4d620a364302" title=" " alt="" coords="517,90,613,115"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="647,120,613,114,614,108,648,115"/>
+<area shape="rect" id="Node000005" href="$aes__gcm_8c.html#ab978e9526f074921fba3f9064d0609c0" title="Perform Aes Gcm Finalize." alt="" coords="263,140,455,166"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="647,134,455,148,455,143,647,129"/>
+<area shape="rect" id="Node000003" href="$aes__gcm_8c.html#af586153f91844b420e3235f0efa83be2" title="Decrypt ciphertext with AES&#45;GCM." alt="" coords="5,16,200,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="541,81,509,53,468,31,430,21,391,14,311,8,236,11,171,19,171,14,235,6,311,3,392,8,432,15,470,26,512,49,545,77"/>
+<area shape="rect" id="Node000004" href="$aes__gcm_8c.html#a01f0dd47ebed9cfa665b6124a51fbee5" title="Encrypt plaintext with AES&#45;GCM." alt="" coords="261,42,456,67"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="503,90,469,82,414,69,416,64,470,77,505,85"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="509,121,470,131,421,143,420,138,469,126,507,116"/>
+<area shape="rect" id="Node000006" href="$aes__gcm_8c.html#a39020848dc3c4c69f44c5c48c2ce6bdd" title="Perform Aes Gcm Update Aad." alt="" coords="248,91,469,116"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="504,105,470,105,470,100,504,100"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="248,46,200,41,200,36,248,41"/>
+</map>

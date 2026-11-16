@@ -1,0 +1,9 @@
+<map id="include/neural_core/architecture/distributed.h" name="include/neural_core/architecture/distributed.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="154,5,345,45"/>
+<area shape="rect" id="Node000002" href="$checkpoint_8c.html" title=" " alt="" coords="5,93,141,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,54,113,96,111,91,197,49"/>
+<area shape="rect" id="Node000003" href="$distributed__sampler_8c.html" title=" " alt="" coords="166,93,333,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="252,59,252,93,247,93,247,59"/>
+<area shape="rect" id="Node000004" href="$zero_8c.html" title=" " alt="" coords="357,93,493,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="301,49,388,91,386,96,299,54"/>
+</map>

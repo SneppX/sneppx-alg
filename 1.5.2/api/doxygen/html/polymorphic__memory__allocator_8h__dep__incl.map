@@ -1,0 +1,45 @@
+<map id="include/neural_core/kernel/polymorphic_memory_allocator.h" name="include/neural_core/kernel/polymorphic_memory_allocator.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="2013,5,2172,60"/>
+<area shape="rect" id="Node000002" href="$arch_8c.html" title=" " alt="" coords="5,115,111,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2000,37,1615,41,1072,52,789,62,523,74,295,90,122,111,92,118,91,113,122,105,294,85,523,69,788,56,1072,47,1615,36,2000,32"/>
+<area shape="rect" id="Node000003" href="$attention_8c.html" title=" " alt="" coords="135,115,333,141"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="2000,37,1719,39,1310,49,832,71,586,88,345,111,293,118,293,113,344,105,586,83,832,66,1310,44,1719,34,2000,31"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html" title=" " alt="" coords="357,115,511,141"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="2000,36,1745,37,1379,46,955,69,737,87,524,111,482,118,481,113,523,105,736,82,955,64,1379,41,1745,32,2000,31"/>
+<area shape="rect" id="Node000005" href="$tape_8c.html" title=" " alt="" coords="535,115,695,141"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="2000,37,1771,40,1451,51,1082,73,893,90,708,111,665,118,664,113,707,105,892,85,1082,68,1451,46,1771,35,1999,32"/>
+<area shape="rect" id="Node000006" href="$variable_8c.html" title=" " alt="" coords="719,115,903,141"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1999,39,1802,46,1533,59,1226,80,916,111,868,118,867,113,915,105,1226,74,1533,53,1802,40,1999,34"/>
+<area shape="rect" id="Node000007" href="$data__pipeline_8c.html" title=" " alt="" coords="928,115,1127,141"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1999,41,1623,65,1382,85,1140,111,1090,118,1089,113,1139,105,1382,80,1623,60,1999,36"/>
+<area shape="rect" id="Node000008" href="$inference__engine_8c.html" title=" " alt="" coords="1151,108,1343,148"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1999,44,1711,70,1356,111,1344,112,1343,107,1355,105,1711,64,1999,39"/>
+<area shape="rect" id="Node000009" href="$allocator_8c.html" title=" " alt="" coords="1367,115,1559,141"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="2000,49,1572,111,1528,118,1527,113,1571,105,1999,44"/>
+<area shape="rect" id="Node000010" href="$allocator__interface_8c.html" title=" " alt="" coords="1584,108,1767,148"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="2001,57,1760,111,1759,105,2000,52"/>
+<area shape="rect" id="Node000011" href="$cognitive__manager_8c.html" title=" " alt="" coords="1791,108,1976,148"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="2022,68,1927,110,1925,105,2020,63"/>
+<area shape="rect" id="Node000012" href="$episodic_8c.html" title=" " alt="" coords="2000,108,2185,148"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="2095,74,2095,108,2090,108,2090,74"/>
+<area shape="rect" id="Node000013" href="$procedural_8c.html" title=" " alt="" coords="2209,108,2395,148"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="2165,63,2261,105,2258,110,2163,68"/>
+<area shape="rect" id="Node000014" href="$semantic_8c.html" title=" " alt="" coords="2419,108,2604,148"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="2186,52,2427,105,2426,111,2185,57"/>
+<area shape="rect" id="Node000015" href="$working_8c.html" title=" " alt="" coords="2628,108,2813,148"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="2186,43,2617,105,2628,107,2627,112,2616,111,2186,49"/>
+<area shape="rect" id="Node000016" href="$optimizer_8c.html" title=" " alt="" coords="2837,115,3041,141"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="2186,39,2472,65,2826,105,2875,113,2874,118,2826,111,2472,70,2185,44"/>
+<area shape="rect" id="Node000017" href="$optimizer__radam_8c.html" title=" " alt="" coords="3066,108,3261,148"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="2186,36,2565,59,2809,79,3054,105,3066,107,3065,112,3054,111,2808,84,2565,64,2185,41"/>
+<area shape="rect" id="Node000018" href="$optimizer__sf__adamw_8c.html" title=" " alt="" coords="3285,108,3479,148"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="2186,34,2384,41,2654,54,2961,75,3273,105,3285,107,3284,112,3272,111,2961,81,2653,60,2384,46,2186,39"/>
+<area shape="rect" id="Node000019" href="$tensor_8c.html" title=" " alt="" coords="3503,115,3666,141"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="2186,32,2416,35,2740,46,3113,68,3304,85,3492,105,3535,113,3534,118,3491,111,3304,90,3113,73,2740,51,2416,41,2186,37"/>
+<area shape="rect" id="Node000020" href="$tokenizer_8c.html" title=" " alt="" coords="3690,115,3890,141"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="2186,32,2443,36,2812,47,3241,69,3462,85,3678,105,3730,113,3729,118,3678,111,3462,90,3241,74,2812,52,2443,41,2185,37"/>
+<area shape="rect" id="Node000021" href="$trainer_8c.html" title=" " alt="" coords="3913,115,4067,141"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="2186,33,2542,41,3038,56,3537,77,3745,90,3902,105,3944,113,3943,118,3902,111,3744,96,3536,82,3037,61,2541,46,2185,38"/>
+<area shape="rect" id="Node000022" href="$trainer__cuda_8c.html" title=" " alt="" coords="4091,108,4233,148"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="2186,33,2573,39,3121,52,3674,74,3905,88,4080,105,4091,107,4090,112,4079,111,3905,94,3674,79,3120,58,2573,44,2186,38"/>
+</map>

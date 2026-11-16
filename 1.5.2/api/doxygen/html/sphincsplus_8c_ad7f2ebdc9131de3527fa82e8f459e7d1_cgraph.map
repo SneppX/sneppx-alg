@@ -1,0 +1,11 @@
+<map id="spx_fors_pk_from_sig" name="spx_fors_pk_from_sig">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,169,56"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#a458faa43f71db267b293647b20a3ef22" title=" " alt="" coords="217,5,337,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,30,203,25,204,30,170,35"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#a0e29e34f08aea9b0d8e51085458f77a1" title=" " alt="" coords="228,55,327,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="170,51,215,57,214,62,169,56"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="385,55,512,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="327,65,371,65,371,70,327,70"/>
+<area shape="rect" id="Node000005" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="560,55,700,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="512,65,546,65,546,70,512,70"/>
+</map>

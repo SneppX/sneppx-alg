@@ -1,0 +1,9 @@
+<map id="include/neural_core/security/side_channel_resistant_primitives.h" name="include/neural_core/security/side_channel_resistant_primitives.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="195,5,365,60"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,108,176,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,69,142,110,139,105,217,64"/>
+<area shape="rect" id="Node000003" href="$sc_8c.html" title=" " alt="" coords="201,123,359,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="283,74,283,122,277,122,277,74"/>
+<area shape="rect" id="Node000004" href="$timing_8c.html" title=" " alt="" coords="384,123,571,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="345,64,456,120,454,125,342,69"/>
+</map>

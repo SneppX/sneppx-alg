@@ -1,0 +1,16 @@
+<map id="SNEPPX_grad_opt_step" name="SNEPPX_grad_opt_step">
+<area shape="rect" id="Node000001" title="Perform Grad Opt Step." alt="" coords="5,55,177,80"/>
+<area shape="rect" id="Node000002" href="$gradient__optimization_8c.html#a0a3e861b56768f1db95d8dae9506b37a" title=" " alt="" coords="225,5,344,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,52,220,32,221,37,142,57"/>
+<area shape="rect" id="Node000003" href="$gradient__optimization_8c.html#ac1676b1bec1464fa758b5c2cb1e6913d" title=" " alt="" coords="249,55,320,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,65,236,65,236,70,177,70"/>
+<area shape="rect" id="Node000006" href="$gradient__optimization_8c.html#a7a063b9fda2e4a41462acb15b3b1d5d4" title=" " alt="" coords="249,104,320,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="142,77,237,102,235,107,141,83"/>
+<area shape="rect" id="Node000004" href="$tensor_8c.html#a9fa38306b71ae696b0311549ffa88075" title="Perform Tensor Get F32." alt="" coords="392,55,569,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="320,65,378,65,378,70,320,70"/>
+<area shape="rect" id="Node000005" href="$tensor_8c.html#a659c62385dd88d3536169c33f3bbebb7" title=" " alt="" coords="617,80,800,105"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="570,75,604,78,604,84,569,80"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#a21d2ae4e6b015785bd03ee588e8f17cd" title="Perform Tensor Set F32." alt="" coords="393,104,569,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="320,114,379,114,379,119,320,119"/>
+<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="569,105,603,101,604,106,569,110"/>
+</map>

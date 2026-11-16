@@ -1,0 +1,53 @@
+<map id="validate_session_id" name="validate_session_id">
+<area shape="rect" id="Node000001" title=" " alt="" coords="491,742,641,767"/>
+<area shape="rect" id="Node000002" href="$transport__security_8c.html#a93a5af90468465a0dd5f1a9b3a6d2490" title=" " alt="" coords="273,13,418,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="561,729,554,588,534,385,518,280,498,184,472,105,457,75,441,53,417,37,420,32,445,49,462,72,477,103,503,183,524,279,539,384,559,588,566,728"/>
+<area shape="rect" id="Node000004" href="$transport__security_8c.html#a265582ef619d7eb72a5d7cec9c825a78" title="Reset Transport Cipher Ctx." alt="" coords="252,63,439,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="560,728,550,600,529,416,513,322,493,236,469,165,455,137,441,116,427,105,430,101,445,113,460,135,474,163,498,234,518,321,534,416,556,600,566,728"/>
+<area shape="rect" id="Node000005" href="$transport__security_8c.html#a44b643838e63855ab8b0ec71329301f7" title="Perform Transport Encrypt Count." alt="" coords="248,127,443,167"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="560,729,548,612,525,447,509,363,489,286,467,223,441,180,427,169,430,165,445,177,471,221,494,285,514,362,530,446,553,611,565,728"/>
+<area shape="rect" id="Node000006" href="$transport__security_8c.html#a93a91efce5fb6d288971bbebefe632e0" title="Perform Transport Get Aad Key." alt="" coords="262,191,429,231"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="559,729,545,623,521,478,504,404,486,337,464,282,441,244,427,233,430,229,445,241,469,279,491,335,510,403,526,477,551,623,564,728"/>
+<area shape="rect" id="Node000007" href="$transport__security_8c.html#a568ab0980fbfb92e0127c6b471240be1" title="Perform Transport Get Rekey Count." alt="" coords="262,255,429,295"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="563,728,560,648,555,594,545,536,530,475,509,415,479,358,441,309,426,297,430,293,445,305,484,356,514,413,535,473,551,535,560,594,566,648,568,728"/>
+<area shape="rect" id="Node000008" href="$transport__security_8c.html#aec90c923c0d10ac3f20c93ca3b9f5268" title="Perform Transport Get Rekey Interval." alt="" coords="262,319,429,359"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="561,729,556,659,538,563,522,512,502,462,475,414,441,373,426,361,429,357,445,369,479,411,506,459,527,510,543,562,561,658,567,728"/>
+<area shape="rect" id="Node000009" href="$transport__security_8c.html#adbd9b338184c5450be653cee6e4ea1d6" title="Perform Transport Get Rekey Threshold." alt="" coords="262,383,429,423"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="560,729,550,669,530,590,514,549,494,508,470,470,441,437,425,425,428,421,444,433,474,467,499,506,519,547,535,589,555,668,565,728"/>
+<area shape="rect" id="Node000010" href="$transport__security_8c.html#afa39dcfa7b7505c6cb4583efae405991" title="Perform Transport Get Rekey Time." alt="" coords="262,447,429,487"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="557,729,544,681,521,619,487,556,466,526,441,501,424,489,427,485,444,497,470,523,492,553,526,617,549,679,562,728"/>
+<area shape="rect" id="Node000011" href="$transport__security_8c.html#a9ab0843c3f715d267d9681c47cce9b5a" title="Perform Transport Get Session Age." alt="" coords="262,511,429,551"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="553,730,536,693,512,649,480,604,441,565,422,553,425,549,444,561,484,600,516,646,541,691,557,728"/>
+<area shape="rect" id="Node000012" href="$transport__security_8c.html#a34bd2dc06c5eacbaadea716afc9ec5ce" title="Perform Transport Get Session Creation Time." alt="" coords="258,575,433,615"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="546,733,502,680,473,653,441,629,418,617,421,612,444,624,476,649,506,677,550,729"/>
+<area shape="rect" id="Node000013" href="$transport__security_8c.html#aab70cdd62f556e79683db87bf2c97369" title="Perform Transport Get Session Handshake State." alt="" coords="248,639,443,679"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="530,738,442,693,411,681,413,676,444,688,532,733"/>
+<area shape="rect" id="Node000014" href="$transport__security_8c.html#ac97dc5c72c05406a9cc8d451de7d3b7d" title="Perform Transport Get Session Key." alt="" coords="262,703,429,743"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="476,744,429,737,429,732,477,739"/>
+<area shape="rect" id="Node000015" href="$transport__security_8c.html#a4e022d926b5bc4593cc89b67c87c2ecb" title="Perform Transport Get Session Last Used." alt="" coords="262,767,429,807"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="477,770,429,777,429,772,476,765"/>
+<area shape="rect" id="Node000016" href="$transport__security_8c.html#aa4628965abe4d7279735c23bd469f9a8" title="Perform Transport Get Session Timeout." alt="" coords="262,831,429,871"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="532,777,444,821,413,833,411,828,442,816,530,772"/>
+<area shape="rect" id="Node000017" href="$transport__security_8c.html#ab34b091f97a87ad84a09c340b4c91d10" title="Perform Transport Is Noise Session." alt="" coords="267,895,424,935"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="550,780,506,833,476,861,444,885,421,897,418,892,441,880,473,857,502,829,546,777"/>
+<area shape="rect" id="Node000018" href="$transport__security_8c.html#ac02504328919b8f6c143087eecd28021" title="Perform Transport Is Session Active." alt="" coords="267,959,424,999"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="557,781,541,818,516,863,484,909,444,949,425,961,422,956,441,945,480,906,512,861,536,816,553,779"/>
+<area shape="rect" id="Node000019" href="$transport__security_8c.html#a0207bd2aa3042c22d2b2af38d4cd2502" title="Perform Transport Noise Get Nonce." alt="" coords="255,1023,436,1063"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="562,781,549,830,526,892,492,957,470,986,444,1013,427,1025,424,1020,441,1009,466,983,487,954,521,890,544,829,557,780"/>
+<area shape="rect" id="Node000020" href="$transport__security_8c.html#ac0786d44a1d4dc8e96ef3efc5c51d8be" title="Perform Transport Noise Handshake State." alt="" coords="255,1087,436,1127"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="565,782,555,842,535,921,519,963,499,1004,474,1042,444,1077,428,1089,425,1084,441,1073,470,1039,494,1001,514,960,530,919,550,840,560,781"/>
+<area shape="rect" id="Node000021" href="$transport__security_8c.html#a97d15710df5d5e425e38912de16b8713" title="Perform Transport Noise Set Nonce." alt="" coords="255,1151,436,1191"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="567,781,561,851,543,947,527,999,506,1050,479,1098,445,1141,429,1153,426,1149,441,1137,475,1095,502,1048,522,997,538,946,556,851,561,781"/>
+<area shape="rect" id="Node000022" href="$transport__security_8c.html#aff39f641458d022eeae6068dec29169b" title="Perform Transport Session Is Rekeyed." alt="" coords="248,1215,443,1255"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="568,781,566,862,560,916,551,975,535,1036,514,1097,484,1154,445,1205,430,1217,426,1212,441,1201,479,1151,509,1094,530,1034,545,974,555,915,560,861,563,781"/>
+<area shape="rect" id="Node000023" href="$transport__security_8c.html#aeb9b3ddb52f9b6a336fec641c3f52bdd" title="Perform Transport Session Rekey." alt="" coords="248,1279,443,1319"/>
+<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="564,781,551,887,526,1032,510,1106,491,1174,469,1230,445,1268,430,1280,427,1276,441,1265,464,1227,486,1172,504,1105,521,1031,545,886,559,781"/>
+<area shape="rect" id="Node000024" href="$transport__security_8c.html#a2b21b491dd4fcadb6764acf3daa5043e" title="Perform Transport Set Rekey Interval." alt="" coords="262,1343,429,1383"/>
+<area shape="poly" id="edge23_Node000001_Node000024" title=" " alt="" coords="565,781,553,898,530,1063,514,1147,494,1225,471,1288,445,1332,430,1345,427,1341,441,1329,467,1286,489,1223,509,1146,525,1062,548,898,560,781"/>
+<area shape="rect" id="Node000025" href="$transport__security_8c.html#a9134fae2035ec97354e4be2784b69c8b" title="Perform Transport Set Session Handshake Done." alt="" coords="248,1407,443,1447"/>
+<area shape="poly" id="edge24_Node000001_Node000025" title=" " alt="" coords="566,781,556,910,534,1094,518,1188,498,1275,474,1347,460,1375,445,1396,430,1409,427,1405,441,1393,455,1372,469,1345,493,1274,513,1187,529,1093,550,909,560,781"/>
+<area shape="rect" id="Node000026" href="$transport__security_8c.html#a444cdf04741617c9cd41cc53cffb6c3d" title="Perform Transport Set Session Key." alt="" coords="262,1471,429,1511"/>
+<area shape="poly" id="edge25_Node000001_Node000026" title=" " alt="" coords="566,781,558,921,538,1124,522,1229,502,1325,476,1405,461,1436,445,1460,431,1473,427,1469,441,1457,457,1434,471,1403,496,1324,517,1228,532,1123,553,921,561,781"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#a91baa9928ccceac7a6b0f7a5dc29abaf" title="Perform Transport Session Has Timed Out." alt="" coords="5,5,200,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="259,28,200,28,200,23,259,23"/>
+</map>

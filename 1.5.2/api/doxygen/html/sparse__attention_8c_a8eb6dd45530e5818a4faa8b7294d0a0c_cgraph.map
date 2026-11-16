@@ -1,0 +1,5 @@
+<map id="SNEPPX_sparse_attn_forward" name="SNEPPX_sparse_attn_forward">
+<area shape="rect" id="Node000001" title="Run the forward pass for Sparse Attn." alt="" coords="5,5,161,45"/>
+<area shape="rect" id="Node000002" href="$sparse__attention_8c.html#a6d9848939370ed31ec2ebcc228a80588" title="Perform Sparse Attn Build Mask." alt="" coords="209,5,365,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,23,196,23,196,28,161,28"/>
+</map>

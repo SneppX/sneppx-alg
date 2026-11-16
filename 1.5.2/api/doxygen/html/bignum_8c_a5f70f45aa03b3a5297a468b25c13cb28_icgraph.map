@@ -1,0 +1,19 @@
+<map id="SNEPPX_bn_div_word" name="SNEPPX_bn_div_word">
+<area shape="rect" id="Node000001" title=" " alt="" coords="773,156,936,181"/>
+<area shape="rect" id="Node000002" href="$bignum_8c.html#aaedbc58543f9681b9e855a8fcf6e7b57" title="Perform Bn Div." alt="" coords="603,81,725,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="808,153,696,109,698,104,810,148"/>
+<area shape="rect" id="Node000005" href="$bignum_8c.html#a187b8d9d564b82a14f36a923c78abea5" title="Perform Bn Exp Mod." alt="" coords="212,156,375,181"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="760,171,375,171,375,166,760,166"/>
+<area shape="rect" id="Node000006" href="$bignum_8c.html#a4b29d7828c52cd6ceffa862bcc64ecb2" title="Perform Bn Is Prime." alt="" coords="5,156,164,181"/>
+<area shape="poly" id="edge10_Node000001_Node000006" title=" " alt="" coords="760,183,649,194,512,202,362,205,212,197,137,184,138,179,212,191,362,199,512,197,649,188,760,178"/>
+<area shape="rect" id="Node000003" href="$bignum_8c.html#aaf3e642b0ec279e9f4e0dbe49c899593" title="Perform Bn Inv Mod." alt="" coords="214,5,373,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="596,81,554,71,363,33,364,28,555,66,598,76"/>
+<area shape="rect" id="Node000004" href="$bignum_8c.html#a975b93ccd7c27d5f7553b62f9fe87d1b" title="Perform Bn Mod." alt="" coords="423,81,555,107"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="589,97,555,97,555,91,589,91"/>
+<area shape="poly" id="edge7_Node000004_Node000003" title=" " alt="" coords="441,79,326,33,328,28,443,74"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="449,115,376,146,339,158,337,153,374,141,447,110"/>
+<area shape="poly" id="edge8_Node000004_Node000006" title=" " alt="" coords="409,86,314,83,263,87,213,97,180,109,150,125,103,158,100,154,147,120,178,104,211,91,262,81,314,77,409,80"/>
+<area shape="rect" id="Node000007" href="$bignum_8c.html#a8a685a101fe659216542036727131861" title="Perform Bn Gcd." alt="" coords="230,107,357,132"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="409,107,357,114,357,109,409,102"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="198,171,164,171,164,166,198,166"/>
+</map>

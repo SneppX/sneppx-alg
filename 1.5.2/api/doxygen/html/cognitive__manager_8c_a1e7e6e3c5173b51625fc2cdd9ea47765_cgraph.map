@@ -1,0 +1,9 @@
+<map id="sneppx_semantic_create" name="sneppx_semantic_create">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,189,56"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="246,5,353,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="189,29,232,24,233,29,190,34"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="237,55,361,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="190,52,224,56,223,61,189,57"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="409,5,568,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="353,15,396,15,396,21,353,21"/>
+</map>

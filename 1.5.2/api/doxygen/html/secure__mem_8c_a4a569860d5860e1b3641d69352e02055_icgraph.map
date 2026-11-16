@@ -1,0 +1,9 @@
+<map id="SNEPPX_secure_zero" name="SNEPPX_secure_zero">
+<area shape="rect" id="Node000001" title="Perform Secure Zero." alt="" coords="467,42,625,67"/>
+<area shape="rect" id="Node000002" href="$secure__mem_8c.html#a7fd926d657798c6a8e4b4a7d73a38e40" title="Destroy Secure Pool." alt="" coords="244,5,403,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="453,45,403,38,403,33,454,40"/>
+<area shape="rect" id="Node000003" href="$secure__mem_8c.html#a377c4e243b37c8caaf6b3ca48ec95c7e" title="Free Secure Pool." alt="" coords="228,70,419,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="453,69,419,73,418,68,453,64"/>
+<area shape="rect" id="Node000004" href="$secure__mem_8c.html#ab36568b95ed140fd30bed074c10b517d" title="Perform Secure Realloc." alt="" coords="5,70,180,95"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="214,85,180,85,180,80,214,80"/>
+</map>

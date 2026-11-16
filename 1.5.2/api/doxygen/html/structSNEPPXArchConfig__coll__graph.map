@@ -1,0 +1,15 @@
+<map id="SNEPPXArchConfig" name="SNEPPXArchConfig">
+<area shape="rect" id="Node000001" title=" " alt="" coords="337,129,480,155"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXHSSConfig.html" title=" " alt="" coords="23,5,163,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,23,246,36,314,61,340,76,363,94,398,127,394,131,360,98,337,80,312,66,244,41,176,28"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXSERConfig.html" title=" " alt="" coords="23,55,162,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,75,244,87,314,103,379,127,377,132,313,109,243,92,176,81"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXARCConfig.html" title=" " alt="" coords="22,104,163,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="177,121,337,134,337,139,177,126"/>
+<area shape="rect" id="Node000005" href="$structSNEPPXNPEConfig.html" title=" " alt="" coords="23,153,163,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="176,165,243,163,313,158,351,152,352,157,314,163,244,168,177,170"/>
+<area shape="rect" id="Node000006" href="$structSNEPPXFMConfig.html" title=" " alt="" coords="25,203,160,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="173,209,242,200,313,185,352,170,385,152,387,157,354,174,314,190,243,206,174,214"/>
+<area shape="rect" id="Node000007" href="$structSNEPPXAttentionConfig.html" title=" " alt="" coords="5,252,180,277"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="193,258,254,247,312,226,338,210,361,191,395,153,399,157,365,194,341,215,314,231,255,252,194,263"/>
+</map>

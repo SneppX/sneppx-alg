@@ -1,0 +1,11 @@
+<map id="SNEPPXCognitiveMemoryConfig" name="SNEPPXCognitiveMemoryConfig">
+<area shape="rect" id="Node000001" title=" " alt="" coords="309,80,539,105"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXEpisodicConfig.html" title=" " alt="" coords="13,5,181,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,31,286,54,377,77,376,82,285,59,177,36"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXSemanticConfig.html" title=" " alt="" coords="9,55,184,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,72,309,81,309,86,198,78"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXWorkingConfig.html" title=" " alt="" coords="13,104,180,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="194,113,285,109,340,103,340,108,286,114,194,119"/>
+<area shape="rect" id="Node000005" href="$structSNEPPXProceduralConfig.html" title=" " alt="" coords="5,153,188,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="201,149,285,133,386,103,387,108,286,138,202,154"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="SNEPPX_mem_page_size" name="SNEPPX_mem_page_size">
+<area shape="rect" id="Node000001" title="Perform Mem Page Size." alt="" coords="249,70,436,95"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#a36372de1a0208f4e5aa49758419219e2" title="Perform Mem Is Page Aligned." alt="" coords="18,5,189,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="275,69,187,48,188,43,276,64"/>
+<area shape="rect" id="Node000003" href="$memory__hardening_8c.html#a98eb7e9c6ea006984a5d79725734e3fd" title="Perform Mem Num Pages." alt="" coords="5,70,201,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,85,202,85,202,80,236,80"/>
+<area shape="rect" id="Node000004" href="$memory__hardening_8c.html#a87255dd17f93701592c7eb3268c8eeea" title="Perform Mem Round Up To Page." alt="" coords="13,120,194,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="276,101,188,123,187,117,275,96"/>
+</map>

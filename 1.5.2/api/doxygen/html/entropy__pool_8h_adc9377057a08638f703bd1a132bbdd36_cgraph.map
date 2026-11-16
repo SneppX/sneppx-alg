@@ -1,0 +1,19 @@
+<map id="SNEPPX_entropy_pool_add_os" name="SNEPPX_entropy_pool_add_os">
+<area shape="rect" id="Node000001" title="Perform Entropy Pool Add Os." alt="" coords="5,47,171,87"/>
+<area shape="rect" id="Node000002" href="$entropy__pool_8c.html#ac3a243d3cd060849473eae159c902595" title="Add Entropy Pool." alt="" coords="219,55,415,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,65,205,65,205,70,171,70"/>
+<area shape="rect" id="Node000003" href="$siphash_8c.html#a220923dc0e0333768ec53729345453aa" title="Compute SipHash 2&#45;4 of input." alt="" coords="463,5,647,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="378,52,479,31,480,36,379,57"/>
+<area shape="rect" id="Node000006" href="$siphash_8c.html#a9c2503c774f2c5c99006b89363732f68" title="Initialize Siphash." alt="" coords="475,104,634,129"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="379,77,480,99,479,104,378,83"/>
+<area shape="rect" id="Node000008" href="$siphash_8c.html#aa02b4099e59778a97900f246fdd3666f" title="Update Siphash." alt="" coords="463,55,646,80"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="415,65,450,65,450,70,415,70"/>
+<area shape="rect" id="Node000004" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="698,31,777,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="647,28,685,33,684,39,646,33"/>
+<area shape="rect" id="Node000005" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="828,31,888,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="777,41,814,41,814,46,777,46"/>
+<area shape="rect" id="Node000007" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="695,92,780,117"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="634,109,681,106,681,111,635,114"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="646,53,684,48,685,53,647,58"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="618,77,682,91,681,96,617,83"/>
+</map>

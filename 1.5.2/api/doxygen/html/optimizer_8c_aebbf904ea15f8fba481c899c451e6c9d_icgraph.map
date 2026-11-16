@@ -1,0 +1,24 @@
+<map id="clip_grad" name="clip_grad">
+<area shape="rect" id="Node000001" title=" " alt="" coords="636,129,717,155"/>
+<area shape="rect" id="Node000002" href="$optimizer_8c.html#a1417a02bf4a80fa2f02b0728c35832a7" title=" " alt="" coords="473,5,588,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="657,120,627,82,586,44,567,33,570,28,590,40,631,78,661,117"/>
+<area shape="rect" id="Node000005" href="$optimizer_8c.html#aa45c8beb259c989f4a957b6483461a5a" title=" " alt="" coords="475,55,586,80"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="642,124,587,94,563,83,565,78,589,89,645,120"/>
+<area shape="rect" id="Node000006" href="$optimizer_8c.html#aac7b898fd7043e6fd6c3c6ccf832be5a" title=" " alt="" coords="483,104,578,129"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="622,135,578,127,578,122,623,130"/>
+<area shape="rect" id="Node000007" href="$optimizer_8c.html#a8f43b4f0bfef5a94ab6f5858ee22e71c" title=" " alt="" coords="475,153,586,179"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="623,153,587,160,586,154,622,148"/>
+<area shape="rect" id="Node000008" href="$optimizer_8c.html#af7c7c69805a4e67324935285f04df5ff" title=" " alt="" coords="475,203,586,228"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="643,164,589,192,562,205,560,200,587,188,640,159"/>
+<area shape="rect" id="Node000009" href="$optimizer_8c.html#ad1f5fcaa0742ec4668cae2d8c8d0613c" title=" " alt="" coords="491,252,571,277"/>
+<area shape="poly" id="edge12_Node000001_Node000009" title=" " alt="" coords="661,167,630,205,590,241,568,254,565,250,586,237,626,201,657,164"/>
+<area shape="rect" id="Node000003" href="$optimizer_8c.html#adf4a9d996ece7341e38f9cd3060f7959" title="Perform Optimizer Step." alt="" coords="248,129,425,155"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="485,39,475,44,406,90,355,131,351,127,403,86,472,40,483,34"/>
+<area shape="rect" id="Node000004" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,129,200,155"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="234,145,200,145,200,139,234,139"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="485,88,371,132,369,127,483,83"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="470,127,426,133,425,128,469,122"/>
+<area shape="poly" id="edge9_Node000007_Node000003" title=" " alt="" coords="461,160,425,156,426,150,462,155"/>
+<area shape="poly" id="edge11_Node000008_Node000003" title=" " alt="" coords="482,200,371,157,373,152,484,195"/>
+<area shape="poly" id="edge13_Node000009_Node000003" title=" " alt="" coords="485,248,472,242,404,197,352,157,355,153,407,192,475,237,487,244"/>
+</map>

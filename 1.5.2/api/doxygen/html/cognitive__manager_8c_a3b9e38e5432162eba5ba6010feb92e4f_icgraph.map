@@ -1,0 +1,9 @@
+<map id="sneppx_episodic_consolidate" name="sneppx_episodic_consolidate">
+<area shape="rect" id="Node000001" title=" " alt="" coords="500,31,712,56"/>
+<area shape="rect" id="Node000002" href="$cognitive__manager_8c.html#ae541154514bfd171b23d39916628d6d5" title="Perform Episodic Consolidate." alt="" coords="236,5,452,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="486,34,452,31,452,26,487,29"/>
+<area shape="rect" id="Node000003" href="$episodic_8c.html#a52c6862e7ffb3cc66a8b0cebbff08c46" title=" " alt="" coords="255,55,433,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="487,57,434,62,433,57,486,52"/>
+<area shape="rect" id="Node000004" href="$cognitive__manager_8c.html#a04d533a5b6f015bca212b0faf057fc40" title="Perform Episodic Record." alt="" coords="5,55,188,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,70,188,70,188,65,241,65"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="SNEPPX_shamir_split" name="SNEPPX_shamir_split">
+<area shape="rect" id="Node000001" title="Perform Shamir Split." alt="" coords="5,31,165,56"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#aa65931cf1992469f14274e23b39050bb" title=" " alt="" coords="235,5,297,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,29,221,22,221,27,166,35"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#afb6baabcf7a1dfccc705357f10f1aea1" title=" " alt="" coords="213,55,319,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="166,51,200,56,199,61,165,57"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#aba76d0071c81d00029fb56a39967161d" title=" " alt="" coords="367,29,433,55"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="318,55,353,48,354,53,319,60"/>
+<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#a0332783cb66261ee3ab240e4f925906d" title=" " alt="" coords="367,79,433,104"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="319,74,354,80,353,86,318,79"/>
+</map>

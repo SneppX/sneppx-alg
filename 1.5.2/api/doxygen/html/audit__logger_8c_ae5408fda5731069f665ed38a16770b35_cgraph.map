@@ -1,0 +1,7 @@
+<map id="SNEPPX_audit_get_stats" name="SNEPPX_audit_get_stats">
+<area shape="rect" id="Node000001" title="Perform Audit Get Stats." alt="" coords="5,13,185,38"/>
+<area shape="rect" id="Node000002" href="$audit__logger_8c.html#abe8d4ecf87202d9501e33974e03d78bc" title="Perform Audit Verify Chain." alt="" coords="233,5,391,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,23,220,23,220,28,186,28"/>
+<area shape="rect" id="Node000003" href="$audit__logger_8c.html#a82a4fe99f043fd5bb484d1d2995cb75b" title=" " alt="" coords="439,13,536,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="391,23,425,23,425,28,391,28"/>
+</map>

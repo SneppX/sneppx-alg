@@ -1,0 +1,10 @@
+<map id="free_ctx_EmbeddingCtx" name="free_ctx_EmbeddingCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="692,31,869,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ae57baf6f43a0206d337cd396e94f48e5" title=" " alt="" coords="449,5,644,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="678,35,644,31,644,26,679,30"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a51c5673208c0b8f84864c299d139a429" title="Perform Embedding." alt="" coords="248,31,401,56"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="678,46,401,46,401,41,678,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="436,33,402,37,401,32,435,28"/>
+<area shape="rect" id="Node000004" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,31,200,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="234,46,200,46,200,41,234,41"/>
+</map>

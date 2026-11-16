@@ -1,0 +1,7 @@
+<map id="SNEPPX_data_pipeline_destroy" name="SNEPPX_data_pipeline_destroy">
+<area shape="rect" id="Node000001" title="Destroy Data Pipeline." alt="" coords="5,5,173,45"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="221,13,328,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="173,23,208,23,208,28,173,28"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="376,13,535,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="328,23,362,23,362,28,328,28"/>
+</map>

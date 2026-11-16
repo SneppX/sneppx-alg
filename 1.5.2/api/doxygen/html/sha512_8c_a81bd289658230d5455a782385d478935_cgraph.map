@@ -1,0 +1,12 @@
+<map id="SNEPPX_sha512_legacy" name="SNEPPX_sha512_legacy">
+<area shape="rect" id="Node000001" title="Legacy SHA&#45;512 (pre&#45;RFC&#45;8032 length encoding)." alt="" coords="5,63,183,88"/>
+<area shape="rect" id="Node000002" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="242,5,397,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="144,60,255,31,256,37,145,65"/>
+<area shape="rect" id="Node000003" href="$sha512_8c.html#ad177edfadcbb5474b7077698cdec0fdb" title="Perform Sha512 Finish (Legacy / Pre&#45;Fix Behavior)." alt="" coords="231,55,408,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,73,217,73,217,78,183,78"/>
+<area shape="rect" id="Node000004" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Update Sha512." alt="" coords="456,92,635,117"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="139,86,183,96,231,105,340,111,442,109,442,115,340,116,230,110,182,102,138,91"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="409,84,443,89,442,94,408,89"/>
+<area shape="rect" id="Node000005" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="683,92,823,117"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="635,102,669,102,669,107,635,107"/>
+</map>

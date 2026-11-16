@@ -1,0 +1,9 @@
+<map id="rlhf_detect_bias" name="rlhf_detect_bias">
+<area shape="rect" id="Node000001" title=" " alt="" coords="257,63,384,88"/>
+<area shape="rect" id="Node000002" href="$rlhf__safety_8c.html#a7446fe197dbd85e9721521262253e321" title="Perform Rlhf Check Policies." alt="" coords="5,5,209,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="263,61,209,46,160,33,162,28,210,41,265,56"/>
+<area shape="rect" id="Node000003" href="$rlhf__safety_8c.html#aa04d21d0012a933c67801e3e9bb8c204" title="Perform Rlhf Generate Critique." alt="" coords="24,55,191,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="244,78,191,78,191,73,244,73"/>
+<area shape="rect" id="Node000004" href="$rlhf__safety_8c.html#a40b76a60bc448d5ef59452a8b309982c" title="Perform Rlhf Score." alt="" coords="35,120,179,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="265,94,210,110,162,122,160,117,209,105,263,89"/>
+</map>

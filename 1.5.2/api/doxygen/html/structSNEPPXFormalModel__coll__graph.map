@@ -1,0 +1,7 @@
+<map id="SNEPPXFormalModel" name="SNEPPXFormalModel">
+<area shape="rect" id="Node000001" title=" " alt="" coords="79,93,238,119"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXModelState.html" title=" " alt="" coords="5,5,152,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,39,149,91,146,95,97,43"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXFVState.html" title=" " alt="" coords="177,5,301,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="221,43,172,95,168,91,217,39"/>
+</map>

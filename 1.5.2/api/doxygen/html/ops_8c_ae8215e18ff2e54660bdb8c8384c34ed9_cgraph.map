@@ -1,0 +1,17 @@
+<map id="recompute_PowCtx" name="recompute_PowCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,153,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a146fc3c57a037d05b02579231d8d39d3" title=" " alt="" coords="201,5,332,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,31,187,26,188,31,154,36"/>
+<area shape="rect" id="Node000007" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="205,55,329,80"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="154,50,191,55,190,60,153,55"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="837,31,944,56"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="332,12,536,9,663,13,790,22,824,27,824,32,789,27,662,18,536,14,332,18"/>
+<area shape="rect" id="Node000005" href="$tensor_8c.html#ad054e4c60272e5bea3021d35186edae5" title="Destroy Tensor." alt="" coords="380,31,557,56"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="333,24,366,28,366,33,332,29"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="992,31,1151,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="944,41,978,41,978,46,944,46"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="557,41,823,41,823,46,557,46"/>
+<area shape="rect" id="Node000006" href="$tensor_8c.html#ab304e494ae590b3cf08d4ff51aa3c1f3" title="Perform Storage Release." alt="" coords="605,81,789,107"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="528,54,627,76,626,81,526,59"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="746,79,828,57,829,62,747,84"/>
+</map>

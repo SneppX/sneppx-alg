@@ -1,0 +1,13 @@
+<map id="dilithium_decompose_scalar" name="dilithium_decompose_scalar">
+<area shape="rect" id="Node000001" title=" " alt="" coords="707,27,869,67"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#a61eda01aed2308b91d247c12f57913a9" title=" " alt="" coords="461,5,659,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="693,38,659,33,659,28,693,32"/>
+<area shape="rect" id="Node000004" href="$dilithium_8c.html#ab6a47a8629e64c34725f890ea66f4272" title=" " alt="" coords="489,55,631,95"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="693,62,632,69,631,64,693,56"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="239,5,411,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="448,21,411,21,411,15,448,15"/>
+<area shape="rect" id="Node000005" href="$dilithium_8c.html#a4c166d00d7aae33c09954f1f04ecd0fd" title=" " alt="" coords="236,63,413,88"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="475,78,413,78,413,73,475,73"/>
+<area shape="rect" id="Node000006" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="5,63,188,88"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="222,78,188,78,188,73,222,73"/>
+</map>

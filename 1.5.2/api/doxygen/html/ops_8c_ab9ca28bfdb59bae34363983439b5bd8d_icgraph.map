@@ -1,0 +1,15 @@
+<map id="free_ctx_BinopCtx" name="free_ctx_BinopCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1072,42,1213,67"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a0b475f1cbd2c1270cd8cbb0cf47251c5" title=" " alt="" coords="865,17,1024,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1058,47,1024,42,1025,37,1059,41"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a099d6baf60b11293d6460faf12a14be0" title="Perform Matmul." alt="" coords="687,42,817,67"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="1058,57,818,57,818,52,1058,52"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="852,44,818,49,817,43,851,39"/>
+<area shape="rect" id="Node000004" href="$attention_8c.html#a862e89866d73e95189c504feadac7c2f" title="Perform Attn Build Train Graph." alt="" coords="456,5,639,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="672,46,638,41,639,36,673,41"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,42,200,67"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="672,59,639,60,248,60,200,59,200,54,248,55,639,55,672,54"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="248,5,408,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="442,28,408,28,408,23,442,23"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="234,40,200,45,200,39,234,35"/>
+</map>

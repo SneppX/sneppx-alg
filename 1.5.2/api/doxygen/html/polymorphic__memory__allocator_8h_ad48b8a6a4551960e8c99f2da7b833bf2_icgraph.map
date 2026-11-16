@@ -1,0 +1,20 @@
+<map id="SNEPPX_secure_copy" name="SNEPPX_secure_copy">
+<area shape="rect" id="Node000001" title="Perform Secure Copy." alt="" coords="899,152,1060,177"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a558789bc26070817e2c2faa2b1be9d18" title="Perform Realloc." alt="" coords="727,152,851,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="885,167,851,167,851,162,885,162"/>
+<area shape="rect" id="Node000003" href="$tokenizer_8c.html#a574d67a7bcd26bd803720fe1e6703a43" title=" " alt="" coords="544,101,639,127"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="724,151,638,129,640,124,726,146"/>
+<area shape="rect" id="Node000008" href="$tokenizer_8c.html#ab1585978c09f059bf372a0b0ff11dc9c" title="Perform Tokenizer Train Bpe." alt="" coords="5,131,213,156"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="713,165,214,149,214,144,713,160"/>
+<area shape="rect" id="Node000009" href="$tokenizer_8c.html#a9cc41c7ea3c4950ccd38d88936bcadff" title="Load Tokenizer." alt="" coords="504,203,679,228"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="726,183,642,205,641,200,725,178"/>
+<area shape="rect" id="Node000004" href="$tokenizer_8c.html#a78acca3410dc713ae6873d2e0ede6a0d" title="Perform Tokenizer Encode." alt="" coords="261,52,456,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="530,104,419,80,420,75,531,99"/>
+<area shape="rect" id="Node000007" href="$tokenizer_8c.html#ad853afcd9c0bcc52b7b9119c55bf0b0f" title=" " alt="" coords="279,101,439,127"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="530,117,439,117,439,111,530,111"/>
+<area shape="rect" id="Node000005" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="40,5,179,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="276,52,177,33,178,28,277,47"/>
+<area shape="rect" id="Node000006" href="$data__pipeline_8c.html#a8c027bdaaad1b07fae0cf9482ab99ccc" title="Create Text Dataset." alt="" coords="28,55,191,95"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="248,72,191,75,191,69,247,67"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="266,128,214,134,213,128,265,122"/>
+</map>

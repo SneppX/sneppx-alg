@@ -1,0 +1,15 @@
+<map id="audit_compute_category_checks" name="audit_compute_category_checks">
+<area shape="rect" id="Node000001" title=" " alt="" coords="477,69,660,109"/>
+<area shape="rect" id="Node000002" href="$self__audit_8c.html#a5d8aac7b0d1a9deb0efc72cbd4da8eee" title=" " alt="" coords="256,5,420,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="482,68,410,48,411,43,484,63"/>
+<area shape="rect" id="Node000003" href="$self__audit_8c.html#a5d5140e707f222aab799b51dde881705" title=" " alt="" coords="247,69,429,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="464,92,430,92,430,87,464,87"/>
+<area shape="rect" id="Node000007" href="$self__audit_8c.html#a51a57fa9e1aa7e620388fb7295e1840e" title=" " alt="" coords="257,134,419,159"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="475,115,390,137,389,131,474,110"/>
+<area shape="rect" id="Node000004" href="$self__audit_8c.html#a81b1f8cdb920f2b0223413d8ecb85508" title=" " alt="" coords="6,12,198,52"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,69,184,55,186,49,243,64"/>
+<area shape="rect" id="Node000005" href="$self__audit_8c.html#a0e6aacfab7c588b60d1d830f6aff493e" title=" " alt="" coords="5,77,199,102"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="233,92,199,92,199,87,233,87"/>
+<area shape="rect" id="Node000006" href="$self__audit_8c.html#a39a1bc16e864020d5ebb6a1f50be291a" title=" " alt="" coords="9,127,195,167"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="243,115,186,129,184,124,241,110"/>
+</map>

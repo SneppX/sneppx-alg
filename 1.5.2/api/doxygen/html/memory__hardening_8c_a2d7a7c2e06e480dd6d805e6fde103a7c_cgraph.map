@@ -1,0 +1,5 @@
+<map id="SNEPPX_freelist_write_canary" name="SNEPPX_freelist_write_canary">
+<area shape="rect" id="Node000001" title="Perform Freelist Write Canary." alt="" coords="5,5,172,45"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#adbc9759ba4ffde7c1190a5954446d555" title="Perform Freelist Canary Value." alt="" coords="220,5,397,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,23,207,23,207,28,172,28"/>
+</map>

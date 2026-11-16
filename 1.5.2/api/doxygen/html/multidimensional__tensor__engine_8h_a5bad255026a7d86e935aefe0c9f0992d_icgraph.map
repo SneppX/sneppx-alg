@@ -1,0 +1,15 @@
+<map id="SNEPPX_tensor_embedding" name="SNEPPX_tensor_embedding">
+<area shape="rect" id="Node000001" title="Perform Tensor Embedding." alt="" coords="484,55,685,80"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a51c5673208c0b8f84864c299d139a429" title="Perform Embedding." alt="" coords="265,5,419,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="508,55,405,33,406,28,509,49"/>
+<area shape="rect" id="Node000004" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="248,55,436,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="471,70,436,70,436,65,471,65"/>
+<area shape="rect" id="Node000006" href="$arch_8c.html#a5d156cc00f9e0b423266b948f6baa1ea" title="Run the forward pass for Model." alt="" coords="253,104,431,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="509,85,406,107,405,101,508,80"/>
+<area shape="rect" id="Node000003" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,5,200,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="252,21,200,21,200,15,252,15"/>
+<area shape="rect" id="Node000005" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="33,55,172,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="234,70,172,70,172,65,234,65"/>
+<area shape="rect" id="Node000007" href="$trainer_8c.html#a802056e5ee54b9d1fff826ee321dab4c" title="Perform Trainer Evaluate." alt="" coords="9,104,196,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="239,119,196,119,196,114,239,114"/>
+</map>

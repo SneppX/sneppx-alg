@@ -1,0 +1,15 @@
+<map id="hsm_find_slot" name="hsm_find_slot">
+<area shape="rect" id="Node000001" title=" " alt="" coords="256,129,368,155"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a69806e2cb66f74f41da9b01e3b68bf5b" title="Perform Hsm Delete Key." alt="" coords="13,5,200,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="291,120,254,81,232,61,207,44,180,33,182,28,209,40,235,57,258,77,295,116"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#acf0f33837994bd8e8329b29636620faf" title="Perform Hsm Generate Key." alt="" coords="5,55,208,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="275,125,207,94,170,83,171,78,209,89,278,120"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#abc9a90a57dcae579eb58724b08d85ed7" title="Perform Hsm Load Key." alt="" coords="20,104,193,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="242,136,193,130,194,125,243,131"/>
+<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#a70e768c3ad1f82e9dbd43e3f11e4557d" title="Perform Hsm Store Key." alt="" coords="17,153,196,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="243,153,196,158,196,153,242,147"/>
+<area shape="rect" id="Node000006" href="$s6__extensions_8c.html#ac7f4562c042e439ce7fea5b4d2f46a38" title="Perform Hsm Unwrap Key." alt="" coords="10,203,203,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="276,163,209,193,167,205,165,200,207,187,274,158"/>
+<area shape="rect" id="Node000007" href="$s6__extensions_8c.html#ae74993abae9f20df48f049d2071e8b29" title="Perform Hsm Wrap Key." alt="" coords="18,252,195,277"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="294,167,258,206,209,242,179,254,177,250,207,237,254,202,290,164"/>
+</map>

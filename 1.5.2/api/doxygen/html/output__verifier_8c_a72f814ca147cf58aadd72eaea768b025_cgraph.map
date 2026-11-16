@@ -1,0 +1,9 @@
+<map id="SNEPPX_output_verifier_check_pii_all" name="SNEPPX_output_verifier_check_pii_all">
+<area shape="rect" id="Node000001" title="Perform Output Verifier Check Pii All." alt="" coords="5,69,180,109"/>
+<area shape="rect" id="Node000002" href="$output__verifier_8c.html#a2c036275a7c955fbbb540651ce5ee7c4" title="Perform Output Verifier Check Pii Emails." alt="" coords="228,5,403,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,67,231,47,233,52,164,72"/>
+<area shape="rect" id="Node000003" href="$output__verifier_8c.html#a18fb72202621b0845a2a9c9fc41228f3" title="Perform Output Verifier Check Pii Phones." alt="" coords="228,69,403,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="180,87,214,87,214,92,180,92"/>
+<area shape="rect" id="Node000004" href="$output__verifier_8c.html#aeb13ee269c6ff8911a49ccb03d88251d" title="Perform Output Verifier Check Pii Ssn." alt="" coords="228,133,403,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,107,233,127,231,132,162,112"/>
+</map>

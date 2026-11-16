@@ -1,0 +1,9 @@
+<map id="SNEPPX_llm_config_from_json" name="SNEPPX_llm_config_from_json">
+<area shape="rect" id="Node000001" title="Parse an LLM configuration from a JSON string." alt="" coords="5,55,224,80"/>
+<area shape="rect" id="Node000002" href="$model__zoo_8c.html#afbc796266b5c5126c5500a9ed6035da5" title=" " alt="" coords="277,5,390,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,52,263,31,264,36,172,57"/>
+<area shape="rect" id="Node000003" href="$model__zoo_8c.html#ac193adeea3c5d313e7544f4b2da19300" title=" " alt="" coords="283,55,384,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,65,269,65,269,70,225,70"/>
+<area shape="rect" id="Node000004" href="$model__zoo_8c.html#a65611689a6eea9489c0f77e3f9a0e396" title=" " alt="" coords="272,104,395,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="172,77,264,98,262,104,171,83"/>
+</map>

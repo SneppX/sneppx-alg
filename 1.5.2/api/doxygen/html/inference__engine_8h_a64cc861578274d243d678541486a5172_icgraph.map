@@ -1,0 +1,9 @@
+<map id="SNEPPX_argmax" name="SNEPPX_argmax">
+<area shape="rect" id="Node000001" title="Perform Argmax." alt="" coords="643,13,773,38"/>
+<area shape="rect" id="Node000002" href="$inference__engine_8c.html#af8fd45bf4e4ce4d6f2baebaedfc76f56" title="Perform Sample From Logits." alt="" coords="428,5,595,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="629,28,595,28,595,23,629,23"/>
+<area shape="rect" id="Node000003" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="192,13,380,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="414,28,380,28,380,23,414,23"/>
+<area shape="rect" id="Node000004" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="5,13,144,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="178,28,144,28,144,23,178,23"/>
+</map>

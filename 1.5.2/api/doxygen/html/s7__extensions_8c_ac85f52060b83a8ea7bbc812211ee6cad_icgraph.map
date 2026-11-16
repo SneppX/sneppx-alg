@@ -1,0 +1,7 @@
+<map id="key_type_valid" name="key_type_valid">
+<area shape="rect" id="Node000001" title=" " alt="" coords="209,31,329,56"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a92462b98393037dd268f70c0723b054c" title="Perform Tuf Get Key." alt="" coords="5,5,161,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,36,161,31,162,26,196,31"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#a5ad86664b148ed2fb882f51150f33241" title="Perform Tuf Set Key." alt="" coords="6,55,161,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="196,55,161,60,161,55,195,50"/>
+</map>

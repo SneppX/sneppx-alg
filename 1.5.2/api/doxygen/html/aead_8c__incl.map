@@ -1,0 +1,25 @@
+<map id="security/crypto/c/aead.c" name="security/crypto/c/aead.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="559,5,736,31"/>
+<area shape="rect" id="Node000002" href="$authenticated__encryption__module_8h.html" title=" " alt="" coords="5,79,193,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="559,33,207,81,207,76,558,28"/>
+<area shape="rect" id="Node000005" href="$chacha20__stream__cipher_8h.html" title=" " alt="" coords="218,86,413,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="600,33,377,85,376,80,598,28"/>
+<area shape="rect" id="Node000006" href="$polynomial__authentication__mac_8h.html" title=" " alt="" coords="437,79,633,119"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="632,33,575,73,572,69,629,29"/>
+<area shape="rect" id="Node000007" href="$constant__time__operations_8h.html" title=" " alt="" coords="658,86,861,111"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="665,29,733,76,730,80,662,33"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="885,86,956,111"/>
+<area shape="poly" id="edge13_Node000001_Node000008" title=" " alt="" coords="698,28,780,49,873,76,881,79,879,84,872,81,779,54,696,33"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="980,86,1051,111"/>
+<area shape="poly" id="edge14_Node000001_Node000009" title=" " alt="" coords="735,28,847,47,969,76,977,79,976,84,968,81,846,52,734,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="339,167,414,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="166,116,327,161,325,166,165,121"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="469,167,540,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="194,115,456,166,455,171,193,121"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="326,110,361,154,357,158,322,113"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="344,109,465,159,463,164,342,114"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="499,121,413,163,411,158,496,116"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="530,120,517,155,512,153,525,118"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="704,114,428,170,427,165,703,109"/>
+<area shape="poly" id="edge12_Node000007_Node000004" title=" " alt="" coords="723,114,554,166,552,161,722,109"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="SNEPPXARCLayer" name="SNEPPXARCLayer">
+<area shape="rect" id="Node000001" title=" " alt="" coords="908,103,1044,129"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXInputGuard.html" title=" " alt="" coords="553,49,698,74"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="713,68,884,93,921,101,920,106,884,99,712,74"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="229,77,344,102"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="306,64,333,40,367,22,404,13,434,13,464,18,501,21,611,20,697,17,738,18,781,24,829,35,885,54,928,76,961,101,958,105,925,81,883,58,828,40,780,29,737,24,697,22,611,25,501,27,463,23,433,19,404,18,369,26,336,45,310,68"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,81,552,65,553,70,358,86"/>
+<area shape="rect" id="Node000005" href="$structSNEPPXGradientObfuscator.html" title=" " alt="" coords="525,103,725,129"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="330,104,368,115,448,122,525,122,525,127,448,128,368,120,329,109"/>
+<area shape="rect" id="Node000006" href="$structSNEPPXOutputVerifier.html" title=" " alt="" coords="544,153,707,178"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="305,113,332,146,349,162,369,174,396,183,424,188,481,191,535,185,581,175,582,181,536,190,481,196,423,194,394,188,367,178,346,166,328,150,301,116"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,77,128,102"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="142,87,229,87,229,92,142,92"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="739,113,908,113,908,119,739,119"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="720,154,884,133,921,126,922,131,884,139,721,160"/>
+<area shape="rect" id="Node000007" href="$structSNEPPXARCConfig.html" title=" " alt="" coords="555,202,696,227"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="709,208,795,196,840,186,883,172,924,151,958,127,961,131,927,155,885,177,841,191,796,201,710,213"/>
+</map>

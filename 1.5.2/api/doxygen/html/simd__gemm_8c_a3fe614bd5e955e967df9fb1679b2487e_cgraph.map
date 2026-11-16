@@ -1,0 +1,9 @@
+<map id="SNEPPX_gemm_batched_strided" name="SNEPPX_gemm_batched_strided">
+<area shape="rect" id="Node000001" title="Perform Gemm Batched Strided." alt="" coords="5,5,187,45"/>
+<area shape="rect" id="Node000002" href="$simd__gemm_8c.html#a7b788105ab0092e33d2b57b13f324e96" title="Perform Gemm." alt="" coords="235,13,357,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,23,221,23,221,28,187,28"/>
+<area shape="rect" id="Node000003" href="$simd__gemm_8c.html#a1c757e2de6a34aff61355ff59bb53881" title="Perform Gemm Avx2." alt="" coords="405,13,567,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,23,392,23,392,28,358,28"/>
+<area shape="rect" id="Node000004" href="$simd__gemm_8c.html#a403bd8eb9c6b77db7b6cee06a9f28c16" title="Perform Gemm Scalar." alt="" coords="615,13,783,38"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="567,23,601,23,601,28,567,28"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_sigmoid" name="SNEPPX_tensor_sigmoid">
+<area shape="rect" id="Node000001" title="Perform Tensor Sigmoid." alt="" coords="185,5,365,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a97ab4d4bfabfa04c36d68943daa3da6e" title="Perform Sigmoid." alt="" coords="5,5,137,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,21,138,21,138,15,172,15"/>
+</map>

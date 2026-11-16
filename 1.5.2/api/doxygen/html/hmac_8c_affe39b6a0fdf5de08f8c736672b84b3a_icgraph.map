@@ -1,0 +1,12 @@
+<map id="SNEPPX_hmac_sha256" name="SNEPPX_hmac_sha256">
+<area shape="rect" id="Node000001" title="Perform Hmac Sha256." alt="" coords="379,55,549,80"/>
+<area shape="rect" id="Node000002" href="$hkdf_8c.html#a0e79eab9b1905d28f57c5a5729e792eb" title="HKDF expand phase." alt="" coords="165,5,329,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="394,54,303,33,304,28,395,49"/>
+<area shape="rect" id="Node000004" href="$hkdf_8c.html#a0ca09d33218573e26fff3578f8c5ed59" title="HKDF extract phase." alt="" coords="165,55,328,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="365,70,328,70,328,65,365,65"/>
+<area shape="rect" id="Node000005" href="$pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="163,105,331,145"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="403,86,324,107,322,102,401,81"/>
+<area shape="rect" id="Node000003" href="$hkdf_8c.html#a95515da12759c22f8c1b18f88fa51ff4" title="Perform Hkdf." alt="" coords="5,31,115,56"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="152,34,115,39,115,33,151,28"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="152,58,114,53,115,48,152,53"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="SNEPPX_poison_detector_optimal_threshold" name="SNEPPX_poison_detector_optimal_threshold">
+<area shape="rect" id="Node000001" title="Perform Poison Detector Optimal Threshold." alt="" coords="5,5,189,45"/>
+<area shape="rect" id="Node000002" href="$data__poisoning__defense_8c.html#a6c678cfe9fa8c309d86742ff3aeef640" title="Perform Poison Detector F1 Score." alt="" coords="237,5,421,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,23,223,23,223,28,190,28"/>
+<area shape="rect" id="Node000003" href="$data__poisoning__defense_8c.html#a8ab18ed75773130272bceaa9a14e5ce2" title="Perform Poison Detector Precision Recall." alt="" coords="469,5,653,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="422,23,455,23,455,28,422,28"/>
+</map>

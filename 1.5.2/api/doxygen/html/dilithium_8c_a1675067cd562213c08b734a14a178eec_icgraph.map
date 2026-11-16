@@ -1,0 +1,21 @@
+<map id="dilithium_mont_reduce" name="dilithium_mont_reduce">
+<area shape="rect" id="Node000001" title=" " alt="" coords="784,56,956,81"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#abc6cba41451b41c4059077950343047f" title=" " alt="" coords="604,5,736,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="805,55,720,33,721,28,806,50"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html#a2f1014e079c1a6c7d33b2d7ecb57ad48" title=" " alt="" coords="409,56,556,81"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="770,71,556,71,556,66,770,66"/>
+<area shape="rect" id="Node000008" href="$dilithium_8c.html#a12ad85b7a8bc6c3539f4e0bcd69b0df8" title=" " alt="" coords="617,107,723,132"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="806,87,721,109,720,104,805,82"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="610,37,531,58,530,53,608,32"/>
+<area shape="rect" id="Node000004" href="$dilithium_8c.html#ab75bc9d768ca62f5b3fec9c0a6073e04" title=" " alt="" coords="245,56,361,81"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="395,71,362,71,362,66,395,66"/>
+<area shape="rect" id="Node000006" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="15,7,187,32"/>
+<area shape="poly" id="edge7_Node000003_Node000006" title=" " alt="" coords="410,56,361,47,187,28,188,23,362,42,411,51"/>
+<area shape="rect" id="Node000007" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="10,105,193,131"/>
+<area shape="poly" id="edge8_Node000003_Node000007" title=" " alt="" coords="415,87,362,97,193,115,192,110,361,91,414,82"/>
+<area shape="rect" id="Node000005" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="5,56,197,81"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="231,71,197,71,197,66,231,66"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="237,55,154,35,155,29,238,50"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="238,87,155,108,154,103,237,82"/>
+<area shape="poly" id="edge10_Node000008_Node000003" title=" " alt="" coords="608,106,530,84,531,79,610,100"/>
+</map>

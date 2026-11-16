@@ -1,0 +1,10 @@
+<map id="is_reduced_dim" name="is_reduced_dim">
+<area shape="rect" id="Node000001" title=" " alt="" coords="445,70,569,95"/>
+<area shape="rect" id="Node000002" href="$tensor__ops__impl_8c.html#a7b5cf6ff03b31d12891101708e03643b" title="Perform Tensor Reduce Max F32." alt="" coords="225,5,397,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="449,69,379,48,381,43,451,64"/>
+<area shape="rect" id="Node000003" href="$tensor__ops__impl_8c.html#a434f1dfe47f82ec4e8b1189889d76fcb" title="Perform Tensor Reduce Mean F32." alt="" coords="5,92,177,132"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="432,91,178,109,177,103,431,85"/>
+<area shape="rect" id="Node000004" href="$tensor__ops__impl_8c.html#a29244231cebf175cf10cb984a1de13aa" title="Perform Tensor Reduce Sum F32." alt="" coords="225,120,397,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="451,102,381,123,379,117,449,97"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="211,130,177,126,178,120,212,125"/>
+</map>

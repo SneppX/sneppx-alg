@@ -1,0 +1,7 @@
+<map id="SNEPPX_ed25519_secret_key_expand" name="SNEPPX_ed25519_secret_key_expand">
+<area shape="rect" id="Node000001" title="Perform Ed25519 Secret Key Expand." alt="" coords="5,23,188,63"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a8fc1c0cfd641e5f61ab4359eea495689" title=" " alt="" coords="245,5,353,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,29,231,24,232,29,188,35"/>
+<area shape="rect" id="Node000003" href="$sha512__hashing__implementation_8h.html#ad75e7141bcdfd62fe0467ea101073acf" title="Compute SHA&#45;512 hash of input." alt="" coords="236,55,363,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="188,51,223,56,222,61,188,57"/>
+</map>

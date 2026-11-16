@@ -1,0 +1,11 @@
+<map id="hmac_compute" name="hmac_compute">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,128,80"/>
+<area shape="rect" id="Node000002" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="181,5,350,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,52,200,31,201,37,119,57"/>
+<area shape="rect" id="Node000003" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="188,55,343,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="128,65,174,65,174,70,128,70"/>
+<area shape="rect" id="Node000004" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="176,104,355,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="119,77,201,98,200,103,118,83"/>
+<area shape="rect" id="Node000005" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="403,104,543,129"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="355,114,389,114,389,119,355,119"/>
+</map>

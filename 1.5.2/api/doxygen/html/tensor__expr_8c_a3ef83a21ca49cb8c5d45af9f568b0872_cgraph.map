@@ -1,0 +1,27 @@
+<map id="SNEPPX_expr_eval" name="SNEPPX_expr_eval">
+<area shape="rect" id="Node000001" title="Perform Expr Eval." alt="" coords="5,132,149,157"/>
+<area shape="rect" id="Node000002" href="$tensor__expr_8c.html#ab42abc395195007857c54a64ab504feb" title=" " alt="" coords="197,132,287,157"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,142,184,142,184,147,150,147"/>
+<area shape="poly" id="edge7_Node000002_Node000002" title=" " alt="" coords="215,133,209,124,212,114,223,108,242,105,264,109,274,117,270,121,262,114,242,111,225,113,216,117,214,123,219,130"/>
+<area shape="rect" id="Node000003" href="$tensor__expr_8c.html#abfce19ae43431a7358f82718e4a3cd46" title=" " alt="" coords="359,5,471,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="251,130,285,90,333,48,359,34,361,38,336,52,288,94,255,133"/>
+<area shape="rect" id="Node000004" href="$tensor__expr_8c.html#a2d3eeedca72b587615d046a7c6756bab" title=" " alt="" coords="576,81,671,107"/>
+<area shape="poly" id="edge11_Node000002_Node000004" title=" " alt="" coords="259,129,292,109,334,91,394,81,455,77,562,83,562,88,455,82,395,86,335,97,295,113,262,134"/>
+<area shape="rect" id="Node000005" href="$tensor__expr_8c.html#a25100e07beff38cdd37a274e3b9685d6" title=" " alt="" coords="365,107,464,132"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="286,144,365,132,365,137,287,149"/>
+<area shape="rect" id="Node000006" href="$tensor__expr_8c.html#acace0b0a889e830871dcc486ad19d84f" title=" " alt="" coords="367,156,462,181"/>
+<area shape="poly" id="edge8_Node000002_Node000006" title=" " alt="" coords="280,155,354,166,353,172,279,160"/>
+<area shape="rect" id="Node000007" href="$simd__gemm_8c.html#acc7f673581d34ac13025ea4b3bbd21f4" title="Perform Fused Linear Bias Avx2." alt="" coords="335,206,495,246"/>
+<area shape="poly" id="edge12_Node000002_Node000007" title=" " alt="" coords="268,155,336,190,353,198,351,203,334,195,265,160"/>
+<area shape="rect" id="Node000008" href="$simd__gemm_8c.html#a7b788105ab0092e33d2b57b13f324e96" title="Perform Gemm." alt="" coords="353,271,476,296"/>
+<area shape="poly" id="edge13_Node000002_Node000008" title=" " alt="" coords="253,156,285,205,308,232,336,256,348,263,346,267,333,260,305,236,280,208,248,159"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="451,28,576,74,574,79,450,33"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="366,121,293,132,292,127,365,116"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="464,111,562,99,563,104,465,116"/>
+<area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="377,159,300,147,301,142,377,153"/>
+<area shape="poly" id="edge10_Node000006_Node000004" title=" " alt="" coords="456,153,494,141,577,109,579,114,496,146,458,158"/>
+<area shape="rect" id="Node000009" href="$simd__gemm_8c.html#a1c757e2de6a34aff61355ff59bb53881" title="Perform Gemm Avx2." alt="" coords="543,271,704,296"/>
+<area shape="poly" id="edge14_Node000008_Node000009" title=" " alt="" coords="476,281,529,281,529,286,476,286"/>
+<area shape="rect" id="Node000010" href="$simd__gemm_8c.html#a403bd8eb9c6b77db7b6cee06a9f28c16" title="Perform Gemm Scalar." alt="" coords="752,271,920,296"/>
+<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="704,281,738,281,738,286,704,286"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="SNEPPX_model_check" name="SNEPPX_model_check">
+<area shape="rect" id="Node000001" title="Perform Model Check." alt="" coords="273,31,440,56"/>
+<area shape="rect" id="Node000002" href="$model__checking_8c.html#abe0c0010fa0f35505b237a009af4e1e2" title="Perform Model Get Reachable." alt="" coords="5,5,225,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,36,225,32,226,27,260,31"/>
+<area shape="rect" id="Node000003" href="$model__checking_8c.html#ae8c210830b012bcca4910181b7f01938" title="Reduce the model to reachable states (reachable&#45;state reduction)." alt="" coords="21,55,210,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="260,56,210,61,210,55,259,50"/>
+</map>

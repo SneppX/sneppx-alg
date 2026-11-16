@@ -1,0 +1,17 @@
+<map id="fq_reduce" name="fq_reduce">
+<area shape="rect" id="Node000001" title=" " alt="" coords="571,31,657,56"/>
+<area shape="rect" id="Node000002" href="$kyber_8c.html#afc0b9e3f818ce1c26dfac91ef9ec0584" title=" " alt="" coords="441,55,523,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="558,56,523,63,522,57,557,51"/>
+<area shape="rect" id="Node000007" href="$kyber_8c.html#a9d481c0b110afcd0e708abd20e334527" title=" " alt="" coords="442,5,522,31"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="556,35,522,28,523,23,557,30"/>
+<area shape="rect" id="Node000003" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="244,55,373,80"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="427,70,373,70,373,65,427,65"/>
+<area shape="rect" id="Node000005" href="$kyber_8c.html#ab6f4fb8549887ad7039a8601355ff972" title="Decapsulate Kyber." alt="" coords="224,5,393,31"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="427,55,353,33,355,28,428,49"/>
+<area shape="rect" id="Node000006" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="224,104,393,129"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="429,85,394,95,355,107,353,101,393,90,427,80"/>
+<area shape="rect" id="Node000004" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="5,55,176,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="230,70,176,70,176,65,230,65"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="430,36,394,46,355,57,353,52,393,41,428,30"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="428,21,394,21,394,15,428,15"/>
+</map>

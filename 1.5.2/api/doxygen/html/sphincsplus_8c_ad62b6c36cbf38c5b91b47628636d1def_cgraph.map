@@ -1,0 +1,36 @@
+<map id="spx_ht_sign" name="spx_ht_sign">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,104,80"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#a91c5647eb2d0c8ba4abcccbf0662db3a" title=" " alt="" coords="152,55,287,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,65,138,65,138,70,104,70"/>
+<area shape="rect" id="Node000011" href="$sphincsplus_8c.html#a80c9346f981807a841ebbb0dbabfb65c" title=" " alt="" coords="165,5,274,31"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="97,52,162,32,164,37,98,57"/>
+<area shape="rect" id="Node000012" href="$sphincsplus_8c.html#a3d7d490e27e978987c4e11ca6ba25ce9" title=" " alt="" coords="504,141,621,167"/>
+<area shape="poly" id="edge16_Node000001_Node000012" title=" " alt="" coords="101,77,153,90,335,122,490,143,490,148,334,127,151,95,100,83"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#a8201ff1f04e62b590b32915b20d78a65" title=" " alt="" coords="335,5,449,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="264,52,333,32,334,37,265,57"/>
+<area shape="rect" id="Node000007" href="$sphincsplus_8c.html#a0b4d64fc38ec8c930240948ff97f14b7" title=" " alt="" coords="335,55,449,80"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="287,65,321,65,321,70,287,70"/>
+<area shape="rect" id="Node000004" href="$sphincsplus_8c.html#a0e29e34f08aea9b0d8e51085458f77a1" title=" " alt="" coords="1000,92,1099,117"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="449,14,541,15,661,20,794,32,927,55,970,68,1009,84,1007,89,968,73,926,61,794,38,661,25,541,20,449,19"/>
+<area shape="rect" id="Node000005" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="1172,143,1299,168"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1098,115,1175,136,1174,141,1096,120"/>
+<area shape="rect" id="Node000006" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="1347,143,1487,168"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1299,153,1333,153,1333,158,1299,158"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="450,63,660,61,793,66,927,77,987,87,986,92,926,82,793,71,660,66,450,68"/>
+<area shape="rect" id="Node000008" href="$sphincsplus_8c.html#ae2c1f44c224e65504996d612e77e07eb" title=" " alt="" coords="497,92,628,117"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="450,77,492,86,491,92,449,82"/>
+<area shape="rect" id="Node000009" href="$sphincsplus_8c.html#adbffc42a78aad813fe50b33c565f512c" title=" " alt="" coords="679,117,805,143"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="629,111,666,117,665,122,628,117"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="805,130,864,131,926,127,986,117,987,123,927,133,864,136,805,136"/>
+<area shape="rect" id="Node000010" href="$sphincsplus_8c.html#a9fe0a96ba83fc5e842f5cfe686f7b9f0" title=" " alt="" coords="856,92,927,117"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="804,117,842,110,843,116,805,122"/>
+<area shape="poly" id="edge12_Node000010_Node000004" title=" " alt="" coords="927,102,986,102,986,107,927,107"/>
+<area shape="poly" id="edge14_Node000011_Node000003" title=" " alt="" coords="274,15,321,15,321,21,274,21"/>
+<area shape="poly" id="edge15_Node000011_Node000007" title=" " alt="" coords="265,28,334,48,333,53,264,33"/>
+<area shape="poly" id="edge20_Node000012_Node000009" title=" " alt="" coords="621,144,665,138,666,143,622,149"/>
+<area shape="rect" id="Node000013" href="$sphincsplus_8c.html#ad5732c0b38d832e4172691b693c949ba" title=" " alt="" coords="676,168,808,193"/>
+<area shape="poly" id="edge17_Node000012_Node000013" title=" " alt="" coords="622,160,662,166,662,171,621,165"/>
+<area shape="rect" id="Node000014" href="$sphincsplus_8c.html#ac4d4b4e1716743e99c947fea0f764b21" title=" " alt="" coords="975,167,1124,192"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="808,178,961,177,961,182,808,183"/>
+<area shape="poly" id="edge19_Node000014_Node000005" title=" " alt="" coords="1124,167,1158,163,1159,168,1125,172"/>
+</map>

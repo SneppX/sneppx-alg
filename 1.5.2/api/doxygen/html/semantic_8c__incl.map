@@ -1,0 +1,27 @@
+<map id="kernel/memory/cognition/semantic.c" name="kernel/memory/cognition/semantic.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="378,5,563,45"/>
+<area shape="rect" id="Node000002" href="$cognitive__memory_8h.html" title=" " alt="" coords="177,93,332,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="420,48,300,91,298,86,418,43"/>
+<area shape="rect" id="Node000007" href="$polymorphic__memory__allocator_8h.html" title=" " alt="" coords="343,255,508,295"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="454,47,438,69,425,94,417,133,415,172,421,241,416,241,410,172,412,132,420,92,433,66,450,44"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="435,93,506,119"/>
+<area shape="poly" id="edge13_Node000001_Node000008" title=" " alt="" coords="473,46,473,79,468,79,468,46"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="530,93,601,119"/>
+<area shape="poly" id="edge14_Node000001_Node000009" title=" " alt="" coords="495,43,542,82,539,86,492,48"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="625,93,693,119"/>
+<area shape="poly" id="edge15_Node000001_Node000010" title=" " alt="" coords="517,43,619,85,617,90,515,48"/>
+<area shape="rect" id="Node000003" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="84,255,268,295"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="256,119,249,160,232,208,206,246,202,243,227,205,243,158,251,118"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="75,343,149,368"/>
+<area shape="poly" id="edge8_Node000002_Node000004" title=" " alt="" coords="177,119,83,138,44,152,21,168,10,189,9,210,14,233,25,255,56,298,90,332,86,335,52,302,20,258,9,235,3,211,5,187,17,165,42,147,81,133,176,114"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="270,343,341,368"/>
+<area shape="poly" id="edge9_Node000002_Node000005" title=" " alt="" coords="260,119,303,329,298,330,255,120"/>
+<area shape="rect" id="Node000006" href="$automatic__differentiation__framework_8h.html" title=" " alt="" coords="31,167,217,207"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="237,121,169,162,166,157,234,117"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="163,297,132,333,128,330,158,293"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="209,293,276,333,273,338,206,297"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="138,206,160,242,155,244,133,208"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="106,209,88,230,75,256,71,275,75,294,83,313,95,330,90,333,78,316,69,295,65,275,70,254,84,227,102,205"/>
+<area shape="poly" id="edge11_Node000007_Node000004" title=" " alt="" coords="351,297,164,344,162,339,350,292"/>
+<area shape="poly" id="edge12_Node000007_Node000005" title=" " alt="" coords="398,297,336,337,333,333,395,293"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="get_tsc" name="get_tsc">
+<area shape="rect" id="Node000001" title=" " alt="" coords="915,42,984,67"/>
+<area shape="rect" id="Node000002" href="$entropy__pool_8c.html#af055d617d7d70c9473369b6cbb4d6aa6" title="Perform Entropy Pool Add Rdtsc." alt="" coords="701,5,867,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="900,49,867,43,867,37,901,44"/>
+<area shape="rect" id="Node000004" href="$entropy__pool_8c.html#a782b9216677c5c8a1e0f58effa6c7e49" title="Get Entropy Pool." alt="" coords="247,42,440,67"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="901,59,867,60,677,62,488,60,440,59,440,54,488,55,677,56,867,55,901,54"/>
+<area shape="rect" id="Node000003" href="$entropy__pool_8c.html#a04c4cd3bf966e6ead4d2ac2121871ac5" title="Perform Entropy Pool Collect." alt="" coords="488,5,653,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="688,28,654,28,654,23,688,23"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="474,40,440,45,440,40,474,35"/>
+<area shape="rect" id="Node000005" href="$entropy__pool_8c.html#acd743633ae58ce55b483f50496585570" title="Perform Entropy Pool Stir." alt="" coords="5,42,199,67"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="233,57,199,57,199,52,233,52"/>
+</map>

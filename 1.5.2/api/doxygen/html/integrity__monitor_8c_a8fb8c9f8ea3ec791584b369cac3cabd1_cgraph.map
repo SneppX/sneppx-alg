@@ -1,0 +1,60 @@
+<map id="populate_self_block" name="populate_self_block">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,372,157,397"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a6540eb55e394cf8b5cc5289d6f78e728" title="Perform Monitor Api Hook Check." alt="" coords="472,435,631,475"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,393,459,439,458,444,157,399"/>
+<area shape="rect" id="Node000006" href="$integrity__monitor_8c.html#aa13f40aa47b14fc08d3563cc56daf5ad" title="Perform Monitor Check Canary." alt="" coords="463,371,639,411"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="158,383,449,387,449,392,158,388"/>
+<area shape="rect" id="Node000007" href="$integrity__monitor_8c.html#a168b5bb0d126af734754bdd70d694d3d" title="Perform Monitor Freq Analyze." alt="" coords="469,651,633,691"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="85,397,86,464,91,511,100,562,115,616,137,667,167,714,207,752,233,768,257,779,281,784,303,785,352,774,408,752,423,741,432,729,441,715,456,701,466,695,469,700,459,705,445,718,436,732,427,745,411,756,353,779,304,790,280,789,256,784,231,773,204,756,163,717,132,670,110,618,95,564,86,511,81,464,79,397"/>
+<area shape="rect" id="Node000008" href="$integrity__monitor_8c.html#a851d26b220526402b4cf7a6494d074d2" title="Reset Monitor Freq." alt="" coords="225,155,389,195"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="86,371,101,337,127,293,161,246,204,205,212,200,215,204,207,209,165,249,131,296,106,340,90,373"/>
+<area shape="rect" id="Node000009" href="$integrity__monitor_8c.html#ae6af7916352cb36dfd8636285ccb8906" title="Initialize Monitor." alt="" coords="228,55,387,80"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="83,371,93,322,115,252,130,214,150,176,175,141,204,109,232,92,262,81,264,86,234,96,207,113,179,144,155,179,135,216,120,254,98,324,88,372"/>
+<area shape="rect" id="Node000010" href="$integrity__monitor_8c.html#a4906ebdbab5773e9c809bc97bd2f7434" title="Perform Monitor Refresh Canary." alt="" coords="459,34,643,74"/>
+<area shape="poly" id="edge14_Node000001_Node000010" title=" " alt="" coords="80,371,83,309,99,217,114,167,136,119,165,75,204,40,237,21,272,10,309,4,347,3,421,11,484,27,483,32,420,17,347,8,310,9,273,15,239,26,207,44,169,79,140,121,119,169,104,218,88,310,85,372"/>
+<area shape="rect" id="Node000012" href="$integrity__monitor_8c.html#a8a4df4342a2bcd7e141ca8c97c3db642" title="Perform Monitor Register Region." alt="" coords="457,157,645,197"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="82,371,92,325,113,260,129,226,149,194,174,164,204,141,239,124,277,115,316,112,356,114,431,128,494,149,493,154,430,133,355,119,317,117,278,120,241,129,207,145,178,168,153,197,134,229,118,262,97,326,87,372"/>
+<area shape="rect" id="Node000013" href="$integrity__monitor_8c.html#a272136820a8bfe447130b9b1d6c506c5" title="Perform Monitor Shutdown." alt="" coords="207,220,408,245"/>
+<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="90,370,136,318,168,288,204,262,236,247,238,252,207,267,171,292,139,322,94,373"/>
+<area shape="rect" id="Node000014" href="$integrity__monitor_8c.html#a3e99fc5409f7925271ee097c8047ff84" title="Stop Monitor." alt="" coords="468,233,635,259"/>
+<area shape="poly" id="edge20_Node000001_Node000014" title=" " alt="" coords="113,369,204,335,352,292,482,259,483,264,354,297,206,340,115,374"/>
+<area shape="rect" id="Node000015" href="$integrity__monitor_8c.html#aa9f909c4559007cd1ff6e22d75d76ad5" title="Start Monitor." alt="" coords="223,473,391,499"/>
+<area shape="poly" id="edge19_Node000001_Node000015" title=" " alt="" coords="104,395,150,423,206,451,247,467,245,472,204,456,147,427,101,400"/>
+<area shape="rect" id="Node000016" href="$integrity__monitor_8c.html#a6a272266365a46538956e7500305d708" title="Perform Monitor Syscall Enable." alt="" coords="216,523,399,563"/>
+<area shape="poly" id="edge21_Node000001_Node000016" title=" " alt="" coords="94,396,138,450,170,482,207,509,218,515,215,520,204,513,167,486,134,454,90,399"/>
+<area shape="rect" id="Node000017" href="$integrity__monitor_8c.html#aa49c994eaa63620a958145c18edd32c1" title="Perform Monitor Timing Check." alt="" coords="461,715,641,755"/>
+<area shape="poly" id="edge22_Node000001_Node000017" title=" " alt="" coords="87,397,100,479,126,600,143,662,162,718,183,762,207,790,242,809,280,819,321,820,361,814,402,804,440,790,504,760,506,765,442,795,403,809,362,819,321,825,280,824,240,814,204,795,179,765,157,720,137,663,121,601,95,480,82,398"/>
+<area shape="rect" id="Node000018" href="$integrity__monitor_8c.html#ae6ff1daf4bc5e12be048050a37276b69" title="Perform Monitor Timing Set Baseline." alt="" coords="217,638,397,678"/>
+<area shape="poly" id="edge24_Node000001_Node000018" title=" " alt="" coords="88,397,100,441,123,502,158,567,181,597,207,624,213,629,210,633,204,628,177,601,154,570,118,504,95,442,83,398"/>
+<area shape="rect" id="Node000019" href="$integrity__monitor_8c.html#a0413224b8dc61cc045baccd7ff3f7870" title="Perform Monitor Unregister Region." alt="" coords="205,702,409,742"/>
+<area shape="poly" id="edge25_Node000001_Node000019" title=" " alt="" coords="87,397,95,451,115,529,131,572,151,614,176,653,207,688,212,692,209,696,203,692,172,657,146,617,126,574,110,531,90,452,81,398"/>
+<area shape="rect" id="Node000020" href="$integrity__monitor_8c.html#a2f7943f8515754c227c985238c589a0f" title="Perform Monitor Verify All." alt="" coords="208,588,407,613"/>
+<area shape="poly" id="edge26_Node000001_Node000020" title=" " alt="" coords="90,397,104,432,128,480,163,531,184,553,207,573,218,580,215,584,204,577,180,557,159,534,124,483,99,434,85,399"/>
+<area shape="rect" id="Node000022" href="$integrity__monitor_8c.html#ac4bc8ad18442679197520d612f5ae65f" title="Perform Monitor Verify Region." alt="" coords="464,307,639,347"/>
+<area shape="poly" id="edge34_Node000001_Node000022" title=" " alt="" coords="158,372,205,366,450,336,451,342,206,371,158,377"/>
+<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#a3bd963555e881fce9f9d896632d4a49b" title=" " alt="" coords="701,315,772,340"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="621,433,644,421,685,386,716,349,720,353,689,390,647,425,624,438"/>
+<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#a4f387d3a9170d9e3c4052fde0e667250" title=" " alt="" coords="693,601,780,627"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="624,473,647,486,672,510,694,537,726,588,721,590,690,540,669,514,644,491,621,478"/>
+<area shape="rect" id="Node000005" href="$integrity__monitor_8c.html#aabe16fa9ae43710a2693d108ea5d8e2f" title=" " alt="" coords="828,601,952,627"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="780,611,814,611,814,617,780,617"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="616,649,681,628,682,633,617,654"/>
+<area shape="poly" id="edge11_Node000009_Node000001" title=" " alt="" coords="229,75,207,89,179,119,156,154,136,191,120,230,99,302,88,359,83,358,94,301,115,228,131,189,151,151,175,116,204,85,226,70"/>
+<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="388,75,534,101,601,120,628,131,647,142,681,179,705,221,722,264,732,300,727,301,717,266,701,224,676,182,644,147,625,136,600,125,533,107,387,80"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="387,60,445,57,446,62,387,66"/>
+<area shape="rect" id="Node000011" href="$integrity__monitor_8c.html#a3b23b536a5ceccf3f843718c0592958e" title=" " alt="" coords="693,41,780,67"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="643,51,680,51,680,57,643,57"/>
+<area shape="poly" id="edge16_Node000012_Node000003" title=" " alt="" coords="606,194,647,218,690,260,722,301,717,304,686,263,644,223,604,199"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="408,235,454,238,454,243,408,241"/>
+<area shape="poly" id="edge23_Node000017_Node000004" title=" " alt="" coords="621,713,644,701,684,669,715,635,719,639,687,673,647,705,623,718"/>
+<area shape="poly" id="edge30_Node000020_Node000002" title=" " alt="" coords="386,585,408,573,425,553,431,532,438,509,455,487,464,480,467,484,459,490,443,512,436,533,429,556,411,577,388,590"/>
+<area shape="poly" id="edge27_Node000020_Node000003" title=" " alt="" coords="407,590,544,570,604,555,644,536,664,517,680,494,706,444,721,394,729,353,735,354,726,395,710,446,685,497,668,520,647,540,606,560,545,575,407,595"/>
+<area shape="poly" id="edge28_Node000020_Node000004" title=" " alt="" coords="407,601,680,609,679,615,407,606"/>
+<area shape="poly" id="edge31_Node000020_Node000006" title=" " alt="" coords="390,585,408,573,422,555,429,538,431,500,434,461,441,441,455,421,460,417,464,421,459,425,446,444,439,462,437,500,434,539,426,558,411,577,393,590"/>
+<area shape="poly" id="edge32_Node000020_Node000007" title=" " alt="" coords="363,611,410,623,478,644,477,649,409,628,361,616"/>
+<area shape="poly" id="edge33_Node000020_Node000017" title=" " alt="" coords="387,611,411,624,428,643,436,663,443,682,459,701,466,706,462,710,456,705,439,685,431,665,424,646,408,628,384,616"/>
+<area shape="rect" id="Node000021" href="$integrity__monitor_8c.html#a6573f07fdafcc77f75bc95c0a156a701" title=" " alt="" coords="476,500,627,525"/>
+<area shape="poly" id="edge29_Node000020_Node000021" title=" " alt="" coords="372,585,408,573,432,558,456,542,492,527,494,532,459,547,435,562,410,578,373,590"/>
+<area shape="poly" id="edge35_Node000022_Node000003" title=" " alt="" coords="639,325,688,325,688,330,639,330"/>
+<area shape="poly" id="edge36_Node000022_Node000004" title=" " alt="" coords="631,345,647,357,669,384,688,413,714,477,729,538,736,586,731,587,724,539,709,478,683,416,665,387,643,361,628,350"/>
+</map>

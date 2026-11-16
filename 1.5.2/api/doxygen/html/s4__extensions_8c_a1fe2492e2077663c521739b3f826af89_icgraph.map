@@ -1,0 +1,9 @@
+<map id="noise_handshake_hash" name="noise_handshake_hash">
+<area shape="rect" id="Node000001" title=" " alt="" coords="312,55,484,80"/>
+<area shape="rect" id="Node000002" href="$s4__extensions_8c.html#a39bb572e73a613a11631cddb4f7cb95d" title="Hash Noise Get Handshake." alt="" coords="5,5,264,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="317,55,264,45,204,33,205,28,264,39,318,50"/>
+<area shape="rect" id="Node000003" href="$s4__extensions_8c.html#ab20a5375d668ddb89a5194c25b96d584" title="Perform Noise Read Msg." alt="" coords="41,55,228,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="298,70,228,70,228,65,298,65"/>
+<area shape="rect" id="Node000004" href="$s4__extensions_8c.html#a2e0d64f7a321ffdd1c7682913900b320" title="Perform Noise Write Msg." alt="" coords="39,104,230,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="317,85,204,107,203,101,316,80"/>
+</map>

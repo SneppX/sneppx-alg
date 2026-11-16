@@ -1,0 +1,23 @@
+<map id="SNEPPX_trainer_load_checkpoint" name="SNEPPX_trainer_load_checkpoint">
+<area shape="rect" id="Node000001" title="Perform Trainer Load Checkpoint." alt="" coords="5,73,164,113"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="261,19,368,44"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,70,253,45,254,50,161,75"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="253,80,377,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,90,239,90,239,95,164,95"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html#ade971a13b83e7e763cd411623e82779c" title="Perform Model Get Params." alt="" coords="212,153,417,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="149,110,262,147,260,152,147,115"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="481,5,640,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="368,26,467,20,468,26,368,31"/>
+<area shape="rect" id="Node000006" href="$adversarial__robustness__certification_8h.html#a7a1f9ad5fd49592f927b983d2efe08a5" title="Perform Arc Get Params." alt="" coords="469,55,653,80"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="342,151,416,114,440,101,464,89,486,81,488,86,466,94,442,106,419,119,344,156"/>
+<area shape="rect" id="Node000007" href="$attention_8c.html#a62a599be94d488a691b695aa39c0379f" title="Perform Attn Get Params." alt="" coords="465,104,656,129"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="378,151,483,129,484,135,379,156"/>
+<area shape="rect" id="Node000008" href="$fractal__memory__orchestrator_8h.html#a7a123c51fbfb08949d6e8bc0230fdcc2" title="Perform Fm Get Params." alt="" coords="469,153,652,179"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="417,163,456,163,456,169,417,169"/>
+<area shape="rect" id="Node000009" href="$hierarchical__state__space_8h.html#a7eef334c5f0599f06a039cfdd098307f" title="Perform Hss Get Params." alt="" coords="467,203,654,228"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="379,176,484,197,483,203,378,181"/>
+<area shape="rect" id="Node000010" href="$neural__programming__engine_8h.html#a06587d5a53b87473f850d6bb43b65217" title="Perform Npe Get Params." alt="" coords="467,252,655,277"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="340,176,396,206,466,237,493,246,491,251,464,242,394,211,337,181"/>
+<area shape="rect" id="Node000011" href="$sparse__expert__routing_8h.html#ad4206f826e72c666674d0bcbaea67d7d" title="Perform Ser Get Params." alt="" coords="469,301,653,327"/>
+<area shape="poly" id="edge10_Node000005_Node000011" title=" " alt="" coords="330,177,386,230,424,260,467,286,486,295,483,299,464,291,421,265,382,234,326,181"/>
+</map>

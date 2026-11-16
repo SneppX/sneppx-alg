@@ -1,0 +1,9 @@
+<map id="SNEPPX_tensor_sin" name="SNEPPX_tensor_sin">
+<area shape="rect" id="Node000001" title="Perform Tensor Sin." alt="" coords="319,31,465,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a481a4980c0eb2bca15466f83204ecba5" title=" " alt="" coords="156,5,271,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="305,34,270,29,271,23,306,28"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#a11eb44da7c16819528e41b4809e8a415" title="Perform Sin." alt="" coords="164,55,263,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="306,58,263,63,262,58,305,52"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#ad3fa3b57ba8bedc4149eabac45b20451" title="Perform Cos." alt="" coords="5,5,108,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="143,21,108,21,108,15,143,15"/>
+</map>

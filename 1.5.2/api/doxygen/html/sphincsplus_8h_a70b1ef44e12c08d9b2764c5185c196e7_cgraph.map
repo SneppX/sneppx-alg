@@ -1,0 +1,28 @@
+<map id="SNEPPX_sphincs_verify" name="SNEPPX_sphincs_verify">
+<area shape="rect" id="Node000001" title="Verify Sphincs." alt="" coords="5,124,179,149"/>
+<area shape="rect" id="Node000002" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="816,145,943,170"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,122,152,75,187,51,226,33,320,8,359,3,397,3,474,13,571,32,650,53,726,81,844,136,842,141,724,86,648,58,570,38,474,19,397,9,360,9,321,13,228,38,190,55,155,79,106,126"/>
+<area shape="rect" id="Node000004" href="$sphincsplus_8c.html#ad7f2ebdc9131de3527fa82e8f459e7d1" title=" " alt="" coords="227,48,391,73"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="128,121,258,75,260,80,130,126"/>
+<area shape="rect" id="Node000006" href="$sphincsplus_8c.html#a0e29e34f08aea9b0d8e51085458f77a1" title=" " alt="" coords="455,105,554,130"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="179,130,442,118,442,123,179,135"/>
+<area shape="rect" id="Node000007" href="$sphincsplus_8c.html#a1ef794eac8321354f035a2ca45fa71c7" title=" " alt="" coords="266,149,351,174"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="179,144,253,153,252,158,179,149"/>
+<area shape="rect" id="Node000008" href="$sphincsplus_8c.html#a4c04c77d37a96d5a1eba7748dc285897" title=" " alt="" coords="657,245,730,270"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="107,147,156,192,190,216,228,234,283,250,340,261,456,271,561,269,642,262,643,267,561,275,456,277,340,267,282,255,226,239,188,220,153,196,103,151"/>
+<area shape="rect" id="Node000009" href="$sphincsplus_8c.html#a8cb090cb865cda75648436f6abef72cf" title=" " alt="" coords="245,198,372,224"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="128,147,228,183,253,192,251,197,226,188,126,152"/>
+<area shape="rect" id="Node000003" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="991,145,1131,170"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="943,155,977,155,977,160,943,160"/>
+<area shape="rect" id="Node000005" href="$sphincsplus_8c.html#a458faa43f71db267b293647b20a3ef22" title=" " alt="" coords="445,48,565,73"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="391,58,431,58,431,63,391,63"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="354,71,448,99,447,104,352,76"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="555,120,802,147,802,152,554,126"/>
+<area shape="poly" id="edge10_Node000008_Node000002" title=" " alt="" coords="717,243,841,175,844,180,720,247"/>
+<area shape="poly" id="edge12_Node000009_Node000006" title=" " alt="" coords="356,196,390,183,434,160,473,136,475,140,437,165,392,188,358,201"/>
+<area shape="rect" id="Node000010" href="$sphincsplus_8c.html#ad5732c0b38d832e4172691b693c949ba" title=" " alt="" coords="439,185,571,210"/>
+<area shape="poly" id="edge13_Node000009_Node000010" title=" " alt="" coords="372,204,425,201,425,206,372,209"/>
+<area shape="rect" id="Node000011" href="$sphincsplus_8c.html#ac4d4b4e1716743e99c947fea0f764b21" title=" " alt="" coords="619,170,768,196"/>
+<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="571,190,605,187,605,193,571,195"/>
+<area shape="poly" id="edge15_Node000011_Node000002" title=" " alt="" coords="768,170,802,166,803,171,769,176"/>
+</map>

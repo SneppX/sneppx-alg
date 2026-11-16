@@ -1,0 +1,9 @@
+<map id="SNEPPXIRPlaybook" name="SNEPPXIRPlaybook">
+<area shape="rect" id="Node000001" title=" " alt="" coords="235,93,382,119"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXIRPlaybookStep.html" title=" " alt="" coords="5,5,180,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,33,281,91,279,96,133,38"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXIRPlaybookCondition.html" title=" " alt="" coords="205,5,413,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="311,45,311,93,306,93,306,45"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXIRPlaybookVariable.html" title=" " alt="" coords="437,5,636,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="494,38,340,96,338,91,492,33"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="SNEPPX_gemm" name="SNEPPX_gemm">
+<area shape="rect" id="Node000001" title="Perform Gemm." alt="" coords="427,104,549,129"/>
+<area shape="rect" id="Node000002" href="$tensor__expr_8c.html#ab42abc395195007857c54a64ab504feb" title=" " alt="" coords="243,55,333,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="422,103,333,81,334,76,423,98"/>
+<area shape="rect" id="Node000006" href="$simd__gemm_8c.html#aff1827e5995ace4a612eae473f3c77be" title="Perform Gemm Batched." alt="" coords="197,104,379,129"/>
+<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="413,119,379,119,379,114,413,114"/>
+<area shape="rect" id="Node000007" href="$simd__gemm_8c.html#a3fe614bd5e955e967df9fb1679b2487e" title="Perform Gemm Batched Strided." alt="" coords="197,154,379,194"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="430,136,359,157,357,151,429,131"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="324,45,314,37,288,33,267,35,256,40,253,46,259,53,255,56,248,46,252,36,265,30,288,28,316,32,327,41"/>
+<area shape="rect" id="Node000003" href="$tensor__expr_8c.html#a25100e07beff38cdd37a274e3b9685d6" title=" " alt="" coords="28,5,127,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="229,65,105,33,106,28,231,59"/>
+<area shape="rect" id="Node000004" href="$tensor__expr_8c.html#acace0b0a889e830871dcc486ad19d84f" title=" " alt="" coords="30,55,125,80"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="229,78,125,78,125,72,229,73"/>
+<area shape="rect" id="Node000005" href="$tensor__expr_8c.html#a3ef83a21ca49cb8c5d45af9f568b0872" title="Perform Expr Eval." alt="" coords="5,104,149,129"/>
+<area shape="poly" id="edge7_Node000002_Node000005" title=" " alt="" coords="231,83,133,107,132,101,229,78"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="141,22,260,52,259,57,140,27"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="138,56,243,57,243,63,138,62"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="SNEPPX_secure_realloc" name="SNEPPX_secure_realloc">
+<area shape="rect" id="Node000001" title="Perform Secure Realloc." alt="" coords="5,80,180,105"/>
+<area shape="rect" id="Node000002" href="$secure__mem_8c.html#a13dadc8aba1ac31f4316659a232ca92f" title="Perform Secure Malloc." alt="" coords="236,55,411,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="180,80,222,76,223,81,180,86"/>
+<area shape="rect" id="Node000006" href="$secure__mem_8c.html#a377c4e243b37c8caaf6b3ca48ec95c7e" title="Free Secure Pool." alt="" coords="228,104,419,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="180,99,215,103,214,108,180,104"/>
+<area shape="rect" id="Node000003" href="$canary_8c.html#a749a7dae8a43e79b27b8f1029b3a11cc" title="Perform Canary Generate." alt="" coords="467,5,656,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="385,52,486,31,487,36,386,57"/>
+<area shape="rect" id="Node000005" href="$canary_8c.html#acf56d2d21f935da9d8d36930456abbb5" title="Write Canary." alt="" coords="479,55,643,80"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="411,65,466,65,466,70,411,70"/>
+<area shape="rect" id="Node000004" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="704,5,877,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="656,15,690,15,690,21,656,21"/>
+<area shape="rect" id="Node000007" href="$canary_8c.html#a5a189a2bf3b077be5bb6e65f8736b3f0" title="Verify Canary." alt="" coords="477,104,645,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="419,114,464,114,464,119,419,119"/>
+<area shape="rect" id="Node000009" href="$secure__mem_8c.html#a4a569860d5860e1b3641d69352e02055" title="Perform Secure Zero." alt="" coords="482,153,641,179"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="386,127,487,148,486,153,385,132"/>
+<area shape="rect" id="Node000008" href="$ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3" title="Perform Ct Equal." alt="" coords="723,104,858,129"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="646,114,710,114,710,119,646,119"/>
+</map>

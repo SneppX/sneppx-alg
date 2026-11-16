@@ -1,0 +1,15 @@
+<map id="find_matching_skill" name="find_matching_skill">
+<area shape="rect" id="Node000001" title=" " alt="" coords="743,39,891,64"/>
+<area shape="rect" id="Node000002" href="$procedural_8c.html#a9ebf9dbf2d8594cf7539715282ee0930" title=" " alt="" coords="508,9,693,35"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="729,42,693,37,694,32,729,37"/>
+<area shape="rect" id="Node000004" href="$procedural_8c.html#a6867f8a043cfdfb332c3cf0970dc241d" title=" " alt="" coords="507,63,695,88"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="729,64,695,68,695,62,729,58"/>
+<area shape="rect" id="Node000003" href="$cognitive__manager_8c.html#af26565712fe1a837b6c9749743c9c422" title="Perform Procedural Learn." alt="" coords="263,5,452,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="494,23,452,22,452,17,494,18"/>
+<area shape="rect" id="Node000005" href="$cognitive__manager_8c.html#afe14a58501169fd22c123810c27e6774" title="Run the forward pass for Cognitive Memory." alt="" coords="256,55,459,95"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="493,78,459,78,459,73,493,73"/>
+<area shape="rect" id="Node000007" href="$cognitive__manager_8c.html#a9926d20719a78ee0fbfc036b942a4408" title="Perform Procedural Recall." alt="" coords="261,120,453,145"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="533,94,413,123,411,117,532,89"/>
+<area shape="rect" id="Node000006" href="$cognitive__manager_8c.html#a43df9d80880c604ec4578ab42e23fae6" title="Perform Cognitive Memory Build Train Graph." alt="" coords="5,55,208,95"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="242,78,208,78,208,73,242,73"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="SNEPPX_firewall_get_stats" name="SNEPPX_firewall_get_stats">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,23,161,63"/>
+<area shape="rect" id="Node000002" href="$firewall__engine_8c.html#adb1ddb2ae800fe9cf040362be69436a9" title=" " alt="" coords="217,5,321,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,30,203,24,204,30,162,35"/>
+<area shape="rect" id="Node000003" href="$firewall__engine_8c.html#a284dfa14dfa0cc491854c74a54dae3f4" title=" " alt="" coords="209,55,329,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="162,51,196,55,195,60,161,56"/>
+</map>

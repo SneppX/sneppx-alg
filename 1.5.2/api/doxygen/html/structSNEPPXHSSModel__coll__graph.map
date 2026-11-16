@@ -1,0 +1,12 @@
+<map id="SNEPPXHSSModel" name="SNEPPXHSSModel">
+<area shape="rect" id="Node000001" title=" " alt="" coords="160,435,299,460"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXHSSLayer.html" title=" " alt="" coords="162,345,297,370"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,384,232,434,227,434,227,384"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="9,93,124,119"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="60,133,45,181,35,243,34,276,37,309,45,341,60,371,79,393,104,410,132,423,160,432,159,437,130,428,102,415,76,397,55,373,40,343,31,310,28,276,29,242,40,179,55,131"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="84,129,224,343,219,346,80,132"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,5,128,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="69,45,69,93,64,93,64,45"/>
+<area shape="rect" id="Node000005" href="$structSNEPPXHSSConfig.html" title=" " alt="" coords="321,345,461,370"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="359,379,252,437,249,432,356,374"/>
+</map>

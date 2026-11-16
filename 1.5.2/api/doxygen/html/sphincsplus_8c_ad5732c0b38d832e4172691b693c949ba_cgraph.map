@@ -1,0 +1,9 @@
+<map id="spx_wots_basew" name="spx_wots_basew">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,137,31"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#ac4d4b4e1716743e99c947fea0f764b21" title=" " alt="" coords="185,5,335,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,15,172,15,172,21,138,21"/>
+<area shape="rect" id="Node000003" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="383,5,509,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="335,15,369,15,369,21,335,21"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="557,5,697,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="510,15,543,15,543,21,510,21"/>
+</map>

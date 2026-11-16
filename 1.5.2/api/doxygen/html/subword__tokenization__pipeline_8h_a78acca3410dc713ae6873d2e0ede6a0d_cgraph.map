@@ -1,0 +1,24 @@
+<map id="SNEPPX_tokenizer_encode" name="SNEPPX_tokenizer_encode">
+<area shape="rect" id="Node000001" title="Perform Tokenizer Encode." alt="" coords="5,80,200,105"/>
+<area shape="rect" id="Node000002" href="$tokenizer_8c.html#a8f7ec9a2dc779517ab6196e1e7912607" title=" " alt="" coords="251,5,340,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,77,248,33,250,38,138,82"/>
+<area shape="rect" id="Node000003" href="$tokenizer_8c.html#afbc943211b957b317d1c99dbbb6ec999" title=" " alt="" coords="400,105,505,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="200,97,387,111,386,116,200,102"/>
+<area shape="rect" id="Node000007" href="$tokenizer_8c.html#a03be31bdad489f47c790cf2892cd1284" title=" " alt="" coords="407,155,498,180"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="164,103,394,152,393,158,163,108"/>
+<area shape="rect" id="Node000008" href="$tokenizer_8c.html#a574d67a7bcd26bd803720fe1e6703a43" title=" " alt="" coords="248,55,343,80"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="199,77,234,73,235,78,200,83"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="590,131,697,156"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="506,122,576,132,576,137,505,128"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="581,81,705,107"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="505,109,567,101,568,106,506,114"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="772,131,931,156"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="697,141,758,141,758,146,697,146"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="498,159,576,149,577,154,498,164"/>
+<area shape="rect" id="Node000009" href="$allocator_8c.html#a558789bc26070817e2c2faa2b1be9d18" title="Perform Realloc." alt="" coords="391,56,515,81"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="343,65,377,65,377,71,343,70"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="487,79,516,92,564,117,582,124,580,129,562,122,514,96,485,84"/>
+<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="515,74,568,81,567,87,515,80"/>
+<area shape="rect" id="Node000010" href="$allocator_8c.html#ad48b8a6a4551960e8c99f2da7b833bf2" title="Perform Secure Copy." alt="" coords="563,32,724,57"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="515,58,549,54,549,59,515,64"/>
+</map>

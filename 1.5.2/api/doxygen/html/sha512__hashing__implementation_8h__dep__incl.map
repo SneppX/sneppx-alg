@@ -1,0 +1,19 @@
+<map id="include/neural_core/security/sha512_hashing_implementation.h" name="include/neural_core/security/sha512_hashing_implementation.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="741,5,928,60"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,108,176,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="728,44,480,68,334,87,188,111,177,113,176,108,188,105,333,81,480,62,727,39"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html" title=" " alt="" coords="200,123,403,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="728,54,415,111,349,125,348,120,414,105,727,49"/>
+<area shape="rect" id="Node000004" href="$drbg_8c.html" title=" " alt="" coords="427,123,602,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="739,67,552,125,551,120,738,61"/>
+<area shape="rect" id="Node000005" href="$ed25519_8c.html" title=" " alt="" coords="626,123,827,148"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="798,72,741,124,737,120,794,68"/>
+<area shape="rect" id="Node000006" href="$hmac_8c.html" title=" " alt="" coords="852,123,1033,148"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="875,68,932,120,928,124,871,72"/>
+<area shape="rect" id="Node000007" href="$random_8c.html" title=" " alt="" coords="1057,123,1252,148"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="931,61,1119,120,1117,125,930,67"/>
+<area shape="rect" id="Node000008" href="$sha512_8c.html" title=" " alt="" coords="1276,123,1468,148"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="942,48,1095,73,1265,105,1328,120,1327,125,1263,111,1094,79,942,53"/>
+<area shape="rect" id="Node000009" href="$sha512__stub_8c.html" title=" " alt="" coords="1492,115,1673,155"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="942,39,1189,63,1335,82,1480,105,1514,113,1513,118,1480,111,1334,87,1188,69,942,45"/>
+</map>

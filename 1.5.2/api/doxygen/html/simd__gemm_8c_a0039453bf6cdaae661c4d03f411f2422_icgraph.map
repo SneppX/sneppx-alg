@@ -1,0 +1,5 @@
+<map id="SNEPPX_reduce_max_avx2" name="SNEPPX_reduce_max_avx2">
+<area shape="rect" id="Node000001" title="Perform Reduce Max Avx2." alt="" coords="276,5,475,31"/>
+<area shape="rect" id="Node000002" href="$simd__gemm_8c.html#a2c8191a9a30ef1ea739d7702a466fb78" title="Perform Reduce Rowmax Avx2." alt="" coords="5,5,228,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="262,21,228,21,228,15,262,15"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="SNEPPX_tensor_permute" name="SNEPPX_tensor_permute">
+<area shape="rect" id="Node000001" title="Perform Tensor Permute." alt="" coords="641,31,824,56"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#abe3e4b3a00a43800e9972169f3c4a847" title="Perform Tensor Transpose." alt="" coords="401,31,593,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="627,46,594,46,594,41,627,41"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a39bfacd6cc1d931f22946c3e29df711a" title=" " alt="" coords="197,5,353,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,33,353,30,354,24,388,28"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#a0be3f63da1f125ad73308c7aa08fddcb" title="Perform Transpose." alt="" coords="5,31,149,56"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="388,46,150,46,150,41,388,41"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="184,32,150,37,149,31,183,27"/>
+</map>

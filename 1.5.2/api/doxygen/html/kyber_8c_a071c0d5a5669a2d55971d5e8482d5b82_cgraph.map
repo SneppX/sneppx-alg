@@ -1,0 +1,9 @@
+<map id="inv_ntt" name="inv_ntt">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,72,56"/>
+<area shape="rect" id="Node000002" href="$kyber_8c.html#af941477739974dab8ef3d319368c95cf" title=" " alt="" coords="120,5,237,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,35,106,29,107,34,73,40"/>
+<area shape="rect" id="Node000003" href="$kyber_8c.html#a4be40bad95cc307e6689e9a2dc37859c" title=" " alt="" coords="149,55,209,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="73,46,136,57,135,63,72,52"/>
+<area shape="rect" id="Node000004" href="$kyber_8c.html#a55a8a71a7ff9af848de8891ad2acff8c" title=" " alt="" coords="285,55,392,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="209,65,272,65,272,70,209,70"/>
+</map>

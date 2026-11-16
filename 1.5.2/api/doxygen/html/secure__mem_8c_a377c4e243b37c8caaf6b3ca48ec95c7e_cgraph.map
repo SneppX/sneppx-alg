@@ -1,0 +1,9 @@
+<map id="SNEPPX_secure_pool_free" name="SNEPPX_secure_pool_free">
+<area shape="rect" id="Node000001" title="Free Secure Pool." alt="" coords="5,31,196,56"/>
+<area shape="rect" id="Node000002" href="$canary_8c.html#a5a189a2bf3b077be5bb6e65f8736b3f0" title="Verify Canary." alt="" coords="244,5,412,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,30,230,26,231,32,197,35"/>
+<area shape="rect" id="Node000004" href="$secure__mem_8c.html#a4a569860d5860e1b3641d69352e02055" title="Perform Secure Zero." alt="" coords="249,55,407,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="197,51,235,55,235,60,196,56"/>
+<area shape="rect" id="Node000003" href="$ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3" title="Perform Ct Equal." alt="" coords="460,5,595,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="412,15,446,15,446,21,412,21"/>
+</map>

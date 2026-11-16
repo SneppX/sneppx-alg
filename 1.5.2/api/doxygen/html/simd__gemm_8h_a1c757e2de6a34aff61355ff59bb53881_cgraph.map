@@ -1,0 +1,5 @@
+<map id="SNEPPX_gemm_avx2" name="SNEPPX_gemm_avx2">
+<area shape="rect" id="Node000001" title="Perform Gemm Avx2." alt="" coords="5,5,167,31"/>
+<area shape="rect" id="Node000002" href="$simd__gemm_8c.html#a403bd8eb9c6b77db7b6cee06a9f28c16" title="Perform Gemm Scalar." alt="" coords="215,5,383,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,15,201,15,201,21,167,21"/>
+</map>

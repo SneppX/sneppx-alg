@@ -1,0 +1,5 @@
+<map id="SNEPPX_gated_ffn_forward" name="SNEPPX_gated_ffn_forward">
+<area shape="rect" id="Node000001" title="Run the forward pass for Gated Ffn." alt="" coords="5,13,204,38"/>
+<area shape="rect" id="Node000002" href="$gated__activations_8c.html#a0506e4b70e2b61b1e772fff0a49d7625" title="Run the forward pass for Gated Activation." alt="" coords="252,5,441,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,23,238,23,238,28,204,28"/>
+</map>

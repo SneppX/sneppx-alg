@@ -1,0 +1,15 @@
+<map id="SNEPPX_optimizer_create" name="SNEPPX_optimizer_create">
+<area shape="rect" id="Node000001" title="Create Optimizer." alt="" coords="236,129,427,155"/>
+<area shape="rect" id="Node000002" href="$optimizer_8c.html#a61727018b3f5be960f00d365c14ac691" title="Create Adagrad." alt="" coords="6,5,187,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="304,123,252,83,187,44,157,33,159,28,189,40,255,78,307,118"/>
+<area shape="rect" id="Node000003" href="$optimizer_8c.html#abf1e99863949f34b031d7e63c51ce5ba" title="Create Adam." alt="" coords="14,55,179,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="283,127,187,94,148,83,149,77,189,89,284,122"/>
+<area shape="rect" id="Node000004" href="$optimizer_8c.html#aae1203c65bee5695d4020bd47c6dd678" title="Create Adamw." alt="" coords="9,104,185,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="222,133,184,129,185,123,223,128"/>
+<area shape="rect" id="Node000005" href="$optimizer_8c.html#a2e990468582afada4911893a4c730218" title="Create Rmsprop." alt="" coords="5,153,188,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="223,156,188,159,188,154,222,150"/>
+<area shape="rect" id="Node000006" href="$optimizer_8c.html#aea591f7dee3c8e44628c16220aafb3ee" title="Create Sgd." alt="" coords="21,203,172,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="282,162,189,193,146,205,144,200,187,187,280,157"/>
+<area shape="rect" id="Node000007" href="$trainer_8c.html#abf88a1963f1a56d2a7f4b1f7e5bd0742" title="Create Trainer." alt="" coords="11,252,182,277"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="306,166,254,204,189,242,155,254,153,249,187,237,251,200,303,161"/>
+</map>

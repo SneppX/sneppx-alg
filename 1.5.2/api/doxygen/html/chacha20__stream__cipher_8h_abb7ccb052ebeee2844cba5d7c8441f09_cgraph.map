@@ -1,0 +1,7 @@
+<map id="SNEPPX_chacha20_encrypt" name="SNEPPX_chacha20_encrypt">
+<area shape="rect" id="Node000001" title="Encrypt/decrypt with ChaCha20 (XOR stream)." alt="" coords="5,5,204,31"/>
+<area shape="rect" id="Node000002" href="$chacha20_8c.html#a5d8576d60f4c311b3c01de3e10609033" title="Perform Chacha20 Block." alt="" coords="252,5,436,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,15,238,15,238,21,204,21"/>
+<area shape="rect" id="Node000003" href="$chacha20_8c.html#a4428703d9ced5a11e93f93eb195eae9d" title=" " alt="" coords="484,5,523,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="436,15,470,15,470,21,436,21"/>
+</map>

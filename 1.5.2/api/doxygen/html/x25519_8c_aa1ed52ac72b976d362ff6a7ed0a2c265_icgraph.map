@@ -1,0 +1,9 @@
+<map id="fe_invert" name="fe_invert">
+<area shape="rect" id="Node000001" title=" " alt="" coords="495,35,575,60"/>
+<area shape="rect" id="Node000002" href="$x25519_8c.html#a7e04dc72c2bb62cbc6104133b0ba5d79" title="Compute X25519 shared secret." alt="" coords="236,35,447,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="481,50,447,50,447,45,481,45"/>
+<area shape="rect" id="Node000003" href="$x25519_8c.html#aa69017cb5661f22cbe6f9cb0dca38bf1" title="Compute X25519 shared secret." alt="" coords="5,5,188,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="222,36,188,32,189,26,223,30"/>
+<area shape="rect" id="Node000004" href="$x25519_8c.html#af8fbd60b13aa0ce3b98e24f269b9cafc" title="Compute X25519 shared secret." alt="" coords="7,55,186,95"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="223,64,187,68,186,62,222,58"/>
+</map>

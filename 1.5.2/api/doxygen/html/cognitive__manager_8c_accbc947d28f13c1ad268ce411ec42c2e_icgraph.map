@@ -1,0 +1,7 @@
+<map id="sneppx_working_destroy" name="sneppx_working_destroy">
+<area shape="rect" id="Node000001" title=" " alt="" coords="256,45,440,70"/>
+<area shape="rect" id="Node000002" href="$cognitive__manager_8c.html#a7672a40f58bd0199edea6d9f6b9fbc08" title="Create Cognitive Memory." alt="" coords="5,5,208,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,46,208,41,209,36,243,41"/>
+<area shape="rect" id="Node000003" href="$cognitive__manager_8c.html#a76689ea21546d691cf8b3cde4c9d7434" title="Destroy Cognitive Memory." alt="" coords="5,69,208,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,74,209,79,208,73,242,69"/>
+</map>

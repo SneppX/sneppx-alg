@@ -1,0 +1,15 @@
+<map id="SNEPPX_freelist_canary_value" name="SNEPPX_freelist_canary_value">
+<area shape="rect" id="Node000001" title="Perform Freelist Canary Value." alt="" coords="672,63,849,103"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#ab5a291d4ce81edfd78ee66b81a1f2072" title="Add Freelist." alt="" coords="241,13,399,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="713,59,670,39,623,24,565,15,506,12,399,18,399,12,506,7,566,10,625,19,672,34,715,54"/>
+<area shape="rect" id="Node000004" href="$memory__hardening_8c.html#a795123943254448e51e502f539ab1683" title="Perform Freelist Check." alt="" coords="235,126,405,151"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="659,98,406,131,405,125,658,93"/>
+<area shape="rect" id="Node000005" href="$memory__hardening_8c.html#a653f33462fd5923ce1a263eb5f89038d" title="Perform Freelist Verify Canary." alt="" coords="453,148,624,188"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="696,110,592,150,591,145,694,105"/>
+<area shape="rect" id="Node000006" href="$memory__hardening_8c.html#a2d7a7c2e06e480dd6d805e6fde103a7c" title="Perform Freelist Write Canary." alt="" coords="455,33,622,73"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="658,72,622,67,623,62,658,66"/>
+<area shape="rect" id="Node000003" href="$memory__hardening_8c.html#adcb56c463bafef4df53d8469edfc5ce9" title="Perform Quarantine Add With Freelist." alt="" coords="5,5,187,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="228,28,187,28,187,23,228,23"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="440,157,405,153,406,147,440,152"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="441,44,398,38,399,33,442,38"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="security/crypto/c/sc.c" name="security/crypto/c/sc.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="11,5,170,31"/>
+<area shape="rect" id="Node000002" href="$side__channel__resistant__primitives_8h.html" title=" " alt="" coords="5,79,176,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,31,93,65,88,65,88,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,167,80,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="81,120,59,156,55,153,77,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="105,167,175,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="105,117,128,154,123,156,100,120"/>
+</map>

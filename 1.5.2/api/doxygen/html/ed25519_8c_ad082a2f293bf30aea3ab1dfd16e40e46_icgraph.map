@@ -1,0 +1,11 @@
+<map id="SNEPPX_ed25519_verify" name="SNEPPX_ed25519_verify">
+<area shape="rect" id="Node000001" title="Verify Ed25519." alt="" coords="459,77,639,102"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="232,5,411,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="489,75,392,48,394,43,490,70"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="232,69,411,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="445,92,411,92,411,87,445,87"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="232,133,411,173"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="490,108,394,136,392,131,489,103"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,184,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,28,184,28,184,23,218,23"/>
+</map>

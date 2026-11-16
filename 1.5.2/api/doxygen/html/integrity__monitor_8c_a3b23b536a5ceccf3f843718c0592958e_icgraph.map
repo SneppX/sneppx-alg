@@ -1,0 +1,15 @@
+<map id="prng_next" name="prng_next">
+<area shape="rect" id="Node000001" title=" " alt="" coords="644,95,731,120"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a4906ebdbab5773e9c809bc97bd2f7434" title="Perform Monitor Refresh Canary." alt="" coords="412,23,596,63"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="636,92,595,78,562,66,563,61,597,73,638,87"/>
+<area shape="rect" id="Node000005" href="$integrity__monitor_8c.html#a51b0136e1c6630cf965c227bf34b107c" title="Perform Monitor Set Canary." alt="" coords="425,87,583,127"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="630,110,584,110,584,105,630,105"/>
+<area shape="rect" id="Node000006" href="$integrity__monitor_8c.html#a07108b57326d64ec4810e21ad017b5b7" title="Perform Prng Next." alt="" coords="431,152,577,177"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="640,127,597,142,554,154,553,149,595,137,638,122"/>
+<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#a8fb8c9f8ea3ec791584b369cac3cabd1" title=" " alt="" coords="212,5,364,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="398,34,364,30,364,24,398,28"/>
+<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#ae6af7916352cb36dfd8636285ccb8906" title="Initialize Monitor." alt="" coords="5,5,164,31"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="398,51,307,51,212,46,137,33,138,28,212,41,307,46,398,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="199,30,164,29,164,24,199,24"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="178,6,212,7,212,12,178,12"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="SNEPPX_bn_sub" name="SNEPPX_bn_sub">
+<area shape="rect" id="Node000001" title="Perform Bn Sub." alt="" coords="5,31,132,56"/>
+<area shape="rect" id="Node000002" href="$bignum_8c.html#aaeefd63546979ff9c57c761135b4184a" title="Perform Bn Cmp." alt="" coords="180,5,311,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="132,32,166,27,167,32,133,37"/>
+<area shape="rect" id="Node000003" href="$bignum_8c.html#a36e16f9c5c056c73d4d5184d5dd1563c" title="Perform Bn Zero." alt="" coords="180,55,311,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="133,49,167,54,166,59,132,55"/>
+</map>

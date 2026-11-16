@@ -1,0 +1,8 @@
+<map id="free_ctx_SigmoidCtx" name="free_ctx_SigmoidCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="408,31,565,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a117373c808d38d7b06fb009c2a1ab0c5" title=" " alt="" coords="185,5,360,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="394,35,360,31,360,26,395,30"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a97ab4d4bfabfa04c36d68943daa3da6e" title="Perform Sigmoid." alt="" coords="5,31,137,56"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="394,46,138,46,138,41,394,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="172,33,138,38,137,32,171,28"/>
+</map>

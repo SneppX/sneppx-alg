@@ -1,0 +1,11 @@
+<map id="SNEPPX_shamir_reconstruct" name="SNEPPX_shamir_reconstruct">
+<area shape="rect" id="Node000001" title="Perform Shamir Reconstruct." alt="" coords="5,80,211,105"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#aba76d0071c81d00029fb56a39967161d" title=" " alt="" coords="259,5,325,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="139,77,246,33,248,38,142,82"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#aa65931cf1992469f14274e23b39050bb" title=" " alt="" coords="261,55,323,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="200,77,247,71,248,76,201,83"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#a33226b62a9c713c1c5f68e8af49098f5" title=" " alt="" coords="261,104,323,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="206,103,247,108,247,114,205,108"/>
+<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#a0332783cb66261ee3ab240e4f925906d" title=" " alt="" coords="259,153,325,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="142,103,247,146,245,151,140,108"/>
+</map>

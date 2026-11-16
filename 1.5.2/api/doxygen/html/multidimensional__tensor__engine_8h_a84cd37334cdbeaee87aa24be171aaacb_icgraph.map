@@ -1,0 +1,20 @@
+<map id="SNEPPX_tensor_mean" name="SNEPPX_tensor_mean">
+<area shape="rect" id="Node000001" title="Perform Tensor Mean." alt="" coords="707,58,872,84"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ac1768d14a5f792e372f85153452b89ca" title=" " alt="" coords="153,68,265,93"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="750,55,707,37,658,23,562,10,486,11,410,24,314,47,242,70,241,65,313,42,409,19,485,6,562,4,659,18,709,32,752,50"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#ab42fd2043d4d5e0ce2c8bf54ac5c69c2" title=" " alt="" coords="527,33,641,58"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="692,62,640,55,641,50,693,56"/>
+<area shape="rect" id="Node000006" href="$ops_8c.html#a31e534bee56778f505e1cb80452b2e5d" title="Perform Mean." alt="" coords="525,82,643,108"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="693,85,644,91,643,86,692,80"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#aca31b0f5ada4e9f24e7f36f3fec12d6a" title="Perform Tensor Var." alt="" coords="509,132,659,157"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="742,91,660,122,624,134,622,129,658,117,741,86"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#ad384244056d7993f3f40d4df7b0a5dc0" title="Perform Std." alt="" coords="5,93,105,118"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="140,94,106,100,105,95,139,89"/>
+<area shape="rect" id="Node000005" href="$ops_8c.html#a2d43210fa5bf321be5f9aca074d56d6b" title="Perform Var." alt="" coords="337,57,438,82"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="514,57,439,66,438,61,513,52"/>
+<area shape="poly" id="edge10_Node000007_Node000005" title=" " alt="" coords="530,130,508,122,418,85,420,80,510,117,532,125"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#abd117fc45a3ffc2e79eb63fbd83c4e6a" title="Perform Tensor Std." alt="" coords="313,118,461,144"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="496,141,461,139,462,133,496,136"/>
+<area shape="poly" id="edge8_Node000008_Node000002" title=" " alt="" coords="328,117,254,96,256,91,330,112"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="299,127,106,112,106,107,300,122"/>
+</map>

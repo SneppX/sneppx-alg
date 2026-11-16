@@ -1,0 +1,67 @@
+<map id="SNEPPX_gt" name="SNEPPX_gt">
+<area shape="rect" id="Node000001" title="Perform Gt." alt="" coords="5,377,99,403"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a34d43e8098434535d9cae1a3df5c54fe" title=" " alt="" coords="757,441,866,467"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,391,743,446,743,451,99,396"/>
+<area shape="rect" id="Node000012" href="$tensor_8c.html#ae24626b62dc2d3250929f7d23238c5b9" title="Perform Tensor Gt." alt="" coords="147,352,288,377"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="99,380,133,375,134,380,99,385"/>
+<area shape="rect" id="Node000003" href="$tape_8c.html#a0ea27e57158a11a9dc87d55064ecc9c2" title="Perform Tape Record." alt="" coords="1245,641,1402,667"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="829,464,885,506,921,530,960,550,1031,579,1105,603,1238,636,1237,641,1103,608,1029,584,958,555,919,534,882,511,826,469"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#ad054e4c60272e5bea3021d35186edae5" title="Destroy Tensor." alt="" coords="979,392,1156,417"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="866,441,987,417,988,423,867,446"/>
+<area shape="rect" id="Node000009" href="$variable_8c.html#a6310f0413cd31b22b2cbf3270d86de40" title="Create Variable." alt="" coords="977,515,1158,540"/>
+<area shape="poly" id="edge10_Node000002_Node000009" title=" " alt="" coords="858,464,1010,508,1008,513,856,469"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="1501,291,1608,316"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1345,639,1383,612,1421,576,1464,511,1499,442,1526,378,1543,329,1548,331,1531,380,1504,444,1469,514,1425,580,1386,617,1348,643"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="1704,591,1828,616"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="1402,644,1638,619,1690,612,1691,617,1639,625,1402,650"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="1687,291,1845,316"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1608,301,1673,301,1673,306,1608,306"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="1107,415,1169,431,1249,443,1293,446,1337,444,1380,437,1422,425,1457,405,1489,379,1535,325,1539,329,1493,383,1460,409,1424,430,1381,443,1337,449,1293,451,1249,449,1168,436,1106,420"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#ab304e494ae590b3cf08d4ff51aa3c1f3" title="Perform Storage Release." alt="" coords="1231,389,1415,415"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="1156,401,1217,400,1217,406,1156,406"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="1387,387,1422,375,1476,349,1522,321,1525,326,1478,354,1424,380,1389,392"/>
+<area shape="poly" id="edge12_Node000009_Node000006" title=" " alt="" coords="1100,538,1158,558,1225,575,1352,593,1479,601,1596,604,1690,603,1690,609,1596,610,1479,607,1351,598,1223,580,1156,563,1099,543"/>
+<area shape="rect" id="Node000010" href="$ops_8c.html#a02a44ec3e0bfb33b8c12261999188fe9" title=" " alt="" coords="1268,491,1379,516"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="1158,516,1254,507,1255,512,1159,521"/>
+<area shape="rect" id="Node000011" href="$tape_8c.html#aea885aafcbbe6b179513220636f4c03c" title="Perform No Grad Is Active." alt="" coords="1225,540,1422,565"/>
+<area shape="poly" id="edge13_Node000009_Node000011" title=" " alt="" coords="1159,534,1211,539,1211,544,1158,539"/>
+<area shape="rect" id="Node000013" href="$tensor_8c.html#a76e352614d2e218ddd0bbcaf4073480d" title=" " alt="" coords="352,352,423,377"/>
+<area shape="poly" id="edge15_Node000012_Node000013" title=" " alt="" coords="288,362,338,362,338,367,288,367"/>
+<area shape="rect" id="Node000014" href="$tensor_8c.html#a8c11d9822a342bfc59417c4a664a3b22" title=" " alt="" coords="336,303,439,328"/>
+<area shape="poly" id="edge16_Node000012_Node000014" title=" " alt="" coords="261,349,328,329,330,335,263,354"/>
+<area shape="poly" id="edge17_Node000014_Node000007" title=" " alt="" coords="439,319,965,389,965,394,439,324"/>
+<area shape="rect" id="Node000015" href="$tensor_8c.html#a88e961c91f43a684eb026d8324f6a6f4" title="Perform Tensor Empty." alt="" coords="490,165,661,191"/>
+<area shape="poly" id="edge18_Node000014_Node000015" title=" " alt="" coords="399,300,436,265,485,225,534,195,537,199,488,229,440,269,403,304"/>
+<area shape="rect" id="Node000020" href="$tensor_8c.html#a288df43c51c41ea15667447d4abda1e5" title=" " alt="" coords="487,240,664,265"/>
+<area shape="poly" id="edge27_Node000014_Node000020" title=" " alt="" coords="425,300,522,267,524,272,427,305"/>
+<area shape="rect" id="Node000016" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Perform Tensor Fill Scalar." alt="" coords="983,88,1152,113"/>
+<area shape="poly" id="edge19_Node000015_Node000016" title=" " alt="" coords="657,163,972,113,972,118,657,168"/>
+<area shape="poly" id="edge22_Node000016_Node000004" title=" " alt="" coords="1136,111,1177,122,1278,160,1375,205,1521,281,1519,286,1372,209,1276,165,1175,127,1134,116"/>
+<area shape="rect" id="Node000017" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="1471,139,1639,164"/>
+<area shape="poly" id="edge20_Node000016_Node000017" title=" " alt="" coords="1086,86,1146,52,1184,36,1223,23,1279,10,1325,4,1370,7,1424,23,1460,44,1493,71,1539,125,1535,129,1489,75,1457,48,1422,28,1369,12,1325,9,1280,16,1225,28,1185,41,1148,57,1089,90"/>
+<area shape="rect" id="Node000018" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="1235,39,1412,64"/>
+<area shape="poly" id="edge23_Node000016_Node000018" title=" " alt="" coords="1133,85,1243,64,1244,69,1134,90"/>
+<area shape="rect" id="Node000019" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="1224,88,1423,113"/>
+<area shape="poly" id="edge26_Node000016_Node000019" title=" " alt="" coords="1152,98,1211,98,1211,103,1152,103"/>
+<area shape="poly" id="edge21_Node000017_Node000006" title=" " alt="" coords="1568,162,1602,211,1641,277,1680,361,1714,446,1759,576,1754,578,1709,448,1675,363,1636,279,1598,214,1563,166"/>
+<area shape="poly" id="edge25_Node000018_Node000004" title=" " alt="" coords="1406,62,1424,73,1445,96,1455,120,1461,145,1473,174,1539,278,1534,281,1468,176,1456,147,1449,122,1441,99,1421,77,1403,66"/>
+<area shape="poly" id="edge24_Node000018_Node000017" title=" " alt="" coords="1389,61,1424,73,1479,100,1525,129,1523,133,1476,105,1422,78,1387,66"/>
+<area shape="rect" id="Node000021" href="$tensor_8c.html#a1a934d15330249655240152823b670f2" title="Perform Tensor Contiguous." alt="" coords="712,240,911,265"/>
+<area shape="poly" id="edge28_Node000020_Node000021" title=" " alt="" coords="664,250,698,250,698,255,664,255"/>
+<area shape="rect" id="Node000025" href="$tensor_8c.html#aa3a89f2c2e728e2b1d627a26266df33d" title="Perform Tensor Is Contiguous." alt="" coords="959,137,1176,163"/>
+<area shape="poly" id="edge40_Node000020_Node000025" title=" " alt="" coords="637,237,992,163,993,168,638,242"/>
+<area shape="poly" id="edge30_Node000021_Node000004" title=" " alt="" coords="911,249,1145,255,1284,262,1423,275,1488,286,1487,291,1422,281,1284,268,1145,260,911,255"/>
+<area shape="poly" id="edge38_Node000021_Node000007" title=" " alt="" coords="835,263,872,288,913,320,936,347,945,359,960,370,992,385,989,390,957,375,941,363,932,350,909,324,869,292,832,267"/>
+<area shape="poly" id="edge37_Node000021_Node000016" title=" " alt="" coords="821,238,875,182,914,149,957,122,974,115,976,120,960,127,917,154,879,185,825,242"/>
+<area shape="poly" id="edge29_Node000021_Node000017" title=" " alt="" coords="905,237,1456,162,1457,167,906,243"/>
+<area shape="rect" id="Node000022" href="$tensor_8c.html#aad9a6a41a76d355ac1a9a0a3e617a8bf" title="Perform Storage Retain." alt="" coords="1236,340,1411,365"/>
+<area shape="poly" id="edge31_Node000021_Node000022" title=" " alt="" coords="833,263,888,295,923,312,959,325,1027,339,1096,348,1223,354,1222,359,1095,354,1026,345,958,330,921,317,886,300,830,268"/>
+<area shape="rect" id="Node000023" href="$tensor_8c.html#a05322f1c9959a8df7e1cbc1d87bcde08" title="Perform Tensor As Strided." alt="" coords="970,291,1165,316"/>
+<area shape="poly" id="edge32_Node000021_Node000023" title=" " alt="" coords="877,263,990,285,989,290,876,268"/>
+<area shape="poly" id="edge39_Node000021_Node000025" title=" " alt="" coords="835,237,890,209,958,179,1004,164,1005,169,960,184,892,214,837,242"/>
+<area shape="poly" id="edge33_Node000023_Node000022" title=" " alt="" coords="1134,313,1244,335,1243,340,1133,319"/>
+<area shape="rect" id="Node000024" href="$tensor_8c.html#a0435f20131e8a7b73d12be7d7ef5d58f" title=" " alt="" coords="1254,291,1393,316"/>
+<area shape="poly" id="edge34_Node000023_Node000024" title=" " alt="" coords="1165,301,1240,301,1240,306,1165,306"/>
+<area shape="poly" id="edge36_Node000024_Node000004" title=" " alt="" coords="1393,301,1488,301,1488,306,1393,306"/>
+<area shape="poly" id="edge35_Node000024_Node000017" title=" " alt="" coords="1342,288,1521,169,1524,174,1345,293"/>
+</map>

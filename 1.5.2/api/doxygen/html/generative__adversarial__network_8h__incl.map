@@ -1,0 +1,7 @@
+<map id="include/neural_core/architecture/generative_adversarial_network.h" name="include/neural_core/architecture/generative_adversarial_network.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,184,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="7,108,81,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,61,60,97,56,95,77,59"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="105,108,188,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="113,59,135,95,130,98,108,61"/>
+</map>

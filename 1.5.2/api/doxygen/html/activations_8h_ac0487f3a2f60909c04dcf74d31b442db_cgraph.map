@@ -1,0 +1,20 @@
+<map id="SNEPPX_act_forward" name="SNEPPX_act_forward">
+<area shape="rect" id="Node000001" title="Run the forward pass for Act." alt="" coords="5,179,163,204"/>
+<area shape="rect" id="Node000002" href="$activations_8c.html#a56523f373056439149cc7f6e9420847c" title="Perform Act Elu." alt="" coords="241,5,367,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,177,134,111,168,73,209,40,227,31,229,36,212,44,172,77,138,115,94,180"/>
+<area shape="rect" id="Node000003" href="$activations_8c.html#aeaae66dda30161155f5f1ac1ef9300de" title="Perform Act Gelu Erf." alt="" coords="224,55,384,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="96,177,143,134,175,110,209,89,226,82,228,87,212,94,178,114,146,138,99,181"/>
+<area shape="rect" id="Node000004" href="$activations_8c.html#a34b87ab2d2a0eb1992e630c6a19161b4" title="Perform Act Gelu Tanh." alt="" coords="219,104,389,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="113,176,210,138,235,130,237,136,212,143,115,181"/>
+<area shape="rect" id="Node000005" href="$activations_8c.html#aa598035dabd88e09f1ffca979e8a3c06" title="Perform Act Leaky Relu." alt="" coords="217,153,391,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="163,180,203,175,203,180,163,185"/>
+<area shape="rect" id="Node000006" href="$activations_8c.html#aab83424809d03043bbca0f5507658e9d" title="Perform Act Log Softmax." alt="" coords="211,203,397,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="163,197,197,201,197,206,163,203"/>
+<area shape="rect" id="Node000007" href="$activations_8c.html#a8ca2a899a38e0568fcbc56f3b6806807" title="Perform Act Softmax Stable." alt="" coords="445,221,605,261"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="112,202,157,221,211,237,267,244,325,248,431,246,431,252,325,253,267,250,210,242,155,226,109,207"/>
+<area shape="rect" id="Node000008" href="$activations_8c.html#a795885803450d9b201b2f2cf293a1bc3" title="Perform Act Prelu." alt="" coords="234,304,374,329"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="101,202,148,241,212,282,245,297,243,302,209,287,145,245,98,206"/>
+<area shape="rect" id="Node000009" href="$activations_8c.html#a1f2e175249e0194d7476867ce64228d8" title="Perform Act Selu." alt="" coords="237,353,371,379"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="95,203,139,268,172,306,212,338,226,346,223,351,209,343,169,310,134,271,90,206"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="398,223,432,227,431,233,397,229"/>
+</map>

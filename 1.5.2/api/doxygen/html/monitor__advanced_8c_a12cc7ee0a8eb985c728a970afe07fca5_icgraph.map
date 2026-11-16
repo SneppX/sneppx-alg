@@ -1,0 +1,7 @@
+<map id="heap_scan_ensure_init" name="heap_scan_ensure_init">
+<area shape="rect" id="Node000001" title=" " alt="" coords="239,45,409,70"/>
+<area shape="rect" id="Node000002" href="$monitor__advanced_8c.html#ac37b3cfcd12386e9f2a1a0cdf11f86fd" title="Perform Heap Corruption Register Alloc." alt="" coords="5,5,191,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="224,46,191,41,191,36,225,41"/>
+<area shape="rect" id="Node000003" href="$monitor__advanced_8c.html#a523aa1cdd726dbb74cfecaed3cc2eed3" title="Perform Heap Corruption Unregister Alloc." alt="" coords="5,69,191,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,74,191,79,191,74,224,69"/>
+</map>

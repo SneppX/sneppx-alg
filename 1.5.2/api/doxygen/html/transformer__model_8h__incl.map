@@ -1,0 +1,7 @@
+<map id="include/neural_core/architecture/transformer_model.h" name="include/neural_core/architecture/transformer_model.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,191,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="10,108,85,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,61,64,97,59,95,80,59"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="109,108,191,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,59,138,95,134,98,112,61"/>
+</map>

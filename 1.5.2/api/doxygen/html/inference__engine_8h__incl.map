@@ -1,0 +1,21 @@
+<map id="include/neural_core/kernel/inference_engine.h" name="include/neural_core/kernel/inference_engine.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="151,5,346,45"/>
+<area shape="rect" id="Node000002" href="$multi__head__attention__module_8h.html" title=" " alt="" coords="228,93,389,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="264,44,290,81,286,84,260,47"/>
+<area shape="rect" id="Node000003" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="217,269,401,309"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="322,43,364,63,403,91,420,113,429,132,439,181,444,202,439,223,417,248,389,266,386,261,414,244,434,220,439,202,434,182,424,134,415,115,399,95,362,67,320,48"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="98,357,173,383"/>
+<area shape="poly" id="edge12_Node000001_Node000004" title=" " alt="" coords="194,48,148,69,98,98,52,136,32,158,17,182,9,206,10,229,19,253,32,275,70,316,108,347,105,351,66,320,28,278,14,255,5,230,4,205,12,180,28,155,48,132,95,93,145,64,192,43"/>
+<area shape="rect" id="Node000007" href="$subword__tokenization__pipeline_8h.html" title=" " alt="" coords="27,181,191,221"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="236,47,135,172,131,169,231,44"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="361,131,392,151,416,180,423,201,416,223,397,247,372,265,369,261,393,243,412,220,418,201,412,183,388,155,358,136"/>
+<area shape="rect" id="Node000006" href="$automatic__differentiation__framework_8h.html" title=" " alt="" coords="215,181,402,221"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="311,134,311,167,306,167,306,134"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="268,312,175,354,172,349,266,307"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="273,357,344,383"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="311,310,311,343,306,343,306,310"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="311,222,311,255,306,255,306,222"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="274,224,240,245,207,271,174,309,150,347,146,344,170,306,203,267,236,240,271,219"/>
+<area shape="poly" id="edge9_Node000007_Node000003" title=" " alt="" coords="154,219,253,261,251,266,152,224"/>
+<area shape="poly" id="edge10_Node000007_Node000004" title=" " alt="" coords="114,221,134,343,129,344,109,222"/>
+</map>

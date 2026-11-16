@@ -1,0 +1,8 @@
+<map id="security/crypto/c/power.c" name="security/crypto/c/power.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="89,5,273,31"/>
+<area shape="rect" id="Node000002" href="$power__analysis__mitigation_8h.html" title=" " alt="" coords="5,79,215,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,33,133,71,129,67,167,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="145,152,216,177"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="196,29,215,50,230,78,232,96,227,114,206,144,202,141,222,112,227,96,225,79,210,53,192,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="124,102,162,140,158,144,120,106"/>
+</map>

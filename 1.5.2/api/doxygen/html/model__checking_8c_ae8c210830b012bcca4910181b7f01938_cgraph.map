@@ -1,0 +1,5 @@
+<map id="SNEPPX_model_minimize" name="SNEPPX_model_minimize">
+<area shape="rect" id="Node000001" title="Reduce the model to reachable states (reachable&#45;state reduction)." alt="" coords="5,5,195,31"/>
+<area shape="rect" id="Node000002" href="$model__checking_8c.html#a67c9e164d9c8db17447593c0a6b33989" title="Perform Model Check." alt="" coords="243,5,409,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,15,229,15,229,21,195,21"/>
+</map>

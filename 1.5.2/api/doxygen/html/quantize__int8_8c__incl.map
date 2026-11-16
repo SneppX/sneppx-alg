@@ -1,0 +1,19 @@
+<map id="kernel/quantization/quantize_int8.c" name="kernel/quantization/quantize_int8.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="201,5,348,45"/>
+<area shape="rect" id="Node000002" href="$quantization_8h.html" title=" " alt="" coords="57,93,172,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="237,48,151,90,149,85,235,43"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="197,93,265,119"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="266,47,246,83,241,80,262,44"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="289,93,351,119"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="288,44,309,80,304,83,283,47"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="375,93,446,119"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="308,43,380,84,377,89,306,48"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="20,255,95,280"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="76,121,41,139,25,152,13,168,8,187,13,207,23,226,37,243,33,246,19,229,8,209,3,187,8,165,21,148,38,135,74,116"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="135,255,206,280"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="155,116,191,135,208,148,221,165,226,187,221,209,210,229,196,246,191,243,205,226,216,207,221,187,216,168,204,152,188,139,153,121"/>
+<area shape="rect" id="Node000005" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="23,167,207,207"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="117,119,117,153,112,153,112,119"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="103,208,76,245,72,242,99,205"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="130,205,156,242,152,245,126,208"/>
+</map>

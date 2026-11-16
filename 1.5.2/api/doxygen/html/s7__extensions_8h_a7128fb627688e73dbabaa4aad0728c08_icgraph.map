@@ -1,0 +1,7 @@
+<map id="SNEPPX_bsdiff" name="SNEPPX_bsdiff">
+<area shape="rect" id="Node000001" title="Perform Bsdiff." alt="" coords="217,45,333,70"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#afe4b7b13e535f6da1fc1a4bf84ed6711" title="Perform Bsdiff Create Patch File." alt="" coords="5,5,169,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,48,169,42,170,37,204,43"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#a706df364052bb9e23a5b594a2aaf310f" title="Perform Bsdiff With Signature." alt="" coords="12,69,163,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,72,163,79,162,74,203,67"/>
+</map>

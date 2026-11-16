@@ -1,0 +1,8 @@
+<map id="free_ctx_BceLossCtx" name="free_ctx_BceLossCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="412,31,569,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#aef2e8169878c625b6769c57dcea88b51" title=" " alt="" coords="189,5,364,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="398,35,364,31,364,26,399,30"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#ace6956b46b15c14f54c98b55bcdf4d0b" title="Perform Bce Loss." alt="" coords="5,31,141,56"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="398,46,142,46,142,41,398,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="176,33,142,38,141,32,175,28"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="SNEPPX_aes256_encrypt_block" name="SNEPPX_aes256_encrypt_block">
+<area shape="rect" id="Node000001" title="Encrypt a single block with Aes256." alt="" coords="491,88,673,128"/>
+<area shape="rect" id="Node000002" href="$aes__gcm_8c.html#a2ccaa46fb21421759f14624e13923750" title="Decrypt a single block with Aes256." alt="" coords="254,5,437,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="513,86,442,60,407,48,409,43,444,55,515,81"/>
+<area shape="rect" id="Node000003" href="$aes__gcm_8c.html#a01f0dd47ebed9cfa665b6124a51fbee5" title="Encrypt plaintext with AES&#45;GCM." alt="" coords="248,70,443,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="477,99,443,96,443,90,478,94"/>
+<area shape="rect" id="Node000005" href="$aes__gcm_8c.html#ab978e9526f074921fba3f9064d0609c0" title="Perform Aes Gcm Finalize." alt="" coords="249,119,441,145"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="477,121,442,125,441,120,477,116"/>
+<area shape="rect" id="Node000006" href="$aes__gcm_8c.html#aa378bdb49e5a306b26cd605ca8aa90cc" title="Initialize Aes Gcm." alt="" coords="262,169,429,194"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="514,135,443,159,398,171,397,166,442,153,512,130"/>
+<area shape="rect" id="Node000004" href="$aes__gcm_8c.html#af586153f91844b420e3235f0efa83be2" title="Decrypt ciphertext with AES&#45;GCM." alt="" coords="5,70,200,95"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="234,85,200,85,200,80,234,80"/>
+</map>

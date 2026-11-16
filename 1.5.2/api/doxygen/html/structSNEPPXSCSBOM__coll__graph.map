@@ -1,0 +1,7 @@
+<map id="SNEPPXSCSBOM" name="SNEPPXSCSBOM">
+<area shape="rect" id="Node000001" title=" " alt="" coords="119,93,249,119"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXSCComponent.html" title=" " alt="" coords="5,5,171,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,38,172,91,169,95,109,42"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXSCVulnerability.html" title=" " alt="" coords="195,5,367,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="264,43,235,71,203,95,200,91,232,67,260,39"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_maximum" name="SNEPPX_tensor_maximum">
+<area shape="rect" id="Node000001" title="Perform Tensor Maximum." alt="" coords="200,5,395,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a9561193a242bed27fed6bc69c9b547f3" title="Perform Maximum." alt="" coords="5,5,152,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,21,153,21,153,15,186,15"/>
+</map>

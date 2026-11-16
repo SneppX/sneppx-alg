@@ -1,0 +1,5 @@
+<map id="SNEPPX_device_insertion_detect" name="SNEPPX_device_insertion_detect">
+<area shape="rect" id="Node000001" title="Perform Device Insertion Detect." alt="" coords="240,5,427,45"/>
+<area shape="rect" id="Node000002" href="$monitor__advanced_8c.html#a7b097568b268fca705e1f4a690e14cce" title="Perform Device Insertion Has New Device." alt="" coords="5,5,192,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="227,28,192,28,192,23,227,23"/>
+</map>

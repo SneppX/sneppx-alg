@@ -1,0 +1,5 @@
+<map id="SNEPPX_audit_shutdown" name="SNEPPX_audit_shutdown">
+<area shape="rect" id="Node000001" title="Perform Audit Shutdown." alt="" coords="5,5,188,31"/>
+<area shape="rect" id="Node000002" href="$audit__logger_8c.html#ac42e4ca2d79377968801caff52a8e4ea" title="Perform Audit Export." alt="" coords="236,5,399,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="189,15,222,15,222,21,189,21"/>
+</map>

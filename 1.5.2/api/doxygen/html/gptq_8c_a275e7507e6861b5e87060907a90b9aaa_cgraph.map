@@ -1,0 +1,7 @@
+<map id="SNEPPX_gptq_quantize" name="SNEPPX_gptq_quantize">
+<area shape="rect" id="Node000001" title="Quantize Gptq." alt="" coords="5,35,177,60"/>
+<area shape="rect" id="Node000002" href="$gptq_8c.html#a8b345fec337af9f183a08920af0ab8dc" title=" " alt="" coords="255,5,368,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,33,241,25,241,30,178,38"/>
+<area shape="rect" id="Node000003" href="$gptq_8c.html#a46c7078221a26487edc216d8aa8bcfff" title="Perform Gptq Quantize Block." alt="" coords="225,55,397,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="178,56,212,60,212,65,178,61"/>
+</map>

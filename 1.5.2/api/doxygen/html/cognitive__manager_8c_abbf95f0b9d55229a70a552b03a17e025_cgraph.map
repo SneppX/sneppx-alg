@@ -1,0 +1,16 @@
+<map id="SNEPPX_semantic_forget" name="SNEPPX_semantic_forget">
+<area shape="rect" id="Node000001" title="Get Semantic For." alt="" coords="5,31,192,56"/>
+<area shape="rect" id="Node000002" href="$semantic_8c.html#a9e9973526d37fd3dd97de1bc4d920e98" title=" " alt="" coords="240,31,423,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,41,226,41,226,46,192,46"/>
+<area shape="rect" id="Node000003" href="$semantic_8c.html#ab172fdc351322f975ef692919783bbe0" title=" " alt="" coords="494,5,625,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="423,31,480,24,480,29,423,36"/>
+<area shape="rect" id="Node000004" href="$tensor_8c.html#ad054e4c60272e5bea3021d35186edae5" title="Destroy Tensor." alt="" coords="471,55,648,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="423,50,458,54,457,59,423,56"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="928,55,1035,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="648,65,914,65,914,70,648,70"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#ab304e494ae590b3cf08d4ff51aa3c1f3" title="Perform Storage Release." alt="" coords="696,80,880,105"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="648,74,683,78,682,84,648,80"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="1083,55,1241,80"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1035,65,1069,65,1069,70,1035,70"/>
+<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="880,78,914,73,915,79,881,83"/>
+</map>

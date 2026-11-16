@@ -1,0 +1,7 @@
+<map id="SNEPPX_arc_layer_destroy" name="SNEPPX_arc_layer_destroy">
+<area shape="rect" id="Node000001" title="Destroy Arc Layer." alt="" coords="448,5,644,31"/>
+<area shape="rect" id="Node000002" href="$arch_8c.html#a6a14129ea1fc53186899ec7cbeba8faf" title="Destroy Model." alt="" coords="223,5,400,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="435,21,400,21,400,15,435,15"/>
+<area shape="rect" id="Node000003" href="$arch_8c.html#a10b0dd27701a47b983681b345f85821b" title="Create Model." alt="" coords="5,5,175,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="209,21,175,21,175,15,209,15"/>
+</map>

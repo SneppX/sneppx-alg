@@ -1,0 +1,15 @@
+<map id="SNEPPX_hkdf_extract" name="SNEPPX_hkdf_extract">
+<area shape="rect" id="Node000001" title="HKDF extract phase." alt="" coords="5,55,168,80"/>
+<area shape="rect" id="Node000002" href="$hmac_8c.html#affe39b6a0fdf5de08f8c736672b84b3a" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="216,55,387,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,65,202,65,202,70,168,70"/>
+<area shape="rect" id="Node000003" href="$hmac_8c.html#a8d0bf8919b85d5a7d50157e76e775c16" title=" " alt="" coords="435,55,557,80"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,65,420,65,420,70,387,70"/>
+<area shape="rect" id="Node000004" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="610,5,779,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="547,52,629,31,630,37,548,57"/>
+<area shape="rect" id="Node000005" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="617,55,772,80"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="558,65,604,65,604,70,558,70"/>
+<area shape="rect" id="Node000006" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="605,104,784,129"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="548,77,630,98,629,103,547,83"/>
+<area shape="rect" id="Node000007" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="832,104,972,129"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="785,114,818,114,818,119,785,119"/>
+</map>

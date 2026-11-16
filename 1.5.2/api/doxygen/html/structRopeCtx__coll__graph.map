@@ -1,0 +1,11 @@
+<map id="RopeCtx" name="RopeCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="28,303,105,328"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXVariable.html" title=" " alt="" coords="137,213,263,238"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="173,248,86,305,83,300,170,243"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="279,217,290,225,282,233,264,236,263,231,280,228,285,225,276,221"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="9,93,124,119"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="66,132,62,182,61,240,68,302,62,303,56,240,57,182,61,132"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="92,126,189,210,185,214,88,130"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,5,128,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="69,45,69,93,64,93,64,45"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="SNEPPX_entropy_pool_add" name="SNEPPX_entropy_pool_add">
+<area shape="rect" id="Node000001" title="Add Entropy Pool." alt="" coords="915,45,1111,70"/>
+<area shape="rect" id="Node000002" href="$entropy__pool_8c.html#adc9377057a08638f703bd1a132bbdd36" title="Perform Entropy Pool Add Os." alt="" coords="701,5,867,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="907,45,867,40,867,34,908,40"/>
+<area shape="rect" id="Node000006" href="$entropy__pool_8c.html#af055d617d7d70c9473369b6cbb4d6aa6" title="Perform Entropy Pool Add Rdtsc." alt="" coords="701,69,867,109"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="908,75,867,80,867,75,907,69"/>
+<area shape="rect" id="Node000003" href="$entropy__pool_8c.html#a04c4cd3bf966e6ead4d2ac2121871ac5" title="Perform Entropy Pool Collect." alt="" coords="488,37,653,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="688,42,654,48,653,42,687,37"/>
+<area shape="rect" id="Node000004" href="$entropy__pool_8c.html#a782b9216677c5c8a1e0f58effa6c7e49" title="Get Entropy Pool." alt="" coords="247,45,440,70"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="474,60,440,60,440,55,474,55"/>
+<area shape="rect" id="Node000005" href="$entropy__pool_8c.html#acd743633ae58ce55b483f50496585570" title="Perform Entropy Pool Stir." alt="" coords="5,45,199,70"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="233,60,199,60,199,55,233,55"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="687,78,653,72,654,67,688,72"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="dilithium_poly_add" name="dilithium_poly_add">
+<area shape="rect" id="Node000001" title=" " alt="" coords="409,31,556,56"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#ab75bc9d768ca62f5b3fec9c0a6073e04" title=" " alt="" coords="245,56,361,81"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="396,58,362,63,361,58,395,53"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="5,5,197,31"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="396,40,197,27,198,22,396,35"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="238,55,197,45,152,33,153,28,198,39,239,50"/>
+<area shape="rect" id="Node000004" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="15,55,187,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="231,71,188,71,188,65,231,66"/>
+<area shape="rect" id="Node000005" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="10,104,193,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="236,87,156,107,155,101,235,82"/>
+</map>

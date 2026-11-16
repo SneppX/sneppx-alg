@@ -1,0 +1,9 @@
+<map id="SNEPPX_canary_generate" name="SNEPPX_canary_generate">
+<area shape="rect" id="Node000001" title="Generate a random stack canary value." alt="" coords="451,35,640,60"/>
+<area shape="rect" id="Node000002" href="$secure__mem_8c.html#a13dadc8aba1ac31f4316659a232ca92f" title="Perform Secure Malloc." alt="" coords="228,5,403,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="437,36,403,32,403,26,437,31"/>
+<area shape="rect" id="Node000004" href="$secure__mem_8c.html#a7d1751b8acc352ec5d438e84b065f682" title="Create Secure Pool." alt="" coords="236,55,395,95"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="437,63,395,68,394,63,436,58"/>
+<area shape="rect" id="Node000003" href="$secure__mem_8c.html#ab36568b95ed140fd30bed074c10b517d" title="Perform Secure Realloc." alt="" coords="5,5,180,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="214,21,180,21,180,15,214,15"/>
+</map>

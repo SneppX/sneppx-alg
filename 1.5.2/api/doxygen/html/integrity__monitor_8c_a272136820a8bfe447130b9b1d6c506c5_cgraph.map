@@ -1,0 +1,5 @@
+<map id="SNEPPX_monitor_shutdown" name="SNEPPX_monitor_shutdown">
+<area shape="rect" id="Node000001" title="Perform Monitor Shutdown." alt="" coords="5,5,207,31"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a3e99fc5409f7925271ee097c8047ff84" title="Stop Monitor." alt="" coords="255,5,421,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,15,241,15,241,21,207,21"/>
+</map>

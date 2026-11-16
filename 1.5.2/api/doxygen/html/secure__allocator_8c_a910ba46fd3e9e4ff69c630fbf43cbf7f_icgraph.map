@@ -1,0 +1,7 @@
+<map id="freelist_destroy" name="freelist_destroy">
+<area shape="rect" id="Node000001" title=" " alt="" coords="268,42,392,67"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="19,5,206,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="254,47,206,41,207,35,255,42"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a7e17af21a5f9be7e46e87a8b86293591" title="Initialize Secure Allocator." alt="" coords="5,70,220,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="255,67,212,73,211,67,254,62"/>
+</map>

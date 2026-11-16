@@ -1,0 +1,5 @@
+<map id="backward_log_softmax" name="backward_log_softmax">
+<area shape="rect" id="Node000001" title=" " alt="" coords="213,5,385,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a6694fcaa611abd2d829dbd02b9081587" title="Perform Log Softmax." alt="" coords="5,5,165,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,21,166,21,166,15,200,15"/>
+</map>

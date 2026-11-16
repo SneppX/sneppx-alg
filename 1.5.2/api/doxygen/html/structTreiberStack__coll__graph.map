@@ -1,0 +1,6 @@
+<map id="TreiberStack" name="TreiberStack">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,93,108,119"/>
+<area shape="rect" id="Node000002" href="$structTreiberNode.html" title=" " alt="" coords="7,5,107,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="59,45,59,93,54,93,54,45"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="122,9,133,18,125,26,107,29,106,23,123,21,128,18,119,14"/>
+</map>

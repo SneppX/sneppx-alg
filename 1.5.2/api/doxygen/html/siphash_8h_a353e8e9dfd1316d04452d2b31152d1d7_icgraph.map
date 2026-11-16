@@ -1,0 +1,5 @@
+<map id="SNEPPX_siphash" name="SNEPPX_siphash">
+<area shape="rect" id="Node000001" title="Compute SipHash 2&#45;4 of input." alt="" coords="207,5,337,31"/>
+<area shape="rect" id="Node000002" href="$siphash_8c.html#a5bc39a42c09ca85c272398799059f157" title="Compute SipHash 2&#45;4 of input." alt="" coords="5,5,159,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,21,159,21,159,15,193,15"/>
+</map>

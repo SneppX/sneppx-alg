@@ -1,0 +1,14 @@
+<map id="SNEPPX_c_hash_blake3" name="SNEPPX_c_hash_blake3">
+<area shape="rect" id="Node000001" title="Perform C Hash Blake3." alt="" coords="5,55,180,80"/>
+<area shape="rect" id="Node000002" href="$blake3_8c.html#ae0715165a4a195205ca609cece213110" title="Perform Blake3 Finish." alt="" coords="233,5,398,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,52,244,31,245,36,151,57"/>
+<area shape="rect" id="Node000005" href="$blake3_8c.html#aa8f473a031cafa6cd73f115d971e3980" title="Initialize Blake3." alt="" coords="240,55,391,80"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="180,65,226,65,226,70,180,70"/>
+<area shape="rect" id="Node000006" href="$blake3_8c.html#a318c7e0e112bc3cb04fdb300e26c36ea" title="Update Blake3." alt="" coords="228,104,403,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="151,77,245,98,244,104,150,83"/>
+<area shape="rect" id="Node000003" href="$blake3_8c.html#a48fd214b4b29feec04376eeb9216a5d5" title=" " alt="" coords="451,55,600,80"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="371,28,458,49,457,54,369,33"/>
+<area shape="rect" id="Node000004" href="$blake3_8c.html#a8cd5822ab9c71f318152c899fa211e5f" title=" " alt="" coords="648,55,783,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="600,65,634,65,634,70,600,70"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="369,101,457,81,458,86,371,107"/>
+</map>

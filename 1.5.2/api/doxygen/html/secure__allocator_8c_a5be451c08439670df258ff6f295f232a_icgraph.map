@@ -1,0 +1,9 @@
+<map id="freelist_insert" name="freelist_insert">
+<area shape="rect" id="Node000001" title=" " alt="" coords="444,42,556,67"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,13,396,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="430,46,396,41,397,35,431,41"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,63,396,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="431,68,397,73,396,68,430,63"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="226,28,192,28,192,23,226,23"/>
+</map>

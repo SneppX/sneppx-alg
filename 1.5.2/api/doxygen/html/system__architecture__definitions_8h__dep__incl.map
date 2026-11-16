@@ -1,0 +1,10 @@
+<map id="include/neural_core/architecture/system_architecture_definitions.h" name="include/neural_core/architecture/system_architecture_definitions.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="140,5,335,60"/>
+<area shape="rect" id="Node000002" href="$differentiable__training__pipeline_8h.html" title=" " alt="" coords="5,108,200,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,70,140,110,136,106,190,66"/>
+<area shape="rect" id="Node000003" href="$trainer_8c.html" title=" " alt="" coords="93,211,246,236"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="237,74,229,118,214,164,199,191,182,212,178,209,194,188,210,162,224,117,231,73"/>
+<area shape="rect" id="Node000004" href="$arch_8c.html" title=" " alt="" coords="275,123,381,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="273,69,319,121,315,124,269,72"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="134,172,162,209,158,212,129,175"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="point_negate" name="point_negate">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,112,31"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a7303c72f462327879b16d11c436061a5" title=" " alt="" coords="160,5,227,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,15,147,15,147,21,112,21"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#a80599a025464973e6a3e4024590fcb41" title=" " alt="" coords="275,5,340,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="227,15,261,15,261,21,227,21"/>
+</map>

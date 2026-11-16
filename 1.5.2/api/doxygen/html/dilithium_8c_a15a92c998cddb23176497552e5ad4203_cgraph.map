@@ -1,0 +1,20 @@
+<map id="dilithium_expand_a" name="dilithium_expand_a">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,156,80"/>
+<area shape="rect" id="Node000002" href="$drbg_8c.html#a2ad9b0b9a552c93bd57bdb432427330e" title="Destroy DRBG context and wipe sensitive data." alt="" coords="209,5,374,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,52,223,31,224,36,136,57"/>
+<area shape="rect" id="Node000003" href="$drbg_8c.html#ac0cc4ee4212c37574be163aa80a06573" title="Generate random bytes from DRBG." alt="" coords="204,55,379,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="157,65,191,65,191,70,157,70"/>
+<area shape="rect" id="Node000009" href="$drbg_8c.html#a5e2c38fb90ee53833024fadcb50aae16" title="Initialize a DRBG context with entropy." alt="" coords="223,104,360,129"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="136,77,224,98,223,103,135,83"/>
+<area shape="rect" id="Node000004" href="$drbg_8c.html#a57f9c1fd87fa5865cb60da90b060172e" title=" " alt="" coords="427,80,508,105"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="379,77,414,82,413,88,378,83"/>
+<area shape="rect" id="Node000005" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="561,31,730,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="507,78,555,65,583,57,584,62,557,70,509,84"/>
+<area shape="rect" id="Node000006" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="568,80,723,105"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="508,90,554,90,554,95,508,95"/>
+<area shape="rect" id="Node000007" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="556,129,735,155"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="509,102,557,115,584,123,583,128,555,121,507,107"/>
+<area shape="rect" id="Node000008" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="783,129,923,155"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="735,139,769,139,769,145,735,145"/>
+<area shape="poly" id="edge9_Node000009_Node000004" title=" " alt="" coords="360,105,413,97,413,103,361,110"/>
+</map>

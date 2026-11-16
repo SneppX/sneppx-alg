@@ -1,0 +1,5 @@
+<map id="SNEPPX_tape_clip_grad_norm" name="SNEPPX_tape_clip_grad_norm">
+<area shape="rect" id="Node000001" title="Perform Tape Clip Grad Norm." alt="" coords="5,5,221,31"/>
+<area shape="rect" id="Node000002" href="$tape_8c.html#aefdcbb96c2a2be48ecf670061b2f83ce" title="Perform Tape Global Norm." alt="" coords="269,5,467,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,15,256,15,256,21,222,21"/>
+</map>

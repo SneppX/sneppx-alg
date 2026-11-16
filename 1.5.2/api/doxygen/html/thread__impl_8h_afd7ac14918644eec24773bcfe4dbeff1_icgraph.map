@@ -1,0 +1,5 @@
+<map id="SNEPPX_worker_destroy" name="SNEPPX_worker_destroy">
+<area shape="rect" id="Node000001" title="Destroy Worker." alt="" coords="252,5,432,31"/>
+<area shape="rect" id="Node000002" href="$thread__impl_8c.html#af0549de5a6e75bcaaff9c97fa9ca855e" title="Destroy Scheduler." alt="" coords="5,5,204,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="238,21,204,21,204,15,238,15"/>
+</map>

@@ -1,0 +1,23 @@
+<map id="include/neural_core/kernel/multi_head_attention_module.h" name="include/neural_core/kernel/multi_head_attention_module.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="559,5,769,60"/>
+<area shape="rect" id="Node000002" href="$system__architecture__definitions_8h.html" title=" " alt="" coords="164,108,359,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="547,66,360,112,358,107,545,61"/>
+<area shape="rect" id="Node000004" href="$trainer_8c.html" title=" " alt="" coords="161,313,314,339"/>
+<area shape="poly" id="edge11_Node000001_Node000004" title=" " alt="" coords="547,55,493,76,468,91,446,110,431,129,424,148,421,186,418,226,410,247,395,267,375,284,352,298,304,316,303,311,350,293,372,280,391,264,406,244,413,225,416,186,419,147,427,126,442,106,465,87,490,71,545,50"/>
+<area shape="rect" id="Node000006" href="$inference__engine_8h.html" title=" " alt="" coords="456,115,651,155"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="626,72,576,117,572,113,623,68"/>
+<area shape="rect" id="Node000008" href="$attention_8c.html" title=" " alt="" coords="675,123,874,148"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="705,68,764,120,760,124,702,72"/>
+<area shape="rect" id="Node000009" href="$attention__module_8c.html" title=" " alt="" coords="898,115,1086,155"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="763,61,931,113,930,118,761,66"/>
+<area shape="rect" id="Node000010" href="$ops_8c.html" title=" " alt="" coords="1111,123,1265,148"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="782,48,934,72,1099,105,1153,120,1151,125,1098,111,933,78,782,53"/>
+<area shape="rect" id="Node000003" href="$differentiable__training__pipeline_8h.html" title=" " alt="" coords="5,211,200,265"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="210,172,146,213,143,208,207,168"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="259,177,241,314,236,313,254,176"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html" title=" " alt="" coords="275,225,381,251"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="289,173,322,224,318,226,284,176"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="157,270,221,311,218,315,154,275"/>
+<area shape="rect" id="Node000007" href="$inference__engine_8c.html" title=" " alt="" coords="457,218,649,258"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="556,169,556,218,551,218,551,169"/>
+</map>

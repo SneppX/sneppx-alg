@@ -1,0 +1,5 @@
+<map id="SNEPPX_hmac_sha512" name="SNEPPX_hmac_sha512">
+<area shape="rect" id="Node000001" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="221,13,392,38"/>
+<area shape="rect" id="Node000002" href="$pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="5,5,173,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,28,174,28,174,23,207,23"/>
+</map>

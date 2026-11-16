@@ -1,0 +1,5 @@
+<map id="SNEPPX_worker_init" name="SNEPPX_worker_init">
+<area shape="rect" id="Node000001" title="Initialize Worker." alt="" coords="224,5,376,31"/>
+<area shape="rect" id="Node000002" href="$thread__impl_8c.html#a998489c8540cc9fc04ec340d191cdb8f" title="Initialize Scheduler." alt="" coords="5,5,176,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="210,21,176,21,176,15,210,15"/>
+</map>

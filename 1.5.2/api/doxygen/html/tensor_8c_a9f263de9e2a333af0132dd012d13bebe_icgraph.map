@@ -1,0 +1,13 @@
+<map id="SNEPPX_tensor_cos" name="SNEPPX_tensor_cos">
+<area shape="rect" id="Node000001" title="Perform Tensor Cos." alt="" coords="316,55,467,80"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a892a39b2655f1dcb42abc7fc59a54575" title=" " alt="" coords="156,5,267,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="330,53,258,33,260,28,332,48"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#a5c44c858bd224f169df32637b18b1db8" title=" " alt="" coords="155,55,268,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="302,70,268,70,268,65,302,65"/>
+<area shape="rect" id="Node000006" href="$ops_8c.html#ad3fa3b57ba8bedc4149eabac45b20451" title="Perform Cos." alt="" coords="160,104,263,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="332,86,260,106,258,101,330,81"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a11eb44da7c16819528e41b4809e8a415" title="Perform Sin." alt="" coords="7,5,105,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="142,21,106,21,106,15,142,15"/>
+<area shape="rect" id="Node000005" href="$ops_8c.html#a30caa773ed53db94dd3725eac194e1f6" title="Perform Tan." alt="" coords="5,55,107,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="141,70,107,70,107,65,141,65"/>
+</map>

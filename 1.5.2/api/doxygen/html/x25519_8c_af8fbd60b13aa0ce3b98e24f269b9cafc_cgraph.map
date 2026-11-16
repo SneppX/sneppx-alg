@@ -1,0 +1,32 @@
+<map id="SNEPPX_x25519_shared_secret" name="SNEPPX_x25519_shared_secret">
+<area shape="rect" id="Node000001" title="Perform X25519 Shared Secret." alt="" coords="5,173,184,213"/>
+<area shape="rect" id="Node000002" href="$x25519_8c.html#a7e04dc72c2bb62cbc6104133b0ba5d79" title="Perform X25519 Scalar Mult." alt="" coords="232,180,443,205"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,190,218,190,218,195,184,195"/>
+<area shape="rect" id="Node000003" href="$x25519_8c.html#a84b929d31a8c94df4e33bb1c52f42421" title=" " alt="" coords="545,5,611,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="346,178,401,112,442,73,489,40,530,24,532,29,492,44,446,77,405,116,350,182"/>
+<area shape="rect" id="Node000004" href="$x25519_8c.html#abf7b282cc33a4a7faacd73f9447fb193" title=" " alt="" coords="537,55,619,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="353,178,411,135,449,110,490,89,522,77,524,82,492,94,452,115,414,139,356,182"/>
+<area shape="rect" id="Node000005" href="$x25519_8c.html#aa1ed52ac72b976d362ff6a7ed0a2c265" title=" " alt="" coords="538,104,618,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="378,177,524,131,526,136,379,182"/>
+<area shape="rect" id="Node000006" href="$x25519_8c.html#a47407989d9580e70febe28c79f95aa68" title=" " alt="" coords="835,156,901,181"/>
+<area shape="poly" id="edge11_Node000002_Node000006" title=" " alt="" coords="443,196,598,199,685,196,770,189,821,179,822,184,771,194,685,201,598,204,443,202"/>
+<area shape="rect" id="Node000010" href="$x25519_8c.html#ae763058b04b2a32e662302b0e61c2320" title=" " alt="" coords="713,155,771,180"/>
+<area shape="poly" id="edge15_Node000002_Node000010" title=" " alt="" coords="443,183,700,167,700,173,443,189"/>
+<area shape="rect" id="Node000011" href="$x25519_8c.html#a7e9a20ac1022b8c26c02d4c75ce84537" title=" " alt="" coords="819,256,917,281"/>
+<area shape="poly" id="edge12_Node000002_Node000011" title=" " alt="" coords="427,203,805,257,804,262,427,208"/>
+<area shape="rect" id="Node000012" href="$x25519_8c.html#acf4abb2fe5d1dc07d9991a4d8f0bc215" title=" " alt="" coords="545,307,611,332"/>
+<area shape="poly" id="edge16_Node000002_Node000012" title=" " alt="" coords="358,203,416,242,492,285,533,302,531,307,489,290,414,247,355,208"/>
+<area shape="rect" id="Node000013" href="$x25519_8c.html#a6244cd02a2349417bd5537e293064d81" title="Perform X25519 Clamp." alt="" coords="491,356,665,381"/>
+<area shape="poly" id="edge17_Node000002_Node000013" title=" " alt="" coords="350,204,405,270,446,309,492,342,504,349,502,353,489,347,442,313,401,274,346,207"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="618,118,690,126,771,139,822,152,821,157,770,145,689,131,618,123"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="619,126,701,152,700,157,618,131"/>
+<area shape="rect" id="Node000007" href="$x25519_8c.html#a195df6cadf2015489e05f3167611deca" title=" " alt="" coords="975,156,1022,181"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="902,166,962,166,962,171,902,171"/>
+<area shape="rect" id="Node000009" href="$x25519_8c.html#a0478595d5bc6808fe41be58a34c03002" title=" " alt="" coords="965,205,1032,231"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="903,179,953,198,951,203,901,184"/>
+<area shape="rect" id="Node000008" href="$x25519_8c.html#a6cb9c57ed53aa1df796137d0bc5e44be" title=" " alt="" coords="1080,207,1159,232"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1023,176,1077,199,1075,204,1021,181"/>
+<area shape="poly" id="edge10_Node000010_Node000006" title=" " alt="" coords="771,165,821,166,821,171,771,170"/>
+<area shape="poly" id="edge14_Node000011_Node000008" title=" " alt="" coords="917,260,1031,241,1066,232,1067,237,1033,246,918,265"/>
+<area shape="poly" id="edge13_Node000011_Node000009" title=" " alt="" coords="901,253,951,233,953,238,903,258"/>
+</map>

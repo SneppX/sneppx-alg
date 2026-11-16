@@ -1,0 +1,7 @@
+<map id="SNEPPX_audit_log_formatted" name="SNEPPX_audit_log_formatted">
+<area shape="rect" id="Node000001" title="Perform Audit Log Formatted." alt="" coords="5,5,217,31"/>
+<area shape="rect" id="Node000002" href="$audit__logger_8c.html#ace73f9e15d8ba6355d5727d5145120d5" title="Perform Audit Log." alt="" coords="265,5,405,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="217,15,251,15,251,21,217,21"/>
+<area shape="rect" id="Node000003" href="$audit__logger_8c.html#a82a4fe99f043fd5bb484d1d2995cb75b" title=" " alt="" coords="453,5,551,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="406,15,439,15,439,21,406,21"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="gf_init" name="gf_init">
+<area shape="rect" id="Node000001" title=" " alt="" coords="512,55,575,80"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a449607648100101ec701579463dd7dad" title="Initialize Hsm." alt="" coords="293,5,429,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="498,55,463,45,420,33,421,28,465,39,500,50"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#a48153ef907c2eb05ce4895448dd306c1" title="Perform Shamir Reconstruct." alt="" coords="259,55,464,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="498,70,464,70,464,65,498,65"/>
+<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#afc6fe2d8b07c73865d074fb62746ecab" title="Perform Shamir Split." alt="" coords="281,108,441,133"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="500,83,465,94,408,111,406,105,463,89,498,78"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#a4798a57cbb9f7ad30a6af7b2106466dd" title="Perform Shamir Reconstruct 5 Of 9." alt="" coords="5,43,211,83"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="245,68,211,68,211,62,245,63"/>
+<area shape="rect" id="Node000006" href="$s6__extensions_8c.html#a49ea32043110a149b2ae165a89c823df" title="Perform Shamir Split 5 Of 9." alt="" coords="28,107,188,147"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="268,126,188,128,188,123,268,120"/>
+</map>

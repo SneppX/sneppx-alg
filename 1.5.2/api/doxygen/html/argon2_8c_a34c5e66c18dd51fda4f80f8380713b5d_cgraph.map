@@ -1,0 +1,11 @@
+<map id="SNEPPX_argon2id" name="SNEPPX_argon2id">
+<area shape="rect" id="Node000001" title="Perform Argon2id." alt="" coords="5,24,143,49"/>
+<area shape="rect" id="Node000002" href="$argon2_8c.html#a2d64005d89829d249a14b990cd7fce52" title=" " alt="" coords="381,24,465,49"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,21,190,9,262,3,334,9,374,18,373,23,333,14,262,8,191,14,123,27"/>
+<area shape="rect" id="Node000003" href="$argon2_8c.html#a26d145762f29415a1d6d7ebc3a218a5b" title=" " alt="" coords="513,49,631,75"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="126,47,191,58,273,64,357,66,499,63,500,69,357,72,273,69,190,63,125,52"/>
+<area shape="rect" id="Node000004" href="$argon2_8c.html#ae48698b71a171925f8198c1187fe7041" title=" " alt="" coords="191,24,333,49"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="143,34,177,34,177,39,143,39"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="466,41,500,47,500,52,465,46"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="333,34,368,34,368,39,333,39"/>
+</map>

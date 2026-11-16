@@ -1,0 +1,19 @@
+<map id="spx_wots_sign" name="spx_wots_sign">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,123,56"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#ad5732c0b38d832e4172691b693c949ba" title=" " alt="" coords="171,5,303,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,32,157,27,157,32,123,37"/>
+<area shape="rect" id="Node000006" href="$sphincsplus_8c.html#adbffc42a78aad813fe50b33c565f512c" title=" " alt="" coords="174,55,299,80"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="123,49,161,54,160,59,123,54"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#ac4d4b4e1716743e99c947fea0f764b21" title=" " alt="" coords="469,5,619,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="303,15,456,15,456,21,303,21"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="667,31,793,56"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="619,26,653,30,652,35,618,31"/>
+<area shape="rect" id="Node000005" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="841,31,981,56"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="794,41,827,41,827,46,794,46"/>
+<area shape="rect" id="Node000007" href="$sphincsplus_8c.html#a0e29e34f08aea9b0d8e51085458f77a1" title=" " alt="" coords="495,55,593,80"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="300,65,481,65,481,70,300,70"/>
+<area shape="rect" id="Node000008" href="$sphincsplus_8c.html#a9fe0a96ba83fc5e842f5cfe686f7b9f0" title=" " alt="" coords="351,105,421,131"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="276,78,338,99,337,104,274,83"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="593,58,653,51,653,56,594,64"/>
+<area shape="poly" id="edge9_Node000008_Node000007" title=" " alt="" coords="421,104,490,82,492,87,422,109"/>
+</map>

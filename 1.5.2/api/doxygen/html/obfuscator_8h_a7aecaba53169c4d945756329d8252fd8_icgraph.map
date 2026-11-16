@@ -1,0 +1,11 @@
+<map id="log_obfuscated" name="log_obfuscated">
+<area shape="rect" id="Node000001" title="Log a formatted message with obfuscated content." alt="" coords="256,95,377,121"/>
+<area shape="rect" id="Node000002" href="$elastic_8c.html#a748d3cd9b3acbae419cdfc3378699164" title="Perform Elastic Handle Failure." alt="" coords="19,5,194,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="278,92,207,60,174,48,176,43,209,55,280,87"/>
+<area shape="rect" id="Node000003" href="$elastic_8c.html#ae4b84461b113bb3dd8339d65884a9c77" title="Perform Elastic Join." alt="" coords="29,70,184,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="242,102,184,95,184,89,243,96"/>
+<area shape="rect" id="Node000004" href="$elastic_8c.html#a0da556171f3058e7123302bd2f87cde7" title="Perform Elastic Leave." alt="" coords="23,119,190,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="243,119,191,125,190,120,242,114"/>
+<area shape="rect" id="Node000005" href="$elastic_8c.html#aa3eaaff318e65297b6eb823b2e800d2d" title="Perform Elastic Reconfigure." alt="" coords="5,169,208,194"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="279,129,209,159,166,171,165,166,207,153,277,124"/>
+</map>

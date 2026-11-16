@@ -1,0 +1,11 @@
+<map id="PowCtx" name="PowCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="31,317,102,343"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXVariable.html" title=" " alt="" coords="111,213,238,238"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,250,81,319,77,315,151,246"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="253,215,261,219,265,226,257,234,239,238,238,232,254,230,259,225,258,223,251,220"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="9,93,124,119"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="66,133,61,182,60,240,68,317,62,317,55,240,56,182,60,132"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="88,127,166,211,162,214,85,131"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,5,128,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="69,45,69,93,64,93,64,45"/>
+</map>

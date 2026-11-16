@@ -1,0 +1,8 @@
+<map id="free_ctx_LayerNormCtx" name="free_ctx_LayerNormCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="449,31,625,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a191322d6f122a775d17f41f3c5a5150a" title=" " alt="" coords="208,5,401,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="435,35,401,31,402,26,436,30"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#afaa482e9aa4391c318aaa2564c940be3" title="Perform Layer Norm." alt="" coords="5,31,160,56"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="435,46,160,46,160,41,435,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="195,33,160,37,160,32,194,28"/>
+</map>

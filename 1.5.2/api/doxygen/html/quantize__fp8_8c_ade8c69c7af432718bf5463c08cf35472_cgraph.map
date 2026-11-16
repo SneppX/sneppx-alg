@@ -1,0 +1,5 @@
+<map id="SNEPPX_quantize_fp8_e5m2" name="SNEPPX_quantize_fp8_e5m2">
+<area shape="rect" id="Node000001" title="Perform Quantize Fp8 E5m2." alt="" coords="5,5,213,31"/>
+<area shape="rect" id="Node000002" href="$quantize__fp8_8c.html#a31a64916682af1a473233e4ff6e8c60a" title="Perform Float To Fp8 E5m2." alt="" coords="261,5,463,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,15,248,15,248,21,213,21"/>
+</map>

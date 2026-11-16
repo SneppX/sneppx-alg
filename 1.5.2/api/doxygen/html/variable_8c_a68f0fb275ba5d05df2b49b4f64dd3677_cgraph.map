@@ -1,0 +1,26 @@
+<map id="SNEPPX_variable_copy" name="SNEPPX_variable_copy">
+<area shape="rect" id="Node000001" title="Perform Variable Copy." alt="" coords="5,160,176,185"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Create Tensor." alt="" coords="230,84,399,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="128,157,263,111,264,116,130,162"/>
+<area shape="rect" id="Node000009" href="$variable_8c.html#a6310f0413cd31b22b2cbf3270d86de40" title="Create Variable." alt="" coords="224,210,405,236"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="148,182,245,205,244,210,147,188"/>
+<area shape="rect" id="Node000003" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="700,134,868,160"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="377,106,454,119,575,132,686,139,686,145,574,137,453,124,377,112"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="731,9,837,34"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="332,81,384,48,417,31,453,19,522,7,593,3,660,5,717,10,717,15,660,10,593,8,523,12,454,24,419,36,386,52,334,86"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="464,34,641,60"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="376,81,477,60,478,65,377,86"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="453,84,652,109"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="400,94,440,94,440,99,400,99"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="933,185,1057,210"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="839,157,929,179,928,184,837,162"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="916,9,1075,34"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="837,19,902,19,902,24,837,24"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="618,57,653,68,708,96,755,124,752,129,706,100,651,73,617,62"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="641,35,717,26,717,31,642,40"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="406,222,652,220,794,212,919,202,920,207,795,217,652,226,406,227"/>
+<area shape="rect" id="Node000010" href="$ops_8c.html#a02a44ec3e0bfb33b8c12261999188fe9" title=" " alt="" coords="497,286,608,312"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="356,233,500,279,498,284,355,238"/>
+<area shape="rect" id="Node000011" href="$tape_8c.html#aea885aafcbbe6b179513220636f4c03c" title="Perform No Grad Is Active." alt="" coords="454,185,651,210"/>
+<area shape="poly" id="edge13_Node000009_Node000011" title=" " alt="" coords="405,211,440,207,440,212,406,216"/>
+</map>

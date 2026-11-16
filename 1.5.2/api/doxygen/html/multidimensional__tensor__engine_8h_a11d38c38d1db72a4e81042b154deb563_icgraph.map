@@ -1,0 +1,8 @@
+<map id="SNEPPX_tensor_pow" name="SNEPPX_tensor_pow">
+<area shape="rect" id="Node000001" title="Perform Tensor Pow." alt="" coords="327,31,481,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ab894eb1089f4b3fc36c36b0b4d220e3f" title=" " alt="" coords="160,5,279,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="313,33,278,29,279,23,313,28"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a336800ede2a6839cdcec62bfcc22362b" title="Perform Pow." alt="" coords="5,31,112,56"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="313,46,112,46,112,41,313,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="147,32,113,38,112,32,146,27"/>
+</map>

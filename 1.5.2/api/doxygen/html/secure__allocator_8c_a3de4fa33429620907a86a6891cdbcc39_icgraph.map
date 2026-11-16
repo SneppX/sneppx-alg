@@ -1,0 +1,15 @@
+<map id="freelist_node_alloc" name="freelist_node_alloc">
+<area shape="rect" id="Node000001" title=" " alt="" coords="444,87,589,113"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#a4a9f44e12a96061385d6ded1d0b31651" title=" " alt="" coords="245,13,391,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="474,84,395,52,362,41,363,36,397,47,476,79"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#acf1d809ea9cc286985fd149892cf8ea1" title=" " alt="" coords="243,62,393,87"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="430,92,393,87,394,82,430,86"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,111,396,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="430,113,397,117,396,112,430,108"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,161,396,201"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="473,120,369,164,367,159,471,115"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a9e87ff97df6bb02b114ec77bcda86c43" title="Perform Secure Allocator Trim Pool." alt="" coords="5,5,192,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="231,28,192,28,192,23,231,23"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,104,192,144"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="226,127,192,127,192,121,226,121"/>
+</map>

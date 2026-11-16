@@ -1,0 +1,7 @@
+<map id="SNEPPX_semantic_relate" name="SNEPPX_semantic_relate">
+<area shape="rect" id="Node000001" title="Perform Semantic Relate." alt="" coords="5,5,191,31"/>
+<area shape="rect" id="Node000002" href="$semantic_8c.html#a80bce1b676acf7f0c20042c4e3e63e55" title=" " alt="" coords="239,5,420,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,15,225,15,225,21,191,21"/>
+<area shape="rect" id="Node000003" href="$semantic_8c.html#ab172fdc351322f975ef692919783bbe0" title=" " alt="" coords="468,5,599,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="420,15,454,15,454,21,420,21"/>
+</map>

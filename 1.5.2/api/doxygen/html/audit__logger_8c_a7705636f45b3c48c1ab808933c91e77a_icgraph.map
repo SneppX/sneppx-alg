@@ -1,0 +1,9 @@
+<map id="audit_compute_entry_crc" name="audit_compute_entry_crc">
+<area shape="rect" id="Node000001" title=" " alt="" coords="244,55,431,80"/>
+<area shape="rect" id="Node000002" href="$audit__logger_8c.html#a00ee6a930ec60564be332506093fe2ad" title=" " alt="" coords="5,5,196,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="262,54,162,33,163,28,263,49"/>
+<area shape="rect" id="Node000003" href="$audit__logger_8c.html#a74d6d6152a47352a8a6f7702251de12a" title=" " alt="" coords="26,55,175,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="230,70,176,70,176,65,230,65"/>
+<area shape="rect" id="Node000004" href="$audit__logger_8c.html#a58060bc2c969ee682485e31912368b6b" title=" " alt="" coords="30,105,171,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="271,86,172,110,171,105,270,81"/>
+</map>

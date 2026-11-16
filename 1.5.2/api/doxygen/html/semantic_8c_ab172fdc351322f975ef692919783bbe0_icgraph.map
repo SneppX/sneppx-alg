@@ -1,0 +1,17 @@
+<map id="find_concept_idx" name="find_concept_idx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="699,55,829,80"/>
+<area shape="rect" id="Node000002" href="$semantic_8c.html#ac5b31182eeb02b8592eae3a30d8fe2f7" title=" " alt="" coords="473,5,645,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="697,54,612,33,613,28,698,49"/>
+<area shape="rect" id="Node000005" href="$semantic_8c.html#a9e9973526d37fd3dd97de1bc4d920e98" title=" " alt="" coords="468,55,651,80"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="685,70,651,70,651,65,685,65"/>
+<area shape="rect" id="Node000007" href="$semantic_8c.html#a80bce1b676acf7f0c20042c4e3e63e55" title=" " alt="" coords="469,104,650,129"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="698,86,613,107,612,101,697,81"/>
+<area shape="rect" id="Node000003" href="$semantic_8c.html#a6a75fd91f9c81845626241d401d65bce" title=" " alt="" coords="239,5,415,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="460,21,415,21,415,15,460,15"/>
+<area shape="rect" id="Node000004" href="$cognitive__manager_8c.html#a1ee1cb38fa7097e912c0a953e557be2a" title="Perform Semantic Store." alt="" coords="5,5,185,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="225,21,185,21,185,15,225,15"/>
+<area shape="rect" id="Node000006" href="$cognitive__manager_8c.html#abbf95f0b9d55229a70a552b03a17e025" title="Get Semantic For." alt="" coords="233,55,420,80"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="454,70,420,70,420,65,454,65"/>
+<area shape="rect" id="Node000008" href="$cognitive__manager_8c.html#afacd3f1b5eee6525f62aa1f1d13ac3b7" title="Perform Semantic Relate." alt="" coords="234,104,419,129"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="455,119,420,119,420,114,455,114"/>
+</map>

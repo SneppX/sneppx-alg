@@ -1,0 +1,17 @@
+<map id="round_up_page" name="round_up_page">
+<area shape="rect" id="Node000001" title=" " alt="" coords="463,133,584,159"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#aabc69a9c6490a089c4e694cad56e3baf" title=" " alt="" coords="253,5,402,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="502,124,464,83,440,62,413,44,388,33,390,28,416,40,443,58,467,79,506,121"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="247,55,408,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="487,129,414,94,380,83,381,77,416,89,489,124"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a09ee8e95b121f2050e7193ca92410678" title="Perform Secure Audit." alt="" coords="246,104,409,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="449,138,408,131,409,126,449,132"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#a8fbc616854e79e5e9cbb26a3e1963135" title="Perform Secure Canary Check." alt="" coords="240,154,415,194"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="449,159,415,164,414,159,449,154"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="249,219,405,244"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="492,168,416,208,380,221,378,216,414,204,489,164"/>
+<area shape="rect" id="Node000008" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="249,269,405,309"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="506,171,467,215,416,258,391,271,389,266,413,253,464,211,502,168"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,211,192,251"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="235,234,192,234,192,229,235,229"/>
+</map>

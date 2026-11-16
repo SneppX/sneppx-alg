@@ -1,0 +1,21 @@
+<map id="security/ui/key_vault.c" name="security/ui/key_vault.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="315,5,483,31"/>
+<area shape="rect" id="Node000002" href="$key__vault_8h.html" title=" " alt="" coords="5,86,103,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="337,33,233,54,116,81,103,85,102,80,115,76,232,49,336,28"/>
+<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="127,79,295,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="373,33,270,76,268,71,371,28"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="319,86,386,111"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="395,32,369,75,364,73,390,29"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="411,86,481,111"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="409,29,434,73,430,75,404,32"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="505,86,576,111"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="421,29,509,77,506,82,419,33"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="601,86,665,111"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="440,28,590,76,595,78,593,83,588,81,439,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="46,167,121,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="61,111,77,153,72,155,56,112"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="160,167,231,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="76,109,164,158,161,162,74,114"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="182,121,115,162,112,157,179,117"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="210,119,203,154,198,153,205,118"/>
+</map>

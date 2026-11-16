@@ -1,0 +1,7 @@
+<map id="hash_hostname" name="hash_hostname">
+<area shape="rect" id="Node000001" title=" " alt="" coords="212,35,337,60"/>
+<area shape="rect" id="Node000002" href="$s4__extensions_8c.html#a27ec23cdbf7e98696103fad385009934" title="Perform Doh Resolve." alt="" coords="5,5,164,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="198,38,164,33,165,28,199,33"/>
+<area shape="rect" id="Node000003" href="$s4__extensions_8c.html#ab8a446ed939fddd3e602a6cc07f6ede0" title="Perform Doh Resolve Batch." alt="" coords="5,55,164,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="199,61,165,66,164,61,198,56"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="SNEPPX_fs_integrity_scan" name="SNEPPX_fs_integrity_scan">
+<area shape="rect" id="Node000001" title="Perform Fs Integrity Scan." alt="" coords="5,55,196,80"/>
+<area shape="rect" id="Node000002" href="$blake3_8c.html#ae0715165a4a195205ca609cece213110" title="Perform Blake3 Finish." alt="" coords="249,5,414,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,52,257,31,259,36,161,57"/>
+<area shape="rect" id="Node000005" href="$blake3_8c.html#aa8f473a031cafa6cd73f115d971e3980" title="Initialize Blake3." alt="" coords="256,55,407,80"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="196,65,242,65,242,70,196,70"/>
+<area shape="rect" id="Node000006" href="$blake3_8c.html#a318c7e0e112bc3cb04fdb300e26c36ea" title="Update Blake3." alt="" coords="244,104,419,129"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="161,77,259,98,257,104,160,83"/>
+<area shape="rect" id="Node000003" href="$blake3_8c.html#a48fd214b4b29feec04376eeb9216a5d5" title=" " alt="" coords="467,55,616,80"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,28,474,49,473,54,385,33"/>
+<area shape="rect" id="Node000004" href="$blake3_8c.html#a8cd5822ab9c71f318152c899fa211e5f" title=" " alt="" coords="664,55,799,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="616,65,650,65,650,70,616,70"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="385,101,473,81,474,86,387,107"/>
+</map>

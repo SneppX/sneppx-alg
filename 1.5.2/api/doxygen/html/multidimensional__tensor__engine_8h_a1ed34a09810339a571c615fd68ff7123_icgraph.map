@@ -1,0 +1,19 @@
+<map id="SNEPPX_tensor_matmul" name="SNEPPX_tensor_matmul">
+<area shape="rect" id="Node000001" title="Perform Tensor Matmul." alt="" coords="903,70,1081,95"/>
+<area shape="rect" id="Node000002" href="$attention_8c.html#a88c63d687c1c3ade333768a9af849ef6" title="Perform Attn Forward Cached." alt="" coords="692,5,855,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="929,69,849,48,851,43,930,64"/>
+<area shape="rect" id="Node000003" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="456,38,644,63"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="889,78,644,60,644,55,889,73"/>
+<area shape="rect" id="Node000005" href="$ops_8c.html#a099d6baf60b11293d6460faf12a14be0" title="Perform Matmul." alt="" coords="708,121,839,146"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="924,101,829,123,828,118,922,96"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="678,39,645,43,644,37,678,33"/>
+<area shape="rect" id="Node000004" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="259,38,397,63"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="442,53,398,53,398,48,442,48"/>
+<area shape="rect" id="Node000006" href="$attention_8c.html#a862e89866d73e95189c504feadac7c2f" title="Perform Attn Build Train Graph." alt="" coords="459,88,641,128"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="694,127,641,121,642,116,695,122"/>
+<area shape="rect" id="Node000008" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,125,200,150"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="694,141,644,143,446,145,248,143,200,142,200,137,248,137,446,140,644,137,694,135"/>
+<area shape="rect" id="Node000007" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="248,88,408,128"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="445,111,408,111,408,105,445,105"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="234,123,200,127,200,122,234,118"/>
+</map>

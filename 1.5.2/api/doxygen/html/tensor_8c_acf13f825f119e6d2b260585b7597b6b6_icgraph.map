@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_slice" name="SNEPPX_tensor_slice">
+<area shape="rect" id="Node000001" title="Perform Tensor Slice." alt="" coords="209,5,368,31"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#a3d802a820557a0b7880737d53b39bb30" title="Perform Tensor Split." alt="" coords="5,5,161,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,21,161,21,161,15,195,15"/>
+</map>

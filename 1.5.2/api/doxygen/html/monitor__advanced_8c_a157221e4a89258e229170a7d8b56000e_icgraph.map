@@ -1,0 +1,9 @@
+<map id="SNEPPX_ml_anomaly_score" name="SNEPPX_ml_anomaly_score">
+<area shape="rect" id="Node000001" title="Perform Ml Anomaly Score." alt="" coords="256,77,459,102"/>
+<area shape="rect" id="Node000002" href="$monitor__advanced_8c.html#ae91acd2f4744462b027cddd76fefee5f" title="Perform Ml Anomaly Is Anomaly." alt="" coords="17,5,196,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="293,76,185,48,186,43,294,71"/>
+<area shape="rect" id="Node000003" href="$monitor__advanced_8c.html#a1623873de32480bcdbb3665c8828bcf5" title="Perform Ml Anomaly Is Anomaly Ex." alt="" coords="17,69,196,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="242,92,196,92,196,87,242,87"/>
+<area shape="rect" id="Node000004" href="$monitor__advanced_8c.html#a4c12bbd683f75312c647d7495786a937" title="Perform Ml Anomaly Score With Threshold." alt="" coords="5,133,208,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="294,108,186,136,185,131,293,103"/>
+</map>

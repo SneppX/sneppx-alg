@@ -1,0 +1,11 @@
+<map id="security/crypto/c/poly1305.c" name="security/crypto/c/poly1305.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="79,5,285,31"/>
+<area shape="rect" id="Node000002" href="$polynomial__authentication__mac_8h.html" title=" " alt="" coords="5,79,201,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,33,134,71,130,67,169,29"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="225,86,296,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="195,29,241,74,237,78,192,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="18,167,93,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,120,72,156,67,153,89,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="117,167,188,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="118,117,140,154,136,156,113,120"/>
+</map>

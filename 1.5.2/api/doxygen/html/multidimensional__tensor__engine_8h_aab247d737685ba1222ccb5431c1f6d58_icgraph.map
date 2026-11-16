@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_conv2d" name="SNEPPX_tensor_conv2d">
+<area shape="rect" id="Node000001" title="Perform Tensor Conv2d." alt="" coords="180,5,355,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#aea98fd3c44788c094a1224cc75d77930" title="Perform Conv2d." alt="" coords="5,5,132,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,21,133,21,133,15,166,15"/>
+</map>

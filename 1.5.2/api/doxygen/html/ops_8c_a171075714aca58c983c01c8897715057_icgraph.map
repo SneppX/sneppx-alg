@@ -1,0 +1,5 @@
+<map id="backward_fake_quant" name="backward_fake_quant">
+<area shape="rect" id="Node000001" title=" " alt="" coords="205,5,369,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a1f12bfc1c6f8bef3e32ff7b25723371b" title="Perform Fake Quant (QAT)." alt="" coords="5,5,157,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,21,157,21,157,15,192,15"/>
+</map>

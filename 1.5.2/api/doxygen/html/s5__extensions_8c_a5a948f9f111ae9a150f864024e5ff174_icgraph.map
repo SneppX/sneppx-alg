@@ -1,0 +1,7 @@
+<map id="SNEPPX_membership_inference_defense_apply" name="SNEPPX_membership_inference_defense_apply">
+<area shape="rect" id="Node000001" title="Apply Membership Inference Defense." alt="" coords="284,37,515,77"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#a7d5f11322906cf9fb7afd598eb0b17b5" title="Perform Membership Inference Defense Apply Batch." alt="" coords="5,5,236,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="270,45,236,41,236,36,271,40"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a3ee51f46005a13d3e4966408aae313ca" title="Perform Membership Inference Defense Apply With Eps." alt="" coords="5,69,236,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="271,75,236,79,236,73,270,69"/>
+</map>

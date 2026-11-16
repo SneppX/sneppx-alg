@@ -1,0 +1,8 @@
+<map id="SNEPPX_tensor_rope" name="SNEPPX_tensor_rope">
+<area shape="rect" id="Node000001" title="Perform Tensor Rope." alt="" coords="332,31,489,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ac5b73d28f842590bbf284bd06d5b6d1e" title=" " alt="" coords="163,5,284,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="318,33,284,29,285,24,319,28"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#ac9c5b6fd3c0ffb857d0a577ff4df7c16" title="Perform Rope." alt="" coords="5,31,115,56"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="318,46,115,46,115,41,318,41"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="150,32,116,37,115,32,149,27"/>
+</map>

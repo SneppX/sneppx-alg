@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['q_0',['q',['../structSNEPPX__FlashAttnBwdParams.html#ae07a164d648fbc11ca6558fb912a16f3',1,'SNEPPX_FlashAttnBwdParams::q'],['../structSNEPPX__GQAParams.html#aba2ef135a96b4f7fea34e19bef7ae738',1,'SNEPPX_GQAParams::q'],['../structSNEPPX__PagedAttnParams.html#a04c1c51624de0c63ac72ba5c5a4c11b7',1,'SNEPPX_PagedAttnParams::q'],['../structSNEPPX__BlockSparseAttnParams.html#a524fa3547d53cc10d42ae7dcb088bdfc',1,'SNEPPX_BlockSparseAttnParams::q'],['../structSNEPPX__FlashAttnParams.html#a8fd8da4738fe32ae00de827f239936bb',1,'SNEPPX_FlashAttnParams::q']]],
+  ['q_5flora_5frank_1',['q_lora_rank',['../structSNEPPXDeepSeekV2Config.html#a69c304e6c251b9d035ed4d96941392f2',1,'SNEPPXDeepSeekV2Config']]],
+  ['q_5fproj_2',['q_proj',['../structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53',1,'SNEPPX_DifferentialAttn']]],
+  ['qber_3',['qber',['../structSNEPPXQKDSession.html#aba537f942de799f81888ae51ccd89e13',1,'SNEPPXQKDSession']]],
+  ['qmax_4',['qmax',['../structSNEPPXQuantParams.html#a9ae08d639d594f07df87a0d9ebad6906',1,'SNEPPXQuantParams']]],
+  ['qmin_5',['qmin',['../structSNEPPXQuantParams.html#a1c697b5d45a98267fee83cd6fc0e02fd',1,'SNEPPXQuantParams']]],
+  ['qualified_5fsecurity_5fassessor_6',['qualified_security_assessor',['../structSNEPPXPCIDSSAssessment.html#a401e8115426cfb8ba814eca91e63fc4a',1,'SNEPPXPCIDSSAssessment']]],
+  ['quant_5fbits_7',['quant_bits',['../structModelConfig.html#af7b09807b284c639aebd47e685b7f028',1,'ModelConfig']]],
+  ['quant_5fgroup_5fsize_8',['quant_group_size',['../structModelConfig.html#a88c4eb76bc34da387c8c366506f4367f',1,'ModelConfig']]],
+  ['quantize_9',['quantize',['../structModelConfig.html#a5fcefcdacd276be716f675f8873933d5',1,'ModelConfig']]],
+  ['query_5fwindow_5fseconds_10',['query_window_seconds',['../structSNEPPXModelExtractionDefense.html#a3ef73042f5418312abdf5f6a23cbc0a9',1,'SNEPPXModelExtractionDefense']]],
+  ['queues_11',['queues',['../structSNEPPXThreadPool.html#ab6c34814aee7817d0fab8421dc920370',1,'SNEPPXThreadPool']]],
+  ['quote_5flen_12',['quote_len',['../structSNEPPXTPMAttestation.html#ab988ca69bb34bf7c450f7b5b7f73c3e5',1,'SNEPPXTPMAttestation']]],
+  ['quote_5fsignature_13',['quote_signature',['../structSNEPPXTPMAttestation.html#a4f8e833491a0d847ce99340be97914aa',1,'SNEPPXTPMAttestation']]],
+  ['qwen2_14',['qwen2',['../structSNEPPXLLMConfig.html#a35ade6f10df283780ce88da59f4cc4b9',1,'SNEPPXLLMConfig']]],
+  ['qwen2_5f72b_15',['qwen2_72b',['../model__zoo_8c.html#af123cf76d8a84e67f0c3fc565513f634',1,'model_zoo.c']]],
+  ['qwen2_5f7b_16',['qwen2_7b',['../model__zoo_8c.html#a352638131b4556f68506a41a18911b3a',1,'model_zoo.c']]]
+];

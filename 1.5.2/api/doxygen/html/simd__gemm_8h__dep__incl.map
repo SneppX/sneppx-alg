@@ -1,0 +1,7 @@
+<map id="include/neural_core/kernel/simd_gemm.h" name="include/neural_core/kernel/simd_gemm.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="81,5,243,45"/>
+<area shape="rect" id="Node000002" href="$simd__gemm_8c.html" title=" " alt="" coords="5,93,148,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,57,97,95,94,91,132,53"/>
+<area shape="rect" id="Node000003" href="$tensor__expr_8c.html" title=" " alt="" coords="173,93,325,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="193,53,231,91,228,95,189,57"/>
+</map>

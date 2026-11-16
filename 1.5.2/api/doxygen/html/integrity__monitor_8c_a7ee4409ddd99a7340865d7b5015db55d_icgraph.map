@@ -1,0 +1,5 @@
+<map id="SNEPPX_monitor_heartbeat_check" name="SNEPPX_monitor_heartbeat_check">
+<area shape="rect" id="Node000001" title="Perform Monitor Heartbeat Check." alt="" coords="227,5,428,45"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a6d439d5f419a9e85ff66960bb67ca7b4" title="Perform Monitor Get Heartbeat Miss Count." alt="" coords="5,5,179,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,28,179,28,179,23,213,23"/>
+</map>

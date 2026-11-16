@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_batch_norm" name="SNEPPX_tensor_batch_norm">
+<area shape="rect" id="Node000001" title="Perform Tensor Batch Norm." alt="" coords="211,5,416,31"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a6b8b6fe7cc75d0a5ac4ad67dc4daf37f" title="Perform Batch Norm." alt="" coords="5,5,163,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,21,163,21,163,15,197,15"/>
+</map>

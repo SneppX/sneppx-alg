@@ -1,0 +1,15 @@
+<map id="SNEPPX_rope_precompute" name="SNEPPX_rope_precompute">
+<area shape="rect" id="Node000001" title="Compute Rope Pre." alt="" coords="484,63,679,88"/>
+<area shape="rect" id="Node000002" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="248,5,436,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="514,62,395,33,396,28,515,57"/>
+<area shape="rect" id="Node000004" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="262,55,422,95"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="470,78,422,78,422,73,470,73"/>
+<area shape="rect" id="Node000006" href="$arch_8c.html#a5d156cc00f9e0b423266b948f6baa1ea" title="Run the forward pass for Model." alt="" coords="253,120,431,145"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="515,94,396,123,395,117,514,89"/>
+<area shape="rect" id="Node000003" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="33,5,172,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="234,21,172,21,172,15,234,15"/>
+<area shape="rect" id="Node000005" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,63,200,88"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="248,78,200,78,200,73,248,73"/>
+<area shape="rect" id="Node000007" href="$trainer_8c.html#a802056e5ee54b9d1fff826ee321dab4c" title="Perform Trainer Evaluate." alt="" coords="9,120,196,145"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="239,135,196,135,196,130,239,130"/>
+</map>

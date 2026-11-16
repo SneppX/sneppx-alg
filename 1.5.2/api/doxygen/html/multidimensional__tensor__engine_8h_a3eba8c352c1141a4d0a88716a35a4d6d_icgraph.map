@@ -1,0 +1,9 @@
+<map id="SNEPPX_tensor_log" name="SNEPPX_tensor_log">
+<area shape="rect" id="Node000001" title="Perform Tensor Log." alt="" coords="327,31,475,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ab894eb1089f4b3fc36c36b0b4d220e3f" title=" " alt="" coords="160,5,279,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="313,34,279,29,279,24,314,28"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#aee65ea53fcaeb3d2c66c6dd9078b028d" title="Perform Log." alt="" coords="169,55,269,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="313,58,270,63,269,58,313,52"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a336800ede2a6839cdcec62bfcc22362b" title="Perform Pow." alt="" coords="5,5,112,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="146,21,112,21,112,15,146,15"/>
+</map>

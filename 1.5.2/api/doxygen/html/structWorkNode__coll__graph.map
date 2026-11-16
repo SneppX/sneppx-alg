@@ -1,0 +1,6 @@
+<map id="WorkNode" name="WorkNode">
+<area shape="rect" id="Node000001" title=" " alt="" coords="12,93,101,119"/>
+<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="116,97,124,100,128,106,120,114,102,117,101,111,117,109,123,106,121,104,114,102"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXTask.html" title=" " alt="" coords="5,5,108,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="59,45,59,93,54,93,54,45"/>
+</map>

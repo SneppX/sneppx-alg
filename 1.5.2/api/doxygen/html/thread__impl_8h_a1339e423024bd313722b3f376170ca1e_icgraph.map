@@ -1,0 +1,7 @@
+<map id="SNEPPX_worker_push_task" name="SNEPPX_worker_push_task">
+<area shape="rect" id="Node000001" title="Perform Worker Push Task." alt="" coords="491,13,688,38"/>
+<area shape="rect" id="Node000002" href="$thread__impl_8c.html#a18b9d1f977cfd60247605f3964e64afb" title="Perform Scheduler Submit." alt="" coords="248,13,443,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="477,28,443,28,443,23,477,23"/>
+<area shape="rect" id="Node000003" href="$thread__impl_8c.html#a216184398a443c59f75c0282c7547a68" title="Perform Scheduler Submit Stealable." alt="" coords="5,5,200,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="234,28,200,28,200,23,234,23"/>
+</map>

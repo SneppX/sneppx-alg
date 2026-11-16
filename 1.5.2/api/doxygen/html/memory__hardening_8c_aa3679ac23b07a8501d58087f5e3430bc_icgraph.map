@@ -1,0 +1,5 @@
+<map id="SNEPPX_mem_quarantine_check" name="SNEPPX_mem_quarantine_check">
+<area shape="rect" id="Node000001" title="Perform Mem Quarantine Check." alt="" coords="248,5,439,45"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#a92dec4225d2d948d1f6b7981920a7f79" title="Perform Quarantine Check With Freelist." alt="" coords="5,5,200,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,28,200,28,200,23,235,23"/>
+</map>

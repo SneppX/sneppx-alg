@@ -1,0 +1,19 @@
+<map id="security/ui/audit_logger.c" name="security/ui/audit_logger.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="259,5,445,31"/>
+<area shape="rect" id="Node000002" href="$audit__logger_8h.html" title=" " alt="" coords="83,79,197,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="319,33,188,77,186,72,317,28"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="222,79,293,104"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="338,33,285,72,282,68,335,29"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="317,79,387,104"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="355,31,355,65,349,65,349,31"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="412,79,476,104"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="368,29,420,68,417,72,365,33"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="500,79,575,104"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="383,28,495,71,494,76,381,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,152,80,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="126,106,71,146,68,141,123,102"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="105,152,175,177"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="143,104,143,138,137,138,137,104"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="200,152,267,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="157,102,209,141,206,146,153,106"/>
+</map>

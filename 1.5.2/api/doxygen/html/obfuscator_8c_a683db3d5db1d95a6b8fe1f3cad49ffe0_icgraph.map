@@ -1,0 +1,18 @@
+<map id="sneppx_obfuscate_string" name="sneppx_obfuscate_string">
+<area shape="rect" id="Node000001" title="Obfuscate a string via XOR with a per&#45;process key." alt="" coords="460,173,644,198"/>
+<area shape="rect" id="Node000002" href="$obfuscator_8c.html#a7aecaba53169c4d945756329d8252fd8" title="Log a formatted message with obfuscated content." alt="" coords="273,115,395,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="489,172,382,143,384,138,491,167"/>
+<area shape="rect" id="Node000007" href="$obfuscator_8c.html#aab315a10bac9b5861eacea445798481c" title="Deobfuscate a previously obfuscated string (XOR is symmetric)." alt="" coords="256,165,412,205"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="446,188,412,188,412,183,446,183"/>
+<area shape="rect" id="Node000008" href="$profiler_8c.html#a234f2f61eb557ae2b1fb2e36f2875f7c" title="Perform Profiler Print." alt="" coords="25,222,188,247"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="492,204,412,220,295,232,188,236,188,231,295,226,412,215,491,199"/>
+<area shape="rect" id="Node000003" href="$elastic_8c.html#a748d3cd9b3acbae419cdfc3378699164" title="Perform Elastic Handle Failure." alt="" coords="19,5,194,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="300,110,257,85,207,60,176,48,178,43,209,55,259,80,303,106"/>
+<area shape="rect" id="Node000004" href="$elastic_8c.html#ae4b84461b113bb3dd8339d65884a9c77" title="Perform Elastic Join." alt="" coords="29,70,184,95"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="259,116,171,98,172,93,260,111"/>
+<area shape="rect" id="Node000005" href="$elastic_8c.html#a0da556171f3058e7123302bd2f87cde7" title="Perform Elastic Leave." alt="" coords="23,119,190,145"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="260,132,190,133,190,128,260,127"/>
+<area shape="rect" id="Node000006" href="$elastic_8c.html#aa3eaaff318e65297b6eb823b2e800d2d" title="Perform Elastic Reconfigure." alt="" coords="5,169,208,194"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="266,147,162,171,161,166,265,141"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="243,208,166,225,165,219,242,202"/>
+</map>

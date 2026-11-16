@@ -1,0 +1,9 @@
+<map id="audit_find_worst_category" name="audit_find_worst_category">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,45,199,70"/>
+<area shape="rect" id="Node000002" href="$self__audit_8c.html#a5d5140e707f222aab799b51dde881705" title=" " alt="" coords="247,37,429,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="199,55,233,55,233,60,199,60"/>
+<area shape="rect" id="Node000003" href="$self__audit_8c.html#ad4208dd547887fc39359c02f86c09b77" title=" " alt="" coords="477,5,660,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="429,42,463,37,464,43,430,47"/>
+<area shape="rect" id="Node000004" href="$self__audit_8c.html#a2348d47223d000eefb9a2bef77844b3d" title=" " alt="" coords="477,69,660,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="430,67,464,72,463,77,429,73"/>
+</map>

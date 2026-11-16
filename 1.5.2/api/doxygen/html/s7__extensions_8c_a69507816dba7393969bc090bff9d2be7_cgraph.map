@@ -1,0 +1,5 @@
+<map id="SNEPPX_tpm_quote" name="SNEPPX_tpm_quote">
+<area shape="rect" id="Node000001" title="Perform Tpm Quote." alt="" coords="5,5,156,31"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a9c7e446ae9202b339b98eb9b61afa744" title="Read Tpm Pcr." alt="" coords="204,5,373,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,15,190,15,190,21,156,21"/>
+</map>

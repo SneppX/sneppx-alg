@@ -1,0 +1,9 @@
+<map id="SNEPPX_tensor_sign" name="SNEPPX_tensor_sign">
+<area shape="rect" id="Node000001" title="Sign Tensor." alt="" coords="319,31,473,56"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#aaf6eb97b6290288524523122d6996ff2" title=" " alt="" coords="156,5,271,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="304,33,271,29,271,23,305,28"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#ad25266a72ffa3870ee2e2f4cb00575b3" title="Sign Sign." alt="" coords="160,55,267,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="305,58,267,63,267,58,305,53"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a0db97fbc4bad2c2a3b28e6f0755be4e9" title="Perform Abs." alt="" coords="5,5,108,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="143,21,108,21,108,15,143,15"/>
+</map>

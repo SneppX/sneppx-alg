@@ -1,0 +1,11 @@
+<map id="SNEPPX_training_sanitize_all" name="SNEPPX_training_sanitize_all">
+<area shape="rect" id="Node000001" title="Perform Training Sanitize All." alt="" coords="5,99,216,125"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#a09278d419530cb92e41830a398d6444f" title="Perform Training Sanitize Emails." alt="" coords="279,5,467,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,97,263,55,288,47,290,52,265,60,147,102"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a31629b29c9743651429216296390b83c" title="Perform Training Sanitize Ips." alt="" coords="266,70,481,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="216,98,252,94,252,99,217,103"/>
+<area shape="rect" id="Node000004" href="$s5__extensions_8c.html#a57d004a7ca499984efc2662b54ab2ee5" title="Perform Training Sanitize Phones." alt="" coords="279,120,467,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="217,121,266,126,265,131,216,126"/>
+<area shape="rect" id="Node000005" href="$s5__extensions_8c.html#aa11aa5caafdef9e799d9d5cf5b0a835b" title="Perform Training Sanitize Urls." alt="" coords="264,185,483,210"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="142,122,198,146,265,169,298,179,297,184,263,175,196,151,140,127"/>
+</map>

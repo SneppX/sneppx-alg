@@ -1,0 +1,7 @@
+<map id="SNEPPX_loop_invariant_infer_from_source" name="SNEPPX_loop_invariant_infer_from_source">
+<area shape="rect" id="Node000001" title="Perform Loop Invariant Infer From Source." alt="" coords="5,5,179,45"/>
+<area shape="rect" id="Node000002" href="$s8__extensions_8c.html#a512aeefe3f099c6ffc7b5a414774a6f8" title="Perform Loop Invariant Infer." alt="" coords="227,5,400,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="179,23,213,23,213,28,179,28"/>
+<area shape="rect" id="Node000003" href="$s8__extensions_8c.html#ad6efdf7a34a8134c22060feac9fdc940" title="Perform Is Ident Char." alt="" coords="448,13,615,38"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="400,23,434,23,434,28,400,28"/>
+</map>

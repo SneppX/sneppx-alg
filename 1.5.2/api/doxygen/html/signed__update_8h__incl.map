@@ -1,0 +1,11 @@
+<map id="include/neural_core/security/signed_update.h" name="include/neural_core/security/signed_update.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="48,5,237,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="41,167,116,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="74,48,39,67,24,80,13,94,9,111,16,128,30,143,48,157,44,161,26,147,11,131,3,112,8,92,20,76,36,62,71,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="170,167,240,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="213,43,248,62,264,76,277,92,281,112,273,131,258,147,240,161,237,157,254,143,269,128,276,111,272,94,260,80,245,67,211,48"/>
+<area shape="rect" id="Node000004" href="$ed25519__signature__verification_8h.html" title=" " alt="" coords="23,93,262,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="145,46,145,79,140,79,140,46"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="134,121,100,158,96,155,130,117"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="155,117,188,154,184,158,151,121"/>
+</map>

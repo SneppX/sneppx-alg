@@ -1,0 +1,9 @@
+<map id="SNEPPX_timing_safe_equal" name="SNEPPX_timing_safe_equal">
+<area shape="rect" id="Node000001" title="Perform Timing Safe Equal." alt="" coords="5,47,163,87"/>
+<area shape="rect" id="Node000002" href="$ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3" title="Perform Ct Equal." alt="" coords="223,5,357,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,46,222,31,223,37,163,51"/>
+<area shape="rect" id="Node000003" href="$timing_8c.html#af6e8b3c90f99be76a1e701d6208b3bc0" title="Perform Timing End." alt="" coords="213,55,367,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,65,199,65,199,70,163,70"/>
+<area shape="rect" id="Node000004" href="$timing_8c.html#ac6e0a7dc97bc651fdea2805933eb28c6" title="Start Timing." alt="" coords="211,104,369,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="163,84,223,98,222,103,162,89"/>
+</map>

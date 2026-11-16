@@ -4830,8 +4830,7 @@
 the <code>SNEPPX_*</code> Doxygen comments in <code>include/neural_core/</code> (Layers 1 &amp; 4 of the
 <a href="../COMMENTING/">commenting standard</a>).</p>
 <h2 id="regenerating&#702;locally">Regenerating locally<a class="headerlink" href="#regenerating&#702;locally" title="Permanent link">&para;</a></h2>
-<p>No CI is involved (see <a href="../dev/pages-deploy/">GitHub Pages deployment</a>).
-From the repository root, on any platform with Doxygen 1.9+ installed:</p>
+<p>The GitHub Pages workflow generates this HTML reference before MkDocs builds the site. The generated files are not committed to the source tree. For local regeneration, run the following from the repository root with Doxygen 1.9+ installed:</p>
 <div class="highlight"><pre><span></span><code><span class="c"># Use the root Doxyfile (output directory = docs/api/doxygen)</span>
 <span class="n">doxygen</span> <span class="n">Doxyfile</span>
 </code></pre></div>
@@ -4869,7 +4868,7 @@ navigation sidebar to jump to any <code>SNEPPX_*</code> symbol.</p>
 ></iframe>
 </p>
 <p>If the frame does not render, open the reference directly:
-<a href="https://github.com/SneppX/sneppx-alg/blob/main/docs/api/index.md"><code>doxygen/html/index.html</code></a>.</p>
+<a href="doxygen/html/"><code>doxygen/html/index.html</code></a>.</p>
 <h2 id="key&#702;headers&#702;to&#702;start&#702;from">Key headers to start from<a class="headerlink" href="#key&#702;headers&#702;to&#702;start&#702;from" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

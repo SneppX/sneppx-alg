@@ -1,0 +1,17 @@
+<map id="spx_compress" name="spx_compress">
+<area shape="rect" id="Node000001" title=" " alt="" coords="629,55,744,80"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#adb9d82a28051437eb04ad77d66b874aa" title=" " alt="" coords="252,5,363,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="626,54,581,45,464,30,363,23,363,18,465,25,582,39,627,49"/>
+<area shape="rect" id="Node000004" href="$sphincsplus_8c.html#a91c5647eb2d0c8ba4abcccbf0662db3a" title=" " alt="" coords="447,55,581,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="616,70,581,70,581,65,616,65"/>
+<area shape="rect" id="Node000006" href="$sphincsplus_8c.html#a80c9346f981807a841ebbb0dbabfb65c" title=" " alt="" coords="459,104,569,129"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="629,86,560,106,559,101,628,81"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#a2c331bc854f68512d32b07430abc956d" title="Sign Sphincs." alt="" coords="5,31,168,56"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="238,29,168,37,168,31,238,23"/>
+<area shape="rect" id="Node000005" href="$sphincsplus_8c.html#ad62b6c36cbf38c5b91b47628636d1def" title=" " alt="" coords="258,55,357,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="433,70,357,70,357,65,433,65"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="244,63,168,55,169,50,244,58"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="446,103,356,82,357,76,448,98"/>
+<area shape="rect" id="Node000007" href="$sphincsplus_8c.html#aa8322da28dedd392f705b10ae8a65fd9" title="Generate Sphincs." alt="" coords="216,104,399,129"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="446,119,399,119,399,114,446,114"/>
+</map>

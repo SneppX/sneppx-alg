@@ -1,0 +1,29 @@
+<map id="SNEPPX_model_destroy" name="SNEPPX_model_destroy">
+<area shape="rect" id="Node000001" title="Destroy Model." alt="" coords="5,228,183,253"/>
+<area shape="rect" id="Node000002" href="$adversarial__robustness__certification_8h.html#ac46b971423a2f755dbe7e37a6b678d08" title="Destroy Arc Layer." alt="" coords="236,5,432,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,227,114,190,142,139,180,86,203,62,229,41,242,34,244,38,232,46,207,66,184,90,147,142,119,192,103,229"/>
+<area shape="rect" id="Node000003" href="$attention_8c.html#a903d592ab3aea7648c34b7ac967dee18" title="Destroy Attn Weights." alt="" coords="252,55,416,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="104,226,155,172,190,140,229,112,254,98,257,103,232,116,194,144,158,176,108,230"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="943,95,1049,120"/>
+<area shape="poly" id="edge10_Node000001_Node000004" title=" " alt="" coords="141,225,230,206,331,194,418,190,565,192,636,193,711,189,796,177,894,154,930,141,962,125,964,129,932,146,895,159,797,182,712,194,636,198,565,198,418,195,332,199,231,211,142,231"/>
+<area shape="rect" id="Node000006" href="$tensor_8c.html#ad054e4c60272e5bea3021d35186edae5" title="Destroy Tensor." alt="" coords="485,95,663,120"/>
+<area shape="poly" id="edge15_Node000001_Node000006" title=" " alt="" coords="112,226,163,193,230,162,291,144,354,130,471,112,472,118,355,135,292,149,232,167,166,198,115,230"/>
+<area shape="rect" id="Node000008" href="$fractal__memory__orchestrator_8h.html#aa38895c2f79dfd76c17bcca9a414167b" title="Destroy Fm Controller." alt="" coords="251,221,417,261"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="183,238,237,238,237,243,183,243"/>
+<area shape="rect" id="Node000009" href="$hierarchical__state__space_8h.html#ace6e2b0f09eab1bec87c3426dab3ed11" title="Destroy Hss Model." alt="" coords="231,285,437,311"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="149,251,267,279,266,285,147,256"/>
+<area shape="rect" id="Node000010" href="$neural__programming__engine_8h.html#af2c4d5abf0e02d46ca19706ccbfdfaf9" title="Destroy Npe Program." alt="" coords="251,335,417,375"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="114,251,166,285,232,321,249,328,247,333,230,326,163,290,111,256"/>
+<area shape="rect" id="Node000011" href="$neural__programming__engine_8h.html#af5f090281904672a113926dac92b6e17" title="Destroy Npe Vm." alt="" coords="240,400,428,425"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="106,252,154,316,190,354,232,385,248,393,245,398,229,390,186,358,150,320,101,255"/>
+<area shape="rect" id="Node000012" href="$sparse__expert__routing_8h.html#a9e53662973ee7fc8b713f88718128fff" title="Destroy Ser Model." alt="" coords="232,449,436,475"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="103,253,119,290,146,340,184,392,207,416,232,436,241,441,239,446,229,440,203,419,180,395,142,342,114,292,98,255"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="416,70,633,71,764,76,895,86,930,91,929,96,894,91,764,81,633,76,416,76"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="417,84,472,91,471,96,416,89"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="1097,95,1256,120"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1050,105,1083,105,1083,110,1050,110"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="663,105,929,105,929,110,663,110"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#ab304e494ae590b3cf08d4ff51aa3c1f3" title="Perform Storage Release." alt="" coords="711,120,895,145"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="663,114,697,118,697,124,662,120"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="895,118,929,113,929,119,895,123"/>
+</map>

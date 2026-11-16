@@ -1,0 +1,9 @@
+<map id="SNEPPX_secure_allocator_init" name="SNEPPX_secure_allocator_init">
+<area shape="rect" id="Node000001" title="Initialize Secure Allocator." alt="" coords="5,55,220,80"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#a997bdb69ca4692d7a4599d7943e5ab4a" title=" " alt="" coords="269,5,391,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,52,259,31,261,36,170,57"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a910ba46fd3e9e4ff69c630fbf43cbf7f" title=" " alt="" coords="268,55,392,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="220,65,254,65,254,70,220,70"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#aa7c6dc6eb4ef454e4dc66b6cf4b3c21f" title=" " alt="" coords="270,104,390,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="170,77,261,98,259,104,169,83"/>
+</map>

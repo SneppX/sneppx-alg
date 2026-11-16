@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['j0_0',['j0',['../structSNEPPXAESGCM.html#a9ff4d78cf7e6d8e19c60999054ca5011',1,'SNEPPXAESGCM']]],
+  ['jailed_1',['jailed',['../structSNEPPXBCValidator.html#acf3dfd108e6d4fa2cc0f39400ff702fc',1,'SNEPPXBCValidator']]],
+  ['jit_5fenabled_2',['jit_enabled',['../structSNEPPXNPEConfig.html#a28ec6e933fef5de7fa72b051551b9930',1,'SNEPPXNPEConfig']]],
+  ['jit_5fhot_5fthreshold_3',['jit_hot_threshold',['../structSNEPPXNPEConfig.html#afc9467308750494869b1610c43181a34',1,'SNEPPXNPEConfig']]],
+  ['jit_5fprofile_4',['jit_profile',['../structSNEPPXNPEVM.html#add826b534bdb2e2e24ef7c99fc13d44d',1,'SNEPPXNPEVM']]],
+  ['jmp_5',['jmp',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a152b9af76a9e7dd95d9da277b69fdd95',1,'SNEPPX::JMP'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a152b9af76a9e7dd95d9da277b69fdd95',1,'SNEPPX::JMP']]],
+  ['jnz_6',['jnz',['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a97a63ac12c7c5761e30b9ec4ee31e993',1,'SNEPPX::JNZ'],['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a97a63ac12c7c5761e30b9ec4ee31e993',1,'SNEPPX::JNZ']]],
+  ['json_5fescape_7',['json_escape',['../model__zoo_8c.html#abdd18ae3ce63f5c4b4949c9c82bd5298',1,'model_zoo.c']]],
+  ['json_5ffp_8',['json_fp',['../structSNEPPX__Logger.html#a83e8165d2a06cfddb34ca290a1188ce4',1,'SNEPPX_Logger']]],
+  ['json_5fget_5ffloat_9',['json_get_float',['../model__zoo_8c.html#afbc796266b5c5126c5500a9ed6035da5',1,'model_zoo.c']]],
+  ['json_5fget_5fint_10',['json_get_int',['../model__zoo_8c.html#ac193adeea3c5d313e7544f4b2da19300',1,'model_zoo.c']]],
+  ['json_5fget_5fsize_5ft_11',['json_get_size_t',['../model__zoo_8c.html#a65611689a6eea9489c0f77e3f9a0e396',1,'model_zoo.c']]],
+  ['json_5fpath_12',['json_path',['../structSNEPPX__LogConfig.html#aa56003e375dc7930f90a5eea0d19a57a',1,'SNEPPX_LogConfig']]],
+  ['junk_5fcode_13',['junk_code',['../structSNEPPXJunkCodeGen.html#a21c3e72b54b7b2c5178b478815ce470c',1,'SNEPPXJunkCodeGen']]],
+  ['junk_5fcount_14',['junk_count',['../structSNEPPXJunkCodeGen.html#a590d41c48379fbe389a47b8ac8a6fe00',1,'SNEPPXJunkCodeGen']]],
+  ['justification_15',['justification',['../structSNEPPXZTRequest.html#a26857d1fdebc56a4913cb06d16fa4a5f',1,'SNEPPXZTRequest']]],
+  ['justification_5flen_16',['justification_len',['../structSNEPPXZTRequest.html#a731b2485fafb347ade3ce3607261d173',1,'SNEPPXZTRequest']]],
+  ['jwks_5furi_17',['jwks_uri',['../structSNEPPXOidcProvider.html#a22eb55217bd9818382e4cd312c6a6df0',1,'SNEPPXOidcProvider']]],
+  ['jz_18',['jz',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a743bda3a6098df4383907d7c772fca9c',1,'SNEPPX::JZ'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a743bda3a6098df4383907d7c772fca9c',1,'SNEPPX::JZ']]]
+];

@@ -1,0 +1,7 @@
+<map id="dilithium_gamma2" name="dilithium_gamma2">
+<area shape="rect" id="Node000001" title=" " alt="" coords="236,31,381,56"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="11,5,183,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,36,183,31,183,26,223,30"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="5,55,188,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="223,56,188,60,188,54,222,50"/>
+</map>

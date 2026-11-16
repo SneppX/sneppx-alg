@@ -1,0 +1,19 @@
+<map id="SNEPPX_rope_precompute" name="SNEPPX_rope_precompute">
+<area shape="rect" id="Node000001" title="Compute Rope Pre." alt="" coords="5,56,200,81"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Create Tensor." alt="" coords="248,56,417,81"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,66,234,66,234,71,200,71"/>
+<area shape="rect" id="Node000003" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="712,6,880,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,53,406,32,465,15,525,7,586,4,698,6,698,12,586,9,525,12,466,20,408,37,360,58"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="743,56,849,81"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="417,66,729,66,729,71,417,71"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="476,30,653,56"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="417,56,462,51,462,57,418,62"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="465,132,664,157"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="373,78,466,110,512,125,511,130,464,115,371,84"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="945,6,1069,32"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="880,16,931,16,931,22,880,22"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="928,56,1087,81"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="849,66,914,66,914,71,849,71"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="653,31,698,26,699,32,654,36"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="654,50,729,58,729,64,653,55"/>
+</map>

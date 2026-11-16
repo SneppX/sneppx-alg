@@ -1,0 +1,25 @@
+<map id="SNEPPX_tensor_softmax" name="SNEPPX_tensor_softmax">
+<area shape="rect" id="Node000001" title="Perform Tensor Softmax." alt="" coords="1161,104,1343,129"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a7a1a75689828b008b171fe2fc23e6685" title=" " alt="" coords="918,5,1101,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1218,99,1169,71,1112,44,1076,33,1078,28,1114,40,1172,66,1221,94"/>
+<area shape="rect" id="Node000004" href="$ops_8c.html#afe2f6a61d83375eafaabc5c6cd8d9cda" title=" " alt="" coords="923,55,1095,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1175,104,1072,83,1073,77,1176,99"/>
+<area shape="rect" id="Node000006" href="$ops_8c.html#a5250621dac7f875a7d2f9e6ef751f55f" title=" " alt="" coords="937,153,1082,179"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1176,135,1073,156,1072,151,1175,129"/>
+<area shape="rect" id="Node000007" href="$ops_8c.html#ac5b0e3552c57d868639dd780ddd455fc" title="Perform Softmax." alt="" coords="705,167,839,192"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="1224,140,1175,170,1145,184,1114,194,1040,206,965,208,895,203,836,195,837,189,896,197,966,202,1040,200,1113,189,1143,179,1172,165,1221,135"/>
+<area shape="rect" id="Node000011" href="$tensor_8c.html#a04bd7126f95606aacd296e9c51527de4" title="Perform Tensor Log Softmax." alt="" coords="905,104,1113,129"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="1148,119,1113,119,1113,114,1148,114"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a70ae1d4a03dcc6a71cfe1fee0f5ed8ff" title="Perform Cross Entropy." alt="" coords="687,5,857,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="904,21,857,21,857,15,904,15"/>
+<area shape="rect" id="Node000005" href="$ops_8c.html#a6694fcaa611abd2d829dbd02b9081587" title="Perform Log Softmax." alt="" coords="692,92,852,117"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="915,85,853,95,852,89,914,80"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="923,173,839,178,839,173,923,168"/>
+<area shape="rect" id="Node000008" href="$attention_8c.html#a862e89866d73e95189c504feadac7c2f" title="Perform Attn Build Train Graph." alt="" coords="456,159,639,199"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="692,182,639,182,639,177,692,177"/>
+<area shape="rect" id="Node000009" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="248,159,408,199"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="442,182,408,182,408,177,442,177"/>
+<area shape="rect" id="Node000010" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,167,200,192"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="234,182,200,182,200,177,234,177"/>
+<area shape="poly" id="edge12_Node000011_Node000005" title=" " alt="" coords="892,113,852,111,852,106,892,108"/>
+</map>

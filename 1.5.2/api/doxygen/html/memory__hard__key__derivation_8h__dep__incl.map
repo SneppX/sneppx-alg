@@ -1,0 +1,9 @@
+<map id="include/neural_core/security/memory_hard_key_derivation.h" name="include/neural_core/security/memory_hard_key_derivation.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="201,5,375,60"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,108,176,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="226,68,143,110,141,106,224,64"/>
+<area shape="rect" id="Node000003" href="$c__binding__implementation_8c.html" title=" " alt="" coords="201,115,375,155"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="291,74,291,115,285,115,285,74"/>
+<area shape="rect" id="Node000004" href="$argon2_8c.html" title=" " alt="" coords="399,123,590,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="355,63,472,120,470,125,353,68"/>
+</map>

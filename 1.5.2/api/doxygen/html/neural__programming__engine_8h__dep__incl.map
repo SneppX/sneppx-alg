@@ -1,0 +1,12 @@
+<map id="include/neural_core/architecture/neural_programming_engine.h" name="include/neural_core/architecture/neural_programming_engine.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="147,5,327,60"/>
+<area shape="rect" id="Node000002" href="$system__architecture__definitions_8h.html" title=" " alt="" coords="140,108,335,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="240,74,240,108,235,108,235,74"/>
+<area shape="rect" id="Node000003" href="$differentiable__training__pipeline_8h.html" title=" " alt="" coords="5,211,200,265"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="193,173,140,213,136,208,190,169"/>
+<area shape="rect" id="Node000004" href="$trainer_8c.html" title=" " alt="" coords="93,313,246,339"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="237,177,229,221,214,266,199,293,182,315,178,312,194,290,210,264,224,219,231,176"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html" title=" " alt="" coords="275,225,381,251"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="273,172,319,223,315,227,269,175"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="134,275,162,311,158,315,129,278"/>
+</map>

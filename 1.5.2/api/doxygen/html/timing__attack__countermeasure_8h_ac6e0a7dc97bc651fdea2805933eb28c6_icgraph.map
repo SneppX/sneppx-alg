@@ -1,0 +1,7 @@
+<map id="SNEPPX_timing_start" name="SNEPPX_timing_start">
+<area shape="rect" id="Node000001" title="Start Timing." alt="" coords="232,45,391,70"/>
+<area shape="rect" id="Node000002" href="$timing_8c.html#aa96f16d3ce8bf7a1158d18dbdb56dc5f" title="Perform Timing Random Delay." alt="" coords="5,5,184,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="218,46,184,41,185,36,218,41"/>
+<area shape="rect" id="Node000003" href="$timing_8c.html#a6b1f78fb6d210ff3f4d7069416358e45" title="Perform Timing Safe Equal." alt="" coords="16,69,173,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="218,74,174,80,173,75,218,68"/>
+</map>

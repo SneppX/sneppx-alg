@@ -1,0 +1,7 @@
+<map id="SNEPPX_prompt_filter_add_pattern" name="SNEPPX_prompt_filter_add_pattern">
+<area shape="rect" id="Node000001" title="Perform Prompt Filter Add Pattern." alt="" coords="217,37,381,77"/>
+<area shape="rect" id="Node000002" href="$prompt__filter_8c.html#aed11b5da1d94a58db1eda48c7d279990" title="Perform Prompt Filter Add Defaults." alt="" coords="5,5,169,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,46,169,40,170,35,204,40"/>
+<area shape="rect" id="Node000003" href="$prompt__filter_8c.html#a50a2c8b2b64913803234d521d3401eb4" title="Perform Prompt Filter Load Defaults." alt="" coords="5,69,169,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,74,170,80,169,74,203,69"/>
+</map>

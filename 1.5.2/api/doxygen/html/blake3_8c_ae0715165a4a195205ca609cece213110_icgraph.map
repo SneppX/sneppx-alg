@@ -1,0 +1,55 @@
+<map id="SNEPPX_blake3_finish" name="SNEPPX_blake3_finish">
+<area shape="rect" id="Node000001" title="Perform Blake3 Finish." alt="" coords="725,483,891,508"/>
+<area shape="rect" id="Node000002" href="$c__binding__implementation_8c.html#ac19a7daccfe08a1c599a42dd73702810" title="Perform C Hash Blake3." alt="" coords="489,5,663,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="805,469,802,387,797,332,786,272,770,211,747,151,716,94,676,45,658,33,661,29,679,41,721,91,752,148,776,209,792,271,802,331,808,386,810,469"/>
+<area shape="rect" id="Node000003" href="$monitor__advanced_8c.html#adbf705a97672103aff8faaab54941de1" title="Perform Code Tamper Add Region." alt="" coords="493,55,659,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="803,469,796,398,777,301,760,250,738,199,710,151,676,109,657,96,660,92,679,105,715,148,743,196,765,248,782,300,801,397,808,469"/>
+<area shape="rect" id="Node000004" href="$monitor__advanced_8c.html#a531b9b2ca8dc40dbb9ca2ff948bf43b7" title="Perform Code Tamper Check." alt="" coords="493,119,659,159"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="801,470,791,409,768,329,752,287,731,246,706,207,676,173,657,161,660,156,679,169,710,204,736,243,757,285,774,328,796,408,806,469"/>
+<area shape="rect" id="Node000005" href="$monitor__advanced_8c.html#adc93b450786a048525cba2205da20e64" title="Perform Code Tamper Check All." alt="" coords="493,183,659,223"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="798,470,784,420,760,358,724,293,702,263,676,237,657,225,660,221,679,233,706,260,729,290,765,356,789,419,803,468"/>
+<area shape="rect" id="Node000007" href="$monitor__advanced_8c.html#a1fa7e22eb69976f231b2207ec8a77a7b" title="Initialize Code Tamper." alt="" coords="479,248,673,273"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="796,471,780,430,754,380,720,329,699,306,676,287,656,276,658,271,679,282,703,303,724,326,759,377,784,428,801,469"/>
+<area shape="rect" id="Node000008" href="$monitor__advanced_8c.html#ab435b1147833e9220f368f66b3768cbd" title="Perform Fs Integrity Scan." alt="" coords="481,297,671,323"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="791,472,746,404,714,368,676,338,650,325,652,320,679,333,717,364,750,401,796,469"/>
+<area shape="rect" id="Node000009" href="$monitor__advanced_8c.html#acd656b1c055d9417429a563d3c54f716" title="Perform Fs Integrity Verify With Report." alt="" coords="499,347,653,387"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="781,475,734,438,676,402,649,390,651,385,679,397,737,434,784,471"/>
+<area shape="rect" id="Node000010" href="$monitor__advanced_8c.html#a53a3914160cab5368e9498eeafd2fec5" title="Perform Fs Integrity Watch." alt="" coords="499,411,653,451"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="747,482,649,454,650,449,749,476"/>
+<area shape="rect" id="Node000011" href="$identity__management_8c.html#a2e56d9e833adc37ce48c511885070ef2" title="Verify Identity Tls." alt="" coords="499,475,653,515"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="712,498,653,498,653,493,712,493"/>
+<area shape="rect" id="Node000012" href="$monitor__advanced_8c.html#ad9e6c745a9453900bcb4d262ee60abde" title="Perform Ima Measure." alt="" coords="491,540,661,565"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="743,514,629,543,627,537,742,509"/>
+<area shape="rect" id="Node000018" href="$monitor__advanced_8c.html#ac9816f5805a063e72e7278d5d1b6f05f" title="Perform Internal Verify All Regions." alt="" coords="489,590,663,630"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="780,518,733,549,678,579,646,592,644,587,676,574,731,544,777,514"/>
+<area shape="rect" id="Node000019" href="$monitor__advanced_8c.html#a697e5e4b8ff511124102b3c3d55c0a50" title="Perform Toctou Check." alt="" coords="493,655,659,680"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="794,522,748,583,716,616,679,644,651,657,649,652,676,640,712,612,744,580,790,518"/>
+<area shape="rect" id="Node000021" href="$monitor__advanced_8c.html#a015436e57bc5ec8ff65a32f8f539a1d0" title="Perform Toctou Get Change Count." alt="" coords="475,705,677,745"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="799,522,781,560,755,606,721,653,679,693,657,707,654,702,676,689,717,649,750,603,776,557,794,520"/>
+<area shape="rect" id="Node000022" href="$monitor__advanced_8c.html#a39e339b2b5d29aa6aeefa5686ccd895b" title="Initialize Toctou." alt="" coords="501,769,651,795"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="804,522,790,572,766,637,730,702,706,733,679,759,652,774,649,769,676,755,702,729,725,700,761,634,785,571,799,521"/>
+<area shape="rect" id="Node000023" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="487,819,665,859"/>
+<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="806,522,795,581,772,658,755,699,735,739,709,776,679,809,662,821,659,817,676,805,705,773,730,736,750,697,767,656,789,580,801,521"/>
+<area shape="rect" id="Node000025" href="$signed__update_8c.html#afcd0f60b0a2b37b5d5eca988d75d70cf" title="Hash Update Verifier Compute." alt="" coords="487,883,665,923"/>
+<area shape="poly" id="edge24_Node000001_Node000025" title=" " alt="" coords="808,522,800,592,780,686,764,736,742,786,714,832,679,873,663,885,660,881,676,869,710,829,737,783,759,734,775,684,795,591,803,522"/>
+<area shape="rect" id="Node000027" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="487,947,665,987"/>
+<area shape="poly" id="edge26_Node000001_Node000027" title=" " alt="" coords="810,522,805,602,799,655,788,713,772,773,749,832,719,888,679,937,664,949,661,945,675,933,714,885,744,830,767,771,783,711,794,654,800,601,804,522"/>
+<area shape="rect" id="Node000006" href="$monitor__advanced_8c.html#a6f56a9dbff8180fa1e417c76457f7c16" title="Perform Code Tamper Verify All With Report." alt="" coords="239,183,409,223"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="480,206,410,206,410,201,480,201"/>
+<area shape="rect" id="Node000013" href="$monitor__advanced_8c.html#a452131dcfb3cb49b18e97b74e6f5e62b" title="Perform Ima Appraise." alt="" coords="240,433,408,459"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="488,537,473,530,457,515,448,500,440,486,425,472,402,461,404,456,428,468,444,482,453,497,461,512,476,525,490,533"/>
+<area shape="rect" id="Node000015" href="$monitor__advanced_8c.html#a9e229b869a1c219de10aabd5c4b7ffae" title="Perform Ima Appraise Path." alt="" coords="222,483,426,508"/>
+<area shape="poly" id="edge14_Node000012_Node000015" title=" " alt="" coords="506,540,380,511,381,505,507,534"/>
+<area shape="rect" id="Node000016" href="$monitor__advanced_8c.html#a8120073bec2210a96a0907bfe6ee25d8" title="Perform Ima Measure Batch." alt="" coords="239,533,409,573"/>
+<area shape="poly" id="edge15_Node000012_Node000016" title=" " alt="" coords="477,555,409,555,409,550,477,550"/>
+<area shape="rect" id="Node000017" href="$monitor__advanced_8c.html#a5f7d25b06547f7d677cd3872b25c918a" title="Perform Ima Measure Path." alt="" coords="221,597,427,623"/>
+<area shape="poly" id="edge16_Node000012_Node000017" title=" " alt="" coords="507,571,381,600,380,595,506,566"/>
+<area shape="rect" id="Node000014" href="$monitor__advanced_8c.html#aa3417e085222fe8e86b79b5d07693fb8" title="Perform Ima Appraise Batch." alt="" coords="5,426,173,466"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="226,449,174,449,174,443,226,443"/>
+<area shape="rect" id="Node000020" href="$monitor__advanced_8c.html#a1c1b26b1d3933861fe6c59f4e4c5236e" title="Update Toctou Check And." alt="" coords="241,647,407,687"/>
+<area shape="poly" id="edge19_Node000019_Node000020" title=" " alt="" coords="479,670,408,670,408,665,479,665"/>
+<area shape="rect" id="Node000024" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="235,819,413,859"/>
+<area shape="poly" id="edge23_Node000023_Node000024" title=" " alt="" coords="473,842,413,842,413,837,473,837"/>
+<area shape="rect" id="Node000026" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="235,883,413,923"/>
+<area shape="poly" id="edge25_Node000025_Node000026" title=" " alt="" coords="473,906,413,906,413,901,473,901"/>
+</map>

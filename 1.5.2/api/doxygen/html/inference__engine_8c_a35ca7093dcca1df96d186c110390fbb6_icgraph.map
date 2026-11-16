@@ -1,0 +1,5 @@
+<map id="SNEPPX_generate_tokens" name="SNEPPX_generate_tokens">
+<area shape="rect" id="Node000001" title="Perform Generate Tokens." alt="" coords="192,5,380,31"/>
+<area shape="rect" id="Node000002" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="5,5,144,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,21,144,21,144,15,178,15"/>
+</map>

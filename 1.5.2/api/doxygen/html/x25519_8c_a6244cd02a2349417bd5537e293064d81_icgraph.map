@@ -1,0 +1,10 @@
+<map id="SNEPPX_x25519_clamp" name="SNEPPX_x25519_clamp">
+<area shape="rect" id="Node000001" title="Perform X25519 Clamp." alt="" coords="495,31,669,56"/>
+<area shape="rect" id="Node000002" href="$x25519_8c.html#aa69017cb5661f22cbe6f9cb0dca38bf1" title="Compute X25519 shared secret." alt="" coords="5,5,188,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="481,41,188,25,188,20,481,35"/>
+<area shape="rect" id="Node000003" href="$x25519_8c.html#a7e04dc72c2bb62cbc6104133b0ba5d79" title="Compute X25519 shared secret." alt="" coords="236,56,447,81"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="481,57,447,60,447,55,481,51"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="265,56,158,33,159,28,266,50"/>
+<area shape="rect" id="Node000004" href="$x25519_8c.html#af8fbd60b13aa0ce3b98e24f269b9cafc" title="Compute X25519 shared secret." alt="" coords="7,55,186,95"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="222,75,186,76,186,70,222,69"/>
+</map>

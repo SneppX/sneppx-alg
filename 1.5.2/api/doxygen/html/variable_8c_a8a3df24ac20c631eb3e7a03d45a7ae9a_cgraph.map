@@ -1,0 +1,13 @@
+<map id="SNEPPX_variable_destroy" name="SNEPPX_variable_destroy">
+<area shape="rect" id="Node000001" title="Destroy Variable." alt="" coords="5,5,195,31"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="700,31,807,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,11,405,9,529,13,652,22,687,27,686,32,652,27,528,18,405,14,195,16"/>
+<area shape="rect" id="Node000004" href="$tensor_8c.html#ad054e4c60272e5bea3021d35186edae5" title="Destroy Tensor." alt="" coords="243,31,420,56"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="195,26,229,29,228,35,195,31"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="855,31,1013,56"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="807,41,841,41,841,46,807,46"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="420,41,686,41,686,46,420,46"/>
+<area shape="rect" id="Node000005" href="$tensor_8c.html#ab304e494ae590b3cf08d4ff51aa3c1f3" title="Perform Storage Release." alt="" coords="468,81,652,107"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="390,54,489,76,488,81,389,59"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="609,79,690,57,692,62,610,84"/>
+</map>

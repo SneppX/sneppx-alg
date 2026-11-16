@@ -1,0 +1,5 @@
+<map id="SNEPPX_act_log_softmax" name="SNEPPX_act_log_softmax">
+<area shape="rect" id="Node000001" title="Perform Act Log Softmax." alt="" coords="5,13,192,38"/>
+<area shape="rect" id="Node000002" href="$activations_8c.html#a8ca2a899a38e0568fcbc56f3b6806807" title="Perform Act Softmax Stable." alt="" coords="240,5,400,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,23,226,23,226,28,192,28"/>
+</map>

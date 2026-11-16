@@ -1,0 +1,5 @@
+<map id="SNEPPX_poison_detector_is_outlier" name="SNEPPX_poison_detector_is_outlier">
+<area shape="rect" id="Node000001" title="Perform Poison Detector Is Outlier." alt="" coords="5,5,189,45"/>
+<area shape="rect" id="Node000002" href="$data__poisoning__defense_8c.html#a164d447df998e8b655d33d6c73590d12" title="Perform Poison Detector Score." alt="" coords="237,5,421,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,23,223,23,223,28,190,28"/>
+</map>

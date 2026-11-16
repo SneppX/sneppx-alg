@@ -1,0 +1,5 @@
+<map id="SNEPPX_secure_canary_generate" name="SNEPPX_secure_canary_generate">
+<area shape="rect" id="Node000001" title="Perform Secure Canary Generate." alt="" coords="215,5,389,45"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="5,13,167,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,28,167,28,167,23,201,23"/>
+</map>

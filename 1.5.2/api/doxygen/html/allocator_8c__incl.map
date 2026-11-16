@@ -1,0 +1,21 @@
+<map id="kernel/memory/allocator.c" name="kernel/memory/allocator.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="323,5,515,31"/>
+<area shape="rect" id="Node000002" href="$polymorphic__memory__allocator_8h.html" title=" " alt="" coords="8,79,173,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="372,33,183,78,182,73,370,28"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="197,86,264,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="392,33,272,83,270,78,390,28"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="289,86,359,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="406,33,350,79,347,75,403,29"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="383,86,454,111"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="421,31,421,72,416,72,416,31"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="478,86,581,111"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="437,29,503,76,500,80,433,33"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="605,86,680,111"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="454,28,594,76,601,79,599,84,592,81,453,33"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="705,86,773,111"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="487,28,585,48,693,76,700,79,699,84,691,81,584,53,486,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,167,80,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="81,120,59,156,55,153,77,117"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="105,167,175,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="105,117,128,154,123,156,100,120"/>
+</map>
