@@ -1,5 +1,13 @@
 var NAVTREEINDEX29 =
 {
+"sparse__expert__routing_8h.html#a23c6018594a19e271b5f9b0906e6875f":[2,0,0,0,0,13,9],
+"sparse__expert__routing_8h.html#a316928889c200f6075e06e1cc6a161fc":[2,0,0,0,0,13,12],
+"sparse__expert__routing_8h.html#a7d2a4db0b61fbbf94d191085d1d0e98a":[2,0,0,0,0,13,19],
+"sparse__expert__routing_8h.html#a86cffdba4cd0a939f9544cd9a666bfa0":[2,0,0,0,0,13,7],
+"sparse__expert__routing_8h.html#a8fa84722a39ddf185aa22f6410080a44":[2,0,0,0,0,13,25],
+"sparse__expert__routing_8h.html#a9560414a5a37f4167d2cddd8076fa4a1":[2,0,0,0,0,13,24],
+"sparse__expert__routing_8h.html#a98948e1003960d53a6d81debe319b2d8":[2,0,0,0,0,13,11],
+"sparse__expert__routing_8h.html#a9e53662973ee7fc8b713f88718128fff":[2,0,0,0,0,13,22],
 "sparse__expert__routing_8h.html#aa67b7dfd96391140cbe6c00d7eb9615b":[2,0,0,0,0,13,6],
 "sparse__expert__routing_8h.html#ab3fcd701127f8460dd87c12b1bb3fa20":[2,0,0,0,0,13,20],
 "sparse__expert__routing_8h.html#ab79c009535a887489edc430213f5991f":[2,0,0,0,0,13,4],
@@ -241,13 +249,5 @@ var NAVTREEINDEX29 =
 "structMaxCtx.html":[1,0,59],
 "structMaxCtx.html#a2f5e252ad4790f8d7b8762a0ac1499f7":[1,0,59,0],
 "structMaxCtx.html#a634dfdd22b290f37357da8cca3726c38":[1,0,59,1],
-"structMeanCtx.html":[1,0,60],
-"structMeanCtx.html#a0bbb59a5d22d7be97e2405d956d5e8c9":[1,0,60,0],
-"structMeanCtx.html#ade93744d4a10196b4607de5109acfe24":[1,0,60,1],
-"structMinCtx.html":[1,0,61],
-"structMinCtx.html#aaa1dc2aeedfb8e43a5a8e9ea41ec7ae7":[1,0,61,0],
-"structMinCtx.html#abab22d47f73025c18ced27ed2bb11e0c":[1,0,61,1],
-"structModelConfig.html":[1,0,62],
-"structModelConfig.html#a0081381d9908dafdd4aa72bad0c951f1":[1,0,62,22],
-"structModelConfig.html#a0433bde6abdd1872abe8f670c974796f":[1,0,62,13]
+"structMeanCtx.html":[1,0,60]
 };

@@ -146,6 +146,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a7128fb627688e73dbabaa4aad0728c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff.  <br /></td></tr>
 <tr class="memitem:a6689c4b8497f7913aeb47e9a3619d50f" id="r_a6689c4b8497f7913aeb47e9a3619d50f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6689c4b8497f7913aeb47e9a3619d50f">SNEPPX_bspatch</a> (const uint8_t *old_data, size_t old_len, const uint8_t *patch, size_t patch_len, uint8_t *new_data, size_t *new_len)</td></tr>
 <tr class="memdesc:a6689c4b8497f7913aeb47e9a3619d50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bspatch.  <br /></td></tr>
+<tr class="memitem:ab36e5de71cfe329567d1563aae589e04" id="r_ab36e5de71cfe329567d1563aae589e04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab36e5de71cfe329567d1563aae589e04">SNEPPX_bsdiff_apply_patch</a> (const char *old_path, const char *patch_path, const char *new_path)</td></tr>
+<tr class="memdesc:ab36e5de71cfe329567d1563aae589e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff Apply Patch.  <br /></td></tr>
+<tr class="memitem:ad741ebaa7991c5ace3f60bf313df93a4" id="r_ad741ebaa7991c5ace3f60bf313df93a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad741ebaa7991c5ace3f60bf313df93a4">SNEPPX_bspatch_apply_patch</a> (const char *old_path, const char *patch_path, const char *new_path)</td></tr>
+<tr class="memdesc:ad741ebaa7991c5ace3f60bf313df93a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bspatch Apply Patch.  <br /></td></tr>
 <tr class="memitem:ad76e0904b4671588cce6a5d50a208fe7" id="r_ad76e0904b4671588cce6a5d50a208fe7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad76e0904b4671588cce6a5d50a208fe7">SNEPPX_ab_partition_init</a> (<a class="el" href="structSNEPPXABPartition.html">SNEPPXABPartition</a> *ab)</td></tr>
 <tr class="memdesc:ad76e0904b4671588cce6a5d50a208fe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Ab Partition.  <br /></td></tr>
 <tr class="memitem:a5643d32c0bd200732d39fc1d9bbc98ec" id="r_a5643d32c0bd200732d39fc1d9bbc98ec"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5643d32c0bd200732d39fc1d9bbc98ec">SNEPPX_ab_partition_mark_good</a> (<a class="el" href="structSNEPPXABPartition.html">SNEPPXABPartition</a> *ab, int slot)</td></tr>
@@ -385,6 +389,56 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="ab36e5de71cfe329567d1563aae589e04" name="ab36e5de71cfe329567d1563aae589e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab36e5de71cfe329567d1563aae589e04">&#9670;&#160;</a></span>SNEPPX_bsdiff_apply_patch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_bsdiff_apply_patch </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>old_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>patch_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>new_path</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Bsdiff Apply Patch. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">old_path</td><td>[in] Old Path value. </td></tr>
+    <tr><td class="paramname">patch_path</td><td>[in] Patch Path value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00887">887</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph.png" border="0" usemap="#as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph" loading="lazy" alt=""/></div>
+<map name="as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph" id="as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph">
+<area shape="rect" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
+<area shape="rect" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
+<area shape="poly" title=" " alt="" coords="164,25,199,27,193,28,164,30"/>
+<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
+<area shape="poly" title=" " alt="" coords="386,25,420,28,415,28,386,30"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a6689c4b8497f7913aeb47e9a3619d50f" name="a6689c4b8497f7913aeb47e9a3619d50f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6689c4b8497f7913aeb47e9a3619d50f">&#9670;&#160;</a></span>SNEPPX_bspatch()</h2>
 
@@ -458,6 +512,64 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
 <area shape="rect" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
 <area shape="poly" title=" " alt="" coords="415,28,386,30,386,25,420,28"/>
+<area shape="rect" href="s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
+<area shape="poly" title=" " alt="" coords="193,28,164,30,164,25,199,27"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad741ebaa7991c5ace3f60bf313df93a4" name="ad741ebaa7991c5ace3f60bf313df93a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad741ebaa7991c5ace3f60bf313df93a4">&#9670;&#160;</a></span>SNEPPX_bspatch_apply_patch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_bspatch_apply_patch </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>old_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>patch_path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>new_path</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Bspatch Apply Patch. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">old_path</td><td>[in] Old Path value. </td></tr>
+    <tr><td class="paramname">patch_path</td><td>[in] Patch Path value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00899">899</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph.png" border="0" usemap="#as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph" loading="lazy" alt=""/></div>
+<map name="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph" id="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph">
+<area shape="rect" title="Perform Bspatch Apply Patch." alt="" coords="5,5,179,50"/>
+<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="227,14,357,42"/>
+<area shape="poly" title=" " alt="" coords="179,25,214,27,208,28,179,30"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_icgraph.png" border="0" usemap="#as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_icgraph" loading="lazy" alt=""/></div>
+<map name="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_icgraph" id="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_icgraph">
+<area shape="rect" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
 <area shape="rect" href="s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
 <area shape="poly" title=" " alt="" coords="193,28,164,30,164,25,199,27"/>
 </map>

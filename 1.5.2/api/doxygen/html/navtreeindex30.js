@@ -1,5 +1,13 @@
 var NAVTREEINDEX30 =
 {
+"structMeanCtx.html#a0bbb59a5d22d7be97e2405d956d5e8c9":[1,0,60,0],
+"structMeanCtx.html#ade93744d4a10196b4607de5109acfe24":[1,0,60,1],
+"structMinCtx.html":[1,0,61],
+"structMinCtx.html#aaa1dc2aeedfb8e43a5a8e9ea41ec7ae7":[1,0,61,0],
+"structMinCtx.html#abab22d47f73025c18ced27ed2bb11e0c":[1,0,61,1],
+"structModelConfig.html":[1,0,62],
+"structModelConfig.html#a0081381d9908dafdd4aa72bad0c951f1":[1,0,62,22],
+"structModelConfig.html#a0433bde6abdd1872abe8f670c974796f":[1,0,62,13],
 "structModelConfig.html#a0895e5c2b60b7615395e4a7ab5d60757":[1,0,62,47],
 "structModelConfig.html#a0a8721f0f192ec5619dd668905f8bfe1":[1,0,62,3],
 "structModelConfig.html#a16b75f29f844e2cf2a36ff7725cf27ad":[1,0,62,18],
@@ -241,13 +249,5 @@ var NAVTREEINDEX30 =
 "structSNEPPXAdversarialAttackConfig.html#a787dd2569eac7407bcd7e4c0268c4d1f":[1,0,134,6],
 "structSNEPPXAdversarialAttackConfig.html#a8b979f55c9811048c8f51d9d14e3e8d2":[1,0,134,8],
 "structSNEPPXAdversarialAttackConfig.html#a94bd9cab151b7db3439fd0ddf7b36246":[1,0,134,0],
-"structSNEPPXAdversarialAttackConfig.html#acac5c500965c5ad4f67aa6368978a72f":[1,0,134,9],
-"structSNEPPXAdversarialAttackConfig.html#ad72c5f3a7c5a34f154c9c47bca97fcf8":[1,0,134,10],
-"structSNEPPXAdversarialAttackConfig.html#aea591ed9b7045ec81d79f2c707ebd1c6":[1,0,134,4],
-"structSNEPPXAdversarialReport.html":[1,0,135],
-"structSNEPPXAdversarialReport.html#a1a102947f04ae7118753a2f8ba48a658":[1,0,135,1],
-"structSNEPPXAdversarialReport.html#a1d79f1b59856d30b4ebbb7301a89fda9":[1,0,135,4],
-"structSNEPPXAdversarialReport.html#a30e54fb848aa9f3113bd15821edc50b4":[1,0,135,3],
-"structSNEPPXAdversarialReport.html#a5af1de16db6cb7f1d5efd75ee81a5e4c":[1,0,135,0],
-"structSNEPPXAdversarialReport.html#a87a17a5d2d7f6310a8a58d76bc4000a5":[1,0,135,2]
+"structSNEPPXAdversarialAttackConfig.html#acac5c500965c5ad4f67aa6368978a72f":[1,0,134,9]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX38 =
 {
+"structSNEPPXQRNGState.html#a381a2b050b1c48bb56585b6547fe3d0d":[1,0,347,5],
+"structSNEPPXQRNGState.html#a5a8a45428531765d88f6161d900dd84c":[1,0,347,1],
+"structSNEPPXQRNGState.html#ab23e8d0204baffecf1d285f7f08f8a2f":[1,0,347,3],
+"structSNEPPXQRNGState.html#adb50c230c881b51c98e47378b3e37ce1":[1,0,347,2],
+"structSNEPPXQRNGState.html#ae6c03db3713155635a6510121ca9f27e":[1,0,347,4],
+"structSNEPPXQUICConn.html":[1,0,354],
+"structSNEPPXQUICConn.html#a0a9a35bdeb094347925315042950a34f":[1,0,354,2],
+"structSNEPPXQUICConn.html#a1dc92e2c76f65321042fe69e1fbbfc4b":[1,0,354,4],
 "structSNEPPXQUICConn.html#a5057d47e1776d609bffe79706b7b0f2b":[1,0,354,1],
 "structSNEPPXQUICConn.html#aa85c7d1757df60c75b6b1cff4e04ecb0":[1,0,354,3],
 "structSNEPPXQUICConn.html#af5c02acf095a17be37b64a1c378d3ab9":[1,0,354,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX38 =
 "structSNEPPXSOARWorkflow.html#ac410d87c38e99f7b7a987c4f9e0d5b0e":[1,0,393,9],
 "structSNEPPXSOARWorkflow.html#ac6d77a0b3e2ea42c46007f3ac30331d5":[1,0,393,2],
 "structSNEPPXSOARWorkflow.html#acf8941fbb98ce4d0f92ebe0ffc45a849":[1,0,393,1],
-"structSNEPPXSOARWorkflow.html#adc3522ce6976b9ee10a2ac6d04d6e76f":[1,0,393,3],
-"structSNEPPXSOARWorkflow.html#ae2c792ac0f46caa8d6d943c854127455":[1,0,393,6],
-"structSNEPPXSOC2Assessment.html":[1,0,394],
-"structSNEPPXSOC2Assessment.html#a03afd95efb11aac0bf74397d96b0e6b4":[1,0,394,14],
-"structSNEPPXSOC2Assessment.html#a0d49edf40211ef8e26fd7db9b3de9cde":[1,0,394,7],
-"structSNEPPXSOC2Assessment.html#a0ee7deda3510a64497ed02c00b2e18d1":[1,0,394,4],
-"structSNEPPXSOC2Assessment.html#a13a30dc24de7433e81b08b599b1ed6fc":[1,0,394,1],
-"structSNEPPXSOC2Assessment.html#a1425f92637396661ff8a4e13b8090312":[1,0,394,17],
-"structSNEPPXSOC2Assessment.html#a2c7cf5e5e5bdb6d5c55cf0321895476d":[1,0,394,2]
+"structSNEPPXSOARWorkflow.html#adc3522ce6976b9ee10a2ac6d04d6e76f":[1,0,393,3]
 };

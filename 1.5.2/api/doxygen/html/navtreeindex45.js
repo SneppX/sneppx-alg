@@ -1,5 +1,13 @@
 var NAVTREEINDEX45 =
 {
+"structfuzz__stats__t.html#a3dd5424ccc829e77bd2161325f5b750d":[1,0,49,1],
+"structfuzz__stats__t.html#a83700919a86965d74819932f47511126":[1,0,49,6],
+"structfuzz__stats__t.html#ab5f4f02fa4db88d29c2ecb06cf34f144":[1,0,49,4],
+"structfuzz__stats__t.html#ae0ea4ef3281dd74c7fa004936ef74c75":[1,0,49,5],
+"structfuzz__stats__t.html#aefa067758b3aca5d05466667f9791251":[1,0,49,3],
+"structfuzz__stats__t.html#af84b9e50bcb97fd47f35d0a32ec2311e":[1,0,49,7],
+"structleak__allocation__t.html":[1,0,54],
+"structleak__allocation__t.html#a0422165156884621f85fac15bbc914dc":[1,0,54,0],
 "structleak__allocation__t.html#a0e9b4f2e1edaa8525fac2cef96b08b10":[1,0,54,8],
 "structleak__allocation__t.html#a3e9244954d6dff80390e7bbfbceced56":[1,0,54,6],
 "structleak__allocation__t.html#a3e9fc846d1d5c1beb36ddb12d7b9c950":[1,0,54,3],
@@ -241,13 +249,5 @@ var NAVTREEINDEX45 =
 "tensor_8c.html#a4fbfa6c98d7301ad1f8503a31c2901e4":[2,0,1,16,2,0],
 "tensor_8c.html#a4fed75105921b91696a7106e11d3c3e2":[2,0,1,16,2,107],
 "tensor_8c.html#a51626a5815bf0698656b32f7ada52ae8":[2,0,1,16,2,132],
-"tensor_8c.html#a52b8fb13a9dd0564cde15b645b86ad17":[2,0,1,16,2,2],
-"tensor_8c.html#a569fc3410d4bd7ba607224de577cba46":[2,0,1,16,2,6],
-"tensor_8c.html#a5b3eb5d83bf119ed9305d9be7241d2f7":[2,0,1,16,2,136],
-"tensor_8c.html#a5bad255026a7d86e935aefe0c9f0992d":[2,0,1,16,2,53],
-"tensor_8c.html#a5bec367a0be040ec45ce5c3466eff729":[2,0,1,16,2,117],
-"tensor_8c.html#a5c5ca14ead65aeafe7dacfe76c8055b5":[2,0,1,16,2,133],
-"tensor_8c.html#a5cd3d183752008ea92c749e22d673f31":[2,0,1,16,2,109],
-"tensor_8c.html#a5df2b3428e5b693abcaf7ba86d68c3bf":[2,0,1,16,2,106],
-"tensor_8c.html#a5e65def3965dc59c35d9d21af6463e85":[2,0,1,16,2,104]
+"tensor_8c.html#a52b8fb13a9dd0564cde15b645b86ad17":[2,0,1,16,2,2]
 };

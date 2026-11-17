@@ -1,5 +1,13 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXCISControl.html#a8264390add39c5d00e38782e7499f14c":[1,0,181,3],
+"structSNEPPXCISControl.html#a828f5c2caa23aa93a09396aa1aaf9c91":[1,0,181,12],
+"structSNEPPXCISControl.html#a98e530d3637571222669c78c994676c7":[1,0,181,0],
+"structSNEPPXCISControl.html#aa7e6a27af8e89328c489f248d612b657":[1,0,181,11],
+"structSNEPPXCISControl.html#aa81393e2f333a596da6f8322bd5467db":[1,0,181,17],
+"structSNEPPXCISControl.html#aa89d6c47cfa3a8aa8b8929b2559d46c5":[1,0,181,16],
+"structSNEPPXCISControl.html#ac9c0648f3d32113d3a1ca13c59d971f9":[1,0,181,1],
+"structSNEPPXCISControl.html#ad2f7071ead210188f9dd8ccabcde2def":[1,0,181,10],
 "structSNEPPXCISControl.html#ad9120787a7a19b2a8f5993304bb4ab22":[1,0,181,7],
 "structSNEPPXCISControl.html#af04275b40a7c9205760cb1d503505e26":[1,0,181,2],
 "structSNEPPXCanary.html":[1,0,168],
@@ -241,13 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXEpisodicConfig.html#a6abc7c0ccbdf475116ca89b9301d709a":[1,0,200,1],
 "structSNEPPXEpisodicExperience.html":[1,0,201],
 "structSNEPPXEpisodicExperience.html#a099af41ff9f0010e171d49cebdb2e373":[1,0,201,4],
-"structSNEPPXEpisodicExperience.html#a288e1039b6ce8822ff080399c36b6cb4":[1,0,201,3],
-"structSNEPPXEpisodicExperience.html#a448a474c6a2a977a95a3d867d8855ef4":[1,0,201,0],
-"structSNEPPXEpisodicExperience.html#a9af06b4216ecd5113a1353615bd3ea93":[1,0,201,1],
-"structSNEPPXEpisodicExperience.html#aa4b63e86082334d252a397ca018cbd36":[1,0,201,5],
-"structSNEPPXEpisodicExperience.html#ac9229a8ea6e875183a5875055962acc9":[1,0,201,2],
-"structSNEPPXEpisodicExperience.html#aed4092fde05baa5ef22185ae820275ec":[1,0,201,6],
-"structSNEPPXExpert.html":[1,0,202],
-"structSNEPPXExpert.html#a43cb01898d9193c6f030b14ec9a98be1":[1,0,202,0],
-"structSNEPPXExpert.html#a4427a948315bffb0418cc95e38ab8fd2":[1,0,202,4]
+"structSNEPPXEpisodicExperience.html#a288e1039b6ce8822ff080399c36b6cb4":[1,0,201,3]
 };
