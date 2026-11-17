@@ -3,3 +3,11 @@
 .git-browser-action-button{border:1px solid var(--md-default-fg-color--lightest);border-radius:.25rem;padding:.35rem .65rem;background:var(--md-code-bg-color);color:var(--md-default-fg-color);cursor:pointer;font:inherit}
 .git-browser-search-results-list{display:grid;gap:.65rem}.git-browser-search-result{border:1px solid var(--md-default-fg-color--lightest);border-radius:.3rem;padding:.65rem}.git-browser-search-path{font-weight:600;overflow-wrap:anywhere}.git-browser-search-excerpt{white-space:pre-wrap;overflow-wrap:anywhere;margin:.45rem 0 0;padding:.5rem;background:var(--md-code-bg-color);font-size:.78rem}
 .git-browser-diff{white-space:pre;overflow:auto;padding:.7rem;background:var(--md-code-bg-color);font-size:.75rem;max-height:32rem}.git-browser-patch-row td{padding:.2rem .6rem 1rem}.git-browser-patch-row summary{cursor:pointer;color:var(--md-typeset-a-color)}.git-browser-compare-commits{font-size:.85rem}
+
+/* Accessible CSS color previews and source-browser polish. */
+.git-browser-code .git-color-swatch{display:inline-block;width:.78em;height:.78em;margin:0 .42em 0 .08em;border:1px solid var(--md-default-fg-color--light);border-radius:3px;vertical-align:-.04em;box-shadow:inset 0 0 0 1px #0002}
+.git-browser-code .git-token-color{white-space:pre}
+.git-browser-code tr:hover td{background:color-mix(in srgb,var(--md-default-fg-color) 5%,transparent)}
+.git-browser-code td:first-child{position:sticky;left:0;background:var(--md-code-bg-color)}
+.git-browser-error{overflow-wrap:anywhere}
+@media(prefers-reduced-motion:no-preference){.git-browser a,.git-browser-action-button{transition:color .12s ease,background-color .12s ease}}
