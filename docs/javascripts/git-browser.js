@@ -2,7 +2,7 @@
 "use strict";
 const root=document.querySelector("[data-git-browser]"); if(!root)return;
 const BASE="/sneppx-alg/", DATA=BASE+"git-browser-data/", REPO="https://github.com/SneppX/sneppx-alg";
-const state={manifest:null,branch:null,tree:null};
+const state={manifest:null,branch:null,tree:null,sourceRequests:new Map()};
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const link=(href,text)=>{const n=el("a","",text);n.href=href;return n;};
 const url=(kind,branch,path)=>BASE+kind+"/"+branch+"/"+(path?path.split("/").map(encodeURIComponent).join("/")+"/":"");
