@@ -30,3 +30,7 @@ def test_pages_workflow_copies_highlighter_from_checked_out_source():
 def test_pages_workflow_preserves_highlighter_before_mike_switches_branch():
     assert "cp docs/javascripts/git-browser-highlighter.js \"$RUNNER_TEMP/git-browser-highlighter.js\"" in DEPLOY
     assert 'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js' in DEPLOY
+
+
+def test_pages_workflow_stages_root_highlighter_asset():
+    assert "git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js" in DEPLOY

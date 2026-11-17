@@ -112,7 +112,7 @@ jobs:
           printf '%s\n' 'User-agent: *' 'Allow: /' '' 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' > robots.txt
           grep -Fqx 'User-agent: *' robots.txt
           grep -Fqx 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' robots.txt
-          git add robots.txt sitemap.xml 404.html javascripts/git-browser.js stylesheets/git-browser.css git-browser-data
+          git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js javascripts/git-browser.js stylesheets/git-browser.css git-browser-data
           if ! git diff --cached --quiet; then
             git commit -m "docs: publish current sitemap and robots.txt"
             git push origin gh-pages
