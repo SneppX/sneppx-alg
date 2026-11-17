@@ -1,3 +1,7 @@
+---
+description: "Reference for the SneppX-ALG Python API, including NumPy-backed Tensor, neural-network modules, and optional native backend notes."
+---
+
 # Python API Reference
 
 This reference describes the public Python API. The package currently uses a

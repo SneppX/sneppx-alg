@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG roadmap for TensorFlow and PyTorch capability parity, with explicit current implementation gaps and test requirements."
+---
+
 # TensorFlow and PyTorch Feature Parity Roadmap
 
 ## Goal and compatibility policy

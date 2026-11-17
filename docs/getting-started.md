@@ -1,3 +1,7 @@
+---
+description: "Install SneppX-ALG from PyPI or source and run a first Python tensor and automatic-differentiation example."
+---
+
 # Getting Started
 
 This guide walks you through installing SNEPPX-Alg and running your first training loop.

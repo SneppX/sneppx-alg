@@ -1,3 +1,7 @@
+---
+description: "Development setup, testing guidance, coding conventions, and contribution workflow for SneppX-ALG."
+---
+
 # Contributing
 
 We welcome contributions! Here's how to get started.

@@ -1,3 +1,7 @@
+---
+description: "Runnable SneppX-ALG tutorials covering tensor operations, model building, training, and documented backend requirements."
+---
+
 # Tutorials
 
 Interactive, runnable tutorials for SNEPPX-Algo. Each tutorial has a

@@ -1,3 +1,7 @@
+---
+description: "Overview of the SneppX-ALG five-stage algorithm pipeline, HSS, SER, ARC, NPE, and FM, with implementation context."
+---
+
 # The 5-Pipeline Architecture
 
 SNEPPX-Algo is a **composable 5-component AI algorithm pipeline** wrapped in

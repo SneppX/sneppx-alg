@@ -1,3 +1,7 @@
+---
+description: "Architecture and implementation status of SneppX-ALG security components S0-S9, with limitations and validation notes."
+---
+
 # Security Architecture
 
 ## Overview
