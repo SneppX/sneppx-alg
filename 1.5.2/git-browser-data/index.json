@@ -1,0 +1,349 @@
+{
+  "repository": "SneppX/sneppx-alg",
+  "default_branch": "main",
+  "generated_at": "2026-11-17T10:18:21.843210+00:00",
+  "branches": [
+    {
+      "name": "ci-gated/episodic-consolidate-linkage",
+      "id": "Y2ktZ2F0ZWQvZXBpc29kaWMtY29uc29saWRhdGUtbGlua2FnZQ",
+      "commit": "a91a60413588a83b25038ed2de9e9b7cbcf34747",
+      "file_count": 1588,
+      "commit_count": 2508
+    },
+    {
+      "name": "ci-gated/self-audit-export-hardening",
+      "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1leHBvcnQtaGFyZGVuaW5n",
+      "commit": "cbd6e7f0e482bcf47a763247739aeccd8f08dee2",
+      "file_count": 1588,
+      "commit_count": 2516
+    },
+    {
+      "name": "ci-gated/self-audit-integrity",
+      "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1pbnRlZ3JpdHk",
+      "commit": "5c7a696cb769984ed628c7152a0a69b604826717",
+      "file_count": 1588,
+      "commit_count": 2513
+    },
+    {
+      "name": "ci-gated/self-audit-integrity-mainline",
+      "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1pbnRlZ3JpdHktbWFpbmxpbmU",
+      "commit": "f816840a539f1d0e835a67898a2de098523c4343",
+      "file_count": 1588,
+      "commit_count": 2510
+    },
+    {
+      "name": "dev",
+      "id": "ZGV2",
+      "commit": "b89a13f0c94b4ad67b06bcceada1b8f931406e83",
+      "file_count": 1101,
+      "commit_count": 395
+    },
+    {
+      "name": "distributed-comm-improvement",
+      "id": "ZGlzdHJpYnV0ZWQtY29tbS1pbXByb3ZlbWVudA",
+      "commit": "6fcb29527cf8b9914422fea4d6e6e09be606dfde",
+      "file_count": 1117,
+      "commit_count": 443
+    },
+    {
+      "name": "docs/quickstart",
+      "id": "ZG9jcy9xdWlja3N0YXJ0",
+      "commit": "6fcb29527cf8b9914422fea4d6e6e09be606dfde",
+      "file_count": 1117,
+      "commit_count": 443
+    },
+    {
+      "name": "fix/model-config-c-roundtrip",
+      "id": "Zml4L21vZGVsLWNvbmZpZy1jLXJvdW5kdHJpcA",
+      "commit": "e8d63efdfc8d9072bc2686e8143887ceacf87e20",
+      "file_count": 1567,
+      "commit_count": 2286
+    },
+    {
+      "name": "fix/security-ci-and-native-test-reliability",
+      "id": "Zml4L3NlY3VyaXR5LWNpLWFuZC1uYXRpdmUtdGVzdC1yZWxpYWJpbGl0eQ",
+      "commit": "3143e8198905aa02f1b10a8ceb91335fd2662b2d",
+      "file_count": 1562,
+      "commit_count": 2233
+    },
+    {
+      "name": "gh-pages",
+      "id": "Z2gtcGFnZXM",
+      "commit": "c72df3a293c88d0da847efc5d9970e4280dc11ca",
+      "file_count": 26665,
+      "commit_count": 59
+    },
+    {
+      "name": "main",
+      "id": "bWFpbg",
+      "commit": "b515ecca02f4128aed34def20784e2fa21488e7d",
+      "file_count": 1599,
+      "commit_count": 2550
+    },
+    {
+      "name": "preflight/tensor-framework-parity",
+      "id": "cHJlZmxpZ2h0L3RlbnNvci1mcmFtZXdvcmstcGFyaXR5",
+      "commit": "d136a5edacf4eb838b7757bc0a055cad0ed1bc5c",
+      "file_count": 1573,
+      "commit_count": 2478
+    }
+  ],
+  "tags": [
+    {
+      "name": "algo0.5",
+      "id": "dGFnOmFsZ28wLjU",
+      "object": "25d24520b2617d8d9a0fcdb6a60349a8578afd6d",
+      "commit": "5db73b70edf8b21723342852e60a5ad514a56797",
+      "date": "2026-07-01T19:40:09-07:00",
+      "file_count": 383
+    },
+    {
+      "name": "algo0.5.4",
+      "id": "dGFnOmFsZ28wLjUuNA",
+      "object": "ee8c288761667d20c1cb432d305803047ca77418",
+      "commit": "ee8c288761667d20c1cb432d305803047ca77418",
+      "date": "2026-07-07T03:31:02-07:00",
+      "file_count": 384
+    },
+    {
+      "name": "algo0.7",
+      "id": "dGFnOmFsZ28wLjc",
+      "object": "178a6b4affd3a3b62eea0568cbd69ccf76cf7101",
+      "commit": "178a6b4affd3a3b62eea0568cbd69ccf76cf7101",
+      "date": "2026-07-07T06:55:16-07:00",
+      "file_count": 485
+    },
+    {
+      "name": "algo0.7.5",
+      "id": "dGFnOmFsZ28wLjcuNQ",
+      "object": "dc64050f2bac7f8e7b43fce3d4f5722cdd0afd5a",
+      "commit": "3a5709a6f9879fa1afe081ee8357303c82c263c9",
+      "date": "2026-07-07T11:44:40-07:00",
+      "file_count": 521
+    },
+    {
+      "name": "algo0.7.8",
+      "id": "dGFnOmFsZ28wLjcuOA",
+      "object": "9c0fe521a5600ef19fe006fcfd7ea3434c36ca95",
+      "commit": "307b06188d1fa9ae7d2976c465ce315860ace203",
+      "date": "2026-07-08T08:28:40-07:00",
+      "file_count": 524
+    },
+    {
+      "name": "algo0.8.0",
+      "id": "dGFnOmFsZ28wLjguMA",
+      "object": "8b70f2ac082934276c89bdc5f51a3f3260d8eb08",
+      "commit": "42f486945d178723dd8a11e9e7137a1737c409ae",
+      "date": "2026-07-08T12:35:42-07:00",
+      "file_count": 533
+    },
+    {
+      "name": "algo0.8.1",
+      "id": "dGFnOmFsZ28wLjguMQ",
+      "object": "b22c41e83a2635afb2040bf2544c2fa930c767c9",
+      "commit": "b22c41e83a2635afb2040bf2544c2fa930c767c9",
+      "date": "2026-07-08T19:14:39-07:00",
+      "file_count": 582
+    },
+    {
+      "name": "algo0.8.2",
+      "id": "dGFnOmFsZ28wLjguMg",
+      "object": "1905402a43592bf5151d4a9e39768838d44a10e3",
+      "commit": "1905402a43592bf5151d4a9e39768838d44a10e3",
+      "date": "2026-07-09T03:25:40-07:00",
+      "file_count": 590
+    },
+    {
+      "name": "algo0.8.5",
+      "id": "dGFnOmFsZ28wLjguNQ",
+      "object": "2d80bb8531db2ec3bfbf9e3cc4664284cbd14bb6",
+      "commit": "2d80bb8531db2ec3bfbf9e3cc4664284cbd14bb6",
+      "date": "2026-07-09T07:58:02-07:00",
+      "file_count": 591
+    },
+    {
+      "name": "algo0.8.6",
+      "id": "dGFnOmFsZ28wLjguNg",
+      "object": "3d228e4ab1f664e15fe8a4e1e9e13cfa4cae84ec",
+      "commit": "3d228e4ab1f664e15fe8a4e1e9e13cfa4cae84ec",
+      "date": "2026-07-09T19:57:36-07:00",
+      "file_count": 592
+    },
+    {
+      "name": "algo0.8.6b",
+      "id": "dGFnOmFsZ28wLjguNmI",
+      "object": "bae9eac62755fc5cfd52de0255c4b270586526fd",
+      "commit": "bae9eac62755fc5cfd52de0255c4b270586526fd",
+      "date": "2026-07-09T20:45:58-07:00",
+      "file_count": 598
+    },
+    {
+      "name": "algo0.9.0",
+      "id": "dGFnOmFsZ28wLjkuMA",
+      "object": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "commit": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "date": "2026-07-11T00:09:58-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "algo0.9.2.094",
+      "id": "dGFnOmFsZ28wLjkuMi4wOTQ",
+      "object": "b01b9d72ff3d373f4daefd8a68df9aa01289aa5a",
+      "commit": "423914f49ae3e4302f4c0d9d645a2aa59b59784b",
+      "date": "2026-07-13T16:26:55-07:00",
+      "file_count": 761
+    },
+    {
+      "name": "algo0.9.4.467",
+      "id": "dGFnOmFsZ28wLjkuNC40Njc",
+      "object": "339d11457ea07af751a4919a22787bccdd5fa3dc",
+      "commit": "2a707eddf54db33c01dc641e8ecca33432b68cf2",
+      "date": "2026-07-14T12:49:03-07:00",
+      "file_count": 774
+    },
+    {
+      "name": "v0.1.0",
+      "id": "dGFnOnYwLjEuMA",
+      "object": "20ae1a582996340b1c4b547977327c95c40de18d",
+      "commit": "45102453b2081c4776e2eed6b49d2e50efdc1de1",
+      "date": "2026-06-24T19:26:01-07:00",
+      "file_count": 180
+    },
+    {
+      "name": "v0.9.0",
+      "id": "dGFnOnYwLjkuMA",
+      "object": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "commit": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "date": "2026-07-11T00:09:58-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "v0.9.0-fix1",
+      "id": "dGFnOnYwLjkuMC1maXgx",
+      "object": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "commit": "33497224c4d500011f12ff2d6af18e73451f0e81",
+      "date": "2026-07-11T00:09:58-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "v0.9.0-fix2",
+      "id": "dGFnOnYwLjkuMC1maXgy",
+      "object": "7cb8bda8d723c4210789d2c984351b608cf695e5",
+      "commit": "7cb8bda8d723c4210789d2c984351b608cf695e5",
+      "date": "2026-07-11T00:21:59-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "v0.9.0-fix3",
+      "id": "dGFnOnYwLjkuMC1maXgz",
+      "object": "288a7a749d791fe76162ac37c2114c3da34a2fbb",
+      "commit": "288a7a749d791fe76162ac37c2114c3da34a2fbb",
+      "date": "2026-07-11T00:27:18-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "v0.9.0-fix4",
+      "id": "dGFnOnYwLjkuMC1maXg0",
+      "object": "aa5b3f5bded4635e8a52a02230846eb5a1ec79d3",
+      "commit": "aa5b3f5bded4635e8a52a02230846eb5a1ec79d3",
+      "date": "2026-07-11T00:31:15-07:00",
+      "file_count": 711
+    },
+    {
+      "name": "v0.9.5.748",
+      "id": "dGFnOnYwLjkuNS43NDg",
+      "object": "9b69b8d46e8246514e639aefda11bb443fa6dc06",
+      "commit": "5c875eaf0e5695a48027170181cee30845d76e23",
+      "date": "2026-07-15T10:57:53-07:00",
+      "file_count": 846
+    },
+    {
+      "name": "v0.9.7.890",
+      "id": "dGFnOnYwLjkuNy44OTA",
+      "object": "f1883133c5bf20f1ec1edd1c2043b9ecbac5719a",
+      "commit": "da02d6728f6f59cf434f9b8cb969893e43a89dd9",
+      "date": "2026-07-18T06:29:41-07:00",
+      "file_count": 983
+    },
+    {
+      "name": "v0.9.7.890a",
+      "id": "dGFnOnYwLjkuNy44OTBh",
+      "object": "e6e1929f3402a0e7d1236a6a22d2ef229ff6db90",
+      "commit": "e6e1929f3402a0e7d1236a6a22d2ef229ff6db90",
+      "date": "2026-07-18T21:38:48-07:00",
+      "file_count": 983
+    },
+    {
+      "name": "v0.9.7.890b",
+      "id": "dGFnOnYwLjkuNy44OTBi",
+      "object": "405f40492d214f796526cfb123f0ff1ab245ecc3",
+      "commit": "405f40492d214f796526cfb123f0ff1ab245ecc3",
+      "date": "2026-07-18T21:58:37-07:00",
+      "file_count": 998
+    },
+    {
+      "name": "v0.9.7.890e",
+      "id": "dGFnOnYwLjkuNy44OTBl",
+      "object": "abf81ee4fa52bb1976859183a3ad890a8356a739",
+      "commit": "22d61c82e50c2d93785c32bc9cd1f55de8cd5b90",
+      "date": "2026-07-19T23:36:58-07:00",
+      "file_count": 1013
+    },
+    {
+      "name": "v1.0.0",
+      "id": "dGFnOnYxLjAuMA",
+      "object": "f95e5078d315a252714774f8ea15e4d4e265a983",
+      "commit": "f95e5078d315a252714774f8ea15e4d4e265a983",
+      "date": "2026-07-26T11:01:55-07:00",
+      "file_count": 1046
+    },
+    {
+      "name": "v1.1.0",
+      "id": "dGFnOnYxLjEuMA",
+      "object": "0e93f5a535080dc9755478fe9781b2fe2ed41676",
+      "commit": "0e93f5a535080dc9755478fe9781b2fe2ed41676",
+      "date": "2026-07-30T10:56:56-07:00",
+      "file_count": 1094
+    },
+    {
+      "name": "v1.1.1",
+      "id": "dGFnOnYxLjEuMQ",
+      "object": "a54e9193695c47dd543021ea339b0d635f0069d7",
+      "commit": "a54e9193695c47dd543021ea339b0d635f0069d7",
+      "date": "2026-08-01T05:33:43-07:00",
+      "file_count": 1110
+    },
+    {
+      "name": "v1.2.0",
+      "id": "dGFnOnYxLjIuMA",
+      "object": "b5c239d935eb7d9a115eddd65f14b57fbcf3592f",
+      "commit": "bf4f03e90258fbcdca6fa542f92e1685a9120029",
+      "date": "2026-07-30T09:24:21-07:00",
+      "file_count": 1103
+    },
+    {
+      "name": "v1.2.1",
+      "id": "dGFnOnYxLjIuMQ",
+      "object": "2ed98a78a1f54607dbb99735530ff9c77e8049ce",
+      "commit": "13f59f7a5b6aed4c6099b1f039eb9fe58dc96e26",
+      "date": "2026-08-10T17:21:31-07:00",
+      "file_count": 1283
+    },
+    {
+      "name": "v1.5.0",
+      "id": "dGFnOnYxLjUuMA",
+      "object": "272b11c0204fa68808380d15ca784c500fd9b9c2",
+      "commit": "0968ad23ca2926626c578d9a088bc1ed6080e9eb",
+      "date": "2026-10-17T11:27:46-07:00",
+      "file_count": 1441
+    },
+    {
+      "name": "v1.5.1",
+      "id": "dGFnOnYxLjUuMQ",
+      "object": "1c7243c34d755d44ae9eb6c2e31a902481340577",
+      "commit": "6de105f554a153069ed2a93698f44bd6e462fb05",
+      "date": "2026-10-19T06:46:16-07:00",
+      "file_count": 1452
+    }
+  ]
+}
