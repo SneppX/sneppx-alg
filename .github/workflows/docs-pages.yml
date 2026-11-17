@@ -75,14 +75,9 @@ jobs:
           test -s "$VERSION/sitemap.xml"
           cp "$VERSION/sitemap.xml" sitemap.xml
           grep -q "https://sneppx.github.io/sneppx-alg/$VERSION/" sitemap.xml
-          cat > robots.txt <<'EOF'
-User-agent: *
-Allow: /
-
-Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml
-EOF
-          grep -q '^User-agent: \\*$' robots.txt
-          grep -q '^Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml$' robots.txt
+          printf '%s\n' 'User-agent: *' 'Allow: /' '' 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' > robots.txt
+          grep -Fqx 'User-agent: *' robots.txt
+          grep -Fqx 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' robots.txt
           git add robots.txt sitemap.xml
           if ! git diff --cached --quiet; then
             git commit -m "docs: publish current sitemap and robots.txt"
