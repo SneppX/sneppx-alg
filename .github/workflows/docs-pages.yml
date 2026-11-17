@@ -83,6 +83,7 @@ jobs:
           test -s "$VERSION/sitemap.xml"
           test -s "$VERSION/git-browser-data/index.json"
           mkdir -p javascripts stylesheets
+          cp latest/javascripts/git-browser-highlighter.js javascripts/git-browser-highlighter.js
           cp latest/javascripts/git-browser.js javascripts/git-browser.js
           cp latest/stylesheets/git-browser.css stylesheets/git-browser.css
           rm -rf git-browser-data
@@ -95,6 +96,7 @@ jobs:
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>SneppX-ALG Repository Browser</title>
             <link rel="stylesheet" href="/sneppx-alg/stylesheets/git-browser.css">
+            <script src="/sneppx-alg/javascripts/git-browser-highlighter.js" defer></script>
             <script src="/sneppx-alg/javascripts/git-browser.js" defer></script>
           </head>
           <body>

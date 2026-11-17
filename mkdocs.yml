@@ -62,6 +62,8 @@ extra_javascript:
     - javascripts/optimizer-race.js
     - javascripts/loss-gallery.js
     - javascripts/progress.js
+    - javascripts/git-browser-highlighter.js
+    - javascripts/git-browser.js
 extra:
     social:
         - icon: fontawesome/brands/github

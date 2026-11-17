@@ -68,7 +68,7 @@ def parse_search_lines(output: str, max_lines: int = 12000, max_bytes: int = 180
     return results, truncated
 
 def search_index(ref: str):
-    return parse_search_lines(git("grep", "-I", "-n", "-e", ".", ref, "--", *SEARCH_GLOBS))
+    return parse_search_lines(git("grep", "-I", "-n", "-E", "-e", ".", ref, "--", *SEARCH_GLOBS))
 
 def main():
     parser = argparse.ArgumentParser()

@@ -24,3 +24,15 @@ def test_parse_search_lines_enforces_line_limit():
 def test_parse_search_lines_enforces_byte_limit():
     rows, truncated = MODULE.parse_search_lines("a.py:1:" + "x"*100 + "\n", max_bytes=20)
     assert rows == [] and truncated is True
+
+
+def test_search_index_forces_regex_mode(monkeypatch):
+    captured = {}
+    def fake_git(*args, **kwargs):
+        captured["args"] = args
+        return "src/model.py:1:class Tensor:\\n"
+    monkeypatch.setattr(MODULE, "git", fake_git)
+    rows, truncated = MODULE.search_index("deadbeef")
+    assert captured["args"][:7] == ("grep", "-I", "-n", "-E", "-e", ".", "deadbeef")
+    assert rows[0]["path"] == "src/model.py"
+    assert truncated is False
