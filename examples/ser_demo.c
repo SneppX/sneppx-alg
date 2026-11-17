@@ -1,4 +1,5 @@
 #include "sparse_expert_routing.h"
+#include "neural_core/kernel/polymorphic_memory_allocator.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
