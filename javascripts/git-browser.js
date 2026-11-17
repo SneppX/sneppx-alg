@@ -13,7 +13,7 @@ const show=(...nodes)=>{root.replaceChildren(...nodes);root.classList.add("git-b
 const header=(title,detail)=>{const h=el("div","git-browser-header"),l=el("div");l.append(el("h1","git-browser-title",title));if(detail)l.append(el("div","git-browser-muted",detail));h.append(l,link(REPO,"View on GitHub ↗"));return h;};
 const toolbar=()=>{const b=el("div","git-browser-toolbar"),s=el("select");s.setAttribute("aria-label","Select branch");state.manifest.branches.forEach(x=>{const o=el("option","",x.name);o.value=x.name;o.selected=x.name===state.branch;s.append(o);});s.addEventListener("change",()=>location.href=url("tree",s.value,""));b.append(s,link(BASE+"branches/","Branches"),link(BASE+"tags/","Tags"),link(BASE+"commits/"+(state.branch||"main")+"/","Commits"),link(BASE+"search/","Search"));return b;};
 const crumbs=(branch,path)=>{const b=el("div","git-browser-crumbs");b.append(link(url("tree",branch,""),branch));let current="";(path?path.split("/"):[]).forEach(part=>{b.append(el("span","","/"));current=current?current+"/"+part:part;b.append(link(url("tree",branch,current),part));});return b;};
-const requestCache=new Map(),REQUEST_TIMEOUT_MS=8000;
+const requestCache=new Map(),REQUEST_TIMEOUT_MS=3000;
 async function requestText(target){
 if(requestCache.has(target))return requestCache.get(target);
 const pending=(async()=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);try{const response=await fetch(target,{cache:"force-cache",signal:controller.signal});if(!response.ok)throw Error("Request failed ("+response.status+").");return await response.text();}catch(error){if(error.name==="AbortError")throw Error("Request timed out after "+(REQUEST_TIMEOUT_MS/1000)+" seconds. Check the connection and retry.");throw error;}finally{clearTimeout(timer);}})();
@@ -32,15 +32,58 @@ function rows(path){const prefix=path?path+"/":"",map=new Map();state.tree.entri
 async function tree(branch,path){const meta=await loadBranch(branch),items=rows(path),table=el("table","git-browser-table");table.innerHTML="<thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead>";const body=el("tbody");if(path){const parent=path.split("/").slice(0,-1).join("/"),tr=el("tr"),td=el("td");td.append(link(url("tree",branch,parent),"↰ .."));tr.append(td,el("td","","Directory"),el("td","","—"));body.append(tr);}items.forEach(x=>{const tr=el("tr"),td=el("td","git-browser-name"),target=x.dir?url("tree",branch,path?(path+"/") + x.name:x.name):url("blob",branch,x.path);td.append(link(target,(x.dir?"📁 ":"▤ ")+x.name));tr.append(td,el("td","",x.dir?"Directory":x.mode==="120000"?"Symlink":"File"),el("td","",size(x.size)));body.append(tr);});table.append(body);const summary=el("div","git-browser-summary");summary.append(el("span","",items.filter(x=>x.dir).length+" directories"),el("span","",items.filter(x=>!x.dir).length+" files"),link(REPO+"/commit/"+meta.commit,"Indexed commit "+meta.commit.slice(0,12)));const actions=el("div","git-browser-actions");actions.append(link(REPO+"/archive/refs/heads/"+encodeURIComponent(branch)+".zip","Download ZIP"));const compare=el("button","git-browser-action-button","Compare with main");compare.type="button";compare.addEventListener("click",()=>compareBranch(branch).catch(error=>show(header("Comparison unavailable"),el("div","git-browser-error",error.message))));actions.append(compare);show(header("SneppX-ALG / "+(path?path.split("/").pop():branch),"Read-only source browser · branch "+branch),toolbar(),actions,crumbs(branch,path),summary,table);}
 
 function language(path){const ext=(path.split(".").pop()||"").toLowerCase();return ({py:"python",pyi:"python",c:"c",h:"c",cc:"cpp",cpp:"cpp",hpp:"cpp",js:"javascript",jsx:"javascript",ts:"typescript",tsx:"typescript",json:"json",yml:"yaml",yaml:"yaml",toml:"toml",sh:"bash",ps1:"powershell",html:"html",css:"css",sql:"sql",rs:"rust",go:"go",java:"java"})[ext]||"text";}
-function highlightedLine(line){
-const patterns=[{type:"comment",re:/\/\/.*$|#.*$|\/\*[\s\S]*?\*\//},{type:"string",re:/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/},{type:"number",re:/\b(?:0x[\da-f]+|\d+(?:\.\d+)?(?:e[+-]?\d+)?)\b/i},{type:"keyword",re:/\b(?:async|await|break|case|catch|class|const|continue|def|del|elif|else|enum|export|extends|false|finally|fn|for|from|func|function|if|impl|import|in|interface|let|match|mod|mut|new|null|pass|private|protected|public|raise|return|self|static|struct|super|switch|this|throw|true|try|type|typedef|typename|using|var|void|while|with|yield|None|True|False)\b/},{type:"function",re:/\b[A-Za-z_$][\w$]*(?=\s*\()/}];
-const fragment=document.createDocumentFragment();let cursor=0;
-while(cursor<line.length){let best=null;for(const pattern of patterns){pattern.re.lastIndex=cursor;const match=pattern.re.exec(line);if(match&&(!best||match.index<best.index))best={...match,type:pattern.type};}
-if(!best){fragment.append(document.createTextNode(line.slice(cursor)));break;}if(best.index>cursor)fragment.append(document.createTextNode(line.slice(cursor,best.index)));fragment.append(el("span","git-token-"+best.type,best[0]));cursor=best.index+best[0].length;}
+const LANGUAGE_KEYWORDS={
+python:"False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return self try while with yield",
+c:"_Alignas _Alignof _Atomic _Bool _Complex _Generic _Imaginary _Noreturn _Static_assert _Thread_local auto break case char const continue default do double else enum extern float for goto if inline int long register restrict return short signed sizeof static struct switch typedef union unsigned void volatile while",
+cpp:"alignas alignof and asm auto bool break case catch char class const constexpr const_cast continue decltype default delete do double dynamic_cast else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept not nullptr operator or private protected public register reinterpret_cast return short signed sizeof static static_assert static_cast struct switch template this thread_local throw true try typedef typeid typename union unsigned using virtual void volatile wchar_t while",
+javascript:"async await break case catch class const continue debugger default delete do else export extends false finally for from function get if import in instanceof let new null of return set static super switch this throw true try typeof undefined var void while with yield",
+typescript:"abstract any as asserts async await boolean break case catch class const constructor continue debugger declare default delete do else enum export extends false finally for from function get if implements import in infer instanceof interface is keyof let module namespace never new null number object of package private protected public readonly require global return set static string super switch symbol this throw true try type typeof undefined unique unknown var void while with yield",
+rust:"as async await break const continue crate dyn else enum extern false fn for if impl in let loop match mod move mut pub ref return self Self static struct super trait true type unsafe use where while",
+go:"break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var",
+java:"abstract assert boolean break byte case catch char class const continue default do double else enum extends final finally float for if implements import instanceof int interface long native new package private protected public return short static strictfp super switch synchronized this throw throws transient try void volatile while",
+json:"false null true",yaml:"false null true yes no on off",toml:"false true",
+bash:"case coproc do done elif else esac fi for function if in select then time until while",
+powershell:"begin break catch class continue data define do dynamicparam else elseif end enum exit filter finally for foreach from function if in param process return switch throw trap try until using var while"
+};
+const LANG_LINE_COMMENTS=new Set(["python","yaml","toml","bash","powershell"]);
+const LANG_SLASH_COMMENTS=new Set(["c","cpp","javascript","typescript","rust","go","java"]);
+function highlightedLine(line,lang){
+const fragment=document.createDocumentFragment(),keywords=new Set((LANGUAGE_KEYWORDS[lang]||"").split(/\s+/));
+let cursor=0;
+while(cursor<line.length){
+const rest=line.slice(cursor);
+if((LANG_LINE_COMMENTS.has(lang)&&rest[0]==="#")||(LANG_SLASH_COMMENTS.has(lang)&&rest.startsWith("//"))||(rest.startsWith("/*")&&["c","cpp","javascript","typescript","rust","go","java","css","sql"].includes(lang))){
+fragment.append(el("span","git-token-comment",rest));break;
+}
+const stringMatch=/^(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/.exec(rest);
+if(stringMatch){fragment.append(el("span","git-token-string",stringMatch[0]));cursor+=stringMatch[0].length;continue;}
+if(lang==="css"){
+const colorMatch=/^(?:#[0-9a-f]{3,8}\b|(?:rgba?|hsla?)\([^)]*\)|[a-zA-Z]{3,20}\b)/i.exec(rest);
+if(colorMatch){
+const value=colorMatch[0],hex=value[0]==="#",fn=/^(?:rgba?|hsla?)\(/i.test(value);
+const named=!hex&&!fn&&typeof CSS!=="undefined"&&CSS.supports("color",value)&&!["transparent","currentcolor"].includes(value.toLowerCase());
+if(hex||fn||named){
+const swatch=el("span","git-color-swatch");swatch.style.backgroundColor=value;swatch.setAttribute("aria-label","Color preview: "+value);swatch.title=value;
+const token=el("span","git-token-color");token.append(swatch,document.createTextNode(value));fragment.append(token);cursor+=value.length;continue;
+}
+}
+}
+const numberMatch=/^(?:0x[\da-f]+|\d+(?:\.\d+)?(?:e[+-]?\d+)?)(?:%|px|rem|em|vh|vw)?/i.exec(rest);
+if(numberMatch){fragment.append(el("span","git-token-number",numberMatch[0]));cursor+=numberMatch[0].length;continue;}
+const wordMatch=/^[A-Za-z_$][\w$]*/.exec(rest);
+if(wordMatch){
+const word=wordMatch[0];
+if(keywords.has(word))fragment.append(el("span","git-token-keyword",word));
+else if(rest.slice(word.length).startsWith("("))fragment.append(el("span","git-token-function",word));
+else fragment.append(document.createTextNode(word));
+cursor+=word.length;continue;
+}
+fragment.append(document.createTextNode(line[cursor]));cursor++;
+}
 return fragment;
 }
 
-async function blob(branch,path){const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));const code=el("div","git-browser-code","Loading source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}const source=await requestText(raw(meta.commit,path));const lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody"),lang=language(path);lines.forEach((line,i)=>{const tr=el("tr"),n=el("td","",String(i+1)),c=el("td"),tokenLine=el("code");tokenLine.append(highlightedLine(line||" "));c.append(tokenLine);tr.append(n,c);body.append(tr);});table.append(body);code.replaceChildren(table);}
+async function blob(branch,path){const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));const code=el("div","git-browser-code","Loading source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}const source=await requestText(raw(meta.commit,path));const lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody"),lang=language(path);lines.forEach((line,i)=>{const tr=el("tr"),n=el("td","",String(i+1)),c=el("td"),tokenLine=el("code");tokenLine.append(highlightedLine(line||" ",lang));c.append(tokenLine);tr.append(n,c);body.append(tr);});table.append(body);code.replaceChildren(table);}
 async function tagTree(tag,path){
 const meta=await loadTag(tag),items=rows(path),table=el("table","git-browser-table");
 table.innerHTML="<thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead>";
@@ -61,8 +104,8 @@ const code=el("div","git-browser-code","Loading source…");
 show(header(path,"Tag "+tag),actions,tagCrumbs(tag,path),el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
 if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}
 const source=await requestText(raw(meta.commit,path));
-const lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody");
-lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","",String(i+1)),cell=el("td"),code=el("code","",line||" ");cell.append(code);tr.append(number,cell);body.append(tr);});
+const lines=source.replace(/\r\n/g,"\n").split("\n"),table=el("table"),body=el("tbody"),lang=language(path);
+lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","",String(i+1)),cell=el("td"),code=el("code");code.append(highlightedLine(line||" ",lang));cell.append(code);tr.append(number,cell);body.append(tr);});
 table.append(body);code.replaceChildren(table);
 }
 async function commitDetails(sha){
