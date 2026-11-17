@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-17T10:22:18.328905+00:00",
+  "generated_at": "2026-11-17T10:26:50.949415+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -69,16 +69,16 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "c88f06e97680b398622db39d891a0e623798f5b0",
-      "file_count": 26728,
-      "commit_count": 61
+      "commit": "708d79f8aee80e2f6cf73b747b2589b18d675aad",
+      "file_count": 26787,
+      "commit_count": 63
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "8e65bfc8dff06c3766055de0684a4082ceed568a",
+      "commit": "da7ae55d4f0b6b2d913d82678e3973bd06a91ca5",
       "file_count": 1599,
-      "commit_count": 2551
+      "commit_count": 2552
     },
     {
       "name": "preflight/tensor-framework-parity",
