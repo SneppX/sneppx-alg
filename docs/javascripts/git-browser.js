@@ -24,7 +24,7 @@ function resolveBranch(rest){for(const b of state.manifest.branches.slice().sort
 function rows(path){const prefix=path?path+"/":"",map=new Map();state.tree.entries.forEach(x=>{if(!x.path.startsWith(prefix))return;const tail=x.path.slice(prefix.length);if(!tail)return;const i=tail.indexOf("/");if(i>=0){const n=tail.slice(0,i);if(!map.has(n))map.set(n,{name:n,dir:true});}else map.set(tail,{name:tail,path:x.path,sha:x.sha,size:x.size,mode:x.mode});});return [...map.values()].sort((a,b)=>Number(b.dir)-Number(a.dir)||a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:"base"}));}
 async function tree(branch,path){const meta=await loadBranch(branch),items=rows(path),table=el("table","git-browser-table");table.innerHTML="<thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead>";const body=el("tbody");if(path){const parent=path.split("/").slice(0,-1).join("/"),tr=el("tr"),td=el("td");td.append(link(url("tree",branch,parent),"↰ .."));tr.append(td,el("td","","Directory"),el("td","","—"));body.append(tr);}items.forEach(x=>{const tr=el("tr"),td=el("td","git-browser-name"),target=x.dir?url("tree",branch,path?(path+"/") + x.name:x.name):url("blob",branch,x.path);td.append(link(target,(x.dir?"📁 ":"▤ ")+x.name));tr.append(td,el("td","",x.dir?"Directory":x.mode==="120000"?"Symlink":"File"),el("td","",size(x.size)));body.append(tr);});table.append(body);const summary=el("div","git-browser-summary");summary.append(el("span","",items.filter(x=>x.dir).length+" directories"),el("span","",items.filter(x=>!x.dir).length+" files"),link(REPO+"/commit/"+meta.commit,"Indexed commit "+meta.commit.slice(0,12)));const actions=el("div","git-browser-actions");actions.append(link(REPO+"/archive/refs/heads/"+encodeURIComponent(branch)+".zip","Download ZIP"));const compare=el("button","git-browser-action-button","Compare with main");compare.type="button";compare.addEventListener("click",()=>compareBranch(branch).catch(error=>show(header("Comparison unavailable"),el("div","git-browser-error",error.message))));actions.append(compare);show(header("SneppX-ALG / "+(path?path.split("/").pop():branch),"Read-only source browser · branch "+branch),toolbar(),actions,crumbs(branch,path),summary,table);}
 
-function language(path){const ext=(path.split(".").pop()||"").toLowerCase();return ({py:"python",pyi:"python",c:"c",h:"c",cc:"cpp",cpp:"cpp",hpp:"cpp",js:"javascript",jsx:"javascript",ts:"typescript",tsx:"typescript",json:"json",yml:"yaml",yaml:"yaml",toml:"toml",sh:"bash",ps1:"powershell",html:"html",css:"css",sql:"sql",rs:"rust",go:"go",java:"java"})[ext]||"text";}
+function language(path){const ext=(path.split(".").pop()||"").toLowerCase();return ({py:"python",pyi:"python",c:"c",h:"c",cc:"cpp",cpp:"cpp",cxx:"cpp",hh:"cpp",hpp:"cpp",hxx:"cpp",js:"javascript",jsx:"javascript",mjs:"javascript",cjs:"javascript",ts:"typescript",tsx:"typescript",json:"json",jsonc:"json",yml:"yaml",yaml:"yaml",toml:"toml",ini:"ini",cfg:"ini",sh:"bash",bash:"bash",zsh:"bash",ps1:"powershell",psm1:"powershell",html:"html",htm:"html",css:"css",scss:"css",sass:"css",less:"css",sql:"sql",rs:"rust",go:"go",java:"java",kt:"kotlin",swift:"swift",cs:"csharp",rb:"ruby",php:"php",xml:"xml",svg:"xml",md:"markdown",dockerfile:"dockerfile"})[ext]||"text";}
 function highlightedLine(line){
 const patterns=[{type:"comment",re:/\/\/.*$|#.*$|\/\*[\s\S]*?\*\//},{type:"string",re:/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/},{type:"number",re:/\b(?:0x[\da-f]+|\d+(?:\.\d+)?(?:e[+-]?\d+)?)\b/i},{type:"keyword",re:/\b(?:async|await|break|case|catch|class|const|continue|def|del|elif|else|enum|export|extends|false|finally|fn|for|from|func|function|if|impl|import|in|interface|let|match|mod|mut|new|null|pass|private|protected|public|raise|return|self|static|struct|super|switch|this|throw|true|try|type|typedef|typename|using|var|void|while|with|yield|None|True|False)\b/},{type:"function",re:/\b[A-Za-z_$][\w$]*(?=\s*\()/}];
 const fragment=document.createDocumentFragment();let cursor=0;
@@ -33,7 +33,27 @@ if(!best){fragment.append(document.createTextNode(line.slice(cursor)));break;}if
 return fragment;
 }
 
-async function blob(branch,path){const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));const code=el("div","git-browser-code","Loading source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}const r=await fetch(raw(meta.commit,path));if(!r.ok)throw Error("GitHub could not return this file ("+r.status+").");const lines=(await r.text()).replace(/\r\n/g,"\n").split("\n"),table=el("table"),body=el("tbody"),lang=language(path);lines.forEach((line,i)=>{const tr=el("tr"),n=el("td","",String(i+1)),c=el("td"),tokenLine=el("code");tokenLine.append(highlightedLine(line||" "));c.append(tokenLine);tr.append(n,c);body.append(tr);});table.append(body);code.replaceChildren(table);}
+async function sourceText(sha){
+const existing=state.sourceRequests.get(sha);if(existing)return existing;
+const request=(async()=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),1500);try{const response=await fetch(DATA+"blobs/"+sha+".txt",{signal:controller.signal,cache:"force-cache"});if(!response.ok)throw Error("Cached source unavailable ("+response.status+").");return await response.text();}finally{clearTimeout(timer);}})();
+state.sourceRequests.set(sha,request);try{return await request;}catch(error){state.sourceRequests.delete(sha);throw error;}
+}
+function appendColorTokens(target,line){
+const pattern=/(#[0-9a-fA-F]{3,8}\\b|\\b(?:rgb|rgba|hsl|hsla)\\(\\s*[^)]{1,80}\\)|\\b(?:red|blue|green|black|white|transparent|currentColor)\\b)/g;
+let cursor=0,match;while((match=pattern.exec(line))){if(match.index>cursor)target.append(document.createTextNode(line.slice(cursor,match.index)));const token=el("span","git-color-token",match[0]);token.style.setProperty("--git-color-value",match[0]);token.title="CSS color value: "+match[0];target.append(token);cursor=match.index+match[0].length;}if(cursor<line.length)target.append(document.createTextNode(line.slice(cursor)));
+}
+function renderSource(container,text,path){
+const lines=text.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody"),colorFile=/\\.(css|scss|sass|less|html|htm|svg)$/i.test(path);
+lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","git-browser-line-number",String(i+1)),cell=el("td"),tokenLine=el("code");if(colorFile)appendColorTokens(tokenLine,line||" ");else tokenLine.append(highlightedLine(line||" "));cell.append(tokenLine);tr.append(number,cell);body.append(tr);});table.append(body);container.replaceChildren(table);
+}
+async function blob(branch,path){
+const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);
+const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));
+const code=el("div","git-browser-code","Loading cached source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
+if(item.size>1048576){code.textContent="This file exceeds the 1 MB browser limit. Use the raw-file link to view or download it.";return;}
+try{renderSource(code,await sourceText(item.sha),path);}catch(error){code.replaceChildren(el("div","git-browser-error",error.name==="AbortError"?"Source cache timed out after 1.5 seconds. Reload the page or open the raw file on GitHub.":error.message));const retry=el("button","git-browser-action-button","Retry cached source");retry.type="button";retry.addEventListener("click",()=>{state.sourceRequests.delete(item.sha);blob(branch,path).catch(showError);});code.append(retry);}
+}
+function showError(error){show(header("Repository browser unavailable"),el("div","git-browser-error",error.message));}
 async function tagTree(tag,path){
 const meta=await loadTag(tag),items=rows(path),table=el("table","git-browser-table");
 table.innerHTML="<thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead>";
@@ -48,15 +68,10 @@ show(header("SneppX-ALG / tag / "+tag,"Read-only source browser · immutable tag
 }
 async function tagBlob(tag,path){
 const meta=await loadTag(tag),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);
-const actions=el("div","git-browser-actions");
-actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));
-const code=el("div","git-browser-code","Loading source…");
-show(header(path,"Tag "+tag),actions,tagCrumbs(tag,path),el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
-if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}
-const response=await fetch(raw(meta.commit,path));if(!response.ok)throw Error("GitHub could not return this file ("+response.status+").");
-const lines=(await response.text()).replace(/\r\n/g,"\n").split("\n"),table=el("table"),body=el("tbody");
-lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","",String(i+1)),cell=el("td"),code=el("code","",line||" ");cell.append(code);tr.append(number,cell);body.append(tr);});
-table.append(body);code.replaceChildren(table);
+const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));
+const code=el("div","git-browser-code","Loading cached source…");show(header(path,"Tag "+tag),actions,tagCrumbs(tag,path),el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
+if(item.size>1048576){code.textContent="This file exceeds the 1 MB browser limit. Use the raw-file link to view or download it.";return;}
+try{renderSource(code,await sourceText(item.sha),path);}catch(error){code.replaceChildren(el("div","git-browser-error",error.name==="AbortError"?"Source cache timed out after 1.5 seconds. Reload or open the raw file on GitHub.":error.message));}
 }
 async function commitDetails(sha){
 const data=await json("https://api.github.com/repos/SneppX/sneppx-alg/commits/"+sha),meta=data.commit||{},author=meta.author||{},files=data.files||[];
