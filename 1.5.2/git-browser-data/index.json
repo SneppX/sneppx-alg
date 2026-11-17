@@ -1,91 +1,115 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-17T10:30:13.362213+00:00",
+  "generated_at": "2026-11-17T10:43:13.921965+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
       "id": "Y2ktZ2F0ZWQvZXBpc29kaWMtY29uc29saWRhdGUtbGlua2FnZQ",
       "commit": "a91a60413588a83b25038ed2de9e9b7cbcf34747",
       "file_count": 1588,
-      "commit_count": 2508
+      "commit_count": 2508,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "ci-gated/self-audit-export-hardening",
       "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1leHBvcnQtaGFyZGVuaW5n",
       "commit": "cbd6e7f0e482bcf47a763247739aeccd8f08dee2",
       "file_count": 1588,
-      "commit_count": 2516
+      "commit_count": 2516,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "ci-gated/self-audit-integrity",
       "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1pbnRlZ3JpdHk",
       "commit": "5c7a696cb769984ed628c7152a0a69b604826717",
       "file_count": 1588,
-      "commit_count": 2513
+      "commit_count": 2513,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "ci-gated/self-audit-integrity-mainline",
       "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1pbnRlZ3JpdHktbWFpbmxpbmU",
       "commit": "f816840a539f1d0e835a67898a2de098523c4343",
       "file_count": 1588,
-      "commit_count": 2510
+      "commit_count": 2510,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "dev",
       "id": "ZGV2",
       "commit": "b89a13f0c94b4ad67b06bcceada1b8f931406e83",
       "file_count": 1101,
-      "commit_count": 395
+      "commit_count": 395,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "distributed-comm-improvement",
       "id": "ZGlzdHJpYnV0ZWQtY29tbS1pbXByb3ZlbWVudA",
       "commit": "6fcb29527cf8b9914422fea4d6e6e09be606dfde",
       "file_count": 1117,
-      "commit_count": 443
+      "commit_count": 443,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "docs/quickstart",
       "id": "ZG9jcy9xdWlja3N0YXJ0",
       "commit": "6fcb29527cf8b9914422fea4d6e6e09be606dfde",
       "file_count": 1117,
-      "commit_count": 443
+      "commit_count": 443,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "fix/model-config-c-roundtrip",
       "id": "Zml4L21vZGVsLWNvbmZpZy1jLXJvdW5kdHJpcA",
       "commit": "e8d63efdfc8d9072bc2686e8143887ceacf87e20",
       "file_count": 1567,
-      "commit_count": 2286
+      "commit_count": 2286,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "fix/security-ci-and-native-test-reliability",
       "id": "Zml4L3NlY3VyaXR5LWNpLWFuZC1uYXRpdmUtdGVzdC1yZWxpYWJpbGl0eQ",
       "commit": "3143e8198905aa02f1b10a8ceb91335fd2662b2d",
       "file_count": 1562,
-      "commit_count": 2233
+      "commit_count": 2233,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "9ef73c0ac633de18970bebb60588c19713affa1d",
+      "commit": "1426aa0480e94b32e6c1e070f3b49f2b0ee222bc",
       "file_count": 26787,
-      "commit_count": 65
+      "commit_count": 67,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "f8db3705037263944b4df25062be4ec79d7e9972",
-      "file_count": 1599,
-      "commit_count": 2553
+      "commit": "3cb54f8fccd3037129f0bf4da3dbd98259e244e9",
+      "file_count": 1600,
+      "commit_count": 2554,
+      "search_count": 0,
+      "search_truncated": false
     },
     {
       "name": "preflight/tensor-framework-parity",
       "id": "cHJlZmxpZ2h0L3RlbnNvci1mcmFtZXdvcmstcGFyaXR5",
       "commit": "d136a5edacf4eb838b7757bc0a055cad0ed1bc5c",
       "file_count": 1573,
-      "commit_count": 2478
+      "commit_count": 2478,
+      "search_count": 0,
+      "search_truncated": false
     }
   ],
   "tags": [
