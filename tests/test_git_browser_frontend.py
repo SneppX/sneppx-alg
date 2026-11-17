@@ -22,3 +22,6 @@ def test_theme_is_dark_only():
     assert "prefers-color-scheme: light" not in THEME
     assert "Switch to light mode" not in THEME
     assert "scheme: default" not in THEME
+
+def test_pages_workflow_copies_highlighter_from_checked_out_source():
+    assert "cp docs/javascripts/git-browser-highlighter.js javascripts/git-browser-highlighter.js" in DEPLOY
