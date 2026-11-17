@@ -1,1 +1,4 @@
-User-agent: *\nAllow: /\n\nSitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml\n
+User-agent: *
+Allow: /
+
+Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml
