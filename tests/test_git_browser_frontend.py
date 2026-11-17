@@ -15,7 +15,7 @@ def test_highlighter_and_browser_are_registered_in_load_order():
     assert "git-browser-highlighter.js" not in PAGE
 
 def test_root_404_deployment_includes_both_browser_assets():
-    assert "cp docs/javascripts/git-browser-highlighter.js javascripts/git-browser-highlighter.js" in DEPLOY
+    assert 'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js' in DEPLOY
     assert DEPLOY.index("javascripts/git-browser-highlighter.js\" defer") < DEPLOY.index("javascripts/git-browser.js\" defer")
 def test_theme_is_dark_only():
     assert "scheme: slate" in THEME
@@ -24,7 +24,7 @@ def test_theme_is_dark_only():
     assert "scheme: default" not in THEME
 
 def test_pages_workflow_copies_highlighter_from_checked_out_source():
-    assert "cp docs/javascripts/git-browser-highlighter.js javascripts/git-browser-highlighter.js" in DEPLOY
+    assert 'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js' in DEPLOY
 
 
 def test_pages_workflow_preserves_highlighter_before_mike_switches_branch():
