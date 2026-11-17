@@ -1,3 +1,4 @@
+# This policy is also published at the project root by the Pages workflow.
 User-agent: *
 Allow: /
 
