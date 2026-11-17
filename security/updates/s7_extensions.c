@@ -884,6 +884,8 @@ int SNEPPX_bsdiff_create_patch_file(const char* old_path, const char* new_path, 
  *
  * @return 0 on success, -1 on error.
  */
+int SNEPPX_bspatch_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
+
 int SNEPPX_bsdiff_apply_patch(const char* old_path, const char* patch_path, const char* new_path) {
     return SNEPPX_bspatch_apply_patch(old_path, patch_path, new_path);
 }
