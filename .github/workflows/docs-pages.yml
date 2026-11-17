@@ -7,6 +7,9 @@ on:
       - "docs/**"
       - "mkdocs.yml"
       - "mkdocs.autodoc.yml"
+      - "overrides/**"
+      - "scripts/validate_mkdocs_nav.py"
+      - "Doxyfile"
       - "pyproject.toml"
       - ".github/workflows/docs-pages.yml"
   workflow_dispatch:
@@ -50,7 +53,9 @@ jobs:
           test -s docs/api/doxygen/html/index.html
 
       - name: Validate and build the site
-        run: mkdocs build --strict
+        run: |
+          python scripts/validate_mkdocs_nav.py
+          mkdocs build --strict
 
       - name: Configure deployment commit identity
         run: |
@@ -61,3 +66,14 @@ jobs:
         run: |
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
           mike deploy --push --update-aliases "$VERSION" latest
+
+      - name: Publish project-root robots.txt
+        run: |
+          git fetch origin gh-pages:gh-pages
+          git switch gh-pages
+          printf 'User-agent: *\nAllow: /\n\nSitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml\n' > robots.txt
+          git add robots.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: publish robots.txt for GitHub Pages"
+            git push origin gh-pages
+          fi

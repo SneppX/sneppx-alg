@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sneppx-alg"
 version = "1.5.2"
-description = "Experimental AI framework in C/C++ and Python with tensor, autograd, model, and security research components"
+description = "Open-source AI and machine-learning framework with a native C/C++ core and Python bindings for tensor operations, autograd, neural-network components, and model utilities"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"

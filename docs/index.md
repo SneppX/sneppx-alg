@@ -1,8 +1,12 @@
+---
+description: "SneppX-ALG documentation for the native C/C++ project and Python bindings, including installation, tensor operations, autograd, architecture, APIs, and project limitations."
+---
+
 # SneppX-ALG documentation
 
-SneppX-ALG is an open-source software project with a C/C++ codebase and Python bindings. This site documents how to build and use the available components, how the repository is organized, and where implementation work is still in progress.
+SneppX-ALG is an open-source AI and machine-learning project with a native C/C++ codebase and Python bindings. This documentation explains how to install and build the available components, use the documented APIs, understand the repository, and verify implementation status.
 
-The project is experimental. The Python API, native code, optional backends, and security components do not all have the same level of implementation or test coverage. A feature described in an architecture document is not necessarily available as a finished, production-ready feature.
+The project is in active development. The Python API, native code, optional backends, and security components do not all have the same implementation or test coverage. An architecture proposal or catalogue entry is not, by itself, evidence that a feature is complete or production-ready.
 
 ## Start here
 
@@ -29,7 +33,7 @@ These pages describe different parts of the repository. Check the relevant imple
 
 ## Install the Python bindings
 
-For a source checkout, install the package from its canonical Python project directory:
+Install the package from its canonical Python project directory in a source checkout:
 
 ```bash
 python -m pip install ./bindings/python
@@ -60,7 +64,7 @@ Build options and platform-specific requirements are documented in the [build gu
 - Check whether the component you need is implemented and covered by tests.
 - Confirm whether the Python path uses NumPy or an available native backend.
 - Review known limitations in the relevant API and architecture pages.
-- Treat security features as experimental unless their documentation and independent validation establish otherwise.
+- Treat security features according to their documented implementation and independent validation status.
 - Do not assume compatibility with PyTorch, TensorFlow, JAX, or their model ecosystems.
 
 ## Project information

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sneppx.github.io/sneppx-alg/latest/sitemap.xml

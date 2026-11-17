@@ -4,7 +4,7 @@ site_description: >
     Includes installation, API references, architecture notes, security
     limitations, and development guides.
 site_author: Ammar [SNEPPX]
-site_url: https://SneppX.github.io/sneppx-alg/
+site_url: https://sneppx.github.io/sneppx-alg/
 
 repo_url: https://github.com/SneppX/sneppx-alg
 repo_name: SneppX/sneppx-alg
