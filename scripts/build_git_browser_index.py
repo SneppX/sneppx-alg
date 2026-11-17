@@ -36,7 +36,7 @@ def tree(ref: str):
         metadata, raw_path = record.split(b"\t", 1)
         mode, kind, sha, size = metadata.decode("ascii").split(" ", 3)
         entries.append({"path": raw_path.decode("utf-8", "replace"), "mode": mode,
-                        "type": kind, "sha": sha, "size": None if size == "-" else int(size)})
+                        "type": kind, "sha": sha, "size": None if size.strip() == "-" else int(size.strip())})
     return entries
 
 def history(ref: str):

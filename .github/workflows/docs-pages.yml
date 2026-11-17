@@ -81,6 +81,27 @@ jobs:
           git fetch origin gh-pages:gh-pages
           git switch gh-pages
           test -s "$VERSION/sitemap.xml"
+          test -s "$VERSION/git-browser-data/index.json"
+          mkdir -p javascripts stylesheets
+          cp latest/javascripts/git-browser.js javascripts/git-browser.js
+          cp latest/stylesheets/git-browser.css stylesheets/git-browser.css
+          rm -rf git-browser-data
+          cp -R latest/git-browser-data git-browser-data
+          cat > 404.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>SneppX-ALG Repository Browser</title>
+            <link rel="stylesheet" href="/sneppx-alg/stylesheets/git-browser.css">
+            <script src="/sneppx-alg/javascripts/git-browser.js" defer></script>
+          </head>
+          <body>
+            <main id="git-browser-root" data-git-browser></main>
+          </body>
+          </html>
+          EOF
           cp "$VERSION/sitemap.xml" sitemap.xml
           grep -q "https://sneppx.github.io/sneppx-alg/$VERSION/" sitemap.xml
           printf '%s\n' 'User-agent: *' 'Allow: /' '' 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' > robots.txt
