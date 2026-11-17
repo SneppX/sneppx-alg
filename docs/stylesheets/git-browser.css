@@ -3,3 +3,20 @@
 .git-browser-action-button{border:1px solid var(--md-default-fg-color--lightest);border-radius:.25rem;padding:.35rem .65rem;background:var(--md-code-bg-color);color:var(--md-default-fg-color);cursor:pointer;font:inherit}
 .git-browser-search-results-list{display:grid;gap:.65rem}.git-browser-search-result{border:1px solid var(--md-default-fg-color--lightest);border-radius:.3rem;padding:.65rem}.git-browser-search-path{font-weight:600;overflow-wrap:anywhere}.git-browser-search-excerpt{white-space:pre-wrap;overflow-wrap:anywhere;margin:.45rem 0 0;padding:.5rem;background:var(--md-code-bg-color);font-size:.78rem}
 .git-browser-diff{white-space:pre;overflow:auto;padding:.7rem;background:var(--md-code-bg-color);font-size:.75rem;max-height:32rem}.git-browser-patch-row td{padding:.2rem .6rem 1rem}.git-browser-patch-row summary{cursor:pointer;color:var(--md-typeset-a-color)}.git-browser-compare-commits{font-size:.85rem}
+
+/* Repository browser: fixed dark surface and accessible source presentation. */
+#git-browser-root,.git-browser{color:#e6edf3;background:#090b10;color-scheme:dark}
+.git-browser{padding:1rem;border:1px solid #242a35;border-radius:.55rem}
+.git-browser-title{color:#f0f3f6}
+.git-browser a{color:#8ab4f8}
+.git-browser-muted{color:#9aa7b5}
+.git-browser-table,.git-browser-table th,.git-browser-table td{border-color:#293241}
+.git-browser-table th{background:#141a24;color:#dce4ee}
+.git-browser-table td{background:#0d1118}
+.git-browser-code{background:#0b0f16;border-color:#293241;color:#dce4ee}
+.git-browser-code td:first-child{color:#8592a3;border-color:#293241}
+.git-browser-toolbar select,.git-browser-toolbar input,.git-browser-action-button{background:#111722;color:#e6edf3;border-color:#364152}
+.git-browser-error{background:#1b1115;border-left-color:#f87171;color:#fecaca}
+.git-color-token{display:inline-block;border-radius:.2rem;padding:0 .18rem;background:#18202b;color:#d6e4ff;text-decoration:underline dotted;text-underline-offset:3px}
+.git-browser-line-number{width:1%;min-width:3.2em;text-align:right;color:#8290a2;user-select:none;border-right:1px solid #293241}
+.md-typeset .git-browser{color:#e6edf3}
