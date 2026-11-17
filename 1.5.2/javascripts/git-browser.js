@@ -60,7 +60,8 @@ actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(
 const code=el("div","git-browser-code","Loading source…");
 show(header(path,"Tag "+tag),actions,tagCrumbs(tag,path),el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
 if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}
-const source=await requestText(raw(meta.commit,path));\nconst lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody");
+const source=await requestText(raw(meta.commit,path));
+const lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody");
 lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","",String(i+1)),cell=el("td"),code=el("code","",line||" ");cell.append(code);tr.append(number,cell);body.append(tr);});
 table.append(body);code.replaceChildren(table);
 }
