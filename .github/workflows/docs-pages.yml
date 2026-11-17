@@ -67,13 +67,17 @@ jobs:
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
           mike deploy --push --update-aliases "$VERSION" latest
 
-      - name: Publish project-root robots.txt
+      - name: Publish project-root robots.txt and sitemap
         run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
           git fetch origin gh-pages:gh-pages
           git switch gh-pages
-          printf 'User-agent: *\nAllow: /\n\nSitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml\n' > robots.txt
-          git add robots.txt
+          test -s "$VERSION/sitemap.xml"
+          cp "$VERSION/sitemap.xml" sitemap.xml
+          grep -q "https://sneppx.github.io/sneppx-alg/$VERSION/" sitemap.xml
+          printf 'User-agent: *\\nAllow: /\\n\\nSitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml\\n' > robots.txt
+          git add robots.txt sitemap.xml
           if ! git diff --cached --quiet; then
-            git commit -m "docs: publish robots.txt for GitHub Pages"
+            git commit -m "docs: publish current sitemap and robots.txt"
             git push origin gh-pages
           fi

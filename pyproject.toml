@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sneppx-alg"
 version = "1.5.2"
-description = "Open-source AI and machine-learning framework with a native C/C++ core and Python bindings for tensor operations, autograd, neural-network components, and model utilities"
+description = "Open-source AI and machine-learning framework with a native C/C++ core and Python bindings for tensor operations, autograd, and neural-network components"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -13,15 +13,11 @@ authors = [
     {name = "Ammar [SNEPPX]", email = "algoSNEPPX@gmail.com"},
 ]
 keywords = [
-    "ai", "machine-learning", "deep-learning", "neural-networks",
-    "security", "post-quantum", "cryptography",
-    "distributed-training", "cuda", "tensor",
-    "state-space", "mixture-of-experts", "adversarial",
-    "model-zoo", "quantization", "zero",
-    "llama", "mistral", "qwen", "deepseek",
-    "attention", "mamba", "transformer",
-    "formal-verification", "differential-privacy",
-    "npu", "nccl"
+    "ai", "machine-learning", "deep-learning", "tensor", "autograd",
+    "neural-network", "c", "cpp", "python", "numpy",
+    "scientific-computing", "quantization", "cryptography",
+    "ai-security", "distributed-training", "transformer",
+    "mixture-of-experts", "state-space", "cuda", "open-source"
 ]
 
 classifiers = [
@@ -44,7 +40,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SneppX/sneppx-alg"
+Homepage = "https://sneppx.github.io/sneppxov/"
 Repository = "https://github.com/SneppX/sneppx-alg"
 Documentation = "https://sneppx.github.io/sneppx-alg/"
 "Bug Tracker" = "https://github.com/SneppX/sneppx-alg/issues"

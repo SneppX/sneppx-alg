@@ -1,64 +1,75 @@
 # SneppX-ALG
 
-SneppX-ALG is an open-source AI and machine-learning framework built around a native C/C++ core and Python APIs.
+[![PyPI version](https://img.shields.io/pypi/v/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
+[![Python versions](https://img.shields.io/pypi/pyversions/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
+[![CI](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](LICENSE)
 
-It provides tensor operations, automatic differentiation, neural-network components, model utilities, and security tools.
+SneppX-ALG is an open-source AI and machine-learning framework with a native C/C++ codebase and Python bindings. It brings together tensor operations, automatic differentiation, neural-network components, model utilities, and security-related tooling.
+
+**Project maturity: Alpha.** Implementation and test coverage vary across components and optional backends. Check the relevant documentation and tests before depending on a specific feature. SneppX-ALG is not a drop-in replacement for TensorFlow or PyTorch.
+
+## Install
+
+Install the Python package from PyPI:
+
+```bash
+python -m pip install sneppx-alg
+```
+
+For a source checkout, install the bindings from the repository:
+
+```bash
+python -m pip install ./bindings/python
+```
 
 ## Features
 
-- Tensor operations and automatic differentiation
-- Neural-network layers, losses, and optimizers
-- Transformer and model components
-- Quantization and distributed-computing tools
-- Python bindings and developer utilities
-- Security, monitoring, and firewall components
+- Tensor operations and automatic differentiation.
+- Neural-network layers, losses, and optimizers.
+- Transformer and model components.
+- Quantization and distributed-computing components, with varying maturity.
+- Python bindings and developer utilities.
+- Security, monitoring, cryptography, and network-security components.
 
-Feature coverage varies by subsystem. SneppX-ALG is not a drop-in replacement for TensorFlow or PyTorch. See the [parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md).
+See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md) for current gaps and compatibility goals.
 
-## Requirements
+## Build from source
 
-- CMake 3.16 or newer
-- A C11 and C++17 compatible compiler
-- Python and NumPy for Python support
+Requirements include CMake 3.16 or newer, a C11 and C++17-compatible toolchain, and Python with NumPy for Python support.
 
-## Build
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+```
 
-Configure the project with `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release`.
-
-Build with `cmake --build build --config Release`.
-
-Run native tests with `ctest --test-dir build -C Release --output-on-failure`.
-
-For optional backends and additional setup, see the [quick-start guide](QUICKSTART.md).
-
-## Python
-
-The Python package is located in `bindings/python/`.
-
-Run the linear regression example with `PYTHONPATH=bindings/python python examples/python_api/ex_01_linear_regression.py`.
-
-## Security
-
-The project includes cryptography, memory-hardening, monitoring, network-security, audit, and firewall components.
-
-Security features have different implementation and validation levels. Review the [security documentation](docs/security_layers.md) before deployment.
+CUDA and other optional backends are not required for a basic CPU build. See the [build guide](docs/build.md) for configuration options.
 
 ## Documentation
 
-- [Documentation index](docs/index.md)
-- [Quick start](QUICKSTART.md)
+- [Live documentation](https://sneppx.github.io/sneppx-alg/)
+- [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
+- [Python API reference](https://sneppx.github.io/sneppx-alg/latest/api/python/)
 - [Architecture](docs/ARCHITECTURE.md)
-- [API reference](docs/API.md)
-- [Python features](docs/python_features.md)
-- [Security](docs/security_layers.md)
+- [Security implementation notes](docs/security_layers.md)
 - [Development guide](docs/DEVELOPMENT.md)
+
+The [SneppX-OV project website](https://sneppx.github.io/sneppxov/) provides source-linked catalogues and a project overview.
+
+## Security
+
+Security-related components have different implementation and validation levels. They have not all received independent security audits or certification. Review the [security documentation](docs/security_layers.md) and the relevant tests before deployment.
+
+To report a suspected vulnerability, follow the [security policy](SECURITY.md) and use private disclosure.
 
 ## Contributing
 
-Bug reports, feature requests, and contributions are welcome. Read the [development guide](docs/DEVELOPMENT.md) before contributing.
+Bug reports, feature requests, and contributions are welcome. Read the [development guide](docs/DEVELOPMENT.md) before making changes.
 
 - [Issues](https://github.com/SneppX/sneppx-alg/issues)
 - [Discussions](https://github.com/SneppX/sneppx-alg/discussions)
+- [Contribution guide](CONTRIBUTING.md)
 
 ## License
 
