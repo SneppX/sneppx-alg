@@ -70,6 +70,29 @@ def parse_search_lines(output: str, max_lines: int = 12000, max_bytes: int = 180
 def search_index(ref: str):
     return parse_search_lines(git("grep", "-I", "-n", "-e", ".", ref, "--", *SEARCH_GLOBS))
 
+def cache_source_blobs(entries, output: Path, max_file_bytes: int = 1048576):
+    """Write deduplicated UTF-8 source blobs for same-origin static serving."""
+    output.mkdir(parents=True, exist_ok=True)
+    cached, skipped = set(), 0
+    for entry in entries:
+        size = entry["size"]
+        if entry["type"] != "blob" or size is None or size > max_file_bytes:
+            continue
+        sha = entry["sha"]
+        target = output / (sha + ".txt")
+        if target.exists():
+            cached.add(sha)
+            continue
+        content = git("cat-file", "blob", sha, binary=True)
+        try:
+            decoded = content.decode("utf-8")
+        except UnicodeDecodeError:
+            skipped += 1
+            continue
+        target.write_text(decoded, encoding="utf-8", newline="")
+        cached.add(sha)
+    return {"cached_blob_count": len(cached), "skipped_binary_count": skipped}
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="docs/git-browser-data")
@@ -97,7 +120,7 @@ def main():
             ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
         branches.append({"name": name, "id": key, "commit": sha,
                          "file_count": len(entries), "commit_count": len(log),
-                         "search_count": len(search_lines), "search_truncated": search_truncated})
+                         "search_count": len(search_lines), "search_truncated": search_truncated, **blob_stats})
     tags = []
     for name, object_sha in refs("refs/tags"):
         sha = git("rev-parse", name + "^{commit}").strip()
