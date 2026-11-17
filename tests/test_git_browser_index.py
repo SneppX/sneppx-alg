@@ -1,0 +1,26 @@
+"""Tests for the static repository browser search index."""
+import importlib.util
+from pathlib import Path
+MODULE_PATH = Path(__file__).parents[1] / "scripts" / "build_git_browser_index.py"
+SPEC = importlib.util.spec_from_file_location("git_browser_index", MODULE_PATH)
+MODULE = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader is not None
+SPEC.loader.exec_module(MODULE)
+
+def test_identifier_is_url_safe_and_deterministic():
+    value = MODULE.identifier("feature/search-ui")
+    assert value == MODULE.identifier("feature/search-ui")
+    assert "/" not in value and "+" not in value and "=" not in value
+
+def test_parse_search_lines_preserves_path_line_and_content():
+    rows, truncated = MODULE.parse_search_lines("src/model.py:17:def forward(self):\nsrc/model.py:18:    return x + 1\n")
+    assert rows == [{"path":"src/model.py","line":17,"text":"def forward(self):"},{"path":"src/model.py","line":18,"text":"    return x + 1"}]
+    assert truncated is False
+
+def test_parse_search_lines_enforces_line_limit():
+    rows, truncated = MODULE.parse_search_lines("a.py:1:first\na.py:2:second\na.py:3:third\n", max_lines=2)
+    assert len(rows) == 2 and truncated is True
+
+def test_parse_search_lines_enforces_byte_limit():
+    rows, truncated = MODULE.parse_search_lines("a.py:1:" + "x"*100 + "\n", max_bytes=20)
+    assert rows == [] and truncated is True

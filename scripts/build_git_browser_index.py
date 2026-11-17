@@ -49,20 +49,46 @@ def history(ref: str):
             commits.append({"sha": sha, "author": author, "date": date, "subject": subject})
     return commits
 
+SEARCH_GLOBS = ("*.py", "*.pyi", "*.c", "*.h", "*.cc", "*.hh", "*.cpp", "*.hpp", "*.cxx", "*.hxx", "*.js", "*.jsx", "*.ts", "*.tsx", "*.mjs", "*.cjs", "*.java", "*.kt", "*.rs", "*.go", "*.swift", "*.cs", "*.rb", "*.php", "*.sh", "*.bash", "*.zsh", "*.ps1", "*.psm1", "*.sql", "*.json", "*.yaml", "*.yml", "*.toml", "*.ini", "*.cfg", "*.cmake", "CMakeLists.txt", "*.md", "*.html", "*.css", "*.scss", "*.xml", "*.proto", "*.graphql")
+
+def parse_search_lines(output: str, max_lines: int = 12000, max_bytes: int = 1800000):
+    results, used, truncated = [], 0, False
+    for record in output.splitlines():
+        path, separator, remainder = record.partition(":")
+        line_number, separator2, content = remainder.partition(":")
+        if not separator or not separator2 or not line_number.isdigit():
+            continue
+        item = {"path": path, "line": int(line_number), "text": content[:1200]}
+        cost = len(json.dumps(item, ensure_ascii=False).encode("utf-8")) + 1
+        if len(results) >= max_lines or used + cost > max_bytes:
+            truncated = True
+            break
+        results.append(item)
+        used += cost
+    return results, truncated
+
+def search_index(ref: str):
+    return parse_search_lines(git("grep", "-I", "-n", "-e", ".", ref, "--", *SEARCH_GLOBS))
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="docs/git-browser-data")
     parser.add_argument("--repository", default="SneppX/sneppx-alg")
     args = parser.parse_args()
     out = Path(args.output)
-    trees, commits = out / "trees", out / "commits"
+    trees, commits, search = out / "trees", out / "commits", out / "search"
     trees.mkdir(parents=True, exist_ok=True)
     commits.mkdir(parents=True, exist_ok=True)
+    search.mkdir(parents=True, exist_ok=True)
     branches = []
     for name, sha in refs("refs/remotes/origin"):
         key = identifier(name)
         entries = tree(sha)
         log = history(sha)
+        search_lines, search_truncated = search_index(sha)
+        (search / (key + ".json")).write_text(json.dumps(
+            {"branch": name, "commit": sha, "truncated": search_truncated, "lines": search_lines},
+            ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
         (trees / (key + ".json")).write_text(json.dumps(
             {"branch": name, "commit": sha, "entries": entries},
             ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
@@ -70,7 +96,8 @@ def main():
             {"branch": name, "commits": log},
             ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
         branches.append({"name": name, "id": key, "commit": sha,
-                         "file_count": len(entries), "commit_count": len(log)})
+                         "file_count": len(entries), "commit_count": len(log),
+                         "search_count": len(search_lines), "search_truncated": search_truncated})
     tags = []
     for name, object_sha in refs("refs/tags"):
         sha = git("rev-parse", name + "^{commit}").strip()
