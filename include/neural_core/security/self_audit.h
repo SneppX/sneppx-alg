@@ -159,6 +159,18 @@ int  SNEPPX_self_audit_check_network(SNEPPXSelfAudit* audit);
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_self_audit_check_ai_safety(SNEPPXSelfAudit* audit);
+/** Run the S2 obfuscation self-audit checks. */
+int  SNEPPX_self_audit_check_obfuscation(SNEPPXSelfAudit* audit);
+/** Run the S3 monitoring self-audit checks. */
+int  SNEPPX_self_audit_check_monitor(SNEPPXSelfAudit* audit);
+/** Run the S6 user-interface self-audit checks. */
+int  SNEPPX_self_audit_check_ui(SNEPPXSelfAudit* audit);
+/** Run the S7 update self-audit checks. */
+int  SNEPPX_self_audit_check_updates(SNEPPXSelfAudit* audit);
+/** Run the S8 formal-methods self-audit checks. */
+int  SNEPPX_self_audit_check_formal(SNEPPXSelfAudit* audit);
+/** Run the S9 penetration-testing self-audit checks. */
+int  SNEPPX_self_audit_check_pentest(SNEPPXSelfAudit* audit);
 
 #ifdef __cplusplus
 }
