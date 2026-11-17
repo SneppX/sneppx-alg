@@ -16,7 +16,7 @@ def test_highlighter_and_browser_are_registered_in_load_order():
 
 def test_root_404_deployment_includes_both_browser_assets():
     assert 'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js' in DEPLOY
-    assert DEPLOY.index("javascripts/git-browser-highlighter.js\" defer") < DEPLOY.index("javascripts/git-browser.js\" defer")
+    assert DEPLOY.index("latest/javascripts/git-browser-highlighter.js\" defer") < DEPLOY.index("javascripts/git-browser.js\" defer")
 def test_theme_is_dark_only():
     assert "scheme: slate" in THEME
     assert "prefers-color-scheme: light" not in THEME
@@ -34,3 +34,7 @@ def test_pages_workflow_preserves_highlighter_before_mike_switches_branch():
 
 def test_pages_workflow_stages_root_highlighter_asset():
     assert "git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js" in DEPLOY
+
+
+def test_root_fallback_uses_live_versioned_highlighter_asset():
+    assert '/sneppx-alg/latest/javascripts/git-browser-highlighter.js' in DEPLOY

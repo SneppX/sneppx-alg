@@ -99,7 +99,7 @@ jobs:
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>SneppX-ALG Repository Browser</title>
             <link rel="stylesheet" href="/sneppx-alg/stylesheets/git-browser.css">
-            <script src="/sneppx-alg/javascripts/git-browser-highlighter.js" defer></script>
+            <script src="/sneppx-alg/latest/javascripts/git-browser-highlighter.js" defer></script>
             <script src="/sneppx-alg/javascripts/git-browser.js" defer></script>
           </head>
           <body>
