@@ -40,7 +40,7 @@ state.sourceRequests.set(sha,request);try{return await request;}catch(error){sta
 }
 function appendColorTokens(target,line){
 const pattern=/(#[0-9a-fA-F]{3,8}\\b|\\b(?:rgb|rgba|hsl|hsla)\\(\\s*[^)]{1,80}\\)|\\b(?:red|blue|green|black|white|transparent|currentColor)\\b)/g;
-let cursor=0,match;while((match=pattern.exec(line))){if(match.index>cursor)target.append(document.createTextNode(line.slice(cursor,match.index)));const token=el("span","git-color-token",match[0]);token.style.setProperty("--git-color-value",match[0]);token.title="CSS color value: "+match[0];target.append(token);cursor=match.index+match[0].length;}if(cursor<line.length)target.append(document.createTextNode(line.slice(cursor)));
+let cursor=0,match;while((match=pattern.exec(line))){if(match.index>cursor)target.append(document.createTextNode(line.slice(cursor,match.index)));const token=el("span","git-color-token",match[0]);token.style.backgroundColor=match[0];token.style.color="color-mix(in srgb, "+match[0]+" 18%, white)";token.title="CSS color value: "+match[0];target.append(token);cursor=match.index+match[0].length;}if(cursor<line.length)target.append(document.createTextNode(line.slice(cursor)));
 }
 function renderSource(container,text,path){
 const lines=text.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody"),colorFile=/\\.(css|scss|sass|less|html|htm|svg)$/i.test(path);
