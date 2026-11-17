@@ -1,13 +1,13 @@
 <map id="SNEPPX_random_bytes" name="SNEPPX_random_bytes">
-<area shape="rect" id="Node000001" title="Perform Random Bytes." alt="" coords="716,45,889,70"/>
-<area shape="rect" id="Node000002" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="477,5,668,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="701,46,668,41,668,36,702,41"/>
-<area shape="rect" id="Node000003" href="$random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Generate a random uint32_t with explicit error reporting." alt="" coords="483,69,662,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="702,74,663,80,662,74,701,69"/>
-<area shape="rect" id="Node000004" href="$random_8c.html#a05cbced9303416a64c246ed28ce2e9db" title="Compatibility wrapper; returns zero if entropy retrieval fails." alt="" coords="246,47,425,73"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="469,79,424,74,425,68,470,74"/>
-<area shape="rect" id="Node000005" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="241,97,429,137"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="470,104,430,109,429,104,470,99"/>
-<area shape="rect" id="Node000006" href="$random_8c.html#af8cd085e61d03a97456dad67182bd463" title="Compatibility wrapper; returns zero for invalid bounds or entropy failure." alt="" coords="5,105,193,130"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,120,194,120,194,115,227,115"/>
+<area shape="rect" id="Node000001" title="Perform Random Bytes." alt="" coords="714,48,887,76"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="476,5,666,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="696,47,667,45,667,39,702,47"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Generate a random uint32_t with explicit error reporting." alt="" coords="482,75,660,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="702,77,661,86,660,81,696,78"/>
+<area shape="rect" id="Node000004" href="$random_8c.html#a05cbced9303416a64c246ed28ce2e9db" title="Compatibility wrapper; returns zero if entropy retrieval fails." alt="" coords="246,52,423,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="464,84,424,81,424,75,470,83"/>
+<area shape="rect" id="Node000005" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="241,104,428,149"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="470,110,429,117,428,112,464,110"/>
+<area shape="rect" id="Node000006" href="$random_8c.html#af8cd085e61d03a97456dad67182bd463" title="Compatibility wrapper; returns zero for invalid bounds or entropy failure." alt="" coords="5,112,193,140"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="222,127,193,129,193,124,227,126"/>
 </map>

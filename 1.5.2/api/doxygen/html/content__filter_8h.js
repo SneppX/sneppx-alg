@@ -1,0 +1,48 @@
+var content__filter_8h =
+[
+    [ "SNEPPXAIGuardrailRule", "structSNEPPXAIGuardrailRule.html", "structSNEPPXAIGuardrailRule" ],
+    [ "SNEPPXAIGuardrailResult", "structSNEPPXAIGuardrailResult.html", "structSNEPPXAIGuardrailResult" ],
+    [ "SNEPPX_AI_GUARDRAIL_MAX_CATEGORIES", "content__filter_8h.html#a22d88bd7ea86c400fa349b3b08b0c6c6", null ],
+    [ "SNEPPX_AI_GUARDRAIL_MAX_PATTERNS", "content__filter_8h.html#a32755fc9acc4bb51387c81c7aacd6314", null ],
+    [ "SNEPPX_AI_GUARDRAIL_MAX_RULES", "content__filter_8h.html#aa26eb97ee547e09b192c061a91317365", null ],
+    [ "SNEPPX_AI_GUARDRAIL_SCORE_THRESHOLD", "content__filter_8h.html#a1c7db4691a76c14a8b84d5230df4b11d", null ],
+    [ "SNEPPXAIGuardrailAction", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2", [
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_BLOCK", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a3699799adfdec1519e7093aa9695288c", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_FLAG", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a50e453038b883ceb769db1bc082707b5", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_LOG", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2ae26b6176a0de8259732a6b446d738ecc", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_REDACT", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a7a1524ea4d393ac385a0d1fe50c9f653", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_MASK", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a4105a3da711ecd4d2dd7e8c2cf77a597", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_REWRITE", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a26d0ad0d265b7b91caea92be26acc4aa", null ],
+      [ "SNEPPX_AI_GUARDRAIL_ACTION_ESCALATE", "content__filter_8h.html#a79a5c2fa69f6143d8417f291f76101f2a921e52d88c513f4f23435d727248a3c3", null ]
+    ] ],
+    [ "SNEPPXAIGuardrailCategory", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7b", [
+      [ "SNEPPX_AI_CATEGORY_HATE_SPEECH", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba2860859dcda2137d0365da2b2b4afe0b", null ],
+      [ "SNEPPX_AI_CATEGORY_VIOLENCE", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7babf7b7d8860edc44f6d03331305dbd419", null ],
+      [ "SNEPPX_AI_CATEGORY_SEXUAL_CONTENT", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7bab63dfa7f3b11b6a3e2e9729925c23c6a", null ],
+      [ "SNEPPX_AI_CATEGORY_HARASSMENT", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7baa2e9c8238f6a7ce4ecd5f8d6fc444466", null ],
+      [ "SNEPPX_AI_CATEGORY_SELF_HARM", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba92bdb0e2aa3439e9cd6b4aa983c25920", null ],
+      [ "SNEPPX_AI_CATEGORY_PERSONAL_IDENTIFIABLE", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba03482f70ff89be8c3a5476d3f1f918cf", null ],
+      [ "SNEPPX_AI_CATEGORY_FINANCIAL_INFO", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7bab2206d185b93250186e550c6a132bc26", null ],
+      [ "SNEPPX_AI_CATEGORY_HEALTH_INFO", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba8abc0182549e1b7aef79516290549979", null ],
+      [ "SNEPPX_AI_CATEGORY_LEGAL_ADVICE", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7baf8024469b7fb1d86bee01aa59d57b052", null ],
+      [ "SNEPPX_AI_CATEGORY_MEDICAL_ADVICE", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba94d3bf7f17c5efa4388591fcb57b4504", null ],
+      [ "SNEPPX_AI_CATEGORY_MALICIOUS_CODE", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba9b8d3170c23527ec5d39b4f306454b4a", null ],
+      [ "SNEPPX_AI_CATEGORY_TERRORISM", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba89e4da00ac2c25c483ecf81477cc056e", null ],
+      [ "SNEPPX_AI_CATEGORY_CHILD_SAFETY", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba1b7b9a0a78eefae2af4acb0b802b4886", null ],
+      [ "SNEPPX_AI_CATEGORY_MISINFORMATION", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba4766098c9e3bbd6b4ee7d684a0291a22", null ],
+      [ "SNEPPX_AI_CATEGORY_PROMPT_INJECTION", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba9f82b84b3796478d9d6bc9d003bc73fb", null ],
+      [ "SNEPPX_AI_CATEGORY_JAILBREAK_ATTEMPT", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba719e18b006d50639c7dd2e4a9b90d9e2", null ],
+      [ "SNEPPX_AI_CATEGORY_SYSTEM_LEAK", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7bac0dc878f57cbd866d3039726db9071c8", null ],
+      [ "SNEPPX_AI_CATEGORY_UNAUTHORIZED_ACTIONS", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7ba55270e5ac18b59f9c1f1de896575ec1f", null ],
+      [ "SNEPPX_AI_CATEGORY_CUSTOM", "content__filter_8h.html#a8fcf2fbcb4bb2fb1f6f857943b9f6b7bac40f08dc54ca8454f8468c8f2129a499", null ]
+    ] ],
+    [ "snepx_ai_guardrail_add_rule", "content__filter_8h.html#a7ec8396a58b71a8e1ab838a48bd695c0", null ],
+    [ "snepx_ai_guardrail_detect_jailbreak", "content__filter_8h.html#a65b11b1777dd4cd24f33b6a9a8dd2ff2", null ],
+    [ "snepx_ai_guardrail_detect_prompt_injection", "content__filter_8h.html#ac67f4652a9359ab3fc87b13c019b1972", null ],
+    [ "snepx_ai_guardrail_filter_input", "content__filter_8h.html#a95ffb609159dd3c601d76118fd38dd9c", null ],
+    [ "snepx_ai_guardrail_filter_output", "content__filter_8h.html#a389b3aaddcff86447c135a87fe3b854c", null ],
+    [ "snepx_ai_guardrail_redact_pii", "content__filter_8h.html#a6285a00af368bcb57b79ce456f31782a", null ],
+    [ "snepx_ai_guardrail_remove_rule", "content__filter_8h.html#ae941f54f353ea041f797c467ab688c04", null ],
+    [ "snepx_ai_guardrail_result_destroy", "content__filter_8h.html#a85b19fbbe6412da119c5024b7ec8e703", null ],
+    [ "snepx_ai_guardrail_scan_output", "content__filter_8h.html#a8101415d4c4b88fb1e1fa3da3eb3b060", null ]
+];

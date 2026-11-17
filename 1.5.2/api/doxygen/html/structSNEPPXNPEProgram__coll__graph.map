@@ -1,9 +1,9 @@
 <map id="SNEPPXNPEProgram" name="SNEPPXNPEProgram">
-<area shape="rect" id="Node000001" title=" " alt="" coords="81,255,236,280"/>
-<area shape="rect" id="Node000002" href="$structSNEPPXNPEInstruction.html" title=" " alt="" coords="5,93,173,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,132,100,179,108,205,120,229,143,253,139,256,115,232,103,207,95,180,88,133"/>
-<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="197,93,312,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="250,132,231,180,201,232,176,256,173,253,197,229,226,178,245,130"/>
-<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="193,5,316,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="257,45,257,93,252,93,252,45"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="70,318,223,346"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXNPEInstruction.html" title=" " alt="" coords="5,106,173,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,147,97,217,105,256,118,293,135,318,130,318,113,296,100,257,92,217,88,151"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="197,106,312,134"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="253,147,238,220,223,259,202,296,174,320,171,315,198,293,218,257,233,218,249,151"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="193,5,316,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="256,46,257,106,252,105,253,51"/>
 </map>

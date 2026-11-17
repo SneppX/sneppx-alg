@@ -1,9 +1,9 @@
 <map id="include/neural_core/kernel/concurrent_workload_dispatch.h" name="include/neural_core/kernel/concurrent_workload_dispatch.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="184,5,391,60"/>
-<area shape="rect" id="Node000002" href="$tensor__ops__impl_8c.html" title=" " alt="" coords="5,108,167,148"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,68,128,110,126,105,217,63"/>
-<area shape="rect" id="Node000003" href="$threadpool_8c.html" title=" " alt="" coords="191,115,384,141"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="290,74,290,115,285,115,285,74"/>
-<area shape="rect" id="Node000004" href="$workload__dispatch_8c.html" title=" " alt="" coords="408,108,580,148"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="359,63,453,105,451,110,357,68"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="183,5,388,67"/>
+<area shape="rect" id="Node000002" href="$tensor__ops__impl_8c.html" title=" " alt="" coords="5,115,166,160"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,74,130,117,128,112,208,75"/>
+<area shape="rect" id="Node000003" href="$threadpool_8c.html" title=" " alt="" coords="189,124,382,151"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="287,81,288,125,283,122,284,84"/>
+<area shape="rect" id="Node000004" href="$workload__dispatch_8c.html" title=" " alt="" coords="405,115,576,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="362,72,449,115,443,115,361,77"/>
 </map>

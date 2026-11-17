@@ -1,22 +1,22 @@
 <map id="kernel/optimizer/optimizer.c" name="kernel/optimizer/optimizer.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="246,5,450,31"/>
-<area shape="rect" id="Node000002" href="$gradient__optimization__suite_8h.html" title=" " alt="" coords="33,79,199,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="315,33,185,77,184,72,313,28"/>
-<area shape="rect" id="Node000006" href="$polymorphic__memory__allocator_8h.html" title=" " alt="" coords="232,167,397,207"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="337,33,318,53,304,80,300,98,300,117,306,153,301,154,294,117,295,97,299,78,314,50,333,29"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="313,86,383,111"/>
-<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="351,31,351,72,345,72,345,31"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="407,86,475,111"/>
-<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="363,29,419,75,415,79,360,33"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="499,86,570,111"/>
-<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="376,28,496,78,494,83,374,33"/>
-<area shape="rect" id="Node000003" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="24,167,208,207"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,119,119,153,113,153,113,119"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="79,255,153,280"/>
-<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="68,121,38,141,14,168,8,187,14,205,37,230,67,248,64,252,34,235,10,208,3,187,10,165,34,137,65,116"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="119,207,119,241,113,241,113,207"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="229,255,299,280"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="153,204,231,246,229,250,150,209"/>
-<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="268,209,159,252,157,247,266,204"/>
-<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="305,208,281,244,277,242,300,205"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="246,5,449,33"/>
+<area shape="rect" id="Node000002" href="$gradient__optimization__suite_8h.html" title=" " alt="" coords="34,81,199,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="308,35,193,78,191,73,312,32"/>
+<area shape="rect" id="Node000006" href="$polymorphic__memory__allocator_8h.html" title=" " alt="" coords="232,174,396,218"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="335,32,317,56,303,82,299,101,299,120,304,160,299,158,293,121,294,100,298,80,313,53,331,35"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="312,90,382,117"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="349,31,350,75,345,73,346,36"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="407,90,474,117"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="363,31,417,79,412,79,362,36"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="498,90,567,117"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="378,31,487,79,492,83,487,83,485,83,377,36"/>
+<area shape="rect" id="Node000003" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="25,174,208,218"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="118,124,119,159,114,158,116,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="80,266,153,294"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="63,129,37,148,15,175,8,196,15,217,38,242,68,261,63,263,34,246,10,220,3,196,10,172,33,144,65,124"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="118,217,119,252,114,250,115,221"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="228,266,298,294"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="156,216,229,258,224,259,155,222"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="264,219,163,262,161,257,259,219"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="303,217,281,255,278,251,298,220"/>
 </map>

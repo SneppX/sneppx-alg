@@ -1,8 +1,8 @@
 <map id="SNEPPX_encoded_attack_scan" name="SNEPPX_encoded_attack_scan">
-<area shape="rect" id="Node000001" title="Perform Encoded Attack Scan." alt="" coords="236,57,456,82"/>
-<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#ab070cfcca6ae669544badff67a3bbd79" title="Perform Encoded Attack Scan All Encodings." alt="" coords="5,5,188,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,57,188,44,189,39,260,52"/>
-<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a2bb5d244af99aed02a9fc8f4f9c22bb4" title="Perform Encoded Attack Scan Deep." alt="" coords="5,93,188,133"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="260,87,189,100,188,95,259,82"/>
-<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="139,82,124,75,97,72,73,74,58,79,53,85,56,92,51,94,48,84,55,74,72,69,97,67,125,70,141,77"/>
+<area shape="rect" id="Node000001" title="Perform Encoded Attack Scan." alt="" coords="236,60,455,88"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#ab070cfcca6ae669544badff67a3bbd79" title="Perform Encoded Attack Scan All Encodings." alt="" coords="5,5,188,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,58,188,47,188,42,256,56"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a2bb5d244af99aed02a9fc8f4f9c22bb4" title="Perform Encoded Attack Scan Deep." alt="" coords="5,99,188,143"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="251,92,188,107,187,101,256,91"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="136,84,122,80,96,77,73,79,59,84,53,90,54,99,49,98,48,89,56,80,72,74,97,72,123,75,141,83"/>
 </map>

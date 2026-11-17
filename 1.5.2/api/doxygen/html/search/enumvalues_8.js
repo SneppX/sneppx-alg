@@ -13,6 +13,6 @@ var searchData=
   ['model_5farch_5fvit_10',['MODEL_ARCH_VIT',['../model__config_8h.html#a4b7cde565dbb11e86951ee85809205daa2ae0459ad008a11edf4f246a624448e9',1,'model_config.h']]],
   ['mov_11',['MOV',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a17b32100aef1fc19670be7fd58bc85df',1,'SNEPPX']]],
   ['mread_12',['MREAD',['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a3f8ba1130765773cab485199425706fb',1,'SNEPPX']]],
-  ['mul_13',['mul',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a2cdf52a55876063ec93b7d18bc741f6c',1,'SNEPPX::MUL'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a2cdf52a55876063ec93b7d18bc741f6c',1,'SNEPPX::MUL']]],
+  ['mul_13',['MUL',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097a2cdf52a55876063ec93b7d18bc741f6c',1,'SNEPPX::MUL'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a2cdf52a55876063ec93b7d18bc741f6c',1,'SNEPPX::MUL']]],
   ['mwrite_14',['MWRITE',['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6ac763af0f2bce23d70290616168747432',1,'SNEPPX']]]
 ];

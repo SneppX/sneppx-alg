@@ -1,0 +1,25 @@
+var differential__privacy_8c =
+[
+    [ "DP_MAX_COMPOSITIONS", "differential__privacy_8c.html#a4aa21fbf68e9c95d34747c081696fcd5", null ],
+    [ "DP_MAX_MECHANISMS", "differential__privacy_8c.html#a963cc0a13733e93880fdb2074d08dbc9", null ],
+    [ "SNEPPX_dp_advanced_compose", "differential__privacy_8c.html#a4a8892d130b4533b15e9e22b4644b1e1", null ],
+    [ "SNEPPX_dp_check_budget", "differential__privacy_8c.html#aeb9bd0e8dd9c7026c3e923b6ed9bd7b5", null ],
+    [ "SNEPPX_dp_compose", "differential__privacy_8c.html#a3fd2ca0e5ca72f5cf14867cdd1a357d1", null ],
+    [ "SNEPPX_dp_dpsgd_step", "differential__privacy_8c.html#acb9fa3826db4ab127d6ff1357b515dc2", null ],
+    [ "SNEPPX_dp_gaussian_mech", "differential__privacy_8c.html#a6ddf282e2133a6a6010f36ab4b6fb650", null ],
+    [ "SNEPPX_dp_get_stats", "differential__privacy_8c.html#a4e999cd9b72d071a18cc9bbad055ffd0", null ],
+    [ "SNEPPX_dp_laplace_mech", "differential__privacy_8c.html#aa7a36a625460afc0e593d4f42bce88ce", null ],
+    [ "SNEPPX_dp_noise_layer", "differential__privacy_8c.html#aacc360f84f760c105376667812646d28", null ],
+    [ "SNEPPX_dp_register_mechanism", "differential__privacy_8c.html#a8eeebe0f973feaa92601458e81cea816", null ],
+    [ "SNEPPX_dp_reset_budget", "differential__privacy_8c.html#a508587e4c4dd7a4661086dc17d5b252e", null ],
+    [ "SNEPPX_dp_sequential_compose", "differential__privacy_8c.html#a88e07433e23269c352fda9da1a677c1e", null ],
+    [ "SNEPPX_dp_set_budget", "differential__privacy_8c.html#acabe153f63051ebe357ee77aa9574b6a", null ],
+    [ "budget_initialized", "differential__privacy_8c.html#ab584863cd63f727df1a825c7340b471d", null ],
+    [ "comp_count", "differential__privacy_8c.html#a48cc8ab769cd1d78b398083149d5b49a", null ],
+    [ "compositions", "differential__privacy_8c.html#a050f959a752a3b577aee3385cf06e492", null ],
+    [ "global_budget", "differential__privacy_8c.html#a6915a03685faed7a157e0093cf75c15e", null ],
+    [ "mech_count", "differential__privacy_8c.html#a6d35bfebd55670cbf23aca1a67e5de59", null ],
+    [ "mechanisms", "differential__privacy_8c.html#a106eeefce157f8d8a3fccd05127bd4ee", null ],
+    [ "total_delta_consumed", "differential__privacy_8c.html#a293ffc9806777ab098b8d51715f5402e", null ],
+    [ "total_epsilon_consumed", "differential__privacy_8c.html#ae1dcbe1c7b16b7e1c7defbd7b23c095e", null ]
+];

@@ -1,8 +1,8 @@
 <map id="SNEPPX_act_softmax_stable" name="SNEPPX_act_softmax_stable">
-<area shape="rect" id="Node000001" title="Perform Act Softmax Stable." alt="" coords="445,5,605,45"/>
-<area shape="rect" id="Node000002" href="$activations_8c.html#ac0487f3a2f60909c04dcf74d31b442db" title="Run the forward pass for Act." alt="" coords="5,13,163,38"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="432,28,163,28,163,23,432,23"/>
-<area shape="rect" id="Node000003" href="$activations_8c.html#aab83424809d03043bbca0f5507658e9d" title="Perform Act Log Softmax." alt="" coords="211,38,397,63"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="432,39,398,43,397,37,431,33"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="197,41,163,37,163,32,197,36"/>
+<area shape="rect" id="Node000001" title="Perform Act Softmax Stable." alt="" coords="444,5,603,50"/>
+<area shape="rect" id="Node000002" href="$activations_8c.html#ac0487f3a2f60909c04dcf74d31b442db" title="Run the forward pass for Act." alt="" coords="5,14,162,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="428,30,162,30,162,25,429,25"/>
+<area shape="rect" id="Node000003" href="$activations_8c.html#aab83424809d03043bbca0f5507658e9d" title="Perform Act Log Softmax." alt="" coords="210,39,396,67"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="431,38,397,45,396,40,426,39"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="192,41,162,39,162,34,197,40"/>
 </map>

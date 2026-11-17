@@ -1,8 +1,8 @@
 <map id="SNEPPXThreadScheduler" name="SNEPPXThreadScheduler">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,181,188,207"/>
-<area shape="rect" id="Node000002" href="$structSNEPPXWorker.html" title=" " alt="" coords="159,93,277,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,129,115,183,112,179,189,125"/>
-<area shape="rect" id="Node000003" href="$structSNEPPXTask.html" title=" " alt="" coords="12,5,115,31"/>
-<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="59,45,55,80,58,118,72,152,90,179,85,182,68,155,53,119,49,80,54,44"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,35,198,91,196,95,95,40"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,207,187,234"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXWorker.html" title=" " alt="" coords="160,106,277,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="194,144,114,208,111,204,188,143"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTask.html" title=" " alt="" coords="12,5,113,33"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="56,46,53,89,56,133,71,173,90,206,84,206,66,175,50,134,47,89,55,51"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="96,39,200,104,195,107,95,44"/>
 </map>

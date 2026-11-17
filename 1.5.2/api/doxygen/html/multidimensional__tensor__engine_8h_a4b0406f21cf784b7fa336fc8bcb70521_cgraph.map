@@ -1,17 +1,17 @@
 <map id="SNEPPX_tensor_permute" name="SNEPPX_tensor_permute">
-<area shape="rect" id="Node000001" title="Perform Tensor Permute." alt="" coords="5,31,188,56"/>
-<area shape="rect" id="Node000002" href="$tensor_8c.html#a05322f1c9959a8df7e1cbc1d87bcde08" title="Perform Tensor As Strided." alt="" coords="236,31,431,56"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,41,222,41,222,46,188,46"/>
-<area shape="rect" id="Node000003" href="$tensor_8c.html#aad9a6a41a76d355ac1a9a0a3e617a8bf" title="Perform Storage Retain." alt="" coords="479,5,653,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="431,30,464,26,465,32,431,35"/>
-<area shape="rect" id="Node000004" href="$tensor_8c.html#a0435f20131e8a7b73d12be7d7ef5d58f" title=" " alt="" coords="497,55,635,80"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="431,51,483,56,483,61,431,56"/>
-<area shape="rect" id="Node000005" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="701,29,869,55"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="636,57,688,51,688,56,636,62"/>
-<area shape="rect" id="Node000007" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="732,79,839,104"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="636,72,718,81,718,87,636,78"/>
-<area shape="rect" id="Node000006" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="935,29,1059,55"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="870,39,921,39,921,45,870,45"/>
-<area shape="rect" id="Node000008" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="917,79,1076,104"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="839,89,903,89,903,94,839,94"/>
+<area shape="rect" id="Node000001" title="Perform Tensor Permute." alt="" coords="5,32,188,60"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#a05322f1c9959a8df7e1cbc1d87bcde08" title="Perform Tensor As Strided." alt="" coords="236,32,430,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,43,223,45,218,46,189,48"/>
+<area shape="rect" id="Node000003" href="$tensor_8c.html#aad9a6a41a76d355ac1a9a0a3e617a8bf" title="Perform Storage Retain." alt="" coords="478,5,651,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="430,32,465,31,460,31,430,37"/>
+<area shape="rect" id="Node000004" href="$tensor_8c.html#a0435f20131e8a7b73d12be7d7ef5d58f" title=" " alt="" coords="496,57,634,85"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="430,54,483,62,477,62,430,59"/>
+<area shape="rect" id="Node000005" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="699,31,867,58"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="634,60,681,57,686,56,635,65"/>
+<area shape="rect" id="Node000007" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="730,83,836,110"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="634,77,718,89,712,89,634,82"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="932,31,1055,58"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="867,42,919,44,914,45,867,47"/>
+<area shape="rect" id="Node000008" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="915,83,1072,110"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="836,94,902,96,897,97,836,99"/>
 </map>

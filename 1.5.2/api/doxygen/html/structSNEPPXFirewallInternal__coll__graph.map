@@ -1,7 +1,7 @@
 <map id="SNEPPXFirewallInternal" name="SNEPPXFirewallInternal">
-<area shape="rect" id="Node000001" title=" " alt="" coords="84,93,259,119"/>
-<area shape="rect" id="Node000002" href="$structSNEPPXFirewallRule.html" title=" " alt="" coords="5,5,159,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,38,161,91,157,95,102,42"/>
-<area shape="rect" id="Node000003" href="$structSNEPPXFirewallStats.html" title=" " alt="" coords="183,5,341,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="242,42,186,95,182,91,238,38"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="84,106,258,134"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXFirewallRule.html" title=" " alt="" coords="5,5,158,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,42,161,105,156,106,102,47"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXFirewallStats.html" title=" " alt="" coords="182,5,338,33"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="241,43,184,107,181,103,236,45"/>
 </map>

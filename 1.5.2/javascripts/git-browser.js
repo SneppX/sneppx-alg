@@ -13,7 +13,14 @@ const show=(...nodes)=>{root.replaceChildren(...nodes);root.classList.add("git-b
 const header=(title,detail)=>{const h=el("div","git-browser-header"),l=el("div");l.append(el("h1","git-browser-title",title));if(detail)l.append(el("div","git-browser-muted",detail));h.append(l,link(REPO,"View on GitHub ↗"));return h;};
 const toolbar=()=>{const b=el("div","git-browser-toolbar"),s=el("select");s.setAttribute("aria-label","Select branch");state.manifest.branches.forEach(x=>{const o=el("option","",x.name);o.value=x.name;o.selected=x.name===state.branch;s.append(o);});s.addEventListener("change",()=>location.href=url("tree",s.value,""));b.append(s,link(BASE+"branches/","Branches"),link(BASE+"tags/","Tags"),link(BASE+"commits/"+(state.branch||"main")+"/","Commits"),link(BASE+"search/","Search"));return b;};
 const crumbs=(branch,path)=>{const b=el("div","git-browser-crumbs");b.append(link(url("tree",branch,""),branch));let current="";(path?path.split("/"):[]).forEach(part=>{b.append(el("span","","/"));current=current?current+"/"+part:part;b.append(link(url("tree",branch,current),part));});return b;};
-async function json(path){const r=await fetch(path,{cache:"no-cache"});if(!r.ok)throw Error("Repository index unavailable ("+r.status+"). The documentation may still be deploying.");return r.json();}
+const requestCache=new Map(),REQUEST_TIMEOUT_MS=8000;
+async function requestText(target){
+if(requestCache.has(target))return requestCache.get(target);
+const pending=(async()=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);try{const response=await fetch(target,{cache:"force-cache",signal:controller.signal});if(!response.ok)throw Error("Request failed ("+response.status+").");return await response.text();}catch(error){if(error.name==="AbortError")throw Error("Request timed out after "+(REQUEST_TIMEOUT_MS/1000)+" seconds. Check the connection and retry.");throw error;}finally{clearTimeout(timer);}})();
+requestCache.set(target,pending);
+try{return await pending;}catch(error){requestCache.delete(target);throw error;}
+}
+async function json(path){try{return JSON.parse(await requestText(path));}catch(error){throw Error("Repository index unavailable: "+error.message+" The documentation may still be deploying.");}}
 async function manifest(){if(!state.manifest)state.manifest=await json(DATA+"index.json");return state.manifest;}
 async function loadBranch(name){const b=state.manifest.branches.find(x=>x.name===name);if(!b)throw Error("Branch not found: "+name);state.branch=name;if(!state.tree||state.tree.branch!==name)state.tree=await json(DATA+"trees/"+b.id+".json");return b;}
 const tagUrl=(kind,tag,path)=>BASE+"tag/"+tag+"/"+kind+"/"+(path?path.split("/").map(encodeURIComponent).join("/")+"/":"");
@@ -33,7 +40,7 @@ if(!best){fragment.append(document.createTextNode(line.slice(cursor)));break;}if
 return fragment;
 }
 
-async function blob(branch,path){const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));const code=el("div","git-browser-code","Loading source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}const r=await fetch(raw(meta.commit,path));if(!r.ok)throw Error("GitHub could not return this file ("+r.status+").");const lines=(await r.text()).replace(/\r\n/g,"\n").split("\n"),table=el("table"),body=el("tbody"),lang=language(path);lines.forEach((line,i)=>{const tr=el("tr"),n=el("td","",String(i+1)),c=el("td"),tokenLine=el("code");tokenLine.append(highlightedLine(line||" "));c.append(tokenLine);tr.append(n,c);body.append(tr);});table.append(body);code.replaceChildren(table);}
+async function blob(branch,path){const meta=await loadBranch(branch),item=state.tree.entries.find(x=>x.path===path);if(!item)throw Error("File not found: "+path);const actions=el("div","git-browser-actions");actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(raw(meta.commit,path),"Raw file"),link(REPO+"/commits/"+meta.commit+"/"+path,"File history"),link(REPO+"/blame/"+meta.commit+"/"+path,"Blame"));const code=el("div","git-browser-code","Loading source…");show(header(path,"Branch "+branch),toolbar(),crumbs(branch,path),actions,el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}const source=await requestText(raw(meta.commit,path));const lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody"),lang=language(path);lines.forEach((line,i)=>{const tr=el("tr"),n=el("td","",String(i+1)),c=el("td"),tokenLine=el("code");tokenLine.append(highlightedLine(line||" "));c.append(tokenLine);tr.append(n,c);body.append(tr);});table.append(body);code.replaceChildren(table);}
 async function tagTree(tag,path){
 const meta=await loadTag(tag),items=rows(path),table=el("table","git-browser-table");
 table.innerHTML="<thead><tr><th>Name</th><th>Type</th><th>Size</th></tr></thead>";
@@ -53,8 +60,7 @@ actions.append(link(REPO+"/blob/"+meta.commit+"/"+path,"GitHub permalink"),link(
 const code=el("div","git-browser-code","Loading source…");
 show(header(path,"Tag "+tag),actions,tagCrumbs(tag,path),el("div","git-browser-muted","Blob "+item.sha+" · "+size(item.size)+" · commit "+meta.commit.slice(0,12)),code);
 if(item.size>1048576){code.textContent="This file exceeds 1 MB. Use the raw-file link to view or download it.";return;}
-const response=await fetch(raw(meta.commit,path));if(!response.ok)throw Error("GitHub could not return this file ("+response.status+").");
-const lines=(await response.text()).replace(/\r\n/g,"\n").split("\n"),table=el("table"),body=el("tbody");
+const source=await requestText(raw(meta.commit,path));\nconst lines=source.replace(/\\r\\n/g,"\\n").split("\\n"),table=el("table"),body=el("tbody");
 lines.forEach((line,i)=>{const tr=el("tr"),number=el("td","",String(i+1)),cell=el("td"),code=el("code","",line||" ");cell.append(code);tr.append(number,cell);body.append(tr);});
 table.append(body);code.replaceChildren(table);
 }

@@ -1,0 +1,27 @@
+var s9__extensions_8h =
+[
+    [ "SNEPPXVulnScanner", "structSNEPPXVulnScanner.html", "structSNEPPXVulnScanner" ],
+    [ "SNEPPXFuzzHarness", "structSNEPPXFuzzHarness.html", "structSNEPPXFuzzHarness" ],
+    [ "SNEPPXRedTeamSim", "structSNEPPXRedTeamSim.html", "structSNEPPXRedTeamSim" ],
+    [ "SNEPPXBugBountyTriage", "structSNEPPXBugBountyTriage.html", "structSNEPPXBugBountyTriage" ],
+    [ "SNEPPX_FUZZ_MAX_INPUT", "s9__extensions_8h.html#ae25e5559539e7ed909850d6e44949bb5", null ],
+    [ "SNEPPX_REDTEAM_MAX_STEPS", "s9__extensions_8h.html#aec71687bdcadadf38c4447b73d35bad0", null ],
+    [ "SNEPPX_VULN_MAX_CVE", "s9__extensions_8h.html#ad207ad0874a173e6ccdd54f16196d97a", null ],
+    [ "SNEPPX_api_scan_endpoint", "s9__extensions_8h.html#a73ab45f140cfc3f85f06fd1670852436", null ],
+    [ "SNEPPX_bugbounty_triage_analyze", "s9__extensions_8h.html#a048088a7fe0662a2d4c5c8f6bfc1abb9", null ],
+    [ "SNEPPX_bugbounty_triage_init", "s9__extensions_8h.html#a7eacdc952324148665986aa4f26a52c5", null ],
+    [ "SNEPPX_compliance_check_nist", "s9__extensions_8h.html#a731e74d1990c10187436dc6efbea4ccf", null ],
+    [ "SNEPPX_crypto_test_run", "s9__extensions_8h.html#aa390ae548a39017f62bdebb6cd3c2b79", null ],
+    [ "SNEPPX_dep_check", "s9__extensions_8h.html#a9cf1c9a39b8a5bb11cf5391df315c11f", null ],
+    [ "SNEPPX_fuzz_harness_init", "s9__extensions_8h.html#a8b824c1655f4485fa51b475c2021e677", null ],
+    [ "SNEPPX_fuzz_harness_run", "s9__extensions_8h.html#affbaa375821441c73eaa3a7ed884560b", null ],
+    [ "SNEPPX_redteam_add_step", "s9__extensions_8h.html#a8f5f8a51848a4d27e6e61a5c07d15f93", null ],
+    [ "SNEPPX_redteam_execute", "s9__extensions_8h.html#ac74ad3d3cff6449d8391ca784553f7b0", null ],
+    [ "SNEPPX_redteam_init", "s9__extensions_8h.html#a1d65d0eb76f63918e10e21102c93fe22", null ],
+    [ "SNEPPX_security_regression_run", "s9__extensions_8h.html#a2af0d15705ae1c126e7c286c835bdcaf", null ],
+    [ "SNEPPX_static_analysis_run", "s9__extensions_8h.html#af420bad204aa7c9a5f851a2bfd085bb3", null ],
+    [ "SNEPPX_supply_chain_audit", "s9__extensions_8h.html#a9cfd213082ea49f0286ff79de536fd4b", null ],
+    [ "SNEPPX_vuln_scanner_add_cve", "s9__extensions_8h.html#a60217499dd9d8fa87c2a3e79830b0d24", null ],
+    [ "SNEPPX_vuln_scanner_init", "s9__extensions_8h.html#ae657166e35d9a19069105343bf0222e5", null ],
+    [ "SNEPPX_vuln_scanner_run", "s9__extensions_8h.html#a5689d4c9d27a2c00d150fd6ea9a977a8", null ]
+];

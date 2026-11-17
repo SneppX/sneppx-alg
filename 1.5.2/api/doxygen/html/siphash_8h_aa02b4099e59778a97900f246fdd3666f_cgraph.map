@@ -1,9 +1,9 @@
 <map id="SNEPPX_siphash_update" name="SNEPPX_siphash_update">
-<area shape="rect" id="Node000001" title="Update Siphash." alt="" coords="5,31,188,56"/>
-<area shape="rect" id="Node000002" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="236,5,321,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,28,222,23,223,28,189,33"/>
-<area shape="rect" id="Node000003" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="239,55,318,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,53,226,58,225,63,188,58"/>
-<area shape="rect" id="Node000004" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="369,55,429,80"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="319,65,355,65,355,70,319,70"/>
+<area shape="rect" id="Node000001" title="Update Siphash." alt="" coords="5,32,187,60"/>
+<area shape="rect" id="Node000002" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="235,5,319,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,30,222,27,216,28,187,35"/>
+<area shape="rect" id="Node000003" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="238,57,316,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="187,56,225,64,220,64,187,61"/>
+<area shape="rect" id="Node000004" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="367,57,426,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="316,69,354,71,349,71,316,74"/>
 </map>

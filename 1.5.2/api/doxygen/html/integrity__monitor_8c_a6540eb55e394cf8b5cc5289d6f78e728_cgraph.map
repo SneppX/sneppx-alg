@@ -1,9 +1,9 @@
 <map id="SNEPPX_monitor_api_hook_check" name="SNEPPX_monitor_api_hook_check">
-<area shape="rect" id="Node000001" title="Perform Monitor Api Hook Check." alt="" coords="5,23,164,63"/>
-<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a3bd963555e881fce9f9d896632d4a49b" title=" " alt="" coords="220,5,291,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,29,206,23,207,28,164,34"/>
-<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#a4f387d3a9170d9e3c4052fde0e667250" title=" " alt="" coords="212,55,299,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="164,52,199,57,198,62,164,57"/>
-<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#aabe16fa9ae43710a2693d108ea5d8e2f" title=" " alt="" coords="347,55,471,80"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="299,65,333,65,333,70,299,70"/>
+<area shape="rect" id="Node000001" title="Perform Monitor Api Hook Check." alt="" coords="5,24,163,68"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a3bd963555e881fce9f9d896632d4a49b" title=" " alt="" coords="219,5,289,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,31,206,26,201,28,164,36"/>
+<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#a4f387d3a9170d9e3c4052fde0e667250" title=" " alt="" coords="211,57,297,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,55,198,62,192,63,163,60"/>
+<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#aabe16fa9ae43710a2693d108ea5d8e2f" title=" " alt="" coords="345,57,468,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="297,69,332,71,326,71,297,74"/>
 </map>

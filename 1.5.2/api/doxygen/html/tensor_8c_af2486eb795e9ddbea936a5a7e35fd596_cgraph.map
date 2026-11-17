@@ -1,19 +1,19 @@
 <map id="SNEPPX_tensor_copy" name="SNEPPX_tensor_copy">
-<area shape="rect" id="Node000001" title="Perform Tensor Copy." alt="" coords="5,56,164,81"/>
-<area shape="rect" id="Node000002" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Perform Tensor Fill Scalar." alt="" coords="212,56,381,81"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,66,198,66,198,71,165,71"/>
-<area shape="rect" id="Node000003" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="676,6,844,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="322,53,370,32,429,15,489,7,550,4,662,6,662,12,550,9,489,12,430,20,372,37,324,58"/>
-<area shape="rect" id="Node000005" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="707,56,813,81"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="381,66,693,66,693,71,381,71"/>
-<area shape="rect" id="Node000007" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="440,30,617,56"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="381,56,426,51,426,57,382,62"/>
-<area shape="rect" id="Node000008" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="429,132,628,157"/>
-<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="337,78,430,110,476,125,475,130,428,115,335,84"/>
-<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="909,6,1033,32"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="844,16,895,16,895,22,844,22"/>
-<area shape="rect" id="Node000006" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="892,56,1051,81"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="813,66,878,66,878,71,813,71"/>
-<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="617,31,662,26,663,32,618,36"/>
-<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="618,50,693,58,693,64,617,55"/>
+<area shape="rect" id="Node000001" title="Perform Tensor Copy." alt="" coords="5,68,164,96"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Perform Tensor Fill Scalar." alt="" coords="212,68,380,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,79,199,81,194,83,165,84"/>
+<area shape="rect" id="Node000003" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="673,5,841,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="325,65,372,45,427,29,486,19,547,14,660,14,655,15,547,19,487,24,429,34,374,50,327,70"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="704,69,810,97"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="380,79,691,82,686,84,380,85"/>
+<area shape="rect" id="Node000007" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="438,43,615,70"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="380,70,426,67,421,68,381,75"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="428,144,625,172"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="340,94,429,123,469,139,464,138,427,128,339,99"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="906,5,1029,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="841,17,893,19,888,19,841,22"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="889,69,1046,97"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="810,81,876,83,871,83,810,86"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="615,40,661,35,656,36,616,45"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="615,64,692,75,686,75,615,69"/>
 </map>

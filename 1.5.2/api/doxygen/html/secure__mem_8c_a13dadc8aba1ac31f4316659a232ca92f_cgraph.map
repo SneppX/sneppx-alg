@@ -1,9 +1,9 @@
 <map id="SNEPPX_secure_malloc" name="SNEPPX_secure_malloc">
-<area shape="rect" id="Node000001" title="Perform Secure Malloc." alt="" coords="5,31,180,56"/>
-<area shape="rect" id="Node000002" href="$canary_8c.html#a749a7dae8a43e79b27b8f1029b3a11cc" title="Perform Canary Generate." alt="" coords="228,5,417,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="180,31,214,27,215,33,181,36"/>
-<area shape="rect" id="Node000004" href="$canary_8c.html#acf56d2d21f935da9d8d36930456abbb5" title="Write Canary." alt="" coords="241,55,405,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="181,50,227,55,227,60,180,55"/>
-<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="465,5,639,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="418,15,451,15,451,21,418,21"/>
+<area shape="rect" id="Node000001" title="Perform Secure Malloc." alt="" coords="5,32,179,60"/>
+<area shape="rect" id="Node000002" href="$canary_8c.html#a749a7dae8a43e79b27b8f1029b3a11cc" title="Perform Canary Generate." alt="" coords="227,5,415,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,33,214,31,208,33,179,38"/>
+<area shape="rect" id="Node000004" href="$canary_8c.html#acf56d2d21f935da9d8d36930456abbb5" title="Write Canary." alt="" coords="239,57,402,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="179,53,227,60,221,61,179,58"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="463,5,635,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="415,17,450,19,445,19,415,22"/>
 </map>

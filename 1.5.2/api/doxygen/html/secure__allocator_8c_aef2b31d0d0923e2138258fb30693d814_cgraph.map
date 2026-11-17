@@ -1,22 +1,22 @@
 <map id="SNEPPX_secure_free_quarantine" name="SNEPPX_secure_free_quarantine">
-<area shape="rect" id="Node000001" title="Perform Secure Free Quarantine." alt="" coords="5,146,161,186"/>
-<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="230,5,345,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,144,143,92,174,64,208,40,220,33,222,38,211,44,177,68,147,96,102,148"/>
-<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="223,55,351,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="112,144,157,116,208,89,225,82,227,87,210,94,159,121,115,148"/>
-<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="231,104,343,129"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="161,145,220,130,221,135,162,150"/>
-<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="215,153,360,179"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="161,163,201,163,201,169,161,169"/>
-<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="227,203,348,228"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="162,182,221,197,220,202,161,187"/>
-<area shape="rect" id="Node000008" href="$secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="234,252,341,277"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="115,184,159,211,210,238,227,245,225,250,208,243,157,216,112,188"/>
-<area shape="rect" id="Node000010" href="$secure__allocator_8c.html#a9a34169f219090c1f0f8537f4de2a3be" title="Perform Secure Free Flush Quarantine." alt="" coords="209,302,365,342"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="102,184,148,235,178,263,211,288,220,293,217,298,208,292,175,267,145,239,99,188"/>
-<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="439,31,561,56"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="345,22,426,32,425,37,345,27"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="351,57,426,49,426,54,352,63"/>
-<area shape="rect" id="Node000009" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="413,252,587,277"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="341,262,399,262,399,267,341,267"/>
+<area shape="rect" id="Node000001" title="Perform Secure Free Quarantine." alt="" coords="5,153,161,198"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="230,5,343,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,151,144,97,174,69,207,44,221,38,217,42,210,48,177,73,148,101,103,154"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="223,57,350,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="115,150,158,122,207,95,226,89,222,93,210,100,161,127,118,154"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="231,109,342,137"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="160,153,218,139,214,143,162,158"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="214,161,358,189"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="160,173,201,174,196,176,162,178"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="226,213,346,241"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="160,192,217,208,213,210,161,198"/>
+<area shape="rect" id="Node000008" href="$secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="233,265,340,293"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="117,195,161,223,210,250,227,259,222,259,207,255,158,228,116,201"/>
+<area shape="rect" id="Node000010" href="$secure__allocator_8c.html#a9a34169f219090c1f0f8537f4de2a3be" title="Perform Secure Free Flush Quarantine." alt="" coords="209,317,364,362"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="102,195,149,248,178,277,210,302,218,309,212,308,207,307,175,281,145,252,101,200"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="438,32,558,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="343,24,425,35,420,37,344,29"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="350,61,425,54,420,56,351,66"/>
+<area shape="rect" id="Node000009" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="412,265,584,293"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="340,277,399,279,394,280,340,282"/>
 </map>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['ret_0',['ret',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097afb902bc4807c307b9309f2b528b96f2b',1,'SNEPPX::RET'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6afb902bc4807c307b9309f2b528b96f2b',1,'SNEPPX::RET']]],
+  ['ret_0',['RET',['../namespaceSNEPPX.html#aaa5c631b2891a85d3b6908959425e097afb902bc4807c307b9309f2b528b96f2b',1,'SNEPPX::RET'],['../namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6afb902bc4807c307b9309f2b528b96f2b',1,'SNEPPX::RET']]],
   ['rlhf_5frule_5fbias_1',['RLHF_RULE_BIAS',['../rlhf__safety_8h.html#aebb06f16d996b1ee587bf8f5c3fcaed7abbbc7da8be5dba8d7e3af828650fe115',1,'rlhf_safety.h']]],
   ['rlhf_5frule_5fcustom_2',['RLHF_RULE_CUSTOM',['../rlhf__safety_8h.html#aebb06f16d996b1ee587bf8f5c3fcaed7a336fc1a018713674fee63e40f04ef139',1,'rlhf_safety.h']]],
   ['rlhf_5frule_5ffactual_3',['RLHF_RULE_FACTUAL',['../rlhf__safety_8h.html#aebb06f16d996b1ee587bf8f5c3fcaed7a9c1996c591570e2746813dc1c4ccfc6c',1,'rlhf_safety.h']]],

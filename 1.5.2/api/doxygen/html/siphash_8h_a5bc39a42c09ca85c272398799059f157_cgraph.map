@@ -1,19 +1,19 @@
 <map id="SNEPPX_siphash_24" name="SNEPPX_siphash_24">
-<area shape="rect" id="Node000001" title="Compute SipHash 2&#45;4 of input." alt="" coords="5,55,159,80"/>
-<area shape="rect" id="Node000002" href="$siphash_8c.html#a353e8e9dfd1316d04452d2b31152d1d7" title="Hash Sip." alt="" coords="207,55,337,80"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,65,193,65,193,70,159,70"/>
-<area shape="rect" id="Node000003" href="$siphash_8c.html#a220923dc0e0333768ec53729345453aa" title="Perform Siphash Finalize." alt="" coords="385,5,569,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="325,52,410,31,411,37,326,57"/>
-<area shape="rect" id="Node000006" href="$siphash_8c.html#a9c2503c774f2c5c99006b89363732f68" title="Initialize Siphash." alt="" coords="398,104,557,129"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="326,77,411,98,410,103,325,83"/>
-<area shape="rect" id="Node000008" href="$siphash_8c.html#aa02b4099e59778a97900f246fdd3666f" title="Update Siphash." alt="" coords="386,55,569,80"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="337,65,372,65,372,70,337,70"/>
-<area shape="rect" id="Node000004" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="621,31,699,56"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="570,28,607,33,607,39,569,33"/>
-<area shape="rect" id="Node000005" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="751,31,811,56"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="700,41,737,41,737,46,700,46"/>
-<area shape="rect" id="Node000007" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="617,92,703,117"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="557,109,603,106,604,111,557,114"/>
-<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="569,53,607,48,607,53,570,58"/>
-<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="541,77,604,91,603,96,540,83"/>
+<area shape="rect" id="Node000001" title="Compute SipHash 2&#45;4 of input." alt="" coords="5,57,158,85"/>
+<area shape="rect" id="Node000002" href="$siphash_8c.html#a353e8e9dfd1316d04452d2b31152d1d7" title="Hash Sip." alt="" coords="206,57,335,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,69,193,71,188,72,158,74"/>
+<area shape="rect" id="Node000003" href="$siphash_8c.html#a220923dc0e0333768ec53729345453aa" title="Perform Siphash Finalize." alt="" coords="383,5,566,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="327,54,400,38,405,37,329,59"/>
+<area shape="rect" id="Node000006" href="$siphash_8c.html#a9c2503c774f2c5c99006b89363732f68" title="Initialize Siphash." alt="" coords="396,109,553,137"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="328,83,405,105,400,105,328,88"/>
+<area shape="rect" id="Node000008" href="$siphash_8c.html#aa02b4099e59778a97900f246fdd3666f" title="Update Siphash." alt="" coords="384,57,565,85"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="335,69,371,71,366,71,336,74"/>
+<area shape="rect" id="Node000004" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="618,19,695,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="567,23,605,28,599,29,567,29"/>
+<area shape="rect" id="Node000005" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="747,19,806,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="695,30,734,32,728,33,696,35"/>
+<area shape="rect" id="Node000007" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="614,84,699,112"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="553,110,596,106,602,106,554,115"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="542,54,600,44,606,43,543,59"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="566,82,602,90,596,89,565,87"/>
 </map>

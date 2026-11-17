@@ -1,0 +1,26 @@
+var structSNEPPXIRPlaybook =
+[
+    [ "completed_at_ns", "structSNEPPXIRPlaybook.html#afbebe14e809b6639b0dfc9f0e3f88afb", null ],
+    [ "conditions", "structSNEPPXIRPlaybook.html#a80eae3f365e1db3879a3c706f13903f1", null ],
+    [ "current_step_index", "structSNEPPXIRPlaybook.html#a7cd57baa67e37989118705e40037c4b2", null ],
+    [ "error_log", "structSNEPPXIRPlaybook.html#aeb241a761ec254eddacee3124162ef6c", null ],
+    [ "error_log_len", "structSNEPPXIRPlaybook.html#a4752b5fc0b651866a2f06e02d2cc3855", null ],
+    [ "execution_count", "structSNEPPXIRPlaybook.html#a59f5ca55191f54641dc516260b0f9365", null ],
+    [ "execution_log", "structSNEPPXIRPlaybook.html#a77127377b1d9f95c7b82642a61afcf43", null ],
+    [ "execution_log_len", "structSNEPPXIRPlaybook.html#a0125d8add609d62e3f1623822f8c90dc", null ],
+    [ "incident_context", "structSNEPPXIRPlaybook.html#a9252e4f73a6328ad086102354aba6a7b", null ],
+    [ "incident_context_len", "structSNEPPXIRPlaybook.html#a53cd3eeeeaf35217e6b758f7df936c39", null ],
+    [ "num_conditions", "structSNEPPXIRPlaybook.html#aac50ba21124033e0492cffc9292d52bb", null ],
+    [ "num_steps", "structSNEPPXIRPlaybook.html#a53dbaa965ecf9f1936e2e3db077aae54", null ],
+    [ "num_variables", "structSNEPPXIRPlaybook.html#ae1cdbfe4310fad294323dd43c628de4f", null ],
+    [ "playbook_name", "structSNEPPXIRPlaybook.html#a50764e0f6a611a2ab08d9ba7aeea4a70", null ],
+    [ "playbook_name_len", "structSNEPPXIRPlaybook.html#a09ec9862cf071d7ca1e59c25b43ea5b1", null ],
+    [ "playbook_version", "structSNEPPXIRPlaybook.html#a6fa8b9c025ad58b50d53923b4d0aaaa5", null ],
+    [ "playbook_version_len", "structSNEPPXIRPlaybook.html#ab5d202c153da37188fb500709195a5ee", null ],
+    [ "running", "structSNEPPXIRPlaybook.html#a1d2358f12e7ea027ec815ac917ab2e7a", null ],
+    [ "started_at_ns", "structSNEPPXIRPlaybook.html#aa3c9d39a946f36b48ee164f4e0a10ee6", null ],
+    [ "status", "structSNEPPXIRPlaybook.html#a924870f17252e43990ce885f122653ff", null ],
+    [ "steps", "structSNEPPXIRPlaybook.html#a9d14ce86ed088797add172ef60235698", null ],
+    [ "type", "structSNEPPXIRPlaybook.html#ade1a4d3045970ac7a5c1d2d1241a92a6", null ],
+    [ "variables", "structSNEPPXIRPlaybook.html#a42adc7412e7913ae15fe9e3fd8d10021", null ]
+];

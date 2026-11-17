@@ -1,0 +1,38 @@
+var virtualized__code__execution_8h =
+[
+    [ "SNEPPX::SNEPPXObfVMState", "structSNEPPX_1_1SNEPPXObfVMState.html", "structSNEPPX_1_1SNEPPXObfVMState" ],
+    [ "SNEPPX::SNEPPXObfHandler", "structSNEPPX_1_1SNEPPXObfHandler.html", "structSNEPPX_1_1SNEPPXObfHandler" ],
+    [ "SNEPPX::SNEPPXObfVM", "classSNEPPX_1_1SNEPPXObfVM.html", "classSNEPPX_1_1SNEPPXObfVM" ],
+    [ "SNEPPX_OBF_VM_H", "virtualized__code__execution_8h.html#aead083d18061508665316569d0b04792", null ],
+    [ "SNEPPX::SNEPPXObfHandlerFunc", "namespaceSNEPPX.html#aa3a854269eefb4420f37601a253fdb37", null ],
+    [ "SNEPPX::SNEPPXObfBytecode", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6", [
+      [ "SNEPPX::SNEPPXObfBytecode::NOP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a1a004f5abe2b334db21328be1ea6b593", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::ADD", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a9eeb52badb613229884838847294b90d", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::SUB", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a241dd841abade20fcb27b8a9f494e1eb", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::MUL", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a2cdf52a55876063ec93b7d18bc741f6c", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::DIV", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a29bbf66f7f8529ec47e394fb5a36c646", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::LOAD", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a615d2885ef7576cedd9aafbb2578f028", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::STORE", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a3cfba54f6873dfd55b0b09d32910b20e", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::PUSH", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a73dabe4437725eedc05a1824a2c31550", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::POP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6aefdb39a4c7286afcecf0e8a7435fce6a", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::JMP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a152b9af76a9e7dd95d9da277b69fdd95", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::CALL", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6aca3547acb9162b49fb4a6594ed9b3030", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::RET", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6afb902bc4807c307b9309f2b528b96f2b", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::CMP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a5cbc764daeacd3be7f410f42511c1edb", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::JZ", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a743bda3a6098df4383907d7c772fca9c", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::JNZ", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a97a63ac12c7c5761e30b9ec4ee31e993", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::XOR_OP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a0e73a7e9c8a3c44aa21662782187c4c4", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::FADD", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6afc2cbacfa7c4ef9bc72773ebdd9fe166", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::FSUB", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a06be1058e817f781f4e0f0641f436247", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::FMUL", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a26a83f923754f1e7aa12640b8bcca29a", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::FDIV", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6abccb2b7436e0cbfb334fe07304fe28a6", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::MREAD", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a3f8ba1130765773cab485199425706fb", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::MWRITE", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6ac763af0f2bce23d70290616168747432", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::ENTER", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a331b3100a485d8cacff1d3df8e9b0c13", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::LEAVE", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6ae0f9ef6d3025baf33497bafcca7ff781", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::SWAP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a46fc23bc4e4d57e5469a39658a6dd3e8", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::AND_OP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a1a1a30b02b31446b1de336bfc776e713", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::OR_OP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a9e4bd11c2cd268a084f6a42c33d43324", null ],
+      [ "SNEPPX::SNEPPXObfBytecode::HALT", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6abf2d798abfe8267da4f101692b6cfecd", null ]
+    ] ]
+];

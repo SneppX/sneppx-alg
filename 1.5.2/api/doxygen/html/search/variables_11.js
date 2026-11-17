@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['q_0',['q',['../structSNEPPX__FlashAttnBwdParams.html#ae07a164d648fbc11ca6558fb912a16f3',1,'SNEPPX_FlashAttnBwdParams::q'],['../structSNEPPX__GQAParams.html#aba2ef135a96b4f7fea34e19bef7ae738',1,'SNEPPX_GQAParams::q'],['../structSNEPPX__PagedAttnParams.html#a04c1c51624de0c63ac72ba5c5a4c11b7',1,'SNEPPX_PagedAttnParams::q'],['../structSNEPPX__BlockSparseAttnParams.html#a524fa3547d53cc10d42ae7dcb088bdfc',1,'SNEPPX_BlockSparseAttnParams::q'],['../structSNEPPX__FlashAttnParams.html#a8fd8da4738fe32ae00de827f239936bb',1,'SNEPPX_FlashAttnParams::q']]],
+  ['q_0',['q',['../structSNEPPX__FlashAttnParams.html#a8fd8da4738fe32ae00de827f239936bb',1,'SNEPPX_FlashAttnParams::q'],['../structSNEPPX__FlashAttnBwdParams.html#ae07a164d648fbc11ca6558fb912a16f3',1,'SNEPPX_FlashAttnBwdParams::q'],['../structSNEPPX__GQAParams.html#aba2ef135a96b4f7fea34e19bef7ae738',1,'SNEPPX_GQAParams::q'],['../structSNEPPX__PagedAttnParams.html#a04c1c51624de0c63ac72ba5c5a4c11b7',1,'SNEPPX_PagedAttnParams::q'],['../structSNEPPX__BlockSparseAttnParams.html#a524fa3547d53cc10d42ae7dcb088bdfc',1,'SNEPPX_BlockSparseAttnParams::q']]],
   ['q_5flora_5frank_1',['q_lora_rank',['../structSNEPPXDeepSeekV2Config.html#a69c304e6c251b9d035ed4d96941392f2',1,'SNEPPXDeepSeekV2Config']]],
   ['q_5fproj_2',['q_proj',['../structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53',1,'SNEPPX_DifferentialAttn']]],
   ['qber_3',['qber',['../structSNEPPXQKDSession.html#aba537f942de799f81888ae51ccd89e13',1,'SNEPPXQKDSession']]],

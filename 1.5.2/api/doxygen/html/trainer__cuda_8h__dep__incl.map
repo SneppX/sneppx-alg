@@ -1,7 +1,7 @@
 <map id="include/neural_core/kernel/trainer_cuda.h" name="include/neural_core/kernel/trainer_cuda.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="86,5,249,45"/>
-<area shape="rect" id="Node000002" href="$trainer_8c.html" title=" " alt="" coords="5,101,159,126"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,57,96,102,92,98,137,53"/>
-<area shape="rect" id="Node000003" href="$trainer__cuda_8c.html" title=" " alt="" coords="183,93,325,133"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,53,237,91,233,95,194,57"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="86,5,248,50"/>
+<area shape="rect" id="Node000002" href="$trainer_8c.html" title=" " alt="" coords="5,106,158,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="139,60,96,108,92,104,134,62"/>
+<area shape="rect" id="Node000003" href="$trainer__cuda_8c.html" title=" " alt="" coords="182,98,325,143"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="199,59,236,98,230,98,197,64"/>
 </map>

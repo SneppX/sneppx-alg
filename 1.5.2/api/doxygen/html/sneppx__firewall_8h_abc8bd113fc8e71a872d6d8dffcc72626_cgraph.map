@@ -1,11 +1,11 @@
 <map id="SNEPPX_firewall_add_rule" name="SNEPPX_firewall_add_rule">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,196,80"/>
-<area shape="rect" id="Node000002" href="$firewall__engine_8c.html#adb1ddb2ae800fe9cf040362be69436a9" title=" " alt="" coords="252,5,356,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,52,238,31,239,36,154,57"/>
-<area shape="rect" id="Node000003" href="$firewall__engine_8c.html#a284dfa14dfa0cc491854c74a54dae3f4" title=" " alt="" coords="244,55,364,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="196,65,230,65,230,70,196,70"/>
-<area shape="rect" id="Node000004" href="$firewall__engine_8c.html#a434a315f5398694600fb44fb0bcf0e46" title=" " alt="" coords="261,104,347,129"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="154,77,248,101,247,106,153,83"/>
-<area shape="rect" id="Node000005" href="$firewall__engine_8c.html#ad3a57321e4d719fa8350c6ecdbf174de" title=" " alt="" coords="412,104,519,129"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="347,114,398,114,398,119,347,119"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,57,196,85"/>
+<area shape="rect" id="Node000002" href="$firewall__engine_8c.html#adb1ddb2ae800fe9cf040362be69436a9" title=" " alt="" coords="252,5,355,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="157,54,239,35,234,37,158,59"/>
+<area shape="rect" id="Node000003" href="$firewall__engine_8c.html#a284dfa14dfa0cc491854c74a54dae3f4" title=" " alt="" coords="244,57,363,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="196,69,230,71,225,72,196,74"/>
+<area shape="rect" id="Node000004" href="$firewall__engine_8c.html#a434a315f5398694600fb44fb0bcf0e46" title=" " alt="" coords="261,109,346,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="158,83,248,108,243,109,157,88"/>
+<area shape="rect" id="Node000005" href="$firewall__engine_8c.html#ad3a57321e4d719fa8350c6ecdbf174de" title=" " alt="" coords="411,109,516,137"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="346,121,398,123,393,123,347,126"/>
 </map>

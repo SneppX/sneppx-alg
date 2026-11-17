@@ -1,7 +1,7 @@
 <map id="SNEPPX_bspatch" name="SNEPPX_bspatch">
-<area shape="rect" id="Node000001" title="Perform Bspatch." alt="" coords="435,13,565,38"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,387,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="421,28,387,28,387,23,421,23"/>
-<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="198,28,164,28,164,23,198,23"/>
+<area shape="rect" id="Node000001" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="415,28,386,30,386,25,420,28"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="193,28,164,30,164,25,199,27"/>
 </map>

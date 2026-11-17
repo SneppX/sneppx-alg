@@ -1,21 +1,21 @@
 <map id="SNEPPX_tensor_binary_cross_entropy" name="SNEPPX_tensor_binary_cross_entropy">
-<area shape="rect" id="Node000001" title="Perform Tensor Binary Cross Entropy." alt="" coords="5,48,175,88"/>
-<area shape="rect" id="Node000002" href="$tensor_8c.html#a9b439187673d93eb82417f960f7bfa8f" title="Perform Tensor Zeros." alt="" coords="223,56,385,81"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,66,209,66,209,71,175,71"/>
-<area shape="rect" id="Node000003" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Perform Tensor Fill Scalar." alt="" coords="433,56,603,81"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="386,66,420,66,420,71,386,71"/>
-<area shape="rect" id="Node000004" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="897,6,1065,32"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="543,53,592,32,650,15,710,7,771,4,884,6,884,12,771,9,711,12,651,20,594,37,545,58"/>
-<area shape="rect" id="Node000006" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="928,56,1035,81"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="603,66,914,66,914,71,603,71"/>
-<area shape="rect" id="Node000008" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="661,30,839,56"/>
-<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="602,56,647,51,648,57,603,62"/>
-<area shape="rect" id="Node000009" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="651,132,849,157"/>
-<area shape="poly" id="edge10_Node000003_Node000009" title=" " alt="" coords="558,78,652,110,698,125,696,130,650,115,556,84"/>
-<area shape="rect" id="Node000005" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="1131,6,1255,32"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1066,16,1117,16,1117,22,1066,22"/>
-<area shape="rect" id="Node000007" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="1113,56,1272,81"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1035,66,1099,66,1099,71,1035,71"/>
-<area shape="poly" id="edge8_Node000008_Node000004" title=" " alt="" coords="839,31,883,26,884,32,839,36"/>
-<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="839,50,915,58,914,64,839,55"/>
+<area shape="rect" id="Node000001" title="Perform Tensor Binary Cross Entropy." alt="" coords="5,60,174,104"/>
+<area shape="rect" id="Node000002" href="$tensor_8c.html#a9b439187673d93eb82417f960f7bfa8f" title="Perform Tensor Zeros." alt="" coords="222,68,384,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="174,79,209,81,204,83,175,84"/>
+<area shape="rect" id="Node000003" href="$tensor_8c.html#af332dca15a3d406cdb950f0c53db33f5" title="Perform Tensor Fill Scalar." alt="" coords="432,68,600,96"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="384,79,419,81,414,82,385,84"/>
+<area shape="rect" id="Node000004" href="$tensor_8c.html#a8718f6b07c19ae1a8135484b05c11210" title=" " alt="" coords="894,5,1061,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="545,65,592,45,648,29,707,19,767,14,881,14,875,15,767,19,707,24,649,34,594,50,547,70"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="925,69,1030,97"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="600,79,912,83,907,83,601,85"/>
+<area shape="rect" id="Node000008" href="$tensor_8c.html#af9536b16d6897c595a018cf3da7c75d8" title="Create Storage." alt="" coords="659,43,835,70"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="600,70,646,67,641,68,601,75"/>
+<area shape="rect" id="Node000009" href="$tensor_8c.html#a82cd7add68f3d1d39b225406bc67caaf" title="Perform Tensor Dtype Size." alt="" coords="648,144,846,172"/>
+<area shape="poly" id="edge10_Node000003_Node000009" title=" " alt="" coords="560,94,649,123,690,139,684,138,647,128,559,99"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="1126,5,1249,33"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1061,17,1113,19,1108,19,1062,22"/>
+<area shape="rect" id="Node000007" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="1109,69,1266,97"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="1030,81,1096,83,1091,83,1031,86"/>
+<area shape="poly" id="edge8_Node000008_Node000004" title=" " alt="" coords="835,40,876,36,881,35,836,45"/>
+<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="836,64,912,75,907,75,836,69"/>
 </map>

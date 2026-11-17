@@ -1,10 +1,10 @@
 <map id="SNEPPX_ed25519_secret_key_expand" name="SNEPPX_ed25519_secret_key_expand">
-<area shape="rect" id="Node000001" title="Perform Ed25519 Secret Key Expand." alt="" coords="485,69,668,109"/>
-<area shape="rect" id="Node000002" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="239,5,430,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="487,68,410,48,411,43,488,63"/>
-<area shape="rect" id="Node000003" href="$ed25519_8c.html#a82b6426cfd55466f3a6970c4ae155c9f" title="Derive the Ed25519 public key from a 32&#45;byte seed." alt="" coords="232,69,437,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="472,92,438,92,438,87,472,87"/>
-<area shape="rect" id="Node000004" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="5,99,184,139"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="490,115,438,124,304,131,184,128,184,123,304,126,437,119,489,110"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,106,185,110,184,105,218,101"/>
+<area shape="rect" id="Node000001" title="Perform Ed25519 Secret Key Expand." alt="" coords="483,75,665,119"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="238,5,428,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="477,70,413,53,414,48,482,70"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#a82b6426cfd55466f3a6970c4ae155c9f" title="Derive the Ed25519 public key from a 32&#45;byte seed." alt="" coords="231,75,435,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="465,97,435,100,435,94,470,97"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="5,105,183,150"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="484,123,435,134,370,140,303,142,183,138,183,133,303,136,369,135,435,129,479,124"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="213,113,184,119,183,114,218,112"/>
 </map>

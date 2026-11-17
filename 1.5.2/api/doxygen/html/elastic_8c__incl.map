@@ -1,22 +1,22 @@
 <map id="kernel/distributed/elastic.c" name="kernel/distributed/elastic.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="337,5,473,45"/>
-<area shape="rect" id="Node000002" href="$elastic_8h.html" title=" " alt="" coords="26,93,103,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="337,45,117,95,116,90,336,40"/>
-<area shape="rect" id="Node000005" href="$obfuscator_8h.html" title=" " alt="" coords="127,93,298,119"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="360,48,254,91,252,86,358,43"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="323,93,393,119"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="396,47,374,83,370,80,391,44"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="417,93,488,119"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="419,44,441,80,436,83,414,47"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="513,93,579,119"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="440,43,514,84,512,89,437,48"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="603,93,667,119"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="461,43,591,87,589,92,459,48"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="101,167,175,192"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="79,117,118,155,114,159,75,121"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="5,167,76,192"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="63,120,51,154,46,153,58,118"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="203,121,162,159,158,155,199,117"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="199,167,274,192"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="219,118,231,153,226,154,214,120"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="333,5,468,50"/>
+<area shape="rect" id="Node000002" href="$elastic_8h.html" title=" " alt="" coords="25,98,101,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="332,48,117,100,116,94,333,42"/>
+<area shape="rect" id="Node000005" href="$obfuscator_8h.html" title=" " alt="" coords="125,98,294,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="347,52,256,94,253,89,352,50"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="319,98,388,126"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="390,49,371,86,367,82,386,52"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="412,98,482,126"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="414,48,435,85,430,83,412,53"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="506,98,572,126"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="438,48,506,90,501,90,437,53"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="596,98,659,126"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="461,48,584,94,579,94,460,53"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="100,174,173,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="77,124,115,162,110,163,75,129"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,174,76,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="61,124,51,160,47,158,57,128"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="199,125,162,165,159,160,194,127"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="197,174,271,201"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="216,124,227,160,222,158,213,128"/>
 </map>

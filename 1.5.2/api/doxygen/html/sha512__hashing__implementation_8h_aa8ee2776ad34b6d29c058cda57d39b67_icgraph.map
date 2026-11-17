@@ -1,93 +1,93 @@
 <map id="SNEPPX_sha512_finish" name="SNEPPX_sha512_finish">
-<area shape="rect" id="Node000001" title="Compute SHA&#45;512 hash of input." alt="" coords="1144,773,1313,798"/>
-<area shape="rect" id="Node000002" href="$ed25519_8c.html#a85e1f84acda318e9a82b7b92a151eb33" title="Core Ed25519 verify with selectable hash path." alt="" coords="932,109,1089,134"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1217,761,1014,135,1019,133,1222,759"/>
-<area shape="rect" id="Node000009" href="$hmac_8c.html#a8d0bf8919b85d5a7d50157e76e775c16" title=" " alt="" coords="949,394,1072,419"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1211,762,1017,421,1022,418,1215,759"/>
-<area shape="rect" id="Node000018" href="$drbg_8c.html#a57f9c1fd87fa5865cb60da90b060172e" title=" " alt="" coords="970,599,1051,625"/>
-<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="1199,766,1026,627,1030,623,1203,762"/>
-<area shape="rect" id="Node000024" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="234,698,406,723"/>
-<area shape="poly" id="edge49_Node000001_Node000024" title=" " alt="" coords="1131,790,969,791,777,789,595,780,520,773,463,763,439,751,415,738,376,726,377,721,417,734,441,747,465,757,521,768,596,775,777,784,969,786,1130,785"/>
-<area shape="rect" id="Node000025" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="229,747,411,773"/>
-<area shape="poly" id="edge50_Node000001_Node000025" title=" " alt="" coords="1138,802,1096,807,918,821,779,830,640,827,464,807,404,793,352,775,354,770,405,788,464,801,641,822,779,824,918,816,1096,801,1138,797"/>
-<area shape="rect" id="Node000036" href="$ed25519_8c.html#a3615757645589bc2a9ad6526594ac4e3" title="Sign a message with Ed25519." alt="" coords="925,874,1096,899"/>
-<area shape="poly" id="edge51_Node000001_Node000036" title=" " alt="" coords="1194,807,1097,857,1049,876,1047,871,1095,852,1192,803"/>
-<area shape="rect" id="Node000038" href="$sha512__stub_8c.html#adb2e76385bc47a5752f565948585ada9" title="Perform Sha512 Hmac." alt="" coords="925,923,1096,949"/>
-<area shape="poly" id="edge53_Node000001_Node000038" title=" " alt="" coords="1211,811,1163,863,1132,891,1097,914,1072,926,1069,921,1095,910,1129,886,1160,859,1207,807"/>
-<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad082a2f293bf30aea3ab1dfd16e40e46" title="Verify an Ed25519 signature." alt="" coords="697,109,877,134"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="918,124,877,124,877,119,918,119"/>
-<area shape="rect" id="Node000008" href="$ed25519_8c.html#aca9a357925c06c4a8103215281d3b007" title="Verify Ed25519 with optional legacy&#45;hash fallback for migration." alt="" coords="697,44,877,84"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="946,108,865,87,866,81,948,103"/>
-<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="467,69,646,109"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="683,110,646,104,647,99,684,104"/>
-<area shape="rect" id="Node000006" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="467,133,646,173"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="684,138,647,144,646,138,683,133"/>
-<area shape="rect" id="Node000007" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="467,5,646,45"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="715,107,696,98,672,79,648,60,623,48,625,43,651,55,675,75,699,94,717,102"/>
-<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="231,69,409,109"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="454,92,410,92,410,87,454,87"/>
-<area shape="rect" id="Node000010" href="$hmac_8c.html#a593e425c5c037868cbf7dad51b96f4ed" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="697,418,877,443"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="936,417,878,424,877,418,935,412"/>
-<area shape="rect" id="Node000011" href="$hmac_8c.html#affe39b6a0fdf5de08f8c736672b84b3a" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="702,287,873,313"/>
-<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="969,390,814,315,816,310,971,385"/>
-<area shape="rect" id="Node000016" href="$hmac_8c.html#a50098adea5a4335ad742e0f3f2d56823" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="702,369,873,394"/>
-<area shape="poly" id="edge16_Node000009_Node000016" title=" " alt="" coords="935,401,873,394,873,388,936,396"/>
-<area shape="rect" id="Node000012" href="$hkdf_8c.html#a0e79eab9b1905d28f57c5a5729e792eb" title="HKDF expand phase." alt="" coords="475,262,639,287"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="688,292,639,286,639,281,688,286"/>
-<area shape="rect" id="Node000014" href="$hkdf_8c.html#a0ca09d33218573e26fff3578f8c5ed59" title="HKDF extract phase." alt="" coords="475,311,638,337"/>
-<area shape="poly" id="edge13_Node000011_Node000014" title=" " alt="" coords="689,313,638,318,638,313,688,308"/>
-<area shape="rect" id="Node000015" href="$pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="473,197,641,237"/>
-<area shape="poly" id="edge15_Node000011_Node000015" title=" " alt="" coords="738,285,648,252,615,240,617,235,650,247,740,280"/>
-<area shape="rect" id="Node000013" href="$hkdf_8c.html#a95515da12759c22f8c1b18f88fa51ff4" title="Perform Hkdf." alt="" coords="265,287,375,313"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="461,288,375,297,375,292,461,282"/>
-<area shape="poly" id="edge14_Node000014_Node000013" title=" " alt="" coords="461,317,375,308,375,303,462,312"/>
-<area shape="rect" id="Node000017" href="$pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="473,361,641,401"/>
-<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="688,384,641,384,641,379,688,379"/>
-<area shape="rect" id="Node000019" href="$drbg_8c.html#ac0cc4ee4212c37574be163aa80a06573" title="Generate random bytes from DRBG." alt="" coords="700,525,875,550"/>
-<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="965,597,876,564,838,553,840,547,878,559,967,592"/>
-<area shape="rect" id="Node000034" href="$drbg_8c.html#a5e2c38fb90ee53833024fadcb50aae16" title="Initialize a DRBG context with entropy." alt="" coords="719,623,856,649"/>
-<area shape="poly" id="edge40_Node000018_Node000034" title=" " alt="" coords="957,620,857,631,856,626,956,615"/>
-<area shape="rect" id="Node000035" href="$drbg_8c.html#a4e046517172321be06f888708e1d2f2a" title="Reseed DRBG with fresh entropy." alt="" coords="707,574,867,599"/>
-<area shape="poly" id="edge48_Node000018_Node000035" title=" " alt="" coords="956,609,867,598,868,593,957,603"/>
-<area shape="rect" id="Node000020" href="$dilithium_8c.html#a096bf492e4184efe1f4e49404e9badb2" title=" " alt="" coords="516,574,597,599"/>
-<area shape="poly" id="edge20_Node000019_Node000020" title=" " alt="" coords="715,556,598,581,597,576,713,550"/>
-<area shape="rect" id="Node000022" href="$dilithium_8c.html#ae5dd83b61289a0a9059c50f979a97a22" title=" " alt="" coords="516,525,597,550"/>
-<area shape="poly" id="edge22_Node000019_Node000022" title=" " alt="" coords="686,540,598,540,598,535,686,535"/>
-<area shape="rect" id="Node000023" href="$dilithium_8c.html#a15a92c998cddb23176497552e5ad4203" title=" " alt="" coords="481,673,632,698"/>
-<area shape="poly" id="edge24_Node000019_Node000023" title=" " alt="" coords="705,559,699,563,688,575,682,587,676,612,670,638,663,651,651,663,632,675,629,670,648,659,659,648,665,636,671,611,677,585,684,572,696,559,702,554"/>
-<area shape="rect" id="Node000026" href="$dilithium_8c.html#af40b87b76fa5413477561cf861951e2a" title=" " alt="" coords="464,722,649,747"/>
-<area shape="poly" id="edge28_Node000019_Node000026" title=" " alt="" coords="704,559,699,563,685,581,678,599,676,636,674,674,666,694,651,713,635,724,632,720,648,709,662,691,668,673,671,636,673,598,681,578,695,559,700,555"/>
-<area shape="rect" id="Node000027" href="$kyber_8c.html#a8f8700c2c90d65dcfbef0f1c167684e3" title=" " alt="" coords="493,475,621,501"/>
-<area shape="poly" id="edge31_Node000019_Node000027" title=" " alt="" coords="714,524,616,503,617,498,715,519"/>
-<area shape="rect" id="Node000031" href="$kyber_8c.html#a222ae20e1d9cec263e77a68e728586e2" title=" " alt="" coords="500,426,613,451"/>
-<area shape="poly" id="edge35_Node000019_Node000031" title=" " alt="" coords="754,520,705,492,648,465,613,454,615,448,650,460,707,487,756,515"/>
-<area shape="rect" id="Node000033" href="$drbg_8c.html#afb0ddba3c5cc1bf2803bcd36e595d857" title="Perform Drbg Self Test." alt="" coords="471,623,643,649"/>
-<area shape="poly" id="edge39_Node000019_Node000033" title=" " alt="" coords="711,557,699,564,684,576,676,588,666,601,651,614,626,626,624,621,648,610,662,598,671,585,680,572,696,559,709,553"/>
-<area shape="rect" id="Node000021" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="224,574,416,599"/>
-<area shape="poly" id="edge21_Node000020_Node000021" title=" " alt="" coords="502,589,416,589,416,584,502,584"/>
-<area shape="poly" id="edge23_Node000022_Node000021" title=" " alt="" coords="503,551,382,577,381,571,502,546"/>
-<area shape="poly" id="edge25_Node000023_Node000021" title=" " alt="" coords="485,671,463,664,395,632,341,602,344,597,398,628,465,659,486,666"/>
-<area shape="poly" id="edge26_Node000023_Node000024" title=" " alt="" coords="468,697,407,704,406,699,467,692"/>
-<area shape="poly" id="edge27_Node000023_Node000025" title=" " alt="" coords="490,704,465,713,441,726,417,738,381,750,380,745,415,734,439,721,463,708,488,699"/>
-<area shape="poly" id="edge29_Node000026_Node000024" title=" " alt="" coords="450,727,406,722,407,717,451,721"/>
-<area shape="poly" id="edge30_Node000026_Node000025" title=" " alt="" coords="451,749,412,753,411,748,450,743"/>
-<area shape="rect" id="Node000028" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="255,426,385,451"/>
-<area shape="poly" id="edge32_Node000027_Node000028" title=" " alt="" coords="481,475,381,454,382,449,482,470"/>
-<area shape="rect" id="Node000030" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="235,475,405,501"/>
-<area shape="poly" id="edge34_Node000027_Node000030" title=" " alt="" coords="479,491,405,491,405,485,479,485"/>
-<area shape="rect" id="Node000029" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="5,426,176,451"/>
-<area shape="poly" id="edge33_Node000028_Node000029" title=" " alt="" coords="241,441,176,441,176,436,241,436"/>
-<area shape="poly" id="edge36_Node000031_Node000028" title=" " alt="" coords="487,441,385,441,385,436,487,436"/>
-<area shape="poly" id="edge38_Node000031_Node000030" title=" " alt="" coords="487,456,382,478,381,473,486,451"/>
-<area shape="rect" id="Node000032" href="$kyber_8c.html#ab6f4fb8549887ad7039a8601355ff972" title="Decapsulate Kyber." alt="" coords="235,377,405,402"/>
-<area shape="poly" id="edge37_Node000031_Node000032" title=" " alt="" coords="486,427,381,405,382,399,487,422"/>
-<area shape="poly" id="edge41_Node000034_Node000020" title=" " alt="" coords="713,623,597,598,598,593,715,618"/>
-<area shape="poly" id="edge42_Node000034_Node000022" title=" " alt="" coords="709,621,696,614,680,601,671,588,662,575,648,564,623,552,597,545,598,540,625,547,651,559,666,572,676,585,684,598,699,610,711,616"/>
-<area shape="poly" id="edge43_Node000034_Node000023" title=" " alt="" coords="715,654,617,675,616,670,714,649"/>
-<area shape="poly" id="edge44_Node000034_Node000026" title=" " alt="" coords="756,658,707,686,650,713,616,724,614,719,648,708,705,681,754,653"/>
-<area shape="poly" id="edge45_Node000034_Node000027" title=" " alt="" coords="705,620,696,614,684,602,677,588,671,563,665,537,659,526,648,514,620,499,622,494,651,510,663,522,670,535,676,561,682,587,688,598,699,610,708,616"/>
-<area shape="poly" id="edge46_Node000034_Node000031" title=" " alt="" coords="704,621,695,614,681,595,673,576,671,537,668,500,662,482,648,465,631,454,613,447,615,442,634,449,651,461,666,480,674,499,676,537,678,575,685,592,699,610,708,617"/>
-<area shape="poly" id="edge47_Node000034_Node000033" title=" " alt="" coords="705,639,643,639,643,633,705,633"/>
-<area shape="rect" id="Node000037" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="698,873,877,913"/>
-<area shape="poly" id="edge52_Node000036_Node000037" title=" " alt="" coords="912,892,877,893,877,888,912,887"/>
+<area shape="rect" id="Node000001" title="Compute SHA&#45;512 hash of input." alt="" coords="1139,816,1307,844"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a85e1f84acda318e9a82b7b92a151eb33" title="Core Ed25519 verify with selectable hash path." alt="" coords="928,118,1084,146"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1210,802,1010,148,1014,144,1216,802"/>
+<area shape="rect" id="Node000009" href="$hmac_8c.html#a8d0bf8919b85d5a7d50157e76e775c16" title=" " alt="" coords="946,420,1067,448"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1204,803,1014,451,1017,446,1210,803"/>
+<area shape="rect" id="Node000018" href="$drbg_8c.html#a57f9c1fd87fa5865cb60da90b060172e" title=" " alt="" coords="966,635,1046,663"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="1191,806,1024,666,1025,661,1196,807"/>
+<area shape="rect" id="Node000024" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="233,740,404,768"/>
+<area shape="poly" id="edge49_Node000001_Node000024" title=" " alt="" coords="1121,833,963,836,773,834,592,825,518,818,461,808,436,796,413,783,377,771,377,766,415,779,439,792,463,802,519,813,592,820,773,829,963,831,1127,832"/>
+<area shape="rect" id="Node000025" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="228,792,409,820"/>
+<area shape="poly" id="edge50_Node000001_Node000025" title=" " alt="" coords="1121,846,1091,852,914,866,776,874,638,872,462,852,406,839,357,823,357,818,407,834,462,846,638,866,776,869,914,860,1091,846,1126,846"/>
+<area shape="rect" id="Node000036" href="$ed25519_8c.html#a3615757645589bc2a9ad6526594ac4e3" title="Sign a message with Ed25519." alt="" coords="922,918,1091,946"/>
+<area shape="poly" id="edge51_Node000001_Node000036" title=" " alt="" coords="1186,852,1092,902,1049,920,1048,915,1090,897,1181,853"/>
+<area shape="rect" id="Node000038" href="$sha512__stub_8c.html#adb2e76385bc47a5752f565948585ada9" title="Perform Sha512 Hmac." alt="" coords="922,970,1091,998"/>
+<area shape="poly" id="edge53_Node000001_Node000038" title=" " alt="" coords="1204,855,1156,909,1125,936,1092,959,1065,972,1064,967,1090,955,1122,932,1152,905,1199,858"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad082a2f293bf30aea3ab1dfd16e40e46" title="Verify an Ed25519 signature." alt="" coords="694,118,874,146"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="910,133,875,134,873,129,915,131"/>
+<area shape="rect" id="Node000008" href="$ed25519_8c.html#aca9a357925c06c4a8103215281d3b007" title="Verify Ed25519 with optional legacy&#45;hash fallback for migration." alt="" coords="694,49,874,94"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="935,114,870,97,869,92,940,113"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="466,75,643,119"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="677,117,644,113,642,108,682,115"/>
+<area shape="rect" id="Node000006" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="466,144,643,189"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="677,149,645,155,642,151,681,146"/>
+<area shape="rect" id="Node000007" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="466,5,643,50"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="702,112,693,109,678,98,668,86,659,76,645,65,624,53,623,48,648,60,663,72,672,83,681,94,696,104,707,111"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="230,75,407,119"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="448,98,409,99,406,95,452,96"/>
+<area shape="rect" id="Node000010" href="$hmac_8c.html#a593e425c5c037868cbf7dad51b96f4ed" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="694,446,874,474"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="928,444,875,452,873,447,933,442"/>
+<area shape="rect" id="Node000011" href="$hmac_8c.html#affe39b6a0fdf5de08f8c736672b84b3a" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="699,308,869,336"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="961,414,813,339,814,334,966,413"/>
+<area shape="rect" id="Node000016" href="$hmac_8c.html#a50098adea5a4335ad742e0f3f2d56823" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="699,394,869,422"/>
+<area shape="poly" id="edge16_Node000009_Node000016" title=" " alt="" coords="928,426,870,420,869,415,933,425"/>
+<area shape="rect" id="Node000012" href="$hkdf_8c.html#a0e79eab9b1905d28f57c5a5729e792eb" title="HKDF expand phase." alt="" coords="472,282,636,310"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="681,312,637,308,636,303,686,310"/>
+<area shape="rect" id="Node000014" href="$hkdf_8c.html#a0ca09d33218573e26fff3578f8c5ed59" title="HKDF extract phase." alt="" coords="474,334,635,362"/>
+<area shape="poly" id="edge13_Node000011_Node000014" title=" " alt="" coords="682,335,636,341,634,336,686,332"/>
+<area shape="rect" id="Node000015" href="$pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="470,213,638,258"/>
+<area shape="poly" id="edge15_Node000011_Node000015" title=" " alt="" coords="729,304,616,261,615,256,734,302"/>
+<area shape="rect" id="Node000013" href="$hkdf_8c.html#a95515da12759c22f8c1b18f88fa51ff4" title="Perform Hkdf." alt="" coords="264,308,372,336"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="455,308,374,319,372,314,459,305"/>
+<area shape="poly" id="edge14_Node000014_Node000013" title=" " alt="" coords="456,339,374,331,372,326,461,336"/>
+<area shape="rect" id="Node000017" href="$pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="470,385,638,430"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="681,409,639,410,637,405,686,407"/>
+<area shape="rect" id="Node000019" href="$drbg_8c.html#ac0cc4ee4212c37574be163aa80a06573" title="Generate random bytes from DRBG." alt="" coords="697,558,871,586"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="953,629,873,601,836,589,835,583,875,596,958,629"/>
+<area shape="rect" id="Node000034" href="$drbg_8c.html#a5e2c38fb90ee53833024fadcb50aae16" title="Initialize a DRBG context with entropy." alt="" coords="716,662,852,690"/>
+<area shape="poly" id="edge40_Node000018_Node000034" title=" " alt="" coords="948,656,853,670,852,665,953,655"/>
+<area shape="rect" id="Node000035" href="$drbg_8c.html#a4e046517172321be06f888708e1d2f2a" title="Reseed DRBG with fresh entropy." alt="" coords="704,610,864,638"/>
+<area shape="poly" id="edge48_Node000018_Node000035" title=" " alt="" coords="948,643,865,635,864,630,953,642"/>
+<area shape="rect" id="Node000020" href="$dilithium_8c.html#a096bf492e4184efe1f4e49404e9badb2" title=" " alt="" coords="514,610,594,638"/>
+<area shape="poly" id="edge20_Node000019_Node000020" title=" " alt="" coords="702,591,596,617,594,612,707,588"/>
+<area shape="rect" id="Node000022" href="$dilithium_8c.html#ae5dd83b61289a0a9059c50f979a97a22" title=" " alt="" coords="514,558,594,586"/>
+<area shape="poly" id="edge22_Node000019_Node000022" title=" " alt="" coords="679,573,595,574,594,569,684,571"/>
+<area shape="rect" id="Node000023" href="$dilithium_8c.html#a15a92c998cddb23176497552e5ad4203" title=" " alt="" coords="480,714,629,742"/>
+<area shape="poly" id="edge24_Node000019_Node000023" title=" " alt="" coords="703,592,696,600,685,612,679,625,673,650,667,677,660,690,648,703,628,716,626,711,645,699,656,687,662,675,668,649,674,623,681,609,693,596,698,595"/>
+<area shape="rect" id="Node000026" href="$dilithium_8c.html#af40b87b76fa5413477561cf861951e2a" title=" " alt="" coords="462,766,646,794"/>
+<area shape="poly" id="edge28_Node000019_Node000026" title=" " alt="" coords="701,593,696,600,682,619,675,637,673,676,671,715,663,735,648,755,630,768,628,763,644,751,659,733,666,714,668,676,670,636,677,616,692,597,697,596"/>
+<area shape="rect" id="Node000027" href="$kyber_8c.html#a8f8700c2c90d65dcfbef0f1c167684e3" title=" " alt="" coords="490,506,618,534"/>
+<area shape="poly" id="edge31_Node000019_Node000027" title=" " alt="" coords="702,554,619,537,618,531,707,553"/>
+<area shape="rect" id="Node000031" href="$kyber_8c.html#a222ae20e1d9cec263e77a68e728586e2" title=" " alt="" coords="498,454,610,482"/>
+<area shape="poly" id="edge35_Node000019_Node000031" title=" " alt="" coords="746,549,700,524,645,497,611,484,611,479,647,492,702,519,751,549"/>
+<area shape="rect" id="Node000033" href="$drbg_8c.html#afb0ddba3c5cc1bf2803bcd36e595d857" title="Perform Drbg Self Test." alt="" coords="468,662,640,690"/>
+<area shape="poly" id="edge39_Node000019_Node000033" title=" " alt="" coords="704,593,696,601,681,613,673,625,663,638,648,651,622,664,619,659,645,647,659,635,668,622,677,609,693,596,708,591"/>
+<area shape="rect" id="Node000021" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="223,610,414,638"/>
+<area shape="poly" id="edge21_Node000020_Node000021" title=" " alt="" coords="496,625,415,626,413,621,501,623"/>
+<area shape="poly" id="edge23_Node000022_Node000021" title=" " alt="" coords="497,585,385,612,383,607,501,582"/>
+<area shape="poly" id="edge25_Node000023_Node000021" title=" " alt="" coords="480,709,461,703,395,671,343,641,343,635,397,667,463,699,485,708"/>
+<area shape="poly" id="edge26_Node000023_Node000024" title=" " alt="" coords="462,739,405,747,404,742,467,737"/>
+<area shape="poly" id="edge27_Node000023_Node000025" title=" " alt="" coords="480,748,463,757,415,782,379,794,377,789,413,777,461,752,485,746"/>
+<area shape="poly" id="edge29_Node000026_Node000024" title=" " alt="" coords="444,769,405,766,404,761,449,767"/>
+<area shape="poly" id="edge30_Node000026_Node000025" title=" " alt="" coords="444,793,410,799,409,794,449,791"/>
+<area shape="rect" id="Node000028" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="254,454,382,482"/>
+<area shape="poly" id="edge32_Node000027_Node000028" title=" " alt="" coords="473,504,384,484,382,479,478,501"/>
+<area shape="rect" id="Node000030" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="234,506,402,534"/>
+<area shape="poly" id="edge34_Node000027_Node000030" title=" " alt="" coords="473,521,404,522,402,517,478,518"/>
+<area shape="rect" id="Node000029" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="5,454,175,482"/>
+<area shape="poly" id="edge33_Node000028_Node000029" title=" " alt="" coords="236,469,176,470,174,465,240,466"/>
+<area shape="poly" id="edge36_Node000031_Node000028" title=" " alt="" coords="480,469,384,470,382,465,485,466"/>
+<area shape="poly" id="edge38_Node000031_Node000030" title=" " alt="" coords="481,485,386,508,383,503,485,482"/>
+<area shape="rect" id="Node000032" href="$kyber_8c.html#ab6f4fb8549887ad7039a8601355ff972" title="Decapsulate Kyber." alt="" coords="234,402,402,430"/>
+<area shape="poly" id="edge37_Node000031_Node000032" title=" " alt="" coords="480,453,385,433,384,428,485,451"/>
+<area shape="poly" id="edge41_Node000034_Node000020" title=" " alt="" coords="702,658,595,635,595,630,707,657"/>
+<area shape="poly" id="edge42_Node000034_Node000022" title=" " alt="" coords="703,655,693,651,677,638,668,625,659,613,645,601,620,589,595,581,595,576,622,584,648,596,663,609,673,622,681,635,696,647,709,655"/>
+<area shape="poly" id="edge43_Node000034_Node000023" title=" " alt="" coords="702,694,620,716,618,711,707,693"/>
+<area shape="poly" id="edge44_Node000034_Node000026" title=" " alt="" coords="751,697,702,728,647,755,613,768,611,763,645,751,700,724,746,699"/>
+<area shape="poly" id="edge45_Node000034_Node000027" title=" " alt="" coords="700,655,693,651,681,638,674,625,668,598,662,573,656,560,645,548,618,533,618,528,648,544,660,557,667,571,673,597,679,623,685,635,696,647,705,655"/>
+<area shape="poly" id="edge46_Node000034_Node000031" title=" " alt="" coords="700,655,692,651,677,631,670,611,668,572,666,533,659,515,644,496,628,485,611,477,610,472,631,480,648,492,663,512,671,532,673,571,675,610,682,629,696,647,705,656"/>
+<area shape="poly" id="edge47_Node000034_Node000033" title=" " alt="" coords="698,676,641,678,640,673,704,675"/>
+<area shape="rect" id="Node000037" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="695,919,873,963"/>
+<area shape="poly" id="edge52_Node000036_Node000037" title=" " alt="" coords="903,936,873,940,873,935,909,936"/>
 </map>

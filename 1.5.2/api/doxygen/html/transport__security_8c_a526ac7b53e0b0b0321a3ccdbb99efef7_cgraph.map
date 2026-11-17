@@ -1,5 +1,5 @@
 <map id="SNEPPX_transport_noise_handshake_respond" name="SNEPPX_transport_noise_handshake_respond">
-<area shape="rect" id="Node000001" title="Perform Transport Noise Handshake Respond." alt="" coords="5,5,187,45"/>
-<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="235,13,408,38"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,23,221,23,221,28,187,28"/>
+<area shape="rect" id="Node000001" title="Perform Transport Noise Handshake Respond." alt="" coords="5,5,186,50"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="234,14,406,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,25,221,27,215,28,186,30"/>
 </map>

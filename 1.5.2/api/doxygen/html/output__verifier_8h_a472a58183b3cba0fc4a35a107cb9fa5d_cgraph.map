@@ -1,5 +1,5 @@
 <map id="SNEPPX_s5_verifier_add_blocked_topic" name="SNEPPX_s5_verifier_add_blocked_topic">
-<area shape="rect" id="Node000001" title="Perform S5 Verifier Add Blocked Topic." alt="" coords="5,5,155,45"/>
-<area shape="rect" id="Node000002" href="$output__verifier_8c.html#a8823e1b7d97bb5ff22dcc47b05c972c7" title="Perform Output Verifier Add Blocked Topic." alt="" coords="203,5,377,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="155,23,189,23,189,28,155,28"/>
+<area shape="rect" id="Node000001" title="Perform S5 Verifier Add Blocked Topic." alt="" coords="5,5,154,50"/>
+<area shape="rect" id="Node000002" href="$output__verifier_8c.html#a8823e1b7d97bb5ff22dcc47b05c972c7" title="Perform Output Verifier Add Blocked Topic." alt="" coords="202,5,376,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,25,189,27,183,28,154,30"/>
 </map>

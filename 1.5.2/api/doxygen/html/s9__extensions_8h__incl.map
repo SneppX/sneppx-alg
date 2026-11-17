@@ -1,7 +1,7 @@
 <map id="include/neural_core/security/s9_extensions.h" name="include/neural_core/security/s9_extensions.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,192,45"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="13,93,88,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,47,67,83,63,80,85,44"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="113,93,183,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="113,44,136,80,131,83,108,47"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,192,50"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="14,98,87,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,49,68,86,64,83,84,52"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="111,98,182,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="112,48,134,84,128,84,110,53"/>
 </map>

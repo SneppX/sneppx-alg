@@ -1,0 +1,25 @@
+var structSNEPPXLlamaConfig =
+[
+    [ "attention_dropout", "structSNEPPXLlamaConfig.html#afa7da022f189f78d2dd01b545ffd7068", null ],
+    [ "family", "structSNEPPXLlamaConfig.html#a4f1c4f2885c68fa5f474fcff956044cd", null ],
+    [ "head_dim", "structSNEPPXLlamaConfig.html#a829d9c63b15204a0f99be9e4d6793ef3", null ],
+    [ "hidden_act", "structSNEPPXLlamaConfig.html#a850e343c68b286e066aa2972b807d61a", null ],
+    [ "hidden_dropout", "structSNEPPXLlamaConfig.html#a1995b6ffea898faeaf860ea1a296e34e", null ],
+    [ "hidden_size", "structSNEPPXLlamaConfig.html#aeb2c466de7cc82179b7c30cb6eef1cbb", null ],
+    [ "intermediate_size", "structSNEPPXLlamaConfig.html#abfe3e40fffa9ea0040245e02e040a4db", null ],
+    [ "max_position_embeddings", "structSNEPPXLlamaConfig.html#a9a7d54aa22ce132aacaff556ad113e83", null ],
+    [ "num_attention_heads", "structSNEPPXLlamaConfig.html#a59c8898624d78890e5c3dc6a556bbd2e", null ],
+    [ "num_experts", "structSNEPPXLlamaConfig.html#a594c9b54f4f8303d214cd36c0300c7a3", null ],
+    [ "num_experts_per_tok", "structSNEPPXLlamaConfig.html#a130e2cadda5d6511d46f0a6eefcda165", null ],
+    [ "num_hidden_groups", "structSNEPPXLlamaConfig.html#af556d33dc28d35fb65f6ae75aba309bf", null ],
+    [ "num_hidden_layers", "structSNEPPXLlamaConfig.html#adfb42e37f83f2f035c525fd812e59ea0", null ],
+    [ "num_key_value_heads", "structSNEPPXLlamaConfig.html#ae42f69aa603f6fb3795262d47eb78990", null ],
+    [ "rms_norm_eps", "structSNEPPXLlamaConfig.html#a06c74514e5d503d9079f2f2b927abb3c", null ],
+    [ "rope_theta", "structSNEPPXLlamaConfig.html#ac76b37bf824699f7c0118d2ada69e871", null ],
+    [ "sliding_window", "structSNEPPXLlamaConfig.html#a5c5ec2a726bcbbf125ca1b16d81ef7c6", null ],
+    [ "tie_word_embeddings", "structSNEPPXLlamaConfig.html#a2792bbd0d0dd5652ddbc7368300a7d34", null ],
+    [ "use_flash_attn", "structSNEPPXLlamaConfig.html#a1f0652942de0a3b3f39ba7e2da6379c5", null ],
+    [ "use_scaled_rope", "structSNEPPXLlamaConfig.html#ac3df274903c483977506478379fc7bb8", null ],
+    [ "use_sdpa", "structSNEPPXLlamaConfig.html#a575cbee6e59047e7f8613827643ee0e3", null ],
+    [ "vocab_size", "structSNEPPXLlamaConfig.html#a041c785b9b1d54a952edffe01296845b", null ]
+];

@@ -1,76 +1,76 @@
 <map id="SNEPPX_random_bytes" name="SNEPPX_random_bytes">
-<area shape="rect" id="Node000001" title="Perform Random Bytes." alt="" coords="764,703,937,728"/>
-<area shape="rect" id="Node000002" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="532,33,661,59"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="844,689,830,566,803,390,785,300,764,217,741,148,714,101,685,77,651,61,653,56,688,72,718,98,745,146,769,215,790,299,808,389,835,565,849,688"/>
-<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="543,112,650,137"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="844,689,831,574,805,411,787,329,766,254,742,192,728,169,714,152,700,141,684,134,650,127,651,121,686,129,703,137,718,148,733,166,746,190,771,252,792,327,810,410,836,573,849,689"/>
-<area shape="rect" id="Node000008" href="$aslr_8c.html#aaa81b9d4d406b66f4c2811172bd326e1" title="Set Aslr Random Off." alt="" coords="516,162,677,202"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="843,689,827,585,799,443,781,371,761,305,738,252,714,216,697,203,677,194,679,189,700,198,718,212,743,249,766,303,786,369,804,442,832,584,848,688"/>
-<area shape="rect" id="Node000011" href="$canary_8c.html#a749a7dae8a43e79b27b8f1029b3a11cc" title="Perform Canary Generate." alt="" coords="502,227,691,252"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="848,689,845,606,839,551,829,491,812,430,788,369,756,313,714,265,690,250,693,246,718,261,760,310,793,367,817,428,834,490,844,551,850,606,853,689"/>
-<area shape="rect" id="Node000014" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="501,276,693,301"/>
-<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="846,689,841,614,822,512,805,458,782,405,752,357,714,315,692,301,695,296,718,311,757,353,787,403,810,456,827,511,846,613,852,688"/>
-<area shape="rect" id="Node000015" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="511,325,683,351"/>
-<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="845,689,836,623,815,535,798,488,776,443,748,401,714,365,699,355,682,348,684,343,702,350,718,361,753,398,781,440,803,486,820,533,842,622,850,689"/>
-<area shape="rect" id="Node000016" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="501,375,692,415"/>
-<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="842,689,829,635,805,564,788,527,768,491,743,458,714,429,691,415,693,410,718,425,747,455,772,488,793,525,810,562,834,633,847,688"/>
-<area shape="rect" id="Node000017" href="$key__vault_8c.html#a87949bbd9b1b43c3780510769841d439" title="Perform Key Vault Generate Key." alt="" coords="477,440,716,465"/>
-<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="840,690,825,644,800,586,763,527,740,501,714,479,695,468,697,463,718,474,744,497,767,524,804,584,830,642,845,689"/>
-<area shape="rect" id="Node000018" href="$key__vault_8c.html#af0c7656d2db5c3ec8af20c8280ec29f7" title="Perform Key Vault Get Key." alt="" coords="496,489,697,515"/>
-<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="837,691,818,654,792,609,757,565,715,528,693,517,695,513,717,524,761,561,796,606,823,651,841,689"/>
-<area shape="rect" id="Node000019" href="$key__vault_8c.html#afc6f3908e00ac2ee747c35ecd7200453" title="Perform Key Vault Rotate Key." alt="" coords="487,539,706,564"/>
-<area shape="poly" id="edge19_Node000001_Node000019" title=" " alt="" coords="831,693,784,634,751,603,715,578,689,567,691,562,717,573,755,599,788,630,836,689"/>
-<area shape="rect" id="Node000020" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="512,588,681,613"/>
-<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="822,696,774,661,715,628,677,616,678,611,717,624,777,657,825,692"/>
-<area shape="rect" id="Node000021" href="$random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Generate a random uint32_t with explicit error reporting." alt="" coords="507,638,686,678"/>
-<area shape="poly" id="edge21_Node000001_Node000021" title=" " alt="" coords="780,702,685,681,686,675,781,697"/>
-<area shape="rect" id="Node000025" href="$sphincsplus_8c.html#aa8322da28dedd392f705b10ae8a65fd9" title="Generate Sphincs." alt="" coords="505,703,688,728"/>
-<area shape="poly" id="edge25_Node000001_Node000025" title=" " alt="" coords="750,718,688,718,688,713,750,713"/>
-<area shape="rect" id="Node000026" href="$timing_8c.html#aa96f16d3ce8bf7a1158d18dbdb56dc5f" title="Perform Timing Random Delay." alt="" coords="507,753,686,793"/>
-<area shape="poly" id="edge26_Node000001_Node000026" title=" " alt="" coords="781,734,686,755,685,750,780,728"/>
-<area shape="rect" id="Node000027" href="$s7__extensions_8c.html#aa8b81abd352bd3a5e444e87d7d9d9ba3" title="Perform Tpm Get Random." alt="" coords="501,817,692,843"/>
-<area shape="poly" id="edge27_Node000001_Node000027" title=" " alt="" coords="825,739,777,774,717,807,678,820,677,815,715,802,774,770,822,735"/>
-<area shape="rect" id="Node000028" href="$transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab" title="Encrypt Transport." alt="" coords="499,867,694,892"/>
-<area shape="poly" id="edge28_Node000001_Node000028" title=" " alt="" coords="836,741,788,801,755,832,717,858,691,869,689,864,715,853,751,828,784,797,831,738"/>
-<area shape="rect" id="Node000029" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="499,917,694,957"/>
-<area shape="poly" id="edge29_Node000001_Node000029" title=" " alt="" coords="841,742,822,779,795,823,760,868,718,907,695,919,693,915,714,902,756,865,791,820,818,776,836,739"/>
-<area shape="rect" id="Node000030" href="$transport__security_8c.html#ab297cc852d9304ac3f720044e6ae92b0" title="Perform Transport New Session." alt="" coords="510,981,683,1021"/>
-<area shape="poly" id="edge30_Node000001_Node000030" title=" " alt="" coords="846,742,831,791,805,853,768,916,745,945,718,971,685,989,683,984,714,967,741,942,764,913,800,851,826,789,841,741"/>
-<area shape="rect" id="Node000031" href="$transport__security_8c.html#aa5c08d62fe21d48fc33776333152fc76" title="Perform Transport Noise Handshake." alt="" coords="506,1045,687,1085"/>
-<area shape="poly" id="edge31_Node000001_Node000031" title=" " alt="" coords="849,743,837,803,814,881,797,923,775,964,749,1002,718,1035,689,1052,686,1048,714,1031,745,998,771,961,792,921,809,880,832,801,843,742"/>
-<area shape="rect" id="Node000032" href="$transport__security_8c.html#a526ac7b53e0b0b0321a3ccdbb99efef7" title="Perform Transport Noise Handshake Respond." alt="" coords="506,1109,687,1149"/>
-<area shape="poly" id="edge32_Node000001_Node000032" title=" " alt="" coords="851,742,843,813,823,909,806,960,783,1011,754,1058,718,1099,689,1117,686,1112,714,1095,750,1054,778,1008,801,958,818,907,838,812,846,741"/>
-<area shape="rect" id="Node000033" href="$transport__security_8c.html#aeb9b3ddb52f9b6a336fec641c3f52bdd" title="Perform Transport Session Rekey." alt="" coords="499,1173,694,1213"/>
-<area shape="poly" id="edge33_Node000001_Node000033" title=" " alt="" coords="852,742,848,823,842,877,831,936,814,997,790,1057,759,1113,718,1163,696,1178,693,1174,714,1159,754,1110,786,1055,809,996,826,935,837,876,843,823,847,742"/>
-<area shape="rect" id="Node000034" href="$s7__extensions_8c.html#ae6adb17fd32287417d685af6ce25efdf" title="Perform Tuf Generate Keypair." alt="" coords="515,1237,678,1277"/>
-<area shape="poly" id="edge34_Node000001_Node000034" title=" " alt="" coords="849,742,833,848,805,993,787,1066,767,1134,743,1189,718,1226,700,1240,679,1249,677,1245,697,1236,714,1223,739,1186,762,1132,782,1065,800,992,827,847,843,741"/>
-<area shape="rect" id="Node000035" href="$s7__extensions_8c.html#a1fe4ef6801561881c12f84361df11b21" title="Initialize Tuf." alt="" coords="533,1301,660,1327"/>
-<area shape="poly" id="edge35_Node000001_Node000035" title=" " alt="" coords="850,742,836,860,810,1025,793,1109,771,1185,747,1248,733,1272,718,1291,691,1308,661,1316,659,1311,689,1303,714,1287,728,1269,742,1246,766,1184,787,1107,805,1024,831,859,844,742"/>
-<area shape="rect" id="Node000036" href="$s7__extensions_8c.html#a248236ef7cadd6661b6f6fb9c42e3a6a" title="Perform Tuf Snapshot." alt="" coords="515,1351,679,1376"/>
-<area shape="poly" id="edge36_Node000001_Node000036" title=" " alt="" coords="850,742,838,869,814,1049,796,1142,775,1226,749,1294,734,1321,718,1341,700,1354,680,1362,678,1357,698,1349,714,1337,730,1318,744,1292,770,1224,791,1140,809,1049,833,869,845,742"/>
-<area shape="rect" id="Node000037" href="$x25519_8c.html#aa69017cb5661f22cbe6f9cb0dca38bf1" title="Compute X25519 shared secret." alt="" coords="505,1400,688,1425"/>
-<area shape="poly" id="edge37_Node000001_Node000037" title=" " alt="" coords="851,742,840,877,817,1073,800,1173,778,1264,751,1340,735,1369,718,1391,690,1408,687,1404,714,1387,731,1366,746,1337,773,1263,795,1172,812,1072,835,877,845,741"/>
-<area shape="rect" id="Node000003" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="250,5,421,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="518,40,421,30,421,24,518,35"/>
-<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="257,55,413,80"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="529,113,393,83,394,77,530,108"/>
-<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="257,105,413,145"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="529,127,413,127,413,122,529,122"/>
-<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="6,47,193,87"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="243,70,193,70,193,65,243,65"/>
-<area shape="rect" id="Node000009" href="$aslr_8c.html#ae348adf14c065768a3867acca2eab946" title="Apply Aslr." alt="" coords="262,169,409,195"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="503,185,409,185,409,179,503,179"/>
-<area shape="rect" id="Node000010" href="$secure__mem_8c.html#a7d1751b8acc352ec5d438e84b065f682" title="Create Secure Pool." alt="" coords="256,219,415,259"/>
-<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="503,205,416,225,414,219,502,200"/>
-<area shape="poly" id="edge13_Node000011_Node000010" title=" " alt="" coords="488,242,415,242,415,237,488,237"/>
-<area shape="rect" id="Node000012" href="$secure__mem_8c.html#a13dadc8aba1ac31f4316659a232ca92f" title="Perform Secure Malloc." alt="" coords="248,284,423,309"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="518,257,478,266,389,287,388,281,477,261,517,252"/>
-<area shape="rect" id="Node000013" href="$secure__mem_8c.html#ab36568b95ed140fd30bed074c10b517d" title="Perform Secure Realloc." alt="" coords="12,284,187,309"/>
-<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="234,299,187,299,187,294,234,294"/>
-<area shape="rect" id="Node000022" href="$random_8c.html#a05cbced9303416a64c246ed28ce2e9db" title="Compatibility wrapper; returns zero if entropy retrieval fails." alt="" coords="246,616,425,641"/>
-<area shape="poly" id="edge22_Node000021_Node000022" title=" " alt="" coords="493,649,425,641,425,636,493,644"/>
-<area shape="rect" id="Node000023" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="241,666,429,706"/>
-<area shape="poly" id="edge23_Node000021_Node000023" title=" " alt="" coords="494,672,430,679,429,673,493,666"/>
-<area shape="rect" id="Node000024" href="$random_8c.html#af8cd085e61d03a97456dad67182bd463" title="Compatibility wrapper; returns zero for invalid bounds or entropy failure." alt="" coords="5,673,193,699"/>
-<area shape="poly" id="edge24_Node000023_Node000024" title=" " alt="" coords="227,689,194,689,194,683,227,683"/>
+<area shape="rect" id="Node000001" title="Perform Random Bytes." alt="" coords="761,737,934,765"/>
+<area shape="rect" id="Node000002" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="530,35,659,62"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="841,721,827,592,801,409,783,315,762,229,738,157,711,107,683,82,650,66,649,60,686,78,715,104,743,155,767,227,788,314,806,408,832,592,846,723"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="542,117,648,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="841,721,828,600,803,430,786,343,764,265,740,201,726,177,711,158,698,148,682,141,649,133,647,128,684,135,701,143,715,155,730,174,745,199,770,263,791,342,808,429,834,599,846,723"/>
+<area shape="rect" id="Node000008" href="$aslr_8c.html#aaa81b9d4d406b66f4c2811172bd326e1" title="Set Aslr Random Off." alt="" coords="514,169,675,214"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="840,721,824,613,797,465,779,390,759,321,736,265,711,228,694,214,676,205,675,200,697,210,715,224,741,263,764,319,784,388,802,464,830,612,845,723"/>
+<area shape="rect" id="Node000011" href="$canary_8c.html#a749a7dae8a43e79b27b8f1029b3a11cc" title="Perform Canary Generate." alt="" coords="500,237,689,265"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="839,721,823,622,794,489,777,422,757,362,735,312,711,280,690,265,689,260,715,276,740,310,762,360,782,421,800,488,828,621,844,722"/>
+<area shape="rect" id="Node000014" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="499,289,690,317"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="844,721,839,644,832,593,820,538,804,482,781,427,750,376,712,332,691,318,690,313,715,328,755,373,785,424,809,480,825,537,837,592,844,643,849,723"/>
+<area shape="rect" id="Node000015" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="509,341,680,369"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="842,721,834,652,814,560,797,511,775,464,747,420,712,383,697,372,681,365,680,360,699,368,715,378,751,417,780,461,802,509,819,558,840,651,847,722"/>
+<area shape="rect" id="Node000016" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="500,393,690,438"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="839,721,826,665,803,592,786,554,765,517,741,482,712,452,691,437,690,432,715,448,745,479,770,514,791,552,808,590,831,664,844,723"/>
+<area shape="rect" id="Node000017" href="$key__vault_8c.html#a87949bbd9b1b43c3780510769841d439" title="Perform Key Vault Generate Key." alt="" coords="476,461,713,489"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="837,722,822,675,797,615,760,554,738,527,712,504,693,492,691,487,715,500,741,524,765,551,801,613,827,673,842,723"/>
+<area shape="rect" id="Node000018" href="$key__vault_8c.html#af0c7656d2db5c3ec8af20c8280ec29f7" title="Perform Key Vault Get Key." alt="" coords="494,513,695,541"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="833,723,815,685,789,640,754,594,712,556,690,544,689,539,715,552,758,590,793,637,820,683,838,723"/>
+<area shape="rect" id="Node000019" href="$key__vault_8c.html#afc6f3908e00ac2ee747c35ecd7200453" title="Perform Key Vault Rotate Key." alt="" coords="486,565,704,593"/>
+<area shape="poly" id="edge19_Node000001_Node000019" title=" " alt="" coords="827,724,780,665,748,634,712,608,687,596,685,591,715,604,751,630,784,662,832,724"/>
+<area shape="rect" id="Node000020" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="510,617,679,645"/>
+<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="817,727,770,693,712,659,680,647,679,642,714,654,773,688,822,727"/>
+<area shape="rect" id="Node000021" href="$random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Generate a random uint32_t with explicit error reporting." alt="" coords="506,669,683,714"/>
+<area shape="poly" id="edge21_Node000001_Node000021" title=" " alt="" coords="769,734,684,715,683,710,774,732"/>
+<area shape="rect" id="Node000025" href="$sphincsplus_8c.html#aa8322da28dedd392f705b10ae8a65fd9" title="Generate Sphincs." alt="" coords="504,737,686,765"/>
+<area shape="poly" id="edge25_Node000001_Node000025" title=" " alt="" coords="743,752,687,754,685,749,748,750"/>
+<area shape="rect" id="Node000026" href="$timing_8c.html#aa96f16d3ce8bf7a1158d18dbdb56dc5f" title="Perform Timing Random Delay." alt="" coords="506,789,684,834"/>
+<area shape="poly" id="edge26_Node000001_Node000026" title=" " alt="" coords="769,770,686,792,683,788,774,768"/>
+<area shape="rect" id="Node000027" href="$s7__extensions_8c.html#aa8b81abd352bd3a5e444e87d7d9d9ba3" title="Perform Tpm Get Random." alt="" coords="500,857,690,885"/>
+<area shape="poly" id="edge27_Node000001_Node000027" title=" " alt="" coords="817,777,773,814,714,848,684,859,681,854,712,843,770,810,822,774"/>
+<area shape="rect" id="Node000028" href="$transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab" title="Encrypt Transport." alt="" coords="498,909,692,937"/>
+<area shape="poly" id="edge28_Node000001_Node000028" title=" " alt="" coords="831,776,784,840,751,872,715,899,687,911,685,906,712,894,748,868,780,837,827,780"/>
+<area shape="rect" id="Node000029" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="498,961,692,1006"/>
+<area shape="poly" id="edge29_Node000001_Node000029" title=" " alt="" coords="836,777,819,819,792,865,757,911,715,951,694,963,691,959,712,946,753,908,787,862,814,817,833,782"/>
+<area shape="rect" id="Node000030" href="$transport__security_8c.html#ab297cc852d9304ac3f720044e6ae92b0" title="Perform Transport New Session." alt="" coords="508,1030,681,1075"/>
+<area shape="poly" id="edge30_Node000001_Node000030" title=" " alt="" coords="841,778,828,832,803,896,766,963,742,993,715,1020,682,1039,680,1034,712,1016,738,990,761,960,798,894,823,830,838,782"/>
+<area shape="rect" id="Node000031" href="$transport__security_8c.html#aa5c08d62fe21d48fc33776333152fc76" title="Perform Transport Noise Handshake." alt="" coords="504,1100,685,1144"/>
+<area shape="poly" id="edge31_Node000001_Node000031" title=" " alt="" coords="845,778,835,845,812,927,795,971,774,1014,747,1054,715,1089,687,1107,684,1103,712,1085,743,1051,769,1011,790,969,807,926,830,843,842,783"/>
+<area shape="rect" id="Node000032" href="$transport__security_8c.html#a526ac7b53e0b0b0321a3ccdbb99efef7" title="Perform Transport Noise Handshake Respond." alt="" coords="504,1169,685,1214"/>
+<area shape="poly" id="edge32_Node000001_Node000032" title=" " alt="" coords="847,778,841,856,821,957,805,1011,782,1065,752,1115,715,1158,686,1177,684,1173,712,1155,748,1111,777,1062,800,1010,816,956,836,855,844,783"/>
+<area shape="rect" id="Node000033" href="$transport__security_8c.html#aeb9b3ddb52f9b6a336fec641c3f52bdd" title="Perform Transport Session Rekey." alt="" coords="498,1238,692,1283"/>
+<area shape="poly" id="edge33_Node000001_Node000033" title=" " alt="" coords="848,778,847,868,841,925,830,987,814,1052,790,1115,757,1175,715,1228,694,1244,691,1239,711,1224,753,1172,785,1113,808,1050,825,986,836,924,842,867,846,783"/>
+<area shape="rect" id="Node000034" href="$s7__extensions_8c.html#ae6adb17fd32287417d685af6ce25efdf" title="Perform Tuf Generate Keypair." alt="" coords="514,1308,676,1352"/>
+<area shape="poly" id="edge34_Node000001_Node000034" title=" " alt="" coords="844,778,830,893,804,1047,786,1126,765,1198,742,1256,715,1297,698,1311,677,1321,675,1316,695,1307,711,1293,737,1254,760,1196,781,1125,798,1046,825,892,841,782"/>
+<area shape="rect" id="Node000035" href="$s7__extensions_8c.html#a1fe4ef6801561881c12f84361df11b21" title="Initialize Tuf." alt="" coords="532,1376,657,1404"/>
+<area shape="poly" id="edge35_Node000001_Node000035" title=" " alt="" coords="845,778,834,907,810,1083,792,1172,771,1254,745,1321,731,1347,715,1366,689,1384,658,1392,657,1387,687,1379,712,1363,726,1344,740,1319,766,1252,787,1171,804,1082,829,906,842,783"/>
+<area shape="rect" id="Node000036" href="$s7__extensions_8c.html#a248236ef7cadd6661b6f6fb9c42e3a6a" title="Perform Tuf Snapshot." alt="" coords="513,1428,676,1456"/>
+<area shape="poly" id="edge36_Node000001_Node000036" title=" " alt="" coords="846,778,836,916,813,1107,795,1205,773,1294,747,1367,732,1395,715,1417,698,1430,678,1439,676,1434,695,1426,711,1413,727,1393,742,1365,768,1292,790,1204,807,1106,831,916,843,783"/>
+<area shape="rect" id="Node000037" href="$x25519_8c.html#aa69017cb5661f22cbe6f9cb0dca38bf1" title="Compute X25519 shared secret." alt="" coords="504,1480,685,1508"/>
+<area shape="poly" id="edge37_Node000001_Node000037" title=" " alt="" coords="846,778,838,925,816,1132,799,1238,777,1335,749,1415,733,1446,715,1469,687,1488,685,1483,712,1465,729,1443,744,1413,771,1334,793,1237,811,1131,833,925,843,783"/>
+<area shape="rect" id="Node000003" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="250,5,419,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="513,41,421,31,418,26,518,38"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="257,57,412,85"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="524,117,399,88,397,83,529,114"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="257,109,412,154"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="524,133,414,133,411,129,528,129"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="6,49,192,94"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="239,73,194,73,191,69,243,69"/>
+<area shape="rect" id="Node000009" href="$aslr_8c.html#ae348adf14c065768a3867acca2eab946" title="Apply Aslr." alt="" coords="261,177,408,205"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="497,193,409,193,406,189,501,190"/>
+<area shape="rect" id="Node000010" href="$secure__mem_8c.html#a7d1751b8acc352ec5d438e84b065f682" title="Create Secure Pool." alt="" coords="256,229,413,274"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="497,215,415,235,412,231,501,211"/>
+<area shape="poly" id="edge13_Node000011_Node000010" title=" " alt="" coords="483,253,415,253,412,249,487,250"/>
+<area shape="rect" id="Node000012" href="$secure__mem_8c.html#a13dadc8aba1ac31f4316659a232ca92f" title="Perform Secure Malloc." alt="" coords="248,297,421,325"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="512,271,477,280,398,299,394,295,475,275,516,267"/>
+<area shape="rect" id="Node000013" href="$secure__mem_8c.html#ab36568b95ed140fd30bed074c10b517d" title="Perform Secure Realloc." alt="" coords="12,297,186,325"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="230,313,188,313,184,309,234,309"/>
+<area shape="rect" id="Node000022" href="$random_8c.html#a05cbced9303416a64c246ed28ce2e9db" title="Compatibility wrapper; returns zero if entropy retrieval fails." alt="" coords="246,647,423,674"/>
+<area shape="poly" id="edge22_Node000021_Node000022" title=" " alt="" coords="488,680,425,673,423,669,493,678"/>
+<area shape="rect" id="Node000023" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="241,698,428,743"/>
+<area shape="poly" id="edge23_Node000021_Node000023" title=" " alt="" coords="488,704,430,712,427,708,493,701"/>
+<area shape="rect" id="Node000024" href="$random_8c.html#af8cd085e61d03a97456dad67182bd463" title="Compatibility wrapper; returns zero for invalid bounds or entropy failure." alt="" coords="5,707,193,734"/>
+<area shape="poly" id="edge24_Node000023_Node000024" title=" " alt="" coords="223,722,195,723,192,718,227,719"/>
 </map>

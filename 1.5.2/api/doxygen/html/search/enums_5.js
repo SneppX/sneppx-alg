@@ -91,7 +91,7 @@ var searchData=
   ['sneppxsparseattnpattern_88',['SNEPPXSparseAttnPattern',['../sparse__attention_8h.html#a2b0886e3b955e21dad302565f5efa776',1,'sparse_attention.h']]],
   ['sneppxstigcategory_89',['SNEPPXSTIGCategory',['../stig__framework_8h.html#ae7f76d50df73cf6d08835a12b6844d31',1,'stig_framework.h']]],
   ['sneppxstigstatus_90',['SNEPPXSTIGStatus',['../stig__framework_8h.html#a6c6b27a690f6463ffc9ee62590e7ba13',1,'stig_framework.h']]],
-  ['sneppxteetype_91',['sneppxteetype',['../s10__hardware__security_8h.html#a5d0026ac40c4f773bb0307d6f32883ad',1,'SNEPPXTeeType:&#160;s10_hardware_security.h'],['../tee__interface_8h.html#a5d0026ac40c4f773bb0307d6f32883ad',1,'SNEPPXTeeType:&#160;tee_interface.h']]],
+  ['sneppxteetype_91',['SNEPPXTeeType',['../s10__hardware__security_8h.html#a5d0026ac40c4f773bb0307d6f32883ad',1,'SNEPPXTeeType:&#160;s10_hardware_security.h'],['../tee__interface_8h.html#a5d0026ac40c4f773bb0307d6f32883ad',1,'SNEPPXTeeType:&#160;tee_interface.h']]],
   ['sneppxtenrichmentresult_92',['SNEPPXTEnrichmentResult',['../enrichment__pipeline_8h.html#a1b9c2dde5af3c2ef0cf88ce93e217d6f',1,'enrichment_pipeline.h']]],
   ['sneppxticollectorsource_93',['SNEPPXTICollectorSource',['../collector__network_8h.html#a37418b66eadaeea0d25cfdd562db365a',1,'collector_network.h']]],
   ['sneppxticonfidencelevel_94',['SNEPPXTIConfidenceLevel',['../analyzer_8h.html#afeb394ddebf1f89d4588f26ed8cf75ff',1,'analyzer.h']]],

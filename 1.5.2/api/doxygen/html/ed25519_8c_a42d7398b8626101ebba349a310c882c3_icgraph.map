@@ -1,19 +1,19 @@
 <map id="point_from_bytes" name="point_from_bytes">
-<area shape="rect" id="Node000001" title=" " alt="" coords="917,134,1053,159"/>
-<area shape="rect" id="Node000002" href="$ed25519_8c.html#a85e1f84acda318e9a82b7b92a151eb33" title="Core Ed25519 verify with selectable hash path." alt="" coords="699,105,857,130"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="903,138,856,131,857,126,904,133"/>
-<area shape="rect" id="Node000009" href="$ed25519_8c.html#a2c8ab1bc9b3f1a34d21f57bc45ad80ec" title="Perform Ed25519 Scalar Multiply." alt="" coords="687,155,869,195"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="904,160,870,165,869,160,903,155"/>
-<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad082a2f293bf30aea3ab1dfd16e40e46" title="Verify an Ed25519 signature." alt="" coords="459,77,639,102"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="686,109,638,103,639,98,686,103"/>
-<area shape="rect" id="Node000008" href="$ed25519_8c.html#aca9a357925c06c4a8103215281d3b007" title="Verify Ed25519 with optional legacy&#45;hash fallback for migration." alt="" coords="459,127,639,167"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="686,132,639,138,638,133,685,126"/>
-<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="232,5,411,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="489,75,392,48,394,43,490,70"/>
-<area shape="rect" id="Node000006" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="232,69,411,109"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="445,92,411,92,411,87,445,87"/>
-<area shape="rect" id="Node000007" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="232,133,411,173"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="490,108,394,136,392,131,489,103"/>
-<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,184,45"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="218,28,184,28,184,23,218,23"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="913,143,1048,171"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a85e1f84acda318e9a82b7b92a151eb33" title="Core Ed25519 verify with selectable hash path." alt="" coords="696,112,852,140"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="895,145,853,141,853,135,900,145"/>
+<area shape="rect" id="Node000009" href="$ed25519_8c.html#a2c8ab1bc9b3f1a34d21f57bc45ad80ec" title="Perform Ed25519 Scalar Multiply." alt="" coords="683,164,865,209"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="900,169,865,176,865,171,894,169"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad082a2f293bf30aea3ab1dfd16e40e46" title="Verify an Ed25519 signature." alt="" coords="456,83,635,111"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="678,114,636,111,636,106,683,114"/>
+<area shape="rect" id="Node000008" href="$ed25519_8c.html#aca9a357925c06c4a8103215281d3b007" title="Verify Ed25519 with optional legacy&#45;hash fallback for migration." alt="" coords="456,135,635,179"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="683,139,636,148,635,142,678,139"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,5,408,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="481,78,395,53,395,48,486,78"/>
+<area shape="rect" id="Node000006" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="231,75,408,119"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="438,97,409,100,408,94,443,97"/>
+<area shape="rect" id="Node000007" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="231,144,408,189"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="481,115,457,125,390,146,389,141,455,120,476,116"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,183,50"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,29,184,30,182,25,218,27"/>
 </map>

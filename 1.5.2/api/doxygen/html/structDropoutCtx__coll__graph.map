@@ -1,11 +1,11 @@
 <map id="DropoutCtx" name="DropoutCtx">
-<area shape="rect" id="Node000001" title=" " alt="" coords="19,303,115,328"/>
-<area shape="rect" id="Node000002" href="$structSNEPPXVariable.html" title=" " alt="" coords="111,213,238,238"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,249,82,305,79,301,148,245"/>
-<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="253,217,265,225,256,233,239,236,238,231,254,228,259,225,250,221"/>
-<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="9,93,124,119"/>
-<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="66,132,61,182,60,240,67,302,62,303,55,240,55,182,60,132"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="88,127,166,211,162,214,85,131"/>
-<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,5,128,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="69,45,69,93,64,93,64,45"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="19,372,114,399"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXVariable.html" title=" " alt="" coords="113,261,238,289"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="155,300,82,373,78,369,150,299"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="254,264,265,275,257,285,240,288,238,283,255,280,260,275,253,269"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="9,106,124,134"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="64,146,60,217,60,299,67,372,62,371,55,299,55,217,63,152"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="86,144,169,260,164,262,83,149"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,5,128,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="67,46,69,106,64,105,66,51"/>
 </map>

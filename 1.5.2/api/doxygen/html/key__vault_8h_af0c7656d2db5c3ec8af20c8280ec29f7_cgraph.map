@@ -1,5 +1,5 @@
 <map id="SNEPPX_key_vault_get_key" name="SNEPPX_key_vault_get_key">
-<area shape="rect" id="Node000001" title="Perform Key Vault Get Key." alt="" coords="5,5,207,31"/>
-<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="255,5,428,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,15,241,15,241,21,207,21"/>
+<area shape="rect" id="Node000001" title="Perform Key Vault Get Key." alt="" coords="5,5,206,33"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="254,5,426,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,17,241,19,235,19,206,22"/>
 </map>

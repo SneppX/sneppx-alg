@@ -1,0 +1,38 @@
+var hipaa__framework_8h =
+[
+    [ "SNEPPXPHIField", "structSNEPPXPHIField.html", "structSNEPPXPHIField" ],
+    [ "SNEPPXPHIRecord", "structSNEPPXPHIRecord.html", "structSNEPPXPHIRecord" ],
+    [ "SNEPPXHIPAATechnicalSafeguards", "structSNEPPXHIPAATechnicalSafeguards.html", "structSNEPPXHIPAATechnicalSafeguards" ],
+    [ "SNEPPXHIPAAAdminSafeguards", "structSNEPPXHIPAAAdminSafeguards.html", "structSNEPPXHIPAAAdminSafeguards" ],
+    [ "SNEPPXHIPAABreach", "structSNEPPXHIPAABreach.html", "structSNEPPXHIPAABreach" ],
+    [ "SNEPPX_HIPAA_MAX_PHI_FIELDS", "hipaa__framework_8h.html#a251d84081244a4807b3171fcb4deb4a3", null ],
+    [ "SNEPPX_HIPAA_SAFEGUARDS_ADMIN", "hipaa__framework_8h.html#a46e75136f79e2bb802fc81c4a4843998", null ],
+    [ "SNEPPX_HIPAA_SAFEGUARDS_PHYSICAL", "hipaa__framework_8h.html#a08c67e05e5da6a64388047f2f2acecfc", null ],
+    [ "SNEPPX_HIPAA_SAFEGUARDS_TECHNICAL", "hipaa__framework_8h.html#a19b10682ee0c6401498cf377a8977e22", null ],
+    [ "SNEPPXPHIType", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7", [
+      [ "SNEPPX_PHI_TYPE_DEMOGRAPHIC", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7ae48f2b16dc7b951a015cce8e1397d283", null ],
+      [ "SNEPPX_PHI_TYPE_MEDICAL_RECORD", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7ad490ec29934ff06f759f3e78d59bb01c", null ],
+      [ "SNEPPX_PHI_TYPE_LAB_RESULT", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7afdbff91855e1e7ea8e7cf514f24fd586", null ],
+      [ "SNEPPX_PHI_TYPE_PRESCRIPTION", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7a7160defba169b8e1df366bb67f42d8db", null ],
+      [ "SNEPPX_PHI_TYPE_INSURANCE", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7a65e59832c96b7d898d49af1ad3adb98f", null ],
+      [ "SNEPPX_PHI_TYPE_BILLING", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7aadfef4c9bf59cdf52b3fd11b4533a114", null ],
+      [ "SNEPPX_PHI_TYPE_CLINICAL_NOTES", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7adfff2d04bdb9300eed032a177615c661", null ],
+      [ "SNEPPX_PHI_TYPE_GENETIC", "hipaa__framework_8h.html#a10bbab5adcdab8caf5d872b51fc198b7ad6117809d806e45a9e3350966cf597d2", null ]
+    ] ],
+    [ "snepx_hipaa_audit_trail_export", "hipaa__framework_8h.html#acc06615e8be7c46e1eeec93f61ce691c", null ],
+    [ "snepx_hipaa_baa_create", "hipaa__framework_8h.html#adaea81e5c057b4b61ddbe3faf18f7e7b", null ],
+    [ "snepx_hipaa_baa_verify", "hipaa__framework_8h.html#aad8e6dd6a322cd4df4b91a2a51220607", null ],
+    [ "snepx_hipaa_breach_notify", "hipaa__framework_8h.html#a8016094456aaff7c09ce89f233295c7e", null ],
+    [ "snepx_hipaa_breach_report", "hipaa__framework_8h.html#aedb390e1210d9f2c4e713a3736df4285", null ],
+    [ "snepx_hipaa_breach_risk_assessment", "hipaa__framework_8h.html#a588b6012e1ecf2e7d863a7f9f75681b8", null ],
+    [ "snepx_hipaa_phi_access_log", "hipaa__framework_8h.html#ab2bdd34f9e77ff11470eff8e80b1431e", null ],
+    [ "snepx_hipaa_phi_decrypt", "hipaa__framework_8h.html#a44a97722c93ca09b0418b0da9389dc33", null ],
+    [ "snepx_hipaa_phi_deidentify", "hipaa__framework_8h.html#a28131daa1483f4d34ddc9e4756558729", null ],
+    [ "snepx_hipaa_phi_encrypt", "hipaa__framework_8h.html#ae2d3e7410865090f409a255eb8f651b0", null ],
+    [ "snepx_hipaa_phi_mask", "hipaa__framework_8h.html#a3a7a6d688e370a18b349143ab8fcb974", null ],
+    [ "snepx_hipaa_phi_minimize", "hipaa__framework_8h.html#aa58d91d5bd560578c38bcb265e214c63", null ],
+    [ "snepx_hipaa_phi_register", "hipaa__framework_8h.html#aa80494af62c85924635ee35f57679c89", null ],
+    [ "snepx_hipaa_safeguards_admin_evaluate", "hipaa__framework_8h.html#ab760c04dc913c4c91749601b2033fdcf", null ],
+    [ "snepx_hipaa_safeguards_physical_evaluate", "hipaa__framework_8h.html#a23b5fbe5714846f312dcc21736483e35", null ],
+    [ "snepx_hipaa_safeguards_technical_evaluate", "hipaa__framework_8h.html#a35b246fcf6367f61bf06c9ea1bdb8dbe", null ]
+];

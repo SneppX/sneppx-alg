@@ -1,9 +1,9 @@
 <map id="SNEPPX_threat_viz_remove_edge" name="SNEPPX_threat_viz_remove_edge">
-<area shape="rect" id="Node000001" title="Perform Threat Viz Remove Edge." alt="" coords="5,31,247,56"/>
-<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a76191d3658d6ec7a6a011745829ec170" title=" " alt="" coords="308,5,439,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,28,294,23,295,29,247,34"/>
-<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#a3fb0f72e0bd3317528bc5a0b9034e8c9" title=" " alt="" coords="295,55,452,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="247,52,281,56,281,61,247,58"/>
-<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#ad96fc497be31562e6340b9b51fa32b39" title=" " alt="" coords="500,5,623,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="439,15,486,15,486,21,439,21"/>
+<area shape="rect" id="Node000001" title="Perform Threat Viz Remove Edge." alt="" coords="5,32,246,60"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a76191d3658d6ec7a6a011745829ec170" title=" " alt="" coords="307,5,437,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,30,294,27,288,28,247,35"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#a3fb0f72e0bd3317528bc5a0b9034e8c9" title=" " alt="" coords="294,57,450,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="246,56,281,61,275,62,246,61"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#ad96fc497be31562e6340b9b51fa32b39" title=" " alt="" coords="498,5,620,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="437,17,485,19,480,19,437,22"/>
 </map>

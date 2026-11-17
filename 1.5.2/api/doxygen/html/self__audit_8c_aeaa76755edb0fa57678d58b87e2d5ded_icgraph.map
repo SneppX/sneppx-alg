@@ -1,9 +1,9 @@
 <map id="audit_category_prefix" name="audit_category_prefix">
-<area shape="rect" id="Node000001" title="Initialize Self Audit." alt="" coords="228,77,391,102"/>
-<area shape="rect" id="Node000002" href="$self__audit_8c.html#a5437599027175fcd54504839bbc32e81" title="Perform Self Audit Add Check Ex." alt="" coords="5,5,180,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,75,160,48,162,43,253,70"/>
-<area shape="rect" id="Node000003" href="$self__audit_8c.html#ac304dcb96a30d19554126b4d1f6e28f8" title="Perform Self Audit Get Category Count." alt="" coords="7,69,179,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="214,92,179,92,179,87,214,87"/>
-<area shape="rect" id="Node000004" href="$self__audit_8c.html#ac7e1af204e048b891f541e66ee7fbf77" title="Perform Self Audit Get Category Score." alt="" coords="7,133,179,173"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="253,109,162,136,160,131,251,104"/>
+<area shape="rect" id="Node000001" title="Initialize Self Audit." alt="" coords="228,83,390,111"/>
+<area shape="rect" id="Node000002" href="$self__audit_8c.html#a5437599027175fcd54504839bbc32e81" title="Perform Self Audit Add Check Ex." alt="" coords="5,5,180,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,79,164,53,165,48,251,77"/>
+<area shape="rect" id="Node000003" href="$self__audit_8c.html#ac304dcb96a30d19554126b4d1f6e28f8" title="Perform Self Audit Get Category Count." alt="" coords="7,75,178,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="210,98,179,100,178,94,215,96"/>
+<area shape="rect" id="Node000004" href="$self__audit_8c.html#ac7e1af204e048b891f541e66ee7fbf77" title="Perform Self Audit Get Category Score." alt="" coords="7,144,178,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="251,115,165,146,164,141,246,117"/>
 </map>

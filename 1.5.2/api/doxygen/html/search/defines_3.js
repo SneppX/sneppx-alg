@@ -1,7 +1,7 @@
 var searchData=
 [
   ['cas_5fptr_0',['CAS_PTR',['../pool__impl_8c.html#a645a1fc9c8fc7aed9fdcf55dba577f76',1,'pool_impl.c']]],
-  ['ch_1',['ch',['../sha256_8c.html#a0ed6c9c714485592a8c317a8ad91c83b',1,'CH:&#160;sha256.c'],['../sha512_8c.html#a0ed6c9c714485592a8c317a8ad91c83b',1,'CH:&#160;sha512.c']]],
+  ['ch_1',['CH',['../sha256_8c.html#a0ed6c9c714485592a8c317a8ad91c83b',1,'CH:&#160;sha256.c'],['../sha512_8c.html#a0ed6c9c714485592a8c317a8ad91c83b',1,'CH:&#160;sha512.c']]],
   ['color_5fblue_2',['COLOR_BLUE',['../logger_8c.html#a23c70d699a5a775bc2e1ebeb8603f630',1,'logger.c']]],
   ['color_5fcyan_3',['COLOR_CYAN',['../logger_8c.html#a82573859711fce56f1aa0a76b18a9b18',1,'logger.c']]],
   ['color_5fgray_4',['COLOR_GRAY',['../logger_8c.html#a3aaf3b0287d26dfb6ecb3b1c46e950c8',1,'logger.c']]],

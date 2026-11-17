@@ -1,9 +1,9 @@
 <map id="SNEPPXAttentionWeights" name="SNEPPXAttentionWeights">
-<area shape="rect" id="Node000001" title=" " alt="" coords="37,284,223,309"/>
-<area shape="rect" id="Node000002" href="$structSNEPPXAttentionConfig.html" title=" " alt="" coords="5,93,180,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,132,130,283,125,284,95,133"/>
-<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="205,93,319,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="254,132,222,193,200,229,175,262,148,286,145,282,171,258,195,226,217,191,249,130"/>
-<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="201,5,323,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="265,45,265,93,259,93,259,45"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="38,363,223,391"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXAttentionConfig.html" title=" " alt="" coords="5,106,179,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,148,131,363,126,363,94,150"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="203,106,317,134"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,147,231,239,209,291,179,341,153,365,150,360,175,337,204,289,226,237,253,151"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="199,5,321,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="261,46,263,106,257,105,259,51"/>
 </map>

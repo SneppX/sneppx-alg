@@ -1,60 +1,60 @@
 <map id="SNEPPX_dilithium_keygen" name="SNEPPX_dilithium_keygen">
-<area shape="rect" id="Node000001" title="Generate Dilithium." alt="" coords="5,231,197,256"/>
-<area shape="rect" id="Node000002" href="$dilithium_8c.html#a096bf492e4184efe1f4e49404e9badb2" title=" " alt="" coords="308,5,389,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,229,123,192,152,140,193,86,217,61,244,40,268,28,294,20,295,26,270,33,247,44,221,65,197,89,157,143,128,194,110,232"/>
-<area shape="rect" id="Node000011" href="$dilithium_8c.html#ae5dd83b61289a0a9059c50f979a97a22" title=" " alt="" coords="308,55,389,80"/>
-<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="109,229,160,162,199,122,244,89,268,78,293,71,295,76,270,83,247,94,202,126,164,165,113,232"/>
-<area shape="rect" id="Node000012" href="$dilithium_8c.html#a15a92c998cddb23176497552e5ad4203" title=" " alt="" coords="273,104,424,129"/>
-<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="117,228,172,189,244,146,283,131,285,136,246,151,175,193,120,232"/>
-<area shape="rect" id="Node000013" href="$dilithium_8c.html#ab75bc9d768ca62f5b3fec9c0a6073e04" title=" " alt="" coords="291,205,407,231"/>
-<area shape="poly" id="edge19_Node000001_Node000013" title=" " alt="" coords="197,231,277,223,278,228,198,236"/>
-<area shape="rect" id="Node000014" href="$dilithium_8c.html#a7f1c805503befba79552502a87e03c82" title=" " alt="" coords="514,155,661,180"/>
-<area shape="poly" id="edge29_Node000001_Node000014" title=" " alt="" coords="131,228,183,208,245,190,311,179,378,171,500,165,500,170,379,177,312,184,246,195,185,213,132,233"/>
-<area shape="rect" id="Node000020" href="$dilithium_8c.html#a051aaeaf1fe745342b0f38538464ca0e" title=" " alt="" coords="245,255,452,280"/>
-<area shape="poly" id="edge30_Node000001_Node000020" title=" " alt="" coords="198,250,232,253,232,259,197,255"/>
-<area shape="rect" id="Node000021" href="$dilithium_8c.html#a293d03306f265913b365a823feada47b" title=" " alt="" coords="302,304,395,329"/>
-<area shape="poly" id="edge31_Node000001_Node000021" title=" " alt="" coords="137,254,246,290,289,301,288,307,245,295,136,259"/>
-<area shape="rect" id="Node000022" href="$dilithium_8c.html#a34e75904edb2121006d52ec6d9b7584a" title=" " alt="" coords="277,353,420,379"/>
-<area shape="poly" id="edge32_Node000001_Node000022" title=" " alt="" coords="119,254,173,296,209,320,246,340,266,347,264,352,244,344,206,324,170,301,116,258"/>
-<area shape="rect" id="Node000023" href="$dilithium_8c.html#ac4c5d3f92499c33802d711ab561a77b4" title=" " alt="" coords="283,403,414,428"/>
-<area shape="poly" id="edge33_Node000001_Node000023" title=" " alt="" coords="113,255,164,320,203,357,247,389,271,400,269,405,244,394,199,361,160,323,109,258"/>
-<area shape="rect" id="Node000024" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="262,452,435,477"/>
-<area shape="poly" id="edge34_Node000001_Node000024" title=" " alt="" coords="111,255,128,292,157,342,197,395,221,418,247,438,257,444,254,449,244,443,217,422,193,398,153,345,123,295,106,258"/>
-<area shape="rect" id="Node000003" href="$drbg_8c.html#a2ad9b0b9a552c93bd57bdb432427330e" title="Destroy DRBG context and wipe sensitive data." alt="" coords="505,5,670,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="390,15,491,15,491,21,390,21"/>
-<area shape="rect" id="Node000004" href="$drbg_8c.html#ac0cc4ee4212c37574be163aa80a06573" title="Generate random bytes from DRBG." alt="" coords="500,104,675,129"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="390,19,422,27,453,40,469,52,478,65,487,77,501,89,516,97,514,101,499,94,483,81,474,68,465,56,451,44,420,32,389,25"/>
-<area shape="rect" id="Node000010" href="$drbg_8c.html#a5e2c38fb90ee53833024fadcb50aae16" title="Initialize a DRBG context with entropy." alt="" coords="519,55,656,80"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="390,24,512,49,511,54,389,29"/>
-<area shape="rect" id="Node000005" href="$drbg_8c.html#a57f9c1fd87fa5865cb60da90b060172e" title=" " alt="" coords="748,79,829,104"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="675,103,734,95,735,101,676,108"/>
-<area shape="rect" id="Node000006" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="907,29,1077,55"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="829,79,925,55,926,61,830,84"/>
-<area shape="rect" id="Node000007" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="915,79,1069,104"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="830,89,901,89,901,94,830,94"/>
-<area shape="rect" id="Node000008" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="903,128,1081,153"/>
-<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="830,98,926,122,925,127,829,104"/>
-<area shape="rect" id="Node000009" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="1129,128,1269,153"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="1082,138,1116,138,1116,143,1082,143"/>
-<area shape="poly" id="edge10_Node000010_Node000005" title=" " alt="" coords="657,73,734,82,734,88,656,78"/>
-<area shape="poly" id="edge12_Node000011_Node000003" title=" " alt="" coords="389,56,511,31,512,36,390,62"/>
-<area shape="poly" id="edge13_Node000011_Node000004" title=" " alt="" coords="390,73,512,99,511,104,389,78"/>
-<area shape="poly" id="edge14_Node000011_Node000010" title=" " alt="" coords="390,65,505,65,505,70,390,70"/>
-<area shape="poly" id="edge16_Node000012_Node000003" title=" " alt="" coords="422,101,451,89,465,78,474,65,483,52,499,40,511,33,513,38,501,44,487,56,478,68,469,81,453,94,424,106"/>
-<area shape="poly" id="edge17_Node000012_Node000004" title=" " alt="" coords="424,114,486,114,486,119,424,119"/>
-<area shape="poly" id="edge18_Node000012_Node000010" title=" " alt="" coords="410,101,511,80,512,85,411,107"/>
-<area shape="poly" id="edge20_Node000013_Node000014" title=" " alt="" coords="407,203,513,180,514,185,408,208"/>
-<area shape="rect" id="Node000016" href="$dilithium_8c.html#a2f1014e079c1a6c7d33b2d7ecb57ad48" title=" " alt="" coords="514,205,661,231"/>
-<area shape="poly" id="edge22_Node000013_Node000016" title=" " alt="" coords="407,215,500,215,500,221,407,221"/>
-<area shape="rect" id="Node000015" href="$dilithium_8c.html#afef2600ad9e4044c8b9065b4ab8deb1e" title=" " alt="" coords="723,155,854,180"/>
-<area shape="poly" id="edge21_Node000014_Node000015" title=" " alt="" coords="661,165,710,165,710,170,661,170"/>
-<area shape="poly" id="edge28_Node000016_Node000015" title=" " alt="" coords="638,203,724,181,725,186,639,208"/>
-<area shape="rect" id="Node000017" href="$dilithium_8c.html#abc6cba41451b41c4059077950343047f" title=" " alt="" coords="723,256,855,281"/>
-<area shape="poly" id="edge23_Node000016_Node000017" title=" " alt="" coords="639,228,725,250,724,255,638,233"/>
-<area shape="rect" id="Node000018" href="$dilithium_8c.html#a1675067cd562213c08b734a14a178eec" title=" " alt="" coords="906,256,1078,281"/>
-<area shape="poly" id="edge25_Node000016_Node000018" title=" " alt="" coords="661,221,855,242,912,251,911,256,854,247,661,226"/>
-<area shape="rect" id="Node000019" href="$dilithium_8c.html#a12ad85b7a8bc6c3539f4e0bcd69b0df8" title=" " alt="" coords="736,305,841,331"/>
-<area shape="poly" id="edge26_Node000016_Node000019" title=" " alt="" coords="610,229,661,259,724,292,739,298,736,303,722,296,659,264,608,233"/>
-<area shape="poly" id="edge24_Node000017_Node000018" title=" " alt="" coords="855,266,892,266,892,271,855,271"/>
-<area shape="poly" id="edge27_Node000019_Node000018" title=" " alt="" coords="841,303,925,282,926,287,842,308"/>
+<area shape="rect" id="Node000001" title="Generate Dilithium." alt="" coords="5,237,197,265"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#a096bf492e4184efe1f4e49404e9badb2" title=" " alt="" coords="308,5,388,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,236,123,198,152,145,192,90,216,65,243,44,267,31,294,24,290,28,269,36,246,48,220,69,196,94,157,148,128,200,110,238"/>
+<area shape="rect" id="Node000011" href="$dilithium_8c.html#ae5dd83b61289a0a9059c50f979a97a22" title=" " alt="" coords="308,57,388,85"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="109,235,160,168,199,129,243,96,267,84,294,78,290,81,269,89,246,100,202,133,164,171,114,238"/>
+<area shape="rect" id="Node000012" href="$dilithium_8c.html#a15a92c998cddb23176497552e5ad4203" title=" " alt="" coords="273,109,422,137"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="118,235,172,195,243,153,278,141,274,144,246,158,175,199,122,239"/>
+<area shape="rect" id="Node000013" href="$dilithium_8c.html#ab75bc9d768ca62f5b3fec9c0a6073e04" title=" " alt="" coords="290,211,406,238"/>
+<area shape="poly" id="edge19_Node000001_Node000013" title=" " alt="" coords="196,238,277,231,272,234,198,243"/>
+<area shape="rect" id="Node000014" href="$dilithium_8c.html#a7f1c805503befba79552502a87e03c82" title=" " alt="" coords="513,161,658,189"/>
+<area shape="poly" id="edge29_Node000001_Node000014" title=" " alt="" coords="132,235,184,214,244,197,310,185,377,178,500,173,495,176,377,183,311,191,245,202,186,219,135,239"/>
+<area shape="rect" id="Node000020" href="$dilithium_8c.html#a051aaeaf1fe745342b0f38538464ca0e" title=" " alt="" coords="245,263,451,290"/>
+<area shape="poly" id="edge30_Node000001_Node000020" title=" " alt="" coords="196,258,231,263,227,265,198,264"/>
+<area shape="rect" id="Node000021" href="$dilithium_8c.html#a293d03306f265913b365a823feada47b" title=" " alt="" coords="302,315,394,342"/>
+<area shape="poly" id="edge31_Node000001_Node000021" title=" " alt="" coords="140,263,245,299,289,313,284,314,244,304,140,268"/>
+<area shape="rect" id="Node000022" href="$dilithium_8c.html#a34e75904edb2121006d52ec6d9b7584a" title=" " alt="" coords="277,367,419,394"/>
+<area shape="poly" id="edge32_Node000001_Node000022" title=" " alt="" coords="118,263,173,307,209,331,246,351,266,361,261,362,244,356,206,335,170,311,118,268"/>
+<area shape="rect" id="Node000023" href="$dilithium_8c.html#ac4c5d3f92499c33802d711ab561a77b4" title=" " alt="" coords="283,419,413,446"/>
+<area shape="poly" id="edge33_Node000001_Node000023" title=" " alt="" coords="112,263,164,332,202,371,246,404,271,417,266,417,243,408,199,375,160,335,111,268"/>
+<area shape="rect" id="Node000024" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="262,471,434,498"/>
+<area shape="poly" id="edge34_Node000001_Node000024" title=" " alt="" coords="108,263,128,303,157,355,196,409,220,434,246,456,257,464,251,463,243,460,216,438,192,413,152,358,123,305,107,268"/>
+<area shape="rect" id="Node000003" href="$drbg_8c.html#a2ad9b0b9a552c93bd57bdb432427330e" title="Destroy DRBG context and wipe sensitive data." alt="" coords="504,5,668,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="388,17,490,18,485,20,389,22"/>
+<area shape="rect" id="Node000004" href="$drbg_8c.html#ac0cc4ee4212c37574be163aa80a06573" title="Generate random bytes from DRBG." alt="" coords="499,109,672,137"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="388,22,421,30,452,44,468,56,477,69,486,82,501,94,513,103,508,103,497,99,482,86,473,72,464,60,450,48,419,35,389,27"/>
+<area shape="rect" id="Node000010" href="$drbg_8c.html#a5e2c38fb90ee53833024fadcb50aae16" title="Initialize a DRBG context with entropy." alt="" coords="518,57,654,85"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="388,25,507,52,502,55,389,30"/>
+<area shape="rect" id="Node000005" href="$drbg_8c.html#a57f9c1fd87fa5865cb60da90b060172e" title=" " alt="" coords="746,83,826,110"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="672,109,733,103,728,105,673,114"/>
+<area shape="rect" id="Node000006" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="905,31,1073,58"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="826,84,920,62,915,64,827,89"/>
+<area shape="rect" id="Node000007" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="912,83,1066,110"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="826,94,899,96,894,97,827,99"/>
+<area shape="rect" id="Node000008" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="900,135,1078,162"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="826,104,920,130,915,131,827,109"/>
+<area shape="rect" id="Node000009" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="1126,135,1265,162"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="1078,146,1113,148,1108,149,1079,151"/>
+<area shape="poly" id="edge10_Node000010_Node000005" title=" " alt="" coords="654,77,733,89,728,90,655,82"/>
+<area shape="poly" id="edge12_Node000011_Node000003" title=" " alt="" coords="387,60,507,35,502,38,390,65"/>
+<area shape="poly" id="edge13_Node000011_Node000004" title=" " alt="" coords="388,77,507,104,502,107,389,83"/>
+<area shape="poly" id="edge14_Node000011_Node000010" title=" " alt="" coords="388,69,505,70,500,72,389,74"/>
+<area shape="poly" id="edge16_Node000012_Node000003" title=" " alt="" coords="421,107,450,94,464,82,473,70,482,57,497,44,513,38,508,41,501,48,486,60,477,73,468,86,452,99,424,111"/>
+<area shape="poly" id="edge17_Node000012_Node000004" title=" " alt="" coords="422,121,486,122,481,124,424,126"/>
+<area shape="poly" id="edge18_Node000012_Node000010" title=" " alt="" coords="414,106,506,88,502,90,416,111"/>
+<area shape="poly" id="edge20_Node000013_Node000014" title=" " alt="" coords="405,210,503,192,498,194,407,215"/>
+<area shape="rect" id="Node000016" href="$dilithium_8c.html#a2f1014e079c1a6c7d33b2d7ecb57ad48" title=" " alt="" coords="512,213,659,241"/>
+<area shape="poly" id="edge22_Node000013_Node000016" title=" " alt="" coords="406,223,499,225,494,227,407,228"/>
+<area shape="rect" id="Node000015" href="$dilithium_8c.html#afef2600ad9e4044c8b9065b4ab8deb1e" title=" " alt="" coords="721,161,851,189"/>
+<area shape="poly" id="edge21_Node000014_Node000015" title=" " alt="" coords="658,173,708,175,703,176,659,178"/>
+<area shape="poly" id="edge28_Node000016_Node000015" title=" " alt="" coords="641,210,718,193,713,194,643,215"/>
+<area shape="rect" id="Node000017" href="$dilithium_8c.html#abc6cba41451b41c4059077950343047f" title=" " alt="" coords="720,263,852,290"/>
+<area shape="poly" id="edge23_Node000016_Node000017" title=" " alt="" coords="645,239,715,258,710,259,645,244"/>
+<area shape="rect" id="Node000018" href="$dilithium_8c.html#a1675067cd562213c08b734a14a178eec" title=" " alt="" coords="903,263,1074,290"/>
+<area shape="poly" id="edge25_Node000016_Node000018" title=" " alt="" coords="659,229,852,249,905,259,899,259,851,254,659,235"/>
+<area shape="rect" id="Node000019" href="$dilithium_8c.html#a12ad85b7a8bc6c3539f4e0bcd69b0df8" title=" " alt="" coords="734,315,838,342"/>
+<area shape="poly" id="edge26_Node000016_Node000019" title=" " alt="" coords="611,239,722,299,737,308,731,308,719,304,610,244"/>
+<area shape="poly" id="edge24_Node000017_Node000018" title=" " alt="" coords="852,274,890,276,885,277,853,279"/>
+<area shape="poly" id="edge27_Node000019_Node000018" title=" " alt="" coords="838,313,915,295,920,294,839,318"/>
 </map>
