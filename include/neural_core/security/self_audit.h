@@ -159,6 +159,13 @@ int  SNEPPX_self_audit_check_network(SNEPPXSelfAudit* audit);
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_self_audit_check_ai_safety(SNEPPXSelfAudit* audit);
+/* Additional self-audit categories implemented by the S9 audit module. */
+int  SNEPPX_self_audit_check_obfuscation(SNEPPXSelfAudit* audit);
+int  SNEPPX_self_audit_check_monitor(SNEPPXSelfAudit* audit);
+int  SNEPPX_self_audit_check_ui(SNEPPXSelfAudit* audit);
+int  SNEPPX_self_audit_check_updates(SNEPPXSelfAudit* audit);
+int  SNEPPX_self_audit_check_formal(SNEPPXSelfAudit* audit);
+int  SNEPPX_self_audit_check_pentest(SNEPPXSelfAudit* audit);
 
 #ifdef __cplusplus
 }
