@@ -24,3 +24,21 @@ def test_parse_search_lines_enforces_line_limit():
 def test_parse_search_lines_enforces_byte_limit():
     rows, truncated = MODULE.parse_search_lines("a.py:1:" + "x"*100 + "\n", max_bytes=20)
     assert rows == [] and truncated is True
+
+
+def test_cache_source_blobs_deduplicates_and_skips_binary(tmp_path, monkeypatch):
+    entries = [
+        {"type": "blob", "size": 5, "sha": "a" * 40},
+        {"type": "blob", "size": 5, "sha": "a" * 40},
+        {"type": "blob", "size": 2, "sha": "b" * 40},
+        {"type": "blob", "size": 2_000_000, "sha": "c" * 40},
+    ]
+    def fake_git(*args, binary=False):
+        if args[-1] == "a" * 40:
+            return b"hello"
+        return b"\\xff\\xfe"
+    monkeypatch.setattr(MODULE, "git", fake_git)
+    stats = MODULE.cache_source_blobs(entries, tmp_path)
+    assert stats == {"cached_blob_count": 1, "skipped_binary_count": 1}
+    assert (tmp_path / ("a" * 40 + ".txt")).read_text(encoding="utf-8") == "hello"
+    assert not (tmp_path / ("b" * 40 + ".txt")).exists()
