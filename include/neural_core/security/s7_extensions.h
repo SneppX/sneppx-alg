@@ -97,6 +97,10 @@ int  SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_d
  */
 int  SNEPPX_bspatch(const uint8_t* old_data, size_t old_len, const uint8_t* patch, size_t patch_len, uint8_t* new_data, size_t* new_len);
 
+/* File-based delta helpers used by the update pipeline. */
+int  SNEPPX_bsdiff_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
+int  SNEPPX_bspatch_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
+
 /* A/B partition management */
 typedef struct {
     int active_slot;
