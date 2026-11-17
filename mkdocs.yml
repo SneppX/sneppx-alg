@@ -126,6 +126,7 @@ markdown_extensions:
 
 nav:
     - Home: index.md
+    - Repository: code-browser/index.md
     - Playground: playground.md
     - Cookbook:
         - Overview: cookbook.md

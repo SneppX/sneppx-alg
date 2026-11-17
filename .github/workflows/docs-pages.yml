@@ -9,6 +9,7 @@ on:
       - "mkdocs.autodoc.yml"
       - "overrides/**"
       - "scripts/validate_mkdocs_nav.py"
+      - "scripts/build_git_browser_index.py"
       - "Doxyfile"
       - "pyproject.toml"
       - ".github/workflows/docs-pages.yml"
@@ -32,6 +33,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Fetch all repository branches and tags
+        run: git fetch --force origin '+refs/heads/*:refs/remotes/origin/*' --tags
+
       - name: Set up Python
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
@@ -52,9 +56,13 @@ jobs:
           doxygen Doxyfile
           test -s docs/api/doxygen/html/index.html
 
+      - name: Generate branch-aware Git browser data
+        run: python scripts/build_git_browser_index.py --output docs/git-browser-data
+
       - name: Validate and build the site
         run: |
           python scripts/validate_mkdocs_nav.py
+          test -s docs/git-browser-data/index.json
           mkdocs build --strict
 
       - name: Configure deployment commit identity
