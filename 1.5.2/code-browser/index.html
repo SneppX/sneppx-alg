@@ -147,6 +147,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#direct&#702;routes" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -364,6 +369,24 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -380,6 +403,56 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#direct&#702;routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direct routes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url&#702;structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source&#702;and&#702;revision&#702;integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source and revision integrity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -4649,6 +4722,47 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#direct&#702;routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direct routes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url&#702;structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source&#702;and&#702;revision&#702;integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source and revision integrity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -4682,7 +4796,51 @@
 
 <div id="git-browser-root" data-git-browser></div>
 
-<p>This read-only browser is generated from the Git repository during the documentation build. GitHub remains the source of truth.</p>
+<p>The read-only repository browser is generated from Git references during the documentation build. GitHub remains the source of truth.</p>
+<h2 id="direct&#702;routes">Direct routes<a class="headerlink" href="#direct&#702;routes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/sneppx-alg/tree/main/">Main branch</a></td>
+<td>Browse the default branch</td>
+</tr>
+<tr>
+<td><a href="/sneppx-alg/branches/">All branches</a></td>
+<td>List every public branch</td>
+</tr>
+<tr>
+<td><a href="/sneppx-alg/tags/">All tags</a></td>
+<td>Browse release and development tags</td>
+</tr>
+<tr>
+<td><a href="/sneppx-alg/commits/main/">Main commit history</a></td>
+<td>Inspect the complete indexed history</td>
+</tr>
+<tr>
+<td><a href="/sneppx-alg/search/">Repository search</a></td>
+<td>Search indexed file and directory paths</td>
+</tr>
+</tbody>
+</table>
+<h2 id="url&#702;structure">URL structure<a class="headerlink" href="#url&#702;structure" title="Permanent link">&para;</a></h2>
+<ul>
+<li>`/tree/{branch}/{path}` lists the contents of a directory.</li>
+<li>`/blob/{branch}/{path}` displays a tracked file with line numbers.</li>
+<li>`/tag/{tag}/tree/{path}` browses a tagged snapshot.</li>
+<li>`/tag/{tag}/blob/{path}` displays a file from a tagged snapshot.</li>
+<li>`/commit/{sha}` displays commit metadata and changed files.</li>
+<li>`/commits/{branch}/` lists the branch's indexed commit history.</li>
+</ul>
+<p>Branch names containing slashes are supported. For example, `/tree/ci-gated/self-audit-integrity/`.</p>
+<h2 id="source&#702;and&#702;revision&#702;integrity">Source and revision integrity<a class="headerlink" href="#source&#702;and&#702;revision&#702;integrity" title="Permanent link">&para;</a></h2>
+<p>Directory listings, file paths, object IDs, branch heads, tags, and commit histories are generated from Git during deployment. Source files are retrieved using the immutable commit SHA associated with the selected branch or tag. GitHub links open the corresponding commit, file history, blame view, or branch comparison.</p>
+<p>The browser is read-only. It does not create a second editable copy of the source tree.</p>
 
 
 
