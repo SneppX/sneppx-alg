@@ -25,3 +25,8 @@ def test_theme_is_dark_only():
 
 def test_pages_workflow_copies_highlighter_from_checked_out_source():
     assert "cp docs/javascripts/git-browser-highlighter.js javascripts/git-browser-highlighter.js" in DEPLOY
+
+
+def test_pages_workflow_preserves_highlighter_before_mike_switches_branch():
+    assert "cp docs/javascripts/git-browser-highlighter.js \"$RUNNER_TEMP/git-browser-highlighter.js\"" in DEPLOY
+    assert 'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js' in DEPLOY
