@@ -99,25 +99,25 @@ def main():
     parser.add_argument("--repository", default="SneppX/sneppx-alg")
     args = parser.parse_args()
     out = Path(args.output)
-    trees, commits, search = out / "trees", out / "commits", out / "search"
-    trees.mkdir(parents=True, exist_ok=True)
-    commits.mkdir(parents=True, exist_ok=True)
-    search.mkdir(parents=True, exist_ok=True)
+    trees, commits, search, blobs = (out / name for name in ("trees", "commits", "search", "blobs"))
+    for directory in (trees, commits, search, blobs):
+        directory.mkdir(parents=True, exist_ok=True)
     branches = []
     for name, sha in refs("refs/remotes/origin"):
         key = identifier(name)
         entries = tree(sha)
+        blob_stats = cache_source_blobs(entries, blobs)
         log = history(sha)
         search_lines, search_truncated = search_index(sha)
         (search / (key + ".json")).write_text(json.dumps(
             {"branch": name, "commit": sha, "truncated": search_truncated, "lines": search_lines},
-            ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+            ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
         (trees / (key + ".json")).write_text(json.dumps(
             {"branch": name, "commit": sha, "entries": entries},
-            ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+            ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
         (commits / (key + ".json")).write_text(json.dumps(
             {"branch": name, "commits": log},
-            ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+            ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
         branches.append({"name": name, "id": key, "commit": sha,
                          "file_count": len(entries), "commit_count": len(log),
                          "search_count": len(search_lines), "search_truncated": search_truncated, **blob_stats})
@@ -127,16 +127,19 @@ def main():
         date = git("show", "-s", "--format=%cI", sha).strip()
         key = identifier("tag:" + name)
         entries = tree(sha)
+        cache_source_blobs(entries, blobs)
         (trees / (key + ".json")).write_text(json.dumps(
             {"branch": name, "commit": sha, "entries": entries},
-            ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+            ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
         tags.append({"name": name, "id": key, "object": object_sha, "commit": sha,
                      "date": date, "file_count": len(entries)})
     manifest = {"repository": args.repository, "default_branch": "main",
                 "generated_at": datetime.now(timezone.utc).isoformat(),
+                "source_cache": {"path": "blobs/{sha}.txt", "max_file_bytes": 1048576, "encoding": "utf-8"},
                 "branches": branches, "tags": tags}
-    (out / "index.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out / "index.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
     print(f"Indexed {len(branches)} branches, {len(tags)} tags, "
-          f"{sum(item['file_count'] for item in branches)} branch-file entries.")
+          f"{sum(item['file_count'] for item in branches)} branch-file entries; "
+          f"{sum(item['cached_blob_count'] for item in branches)} branch blob references.")
 if __name__ == "__main__":
     main()
