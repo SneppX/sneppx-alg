@@ -36,7 +36,7 @@ def test_cache_source_blobs_deduplicates_and_skips_binary(tmp_path, monkeypatch)
     def fake_git(*args, binary=False):
         if args[-1] == "a" * 40:
             return b"hello"
-        return b"\\xff\\xfe"
+        return bytes([255, 254])
     monkeypatch.setattr(MODULE, "git", fake_git)
     stats = MODULE.cache_source_blobs(entries, tmp_path)
     assert stats == {"cached_blob_count": 1, "skipped_binary_count": 1}
