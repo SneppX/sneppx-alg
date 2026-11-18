@@ -1,0 +1,28 @@
+var memory__leak__detector_8c =
+[
+    [ "leak_allocation_t", "structleak__allocation__t.html", "structleak__allocation__t" ],
+    [ "LEAK_BACKTRACE_DEPTH", "memory__leak__detector_8c.html#a8242ad051d88d4513ecba3f7b03b2eda", null ],
+    [ "LEAK_MAX_ALLOCATIONS", "memory__leak__detector_8c.html#a06addac0c3684f30ee68e025065d6095", null ],
+    [ "LEAK_MAX_REPORTS", "memory__leak__detector_8c.html#ae2145fefb844b624a11cfa320d416c79", null ],
+    [ "SNEPPX_leak_calloc", "memory__leak__detector_8c.html#a813c9a70c17c8b3f0fbd66655667a736", null ],
+    [ "SNEPPX_leak_check", "memory__leak__detector_8c.html#a6d9dc75a520d9ed198cfcb80a904c3e6", null ],
+    [ "SNEPPX_leak_disable_tracking", "memory__leak__detector_8c.html#a2598310679ae70c01b3f3d99d20828af", null ],
+    [ "SNEPPX_leak_enable_tracking", "memory__leak__detector_8c.html#a43766a489568698393e023467dd916d4", null ],
+    [ "SNEPPX_leak_free", "memory__leak__detector_8c.html#af35aa122c22489ae8c776b2b1e22d58c", null ],
+    [ "SNEPPX_leak_get_stats", "memory__leak__detector_8c.html#a0cf2ed4dd4674df1eed44bd944506974", null ],
+    [ "SNEPPX_leak_init", "memory__leak__detector_8c.html#a7a0a61526b74d3309741707a7cae9882", null ],
+    [ "SNEPPX_leak_malloc", "memory__leak__detector_8c.html#acc29f47e19c826eb028640925b4409ed", null ],
+    [ "SNEPPX_leak_realloc", "memory__leak__detector_8c.html#a39fe7e0a6a741a4e1dc07bc8dec2116c", null ],
+    [ "SNEPPX_leak_reset", "memory__leak__detector_8c.html#aabcd6498e4bee0125ab7808a86f15b70", null ],
+    [ "SNEPPX_leak_set_threshold", "memory__leak__detector_8c.html#afcb1f412cce8de422325faef3f46c5d6", null ],
+    [ "SNEPPX_leak_track_alloc", "memory__leak__detector_8c.html#a92402033238a032c79bc9312cf4fbe2d", null ],
+    [ "SNEPPX_leak_track_free", "memory__leak__detector_8c.html#ab92d2050ea0ace244f636295642c5799", null ],
+    [ "alloc_count", "memory__leak__detector_8c.html#af182ea4873391a19209d06a1814404c4", null ],
+    [ "allocations", "memory__leak__detector_8c.html#a402763d4656481a63eb36b250045a140", null ],
+    [ "current_usage", "memory__leak__detector_8c.html#a1e2dbc07d814104b01f9cf11c6b615a2", null ],
+    [ "leak_threshold", "memory__leak__detector_8c.html#a4a369d67e4bab38052d13a17eb17f8af", null ],
+    [ "peak_usage", "memory__leak__detector_8c.html#a6271d8a0a3ae363613e11abb8f5ea854", null ],
+    [ "total_allocated", "memory__leak__detector_8c.html#a424233e13d1935982a2a4e63696cdf4c", null ],
+    [ "total_freed", "memory__leak__detector_8c.html#a04f41f70eb666be6540f40ed11221b2d", null ],
+    [ "tracking_enabled", "memory__leak__detector_8c.html#a162de2b9188520c315f74737af266d6e", null ]
+];

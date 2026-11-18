@@ -1,0 +1,61 @@
+<map id="include/neural_core/kernel/automatic_differentiation_framework.h" name="include/neural_core/kernel/automatic_differentiation_framework.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1034,5,1268,67"/>
+<area shape="rect" id="Node000002" href="$adversarial__robustness__certification_8h.html" title=" " alt="" coords="828,115,1023,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1076,73,990,117,988,112,1071,75"/>
+<area shape="rect" id="Node000004" href="$differentiable__training__pipeline_8h.html" title=" " alt="" coords="87,334,281,396"/>
+<area shape="poly" id="edge13_Node000001_Node000004" title=" " alt="" coords="1016,38,753,41,441,52,294,62,169,75,76,94,46,105,27,117,12,143,9,171,18,201,36,230,60,259,87,287,143,333,138,335,83,291,56,263,31,234,13,203,4,172,6,142,24,113,43,100,75,89,168,70,294,56,440,46,753,36,1020,36"/>
+<area shape="rect" id="Node000005" href="$trainer_8c.html" title=" " alt="" coords="396,444,548,472"/>
+<area shape="poly" id="edge34_Node000001_Node000005" title=" " alt="" coords="1238,72,1268,91,1294,113,1334,155,1364,197,1372,218,1374,241,1368,264,1354,288,1331,311,1299,332,1260,351,1214,368,1108,396,988,418,864,434,744,445,549,457,549,451,743,440,863,428,987,412,1106,391,1212,363,1258,346,1296,327,1328,307,1350,285,1363,262,1369,240,1367,220,1360,199,1330,159,1290,117,1265,95,1237,78"/>
+<area shape="rect" id="Node000007" href="$cognitive__memory_8h.html" title=" " alt="" coords="1423,115,1590,177"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="1265,69,1425,119,1420,119,1265,75"/>
+<area shape="rect" id="Node000013" href="$fractal__memory__orchestrator_8h.html" title=" " alt="" coords="38,115,218,177"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="1016,41,858,50,661,63,445,85,230,118,220,119,217,115,229,112,444,80,660,58,858,45,1021,40"/>
+<area shape="rect" id="Node000014" href="$hierarchical__state__space_8h.html" title=" " alt="" coords="242,115,425,177"/>
+<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="1016,46,749,72,593,92,438,118,427,120,425,115,437,112,592,86,749,67,1021,44"/>
+<area shape="rect" id="Node000015" href="$neural__programming__engine_8h.html" title=" " alt="" coords="449,115,628,177"/>
+<area shape="poly" id="edge18_Node000001_Node000015" title=" " alt="" coords="1016,54,839,81,642,118,630,120,628,115,641,112,838,76,1021,52"/>
+<area shape="rect" id="Node000016" href="$sparse__expert__routing_8h.html" title=" " alt="" coords="653,115,803,177"/>
+<area shape="poly" id="edge20_Node000001_Node000016" title=" " alt="" coords="1016,66,817,118,805,121,803,116,815,112,1021,64"/>
+<area shape="rect" id="Node000017" href="$multi__head__attention__module_8h.html" title=" " alt="" coords="1047,115,1255,177"/>
+<area shape="poly" id="edge22_Node000001_Node000017" title=" " alt="" coords="1152,80,1153,116,1149,113,1149,85"/>
+<area shape="rect" id="Node000022" href="$ops_8c.html" title=" " alt="" coords="1186,242,1339,269"/>
+<area shape="poly" id="edge31_Node000001_Node000022" title=" " alt="" coords="1232,74,1253,92,1269,114,1280,148,1281,184,1276,217,1269,243,1265,239,1271,216,1276,184,1275,149,1264,116,1249,96,1231,79"/>
+<area shape="rect" id="Node000023" href="$autodiff__framework_8c.html" title=" " alt="" coords="1614,124,1783,168"/>
+<area shape="poly" id="edge30_Node000001_Node000023" title=" " alt="" coords="1283,53,1437,78,1603,112,1635,123,1630,123,1602,118,1436,83,1283,58"/>
+<area shape="rect" id="Node000024" href="$tape_8c.html" title=" " alt="" coords="1807,132,1966,160"/>
+<area shape="poly" id="edge32_Node000001_Node000024" title=" " alt="" coords="1284,43,1524,67,1661,87,1797,112,1855,131,1849,131,1795,118,1660,92,1523,72,1284,49"/>
+<area shape="rect" id="Node000025" href="$variable_8c.html" title=" " alt="" coords="1991,132,2174,160"/>
+<area shape="poly" id="edge33_Node000001_Node000025" title=" " alt="" coords="1283,40,1428,48,1602,62,1791,83,1979,112,2046,131,2041,131,1978,118,1791,88,1602,67,1427,53,1284,45"/>
+<area shape="rect" id="Node000003" href="$system__architecture__definitions_8h.html" title=" " alt="" coords="266,225,459,286"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="810,178,718,195,644,204,571,212,479,227,461,231,459,226,478,222,570,207,644,198,718,190,815,176"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="297,296,235,336,233,332,302,293"/>
+<area shape="poly" id="edge6_Node000003_Node000005" title=" " alt="" coords="399,296,424,333,452,393,470,445,466,442,447,395,419,336,397,301"/>
+<area shape="rect" id="Node000006" href="$arch_8c.html" title=" " alt="" coords="305,351,410,379"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="362,300,360,352,356,349,359,304"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="295,398,433,443,428,444,294,404"/>
+<area shape="rect" id="Node000008" href="$cognitive__manager_8c.html" title=" " alt="" coords="1623,233,1807,278"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="1579,181,1676,233,1671,232,1578,187"/>
+<area shape="rect" id="Node000009" href="$episodic_8c.html" title=" " alt="" coords="1831,233,2015,278"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="1606,175,1714,199,1819,222,1851,233,1846,232,1818,227,1713,204,1605,180"/>
+<area shape="rect" id="Node000010" href="$procedural_8c.html" title=" " alt="" coords="2039,233,2223,278"/>
+<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="1606,174,1724,192,1818,199,1911,205,2027,222,2063,233,2058,232,2026,227,1910,210,1818,204,1724,198,1606,180"/>
+<area shape="rect" id="Node000011" href="$semantic_8c.html" title=" " alt="" coords="2247,233,2431,278"/>
+<area shape="poly" id="edge11_Node000007_Node000011" title=" " alt="" coords="1606,174,1701,189,1783,196,1922,199,2061,201,2141,208,2235,222,2273,233,2267,232,2234,227,2141,213,2060,206,1922,204,1782,201,1701,194,1606,180"/>
+<area shape="rect" id="Node000012" href="$working_8c.html" title=" " alt="" coords="1415,233,1599,278"/>
+<area shape="poly" id="edge12_Node000007_Node000012" title=" " alt="" coords="1509,190,1509,234,1505,231,1505,194"/>
+<area shape="poly" id="edge15_Node000013_Node000003" title=" " alt="" coords="208,181,299,223,294,225,208,186"/>
+<area shape="poly" id="edge17_Node000014_Node000003" title=" " alt="" coords="347,189,357,225,352,223,345,194"/>
+<area shape="poly" id="edge19_Node000015_Node000003" title=" " alt="" coords="474,186,413,227,411,222,479,184"/>
+<area shape="poly" id="edge21_Node000016_Node000003" title=" " alt="" coords="635,178,461,231,459,226,640,176"/>
+<area shape="poly" id="edge23_Node000017_Node000003" title=" " alt="" coords="1028,178,876,198,754,203,632,208,562,215,479,227,461,231,459,226,478,222,561,210,632,203,753,198,875,193,1033,177"/>
+<area shape="poly" id="edge29_Node000017_Node000005" title=" " alt="" coords="1028,177,975,183,907,183,758,182,685,184,619,191,564,205,542,215,525,227,504,251,489,279,479,309,473,341,470,401,472,445,468,442,465,401,468,340,474,308,484,277,499,248,521,223,539,210,562,200,618,186,685,179,758,177,907,178,974,178,1034,176"/>
+<area shape="rect" id="Node000018" href="$inference__engine_8h.html" title=" " alt="" coords="746,233,939,278"/>
+<area shape="poly" id="edge24_Node000017_Node000018" title=" " alt="" coords="1053,181,906,235,904,230,1048,183"/>
+<area shape="rect" id="Node000020" href="$attention_8c.html" title=" " alt="" coords="964,242,1162,269"/>
+<area shape="poly" id="edge26_Node000017_Node000020" title=" " alt="" coords="1119,187,1075,243,1072,239,1114,190"/>
+<area shape="rect" id="Node000021" href="$attention__module_8c.html" title=" " alt="" coords="534,233,722,278"/>
+<area shape="poly" id="edge27_Node000017_Node000021" title=" " alt="" coords="1029,178,948,194,882,203,817,212,735,227,703,235,701,230,734,222,816,207,881,198,947,189,1034,177"/>
+<area shape="poly" id="edge28_Node000017_Node000022" title=" " alt="" coords="1194,185,1252,242,1246,240,1192,190"/>
+<area shape="rect" id="Node000019" href="$inference__engine_8c.html" title=" " alt="" coords="747,343,938,388"/>
+<area shape="poly" id="edge25_Node000018_Node000019" title=" " alt="" coords="845,292,845,344,841,341,841,296"/>
+</map>

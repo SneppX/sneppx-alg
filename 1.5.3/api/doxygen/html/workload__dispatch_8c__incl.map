@@ -1,0 +1,9 @@
+<map id="kernel/thread/workload_dispatch.c" name="kernel/thread/workload_dispatch.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="66,5,238,50"/>
+<area shape="rect" id="Node000002" href="$concurrent__workload__dispatch_8h.html" title=" " alt="" coords="5,98,163,143"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,48,111,87,107,84,134,52"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="187,106,256,134"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="169,48,205,94,199,94,168,53"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="47,191,121,218"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="86,141,87,176,81,174,82,145"/>
+</map>

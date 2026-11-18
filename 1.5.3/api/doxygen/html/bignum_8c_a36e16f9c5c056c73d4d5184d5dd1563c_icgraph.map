@@ -1,0 +1,32 @@
+<map id="SNEPPX_bn_zero" name="SNEPPX_bn_zero">
+<area shape="rect" id="Node000001" title="Perform Bn Zero." alt="" coords="849,212,979,240"/>
+<area shape="rect" id="Node000002" href="$bignum_8c.html#aaedbc58543f9681b9e855a8fcf6e7b57" title="Perform Bn Div." alt="" coords="656,135,779,162"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="860,206,754,165,755,160,865,206"/>
+<area shape="rect" id="Node000005" href="$bignum_8c.html#a187b8d9d564b82a14f36a923c78abea5" title="Perform Bn Exp Mod." alt="" coords="212,237,374,265"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="832,232,375,250,374,245,834,227"/>
+<area shape="rect" id="Node000008" href="$bignum_8c.html#a2749d7e7081269b8675c8f822c390089" title="Perform Bn From Hex." alt="" coords="422,313,586,341"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="870,245,801,272,690,299,587,318,586,313,689,294,800,267,864,246"/>
+<area shape="rect" id="Node000009" href="$bignum_8c.html#a6bc62af8067f65367675f12e2aec2745" title="Perform Bn Mul." alt="" coords="440,187,568,214"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="830,221,568,207,568,202,836,220"/>
+<area shape="rect" id="Node000010" href="$bignum_8c.html#a9aebd4da0efbcc03192051e35c3928e0" title=" " alt="" coords="634,339,801,366"/>
+<area shape="poly" id="edge15_Node000001_Node000010" title=" " alt="" coords="891,250,850,288,802,323,764,341,763,335,799,318,847,284,886,252"/>
+<area shape="rect" id="Node000011" href="$bignum_8c.html#ab7597b94c196c978cc091312d4d2c319" title="Perform Bn Sub." alt="" coords="442,33,567,61"/>
+<area shape="poly" id="edge17_Node000001_Node000011" title=" " alt="" coords="889,200,850,162,826,142,799,125,740,99,678,79,567,57,567,51,680,74,742,94,802,121,829,138,854,158,894,201"/>
+<area shape="rect" id="Node000003" href="$bignum_8c.html#aaf3e642b0ec279e9f4e0dbe49c899593" title="Perform Bn Inv Mod." alt="" coords="214,35,372,62"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="639,132,355,66,355,60,643,129"/>
+<area shape="rect" id="Node000004" href="$bignum_8c.html#a975b93ccd7c27d5f7553b62f9fe87d1b" title="Perform Bn Mod." alt="" coords="438,135,570,162"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="638,149,571,151,570,146,644,148"/>
+<area shape="poly" id="edge7_Node000004_Node000003" title=" " alt="" coords="444,129,421,119,396,101,373,83,336,66,336,60,375,78,400,96,423,114,449,128"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="437,169,423,178,364,209,316,239,314,234,362,204,421,173,442,167"/>
+<area shape="rect" id="Node000006" href="$bignum_8c.html#a4b29d7828c52cd6ceffa862bcc64ecb2" title="Perform Bn Is Prime." alt="" coords="5,136,164,164"/>
+<area shape="poly" id="edge8_Node000004_Node000006" title=" " alt="" coords="421,132,374,127,293,122,212,127,146,138,144,133,211,122,293,117,374,122,426,131"/>
+<area shape="rect" id="Node000007" href="$bignum_8c.html#a8a685a101fe659216542036727131861" title="Perform Bn Gcd." alt="" coords="230,136,356,164"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="420,150,357,152,356,147,425,148"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="236,231,210,222,110,167,110,162,213,217,241,231"/>
+<area shape="poly" id="edge13_Node000009_Node000003" title=" " alt="" coords="431,180,420,176,395,153,372,126,309,65,310,60,376,123,398,149,424,172,436,180"/>
+<area shape="poly" id="edge12_Node000009_Node000005" title=" " alt="" coords="426,219,354,239,353,234,432,218"/>
+<area shape="poly" id="edge14_Node000009_Node000006" title=" " alt="" coords="422,197,323,191,211,178,151,167,150,162,212,172,323,185,427,195"/>
+<area shape="poly" id="edge16_Node000010_Node000008" title=" " alt="" coords="616,341,587,340,587,334,622,341"/>
+<area shape="poly" id="edge18_Node000011_Node000003" title=" " alt="" coords="424,49,373,50,372,45,429,47"/>
+<area shape="poly" id="edge19_Node000011_Node000006" title=" " alt="" coords="446,29,397,18,337,10,273,10,242,16,213,26,174,49,141,79,114,111,97,137,92,134,110,108,137,76,171,44,211,21,241,11,273,5,337,4,398,13,451,28"/>
+</map>

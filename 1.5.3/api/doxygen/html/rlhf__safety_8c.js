@@ -1,0 +1,28 @@
+var rlhf__safety_8c =
+[
+    [ "rlhf_policy_t", "structrlhf__policy__t.html", "structrlhf__policy__t" ],
+    [ "rlhf_scoring_t", "structrlhf__scoring__t.html", "structrlhf__scoring__t" ],
+    [ "RLHF_MAX_FEATURES", "rlhf__safety_8c.html#a44bcd171eea1ba7cc4179182f0689762", null ],
+    [ "RLHF_MAX_INPUT", "rlhf__safety_8c.html#a4772ab776f717b7cc9e22ab6dbfcbd9b", null ],
+    [ "RLHF_MAX_POLICIES", "rlhf__safety_8c.html#a918af7afe080737d907b6d205809c912", null ],
+    [ "rlhf_check_factual", "rlhf__safety_8c.html#a12828c9976d4a2eb2bcd83a9ebf6d0ee", null ],
+    [ "rlhf_detect_bias", "rlhf__safety_8c.html#a63b01ae689ddeb6c7e901cc81f9c7432", null ],
+    [ "rlhf_detect_harm", "rlhf__safety_8c.html#a6030ad11f82d6cd9eef5ab39a753638a", null ],
+    [ "SNEPPX_rlhf_add_default_policies", "rlhf__safety_8c.html#a4c3266fa834af54adb720a1e5fd676b1", null ],
+    [ "SNEPPX_rlhf_add_policy", "rlhf__safety_8c.html#a1b99f676b37cddf019a145b86c5dcae0", null ],
+    [ "SNEPPX_rlhf_check_policies", "rlhf__safety_8c.html#a7446fe197dbd85e9721521262253e321", null ],
+    [ "SNEPPX_rlhf_correct_output", "rlhf__safety_8c.html#a3b5691fbcdd1480793438256d00f89f3", null ],
+    [ "SNEPPX_rlhf_generate_critique", "rlhf__safety_8c.html#aa04d21d0012a933c67801e3e9bb8c204", null ],
+    [ "SNEPPX_rlhf_generate_refusal", "rlhf__safety_8c.html#a6278fc045692b0f461fe6e7bf2ce8277", null ],
+    [ "SNEPPX_rlhf_get_config", "rlhf__safety_8c.html#aec4aeef83df830d4955bd53550fa32d2", null ],
+    [ "SNEPPX_rlhf_get_stats", "rlhf__safety_8c.html#a3ae0de541de3f6470c8bf23583b66cbe", null ],
+    [ "SNEPPX_rlhf_remove_policy", "rlhf__safety_8c.html#a04eecfadc054ebe5620c4353cc410464", null ],
+    [ "SNEPPX_rlhf_reset", "rlhf__safety_8c.html#ace3e5ef2382ffda7e50922b54cfd982f", null ],
+    [ "SNEPPX_rlhf_score", "rlhf__safety_8c.html#a40b76a60bc448d5ef59452a8b309982c", null ],
+    [ "SNEPPX_rlhf_update_config", "rlhf__safety_8c.html#a8bb79f9de923f7591ef7adfcf7796469", null ],
+    [ "policies", "rlhf__safety_8c.html#a90345e22e1e0631cf1a4c02dd3966531", null ],
+    [ "policy_count", "rlhf__safety_8c.html#a96396a41c6115f305f6a58c931f4dec4", null ],
+    [ "rlhf_config", "rlhf__safety_8c.html#a667eec9c8bfa1f34214ddc9262731de0", null ],
+    [ "total_corrections", "rlhf__safety_8c.html#a154369ad0c942b01efab5f31ee28f5c3", null ],
+    [ "total_refusals", "rlhf__safety_8c.html#ab7eeeaa5e872e30752c40c3485770a5f", null ]
+];

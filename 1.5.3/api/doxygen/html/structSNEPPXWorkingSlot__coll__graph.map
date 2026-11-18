@@ -1,0 +1,7 @@
+<map id="SNEPPXWorkingSlot" name="SNEPPXWorkingSlot">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,207,156,234"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXTensor.html" title=" " alt="" coords="23,106,138,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,148,83,207,78,205,78,151"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXStorage.html" title=" " alt="" coords="19,5,142,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="82,46,83,106,78,105,79,51"/>
+</map>

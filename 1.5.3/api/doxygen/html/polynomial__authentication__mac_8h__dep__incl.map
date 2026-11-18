@@ -1,0 +1,9 @@
+<map id="include/neural_core/security/polynomial_authentication_mac.h" name="include/neural_core/security/polynomial_authentication_mac.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="203,5,372,67"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,115,176,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="221,74,147,117,145,112,217,76"/>
+<area shape="rect" id="Node000003" href="$aead_8c.html" title=" " alt="" coords="200,132,376,160"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="290,80,290,133,286,130,286,84"/>
+<area shape="rect" id="Node000004" href="$poly1305_8c.html" title=" " alt="" coords="400,132,605,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="363,72,479,131,474,132,361,77"/>
+</map>

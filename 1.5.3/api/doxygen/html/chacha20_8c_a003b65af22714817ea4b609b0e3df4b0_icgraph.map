@@ -1,0 +1,21 @@
+<map id="SNEPPX_chacha20_encrypt" name="SNEPPX_chacha20_encrypt">
+<area shape="rect" id="Node000001" title="Encrypt Chacha20." alt="" coords="494,161,691,189"/>
+<area shape="rect" id="Node000002" href="$aead_8c.html#a94018eba2cb3ac4308d2e4a4a88b1a96" title="Decrypt Aead." alt="" coords="257,5,424,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="567,149,515,98,481,71,445,48,417,36,416,31,447,43,484,67,518,95,572,150"/>
+<area shape="rect" id="Node000004" href="$aead_8c.html#a13c4f39b86c1ea1b956b5c6dc81eaa30" title="Encrypt Aead." alt="" coords="257,57,424,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="553,153,503,127,445,100,408,88,408,83,447,95,506,122,558,153"/>
+<area shape="rect" id="Node000006" href="$c__binding__implementation_8c.html#a245d792f13845261785a96de2c898b90" title="Decrypt C Chacha20." alt="" coords="235,109,446,137"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="504,158,411,140,411,135,509,157"/>
+<area shape="rect" id="Node000007" href="$c__binding__implementation_8c.html#af6483683c5ea0d68b1c9a5e861a7aee0" title="Encrypt C Chacha20." alt="" coords="235,161,446,189"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="475,176,447,178,446,173,481,175"/>
+<area shape="rect" id="Node000008" href="$transport__security_8c.html#a6431c0f7bbba2dc0eef679384321bf32" title="Decrypt Transport." alt="" coords="243,213,438,241"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="504,194,412,215,411,210,509,192"/>
+<area shape="rect" id="Node000009" href="$transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab" title="Encrypt Transport." alt="" coords="243,265,438,293"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="558,196,506,228,447,255,409,267,407,262,445,250,503,223,553,198"/>
+<area shape="rect" id="Node000010" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="243,317,438,362"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="571,199,518,255,484,282,447,307,423,319,421,314,445,302,481,278,514,251,567,202"/>
+<area shape="rect" id="Node000003" href="$c__binding__implementation_8c.html#ab071599ef2430b398e4928cba922380b" title="Decrypt C Aead." alt="" coords="5,5,187,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="239,21,188,22,186,17,244,18"/>
+<area shape="rect" id="Node000005" href="$c__binding__implementation_8c.html#a4ca5bc7d85cb5df1fda1486f8a6c1f2a" title="Encrypt C Aead." alt="" coords="5,57,187,85"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="239,73,188,74,186,69,244,70"/>
+</map>

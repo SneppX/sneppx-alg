@@ -1,0 +1,15 @@
+<map id="SNEPPX_ml_jailbreak_detect" name="SNEPPX_ml_jailbreak_detect">
+<area shape="rect" id="Node000001" title="Perform Ml Jailbreak Detect." alt="" coords="422,144,582,189"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#a4d207c4fca3eb9ce2e8029a5bca001b1" title="Perform Ml Jailbreak Detect Raw." alt="" coords="214,5,374,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="463,133,422,99,373,65,352,53,352,48,375,60,425,95,469,133"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a3cb3f94a330dd3af968f0aaa7de3f557" title="Perform Ml Jailbreak Detect Utf8." alt="" coords="214,75,374,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="416,139,363,123,363,117,421,138"/>
+<area shape="rect" id="Node000004" href="$s5__extensions_8c.html#ae43c7fc56c27a770e37e745b1da55cfc" title="Perform Ml Jailbreak Helper Scan." alt="" coords="214,144,374,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="404,167,375,169,374,164,409,166"/>
+<area shape="rect" id="Node000006" href="$s5__extensions_8c.html#a290f80139fe8be17cb96f4eea88e260d" title="Perform Ml Jailbreak Scan Advanced." alt="" coords="214,213,374,258"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="421,193,364,215,363,210,416,195"/>
+<area shape="rect" id="Node000007" href="$s5__extensions_8c.html#aa3994a28d3f5f339f681924c072bb846" title="Perform Ml Jailbreak Scan Multi." alt="" coords="214,283,374,327"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="468,198,425,238,375,273,353,285,351,280,373,268,422,233,463,200"/>
+<area shape="rect" id="Node000005" href="$s5__extensions_8c.html#ac1706e5785d6d261ab4bd779d2d6449d" title="Perform Ml Jailbreak Scan Encoded." alt="" coords="5,144,166,189"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="196,167,167,169,165,164,201,165"/>
+</map>

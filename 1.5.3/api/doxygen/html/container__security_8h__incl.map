@@ -1,0 +1,9 @@
+<map id="include/neural_core/security/container_security.h" name="include/neural_core/security/container_security.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="62,5,211,67"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,115,76,143"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,66,67,106,64,102,102,69"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="100,115,173,143"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="138,66,139,100,134,98,135,69"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="197,115,260,143"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="168,65,207,104,202,104,166,70"/>
+</map>

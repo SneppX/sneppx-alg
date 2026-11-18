@@ -1,0 +1,15 @@
+<map id="include/neural_core/security/cryptographic_hashing_blake3.h" name="include/neural_core/security/cryptographic_hashing_blake3.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="509,5,680,67"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,115,176,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="491,54,349,83,188,118,177,121,175,116,187,112,348,77,497,53"/>
+<area shape="rect" id="Node000003" href="$c__binding__implementation_8c.html" title=" " alt="" coords="200,124,373,168"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="497,72,349,126,348,120,492,73"/>
+<area shape="rect" id="Node000004" href="$blake3_8c.html" title=" " alt="" coords="397,132,584,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="558,77,505,134,502,129,553,79"/>
+<area shape="rect" id="Node000005" href="$monitor__advanced_8c.html" title=" " alt="" coords="608,124,792,168"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="635,76,681,124,676,122,633,81"/>
+<area shape="rect" id="Node000006" href="$identity__management_8c.html" title=" " alt="" coords="816,124,1000,168"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="695,69,847,123,842,123,694,74"/>
+<area shape="rect" id="Node000007" href="$signed__update_8c.html" title=" " alt="" coords="1024,124,1200,168"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="695,51,846,77,1012,112,1045,123,1039,123,1011,118,845,82,695,56"/>
+</map>

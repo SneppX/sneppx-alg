@@ -1,0 +1,7 @@
+<map id="include/neural_core/security/signed_update.h" name="include/neural_core/security/signed_update.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="95,5,283,50"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,98,176,160"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,60,122,100,119,96,155,62"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html" title=" " alt="" coords="200,106,376,151"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="222,59,269,106,264,106,220,64"/>
+</map>

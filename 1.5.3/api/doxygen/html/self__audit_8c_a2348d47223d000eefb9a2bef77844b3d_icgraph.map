@@ -1,0 +1,11 @@
+<map id="audit_compute_category_passes" name="audit_compute_category_passes">
+<area shape="rect" id="Node000001" title=" " alt="" coords="476,65,658,110"/>
+<area shape="rect" id="Node000002" href="$self__audit_8c.html#a5d5140e707f222aab799b51dde881705" title=" " alt="" coords="246,65,428,110"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="458,88,429,90,428,85,463,87"/>
+<area shape="rect" id="Node000003" href="$self__audit_8c.html#a81b1f8cdb920f2b0223413d8ecb85508" title=" " alt="" coords="6,5,197,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="230,62,192,53,192,48,235,60"/>
+<area shape="rect" id="Node000004" href="$self__audit_8c.html#a0e6aacfab7c588b60d1d830f6aff493e" title=" " alt="" coords="5,74,198,102"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="228,88,199,90,198,85,233,87"/>
+<area shape="rect" id="Node000005" href="$self__audit_8c.html#a39a1bc16e864020d5ebb6a1f50be291a" title=" " alt="" coords="9,125,194,170"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="235,114,193,127,191,122,230,115"/>
+</map>

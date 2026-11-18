@@ -1,0 +1,25 @@
+var structSNEPPXBCTx =
+[
+    [ "block_height", "structSNEPPXBCTx.html#a2aa8a37a15c991afb662009f1d0d49b0", null ],
+    [ "data", "structSNEPPXBCTx.html#a7f71a7ee48431c831116bef9dd64d63e", null ],
+    [ "data_len", "structSNEPPXBCTx.html#a116a5afc573b13da3b27f1ead8cb201d", null ],
+    [ "events", "structSNEPPXBCTx.html#ad03562ddbaa54c9fc3bc4c285e5bcc13", null ],
+    [ "events_len", "structSNEPPXBCTx.html#a0fb83e1e54e3bfb2159d3efe8b195fb7", null ],
+    [ "from_address", "structSNEPPXBCTx.html#a0c484417fe9ebbe4af4c687bbb33aace", null ],
+    [ "from_len", "structSNEPPXBCTx.html#a700a2a7566aa1d3b3dfbed14afb4e801", null ],
+    [ "gas_limit", "structSNEPPXBCTx.html#a721f1bd14b4062be015f082c19eb3866", null ],
+    [ "gas_price", "structSNEPPXBCTx.html#af8a45ce9c8d985cf4d60d0d391104d54", null ],
+    [ "hash_len", "structSNEPPXBCTx.html#a9b5509363d5691303de5f3e9ecb5dbc2", null ],
+    [ "logs", "structSNEPPXBCTx.html#accf3d7276bc089c0ed530dd5f520e974", null ],
+    [ "logs_len", "structSNEPPXBCTx.html#a00e0c823535c45a7aeabcdbb5423ab86", null ],
+    [ "nonce", "structSNEPPXBCTx.html#a432cc08c50b1db1641d59199a6300c29", null ],
+    [ "sig_len", "structSNEPPXBCTx.html#a8d6e096bb18383257cf7ee2f151d0c29", null ],
+    [ "signature", "structSNEPPXBCTx.html#a9e92eff25a971422a4ed08a97adb0763", null ],
+    [ "status", "structSNEPPXBCTx.html#a2f798f37d8d4314698423fad435f0952", null ],
+    [ "to_address", "structSNEPPXBCTx.html#a4f25b17ef5ee192613dbfe3eb34d19ac", null ],
+    [ "to_len", "structSNEPPXBCTx.html#a711454ddb17a13ac1cebb330b00d0c32", null ],
+    [ "tx_hash", "structSNEPPXBCTx.html#a21767ad1eb16fd697fe419b2f2cd7d94", null ],
+    [ "tx_id", "structSNEPPXBCTx.html#a5fe7182a821f5033520f48bc2868ec0c", null ],
+    [ "tx_index", "structSNEPPXBCTx.html#a53cb2e6dada7ffb29e6c01dc690af026", null ],
+    [ "value", "structSNEPPXBCTx.html#a07040ad78384a0f6598e5830ff3a5dcc", null ]
+];

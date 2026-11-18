@@ -1,0 +1,13 @@
+<map id="tokenize_bigrams" name="tokenize_bigrams">
+<area shape="rect" id="Node000001" title=" " alt="" coords="468,118,604,146"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#aa73640b46f0e6e5e37a1ccb08208d5f7" title="Perform Factuality Score." alt="" coords="237,118,420,146"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="450,132,421,134,420,129,455,131"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a886e260baaae2e01bba34cef42fd1790" title="Perform Factuality Score Batch." alt="" coords="5,5,189,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="285,111,188,65,161,53,160,48,190,60,289,109"/>
+<area shape="rect" id="Node000004" href="$s5__extensions_8c.html#a04b13fc6055739b82685fc6ab722cda0" title="Perform Factuality Score Check." alt="" coords="5,75,189,119"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="219,117,190,113,189,108,224,115"/>
+<area shape="rect" id="Node000005" href="$s5__extensions_8c.html#a9167c18b4ab8d6ea573225ce1d3a5149" title="Perform Factuality Score Compare." alt="" coords="5,144,189,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="219,149,190,155,188,150,224,147"/>
+<area shape="rect" id="Node000006" href="$s5__extensions_8c.html#ae2de010687191fed5479c417ff23b378" title="Perform Factuality Score Compare Threshold." alt="" coords="5,213,189,258"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="290,152,190,203,161,215,159,210,188,199,284,154"/>
+</map>

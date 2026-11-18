@@ -1,0 +1,5 @@
+<map id="SNEPPX_embedding" name="SNEPPX_embedding">
+<area shape="rect" id="Node000001" title="Perform Embedding." alt="" coords="248,5,400,33"/>
+<area shape="rect" id="Node000002" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,5,200,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="229,19,200,22,200,17,235,19"/>
+</map>

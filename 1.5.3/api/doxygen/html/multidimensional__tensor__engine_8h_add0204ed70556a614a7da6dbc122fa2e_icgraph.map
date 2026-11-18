@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_silu" name="SNEPPX_tensor_silu">
+<area shape="rect" id="Node000001" title="Perform Tensor Silu." alt="" coords="156,5,306,33"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ad7891cf97997da9ddc8688e614058875" title="Perform Silu." alt="" coords="5,5,108,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,19,108,22,108,17,143,19"/>
+</map>

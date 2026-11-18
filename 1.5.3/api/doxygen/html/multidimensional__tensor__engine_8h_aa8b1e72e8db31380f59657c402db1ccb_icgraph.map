@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_fake_quant" name="SNEPPX_tensor_fake_quant">
+<area shape="rect" id="Node000001" title="Perform Tensor Fake Quant (symmetric affine, straight&#45;through)." alt="" coords="205,5,360,50"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a1f12bfc1c6f8bef3e32ff7b25723371b" title="Perform Fake Quant (QAT)." alt="" coords="5,14,157,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,28,157,30,157,25,192,27"/>
+</map>

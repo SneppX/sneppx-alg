@@ -1,0 +1,12 @@
+<map id="clamp_scalar" name="clamp_scalar">
+<area shape="rect" id="Node000001" title=" " alt="" coords="713,83,821,111"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a3ba40c0bd41a4134e2d94daafe3f9a09" title="Perform Ed25519 Secret Key Expand." alt="" coords="483,75,665,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="695,97,666,100,666,94,700,97"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad4f54e051afbb1eb163293877aebb36c" title="Perform Ed25519 Keypair Generate." alt="" coords="238,5,428,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="477,70,413,53,414,48,482,70"/>
+<area shape="rect" id="Node000004" href="$ed25519_8c.html#a82b6426cfd55466f3a6970c4ae155c9f" title="Derive the Ed25519 public key from a 32&#45;byte seed." alt="" coords="231,75,435,119"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="465,97,435,100,435,94,470,97"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="5,105,183,150"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="484,123,435,134,370,140,303,142,183,138,183,133,303,136,369,135,435,129,479,124"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,113,184,119,183,114,218,112"/>
+</map>

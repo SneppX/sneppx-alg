@@ -1,0 +1,9 @@
+<map id="SNEPPX_monitor_bulk_verify" name="SNEPPX_monitor_bulk_verify">
+<area shape="rect" id="Node000001" title="Verify Monitor Bulk." alt="" coords="5,24,171,68"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a3bd963555e881fce9f9d896632d4a49b" title=" " alt="" coords="227,5,297,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="170,31,214,26,208,28,171,36"/>
+<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#a4f387d3a9170d9e3c4052fde0e667250" title=" " alt="" coords="219,57,305,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="171,55,206,63,200,63,171,61"/>
+<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#aabe16fa9ae43710a2693d108ea5d8e2f" title=" " alt="" coords="353,57,476,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="305,69,340,71,334,71,305,74"/>
+</map>

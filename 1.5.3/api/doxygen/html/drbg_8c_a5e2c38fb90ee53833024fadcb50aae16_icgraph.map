@@ -1,0 +1,37 @@
+<map id="SNEPPX_drbg_init" name="SNEPPX_drbg_init">
+<area shape="rect" id="Node000001" title="Initialize Drbg." alt="" coords="694,161,831,189"/>
+<area shape="rect" id="Node000002" href="$dilithium_8c.html#a096bf492e4184efe1f4e49404e9badb2" title=" " alt="" coords="514,57,594,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="729,151,691,126,645,100,595,83,595,77,647,95,694,122,734,152"/>
+<area shape="rect" id="Node000004" href="$dilithium_8c.html#ae5dd83b61289a0a9059c50f979a97a22" title=" " alt="" coords="514,5,594,33"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="741,148,701,98,675,71,645,48,620,36,595,28,594,23,622,31,648,44,678,67,705,94,747,149"/>
+<area shape="rect" id="Node000005" href="$dilithium_8c.html#a15a92c998cddb23176497552e5ad4203" title=" " alt="" coords="480,109,629,137"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="686,157,613,140,613,135,692,157"/>
+<area shape="rect" id="Node000008" href="$dilithium_8c.html#af40b87b76fa5413477561cf861951e2a" title=" " alt="" coords="462,161,646,189"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="676,176,647,178,647,173,681,175"/>
+<area shape="rect" id="Node000009" href="$kyber_8c.html#a8f8700c2c90d65dcfbef0f1c167684e3" title=" " alt="" coords="490,213,618,241"/>
+<area shape="poly" id="edge12_Node000001_Node000009" title=" " alt="" coords="692,193,613,215,612,210,687,194"/>
+<area shape="rect" id="Node000013" href="$kyber_8c.html#a222ae20e1d9cec263e77a68e728586e2" title=" " alt="" coords="498,265,610,293"/>
+<area shape="poly" id="edge16_Node000001_Node000013" title=" " alt="" coords="734,198,694,229,647,255,611,268,610,263,645,250,691,224,729,200"/>
+<area shape="rect" id="Node000015" href="$drbg_8c.html#afb0ddba3c5cc1bf2803bcd36e595d857" title="Perform Drbg Self Test." alt="" coords="468,317,640,345"/>
+<area shape="poly" id="edge20_Node000001_Node000015" title=" " alt="" coords="746,201,705,256,678,283,648,307,622,319,620,314,645,302,675,279,701,253,742,203"/>
+<area shape="rect" id="Node000003" href="$dilithium_8c.html#a7ae403e0fe1eef36f17336475698378e" title="Generate a Dilithium key pair." alt="" coords="223,57,414,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="496,72,415,74,414,69,501,70"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="497,32,385,59,383,54,501,30"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="471,106,385,88,384,83,476,105"/>
+<area shape="rect" id="Node000006" href="$dilithium_8c.html#a6570909fdcd3ab25a211a395d9761821" title="Sign a message with the secret key." alt="" coords="233,109,404,137"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="461,124,405,126,404,121,466,122"/>
+<area shape="rect" id="Node000007" href="$dilithium_8c.html#a1dd6c1608bae1e18d04f5b3b66332cd2" title="Verify a signature with the public key." alt="" coords="228,161,409,189"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="471,142,385,163,384,158,476,140"/>
+<area shape="poly" id="edge10_Node000008_Node000006" title=" " alt="" coords="471,158,385,140,385,135,476,157"/>
+<area shape="poly" id="edge11_Node000008_Node000007" title=" " alt="" coords="444,176,410,178,409,173,449,175"/>
+<area shape="rect" id="Node000010" href="$kyber_8c.html#ad045649ef7aee4e0f2a95498aecdd501" title=" " alt="" coords="254,213,382,241"/>
+<area shape="poly" id="edge13_Node000009_Node000010" title=" " alt="" coords="473,228,383,230,383,225,478,227"/>
+<area shape="rect" id="Node000012" href="$kyber_8c.html#a21a97702874c34857d6247589ef06965" title="Encapsulate Kyber." alt="" coords="234,265,402,293"/>
+<area shape="poly" id="edge15_Node000009_Node000012" title=" " alt="" coords="478,244,385,267,384,262,473,245"/>
+<area shape="rect" id="Node000011" href="$kyber_8c.html#a9459fbd4784cf7c251fb1be30219207a" title="Generate Kyber." alt="" coords="5,213,175,241"/>
+<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="236,228,175,230,174,225,241,226"/>
+<area shape="poly" id="edge17_Node000013_Node000010" title=" " alt="" coords="480,264,383,244,383,239,486,263"/>
+<area shape="poly" id="edge19_Node000013_Node000012" title=" " alt="" coords="480,279,403,282,403,277,485,279"/>
+<area shape="rect" id="Node000014" href="$kyber_8c.html#ab6f4fb8549887ad7039a8601355ff972" title="Decapsulate Kyber." alt="" coords="234,317,402,345"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="485,294,385,319,384,314,480,295"/>
+</map>

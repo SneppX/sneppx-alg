@@ -1,0 +1,16 @@
+<map id="SNEPPX_batched_matmul" name="SNEPPX_batched_matmul">
+<area shape="rect" id="Node000001" title="Perform Batched Matmul." alt="" coords="685,44,875,72"/>
+<area shape="rect" id="Node000002" href="$attention_8c.html#a3f2709f1d8a33148cbe481e3b9e35f35" title="Run the forward pass for Attn." alt="" coords="475,74,637,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="672,73,638,80,638,74,667,73"/>
+<area shape="rect" id="Node000007" href="$attention_8c.html#a88c63d687c1c3ade333768a9af849ef6" title="Perform Attn Forward Cached." alt="" coords="475,5,637,50"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="667,43,638,41,638,36,672,43"/>
+<area shape="rect" id="Node000003" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="240,18,427,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="481,70,391,49,392,43,486,69"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html#a5d156cc00f9e0b423266b948f6baa1ea" title="Run the forward pass for Model." alt="" coords="245,74,422,102"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="457,88,423,90,422,85,462,88"/>
+<area shape="rect" id="Node000004" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="30,18,167,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="221,32,168,34,167,29,227,31"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#a802056e5ee54b9d1fff826ee321dab4c" title="Perform Trainer Evaluate." alt="" coords="5,74,192,102"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="227,88,192,90,192,85,232,88"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="457,30,428,33,427,27,462,29"/>
+</map>

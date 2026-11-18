@@ -1,0 +1,8 @@
+<map id="free_ctx_BatchNormCtx" name="free_ctx_BatchNormCtx">
+<area shape="rect" id="Node000001" title=" " alt="" coords="451,31,627,58"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ada21ac7c5d8206a2e019a1d892648f5d" title=" " alt="" coords="210,5,403,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="433,33,404,32,404,27,439,33"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a6b8b6fe7cc75d0a5ac4ad67dc4daf37f" title="Perform Batch Norm." alt="" coords="5,31,162,58"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="435,47,162,47,162,42,436,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="191,32,163,38,162,33,197,32"/>
+</map>

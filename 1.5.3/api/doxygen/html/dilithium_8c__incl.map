@@ -1,0 +1,30 @@
+<map id="security/crypto/c/dilithium.c" name="security/crypto/c/dilithium.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="526,5,729,33"/>
+<area shape="rect" id="Node000002" href="$dilithium_8h.html" title=" " alt="" coords="582,90,673,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="629,32,630,76,625,72,626,36"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="218,174,288,201"/>
+<area shape="poly" id="edge14_Node000001_Node000003" title=" " alt="" coords="523,24,382,32,223,43,89,60,44,71,20,83,9,103,13,120,31,135,58,148,130,168,205,181,200,182,129,173,56,153,28,140,9,123,4,103,16,79,42,66,88,55,223,38,382,27,528,22"/>
+<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="31,81,198,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="523,34,383,56,214,83,213,78,382,51,529,32"/>
+<area shape="rect" id="Node000006" href="$drbg_8h.html" title=" " alt="" coords="222,90,284,117"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="523,33,415,53,298,84,292,86,290,81,296,78,414,48,529,31"/>
+<area shape="rect" id="Node000007" href="$sha512__hashing__implementation_8h.html" title=" " alt="" coords="308,90,558,117"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="599,33,479,86,477,81,594,34"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="698,90,768,117"/>
+<area shape="poly" id="edge13_Node000001_Node000008" title=" " alt="" coords="645,31,707,80,702,80,644,36"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="792,90,861,117"/>
+<area shape="poly" id="edge15_Node000001_Node000009" title=" " alt="" coords="662,31,781,79,787,83,781,83,779,83,661,36"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="884,90,955,117"/>
+<area shape="poly" id="edge16_Node000001_Node000010" title=" " alt="" coords="695,31,781,51,874,78,882,84,876,83,872,84,780,56,695,36"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="979,90,1044,117"/>
+<area shape="poly" id="edge17_Node000001_Node000011" title=" " alt="" coords="729,29,845,48,967,78,975,83,970,83,965,84,844,53,729,34"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="597,117,571,128,426,161,304,182,303,176,425,156,570,123,592,118"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="354,174,427,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="595,117,571,128,442,172,441,167,569,123,590,118"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="152,124,220,165,215,166,150,129"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="188,124,341,170,337,172,187,129"/>
+<area shape="poly" id="edge9_Node000006_Node000003" title=" " alt="" coords="255,116,255,160,251,157,251,120"/>
+<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="276,115,358,165,352,165,274,120"/>
+<area shape="poly" id="edge12_Node000007_Node000003" title=" " alt="" coords="407,117,297,169,295,164,401,118"/>
+<area shape="poly" id="edge11_Node000007_Node000004" title=" " alt="" coords="428,116,406,162,402,158,424,119"/>
+</map>

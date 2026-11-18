@@ -1,0 +1,11 @@
+<map id="spx_fors_index" name="spx_fors_index">
+<area shape="rect" id="Node000001" title=" " alt="" coords="437,32,556,60"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#ad7f2ebdc9131de3527fa82e8f459e7d1" title=" " alt="" coords="226,5,389,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="419,35,390,33,390,28,424,35"/>
+<area shape="rect" id="Node000004" href="$sphincsplus_8c.html#adb9d82a28051437eb04ad77d66b874aa" title=" " alt="" coords="252,57,362,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="425,56,363,67,362,61,419,56"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#a70b1ef44e12c08d9b2764c5185c196e7" title="Verify Sphincs." alt="" coords="5,5,178,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="208,20,179,22,178,17,213,19"/>
+<area shape="rect" id="Node000005" href="$sphincsplus_8c.html#a2c331bc854f68512d32b07430abc956d" title="Sign Sphincs." alt="" coords="10,57,173,85"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="234,71,173,74,173,69,239,71"/>
+</map>

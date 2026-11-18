@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['taint_5fis_5fmarked_0',['taint_is_marked',['../s8__extensions_8c.html#a78217ee9d7148ea3a4735238c73794ee',1,'s8_extensions.c']]],
+  ['taint_5fis_5frelated_1',['taint_is_related',['../s8__extensions_8c.html#acbeb92e0ec174014314870f100d0a934',1,'s8_extensions.c']]],
+  ['taint_5fmark_5fvariable_2',['taint_mark_variable',['../s8__extensions_8c.html#a5f55350ba0beac5c63bda2ac20a94fd3',1,'s8_extensions.c']]],
+  ['tape_5ftopological_5fsort_3',['tape_topological_sort',['../tape_8c.html#a2550c5abe0303a51302953aa45a151d9',1,'tape.c']]],
+  ['tensor_5fprep_5fcontiguous_4',['tensor_prep_contiguous',['../tensor_8c.html#a288df43c51c41ea15667447d4abda1e5',1,'tensor.c']]],
+  ['tensor_5fview_5falloc_5',['tensor_view_alloc',['../tensor_8c.html#a0435f20131e8a7b73d12be7d7ef5d58f',1,'tensor.c']]],
+  ['text_5fto_5fembedding_6',['text_to_embedding',['../s5__extensions_8c.html#abf1f1fb3045bfdab8d054916bef621f3',1,'s5_extensions.c']]],
+  ['text_5fto_5fids_5fbytewise_7',['text_to_ids_bytewise',['../tokenizer_8c.html#ad853afcd9c0bcc52b7b9119c55bf0b0f',1,'tokenizer.c']]],
+  ['threat_5ffind_5fedge_8',['threat_find_edge',['../s6__extensions_8c.html#a76191d3658d6ec7a6a011745829ec170',1,'s6_extensions.c']]],
+  ['threat_5fhash_5flabel_9',['threat_hash_label',['../s6__extensions_8c.html#ac2f11ca9ab18c1080620ce58116bc8c9',1,'s6_extensions.c']]],
+  ['threat_5fremove_5fedge_10',['threat_remove_edge',['../s6__extensions_8c.html#a3fb0f72e0bd3317528bc5a0b9034e8c9',1,'s6_extensions.c']]],
+  ['threat_5fstr_5fhash_11',['threat_str_hash',['../s6__extensions_8c.html#ad96fc497be31562e6340b9b51fa32b39',1,'s6_extensions.c']]],
+  ['threat_5fvalidate_5fedge_12',['threat_validate_edge',['../s6__extensions_8c.html#ae33a9c0cc864864d5d507d8091d5f3ae',1,'s6_extensions.c']]],
+  ['tla_5fvalidate_5finvariant_5fname_13',['tla_validate_invariant_name',['../s8__extensions_8c.html#a1d4df85f2fd14cefc33c4498393ef307',1,'s8_extensions.c']]],
+  ['tla_5fvalidate_5fspec_5fsyntax_14',['tla_validate_spec_syntax',['../s8__extensions_8c.html#ad542b01e9f9e0149178c692c560fbc5d',1,'s8_extensions.c']]],
+  ['to_5flower_5futf8_15',['to_lower_utf8',['../prompt__filter_8c.html#a6be09f98ee03f04e68ce68f5b9420a7e',1,'prompt_filter.c']]],
+  ['tokenize_5fbigrams_16',['tokenize_bigrams',['../s5__extensions_8c.html#a8625fbbc5df4b7cb4bdc3c4e9ed9ca31',1,'s5_extensions.c']]],
+  ['toposort_5fdfs_17',['toposort_dfs',['../autodiff__impl_8c.html#a8385897715179b34ebc07cbf7fe9e5fa',1,'autodiff_impl.c']]],
+  ['tpm_5fcheck_5fpcr_5frange_18',['tpm_check_pcr_range',['../s7__extensions_8c.html#a5c2dd25837a23be25261667f8fc4dbf7',1,'s7_extensions.c']]],
+  ['tpm_5fextend_5fpcr_5fsimulation_19',['tpm_extend_pcr_simulation',['../s7__extensions_8c.html#afe6a0c5d2e710a60d263f75ec75fb0ce',1,'s7_extensions.c']]],
+  ['tpm_5fsimulate_5fquote_20',['tpm_simulate_quote',['../s7__extensions_8c.html#a55da3bb58b8961f86282910d22c80540',1,'s7_extensions.c']]],
+  ['tuf_5fcompute_5fmetadata_5fhash_21',['tuf_compute_metadata_hash',['../s7__extensions_8c.html#ac02bde92f0173148492b32c4133f9efa',1,'s7_extensions.c']]],
+  ['tuf_5ffetch_5fmetadata_5ffrom_5fpath_22',['tuf_fetch_metadata_from_path',['../s7__extensions_8c.html#ab538feeb91703bd3b2581e42895a3cbb',1,'s7_extensions.c']]],
+  ['tuf_5fvalidate_5fkey_23',['tuf_validate_key',['../s7__extensions_8c.html#a31d9f4da6695377d26fbe1de2e3fd856',1,'s7_extensions.c']]]
+];

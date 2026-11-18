@@ -1,0 +1,28 @@
+var optimizer_8c =
+[
+    [ "alloc_bufs", "optimizer_8c.html#a4cd4bd2f5cff4b7d4178e9f92d21c3b3", null ],
+    [ "clip_grad", "optimizer_8c.html#aebbf904ea15f8fba481c899c451e6c9d", null ],
+    [ "ensure_bufs", "optimizer_8c.html#ad0075591daa6ca983c82baca4692b1a2", null ],
+    [ "free_bufs", "optimizer_8c.html#ac616cc8bba09ab7cfa9fa27e1d5f9176", null ],
+    [ "SNEPPX_adagrad_create", "optimizer_8c.html#a61727018b3f5be960f00d365c14ac691", null ],
+    [ "SNEPPX_adam_create", "optimizer_8c.html#abf1e99863949f34b031d7e63c51ce5ba", null ],
+    [ "SNEPPX_adamw_create", "optimizer_8c.html#aae1203c65bee5695d4020bd47c6dd678", null ],
+    [ "SNEPPX_lr_scheduler_cosine", "optimizer_8c.html#a4ff24bdbff6fd5c6e0fdecad7a9e5f6b", null ],
+    [ "SNEPPX_lr_scheduler_destroy", "optimizer_8c.html#a3eb47e7deca9cc9858e4fc8f93b0a706", null ],
+    [ "SNEPPX_lr_scheduler_exponential", "optimizer_8c.html#ac6136ee5e6fe3d919080eb2db0e79d38", null ],
+    [ "SNEPPX_lr_scheduler_reduce_on_plateau", "optimizer_8c.html#a05db400a4268376a60dd936a47b73354", null ],
+    [ "SNEPPX_lr_scheduler_step", "optimizer_8c.html#a0421ccdd055f05a4c1344ac25c651d33", null ],
+    [ "SNEPPX_lr_scheduler_step_lr", "optimizer_8c.html#a5657726e981b9cb2680c6c0ae5a331d9", null ],
+    [ "SNEPPX_optimizer_config_default", "optimizer_8c.html#a9604666983f22ff7f7c95e3e0b81e615", null ],
+    [ "SNEPPX_optimizer_create", "optimizer_8c.html#ade7275b032c773e173556f67921a27df", null ],
+    [ "SNEPPX_optimizer_destroy", "optimizer_8c.html#a453c81d22f029f574b24e6f0937056c8", null ],
+    [ "SNEPPX_optimizer_step", "optimizer_8c.html#adf4a9d996ece7341e38f9cd3060f7959", null ],
+    [ "SNEPPX_rmsprop_create", "optimizer_8c.html#a2e990468582afada4911893a4c730218", null ],
+    [ "SNEPPX_sgd_create", "optimizer_8c.html#aea591f7dee3c8e44628c16220aafb3ee", null ],
+    [ "step_adadelta", "optimizer_8c.html#a1417a02bf4a80fa2f02b0728c35832a7", null ],
+    [ "step_adagrad", "optimizer_8c.html#aa45c8beb259c989f4a957b6483461a5a", null ],
+    [ "step_adam", "optimizer_8c.html#aac7b898fd7043e6fd6c3c6ccf832be5a", null ],
+    [ "step_adamax", "optimizer_8c.html#a8f43b4f0bfef5a94ab6f5858ee22e71c", null ],
+    [ "step_rmsprop", "optimizer_8c.html#af7c7c69805a4e67324935285f04df5ff", null ],
+    [ "step_sgd", "optimizer_8c.html#ad1f5fcaa0742ec4668cae2d8c8d0613c", null ]
+];

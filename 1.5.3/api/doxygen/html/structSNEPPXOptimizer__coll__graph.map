@@ -1,0 +1,7 @@
+<map id="SNEPPXOptimizer" name="SNEPPXOptimizer">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,251,141,279"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXTensor.html" title=" " alt="" coords="16,106,130,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,148,76,251,70,250,71,150"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXStorage.html" title=" " alt="" coords="12,5,134,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="74,46,76,106,70,105,72,51"/>
+</map>

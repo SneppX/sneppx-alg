@@ -1,0 +1,5 @@
+<map id="SNEPPX_tensor_eq" name="SNEPPX_tensor_eq">
+<area shape="rect" id="Node000001" title="Perform Tensor Eq." alt="" coords="149,5,292,33"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ae6709328b90987666fc8a323c11f4322" title="Perform Eq." alt="" coords="5,5,101,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="130,19,101,22,101,17,136,19"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="SNEPPX_bn_div" name="SNEPPX_bn_div">
+<area shape="rect" id="Node000001" title="Perform Bn Div." alt="" coords="5,188,128,216"/>
+<area shape="rect" id="Node000002" href="$bignum_8c.html#a4b46e51c1be1ceaf66d0dbdf7e62e55b" title=" " alt="" coords="229,5,284,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,186,108,118,138,78,174,44,193,33,216,26,212,29,195,38,177,48,142,82,113,121,76,189"/>
+<area shape="rect" id="Node000003" href="$bignum_8c.html#aaeefd63546979ff9c57c761135b4184a" title="Perform Bn Cmp." alt="" coords="191,57,322,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="77,186,117,142,144,117,174,96,189,90,186,93,177,100,148,121,121,146,81,189"/>
+<area shape="rect" id="Node000004" href="$bignum_8c.html#a21f0899f8ac110d9b1fe5c13960344d1" title="Perform Bn Copy." alt="" coords="190,109,323,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="94,185,175,147,197,141,193,144,177,152,97,190"/>
+<area shape="rect" id="Node000005" href="$bignum_8c.html#a5f70f45aa03b3a5297a468b25c13cb28" title=" " alt="" coords="176,161,337,189"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="127,191,162,187,158,190,129,196"/>
+<area shape="rect" id="Node000006" href="$bignum_8c.html#a375e6b4ff8fdbbf5f706ab654329d71f" title="Initialize Bn." alt="" coords="195,213,318,241"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="127,207,182,216,177,218,129,213"/>
+<area shape="rect" id="Node000007" href="$bignum_8c.html#a93c6108711297ab7aec94133cf10ace3" title="Perform Bn Is Zero." alt="" coords="182,265,330,293"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="96,214,177,250,197,259,192,260,175,255,96,219"/>
+<area shape="rect" id="Node000008" href="$bignum_8c.html#a2b624403dfc88dda8b0fec91bfb4c131" title="Perform Bn Set Word." alt="" coords="176,317,337,345"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="80,214,121,258,148,281,177,302,190,311,185,311,174,307,144,286,117,261,79,219"/>
+<area shape="rect" id="Node000009" href="$bignum_8c.html#a36e16f9c5c056c73d4d5184d5dd1563c" title="Perform Bn Zero." alt="" coords="191,369,322,397"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="75,214,113,282,142,321,177,354,186,362,181,361,174,359,138,324,108,285,73,219"/>
+</map>

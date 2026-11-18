@@ -1,0 +1,27 @@
+var structSNEPPXNoiseHandshakeState =
+[
+    [ "cipher", "structSNEPPXNoiseHandshakeState.html#aca8d4e8b0aed6a4763877a93af9c098f", null ],
+    [ "ck", "structSNEPPXNoiseHandshakeState.html#a71adf92734f74199c177348d026cf6f2", null ],
+    [ "e", "structSNEPPXNoiseHandshakeState.html#a0b4d96f65647a75b603bf2b3fed4d820", null ],
+    [ "e_len", "structSNEPPXNoiseHandshakeState.html#adf063f50bc94ed74fd62a514307400f6", null ],
+    [ "h", "structSNEPPXNoiseHandshakeState.html#af17e7a1030faa3d0a99cfa95a81760ae", null ],
+    [ "handshake_finished", "structSNEPPXNoiseHandshakeState.html#a44a5d3342f2e492756da375acaaae57e", null ],
+    [ "initiator", "structSNEPPXNoiseHandshakeState.html#a323e3b44c9b00e6c60c658a2ec3e2e84", null ],
+    [ "message_pattern_index", "structSNEPPXNoiseHandshakeState.html#a53d3da789d0099cb68a4c29e744f79f1", null ],
+    [ "num_psk", "structSNEPPXNoiseHandshakeState.html#a2c7ded3130897168d41a6fcb50a023ce", null ],
+    [ "pattern", "structSNEPPXNoiseHandshakeState.html#a648e439d590508d6e33e9fafd31cd419", null ],
+    [ "payload_buffer", "structSNEPPXNoiseHandshakeState.html#a74f98181b26f2d376a43663866e3289c", null ],
+    [ "payload_len", "structSNEPPXNoiseHandshakeState.html#aa3a3a97e71d03dc622f9bbb57e52244a", null ],
+    [ "prologue", "structSNEPPXNoiseHandshakeState.html#a3dc9d41bfba0d2b7341825a8204cf957", null ],
+    [ "prologue_len", "structSNEPPXNoiseHandshakeState.html#a01d280f0a525b09f36aac9444bb7b640", null ],
+    [ "psk", "structSNEPPXNoiseHandshakeState.html#ac289557b3e1878753c5111f3e5c2100d", null ],
+    [ "psk_lens", "structSNEPPXNoiseHandshakeState.html#ac4cfa7be2cd9c3c96169266319b4396d", null ],
+    [ "re", "structSNEPPXNoiseHandshakeState.html#a04264a99f44192ea5c21d1fd456bac71", null ],
+    [ "re_len", "structSNEPPXNoiseHandshakeState.html#a4c1274bb0921edb7d57d775e8c77cddb", null ],
+    [ "rs", "structSNEPPXNoiseHandshakeState.html#aa003408b4c3a7a62352efed9dc89eca2", null ],
+    [ "rs_len", "structSNEPPXNoiseHandshakeState.html#a5a4ce3fc42e972b44eb26151e707ee7d", null ],
+    [ "s", "structSNEPPXNoiseHandshakeState.html#a0f3a76592970cf50ddde3ce986b2a783", null ],
+    [ "s_len", "structSNEPPXNoiseHandshakeState.html#ab1a3dca1a58c9c57a45f53d4533154d8", null ],
+    [ "total_messages", "structSNEPPXNoiseHandshakeState.html#aaa451dbcd9816baaa686f4138dda4a86", null ],
+    [ "transport_phase", "structSNEPPXNoiseHandshakeState.html#a08c65a790ca9348fef70bca538b1e16f", null ]
+];

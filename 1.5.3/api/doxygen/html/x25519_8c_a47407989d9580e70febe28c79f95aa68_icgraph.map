@@ -1,0 +1,16 @@
+<map id="fe_mul" name="fe_mul">
+<area shape="rect" id="Node000001" title=" " alt="" coords="725,36,791,64"/>
+<area shape="rect" id="Node000002" href="$x25519_8c.html#aa1ed52ac72b976d362ff6a7ed0a2c265" title=" " alt="" coords="493,36,572,64"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="706,50,573,52,573,47,712,50"/>
+<area shape="rect" id="Node000003" href="$x25519_8c.html#a7e04dc72c2bb62cbc6104133b0ba5d79" title="Compute X25519 shared secret." alt="" coords="235,36,445,64"/>
+<area shape="poly" id="edge8_Node000001_Node000003" title=" " alt="" coords="707,37,676,34,585,23,493,27,413,38,413,33,493,22,585,18,677,29,712,38"/>
+<area shape="rect" id="Node000006" href="$x25519_8c.html#ae763058b04b2a32e662302b0e61c2320" title=" " alt="" coords="620,87,677,114"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="715,70,678,90,677,85,710,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="475,50,445,52,445,47,480,50"/>
+<area shape="rect" id="Node000004" href="$x25519_8c.html#aa69017cb5661f22cbe6f9cb0dca38bf1" title="Compute X25519 shared secret." alt="" coords="5,5,187,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="216,35,187,33,187,28,222,34"/>
+<area shape="rect" id="Node000005" href="$x25519_8c.html#af8fbd60b13aa0ce3b98e24f269b9cafc" title="Compute X25519 shared secret." alt="" coords="7,57,185,102"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="216,65,186,71,185,66,222,64"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="604,82,566,67,567,62,609,83"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="602,94,493,78,427,67,428,62,493,73,608,94"/>
+</map>

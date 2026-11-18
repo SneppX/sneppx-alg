@@ -1,0 +1,5 @@
+<map id="SNEPPX_freelist_verify_canary" name="SNEPPX_freelist_verify_canary">
+<area shape="rect" id="Node000001" title="Perform Freelist Verify Canary." alt="" coords="224,5,393,50"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#a795123943254448e51e502f539ab1683" title="Perform Freelist Check." alt="" coords="5,14,176,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,28,176,30,176,25,211,27"/>
+</map>

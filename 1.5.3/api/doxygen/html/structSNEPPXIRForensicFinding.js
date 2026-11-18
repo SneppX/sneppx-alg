@@ -1,0 +1,25 @@
+var structSNEPPXIRForensicFinding =
+[
+    [ "confidence_score", "structSNEPPXIRForensicFinding.html#ad538980b7d915c61685bedcedbfc2835", null ],
+    [ "description_len", "structSNEPPXIRForensicFinding.html#ad3f65fd074356b47a8a160d218208500", null ],
+    [ "escalated", "structSNEPPXIRForensicFinding.html#a1a041ee8dc798631a791db6a080c303f", null ],
+    [ "evidence_ref", "structSNEPPXIRForensicFinding.html#a4a3bc233d511af23110b09466bdb4cb2", null ],
+    [ "evidence_ref_len", "structSNEPPXIRForensicFinding.html#adae678b14de194b2f41b7d3b75ad0477", null ],
+    [ "false_positive", "structSNEPPXIRForensicFinding.html#a0276c4f0f5e9c5df552c5a2b33a24fa0", null ],
+    [ "finding_description", "structSNEPPXIRForensicFinding.html#a48510ef8f3a4a5e526ead1c71ddb70aa", null ],
+    [ "finding_id", "structSNEPPXIRForensicFinding.html#a5d8bf55d3c83d38cbb2f1f567ed998cb", null ],
+    [ "finding_title", "structSNEPPXIRForensicFinding.html#ae06a7fe5c66214faaf1eaeb3c9acc8e3", null ],
+    [ "ioc_ref", "structSNEPPXIRForensicFinding.html#a2d116a42e9fe3e4d6b0d7f8cab5c6362", null ],
+    [ "ioc_ref_len", "structSNEPPXIRForensicFinding.html#a05607976107610c49ab5bbe2728709bb", null ],
+    [ "mitre_attack_id", "structSNEPPXIRForensicFinding.html#a05a86b6edc4e94ec138d70d9a037d2c3", null ],
+    [ "mitre_attack_id_len", "structSNEPPXIRForensicFinding.html#a610a3d68057c9294f7bbd4d5963fb21a", null ],
+    [ "module", "structSNEPPXIRForensicFinding.html#a10e0dbc1d63ccd1d647800eadbdad507", null ],
+    [ "raw_data", "structSNEPPXIRForensicFinding.html#a64f10f081212c185a01835cd5f8430cc", null ],
+    [ "raw_data_len", "structSNEPPXIRForensicFinding.html#ab012d5a08e8dee57c20f7622ec1a8ead", null ],
+    [ "remediation", "structSNEPPXIRForensicFinding.html#ae32b4fc4d5e8193df3779b24982ace55", null ],
+    [ "remediation_len", "structSNEPPXIRForensicFinding.html#a6f67885879ae5f65e62d9f03dcd24dce", null ],
+    [ "severity", "structSNEPPXIRForensicFinding.html#a50793a63a393b03db90a4cfa392e0963", null ],
+    [ "timestamp_ns", "structSNEPPXIRForensicFinding.html#ac02095751a8944465cfa567656de0c01", null ],
+    [ "title_len", "structSNEPPXIRForensicFinding.html#a4e66a771222b964428eacdbfad4e65d6", null ],
+    [ "verified", "structSNEPPXIRForensicFinding.html#a4d87559eb8381358aa61ba93fdc6eab2", null ]
+];

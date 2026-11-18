@@ -1,0 +1,14 @@
+<map id="spx_wots_pkgen" name="spx_wots_pkgen">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,135,33"/>
+<area shape="rect" id="Node000002" href="$sphincsplus_8c.html#adbffc42a78aad813fe50b33c565f512c" title=" " alt="" coords="183,5,307,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,17,170,19,165,20,135,22"/>
+<area shape="rect" id="Node000003" href="$sphincsplus_8c.html#a0e29e34f08aea9b0d8e51085458f77a1" title=" " alt="" coords="472,5,571,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="308,17,460,19,454,19,308,22"/>
+<area shape="rect" id="Node000006" href="$sphincsplus_8c.html#a9fe0a96ba83fc5e842f5cfe686f7b9f0" title=" " alt="" coords="355,31,424,58"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="307,27,342,36,337,36,307,33"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="619,5,745,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="571,17,606,19,600,19,571,22"/>
+<area shape="rect" id="Node000005" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="793,5,932,33"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="745,17,780,19,775,19,746,22"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="425,35,454,32,460,31,425,40"/>
+</map>

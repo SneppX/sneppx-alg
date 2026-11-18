@@ -1,0 +1,15 @@
+<map id="SNEPPX::SNEPPXObfuscator" name="SNEPPX::SNEPPXObfuscator">
+<area shape="rect" id="Node000001" title=" " alt="" coords="705,117,906,145"/>
+<area shape="rect" id="Node000002" href="$classSNEPPX_1_1SNEPPXObfStringPool.html" title=" " alt="" coords="341,5,560,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="575,32,629,43,682,59,739,86,787,117,781,117,737,91,680,64,628,49,575,37"/>
+<area shape="rect" id="Node000003" href="$classSNEPPX_1_1SNEPPXObfCFGFlattener.html" title=" " alt="" coords="331,61,570,89"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="585,88,681,102,745,117,740,117,681,107,585,93"/>
+<area shape="rect" id="Node000004" href="$classSNEPPX_1_1SNEPPXObfSubst.html" title=" " alt="" coords="356,117,545,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="560,129,707,131,702,132,561,134"/>
+<area shape="rect" id="Node000005" href="$classSNEPPX_1_1SNEPPXObfVM.html" title=" " alt="" coords="363,173,538,201"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="553,176,681,159,750,146,755,145,681,164,553,181"/>
+<area shape="rect" id="Node000006" href="$structSNEPPX_1_1SNEPPXObfVMState.html" title=" " alt="" coords="5,173,214,201"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="229,185,365,186,360,188,230,190"/>
+<area shape="rect" id="Node000007" href="$classSNEPPX_1_1SNEPPXAntiDebug.html" title=" " alt="" coords="351,229,550,257"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="565,230,623,218,680,202,738,173,783,146,788,145,741,178,682,207,624,224,565,235"/>
+</map>

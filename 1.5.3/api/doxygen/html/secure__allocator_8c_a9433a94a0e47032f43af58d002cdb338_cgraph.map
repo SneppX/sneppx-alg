@@ -1,0 +1,15 @@
+<map id="SNEPPX_secure_alloc" name="SNEPPX_secure_alloc">
+<area shape="rect" id="Node000001" title="Perform Secure Alloc." alt="" coords="5,136,166,164"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#a9f0378c2b6dedc00980aab2ead529da0" title=" " alt="" coords="254,5,347,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,134,146,90,178,65,212,43,241,33,237,36,215,48,181,69,150,94,102,137"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#a3bc7f2d8892cdca08d22098b54ebcc20" title=" " alt="" coords="243,57,358,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="119,133,213,95,238,89,234,92,215,100,121,138"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="240,109,360,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="165,137,227,131,223,134,167,142"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#a21aef3f8a4b82ac57e7152acfc4539d5" title=" " alt="" coords="226,161,374,189"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="165,157,213,164,208,166,166,162"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#a1a3221e87a48a7c52ec7f36a2bf91d57" title=" " alt="" coords="219,213,382,241"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="121,162,215,198,239,208,233,208,213,203,121,167"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a725622fd07637a8d12669829e4e659f1" title="Perform Secure Canary Generate." alt="" coords="214,265,387,310"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="102,161,151,204,215,250,225,258,220,257,212,255,148,209,101,167"/>
+</map>

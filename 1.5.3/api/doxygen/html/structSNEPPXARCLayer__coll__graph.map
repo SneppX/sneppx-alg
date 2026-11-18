@@ -1,0 +1,18 @@
+<map id="SNEPPXARCLayer" name="SNEPPXARCLayer">
+<area shape="rect" id="Node000001" title=" " alt="" coords="919,148,1055,176"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXInputGuard.html" title=" " alt="" coords="562,79,706,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="721,100,806,112,896,130,949,148,943,147,895,135,805,117,721,105"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="233,116,347,144"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="302,100,329,61,348,42,370,28,407,15,439,16,471,22,510,27,621,29,709,28,750,31,794,39,842,53,897,76,922,91,944,110,978,149,973,147,941,114,919,95,894,80,840,58,793,44,750,36,709,33,621,34,510,33,470,27,438,21,408,21,372,32,351,46,333,64,306,104"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="362,118,371,117,564,98,559,100,371,122,363,123"/>
+<area shape="rect" id="Node000005" href="$structSNEPPXGradientObfuscator.html" title=" " alt="" coords="534,152,733,180"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="329,149,372,164,454,174,536,176,531,177,454,179,370,169,329,154"/>
+<area shape="rect" id="Node000006" href="$structSNEPPXOutputVerifier.html" title=" " alt="" coords="553,207,714,234"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="302,156,329,208,348,232,372,251,408,264,438,264,509,250,580,235,586,235,511,256,438,270,407,269,370,255,344,236,324,211,299,161"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="5,116,128,144"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="143,127,234,128,230,132,144,133"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="749,162,921,162,916,163,749,167"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="729,214,810,207,895,192,950,177,955,176,896,198,811,212,730,220"/>
+<area shape="rect" id="Node000007" href="$structSNEPPXARCConfig.html" title=" " alt="" coords="564,260,704,288"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="719,275,806,267,851,257,894,242,919,227,941,209,973,177,978,175,944,213,922,232,896,247,853,262,807,272,720,280"/>
+</map>

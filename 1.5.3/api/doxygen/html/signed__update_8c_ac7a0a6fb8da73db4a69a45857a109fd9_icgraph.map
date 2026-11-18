@@ -1,0 +1,7 @@
+<map id="compare_versions" name="compare_versions">
+<area shape="rect" id="Node000001" title=" " alt="" coords="231,48,371,76"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#a52682e7c8804b6840ed576b249ee4972" title="Perform Update Verifier Is Update Applicable." alt="" coords="5,5,183,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,49,183,45,183,40,218,48"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html#af193741d1723ade8affaeb81bdb08e74" title="Perform Update Verifier Is Update Available." alt="" coords="5,75,183,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="213,77,184,85,183,79,218,76"/>
+</map>

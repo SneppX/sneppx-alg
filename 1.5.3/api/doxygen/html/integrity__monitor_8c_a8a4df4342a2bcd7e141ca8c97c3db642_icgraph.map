@@ -1,0 +1,10 @@
+<map id="SNEPPX_monitor_register_region" name="SNEPPX_monitor_register_region">
+<area shape="rect" id="Node000001" title="Perform Monitor Register Region." alt="" coords="447,28,634,72"/>
+<area shape="rect" id="Node000002" href="$integrity__monitor_8c.html#a8fb8c9f8ea3ec791584b369cac3cabd1" title=" " alt="" coords="230,5,381,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="429,36,382,32,382,26,434,35"/>
+<area shape="rect" id="Node000004" href="$integrity__monitor_8c.html#a3eedfa5df0b5b2f93afc00d2cfce698a" title="Perform Monitor Register Region Ex." alt="" coords="212,57,399,102"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="434,63,400,70,399,65,429,64"/>
+<area shape="rect" id="Node000003" href="$integrity__monitor_8c.html#ae6af7916352cb36dfd8636285ccb8906" title="Initialize Monitor." alt="" coords="5,5,164,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="212,29,164,30,164,25,217,27"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="179,8,232,10,227,11,180,13"/>
+</map>

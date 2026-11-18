@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['inc32_0',['inc32',['../aes__gcm_8c.html#a2ccf546b251e200f444b638e62a48a9f',1,'aes_gcm.c']]],
+  ['increment_5fpersist_5fpath_1',['increment_persist_path',['../monitor__advanced_8c.html#ace861f6238195fdd9f4beb912f90d8e2',1,'monitor_advanced.c']]],
+  ['init_5fbase_5fpoint_2',['init_base_point',['../ed25519_8c.html#a1df57dc382fadb33abacc3acbe58606c',1,'ed25519.c']]],
+  ['init_5fsmall_5fbins_3',['init_small_bins',['../secure__allocator_8c.html#aa7c6dc6eb4ef454e4dc66b6cf4b3c21f',1,'secure_allocator.c']]],
+  ['insert_5fjunk_4',['insert_junk',['../classSNEPPX_1_1SNEPPXObfSubst.html#afe70b70b3ddbbb6ff21f6ba445e8aaf6',1,'SNEPPX::SNEPPXObfSubst']]],
+  ['insert_5fjunk_5fextended_5',['insert_junk_extended',['../classSNEPPX_1_1SNEPPXObfSubst.html#aa191856bb2f92916423cf1add20e084b',1,'SNEPPX::SNEPPXObfSubst']]],
+  ['insert_5fjunk_5fstates_6',['insert_junk_states',['../classSNEPPX_1_1SNEPPXObfCFGFlattener.html#af837dff00ab401cbd1f121aaa1e70618',1,'SNEPPX::SNEPPXObfCFGFlattener']]],
+  ['insert_5fpredicate_7',['insert_predicate',['../classSNEPPX_1_1SNEPPXOpaqueEngine.html#a6457d62e67dca71157580ce9500034a7',1,'SNEPPX::SNEPPXOpaqueEngine']]],
+  ['insert_5fpredicates_5fto_5fcfg_8',['insert_predicates_to_cfg',['../classSNEPPX_1_1SNEPPXOpaqueEngine.html#a3a9f820121cccfcf70c1b324cf12399e',1,'SNEPPX::SNEPPXOpaqueEngine']]],
+  ['instruction_5fcount_9',['instruction_count',['../classSNEPPX_1_1SNEPPXObfVM.html#a9ed4da8f56e98a42c0877390a84df6cd',1,'SNEPPX::SNEPPXObfVM']]],
+  ['intarr_5fcreate_10',['intarr_create',['../tokenizer_8c.html#afbc943211b957b317d1c99dbbb6ec999',1,'tokenizer.c']]],
+  ['intarr_5ffree_11',['intarr_free',['../tokenizer_8c.html#a03be31bdad489f47c790cf2892cd1284',1,'tokenizer.c']]],
+  ['intarr_5fpush_12',['intarr_push',['../tokenizer_8c.html#a574d67a7bcd26bd803720fe1e6703a43',1,'tokenizer.c']]],
+  ['inv_5fntt_13',['inv_ntt',['../kyber_8c.html#a071c0d5a5669a2d55971d5e8482d5b82',1,'kyber.c']]],
+  ['invariant_5fextract_5fcondition_14',['invariant_extract_condition',['../s8__extensions_8c.html#ad4e623f94714edc796bd35dab3398c37',1,'s8_extensions.c']]],
+  ['is_5fbase64_15',['is_base64',['../s5__extensions_8c.html#a2baf8d1b0a2d4467154b7ad61da55a90',1,'s5_extensions.c']]],
+  ['is_5fdebugger_5fattached_16',['is_debugger_attached',['../classSNEPPX_1_1SNEPPXAntiDebug.html#a426472b6485dac76a6f4d714dcdee5af',1,'SNEPPX::SNEPPXAntiDebug']]],
+  ['is_5fhex_17',['is_hex',['../s5__extensions_8c.html#ad38a72773bf4fb1ddd334350d0733c54',1,'s5_extensions.c']]],
+  ['is_5freduced_5fdim_18',['is_reduced_dim',['../tensor__ops__impl_8c.html#a8f7da57151cfd9420c6ba5f5e81a26d4',1,'tensor_ops_impl.c']]],
+  ['is_5fsession_5fexpired_19',['is_session_expired',['../transport__security_8c.html#a93a5af90468465a0dd5f1a9b3a6d2490',1,'transport_security.c']]]
+];

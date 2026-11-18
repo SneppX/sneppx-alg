@@ -1,0 +1,13 @@
+<map id="SNEPPX_attn_get_params" name="SNEPPX_attn_get_params">
+<area shape="rect" id="Node000001" title="Perform Attn Get Params." alt="" coords="500,100,689,128"/>
+<area shape="rect" id="Node000002" href="$arch_8c.html#ade971a13b83e7e763cd411623e82779c" title="Perform Model Get Params." alt="" coords="248,100,452,128"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="481,114,453,116,452,111,487,113"/>
+<area shape="rect" id="Node000003" href="$trainer_8c.html#abf88a1963f1a56d2a7f4b1f7e5bd0742" title="Create Trainer." alt="" coords="17,5,188,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="306,93,256,71,199,47,166,36,165,31,201,42,258,66,311,92"/>
+<area shape="rect" id="Node000004" href="$trainer_8c.html#a8e1455886bddd8a623d530c225096c0b" title="Perform Trainer Load Checkpoint." alt="" coords="24,57,181,102"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="230,98,182,93,181,88,235,96"/>
+<area shape="rect" id="Node000005" href="$trainer_8c.html#a5db16880fb0ad34939218099be19182c" title="Perform Trainer Save Checkpoint." alt="" coords="22,126,183,171"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="230,131,184,140,182,135,235,129"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,195,200,222"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="311,134,258,162,201,186,166,197,164,191,199,181,256,157,306,136"/>
+</map>

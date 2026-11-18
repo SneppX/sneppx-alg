@@ -1,0 +1,45 @@
+var sneppx__firewall_8h =
+[
+    [ "SNEPPXFirewallRule", "structSNEPPXFirewallRule.html", "structSNEPPXFirewallRule" ],
+    [ "SNEPPXFirewallPacket", "structSNEPPXFirewallPacket.html", "structSNEPPXFirewallPacket" ],
+    [ "SNEPPXFirewallResult", "structSNEPPXFirewallResult.html", "structSNEPPXFirewallResult" ],
+    [ "SNEPPXFirewallStats", "structSNEPPXFirewallStats.html", "structSNEPPXFirewallStats" ],
+    [ "SNEPPXFirewallEngine", "structSNEPPXFirewallEngine.html", "structSNEPPXFirewallEngine" ],
+    [ "SNEPPX_FW_ADDRESS_BYTES", "sneppx__firewall_8h.html#a444f956bc55f64d4f78cd56e100e54ad", null ],
+    [ "SNEPPX_FW_ERROR_CAPACITY", "sneppx__firewall_8h.html#a5ede317fc9858f572e417e73b6794c33", null ],
+    [ "SNEPPX_FW_ERROR_INVALID", "sneppx__firewall_8h.html#aa7afb1400f85d24fcdc3388289ead4f4", null ],
+    [ "SNEPPX_FW_ERROR_NOT_FOUND", "sneppx__firewall_8h.html#a337556b4a01989adbd86387a913355cb", null ],
+    [ "SNEPPX_FW_IPV4", "sneppx__firewall_8h.html#a2d69cffedffd92fd635b204f981a511f", null ],
+    [ "SNEPPX_FW_IPV6", "sneppx__firewall_8h.html#ac92bb648894dc5fb47d09c09afdeba72", null ],
+    [ "SNEPPX_FW_MAX_RULES", "sneppx__firewall_8h.html#a851d155af4d025cf6d33637b9b46f504", null ],
+    [ "SNEPPX_FW_OK", "sneppx__firewall_8h.html#a6e9a1524337a1e5dc4d7eb88fd2143f9", null ],
+    [ "SNEPPX_FW_PROTOCOL_ANY", "sneppx__firewall_8h.html#a028dabebc700e851da87790e97aa7e0a", null ],
+    [ "SNEPPX_FW_PROTOCOL_ICMP", "sneppx__firewall_8h.html#a7e6dae2d62c396eb317a018854e7461a", null ],
+    [ "SNEPPX_FW_PROTOCOL_ICMPV6", "sneppx__firewall_8h.html#a335835da68eea7b40a92d562d0fe4e5a", null ],
+    [ "SNEPPX_FW_PROTOCOL_TCP", "sneppx__firewall_8h.html#abc7b7cd70f99b95afd2eed3121ed7b0d", null ],
+    [ "SNEPPX_FW_PROTOCOL_UDP", "sneppx__firewall_8h.html#adb17e21c12de61bf9bdaa0ba1eb6b54b", null ],
+    [ "SNEPPXFirewallAction", "sneppx__firewall_8h.html#a0d9e1d94a7c65da318e1ca07bdb4f539", null ],
+    [ "SNEPPXFirewallDirection", "sneppx__firewall_8h.html#a3eb91af2129623502358bd32463411c3", null ],
+    [ "SNEPPXFirewallEngine", "sneppx__firewall_8h.html#a27ab0a4c9f80bd8ec3597cf58b1dea15", null ],
+    [ "SNEPPXFirewallPacket", "sneppx__firewall_8h.html#a27c8321676fe396cd2cf2a26d941d192", null ],
+    [ "SNEPPXFirewallResult", "sneppx__firewall_8h.html#af5d5e9a96c44a52ca0b4a0ba47dff30f", null ],
+    [ "SNEPPXFirewallRule", "sneppx__firewall_8h.html#a493dfa2894a3a526c9959a4248bdb823", null ],
+    [ "SNEPPXFirewallStats", "sneppx__firewall_8h.html#a52a0595197761503287c2f997157afe6", null ],
+    [ "SNEPPXFirewallAction", "sneppx__firewall_8h.html#aa2f67f8266dc04134109185cfafcf714", [
+      [ "SNEPPX_FW_DENY", "sneppx__firewall_8h.html#aa2f67f8266dc04134109185cfafcf714af14cbffe885df77f30cad82e3137e65f", null ],
+      [ "SNEPPX_FW_ALLOW", "sneppx__firewall_8h.html#aa2f67f8266dc04134109185cfafcf714a3a7e09f75a91f0497e14e6da72a01257", null ]
+    ] ],
+    [ "SNEPPXFirewallDirection", "sneppx__firewall_8h.html#a38448918f7ab3a3c8286627bcc008947", [
+      [ "SNEPPX_FW_INBOUND", "sneppx__firewall_8h.html#a38448918f7ab3a3c8286627bcc008947a4f06fe964d01012bf80ff8ec4b8e94ce", null ],
+      [ "SNEPPX_FW_OUTBOUND", "sneppx__firewall_8h.html#a38448918f7ab3a3c8286627bcc008947af8199783511d87639f2ff79f38b54752", null ],
+      [ "SNEPPX_FW_BOTH_DIRECTIONS", "sneppx__firewall_8h.html#a38448918f7ab3a3c8286627bcc008947a314a48e8af18f6d4775bf7eb222a7507", null ]
+    ] ],
+    [ "SNEPPX_firewall_add_rule", "sneppx__firewall_8h.html#abc8bd113fc8e71a872d6d8dffcc72626", null ],
+    [ "SNEPPX_firewall_destroy", "sneppx__firewall_8h.html#a31ee97b1d7a88f66e46aa14389a4c78d", null ],
+    [ "SNEPPX_firewall_evaluate", "sneppx__firewall_8h.html#a4e9ccd38f19d1c19865d617a174d6c28", null ],
+    [ "SNEPPX_firewall_get_stats", "sneppx__firewall_8h.html#add164d0b32c02ccd7b3d34bf926d7791", null ],
+    [ "SNEPPX_firewall_init", "sneppx__firewall_8h.html#a3cc1113c3f13df3cbacea91f66983814", null ],
+    [ "SNEPPX_firewall_remove_rule", "sneppx__firewall_8h.html#ac5ae7430d9fa3819f4c3d005fee3409a", null ],
+    [ "SNEPPX_firewall_rule_count", "sneppx__firewall_8h.html#a21425a15d1794e63b772bb948d0d706f", null ],
+    [ "SNEPPX_firewall_set_default_action", "sneppx__firewall_8h.html#ae2d98da5faa222fe8df90141a12bf13f", null ]
+];

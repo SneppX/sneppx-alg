@@ -1,0 +1,33 @@
+<map id="SNEPPX_ct_equal" name="SNEPPX_ct_equal">
+<area shape="rect" id="Node000001" title="Perform Ct Equal." alt="" coords="923,278,1057,306"/>
+<area shape="rect" id="Node000002" href="$ed25519_8c.html#a85e1f84acda318e9a82b7b92a151eb33" title="Core Ed25519 verify with selectable hash path." alt="" coords="706,143,863,171"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="964,266,924,228,873,190,839,174,839,169,876,185,928,224,969,267"/>
+<area shape="rect" id="Node000009" href="$aead_8c.html#a94018eba2cb3ac4308d2e4a4a88b1a96" title="Decrypt Aead." alt="" coords="701,199,868,227"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="944,271,874,242,838,230,839,225,876,237,949,271"/>
+<area shape="rect" id="Node000011" href="$argon2_8c.html#a80dc679d0d52656b9a729f4570f7d268" title="Verify Argon2id." alt="" coords="694,251,875,279"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="904,281,875,279,875,274,910,281"/>
+<area shape="rect" id="Node000012" href="$c__binding__implementation_8c.html#abf5c9bb8466f6ccbcc3893fb13d67747" title="Perform C Ct Memcmp." alt="" coords="697,303,872,331"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="905,302,873,309,872,304,910,301"/>
+<area shape="rect" id="Node000013" href="$canary_8c.html#a5a189a2bf3b077be5bb6e65f8736b3f0" title="Verify Canary." alt="" coords="701,355,868,383"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="948,312,876,345,838,357,837,352,874,340,943,313"/>
+<area shape="rect" id="Node000016" href="$timing_8c.html#a6b1f78fb6d210ff3f4d7069416358e45" title="Perform Timing Safe Equal." alt="" coords="706,407,863,451"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="968,316,927,358,876,397,853,409,852,403,873,392,924,354,963,318"/>
+<area shape="rect" id="Node000003" href="$ed25519_8c.html#ad082a2f293bf30aea3ab1dfd16e40e46" title="Verify an Ed25519 signature." alt="" coords="462,83,641,111"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="711,139,608,114,608,109,716,138"/>
+<area shape="rect" id="Node000008" href="$ed25519_8c.html#aca9a357925c06c4a8103215281d3b007" title="Verify Ed25519 with optional legacy&#45;hash fallback for migration." alt="" coords="462,135,641,179"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="688,158,642,160,641,154,693,156"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,5,408,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="485,79,397,53,396,48,490,77"/>
+<area shape="rect" id="Node000006" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="231,75,408,119"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="444,98,409,100,408,94,449,96"/>
+<area shape="rect" id="Node000007" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="231,144,408,189"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="478,117,457,125,390,146,388,141,455,120,482,114"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,183,50"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,29,185,30,182,25,218,26"/>
+<area shape="rect" id="Node000010" href="$c__binding__implementation_8c.html#ab071599ef2430b398e4928cba922380b" title="Decrypt C Aead." alt="" coords="460,203,642,231"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="683,215,643,218,642,213,688,214"/>
+<area shape="rect" id="Node000014" href="$secure__mem_8c.html#a377c4e243b37c8caaf6b3ca48ec95c7e" title="Free Secure Pool." alt="" coords="456,355,646,383"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="683,369,647,372,647,366,688,369"/>
+<area shape="rect" id="Node000015" href="$secure__mem_8c.html#ab36568b95ed140fd30bed074c10b517d" title="Perform Secure Realloc." alt="" coords="233,355,406,383"/>
+<area shape="poly" id="edge14_Node000014_Node000015" title=" " alt="" coords="438,369,407,372,406,366,444,369"/>
+</map>

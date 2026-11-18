@@ -1,0 +1,31 @@
+<map id="SNEPPX_tensor_reshape" name="SNEPPX_tensor_reshape">
+<area shape="rect" id="Node000001" title="Perform Tensor Reshape." alt="" coords="1135,180,1314,208"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#aed9a2923cf070a662dffe46debc5903d" title=" " alt="" coords="934,48,1078,76"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1192,170,1144,134,1086,97,1048,79,1049,74,1088,92,1147,130,1197,171"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#ac3f222a68b5fbf8aac6f1e8b24ffbe9d" title="Perform Reshape." alt="" coords="717,74,849,102"/>
+<area shape="poly" id="edge17_Node000001_Node000003" title=" " alt="" coords="1146,177,844,105,844,99,1151,176"/>
+<area shape="rect" id="Node000007" href="$attention_8c.html#a3f2709f1d8a33148cbe481e3b9e35f35" title="Run the forward pass for Attn." alt="" coords="925,270,1087,298"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="1185,215,1088,261,1057,272,1056,267,1086,256,1180,216"/>
+<area shape="rect" id="Node000008" href="$inference__engine_8c.html#a35ca7093dcca1df96d186c110390fbb6" title="Perform Generate Tokens." alt="" coords="689,210,877,238"/>
+<area shape="poly" id="edge15_Node000001_Node000008" title=" " alt="" coords="1117,186,1025,186,925,192,876,200,831,212,830,207,875,195,924,186,1025,180,1122,185"/>
+<area shape="rect" id="Node000010" href="$arch_8c.html#a5d156cc00f9e0b423266b948f6baa1ea" title="Run the forward pass for Model." alt="" coords="694,295,872,323"/>
+<area shape="poly" id="edge16_Node000001_Node000010" title=" " alt="" coords="1205,219,1156,270,1123,294,1088,311,1031,326,972,332,914,331,863,326,864,321,915,326,971,326,1030,321,1086,307,1121,289,1152,266,1200,221"/>
+<area shape="rect" id="Node000012" href="$attention_8c.html#a88c63d687c1c3ade333768a9af849ef6" title="Perform Attn Forward Cached." alt="" coords="925,201,1087,246"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1122,208,1088,215,1087,210,1117,209"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="916,73,850,83,849,78,921,72"/>
+<area shape="rect" id="Node000004" href="$attention_8c.html#a862e89866d73e95189c504feadac7c2f" title="Perform Attn Build Train Graph." alt="" coords="458,5,639,50"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="709,70,638,53,638,48,714,69"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="248,56,407,101"/>
+<area shape="poly" id="edge6_Node000003_Node000005" title=" " alt="" coords="700,87,408,83,407,77,704,85"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,95,200,123"/>
+<area shape="poly" id="edge7_Node000003_Node000006" title=" " alt="" coords="699,95,564,108,407,116,248,116,201,115,199,110,248,110,407,110,564,102,704,94"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="440,53,409,62,407,58,445,51"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="230,93,201,98,199,93,234,90"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="934,265,837,241,838,235,940,265"/>
+<area shape="poly" id="edge11_Node000007_Node000010" title=" " alt="" coords="912,294,872,302,872,296,907,295"/>
+<area shape="rect" id="Node000009" href="$inference__engine_8c.html#ab4fb199fb6b56f2cefc32a4fef38241b" title="Perform Generate." alt="" coords="480,210,617,238"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="671,224,618,226,617,221,676,223"/>
+<area shape="rect" id="Node000011" href="$trainer_8c.html#a802056e5ee54b9d1fff826ee321dab4c" title="Perform Trainer Evaluate." alt="" coords="455,295,641,323"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="676,309,642,312,642,306,682,309"/>
+<area shape="poly" id="edge14_Node000012_Node000008" title=" " alt="" coords="907,224,877,226,877,221,912,223"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="SNEPPX_tensor_reduce_mean_f32" name="SNEPPX_tensor_reduce_mean_f32">
+<area shape="rect" id="Node000001" title="Perform Tensor Reduce Mean F32." alt="" coords="5,5,177,50"/>
+<area shape="rect" id="Node000002" href="$tensor__ops__impl_8c.html#a8f7da57151cfd9420c6ba5f5e81a26d4" title=" " alt="" coords="444,14,567,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,21,225,20,396,20,431,23,426,24,396,25,225,25,177,26"/>
+<area shape="rect" id="Node000003" href="$tensor__ops__impl_8c.html#a29244231cebf175cf10cb984a1de13aa" title="Perform Tensor Reduce Sum F32." alt="" coords="225,35,396,79"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,36,212,43,206,44,177,42"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="396,41,426,39,431,39,397,47"/>
+</map>

@@ -1,0 +1,20 @@
+<map id="SNEPPX_tokenizer_load" name="SNEPPX_tokenizer_load">
+<area shape="rect" id="Node000001" title="Load Tokenizer." alt="" coords="5,57,180,85"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#a558789bc26070817e2c2faa2b1be9d18" title="Perform Realloc." alt="" coords="264,109,387,137"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,83,251,105,246,107,158,88"/>
+<area shape="rect" id="Node000007" href="$tokenizer_8c.html#a0caad9cb4e1fdf398df7545ee9540d6b" title="Create Tokenizer." alt="" coords="232,57,419,85"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="180,69,219,70,214,72,181,74"/>
+<area shape="rect" id="Node000008" href="$tokenizer_8c.html#a465708a16baf78bfe37b7ce926a9a042" title="Destroy Tokenizer." alt="" coords="228,5,423,33"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="157,54,247,36,243,38,159,59"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="498,31,604,58"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="386,106,422,94,470,69,486,65,491,63,472,74,424,99,387,111"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a9a159410589cec244445c8abaa1905ff" title="Perform Malloc." alt="" coords="490,83,613,110"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="387,113,476,105,471,106,388,119"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#ad48b8a6a4551960e8c99f2da7b833bf2" title="Perform Secure Copy." alt="" coords="471,135,631,162"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="388,127,458,138,453,138,388,133"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="679,31,837,58"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="604,42,667,44,661,45,604,47"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="419,57,486,52,480,53,420,63"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="419,79,477,88,471,88,419,84"/>
+<area shape="poly" id="edge10_Node000008_Node000003" title=" " alt="" coords="423,27,485,37,480,37,423,33"/>
+</map>

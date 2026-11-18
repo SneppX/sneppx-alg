@@ -1,0 +1,7 @@
+<map id="SNEPPX_blake3_update" name="SNEPPX_blake3_update">
+<area shape="rect" id="Node000001" title="Update Blake3." alt="" coords="5,5,180,33"/>
+<area shape="rect" id="Node000002" href="$blake3_8c.html#a48fd214b4b29feec04376eeb9216a5d5" title=" " alt="" coords="228,5,376,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="180,17,215,19,210,19,180,22"/>
+<area shape="rect" id="Node000003" href="$blake3_8c.html#a8cd5822ab9c71f318152c899fa211e5f" title=" " alt="" coords="424,5,558,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="376,17,411,19,406,19,376,22"/>
+</map>

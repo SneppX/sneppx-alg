@@ -1,0 +1,21 @@
+<map id="security/crypto/c/timing.c" name="security/crypto/c/timing.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="335,5,521,33"/>
+<area shape="rect" id="Node000002" href="$timing__attack__countermeasure_8h.html" title=" " alt="" coords="423,90,659,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="447,31,514,80,508,80,445,36"/>
+<area shape="rect" id="Node000005" href="$side__channel__resistant__primitives_8h.html" title=" " alt="" coords="684,81,854,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="483,31,672,78,666,79,482,36"/>
+<area shape="rect" id="Node000006" href="$constant__time__operations_8h.html" title=" " alt="" coords="5,90,208,117"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="375,36,174,88,172,83,377,31"/>
+<area shape="rect" id="Node000007" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="232,81,400,126"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="412,32,359,74,356,69,407,35"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="343,174,416,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="518,117,420,169,418,164,513,118"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="473,174,543,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="538,116,520,162,517,158,534,119"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="686,123,672,128,432,178,431,173,671,123,681,124"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="702,126,558,173,557,168,697,127"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="151,115,330,169,326,173,150,120"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="171,115,459,174,456,178,171,120"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="334,124,363,162,358,160,331,128"/>
+<area shape="poly" id="edge12_Node000007_Node000004" title=" " alt="" coords="367,124,466,167,461,167,366,129"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="SNEPPX_random_uint32_checked" name="SNEPPX_random_uint32_checked">
+<area shape="rect" id="Node000001" title="Perform Random Uint32." alt="" coords="476,28,653,72"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#a05cbced9303416a64c246ed28ce2e9db" title="Compatibility wrapper; returns zero if entropy retrieval fails." alt="" coords="246,5,423,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="458,36,424,34,424,28,464,36"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="241,57,428,102"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="463,63,429,70,428,65,458,63"/>
+<area shape="rect" id="Node000004" href="$random_8c.html#af8cd085e61d03a97456dad67182bd463" title="Compatibility wrapper; returns zero for invalid bounds or entropy failure." alt="" coords="5,65,193,93"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="222,79,193,82,193,77,227,79"/>
+</map>

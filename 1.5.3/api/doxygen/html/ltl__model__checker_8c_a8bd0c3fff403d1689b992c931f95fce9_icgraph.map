@@ -1,0 +1,7 @@
+<map id="SNEPPX_fv_add_state" name="SNEPPX_fv_add_state">
+<area shape="rect" id="Node000001" title="Add state to formal model." alt="" coords="246,36,409,64"/>
+<area shape="rect" id="Node000002" href="$ltl__model__checker_8c.html#acf9a0645fb179682c8be9b0c85a3cb38" title="Add transition between states." alt="" coords="5,5,198,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="228,37,198,35,198,30,233,36"/>
+<area shape="rect" id="Node000003" href="$ltl__model__checker_8c.html#a4c5888174b9b48568de70f823bbd03b3" title="Set initial state." alt="" coords="20,57,183,102"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="228,63,184,71,183,66,233,62"/>
+</map>

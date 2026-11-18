@@ -1,0 +1,13 @@
+<map id="SNEPPX_pool_free" name="SNEPPX_pool_free">
+<area shape="rect" id="Node000001" title="Free Pool." alt="" coords="5,84,146,112"/>
+<area shape="rect" id="Node000002" href="$allocator_8c.html#aaa8ec9c467dec0a137db74de33565d44" title=" " alt="" coords="250,5,318,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,81,193,43,237,31,232,34,195,48,107,86"/>
+<area shape="rect" id="Node000003" href="$allocator_8c.html#a546cd41b754723a20662fae2dfaa72d5" title="Free Free." alt="" coords="231,57,336,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="145,86,218,78,214,81,147,91"/>
+<area shape="rect" id="Node000005" href="$allocator_8c.html#a279750b04971276bbd00bd5eddefbb29" title="Perform Pool Size Class." alt="" coords="194,109,374,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="146,104,181,110,176,111,146,109"/>
+<area shape="rect" id="Node000006" href="$allocator_8c.html#ab6898dd1fbac8785cf5ad8b13befb4b9" title="Initialize Tls Cache." alt="" coords="200,161,368,189"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="108,110,195,146,219,156,213,156,193,151,107,115"/>
+<area shape="rect" id="Node000004" href="$allocator_8c.html#a8fc7ef1ca4e4fa6cbb46f2eab3388c31" title="Perform Secure Zero." alt="" coords="422,57,579,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="337,69,409,71,404,72,337,74"/>
+</map>

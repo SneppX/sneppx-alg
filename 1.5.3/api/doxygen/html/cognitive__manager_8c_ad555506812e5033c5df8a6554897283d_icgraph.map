@@ -1,0 +1,9 @@
+<map id="sneppx_semantic_retrieve" name="sneppx_semantic_retrieve">
+<area shape="rect" id="Node000001" title=" " alt="" coords="504,44,697,72"/>
+<area shape="rect" id="Node000002" href="$cognitive__manager_8c.html#afe14a58501169fd22c123810c27e6774" title="Run the forward pass for Cognitive Memory." alt="" coords="255,5,456,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="486,44,457,43,457,38,491,44"/>
+<area shape="rect" id="Node000004" href="$cognitive__manager_8c.html#ac6a118f154c56914421b4355e9524d62" title="Perform Semantic Retrieve." alt="" coords="257,74,454,102"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="491,72,455,78,454,73,486,72"/>
+<area shape="rect" id="Node000003" href="$cognitive__manager_8c.html#a43df9d80880c604ec4578ab42e23fae6" title="Perform Cognitive Memory Build Train Graph." alt="" coords="5,5,207,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="236,28,207,30,207,25,242,27"/>
+</map>

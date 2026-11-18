@@ -1,0 +1,27 @@
+var structSNEPPX__OptimizerState =
+[
+    [ "beta1", "structSNEPPX__OptimizerState.html#a1c57f444d87ac46d42353cd67014cbe8", null ],
+    [ "beta1_lion", "structSNEPPX__OptimizerState.html#aa2be718a792e83bad92db56b3072c254", null ],
+    [ "beta2", "structSNEPPX__OptimizerState.html#a8fd3ae4d71a7915b6a06ab0795243414", null ],
+    [ "beta2_lion", "structSNEPPX__OptimizerState.html#a32f6a996f403f4a2d6a1a7b776a66416", null ],
+    [ "decoupled_wd", "structSNEPPX__OptimizerState.html#ab675d9ee2e76468f84415641ec069565", null ],
+    [ "epsilon", "structSNEPPX__OptimizerState.html#a0330bd24eb11efaf86e44b4060acf0fa", null ],
+    [ "grad_clip_enabled", "structSNEPPX__OptimizerState.html#ad02505494ea3876011e812d40b647cd9", null ],
+    [ "grad_clip_max_norm", "structSNEPPX__OptimizerState.html#a162cca2af65630d69f49045101074441", null ],
+    [ "lr", "structSNEPPX__OptimizerState.html#af00b5b3c52ebeda9f0b09acca04048e4", null ],
+    [ "lr_decay", "structSNEPPX__OptimizerState.html#a4f5278aead95b25efd01edfa718742dd", null ],
+    [ "lr_min", "structSNEPPX__OptimizerState.html#a072f7bf852f4256e1c91e68e6fafdf6d", null ],
+    [ "lr_warmup_steps", "structSNEPPX__OptimizerState.html#a8225f9d795864246df5cac51bfcd469e", null ],
+    [ "master_weights", "structSNEPPX__OptimizerState.html#ac928c0c3ccff25032cbf14ddc179e104", null ],
+    [ "num_params", "structSNEPPX__OptimizerState.html#aa47de713ec59d53735c3c3b48b76400f", null ],
+    [ "param_groups", "structSNEPPX__OptimizerState.html#a1e1228f025ed7d0025acaa5d7162cef3", null ],
+    [ "param_sizes", "structSNEPPX__OptimizerState.html#ace3262ea04d8ff222ddfd47fbdbac771", null ],
+    [ "rms_alpha", "structSNEPPX__OptimizerState.html#a36fc186a7afe02cf9c0ec9588eb05f0b", null ],
+    [ "rms_momentum", "structSNEPPX__OptimizerState.html#ace22b71707bdd15c5f2766df51b9b24c", null ],
+    [ "state_buf1", "structSNEPPX__OptimizerState.html#a6d13f524415b66d9de991dda0cbeea34", null ],
+    [ "state_buf2", "structSNEPPX__OptimizerState.html#ae237f5fa40d4a03c7b703bf6957cc980", null ],
+    [ "state_buf3", "structSNEPPX__OptimizerState.html#a347ae38cee8a8831fbf8e24aaa564207", null ],
+    [ "step", "structSNEPPX__OptimizerState.html#a7602c911bdaab168c891866077ba33c0", null ],
+    [ "type", "structSNEPPX__OptimizerState.html#aaf6893edd447e91eb442983618595ca0", null ],
+    [ "weight_decay", "structSNEPPX__OptimizerState.html#afe36fd0660df7d2c57b090619a49b105", null ]
+];

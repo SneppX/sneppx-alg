@@ -1,0 +1,9 @@
+<map id="SNEPPXEpisodicBuffer" name="SNEPPXEpisodicBuffer">
+<area shape="rect" id="Node000001" title=" " alt="" coords="22,352,187,380"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXEpisodicExperience.html" title=" " alt="" coords="5,251,204,279"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,293,107,352,102,351,102,296"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTensor.html" title=" " alt="" coords="47,106,162,134"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,147,107,251,102,250,103,151"/>
+<area shape="rect" id="Node000004" href="$structSNEPPXStorage.html" title=" " alt="" coords="43,5,166,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="105,46,107,106,102,105,104,51"/>
+</map>

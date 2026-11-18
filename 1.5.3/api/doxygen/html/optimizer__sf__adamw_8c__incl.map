@@ -1,0 +1,16 @@
+<map id="kernel/optimizer/optimizer_sf_adamw.c" name="kernel/optimizer/optimizer_sf_adamw.c">
+<area shape="rect" id="Node000001" title=" " alt="" coords="254,5,448,50"/>
+<area shape="rect" id="Node000002" href="$optimizer__sf__adamw_8h.html" title=" " alt="" coords="5,106,174,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="287,53,143,103,141,99,290,48"/>
+<area shape="rect" id="Node000004" href="$polymorphic__memory__allocator_8h.html" title=" " alt="" coords="198,98,362,143"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="336,49,308,88,304,84,332,52"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="386,106,457,134"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="369,48,404,94,399,93,367,53"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="481,106,548,134"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="391,48,481,99,475,99,390,53"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="101,191,174,218"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="99,132,125,177,120,177,96,137"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="245,143,174,185,172,180,240,144"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="245,191,315,218"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="282,141,282,177,278,174,278,145"/>
+</map>

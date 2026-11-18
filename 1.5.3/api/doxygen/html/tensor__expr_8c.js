@@ -1,0 +1,26 @@
+var tensor__expr_8c =
+[
+    [ "alloc_payload", "tensor__expr_8c.html#abfce19ae43431a7358f82718e4a3cd46", null ],
+    [ "carry_shape", "tensor__expr_8c.html#adc5b427ffa20386455fbee7956ac82b2", null ],
+    [ "eval_binary", "tensor__expr_8c.html#a25100e07beff38cdd37a274e3b9685d6", null ],
+    [ "eval_node", "tensor__expr_8c.html#ab42abc395195007857c54a64ab504feb", null ],
+    [ "eval_unary", "tensor__expr_8c.html#acace0b0a889e830871dcc486ad19d84f", null ],
+    [ "new_node", "tensor__expr_8c.html#a29dd342339963675f13e61901325ba65", null ],
+    [ "shape_size", "tensor__expr_8c.html#a2d3eeedca72b587615d046a7c6756bab", null ],
+    [ "SNEPPX_expr_activation", "tensor__expr_8c.html#a2c7f27bd533dbba45332a630bf5d1fe3", null ],
+    [ "SNEPPX_expr_binary", "tensor__expr_8c.html#a36319f67e81c8af1c82bb78f5b01a645", null ],
+    [ "SNEPPX_expr_const", "tensor__expr_8c.html#aa22da820efc69f319b434746781fcee6", null ],
+    [ "SNEPPX_expr_eval", "tensor__expr_8c.html#a3ef83a21ca49cb8c5d45af9f568b0872", null ],
+    [ "SNEPPX_expr_fused_linear_bias", "tensor__expr_8c.html#ae96e424267bc597b147bef7311fe640a", null ],
+    [ "SNEPPX_expr_graph_create", "tensor__expr_8c.html#a313b54b56d58c7b697bffc3c25f9506b", null ],
+    [ "SNEPPX_expr_graph_destroy", "tensor__expr_8c.html#ac355ee90d1eb379e8a55393ef7536a95", null ],
+    [ "SNEPPX_expr_input", "tensor__expr_8c.html#a71a4051a86ff379cc835005bc725b0d7", null ],
+    [ "SNEPPX_expr_matmul", "tensor__expr_8c.html#a4b20c9c365999f03e5bb4c299712c97e", null ],
+    [ "SNEPPX_expr_mem_estimate", "tensor__expr_8c.html#a62116b3f03b866cea3a6ef76003b61d3", null ],
+    [ "SNEPPX_expr_plan_fusions", "tensor__expr_8c.html#a36603605a8d6db38415393e14f795514", null ],
+    [ "SNEPPX_expr_print_plan", "tensor__expr_8c.html#a4d5d09361a6639c186ed5b65d709dbdc", null ],
+    [ "SNEPPX_expr_reduction", "tensor__expr_8c.html#a329097c5e197469ee650ed90ba5e58fd", null ],
+    [ "SNEPPX_expr_toposort", "tensor__expr_8c.html#afab9e6061428850641a87f4d56a67152", null ],
+    [ "SNEPPX_expr_unary", "tensor__expr_8c.html#a00caa3628957c432c391c457d9675a84", null ],
+    [ "g_next_id", "tensor__expr_8c.html#a627acc34c25d4fff844c1ea0afd8365f", null ]
+];

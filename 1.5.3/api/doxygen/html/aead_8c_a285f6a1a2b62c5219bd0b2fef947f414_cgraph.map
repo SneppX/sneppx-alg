@@ -1,0 +1,9 @@
+<map id="poly1305_key_gen" name="poly1305_key_gen">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,32,148,60"/>
+<area shape="rect" id="Node000002" href="$chacha20_8c.html#a5d8576d60f4c311b3c01de3e10609033" title="Perform Chacha20 Block." alt="" coords="196,5,379,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,34,183,32,178,33,149,39"/>
+<area shape="rect" id="Node000004" href="$chacha20_8c.html#a0470473dea2b9fc34e7d51297b400fdb" title="Initialize Chacha20." alt="" coords="203,57,372,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="148,52,190,59,185,59,148,57"/>
+<area shape="rect" id="Node000003" href="$chacha20_8c.html#a4428703d9ced5a11e93f93eb195eae9d" title=" " alt="" coords="427,5,465,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="379,17,414,19,409,19,380,22"/>
+</map>

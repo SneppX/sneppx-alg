@@ -1,0 +1,8 @@
+<map id="SNEPPX_tensor_transpose" name="SNEPPX_tensor_transpose">
+<area shape="rect" id="Node000001" title="Perform Tensor Transpose." alt="" coords="400,31,591,58"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#a39bfacd6cc1d931f22946c3e29df711a" title=" " alt="" coords="197,5,352,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="382,32,352,31,352,25,387,32"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a0be3f63da1f125ad73308c7aa08fddcb" title="Perform Transpose." alt="" coords="5,31,149,58"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="384,47,149,47,149,42,385,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="178,32,149,38,149,33,184,31"/>
+</map>

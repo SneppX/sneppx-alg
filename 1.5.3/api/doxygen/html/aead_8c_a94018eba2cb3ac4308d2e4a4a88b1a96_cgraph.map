@@ -1,0 +1,23 @@
+<map id="SNEPPX_aead_decrypt" name="SNEPPX_aead_decrypt">
+<area shape="rect" id="Node000001" title="Decrypt Aead." alt="" coords="5,147,173,174"/>
+<area shape="rect" id="Node000002" href="$chacha20_8c.html#a5d8576d60f4c311b3c01de3e10609033" title="Perform Chacha20 Block." alt="" coords="466,17,649,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,144,116,118,143,85,178,53,220,29,284,10,352,3,417,5,477,13,472,15,417,10,352,9,285,15,222,33,182,57,147,88,120,121,101,147"/>
+<area shape="rect" id="Node000004" href="$chacha20_8c.html#a003b65af22714817ea4b609b0e3df4b0" title="Encrypt/decrypt with ChaCha20 (XOR stream)." alt="" coords="221,43,418,70"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="109,144,158,112,220,81,243,74,239,77,222,85,161,117,112,148"/>
+<area shape="rect" id="Node000005" href="$chacha20_8c.html#a0470473dea2b9fc34e7d51297b400fdb" title="Initialize Chacha20." alt="" coords="235,95,404,122"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="153,143,242,124,238,128,155,148"/>
+<area shape="rect" id="Node000006" href="$ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3" title="Perform Ct Equal." alt="" coords="252,147,386,174"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="172,158,239,159,234,162,174,163"/>
+<area shape="rect" id="Node000007" href="$poly1305_8c.html#a0137fb5eaf436f413164754528b103d0" title="Perform Poly1305 Finish." alt="" coords="229,199,410,226"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="154,172,242,193,237,196,154,177"/>
+<area shape="rect" id="Node000009" href="$poly1305_8c.html#a7a77f650ea3b920f03c0fa045577a816" title="Initialize Poly1305." alt="" coords="236,251,403,278"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="111,172,161,204,222,235,244,245,238,245,220,240,158,208,110,177"/>
+<area shape="rect" id="Node000010" href="$poly1305_8c.html#ad07712cd868cd4568f0bf74f3ce05073" title="Update Poly1305." alt="" coords="224,303,415,330"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="102,172,150,229,184,260,222,287,237,297,231,296,219,292,181,265,146,233,100,177"/>
+<area shape="rect" id="Node000003" href="$chacha20_8c.html#a4428703d9ced5a11e93f93eb195eae9d" title=" " alt="" coords="697,17,736,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="649,28,684,30,679,32,650,34"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="418,43,453,41,448,43,419,48"/>
+<area shape="rect" id="Node000008" href="$poly1305_8c.html#a65fa0a932c7f255917d8de6b2daf46e5" title=" " alt="" coords="496,251,619,278"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="386,224,483,247,478,248,386,229"/>
+<area shape="poly" id="edge11_Node000010_Node000008" title=" " alt="" coords="386,299,478,281,483,281,387,304"/>
+</map>

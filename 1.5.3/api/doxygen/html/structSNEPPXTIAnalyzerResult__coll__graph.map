@@ -1,0 +1,7 @@
+<map id="SNEPPXTIAnalyzerResult" name="SNEPPXTIAnalyzerResult">
+<area shape="rect" id="Node000001" title=" " alt="" coords="55,106,237,134"/>
+<area shape="rect" id="Node000002" href="$structSNEPPXTIIoC.html" title=" " alt="" coords="5,5,111,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,42,137,105,132,106,78,47"/>
+<area shape="rect" id="Node000003" href="$structSNEPPXTIKillChainAnalysis.html" title=" " alt="" coords="135,5,333,33"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="215,44,159,107,156,103,210,45"/>
+</map>

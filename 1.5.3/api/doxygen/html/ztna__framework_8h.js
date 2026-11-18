@@ -1,0 +1,56 @@
+var ztna__framework_8h =
+[
+    [ "SNEPPXZTSubject", "structSNEPPXZTSubject.html", "structSNEPPXZTSubject" ],
+    [ "SNEPPXZTResource", "structSNEPPXZTResource.html", "structSNEPPXZTResource" ],
+    [ "SNEPPXZTCondition", "structSNEPPXZTCondition.html", "structSNEPPXZTCondition" ],
+    [ "SNEPPXZTPolicy", "structSNEPPXZTPolicy.html", "structSNEPPXZTPolicy" ],
+    [ "SNEPPXZTRequest", "structSNEPPXZTRequest.html", "structSNEPPXZTRequest" ],
+    [ "SNEPPX_ZT_MAX_TRUST_SCORE", "ztna__framework_8h.html#abe665dc9e80e29f0c210044be4dc9746", null ],
+    [ "SNEPPX_ZT_MIN_TRUST_SCORE", "ztna__framework_8h.html#a65227aed90e7eb222f32b2021711d59e", null ],
+    [ "SNEPPX_ZT_POLICY_MAX_CONDITIONS", "ztna__framework_8h.html#a77c961fcaf6e43c6811f20bf02c7309c", null ],
+    [ "SNEPPX_ZT_REAUTH_INTERVAL_NS", "ztna__framework_8h.html#a41974fc4afd89d634d85a15adbf5a459", null ],
+    [ "SNEPPX_ZT_SESSION_TIMEOUT_NS", "ztna__framework_8h.html#aef17feb2cd0d0f45df5bd83aaee34a1d", null ],
+    [ "SNEPPXZTConditionType", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bd", [
+      [ "SNEPPX_ZT_CONDITION_USER_ROLE", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda2c8f383df199bc1772e587b2201b7dcd", null ],
+      [ "SNEPPX_ZT_CONDITION_USER_CLEARANCE", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda395bdf866d1e276ea7c9a5cfd9dc471c", null ],
+      [ "SNEPPX_ZT_CONDITION_DEVICE_POSTURE", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda77024762088a3e6ccef479247ea87f9f", null ],
+      [ "SNEPPX_ZT_CONDITION_DEVICE_COMPLIANCE", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bdaaea7a1405da09296df8d008e69a1a5f4", null ],
+      [ "SNEPPX_ZT_CONDITION_NETWORK_LOCATION", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bdaf81baad17570160570dd6761c776d314", null ],
+      [ "SNEPPX_ZT_CONDITION_GEO_LOCATION", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda67ac90747ea3ca099fd8b811159f8f85", null ],
+      [ "SNEPPX_ZT_CONDITION_TIME_OF_DAY", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bdaa91760761555f131c87cca3979496139", null ],
+      [ "SNEPPX_ZT_CONDITION_RISK_SCORE", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bdaace30df0fc68cb4ec1b28c571a099495", null ],
+      [ "SNEPPX_ZT_CONDITION_BEHAVIOR_ANOMALY", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda71253cd8c661e39b776028ba1beb47e5", null ],
+      [ "SNEPPX_ZT_CONDITION_THREAT_INTEL", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda91179f32b76d909c39e13bccaf9e504e", null ],
+      [ "SNEPPX_ZT_CONDITION_SENSITIVITY_LABEL", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda89318f3096a3fc283979cba7d72219a0", null ],
+      [ "SNEPPX_ZT_CONDITION_AUTH_STRENGTH", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda8950710074e91d6b1cdd36cd3bc75ee1", null ],
+      [ "SNEPPX_ZT_CONDITION_SESSION_RISK", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bda866bd5aa9810846d4cf14aecc863b356", null ],
+      [ "SNEPPX_ZT_CONDITION_NETWORK_TELEMETRY", "ztna__framework_8h.html#a9bc692565ee2ebde0e04d473c013f0bdacb2d0cc1a36338936c976fd98222fc86", null ]
+    ] ],
+    [ "SNEPPXZTDecision", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427", [
+      [ "SNEPPX_ZT_ACCESS_DENY", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427a53425265d3fb5e94af0a72c438b4c797", null ],
+      [ "SNEPPX_ZT_ACCESS_ALLOW", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427aee6e6efac235e7334b9d8c94a0db66f1", null ],
+      [ "SNEPPX_ZT_ACCESS_ALLOW_WITH_MFA", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427a100d80ac193941c333d6aabd3fecde3d", null ],
+      [ "SNEPPX_ZT_ACCESS_ALLOW_WITH_JUSTIFICATION", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427a049d8951d4f4b277bdca6db7bdd21f8f", null ],
+      [ "SNEPPX_ZT_ACCESS_ALLOW_TEMPORARY", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427a1678efc27445092a3b13cc152582e4fe", null ],
+      [ "SNEPPX_ZT_ACCESS_ALLOW_RESTRICTED", "ztna__framework_8h.html#a37f24faff2d27496ecb60b9a485f0427a7b1204802ce8e617039038dad33c24ce", null ]
+    ] ],
+    [ "SNEPPXZTDevicePosture", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85", [
+      [ "SNEPPX_ZT_DEVICE_POSTURE_UNKNOWN", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85af3946f75841fed31c07ffe26fb78b59e", null ],
+      [ "SNEPPX_ZT_DEVICE_POSTURE_NON_COMPLIANT", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85a61e370cbee497facd698986003e4d057", null ],
+      [ "SNEPPX_ZT_DEVICE_POSTURE_COMPLIANT", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85a0b7a5458430413a0e68a6c6085b00b3e", null ],
+      [ "SNEPPX_ZT_DEVICE_POSTURE_HARDENED", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85a2f56e3e9076137a43abf8ffae4aba90d", null ],
+      [ "SNEPPX_ZT_DEVICE_POSTURE_COMPROMISED", "ztna__framework_8h.html#a6f24116429939219a5fadce2c2f65d85a4f5daa19359799718a292dc7e73be532", null ]
+    ] ],
+    [ "snepx_zt_compute_risk_score", "ztna__framework_8h.html#abbab21a8788c40ee83a45862eed4b045", null ],
+    [ "snepx_zt_compute_trust_score", "ztna__framework_8h.html#aead40007c2ce40af6607c6b3401de70c", null ],
+    [ "snepx_zt_continuous_verification", "ztna__framework_8h.html#a87a60d750cb61d02592e79ebec58d2af", null ],
+    [ "snepx_zt_create_policy", "ztna__framework_8h.html#a6e1e56ed081c46b5f22cc877cc680689", null ],
+    [ "snepx_zt_create_resource", "ztna__framework_8h.html#a929b5d6d292a918fcd526008ca031f26", null ],
+    [ "snepx_zt_create_subject", "ztna__framework_8h.html#aafb84ecbab4f6513536543dad19db484", null ],
+    [ "snepx_zt_evaluate", "ztna__framework_8h.html#af85db0fd10f84cc5e522f3616ef1a0bc", null ],
+    [ "snepx_zt_policy_add_condition", "ztna__framework_8h.html#a426628044777f643fa2c6a2643656d20", null ],
+    [ "snepx_zt_request_destroy", "ztna__framework_8h.html#a8d647be84b540bef3197b82a5e02e620", null ],
+    [ "snepx_zt_session_create", "ztna__framework_8h.html#aa6c7f45bbe02fab0e369e1c08ddad693", null ],
+    [ "snepx_zt_session_revoke", "ztna__framework_8h.html#a3ee9b95eeb23449fcf724c09284004a1", null ],
+    [ "snepx_zt_session_validate", "ztna__framework_8h.html#ac8400f4237feb96fae2adb49c461bf53", null ]
+];

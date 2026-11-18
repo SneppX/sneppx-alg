@@ -1,0 +1,17 @@
+<map id="poly1305_block" name="poly1305_block">
+<area shape="rect" id="Node000001" title=" " alt="" coords="689,32,813,60"/>
+<area shape="rect" id="Node000002" href="$poly1305_8c.html#a0137fb5eaf436f413164754528b103d0" title="Perform Poly1305 Finish." alt="" coords="455,5,636,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="671,36,637,34,637,28,677,36"/>
+<area shape="rect" id="Node000007" href="$poly1305_8c.html#ad07712cd868cd4568f0bf74f3ce05073" title="Update Poly1305." alt="" coords="450,57,641,85"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="677,55,642,62,642,57,671,56"/>
+<area shape="rect" id="Node000003" href="$aead_8c.html#a94018eba2cb3ac4308d2e4a4a88b1a96" title="Decrypt Aead." alt="" coords="235,5,402,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="437,19,403,22,402,17,442,19"/>
+<area shape="rect" id="Node000005" href="$aead_8c.html#a13c4f39b86c1ea1b956b5c6dc81eaa30" title="Encrypt Aead." alt="" coords="235,57,402,85"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="470,37,383,59,382,54,465,37"/>
+<area shape="rect" id="Node000004" href="$c__binding__implementation_8c.html#ab071599ef2430b398e4928cba922380b" title="Decrypt C Aead." alt="" coords="5,5,187,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="217,20,188,22,187,17,222,19"/>
+<area shape="rect" id="Node000006" href="$c__binding__implementation_8c.html#a4ca5bc7d85cb5df1fda1486f8a6c1f2a" title="Encrypt C Aead." alt="" coords="5,57,187,85"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="217,71,187,74,187,69,222,71"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="465,53,382,36,383,31,470,53"/>
+<area shape="poly" id="edge8_Node000007_Node000005" title=" " alt="" coords="432,71,402,74,402,69,437,71"/>
+</map>

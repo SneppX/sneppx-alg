@@ -1,0 +1,27 @@
+<map id="SNEPPX_bn_init" name="SNEPPX_bn_init">
+<area shape="rect" id="Node000001" title="Initialize Bn." alt="" coords="772,142,895,170"/>
+<area shape="rect" id="Node000002" href="$bignum_8c.html#aaedbc58543f9681b9e855a8fcf6e7b57" title="Perform Bn Div." alt="" coords="601,193,724,220"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="773,174,712,195,711,189,767,175"/>
+<area shape="rect" id="Node000003" href="$bignum_8c.html#aaf3e642b0ec279e9f4e0dbe49c899593" title="Perform Bn Inv Mod." alt="" coords="214,150,372,178"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="755,159,373,165,372,160,758,155"/>
+<area shape="rect" id="Node000004" href="$bignum_8c.html#a975b93ccd7c27d5f7553b62f9fe87d1b" title="Perform Bn Mod." alt="" coords="422,243,553,271"/>
+<area shape="poly" id="edge13_Node000001_Node000004" title=" " alt="" coords="808,179,770,210,725,234,681,247,637,255,554,261,554,256,636,250,680,242,723,229,767,206,804,181"/>
+<area shape="rect" id="Node000005" href="$bignum_8c.html#a187b8d9d564b82a14f36a923c78abea5" title="Perform Bn Exp Mod." alt="" coords="212,91,374,119"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="754,144,723,142,536,124,375,113,374,107,536,119,724,137,759,144"/>
+<area shape="rect" id="Node000006" href="$bignum_8c.html#a4b29d7828c52cd6ceffa862bcc64ecb2" title="Perform Bn Is Prime." alt="" coords="5,66,164,94"/>
+<area shape="poly" id="edge12_Node000001_Node000006" title=" " alt="" coords="810,130,773,92,749,73,722,57,684,40,643,28,559,12,473,8,389,13,309,24,237,38,129,68,126,63,236,33,308,18,388,7,473,3,559,7,644,23,685,35,725,52,752,68,776,88,815,131"/>
+<area shape="rect" id="Node000007" href="$bignum_8c.html#a8a685a101fe659216542036727131861" title="Perform Bn Gcd." alt="" coords="230,287,356,315"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="816,181,777,226,752,247,725,264,678,283,628,297,528,312,433,315,356,311,356,306,433,310,527,306,627,291,676,278,722,259,749,243,773,222,811,183"/>
+<area shape="rect" id="Node000008" href="$bignum_8c.html#a6bc62af8067f65367675f12e2aec2745" title="Perform Bn Mul." alt="" coords="424,41,551,68"/>
+<area shape="poly" id="edge14_Node000001_Node000008" title=" " alt="" coords="800,132,765,110,723,89,679,76,634,67,552,58,551,53,635,62,681,71,725,84,768,105,806,133"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="583,199,373,176,373,170,588,197"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="600,225,539,245,537,240,595,226"/>
+<area shape="poly" id="edge7_Node000004_Node000003" title=" " alt="" coords="440,237,323,181,324,175,446,236"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="464,230,425,186,372,141,338,122,338,117,376,136,429,183,469,231"/>
+<area shape="poly" id="edge8_Node000004_Node000006" title=" " alt="" coords="404,248,310,229,259,213,210,191,175,169,143,143,98,97,98,92,147,139,178,165,213,187,261,208,312,224,409,247"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="412,275,356,290,355,284,406,275"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="194,95,165,92,163,87,199,92"/>
+<area shape="poly" id="edge16_Node000008_Node000003" title=" " alt="" coords="458,76,375,133,334,152,332,147,373,128,453,79"/>
+<area shape="poly" id="edge15_Node000008_Node000005" title=" " alt="" coords="415,74,350,93,348,88,420,71"/>
+<area shape="poly" id="edge17_Node000008_Node000006" title=" " alt="" coords="407,62,165,77,164,72,410,57"/>
+</map>

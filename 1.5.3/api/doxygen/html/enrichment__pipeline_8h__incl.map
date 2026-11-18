@@ -1,0 +1,7 @@
+<map id="security/threat_intel/enrichment_pipeline.h" name="security/threat_intel/enrichment_pipeline.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,176,50"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="6,98,79,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="80,49,60,86,56,83,76,52"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="103,98,174,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="104,48,126,84,120,84,102,53"/>
+</map>

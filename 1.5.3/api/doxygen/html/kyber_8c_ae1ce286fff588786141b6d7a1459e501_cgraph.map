@@ -1,0 +1,18 @@
+<map id="poly_mul" name="poly_mul">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,57,87,85"/>
+<area shape="rect" id="Node000002" href="$kyber_8c.html#ae65a83fdeb589a5eef5b409fcefb2810" title=" " alt="" coords="135,5,212,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,54,126,38,122,41,83,59"/>
+<area shape="rect" id="Node000005" href="$kyber_8c.html#a071c0d5a5669a2d55971d5e8482d5b82" title=" " alt="" coords="140,109,206,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="82,83,128,103,123,105,82,88"/>
+<area shape="rect" id="Node000007" href="$kyber_8c.html#abd602e31e017ba3dd8df08b227c1bd25" title=" " alt="" coords="154,57,193,85"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="87,69,140,70,136,73,88,74"/>
+<area shape="rect" id="Node000003" href="$kyber_8c.html#a4be40bad95cc307e6689e9a2dc37859c" title=" " alt="" coords="288,57,348,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="213,30,276,55,271,56,212,36"/>
+<area shape="rect" id="Node000004" href="$kyber_8c.html#a55a8a71a7ff9af848de8891ad2acff8c" title=" " alt="" coords="424,57,531,85"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="348,69,412,71,406,71,348,74"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="206,109,271,87,277,86,208,114"/>
+<area shape="rect" id="Node000006" href="$kyber_8c.html#af941477739974dab8ef3d319368c95cf" title=" " alt="" coords="260,109,376,137"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="207,121,247,123,242,123,207,126"/>
+<area shape="poly" id="edge9_Node000007_Node000003" title=" " alt="" coords="193,69,275,70,270,72,194,74"/>
+<area shape="poly" id="edge8_Node000007_Node000006" title=" " alt="" coords="194,75,266,103,260,104,193,81"/>
+</map>

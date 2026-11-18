@@ -1,0 +1,13 @@
+<map id="include/neural_core/security/chacha20_stream_cipher.h" name="include/neural_core/security/chacha20_stream_cipher.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="387,5,583,67"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,115,176,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="370,68,189,118,177,121,175,116,187,112,373,64"/>
+<area shape="rect" id="Node000003" href="$c__binding__implementation_8c.html" title=" " alt="" coords="200,124,373,168"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="418,74,327,126,325,121,413,76"/>
+<area shape="rect" id="Node000004" href="$aead_8c.html" title=" " alt="" coords="397,132,573,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="487,80,487,133,483,130,483,84"/>
+<area shape="rect" id="Node000005" href="$chacha20_8c.html" title=" " alt="" coords="598,132,804,160"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="560,72,677,132,672,131,559,77"/>
+<area shape="rect" id="Node000006" href="$transport__security_8c.html" title=" " alt="" coords="828,124,1022,168"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="599,60,816,112,849,123,844,123,815,118,598,66"/>
+</map>

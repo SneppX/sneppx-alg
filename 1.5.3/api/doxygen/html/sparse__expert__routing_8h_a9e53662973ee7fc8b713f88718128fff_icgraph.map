@@ -1,0 +1,7 @@
+<map id="SNEPPX_ser_model_destroy" name="SNEPPX_ser_model_destroy">
+<area shape="rect" id="Node000001" title="Destroy Ser Model." alt="" coords="446,5,649,33"/>
+<area shape="rect" id="Node000002" href="$arch_8c.html#a6a14129ea1fc53186899ec7cbeba8faf" title="Destroy Model." alt="" coords="222,5,398,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="428,19,398,22,398,17,433,19"/>
+<area shape="rect" id="Node000003" href="$arch_8c.html#a10b0dd27701a47b983681b345f85821b" title="Create Model." alt="" coords="5,5,174,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="204,19,174,22,174,17,209,19"/>
+</map>

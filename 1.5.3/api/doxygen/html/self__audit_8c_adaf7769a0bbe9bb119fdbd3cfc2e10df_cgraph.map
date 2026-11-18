@@ -1,0 +1,38 @@
+<map id="SNEPPX_self_audit_run_full" name="SNEPPX_self_audit_run_full">
+<area shape="rect" id="Node000001" title="Perform Self Audit Run Full." alt="" coords="5,360,205,388"/>
+<area shape="rect" id="Node000002" href="$self__audit_8c.html#a38834a58f6372a04be7a56c347c0d93d" title="Perform Self Audit Run All." alt="" coords="253,360,447,388"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,372,240,373,235,376,206,377"/>
+<area shape="rect" id="Node000003" href="$self__audit_8c.html#ae76973445feb3f228e1657b1732cd531" title="Perform Self Audit Check Ai Safety." alt="" coords="504,5,693,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="351,359,363,304,389,224,408,180,432,137,460,96,493,60,501,57,498,61,497,64,464,100,436,140,413,183,394,226,369,306,356,361"/>
+<area shape="rect" id="Node000005" href="$self__audit_8c.html#af1d855ac8818990a5559b93a2250f945" title="Perform Self Audit Check Crypto." alt="" coords="504,75,693,119"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="353,359,370,315,398,253,439,187,465,157,493,130,502,126,498,129,497,134,469,160,444,190,403,256,375,317,358,361"/>
+<area shape="rect" id="Node000006" href="$self__audit_8c.html#aa7bc8a63d8779b8e137e5b1e9d06b780" title="Perform Self Audit Check Formal." alt="" coords="504,144,693,189"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="357,358,408,283,447,238,493,199,505,195,500,198,497,203,451,242,412,286,361,362"/>
+<area shape="rect" id="Node000007" href="$self__audit_8c.html#a3b082c167b246ca2d11b7aa3360d2d96" title="Perform Self Audit Check Memory." alt="" coords="504,213,693,258"/>
+<area shape="poly" id="edge8_Node000002_Node000007" title=" " alt="" coords="366,358,420,315,494,268,510,263,505,266,496,273,424,319,369,362"/>
+<area shape="rect" id="Node000008" href="$self__audit_8c.html#a1f127e282081fcc25cd0896ca3f7d22d" title="Perform Self Audit Check Monitor." alt="" coords="504,283,693,327"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="401,358,503,331,499,333,403,362"/>
+<area shape="rect" id="Node000009" href="$self__audit_8c.html#ac5b3b5384f084c3eee56d1c4b5b00806" title="Perform Self Audit Check Network." alt="" coords="504,352,693,397"/>
+<area shape="poly" id="edge12_Node000002_Node000009" title=" " alt="" coords="447,372,492,373,487,375,448,377"/>
+<area shape="rect" id="Node000010" href="$self__audit_8c.html#a10ae79fb7e12c433ce7e16d80ebe69f4" title="Perform Self Audit Check Obfuscation." alt="" coords="504,421,693,466"/>
+<area shape="poly" id="edge14_Node000002_Node000010" title=" " alt="" coords="402,386,504,416,499,417,402,391"/>
+<area shape="rect" id="Node000011" href="$self__audit_8c.html#afcfd2b026590e1f4a233d723a17db0ca" title="Perform Self Audit Check Pentest." alt="" coords="504,491,693,535"/>
+<area shape="poly" id="edge16_Node000002_Node000011" title=" " alt="" coords="368,386,424,430,496,476,510,484,505,484,494,481,420,434,367,391"/>
+<area shape="rect" id="Node000012" href="$self__audit_8c.html#a39453a2b698acd6a1b31a7088f492209" title="Perform Self Audit Check Ui." alt="" coords="495,559,702,587"/>
+<area shape="poly" id="edge18_Node000002_Node000012" title=" " alt="" coords="359,386,381,420,411,463,450,508,496,545,506,553,501,552,494,550,446,512,407,467,376,423,358,391"/>
+<area shape="rect" id="Node000013" href="$self__audit_8c.html#a587f1d25af466a92bf27eb0df4aa255b" title="Perform Self Audit Check Updates." alt="" coords="504,611,693,655"/>
+<area shape="poly" id="edge20_Node000002_Node000013" title=" " alt="" coords="357,386,376,429,405,485,446,545,470,572,497,596,504,603,499,602,493,600,466,576,441,548,401,488,371,431,356,391"/>
+<area shape="rect" id="Node000014" href="$self__audit_8c.html#aa48e7fce9caa34b75360147758135dac" title="Perform Self Audit Score." alt="" coords="506,679,691,707"/>
+<area shape="poly" id="edge22_Node000002_Node000014" title=" " alt="" coords="355,386,369,441,395,516,413,557,436,597,464,634,497,666,502,672,497,670,493,670,460,637,432,600,409,560,390,518,364,442,353,391"/>
+<area shape="rect" id="Node000004" href="$self__audit_8c.html#a579b1bb3ffd232c98f3afffc2b6a55d7" title="Perform Self Audit Add Check." alt="" coords="750,317,925,362"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="685,48,704,60,730,87,753,118,790,183,815,248,830,303,825,301,810,250,785,186,749,121,726,91,701,64,686,53"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="683,117,704,130,745,169,779,216,805,262,824,304,819,302,800,264,774,219,741,173,701,134,684,122"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="680,187,704,199,736,222,765,250,813,305,808,304,762,253,733,227,701,203,680,192"/>
+<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="672,256,703,268,785,309,780,310,701,273,672,261"/>
+<area shape="poly" id="edge11_Node000008_Node000004" title=" " alt="" coords="693,316,738,324,733,325,694,321"/>
+<area shape="poly" id="edge13_Node000009_Node000004" title=" " alt="" coords="693,358,738,354,733,355,694,363"/>
+<area shape="poly" id="edge15_Node000010_Node000004" title=" " alt="" coords="671,418,701,407,780,371,785,369,703,411,673,423"/>
+<area shape="poly" id="edge17_Node000011_Node000004" title=" " alt="" coords="679,488,701,476,733,453,762,426,808,376,813,373,765,430,736,457,704,481,681,493"/>
+<area shape="poly" id="edge19_Node000012_Node000004" title=" " alt="" coords="681,556,701,546,742,507,776,462,802,416,821,378,825,375,807,418,780,465,746,511,704,550,683,561"/>
+<area shape="poly" id="edge21_Node000013_Node000004" title=" " alt="" coords="684,608,701,596,725,572,747,545,782,485,808,426,825,379,828,375,813,428,787,487,751,548,729,576,704,600,686,613"/>
+</map>

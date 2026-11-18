@@ -1,0 +1,16 @@
+<map id="SNEPPX_ser_get_params" name="SNEPPX_ser_get_params">
+<area shape="rect" id="Node000001" title="Perform Ser Get Params." alt="" coords="500,44,683,72"/>
+<area shape="rect" id="Node000002" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="270,5,430,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="482,45,430,40,430,35,487,44"/>
+<area shape="rect" id="Node000004" href="$arch_8c.html#ade971a13b83e7e763cd411623e82779c" title="Perform Model Get Params." alt="" coords="248,74,452,102"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="482,72,453,78,452,73,487,71"/>
+<area shape="rect" id="Node000003" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,14,200,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="253,29,201,30,199,25,257,26"/>
+<area shape="poly" id="edge7_Node000004_Node000003" title=" " alt="" coords="273,71,163,45,163,39,278,68"/>
+<area shape="rect" id="Node000005" href="$trainer_8c.html#abf88a1963f1a56d2a7f4b1f7e5bd0742" title="Create Trainer." alt="" coords="17,66,188,94"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="229,85,189,85,188,80,234,83"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#a8e1455886bddd8a623d530c225096c0b" title="Perform Trainer Load Checkpoint." alt="" coords="24,117,181,162"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="263,107,182,126,181,121,268,104"/>
+<area shape="rect" id="Node000007" href="$trainer_8c.html#a5db16880fb0ad34939218099be19182c" title="Perform Trainer Save Checkpoint." alt="" coords="22,187,183,231"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="317,109,262,144,201,177,173,189,171,184,199,172,260,140,312,111"/>
+</map>

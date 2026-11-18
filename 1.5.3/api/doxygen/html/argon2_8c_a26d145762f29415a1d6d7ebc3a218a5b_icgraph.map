@@ -1,0 +1,15 @@
+<map id="blake2b_round" name="blake2b_round">
+<area shape="rect" id="Node000001" title=" " alt="" coords="739,81,855,109"/>
+<area shape="rect" id="Node000002" href="$argon2_8c.html#a2d64005d89829d249a14b990cd7fce52" title=" " alt="" coords="607,56,691,84"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="721,82,691,80,691,74,726,83"/>
+<area shape="rect" id="Node000004" href="$argon2_8c.html#a34c5e66c18dd51fda4f80f8380713b5d" title="Perform Argon2id." alt="" coords="234,56,370,84"/>
+<area shape="poly" id="edge7_Node000001_Node000004" title=" " alt="" coords="721,97,607,98,481,90,370,80,370,74,481,84,607,93,726,97"/>
+<area shape="rect" id="Node000003" href="$argon2_8c.html#ae48698b71a171925f8198c1187fe7041" title=" " alt="" coords="418,5,559,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="590,52,535,36,535,31,595,52"/>
+<area shape="poly" id="edge6_Node000002_Node000004" title=" " alt="" coords="589,70,371,72,371,67,594,69"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="423,37,356,58,355,53,418,38"/>
+<area shape="rect" id="Node000005" href="$argon2_8c.html#a80dc679d0d52656b9a729f4570f7d268" title="Verify Argon2id." alt="" coords="5,29,186,57"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="215,59,186,58,186,52,221,59"/>
+<area shape="rect" id="Node000006" href="$c__binding__implementation_8c.html#a1176295133c7d63d3721c4bd2de3f1cc" title="Hash C Argon2." alt="" coords="7,81,184,109"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="216,80,184,87,184,82,221,80"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="SNEPPX_freelist_add" name="SNEPPX_freelist_add">
+<area shape="rect" id="Node000001" title="Add Freelist." alt="" coords="5,34,162,62"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#adbc9759ba4ffde7c1190a5954446d555" title="Perform Freelist Canary Value." alt="" coords="423,31,599,75"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,31,165,19,209,10,292,3,375,10,434,26,429,26,375,16,292,8,210,16,167,24,127,36"/>
+<area shape="rect" id="Node000003" href="$memory__hardening_8c.html#a7704a57cdd61fecc1de4d6efe3372f75" title="Perform Freelist Init Internal." alt="" coords="216,25,369,70"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="162,45,203,47,198,49,163,50"/>
+<area shape="rect" id="Node000004" href="$memory__hardening_8c.html#a2d7a7c2e06e480dd6d805e6fde103a7c" title="Perform Freelist Write Canary." alt="" coords="210,95,375,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="128,59,211,88,206,90,127,65"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="371,92,415,81,420,80,372,97"/>
+</map>

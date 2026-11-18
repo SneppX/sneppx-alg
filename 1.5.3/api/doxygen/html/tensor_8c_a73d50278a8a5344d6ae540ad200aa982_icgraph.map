@@ -1,0 +1,16 @@
+<map id="SNEPPX_tensor_ones" name="SNEPPX_tensor_ones">
+<area shape="rect" id="Node000001" title="Perform Tensor Ones." alt="" coords="703,65,862,93"/>
+<area shape="rect" id="Node000002" href="$ops_8c.html#ab894eb1089f4b3fc36c36b0b4d220e3f" title=" " alt="" coords="506,5,624,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="713,61,618,36,618,31,718,61"/>
+<area shape="rect" id="Node000004" href="$attention_8c.html#a862e89866d73e95189c504feadac7c2f" title="Perform Attn Build Train Graph." alt="" coords="474,57,655,102"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="685,79,656,82,656,77,690,79"/>
+<area shape="rect" id="Node000007" href="$tape_8c.html#a0ff428a7601f9d28ce8a78f68ba78f87" title="Run the backward pass for Tape." alt="" coords="248,125,426,153"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="725,98,656,116,536,132,427,139,426,134,536,127,655,111,720,98"/>
+<area shape="rect" id="Node000003" href="$ops_8c.html#a336800ede2a6839cdcec62bfcc22362b" title="Perform Pow." alt="" coords="284,5,390,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="488,20,391,22,390,17,493,19"/>
+<area shape="rect" id="Node000005" href="$arch_8c.html#a2bcd42a4f11d9cbc9757493b3e3738fd" title="Perform Model Build Train Graph." alt="" coords="257,57,416,102"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="456,79,417,82,417,77,461,79"/>
+<area shape="rect" id="Node000006" href="$trainer_8c.html#aa46ff9266707a074f64fadf50c821b41" title="Perform Trainer Train Step." alt="" coords="5,96,200,124"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="240,92,201,100,200,94,245,91"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="230,126,200,125,200,119,235,126"/>
+</map>

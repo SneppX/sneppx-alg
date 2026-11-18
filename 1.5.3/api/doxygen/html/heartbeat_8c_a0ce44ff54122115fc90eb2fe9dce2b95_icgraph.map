@@ -1,0 +1,11 @@
+<map id="snepx_ns_now" name="snepx_ns_now">
+<area shape="rect" id="Node000001" title=" " alt="" coords="241,100,357,128"/>
+<area shape="rect" id="Node000002" href="$heartbeat_8c.html#a6f48c9fc58f556d110f0c6535abc6d2b" title="Perform Heartbeat Check Alive." alt="" coords="5,5,193,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="254,94,192,65,164,53,164,48,194,60,260,92"/>
+<area shape="rect" id="Node000003" href="$heartbeat_8c.html#a5c7f03df55387253a53cb2ff90cb66b2" title="Initialize Heartbeat." alt="" coords="14,74,184,102"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="223,105,185,102,184,96,228,104"/>
+<area shape="rect" id="Node000004" href="$heartbeat_8c.html#a7c24e74ebc37c562790a5e987454de53" title="Perform Heartbeat Recv." alt="" coords="10,126,188,154"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="223,124,189,131,187,126,228,123"/>
+<area shape="rect" id="Node000005" href="$heartbeat_8c.html#acc36880270e27ec5508719c520e74fcc" title="Perform Heartbeat Send." alt="" coords="9,178,189,206"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="260,135,194,167,157,180,155,175,192,163,255,136"/>
+</map>

@@ -1,0 +1,26 @@
+var container__breakout_8c =
+[
+    [ "breakout_process_t", "structbreakout__process__t.html", "structbreakout__process__t" ],
+    [ "breakout_file_t", "structbreakout__file__t.html", "structbreakout__file__t" ],
+    [ "BREAKOUT_MAX_EVENTS", "container__breakout_8c.html#a47625b9fe2e9fd67aa6ed175f1ac742a", null ],
+    [ "BREAKOUT_SENSITIVITY", "container__breakout_8c.html#a7289fecf07575e31ee98a4cdc0c9cbac", null ],
+    [ "BREAKOUT_WATCH_FILES", "container__breakout_8c.html#a805c401cd34e65b4b72a04bc49cdb26e", null ],
+    [ "add_process", "container__breakout_8c.html#ad1183c1da5d13cdae4203ab65b54f700", null ],
+    [ "find_process", "container__breakout_8c.html#a6d0bd3454bc94c81f0a48c192b3c997b", null ],
+    [ "SNEPPX_breakout_add_watch_file", "container__breakout_8c.html#a4e061dd69651750de0a7446397dd0176", null ],
+    [ "SNEPPX_breakout_check_file_access", "container__breakout_8c.html#a4abbd723ddd219d306eab32e1392aad4", null ],
+    [ "SNEPPX_breakout_detect_capability", "container__breakout_8c.html#a784a717b8850eebca8b8bbc01553d36d", null ],
+    [ "SNEPPX_breakout_detect_mount", "container__breakout_8c.html#a40af6bc9d16159cfa9a442ccb69d6b1f", null ],
+    [ "SNEPPX_breakout_detect_ns_change", "container__breakout_8c.html#aeebbdae3f5f3397dd00354d46fe7086f", null ],
+    [ "SNEPPX_breakout_detect_syscall", "container__breakout_8c.html#a68879cc8e05cc89aa2e9e75ab4fccfcb", null ],
+    [ "SNEPPX_breakout_get_stats", "container__breakout_8c.html#a30bdf0ccb6eeab2c567239751a8a32b7", null ],
+    [ "SNEPPX_breakout_reset", "container__breakout_8c.html#abb1fa41fb94afe03214998d42e91faa8", null ],
+    [ "process_count", "container__breakout_8c.html#aad8bae2a517b7ade8bb43db8909e8aa4", null ],
+    [ "processes", "container__breakout_8c.html#a1e7a29d0fe35736a479af284aa0b02a0", null ],
+    [ "suspicious_paths", "container__breakout_8c.html#a789fb36b3d044a9d358ecf62285cac23", null ],
+    [ "suspicious_syscalls", "container__breakout_8c.html#a022bd0ae247a8b9ebe0c4673e0e7f08d", null ],
+    [ "total_blocks", "container__breakout_8c.html#a9181bee05433b1343c3a2760b211d3f4", null ],
+    [ "total_breakout_attempts", "container__breakout_8c.html#a92b2d0207f3a100280ad5546fe95ac44", null ],
+    [ "watch_file_count", "container__breakout_8c.html#adeae2e8da35a8544b753195e9d773e48", null ],
+    [ "watch_files", "container__breakout_8c.html#ad0a3f810da41ad9e3c1801505c760c5a", null ]
+];

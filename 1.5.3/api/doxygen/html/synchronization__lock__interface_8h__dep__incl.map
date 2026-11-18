@@ -1,0 +1,9 @@
+<map id="include/neural_core/security/synchronization_lock_interface.h" name="include/neural_core/security/synchronization_lock_interface.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="193,5,377,67"/>
+<area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,115,176,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,74,146,117,144,112,215,76"/>
+<area shape="rect" id="Node000003" href="$lock_8c.html" title=" " alt="" coords="200,132,371,160"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="287,80,287,133,283,130,283,84"/>
+<area shape="rect" id="Node000004" href="$secure__mem_8c.html" title=" " alt="" coords="394,124,571,168"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="355,72,446,123,440,123,353,77"/>
+</map>
