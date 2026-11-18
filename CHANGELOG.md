@@ -30,6 +30,24 @@ All notable changes to SNEPPX-Algo.
 
 ## [Unreleased]
 
+### Release candidate 1.5.3-rc.1 (2026-11-18)
+
+- Prepared a patch candidate with corrected autograd behavior, aligned Python build metadata, and artifact-level regression validation. This candidate has not been published.
+
+- **Autograd patch candidate (1.5.3):** include the corrected vector/matrix
+  multiplication VJPs, broadcast-gradient reduction, and multi-output
+  gradient accumulation in the next distribution. The current-main source
+  build passes the focused 19-test regression suite; the published 1.5.2
+  artifact remains unchanged and retains two known external failures.
+- **Packaging consistency:** align the standalone bindings metadata with the
+  workspace metadata, including Alpha maturity, runtime dependencies,
+  project URLs, and the ONNX CLI entry point. Extend validation to check all
+  release-relevant metadata fields.
+- **Build metadata:** align the CMake and Python runtime version to 1.5.3.
+  This is a release candidate only; no PyPI upload or GitHub release has
+  been performed.
+
+
 - **P0 version alignment:** CMake, Python bindings `__version__`, inference server health/app version, ONNX, README/bindings badges aligned to 1.5.2.
 - **P1 Python inference:** `inference_server` requires a registered tokenizer for text encode/decode (HTTP 422 with clear message); removed silent `ord/chr` char-code fallbacks. `serve_cli` validates local config/tokenizer/checkpoint paths and reports checkpoint-loading status clearly.
 - **P2 HF/model zoo (local-only):** `hf_integration` loaders no longer call `huggingface_hub.snapshot_download` and raise clear `FileNotFoundError` for missing local snapshots (`cache_dir=<local .safetensors/.bin dir>`). `model_zoo.from_pretrained` documented as config/skeleton metadata only (no weights download/network).

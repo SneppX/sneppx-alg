@@ -28,7 +28,21 @@ def main() -> int:
     bindings_project = bindings_config.get("project", {})
     errors: list[str] = []
 
-    for field in ("name", "version", "requires-python"):
+    for field in (
+        "name",
+        "version",
+        "requires-python",
+        "description",
+        "readme",
+        "license",
+        "authors",
+        "keywords",
+        "classifiers",
+        "dependencies",
+        "urls",
+        "scripts",
+        "optional-dependencies",
+    ):
         root_value = root_project.get(field)
         bindings_value = bindings_project.get(field)
         if not root_value or not bindings_value:
@@ -38,6 +52,24 @@ def main() -> int:
                 f"project.{field} differs: root={root_value!r}, "
                 f"bindings={bindings_value!r}"
             )
+
+    root_build = root_config.get("build-system", {})
+    bindings_build = bindings_config.get("build-system", {})
+    for field in ("requires", "build-backend"):
+        if root_build.get(field) != bindings_build.get(field):
+            errors.append(
+                f"build-system.{field} differs: root={root_build.get(field)!r}, "
+                f"bindings={bindings_build.get(field)!r}"
+            )
+
+    root_package_data = (
+        root_config.get("tool", {}).get("setuptools", {}).get("package-data")
+    )
+    bindings_package_data = (
+        bindings_config.get("tool", {}).get("setuptools", {}).get("package-data")
+    )
+    if root_package_data != bindings_package_data:
+        errors.append("Setuptools package-data declarations differ between build roots.")
 
     root_where = (
         root_config.get("tool", {})

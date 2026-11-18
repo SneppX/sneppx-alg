@@ -145,7 +145,7 @@ class ModelListResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "1.5.2"
+    version: str = "1.5.3"
     models_loaded: int = 0
     uptime_seconds: float = 0.0
 
@@ -412,7 +412,7 @@ def _key_hash(raw_key: str) -> str:
 
 app = FastAPI(
     title="SneppX Inference API",
-    version="1.5.2",
+    version="1.5.3",
 )
 
 # Enforce the transport, network, and application firewall rings before any
@@ -460,7 +460,7 @@ async def usage_middleware(request: callable, call_next):
 async def health_endpoint():
     return HealthResponse(
         status="ok",
-        version="1.5.2",
+        version="1.5.3",
         models_loaded=len(_models),
         uptime_seconds=time.time() - _start_time,
     )

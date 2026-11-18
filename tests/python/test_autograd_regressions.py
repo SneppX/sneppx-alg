@@ -269,3 +269,20 @@ def test_sum_create_graph_expands_reduced_axes_in_original_positions():
     np.testing.assert_array_equal(first.data, np.ones_like(values))
     assert first.grad_fn is not None
 
+
+
+
+def test_public_package_version_matches_distribution_metadata():
+    import importlib.metadata
+    import tomllib
+    from pathlib import Path
+
+    import SneppX_ALG
+
+    try:
+        expected = importlib.metadata.version("sneppx-alg")
+    except importlib.metadata.PackageNotFoundError:
+        project = Path(__file__).resolve().parents[2] / "pyproject.toml"
+        expected = tomllib.loads(project.read_text(encoding="utf-8"))["project"]["version"]
+
+    assert SneppX_ALG.__version__ == expected

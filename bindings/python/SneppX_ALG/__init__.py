@@ -18,6 +18,7 @@ except ImportError:
         _neural_engine_bridge = types.ModuleType("_neural_engine_bridge_fallback")
 
 from .interface_bindings import *
+from .interface_bindings import __version__
 from . import metrics
 from . import datasets
 from . import sampling
@@ -34,6 +35,7 @@ from . import observability
 from . import speculative
 
 __all__ = [
+    "__version__",
     "_neural_engine_bridge",
     "metrics",
     "datasets",
