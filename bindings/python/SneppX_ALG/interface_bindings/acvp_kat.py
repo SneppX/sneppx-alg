@@ -362,11 +362,17 @@ def interop_report(
     """
     total = agreed = skipped = 0
     mismatches = []
+    errors = []
     for v in vectors:
         try:
             decision = runner(crypto, v)
-        except Exception:
-            decision = None
+        except Exception as exc:
+            # A runner crash is a failed vector, not an unsupported vector.
+            # Only an explicit None return is counted as skipped.
+            total += 1
+            mismatches.append(v.get("tcId"))
+            errors.append({"tcId": v.get("tcId"), "error": type(exc).__name__})
+            continue
         if decision is None:
             skipped += 1
             continue
@@ -375,13 +381,14 @@ def interop_report(
         if bool(decision) == expected:
             agreed += 1
         else:
-            mismatches.append(v["tcId"])
+            mismatches.append(v.get("tcId"))
     agreement = (agreed / total) if total else 0.0
     return {
         "total": total,
         "agreed": agreed,
         "mismatches": mismatches,
         "skipped": skipped,
+        "errors": errors,
         "agreement": agreement,
     }
 
@@ -409,6 +416,7 @@ def run_all_pqc_kats(crypto: Any) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
     all_total = all_agreed = all_skipped = 0
     all_mismatches: List[str] = []
+    all_errors: List[Dict[str, Any]] = []
     for name, (vectors, runner) in runners.items():
         rep = interop_report(crypto, vectors, runner)
         reports[name] = rep
@@ -416,11 +424,13 @@ def run_all_pqc_kats(crypto: Any) -> Dict[str, Any]:
         all_agreed += rep["agreed"]
         all_skipped += rep["skipped"]
         all_mismatches.extend(rep["mismatches"])
+        all_errors.extend(rep["errors"])
     reports["overall"] = {
         "total": all_total,
         "agreed": all_agreed,
         "mismatches": all_mismatches,
         "skipped": all_skipped,
+        "errors": all_errors,
         "agreement": (all_agreed / all_total) if all_total else 0.0,
     }
     return reports
