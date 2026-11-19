@@ -36,13 +36,13 @@ These pages describe different parts of the repository. Check the relevant imple
 Install the package from its canonical Python project directory in a source checkout:
 
 ```bash
-python -m pip install ./bindings/python
+python -m pip install .
 ```
 
 Or use the bindings directly from the repository:
 
 ```bash
-PYTHONPATH=bindings/python python -c "from SneppX_ALG import Tensor; print(Tensor([1, 2, 3]))"
+python -c "from SneppX_ALG import Tensor; print(Tensor([1, 2, 3]))"
 ```
 
 See [Python packaging](dev/python-packaging.md) for the distinction between the development workspace and the distributable package.

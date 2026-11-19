@@ -21,12 +21,20 @@ execution or production readiness.
 
 ## Installation
 
-```powershell
-$env:PYTHONPATH = "bindings/python"
-python -c "from SneppX_ALG import *"
+From the repository root, install the Python package and its runtime dependencies:
+
+```bash
+python -m pip install .
 ```
 
-No C compilation needed — wrappers are pure Python with optional C backend.
+Then import the symbols you need explicitly:
+
+```python
+from SneppX_ALG import Tensor, Linear, Sequential, Model, Optimizer, Trainer
+```
+
+The package includes a Python implementation; a compiled native extension is
+optional and is not built by this installation command.
 
 ## Package Structure
 
@@ -337,13 +345,13 @@ python -m pytest tests/python/test_acvp_sha3.py tests/python/test_acvp_mlkem.py 
 
 ## Extended utilities
 
-A set of pure-Python, NumPy-backed utility packages is included under SneppX_ALG:
-sampling, 
-egularization, callbacks, linalg, signal, graph, stats,
-structured_output, 
-ag, gents, observability, speculative. Each module
-provides minimal, testable primitives and is re-exported from the top-level package.
+The package also exposes NumPy-backed utility modules at the top level:
+`sampling`, `regularization`, `callbacks`, `linalg`, `signal`, `graph`,
+`stats`, `structured_output`, `rag`, `agents`, `observability`, and
+`speculative`.
 
-`python
+Import these namespaces explicitly:
+
+```python
 from SneppX_ALG import agents, rag, structured_output, observability, speculative
-`
+```
