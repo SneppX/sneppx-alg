@@ -5348,10 +5348,14 @@ production-certified or use them as the sole protection for sensitive data.
 Release/update signing currently uses Ed25519, not ML-DSA.</p>
 </blockquote>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
-<span class="n">python</span> <span class="n">-c</span> <span class="s2">"from SneppX_ALG import *"</span>
+<p>From the repository root, install the Python package and its runtime dependencies:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
 </code></pre></div>
-<p>No C compilation needed — wrappers are pure Python with optional C backend.</p>
+<p>Then import the symbols you need explicitly:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Optimizer</span><span class="p">,</span> <span class="n">Trainer</span>
+</code></pre></div>
+<p>The package includes a Python implementation; a compiled native extension is
+optional and is not built by this installation command.</p>
 <h2 id="package&#702;structure">Package Structure<a class="headerlink" href="#package&#702;structure" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>SneppX_ALG/
   __init__.py                   # Re-exports all public classes
@@ -5593,14 +5597,13 @@ these experimental algorithms.</p>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_sha3</span><span class="p">.</span><span class="n">py</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_mlkem</span><span class="p">.</span><span class="n">py</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_mldsa</span><span class="p">.</span><span class="n">py</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_acvp_slhdsa</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span>
 </code></pre></div>
 <h2 id="extended&#702;utilities">Extended utilities<a class="headerlink" href="#extended&#702;utilities" title="Permanent link">&para;</a></h2>
-<p>A set of pure-Python, NumPy-backed utility packages is included under SneppX<em>ALG:
-sampling, 
-egularization, callbacks, linalg, signal, graph, stats,
-structured</em>output, 
-ag, gents, observability, speculative. Each module
-provides minimal, testable primitives and is re-exported from the top-level package.</p>
-<p><code>python
-from SneppX_ALG import agents, rag, structured_output, observability, speculative</code></p>
+<p>The package also exposes NumPy-backed utility modules at the top level:
+<code>sampling</code>, <code>regularization</code>, <code>callbacks</code>, <code>linalg</code>, <code>signal</code>, <code>graph</code>,
+<code>stats</code>, <code>structured_output</code>, <code>rag</code>, <code>agents</code>, <code>observability</code>, and
+<code>speculative</code>.</p>
+<p>Import these namespaces explicitly:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">agents</span><span class="p">,</span> <span class="n">rag</span><span class="p">,</span> <span class="n">structured_output</span><span class="p">,</span> <span class="n">observability</span><span class="p">,</span> <span class="n">speculative</span>
+</code></pre></div>
 
 
 

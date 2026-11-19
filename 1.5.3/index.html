@@ -4899,10 +4899,10 @@
 <p>These pages describe different parts of the repository. Check the relevant implementation and tests before depending on a specific backend, operation, or security control.</p>
 <h2 id="install&#702;the&#702;python&#702;bindings">Install the Python bindings<a class="headerlink" href="#install&#702;the&#702;python&#702;bindings" title="Permanent link">&para;</a></h2>
 <p>Install the package from its canonical Python project directory in a source checkout:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>./bindings/python
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
 </code></pre></div>
 <p>Or use the bindings directly from the repository:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>bindings/python<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from SneppX_ALG import Tensor; print(Tensor([1, 2, 3]))"</span>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from SneppX_ALG import Tensor; print(Tensor([1, 2, 3]))"</span>
 </code></pre></div>
 <p>See <a href="dev/python-packaging/">Python packaging</a> for the distinction between the development workspace and the distributable package.</p>
 <h2 id="build&#702;the&#702;native&#702;project">Build the native project<a class="headerlink" href="#build&#702;the&#702;native&#702;project" title="Permanent link">&para;</a></h2>
