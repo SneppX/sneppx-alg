@@ -257,9 +257,6 @@ def run_mldsa_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     crypto.random_set_seed(h2b(vector["seed"]))
     try:
         pk, sk = crypto.dilithium_keygen(variant)
-    except Exception:
-        crypto.random_clear_seed()
-        return None
     finally:
         crypto.random_clear_seed()
 
@@ -299,9 +296,6 @@ def run_mlkem_keygen(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     crypto.random_set_seed(h2b(vector["d"]))
     try:
         pk, sk = crypto.kyber_keygen(variant)
-    except Exception:
-        crypto.random_clear_seed()
-        return None
     finally:
         crypto.random_clear_seed()
 
@@ -327,26 +321,18 @@ def run_mlkem_encaps_decaps_roundtrip(crypto: Any, vector: Dict[str, Any]) -> bo
         return None
     pk_size, sk_size = _FIPS203_SIZES[variant]
 
+    crypto.random_set_seed(h2b(vector["d"]))
     try:
-        crypto.random_set_seed(h2b(vector["d"]))
         pk, sk = crypto.kyber_keygen(variant)
+    finally:
         crypto.random_clear_seed()
-    except Exception:
-        try:
-            crypto.random_clear_seed()
-        except Exception:
-            pass
-        return None
 
     if len(pk) != pk_size or len(sk) != sk_size:
         return False
 
-    try:
-        ct, ss1 = crypto.kyber_encaps(pk, variant)
-        ss2 = crypto.kyber_decaps(ct, sk, variant)
-        return ss1 == ss2
-    except Exception:
-        return False
+    ct, ss1 = crypto.kyber_encaps(pk, variant)
+    ss2 = crypto.kyber_decaps(ct, sk, variant)
+    return ss1 == ss2
 
 
 def interop_report(
