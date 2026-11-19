@@ -33,7 +33,7 @@ jobs:
           python -c "import glob, yaml; [yaml.safe_load(open(p, encoding='utf-8')) for p in glob.glob('.github/workflows/*.yml')]"
           python -m compileall -q bindings/python/SneppX_ALG/interface_bindings/generation.py bindings/python/SneppX_ALG/interface_bindings/inference_server.py bindings/python/SneppX_ALG/interface_bindings/hf_integration.py bindings/python/SneppX_ALG/interface_bindings/model_zoo.py bindings/python/SneppX_ALG/interface_bindings/serve_cli.py
       - name: Validate MkDocs navigation
-        run: python scripts/validate_mkdocs_nav.py
+        run: python -m pytest tests/test_validate_mkdocs_nav.py -q -p no:cacheprovider && python scripts/validate_mkdocs_nav.py
       - name: README integrity test
         env:
           PYTHONPATH: bindings/python
