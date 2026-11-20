@@ -86,6 +86,27 @@ def server():
 
 
 
+def _raw_http_request(port, payload, shutdown_write=False):
+    client = socket.create_connection(("127.0.0.1", port), timeout=2)
+    try:
+        client.sendall(payload)
+        if shutdown_write:
+            client.shutdown(socket.SHUT_WR)
+        client.settimeout(3)
+        chunks = []
+        while True:
+            try:
+                part = client.recv(4096)
+            except socket.timeout:
+                break
+            if not part:
+                break
+            chunks.append(part)
+        return b"".join(chunks)
+    finally:
+        client.close()
+
+
 def test_slow_client_is_closed_by_receive_timeout(server):
     port, _ = server
     client = socket.create_connection(("127.0.0.1", port), timeout=2)
@@ -120,6 +141,43 @@ def test_connection_limit_returns_service_unavailable(server):
     finally:
         for client in blockers:
             client.close()
+
+
+def test_duplicate_content_length_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\\r\\nHost: localhost\\r\\nContent-Length: 0\\r\\nContent-Length: 0\\r\\n\\r\\n")
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
+
+def test_transfer_encoding_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\\r\\nHost: localhost\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n0\\r\\n\\r\\n")
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
+
+def test_invalid_content_length_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\\r\\nHost: localhost\\r\\nContent-Length: -1\\r\\n\\r\\n")
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
+
+def test_oversized_content_length_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\\r\\nHost: localhost\\r\\nContent-Length: 32769\\r\\n\\r\\n")
+    assert response.startswith(b"HTTP/1.1 413 Payload Too Large")
+
+
+def test_malformed_request_line_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"GET /v1/health\\r\\nHost: localhost\\r\\n\\r\\n")
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
+
+def test_incomplete_declared_body_is_rejected(server):
+    port, _ = server
+    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\\r\\nHost: localhost\\r\\nContent-Length: 3\\r\\n\\r\\na", shutdown_write=True)
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
 
 def test_health_endpoint(server):
     port, _ = server

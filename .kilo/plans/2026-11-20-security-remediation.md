@@ -236,3 +236,5 @@
 - Follow-up compile review found that the new lifecycle helper referenced the platform close wrapper before its definition; a forward declaration was added before CI completed. This is tracked with the Task 4A fixups.
 
 - Compile fixup: the socket close wrapper is a platform macro, not a function; removed the incorrect forward declaration after CI reported the POSIX `close` type conflict.
+
+- Task 4A validation: corrected HEAD `c985d44` passed native build, full CTest, Python HTTP integration (including slow-client and worker-saturation tests), Lint & Docs, and package validation. Intermediate syntax/declaration failures and their fixups are preserved in the commit history and this ledger.

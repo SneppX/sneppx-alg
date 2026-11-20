@@ -106,6 +106,7 @@ int SNEPPX_http_server_add_static_dir(SNEPPX_HttpServer* srv, const char* url_pr
  */
 int SNEPPX_http_server_add_middleware(SNEPPX_HttpServer* srv, SNEPPX_http_middleware_fn mw, void* userdata);
 
+/* Request framing: one request per connection, Content-Length only, 16 KiB headers and 32 KiB body. */
 /* Request accessors */
 /**
  * @brief Perform Http Request Method.

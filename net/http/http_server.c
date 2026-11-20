@@ -49,6 +49,8 @@
 #define MAX_THREADS 16
 #define BUF_SIZE 65536
 #define MAX_HEADERS 64
+#define MAX_REQUEST_HEADER_SIZE 16384U
+#define MAX_REQUEST_BODY_SIZE 32768U
 #define MAX_ROUTE_PARAMS 8
 
 /* ---- Request / Response ---- */
@@ -291,10 +293,27 @@ static int match_route(const char* pattern, const char* path, SNEPPX_HttpRequest
     return *pattern == '\0' && *path == '\0';
 }
 
+static int ascii_lower(int ch) {
+    return (ch >= 'A' && ch <= 'Z') ? ch + ('a' - 'A') : ch;
+}
+static int ascii_equal_n(const char* a, const char* b, size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        if (ascii_lower((unsigned char)a[i]) != ascii_lower((unsigned char)b[i])) return 0;
+    }
+    return 1;
+}
 static const char* find_header(SNEPPX_HttpRequest* req, const char* name) {
+    if (!req || !name) return NULL;
+    size_t wanted_len = strlen(name);
     for (int i = 0; i < req->num_headers; i++) {
-        if (str_starts_with(req->headers[i], name) && req->headers[i][strlen(name)] == ':')
-            return req->headers[i] + strlen(name) + 2;
+        const char* colon = strchr(req->headers[i], ':');
+        if (!colon) continue;
+        size_t name_len = (size_t)(colon - req->headers[i]);
+        if (name_len == wanted_len && ascii_equal_n(req->headers[i], name, name_len)) {
+            const char* value = colon + 1;
+            while (*value == ' ' || *value == '\t') value++;
+            return value;
+        }
     }
     return NULL;
 }
@@ -306,45 +325,150 @@ static void add_header(SNEPPX_HttpResponse* resp, const char* name, const char* 
 
 /* ---- Parse HTTP request ---- */
 
+static int is_http_token_char(unsigned char ch) {
+    if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
+        (ch >= 'a' && ch <= 'z')) return 1;
+    return strchr("!#$%&'*+-.^_\\x60|~", ch) != NULL;
+}
+static const char* find_crlf(const char* start, const char* end) {
+    for (const char* p = start; p + 1 < end; p++) {
+        if (p[0] == '\r' && p[1] == '\n') return p;
+    }
+    return NULL;
+}
+static int parse_request_framing(const char* raw, size_t raw_len,
+                                 size_t* header_len_out, size_t* body_len_out) {
+    if (!raw || !header_len_out || !body_len_out) return -1;
+    size_t header_len = 0;
+    for (size_t i = 0; i + 3 < raw_len; i++) {
+        if (raw[i] == '\r' && raw[i+1] == '\n' && raw[i+2] == '\r' && raw[i+3] == '\n') {
+            header_len = i + 4;
+            break;
+        }
+    }
+    if (!header_len) return 0;
+    if (header_len > MAX_REQUEST_HEADER_SIZE) return -3;
+    const char* header_end = raw + header_len - 2;
+    const char* request_line_end = find_crlf(raw, header_end + 2);
+    if (!request_line_end || request_line_end == raw) return -1;
+    char seen[MAX_HEADERS][256];
+    int seen_count = 0, has_content_length = 0;
+    size_t body_len = 0;
+    const char* p = request_line_end + 2;
+    while (p < header_end) {
+        const char* line_end = find_crlf(p, header_end + 2);
+        if (!line_end || line_end == p || line_end > header_end || p[0] == ' ' || p[0] == '\t') return -1;
+        const char* colon = (const char*)memchr(p, ':', (size_t)(line_end - p));
+        if (!colon || colon == p) return -1;
+        size_t name_len = (size_t)(colon - p);
+        if (name_len >= sizeof(seen[0])) return -1;
+        for (size_t i = 0; i < name_len; i++) if (!is_http_token_char((unsigned char)p[i])) return -1;
+        const char* value = colon + 1;
+        const char* value_end = line_end;
+        while (value < value_end && (*value == ' ' || *value == '\t')) value++;
+        while (value_end > value && (value_end[-1] == ' ' || value_end[-1] == '\t')) value_end--;
+        for (const char* q = value; q < value_end; q++) {
+            unsigned char ch = (unsigned char)*q;
+            if ((ch < 0x20 && ch != '\t') || ch == 0x7f) return -1;
+        }
+        for (int i = 0; i < seen_count; i++) {
+            if (strlen(seen[i]) == name_len && ascii_equal_n(seen[i], p, name_len)) return -1;
+        }
+        if (seen_count >= MAX_HEADERS) return -1;
+        memcpy(seen[seen_count], p, name_len);
+        seen[seen_count][name_len] = '\0';
+        seen_count++;
+        if (name_len == 17 && ascii_equal_n(p, "Transfer-Encoding", 17)) return -1;
+        if (name_len == 6 && ascii_equal_n(p, "Expect", 6)) return -1;
+        if (name_len == 14 && ascii_equal_n(p, "Content-Length", 14)) {
+            if (has_content_length || value == value_end) return -1;
+            has_content_length = 1;
+            size_t parsed = 0;
+            for (const char* q = value; q < value_end; q++) {
+                if (*q < '0' || *q > '9') return -1;
+                unsigned digit = (unsigned)(*q - '0');
+                if (parsed > (SIZE_MAX - digit) / 10) return -1;
+                parsed = parsed * 10 + digit;
+                if (parsed > MAX_REQUEST_BODY_SIZE) return -2;
+            }
+            body_len = parsed;
+        }
+        p = line_end + 2;
+    }
+    *header_len_out = header_len;
+    *body_len_out = body_len;
+    return 1;
+}
+
 static int parse_http_request(const char* raw, size_t raw_len, SNEPPX_HttpRequest* req) {
+    if (!raw || !req) return -1;
     memset(req, 0, sizeof(*req));
-    /* Parse request line: METHOD PATH HTTP/1.x */
-    char line[8192];
-    size_t line_end = 0;
-    while (line_end < raw_len && raw[line_end] != '\r' && raw[line_end] != '\n') line_end++;
-    if (line_end >= sizeof(line)) return -1;
-    memcpy(line, raw, line_end);
-    line[line_end] = '\0';
-    sscanf(line, "%15s %1023s", req->method, req->path);
-    /* Split path and query */
-    char full_path[1024];
-    strncpy(full_path, req->path, 1023);
-    full_path[1023] = '\0';
-    split_query(full_path, req->path, req->query);
-    /* Parse headers */
-    const char* hdr_start = raw + line_end;
-    while (*hdr_start == '\r' || *hdr_start == '\n') hdr_start++;
-    const char* h = hdr_start;
-    while (req->num_headers < MAX_HEADERS) {
-        const char* nl = strstr(h, "\r\n");
-        if (!nl || nl == h) break;
-        size_t hlen = (size_t)(nl - h);
-        if (hlen > 255) hlen = 255;
-        memcpy(req->headers[req->num_headers], h, hlen);
-        req->headers[req->num_headers][hlen] = '\0';
+    size_t header_len = 0, body_len = 0;
+    if (parse_request_framing(raw, raw_len, &header_len, &body_len) != 1 ||
+        header_len > raw_len || body_len != raw_len - header_len) return -1;
+    const char* header_end = raw + header_len - 2;
+    const char* line_end = find_crlf(raw, header_end + 2);
+    if (!line_end || line_end == raw) return -1;
+    const char* first_space = (const char*)memchr(raw, ' ', (size_t)(line_end - raw));
+    if (!first_space || first_space == raw) return -1;
+    const char* second_space = (const char*)memchr(first_space + 1, ' ', (size_t)(line_end - first_space - 1));
+    if (!second_space || second_space == first_space + 1 ||
+        memchr(second_space + 1, ' ', (size_t)(line_end - second_space - 1))) return -1;
+    size_t method_len = (size_t)(first_space - raw);
+    size_t target_len = (size_t)(second_space - first_space - 1);
+    size_t version_len = (size_t)(line_end - second_space - 1);
+    if (method_len >= sizeof(req->method) || target_len == 0 || target_len >= 1024) return -1;
+    const char* target = first_space + 1;
+    const char* version = second_space + 1;
+    if (!((version_len == 8 && memcmp(version, "HTTP/1.0", 8) == 0) ||
+          (version_len == 8 && memcmp(version, "HTTP/1.1", 8) == 0)) || target[0] != '/') return -1;
+    for (size_t i = 0; i < method_len; i++) {
+        if (!is_http_token_char((unsigned char)raw[i])) return -1;
+        req->method[i] = raw[i];
+    }
+    req->method[method_len] = '\0';
+    size_t path_len = target_len, query_len = 0;
+    const char* query_mark = (const char*)memchr(target, '?', target_len);
+    if (query_mark) {
+        path_len = (size_t)(query_mark - target);
+        query_len = target_len - path_len - 1;
+        if (query_len >= sizeof(req->query)) return -1;
+        memcpy(req->query, query_mark + 1, query_len);
+        req->query[query_len] = '\0';
+    }
+    if (path_len == 0 || path_len >= sizeof(req->path)) return -1;
+    for (size_t i = 0; i < path_len; i++) {
+        unsigned char ch = (unsigned char)target[i];
+        if (ch < 0x21 || ch == 0x7f || ch == '#' || ch == '\\') return -1;
+        req->path[i] = (char)ch;
+    }
+    req->path[path_len] = '\0';
+    const char* p = line_end + 2;
+    while (p < header_end) {
+        const char* h_end = find_crlf(p, header_end + 2);
+        if (!h_end || h_end == p || h_end > header_end || req->num_headers >= MAX_HEADERS) return -1;
+        const char* colon = (const char*)memchr(p, ':', (size_t)(h_end - p));
+        if (!colon || colon == p) return -1;
+        size_t name_len = (size_t)(colon - p);
+        const char* value = colon + 1;
+        const char* value_end = h_end;
+        while (value < value_end && (*value == ' ' || *value == '\t')) value++;
+        while (value_end > value && (value_end[-1] == ' ' || value_end[-1] == '\t')) value_end--;
+        size_t value_len = (size_t)(value_end - value);
+        if (name_len + 2 + value_len >= sizeof(req->headers[0])) return -1;
+        char* dest = req->headers[req->num_headers];
+        memcpy(dest, p, name_len);
+        dest[name_len] = ':';
+        dest[name_len + 1] = ' ';
+        memcpy(dest + name_len + 2, value, value_len);
+        dest[name_len + 2 + value_len] = '\0';
         req->num_headers++;
-        h = nl + 2;
+        p = h_end + 2;
     }
-    /* Body is after \r\n\r\n */
-    const char* body_start = strstr(raw, "\r\n\r\n");
-    if (body_start) {
-        body_start += 4;
-        size_t body_avail = raw_len - (size_t)(body_start - raw);
-        if (body_avail > BUF_SIZE - 1) body_avail = BUF_SIZE - 1;
-        memcpy(req->body, body_start, body_avail);
-        req->body[body_avail] = '\0';
-        req->body_len = body_avail;
-    }
+    if (body_len >= sizeof(req->body)) return -1;
+    if (body_len) memcpy(req->body, raw + header_len, body_len);
+    req->body[body_len] = '\0';
+    req->body_len = body_len;
     return 0;
 }
 
@@ -389,50 +513,85 @@ static int build_response(SNEPPX_HttpResponse* resp, char* out, size_t out_max) 
 
 /* ---- Handle single connection ---- */
 
+static int send_all(sock_t fd, const char* data, size_t len) {
+    size_t sent = 0;
+    while (sent < len) {
+        int n = send(fd, data + sent, (int)(len - sent), 0);
+        if (n <= 0) return -1;
+        sent += (size_t)n;
+    }
+    return 0;
+}
+static void send_simple_error(sock_t fd, int status, const char* reason, const char* body) {
+    char response[512];
+    size_t body_len = strlen(body);
+    int n = snprintf(response, sizeof(response),
+        "HTTP/1.1 %d %s\r\nContent-Type: text/plain\r\nContent-Length: %u\r\nConnection: close\r\n\r\n%s",
+        status, reason, (unsigned)body_len, body);
+    if (n > 0 && (size_t)n < sizeof(response)) send_all(fd, response, (size_t)n);
+}
+
 static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
     char raw[BUF_SIZE];
-    size_t raw_len = 0;
-    for (;;) {
+    size_t raw_len = 0, header_len = 0, body_len = 0, expected_len = 0;
+    int framing_ready = 0;
+    while (raw_len < sizeof(raw) - 1) {
         int n = recv(client_fd, raw + raw_len, (int)(sizeof(raw) - 1 - raw_len), 0);
-        if (n <= 0) { snepx_close(client_fd); return; }
+        if (n <= 0) {
+            if (n < 0) send_simple_error(client_fd, 408, "Request Timeout", "Request Timeout\n");
+            else send_simple_error(client_fd, 400, "Bad Request", "Bad Request\n");
+            snepx_close(client_fd);
+            return;
+        }
         raw_len += (size_t)n;
         raw[raw_len] = '\0';
-        /* If we have the header terminator and a Content-Length, keep reading
-         * until the full body has arrived. Otherwise one packet is enough. */
-        const char* body_start = strstr(raw, "\r\n\r\n");
-        if (body_start) {
-            size_t have = raw_len - (size_t)(body_start + 4 - raw);
-            long content_len = -1;
-            const char* cl = strstr(raw, "Content-Length:");
-            if (!cl) cl = strstr(raw, "content-length:");
-            if (cl) content_len = atol(cl + 15);
-            if (content_len <= 0 || have >= (size_t)content_len) break;
-        } else {
-            /* Guard against header floods without a terminator. */
-            if (raw_len > 16384) break;
+        if (!framing_ready) {
+            int framing = parse_request_framing(raw, raw_len, &header_len, &body_len);
+            if (framing == -1) {
+                send_simple_error(client_fd, 400, "Bad Request", "Bad Request\n");
+                snepx_close(client_fd); return;
+            }
+            if (framing == -2) {
+                send_simple_error(client_fd, 413, "Payload Too Large", "Payload Too Large\n");
+                snepx_close(client_fd); return;
+            }
+            if (framing == -3 || (framing == 0 && raw_len >= MAX_REQUEST_HEADER_SIZE)) {
+                send_simple_error(client_fd, 431, "Request Header Fields Too Large", "Request Headers Too Large\n");
+                snepx_close(client_fd); return;
+            }
+            if (framing == 1) {
+                if (header_len > SIZE_MAX - body_len || header_len + body_len > sizeof(raw) - 1) {
+                    send_simple_error(client_fd, 413, "Payload Too Large", "Payload Too Large\n");
+                    snepx_close(client_fd); return;
+                }
+                expected_len = header_len + body_len;
+                framing_ready = 1;
+            }
+        }
+        if (framing_ready) {
+            if (raw_len > expected_len) {
+                send_simple_error(client_fd, 400, "Bad Request", "Unexpected bytes after request body\n");
+                snepx_close(client_fd); return;
+            }
+            if (raw_len == expected_len) break;
         }
     }
-    raw[raw_len] = '\0';
+    if (!framing_ready || raw_len != expected_len) {
+        send_simple_error(client_fd, 413, "Payload Too Large", "Request Too Large\n");
+        snepx_close(client_fd); return;
+    }
 
     SNEPPX_HttpRequest req;
     SNEPPX_HttpResponse resp;
     memset(&resp, 0, sizeof(resp));
     resp.status_code = 200;
-
     if (parse_http_request(raw, raw_len, &req) != 0) {
-        resp.status_code = 400;
-        const char* err = "Bad Request";
-        SNEPPX_http_response_set_body_str(&resp, err);
-        char out[BUF_SIZE];
-        int len = build_response(&resp, out, sizeof(out));
-        send(client_fd, out, len, 0);
-        snepx_close(client_fd);
-        return;
+        send_simple_error(client_fd, 400, "Bad Request", "Bad Request\n");
+        snepx_close(client_fd); return;
     }
     req.client_fd = client_fd;
     req.server = srv;
 
-    /* Run middleware chain */
     int abort = 0;
     for (int i = 0; i < srv->num_middleware; i++) {
         resp.status_code = 200;
@@ -444,10 +603,8 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
         }
     }
 
-    /* Find and run handler (if not aborted) */
     if (!abort) {
         int handled = 0;
-        /* Check static dirs */
         for (int i = 0; i < srv->num_static_dirs; i++) {
             if (str_starts_with(req.path, srv->static_dirs[i][0])) {
                 const char* rel = req.path + strlen(srv->static_dirs[i][0]);
@@ -478,7 +635,6 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
                 }
             }
         }
-        /* Check registered routes */
         if (!handled) {
             for (int i = 0; i < srv->num_routes; i++) {
                 if (strcmp(req.method, srv->routes[i].method) == 0 &&
@@ -496,14 +652,17 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
         }
         if (!handled) {
             resp.status_code = 404;
-            const char* msg = "Not Found";
-            SNEPPX_http_response_set_body_str(&resp, msg);
+            SNEPPX_http_response_set_body_str(&resp, "Not Found");
         }
     }
 
     char out[BUF_SIZE];
-    int len = build_response(&resp, out, sizeof(out));
-    send(client_fd, out, len, 0);
+    int response_len = build_response(&resp, out, sizeof(out));
+    if (response_len <= 0 || (size_t)response_len >= sizeof(out)) {
+        send_simple_error(client_fd, 500, "Internal Server Error", "Internal Server Error\n");
+    } else {
+        send_all(client_fd, out, (size_t)response_len);
+    }
     snepx_close(client_fd);
 }
 
