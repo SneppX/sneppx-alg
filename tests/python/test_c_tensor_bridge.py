@@ -509,3 +509,34 @@ def test_public_tensor_native_softmax_and_reductions_match_numpy():
     assert np.allclose(tensor.native_softmax(dim=1).data, expected_softmax, rtol=1e-5, atol=1e-6)
     assert np.allclose(tensor.native_sum(dim=1).data, np.sum(values, axis=1), rtol=1e-5, atol=1e-6)
     assert np.allclose(tensor.native_mean(dim=1).data, np.mean(values, axis=1), rtol=1e-5, atol=1e-6)
+
+
+
+def test_public_tensor_native_variance_and_std_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 4.0], [3.0, 5.0, 8.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+
+    variance = tensor.native_var(dim=1)
+    deviation = tensor.native_std(dim=1)
+
+    assert variance.shape == (2, 1)
+    assert deviation.shape == (2, 1)
+    assert np.allclose(variance.data.ravel(), values.var(axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(deviation.data.ravel(), values.std(axis=1), rtol=1e-5, atol=1e-6)
+
+
+def test_public_tensor_native_cumulative_ops_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 3.0], [2.0, 3.0, 4.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+
+    cumulative_sum = tensor.native_cumsum(dim=1)
+    cumulative_product = tensor.native_cumprod(dim=1)
+
+    assert cumulative_sum.shape == values.shape
+    assert cumulative_product.shape == values.shape
+    assert np.allclose(cumulative_sum.data, np.cumsum(values, axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(cumulative_product.data, np.cumprod(values, axis=1), rtol=1e-5, atol=1e-6)
