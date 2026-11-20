@@ -229,4 +229,6 @@
 - SXP1 documentation cleanup: restored the adjacent A/B API comment, documented that SXP1 is project-specific (not BSDIFF40), clarified buffer-capacity semantics, and removed duplicate Bspatch API documentation.
 - Sanitizer note: standalone parser harness passed ASan/UBSan; repository-wide sanitizer-enabled CTest remains pending.
 
-- Task 4A implementation pushed as a separate resource-control commit; CI result pending. It adds loopback-only binding, bounded workers, 5-second socket timeouts, and shutdown waiting.
+- Task 4A implementation pushed as a separate resource-control commit; a follow-up fix corrected an extra preprocessor terminator and ensured Winsock accept is unblocked on shutdown. The original commit's CI is recorded separately; the corrected HEAD must pass before Task 4B.
+
+- Process deviation: Task 4A received an immediate syntax/platform shutdown fixup while its first CI run was pending. The correction was made after source inspection found a duplicated `#endif`; no unrelated work was started before the corrected HEAD is green.

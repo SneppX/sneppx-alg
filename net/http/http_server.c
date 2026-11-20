@@ -535,10 +535,6 @@ static void* worker_thread(void* arg) {
 
 /* ---- API Implementation ---- */
 
-#endif
-
-/* ---- API Implementation ---- */
-
 /**
  * @brief Create Http Server.
  *
@@ -693,13 +689,17 @@ void SNEPPX_http_server_stop(SNEPPX_HttpServer* srv) {
     srv->stop_requested = 1;
     srv->running = 0;
     sock_t listen_fd = srv->listen_fd;
+#ifdef _WIN32
+    if (listen_fd != SNEPPX_INVALID_SOCKET) srv->listen_fd = SNEPPX_INVALID_SOCKET;
+#endif
     server_wake_waiters(srv);
     server_unlock(srv);
     if (listen_fd != SNEPPX_INVALID_SOCKET) {
 #ifdef _WIN32
         shutdown(listen_fd, SD_BOTH);
+        snepx_close(listen_fd); /* closesocket is required to wake a blocking Winsock accept */
 #else
-        shutdown(listen_fd, SHUT_RDWR);
+        shutdown(listen_fd, SHUT_RDWR); /* accept loop closes the descriptor after it wakes */
 #endif
     }
 }
