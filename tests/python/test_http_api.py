@@ -85,6 +85,42 @@ def server():
         proc.kill()
 
 
+
+def test_slow_client_is_closed_by_receive_timeout(server):
+    port, _ = server
+    client = socket.create_connection(("127.0.0.1", port), timeout=2)
+    try:
+        client.sendall(b"GET /v1/health HTTP/1.1\\r\\nHost: localhost\\r\\n")
+        client.settimeout(8)
+        started = time.monotonic()
+        data = client.recv(1)
+        elapsed = time.monotonic() - started
+        assert data == b""
+        assert 3.0 <= elapsed < 8.0
+    finally:
+        client.close()
+
+
+def test_connection_limit_returns_service_unavailable(server):
+    port, _ = server
+    blockers = []
+    try:
+        for _ in range(4):
+            client = socket.create_connection(("127.0.0.1", port), timeout=2)
+            client.sendall(b"GET /v1/health HTTP/1.1\\r\\nHost: localhost\\r\\n")
+            blockers.append(client)
+        time.sleep(0.25)
+        overflow = socket.create_connection(("127.0.0.1", port), timeout=2)
+        try:
+            overflow.settimeout(2)
+            response = overflow.recv(128)
+            assert response.startswith(b"HTTP/1.1 503 Service Unavailable")
+        finally:
+            overflow.close()
+    finally:
+        for client in blockers:
+            client.close()
+
 def test_health_endpoint(server):
     port, _ = server
     with urllib.request.urlopen("http://127.0.0.1:%d/v1/health" % port) as r:

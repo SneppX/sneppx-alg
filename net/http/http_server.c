@@ -6,6 +6,7 @@
 #ifdef _WIN32
   #include <winsock2.h>
   #include <ws2tcpip.h>
+  #include <windows.h>
   #pragma comment(lib, "ws2_32.lib")
 /*
  * SNEPPX - Http Server
@@ -33,6 +34,7 @@
   #include <arpa/inet.h>
   #include <unistd.h>
   #include <pthread.h>
+  #include <sys/time.h>
   #include <dirent.h>
   #include <sys/stat.h>
   #include <fcntl.h>
@@ -100,9 +102,138 @@ struct SNEPPX_HttpServer {
     int num_middleware;
     char static_dirs[MAX_ROUTES][2][256];
     int num_static_dirs;
-    void* thread_handles[MAX_THREADS];
-    int num_threads_started;
+    int active_workers;
+    int accept_loop_active;
+    int stop_requested;
+#ifdef _WIN32
+    int winsock_started;
+    CRITICAL_SECTION worker_lock;
+    CONDITION_VARIABLE worker_cond;
+#else
+    pthread_mutex_t worker_lock;
+    pthread_cond_t worker_cond;
+#endif
 };
+
+
+/* ---- Bounded worker lifecycle ---- */
+static void server_lock(SNEPPX_HttpServer* srv) {
+#ifdef _WIN32
+    EnterCriticalSection(&srv->worker_lock);
+#else
+    pthread_mutex_lock(&srv->worker_lock);
+#endif
+}
+static void server_unlock(SNEPPX_HttpServer* srv) {
+#ifdef _WIN32
+    LeaveCriticalSection(&srv->worker_lock);
+#else
+    pthread_mutex_unlock(&srv->worker_lock);
+#endif
+}
+static void server_wake_waiters(SNEPPX_HttpServer* srv) {
+#ifdef _WIN32
+    WakeAllConditionVariable(&srv->worker_cond);
+#else
+    pthread_cond_broadcast(&srv->worker_cond);
+#endif
+}
+static int server_lock_init(SNEPPX_HttpServer* srv) {
+#ifdef _WIN32
+    InitializeCriticalSection(&srv->worker_lock);
+    InitializeConditionVariable(&srv->worker_cond);
+    return 0;
+#else
+    if (pthread_mutex_init(&srv->worker_lock, NULL) != 0) return -1;
+    if (pthread_cond_init(&srv->worker_cond, NULL) != 0) {
+        pthread_mutex_destroy(&srv->worker_lock);
+        return -1;
+    }
+    return 0;
+#endif
+}
+static void server_lock_destroy(SNEPPX_HttpServer* srv) {
+#ifdef _WIN32
+    DeleteCriticalSection(&srv->worker_lock);
+#else
+    pthread_cond_destroy(&srv->worker_cond);
+    pthread_mutex_destroy(&srv->worker_lock);
+#endif
+}
+static int server_is_running(SNEPPX_HttpServer* srv) {
+    server_lock(srv);
+    int running = srv->running && !srv->stop_requested;
+    server_unlock(srv);
+    return running;
+}
+static int server_reserve_worker(SNEPPX_HttpServer* srv) {
+    server_lock(srv);
+    int allowed = srv->running && !srv->stop_requested &&
+                  srv->active_workers < srv->num_threads;
+    if (allowed) srv->active_workers++;
+    server_unlock(srv);
+    return allowed;
+}
+static void server_release_worker(SNEPPX_HttpServer* srv) {
+    server_lock(srv);
+    if (srv->active_workers > 0) srv->active_workers--;
+    server_wake_waiters(srv);
+    server_unlock(srv);
+}
+static void server_wait_idle(SNEPPX_HttpServer* srv) {
+    server_lock(srv);
+    while (srv->active_workers > 0 || srv->accept_loop_active) {
+#ifdef _WIN32
+        SleepConditionVariableCS(&srv->worker_cond, &srv->worker_lock, INFINITE);
+#else
+        pthread_cond_wait(&srv->worker_cond, &srv->worker_lock);
+#endif
+    }
+    server_unlock(srv);
+}
+static void server_finish_accept_loop(SNEPPX_HttpServer* srv, sock_t listen_fd) {
+    sock_t close_fd = SNEPPX_INVALID_SOCKET;
+    server_lock(srv);
+    srv->running = 0;
+    srv->accept_loop_active = 0;
+    if (listen_fd != SNEPPX_INVALID_SOCKET && srv->listen_fd == listen_fd) {
+        close_fd = srv->listen_fd;
+        srv->listen_fd = SNEPPX_INVALID_SOCKET;
+    }
+    server_wake_waiters(srv);
+    server_unlock(srv);
+    if (close_fd != SNEPPX_INVALID_SOCKET) {
+#ifdef _WIN32
+        shutdown(close_fd, SD_BOTH);
+#else
+        shutdown(close_fd, SHUT_RDWR);
+#endif
+        snepx_close(close_fd);
+    }
+}
+static void server_set_client_timeouts(sock_t client_fd) {
+#ifdef _WIN32
+    DWORD timeout_ms = 5000;
+    setsockopt(client_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
+    setsockopt(client_fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
+#else
+    struct timeval timeout = {5, 0};
+    setsockopt(client_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    setsockopt(client_fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+#endif
+}
+static void server_send_busy_response(sock_t client_fd) {
+    static const char response[] =
+        "HTTP/1.1 503 Service Unavailable\r\n"
+        "Connection: close\r\n"
+        "Content-Length: 0\r\n\r\n";
+    size_t sent = 0;
+    while (sent < sizeof(response) - 1) {
+        int n = send(client_fd, response + sent, (int)(sizeof(response) - 1 - sent), 0);
+        if (n <= 0) break;
+        sent += (size_t)n;
+    }
+}
 
 /* ---- Utility ---- */
 
@@ -384,6 +515,7 @@ DWORD WINAPI worker_thread(LPVOID arg) {
     sock_t client_fd = *(sock_t*)argv[0];
     SNEPPX_HttpServer* srv = (SNEPPX_HttpServer*)argv[1];
     handle_connection(client_fd, srv);
+    server_release_worker(srv);
     free(argv[0]);
     free(argv);
     return 0;
@@ -394,10 +526,15 @@ static void* worker_thread(void* arg) {
     sock_t client_fd = *(sock_t*)argv[0];
     SNEPPX_HttpServer* srv = (SNEPPX_HttpServer*)argv[1];
     handle_connection(client_fd, srv);
+    server_release_worker(srv);
     free(argv[0]);
     free(argv);
     return NULL;
 }
+#endif
+
+/* ---- API Implementation ---- */
+
 #endif
 
 /* ---- API Implementation ---- */
@@ -410,8 +547,10 @@ static void* worker_thread(void* arg) {
  * @return Pointer on success, NULL on error.
  */
 SNEPPX_HttpServer* SNEPPX_http_server_create(int port, int num_threads) {
+    if (port < 1 || port > 65535) return NULL;
     SNEPPX_HttpServer* srv = (SNEPPX_HttpServer*)calloc(1, sizeof(*srv));
     if (!srv) return NULL;
+    if (server_lock_init(srv) != 0) { free(srv); return NULL; }
     srv->port = port;
     srv->num_threads = num_threads < 1 ? 1 : (num_threads > MAX_THREADS ? MAX_THREADS : num_threads);
     srv->running = 0;
@@ -426,63 +565,122 @@ SNEPPX_HttpServer* SNEPPX_http_server_create(int port, int num_threads) {
  */
 int SNEPPX_http_server_start(SNEPPX_HttpServer* srv) {
     if (!srv) return -1;
+    server_lock(srv);
+    if (srv->accept_loop_active || srv->active_workers > 0) {
+        server_unlock(srv);
+        return -1;
+    }
+    srv->accept_loop_active = 1;
+    srv->stop_requested = 0;
+    srv->running = 0;
+    server_unlock(srv);
+
 #ifdef _WIN32
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) return -1;
+    if (!srv->winsock_started) {
+        WSADATA wsa;
+        if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+            server_finish_accept_loop(srv, SNEPPX_INVALID_SOCKET);
+            return -1;
+        }
+        srv->winsock_started = 1;
+    }
 #endif
-    srv->listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (srv->listen_fd == SNEPPX_INVALID_SOCKET) return -1;
+
+    sock_t listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (listen_fd == SNEPPX_INVALID_SOCKET) {
+        server_finish_accept_loop(srv, SNEPPX_INVALID_SOCKET);
+        return -1;
+    }
+    server_lock(srv);
+    if (srv->stop_requested) {
+        server_unlock(srv);
+        snepx_close(listen_fd);
+        server_finish_accept_loop(srv, SNEPPX_INVALID_SOCKET);
+        return -1;
+    }
+    srv->listen_fd = listen_fd;
+    server_unlock(srv);
+
     int opt = 1;
 #ifdef _WIN32
-    setsockopt(srv->listen_fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
+    setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
 #else
-    setsockopt(srv->listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 #endif
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     addr.sin_port = htons((unsigned short)srv->port);
-    if (bind(srv->listen_fd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-        snepx_close(srv->listen_fd); srv->listen_fd = SNEPPX_INVALID_SOCKET; return -1;
+    if (bind(listen_fd, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+        server_finish_accept_loop(srv, listen_fd);
+        return -1;
     }
-    if (listen(srv->listen_fd, 128) != 0) {
-        snepx_close(srv->listen_fd); srv->listen_fd = SNEPPX_INVALID_SOCKET; return -1;
+    if (listen(listen_fd, srv->num_threads) != 0) {
+        server_finish_accept_loop(srv, listen_fd);
+        return -1;
+    }
+
+    server_lock(srv);
+    if (srv->stop_requested) {
+        server_unlock(srv);
+        server_finish_accept_loop(srv, listen_fd);
+        return -1;
     }
     srv->running = 1;
+    server_unlock(srv);
 
-    /* Accept loop — spawn threads per connection */
-    while (srv->running) {
+    while (server_is_running(srv)) {
         struct sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
-        sock_t client_fd = accept(srv->listen_fd, (struct sockaddr*)&client_addr, &addr_len);
+        sock_t client_fd = accept(listen_fd, (struct sockaddr*)&client_addr, &addr_len);
         if (client_fd == SNEPPX_INVALID_SOCKET) {
-            if (!srv->running) break;
+            if (!server_is_running(srv)) break;
             snepx_sleep(10);
             continue;
         }
-        /* Allocate args for thread */
+
+        server_set_client_timeouts(client_fd);
+        if (!server_reserve_worker(srv)) {
+            server_send_busy_response(client_fd);
+            snepx_close(client_fd);
+            continue;
+        }
+
         void** args = (void**)malloc(2 * sizeof(void*));
-        if (!args) { snepx_close(client_fd); continue; }
+        if (!args) {
+            snepx_close(client_fd);
+            server_release_worker(srv);
+            continue;
+        }
         sock_t* pfd = (sock_t*)malloc(sizeof(sock_t));
-        if (!pfd) { free(args); snepx_close(client_fd); continue; }
+        if (!pfd) {
+            free(args);
+            snepx_close(client_fd);
+            server_release_worker(srv);
+            continue;
+        }
         *pfd = client_fd;
         args[0] = (void*)pfd;
         args[1] = (void*)srv;
 #ifdef _WIN32
         HANDLE th = CreateThread(NULL, 0, worker_thread, args, 0, NULL);
-        if (th) { CloseHandle(th); srv->num_threads_started++; }
-        else { free(pfd); free(args); snepx_close(client_fd); }
+        if (th) CloseHandle(th);
+        else {
+            free(pfd); free(args); snepx_close(client_fd);
+            server_release_worker(srv);
+        }
 #else
         pthread_t tid;
-        if (pthread_create(&tid, NULL, worker_thread, args) == 0) {
-            pthread_detach(tid);
-            srv->num_threads_started++;
-        } else {
+        if (pthread_create(&tid, NULL, worker_thread, args) == 0) pthread_detach(tid);
+        else {
             free(pfd); free(args); snepx_close(client_fd);
+            server_release_worker(srv);
         }
 #endif
     }
+
+    server_finish_accept_loop(srv, listen_fd);
     return 0;
 }
 
@@ -491,10 +689,18 @@ int SNEPPX_http_server_start(SNEPPX_HttpServer* srv) {
  */
 void SNEPPX_http_server_stop(SNEPPX_HttpServer* srv) {
     if (!srv) return;
+    server_lock(srv);
+    srv->stop_requested = 1;
     srv->running = 0;
-    if (srv->listen_fd != SNEPPX_INVALID_SOCKET) {
-        snepx_close(srv->listen_fd);
-        srv->listen_fd = SNEPPX_INVALID_SOCKET;
+    sock_t listen_fd = srv->listen_fd;
+    server_wake_waiters(srv);
+    server_unlock(srv);
+    if (listen_fd != SNEPPX_INVALID_SOCKET) {
+#ifdef _WIN32
+        shutdown(listen_fd, SD_BOTH);
+#else
+        shutdown(listen_fd, SHUT_RDWR);
+#endif
     }
 }
 
@@ -504,9 +710,11 @@ void SNEPPX_http_server_stop(SNEPPX_HttpServer* srv) {
 void SNEPPX_http_server_destroy(SNEPPX_HttpServer* srv) {
     if (!srv) return;
     SNEPPX_http_server_stop(srv);
+    server_wait_idle(srv);
 #ifdef _WIN32
-    WSACleanup();
+    if (srv->winsock_started) WSACleanup();
 #endif
+    server_lock_destroy(srv);
     free(srv);
 }
 

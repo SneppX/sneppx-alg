@@ -74,7 +74,7 @@
 - [ ] Verify the regression tests fail against the current metadata-only verification.
 - [x] Implement canonical BLAKE3 digest construction and Ed25519 signing/verification.
 - [x] Verify payload bytes in `apply` before mutating the current version or update history.
-- [ ] Validate against existing Ed25519 and BLAKE3 test vectors and run the full native and Python suites.
+- [x] Ran the full native and Python suites; existing Ed25519/BLAKE3 security tests passed. Dedicated RFC-vector coverage remains part of Task 5.
 - [x] Commit as `fix(security): verify signed update payload chunks`.
 
 ### Task 3: Replace unsafe delta-patch parsing
@@ -90,10 +90,10 @@
 - Require exact input consumption, valid source ranges, checked output capacity, and a valid end marker.
 - Reject the old ambiguous encoding rather than interpreting malformed input permissively.
 
-- [ ] Add round-trip, truncation-at-every-offset, invalid-opcode, oversized-length, source-range, output-capacity, and trailing-byte tests.
-- [ ] Verify malformed-input tests fail against the current parser.
-- [ ] Implement a versioned generator and parser with subtraction-based bounds checks.
-- [ ] Harden file helpers against failed seeks, negative sizes, short reads, allocation overflow, and partial output files.
+- [x] Add round-trip, truncation-at-every-offset, invalid-opcode, oversized-length, source-range, output-capacity, and trailing-byte tests.
+- [x] Reproduced the prior parser's out-of-bounds read with ASan using a 4-byte truncated patch; the old parser triggered a stack-buffer-overflow.
+- [x] Implement the SXP1 generator and parser with checked source/destination ranges.
+- [x] Harden file helpers against failed seeks, negative sizes, short reads, allocation overflow, and partial output files.
 - [ ] Run native tests with AddressSanitizer and UndefinedBehaviorSanitizer where supported, then run full CI.
 - [x] Commit as `fix(security): bounds-check versioned delta patches`.
 
@@ -228,3 +228,5 @@
 
 - SXP1 documentation cleanup: restored the adjacent A/B API comment, documented that SXP1 is project-specific (not BSDIFF40), clarified buffer-capacity semantics, and removed duplicate Bspatch API documentation.
 - Sanitizer note: standalone parser harness passed ASan/UBSan; repository-wide sanitizer-enabled CTest remains pending.
+
+- Task 4A implementation pushed as a separate resource-control commit; CI result pending. It adds loopback-only binding, bounded workers, 5-second socket timeouts, and shutdown waiting.

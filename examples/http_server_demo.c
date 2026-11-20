@@ -83,7 +83,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    printf("SneppX C HTTP server listening on port %d\n", port);
+    printf("SneppX C HTTP server listening on 127.0.0.1:%d (loopback only; no TLS)\n", port);
+    printf("For remote access, place a TLS reverse proxy in front of this listener.\n");
     printf("  GET  /v1/health         (public)\n");
     printf("  GET  /v1/models         (public)\n");
     printf("  GET  /v1/models/{id}    (public)\n");
