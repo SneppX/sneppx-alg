@@ -84,3 +84,27 @@ def test_mlkem_roundtrip_keygen_exception_is_not_a_skip():
     with pytest.raises(RuntimeError, match="native keygen failed"):
         kat.run_mlkem_encaps_decaps_roundtrip(Crypto(), vector)
     assert cleared == [True]
+
+
+
+def test_sha3_kat_runner_compares_expected_digest():
+    vector = {"tcId": 7, "len": 8, "msg": "A5", "md": "010203"}
+
+    class Crypto:
+        def __init__(self, digest):
+            self.digest = digest
+
+        def sha3_256(self, _message):
+            return self.digest
+
+    assert kat.run_sha3_256_kat(Crypto(bytes.fromhex("010203")), vector)
+    assert not kat.run_sha3_256_kat(Crypto(bytes.fromhex("030201")), vector)
+
+
+def test_sha3_kat_runner_rejects_missing_expected_digest():
+    class Crypto:
+        def sha3_256(self, _message):
+            return b"\x00"
+
+    with pytest.raises(ValueError, match="expected md digest"):
+        kat.run_sha3_256_kat(Crypto(), {"msg": "00", "len": 8})
