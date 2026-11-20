@@ -52,3 +52,19 @@ class NativeTensorOps:
     def native_mean(self, dim=0):
         """Reduce a tensor with the native C mean operation."""
         return self._native_unary("mean", dim)
+
+    def native_var(self, dim=0):
+        """Compute native variance along one dimension (keeps the reduced axis)."""
+        return self._native_unary("var", dim)
+
+    def native_std(self, dim=0):
+        """Compute native standard deviation along one dimension (keeps the reduced axis)."""
+        return self._native_unary("std", dim)
+
+    def native_cumsum(self, dim=0):
+        """Compute native cumulative sums along one dimension."""
+        return self._native_unary("cumsum", dim)
+
+    def native_cumprod(self, dim=0):
+        """Compute native cumulative products along one dimension."""
+        return self._native_unary("cumprod", dim)
