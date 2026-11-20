@@ -6656,7 +6656,8 @@ data: [DONE]
 <span class="n">SNEPPX_HttpServer</span><span class="o">*</span><span class="w"> </span><span class="n">srv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_server_create</span><span class="p">(</span><span class="mi">8080</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
 
 <span class="cm">/* Add auth middleware */</span>
-<span class="n">SNEPPX_HttpAuth</span><span class="o">*</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_auth_create</span><span class="p">(</span><span class="s">"keys.db"</span><span class="p">);</span>
+<span class="n">SNEPPX_HttpAuth</span><span class="o">*</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_auth_create</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">SNEPPX_http_auth_add_key</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span><span class="w"> </span><span class="n">getenv</span><span class="p">(</span><span class="s">"SNEPPX_HTTP_API_KEY"</span><span class="p">));</span>
 <span class="n">SNEPPX_http_auth_add_public_path</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span><span class="w"> </span><span class="s">"/v1/health"</span><span class="p">);</span>
 <span class="n">SNEPPX_http_server_add_middleware</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span>
 <span class="w">    </span><span class="n">SNEPPX_http_auth_middleware</span><span class="p">(</span><span class="n">auth</span><span class="p">),</span><span class="w"> </span><span class="n">auth</span><span class="p">);</span>
@@ -6679,7 +6680,8 @@ data: [DONE]
 <p>Return 0 on success. Use the accessor/setter functions from <code>http_server.h</code>.</p>
 <h3 id="auth&#702;middleware">Auth Middleware<a class="headerlink" href="#auth&#702;middleware" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="cm">/* Create auth state */</span>
-<span class="n">SNEPPX_HttpAuth</span><span class="o">*</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_auth_create</span><span class="p">(</span><span class="s">"path/to/keys.db"</span><span class="p">);</span>
+<span class="n">SNEPPX_HttpAuth</span><span class="o">*</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_auth_create</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">SNEPPX_http_auth_add_key</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span><span class="w"> </span><span class="n">getenv</span><span class="p">(</span><span class="s">"SNEPPX_HTTP_API_KEY"</span><span class="p">));</span>
 
 <span class="cm">/* Mark public paths (no auth required) */</span>
 <span class="n">SNEPPX_http_auth_add_public_path</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span><span class="w"> </span><span class="s">"/v1/health"</span><span class="p">);</span>
