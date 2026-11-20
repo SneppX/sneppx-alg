@@ -474,3 +474,38 @@ def test_public_tensor_native_binary_ops_reject_dtype_mismatch_and_autograd():
     tracked = Tensor(np.array([1.0], dtype=np.float32), dtype="float32", requires_grad=True)
     with pytest.raises(RuntimeError, match="detach"):
         tracked.native_add(float32)
+
+
+def test_public_tensor_native_arithmetic_and_activations_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[-2.0, 3.0], [4.0, 8.0]], dtype=np.float32)
+    right_values = np.array([[2.0, 1.0], [2.0, 4.0]], dtype=np.float32)
+    left = Tensor(left_values, dtype="float32")
+    right = Tensor(right_values, dtype="float32")
+
+    assert np.allclose(left.native_sub(right).data, left_values - right_values)
+    assert np.allclose(left.native_mul(right).data, left_values * right_values)
+    assert np.allclose(left.native_div(right).data, left_values / right_values)
+    assert np.allclose(left.native_pow(right).data, left_values ** right_values)
+    assert np.allclose(left.native_relu().data, np.maximum(left_values, 0))
+    assert np.allclose(
+        left.native_sigmoid().data,
+        1.0 / (1.0 + np.exp(-left_values)),
+        rtol=1e-6,
+        atol=1e-6,
+    )
+    assert np.allclose(left.native_tanh().data, np.tanh(left_values), rtol=1e-6, atol=1e-6)
+
+
+def test_public_tensor_native_softmax_and_reductions_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+    shifted = values - np.max(values, axis=1, keepdims=True)
+    expected_softmax = np.exp(shifted) / np.sum(np.exp(shifted), axis=1, keepdims=True)
+
+    assert np.allclose(tensor.native_softmax(dim=1).data, expected_softmax, rtol=1e-5, atol=1e-6)
+    assert np.allclose(tensor.native_sum(dim=1).data, np.sum(values, axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(tensor.native_mean(dim=1).data, np.mean(values, axis=1), rtol=1e-5, atol=1e-6)
