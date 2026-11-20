@@ -48,12 +48,12 @@
 - Missing auth state, missing keys, malformed bearer headers, and unknown keys must deny access.
 - Public paths must match a complete path segment, not an arbitrary string prefix.
 
-- [ ] Add tests for missing credentials, random `sk-sneppx-`-prefixed credentials, valid explicitly registered credentials, null auth state, and public-path boundary collisions.
+- [x] Add tests for missing credentials, random `sk-sneppx-`-prefixed credentials, valid explicitly registered credentials, null auth state, and public-path boundary collisions.
 - [ ] Run the HTTP integration tests against the built demo and confirm the new tests fail against the vulnerable behavior.
-- [ ] Implement explicit key registration and fail-closed middleware.
-- [ ] Make demo startup fail if auth setup or middleware registration fails; load its test/deployment key only from an environment variable.
-- [ ] Run the HTTP integration tests and the complete CI workflow.
-- [ ] Commit as `fix(security): make C HTTP authentication fail closed`.
+- [x] Implement explicit key registration and fail-closed middleware.
+- [x] Make demo startup fail if auth setup or middleware registration fails; load its test/deployment key only from an environment variable.
+- [x] Run the HTTP integration tests and the complete CI workflow.
+- [x] Commit as `fix(security): make C HTTP authentication fail closed`.
 
 ### Task 2: Bind signed updates to the actual payload
 
@@ -70,7 +70,7 @@
 - Reject zero/negative/out-of-range chunk counts, duplicate or out-of-order indices, zero-sized chunks, overflow, truncated data, and mismatched hashes.
 - Do not rely on struct padding or host endianness for signed serialization.
 
-- [ ] Add tests for valid payload, altered payload, altered chunk digest, reordered chunks, invalid count, truncation, and null/empty payload.
+- [x] Add regression tests for valid payload, altered payload, altered chunk digest, truncated payload, missing payload, and invalid chunk layout.
 - [ ] Verify the regression tests fail against the current metadata-only verification.
 - [ ] Implement canonical BLAKE3 digest construction and Ed25519 signing/verification.
 - [ ] Verify payload bytes in `apply` before mutating the current version or update history.
@@ -214,3 +214,12 @@
 - Task 1: Regression harness reproduced both fail-open conditions before implementation: null auth state continued, and an unregistered `sk-sneppx-` key was accepted.
 - Task 1: Ruling: Corrected the integration fixture's test-key value immediately after detecting a double-expanded test string during source review — the fixture must use exactly the same explicit key as the authenticated requests — cost if wrong: the integration test could falsely reject a valid registration or provide misleading evidence.
 - Process deviation: A follow-up fixture-only commit was necessary while the preceding commit's CI was still running. This avoids knowingly leaving the integration test inconsistent; the preceding commit's workflow result will still be recorded honestly.
+
+
+### Execution ledger
+
+- Planning commit: `d292df3` — security design and implementation plan.
+- HTTP auth implementation: `4c87c21` — native build passed; initial HTTP integration run failed because the fixture key was double-expanded. This was recorded, not hidden.
+- HTTP auth fixture correction: `586a180` — CI, HTTP integration tests, Lint & Docs, and package artifact validation all passed. The corrected integration suite verified configured-key success, unknown prefixed-key rejection, and public-path boundary rejection.
+- Local SHA-256 verification: RFC 6234 `abc` digest and a 256-byte input matched known SHA-256 output.
+- Signed-update payload regression harness: reproduced the current vulnerable behavior — a tampered payload was accepted and the version advanced when payload bytes were ignored.
