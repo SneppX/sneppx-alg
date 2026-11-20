@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-20T07:09:53.222754+00:00",
+  "generated_at": "2026-11-20T11:04:04.268182+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -67,6 +67,15 @@
       "search_truncated": false
     },
     {
+      "name": "feature/native-tensor-ops-phase2",
+      "id": "ZmVhdHVyZS9uYXRpdmUtdGVuc29yLW9wcy1waGFzZTI",
+      "commit": "010877980f2540c2e5417d4ef0388f79208bf249",
+      "file_count": 1607,
+      "commit_count": 2580,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
       "name": "fix/model-config-c-roundtrip",
       "id": "Zml4L21vZGVsLWNvbmZpZy1jLXJvdW5kdHJpcA",
       "commit": "e8d63efdfc8d9072bc2686e8143887ceacf87e20",
@@ -87,18 +96,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "0c1ba66fdc4aeaacd4eb4f4ad8af6359574a4f1a",
+      "commit": "e0a3c66e36a3c71ac9af2d48607e9a2e807d29cb",
       "file_count": 42473,
-      "commit_count": 96,
+      "commit_count": 98,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "ecc30beee3b6c4d4aeabebc4a4a38822d09d52ad",
-      "file_count": 1606,
-      "commit_count": 2579,
+      "commit": "6689fc61fe8c2465cc6fd7d2c398fce8adc106e5",
+      "file_count": 1607,
+      "commit_count": 2580,
       "search_count": 0,
       "search_truncated": false
     },
