@@ -431,3 +431,46 @@ def test_metadata_round_trip_after_c_ops():
     assert out.shape == (2, 3)
     # result can be converted back and remains finite
     assert np.isfinite(cb.to_numpy(out)).all()
+
+
+def test_public_tensor_native_add_matches_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[1.0, -2.0], [3.5, 4.0]], dtype=np.float32)
+    right_values = np.array([[0.5, 5.0], [-1.5, 2.0]], dtype=np.float32)
+    left = Tensor(left_values, dtype="float32")
+    right = Tensor(right_values, dtype="float32")
+
+    result = left.native_add(right)
+
+    assert result.dtype == "float32"
+    assert result.requires_grad is False
+    assert np.allclose(result.data, left_values + right_values, rtol=0, atol=1e-6)
+
+
+def test_public_tensor_native_matmul_matches_numpy_float64():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[1.25, -2.0, 0.5], [3.0, 4.5, -1.0]], dtype=np.float64)
+    right_values = np.array([[2.0, 1.0], [-0.5, 3.0], [4.0, -2.0]], dtype=np.float64)
+    left = Tensor(left_values, dtype="float64")
+    right = Tensor(right_values, dtype="float64")
+
+    result = left.native_matmul(right)
+
+    assert result.dtype == "float64"
+    assert result.requires_grad is False
+    assert np.allclose(result.data, left_values @ right_values, rtol=0, atol=1e-12)
+
+
+def test_public_tensor_native_binary_ops_reject_dtype_mismatch_and_autograd():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    float32 = Tensor(np.array([1.0], dtype=np.float32), dtype="float32")
+    float64 = Tensor(np.array([1.0], dtype=np.float64), dtype="float64")
+    with pytest.raises(TypeError, match="matching dtypes"):
+        float32.native_add(float64)
+
+    tracked = Tensor(np.array([1.0], dtype=np.float32), dtype="float32", requires_grad=True)
+    with pytest.raises(RuntimeError, match="detach"):
+        tracked.native_add(float32)

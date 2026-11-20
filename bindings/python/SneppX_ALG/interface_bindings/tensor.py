@@ -325,6 +325,27 @@ class Tensor:
             )
         return cls(array, dtype=dtype_name, device=device, requires_grad=requires_grad)
 
+    def _native_binary(self, other, operation):
+        """Run a supported binary operation explicitly in the native C engine."""
+        if not isinstance(other, Tensor):
+            raise TypeError("native tensor operations require another Tensor")
+        if self.device != "cpu" or other.device != "cpu":
+            raise NotImplementedError("native tensor operations currently support CPU tensors only")
+        if self.dtype != other.dtype:
+            raise TypeError("native tensor operations require matching dtypes")
+        native_left = self.to_native()
+        native_right = other.to_native()
+        native_result = getattr(native_left, operation)(native_right)
+        return Tensor.from_native(native_result)
+
+    def native_add(self, other):
+        """Add tensors with the native C engine (explicit opt-in, no autograd)."""
+        return self._native_binary(other, "add")
+
+    def native_matmul(self, other):
+        """Multiply matrices with the native C engine (explicit opt-in, no autograd)."""
+        return self._native_binary(other, "matmul")
+
     def __array__(self, dtype=None, copy=None):
         """Expose tensor storage through NumPy's array protocol.
 

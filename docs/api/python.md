@@ -115,6 +115,21 @@ The compiled extension is optional. Check
 `SneppX_ALG.interface_bindings.c_tensor_bridge.available()` before depending
 on native conversion in an application.
 
+#### Explicit native operations
+
+The public tensor API also exposes opt-in `native_add()` and `native_matmul()`
+methods. These copy matching CPU tensors into the C engine, execute the native
+operation, and copy the result back. Both inputs must use the same dtype and
+must not carry autograd history. The result is a new, non-gradient tensor.
+Ordinary `+` and `@` operators remain on the existing Python/NumPy path; this
+does not silently change application behavior or autograd semantics.
+
+```python
+sum_tensor = left.native_add(right)
+product = matrix.native_matmul(weights)
+```
+
+
 ### Model
 
 ```python
