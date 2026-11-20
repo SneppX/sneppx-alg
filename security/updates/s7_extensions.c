@@ -242,6 +242,11 @@ int SNEPPX_bspatch(const uint8_t* old_data, size_t old_len,
     return 0;
 }
 
+/**
+ * @brief Initialize Ab Partition.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int SNEPPX_ab_partition_init(SNEPPXABPartition* ab) {
     if (!ab) return -1; memset(ab, 0, sizeof(*ab)); ab->active_slot = 0; ab->inactive_slot = 1; ab->swap_ready = 0; return 0;
 }

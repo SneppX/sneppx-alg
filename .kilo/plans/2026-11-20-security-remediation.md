@@ -95,7 +95,7 @@
 - [ ] Implement a versioned generator and parser with subtraction-based bounds checks.
 - [ ] Harden file helpers against failed seeks, negative sizes, short reads, allocation overflow, and partial output files.
 - [ ] Run native tests with AddressSanitizer and UndefinedBehaviorSanitizer where supported, then run full CI.
-- [ ] Commit as `fix(security): bounds-check versioned delta patches`.
+- [x] Commit as `fix(security): bounds-check versioned delta patches`.
 
 ### Task 4: Harden the C HTTP server
 
@@ -225,3 +225,6 @@
 - Signed-update payload regression harness: reproduced the current vulnerable behavior — a tampered payload was accepted and the version advanced when payload bytes were ignored.
 
 - Patch parser regression harness: ASan/UBSan tests passed for SXP1 round trips, all truncation offsets, malformed opcodes, oversized lengths, trailing bytes, capacity limits, and empty inputs.
+
+- SXP1 documentation cleanup: restored the adjacent A/B API comment, documented that SXP1 is project-specific (not BSDIFF40), clarified buffer-capacity semantics, and removed duplicate Bspatch API documentation.
+- Sanitizer note: standalone parser harness passed ASan/UBSan; repository-wide sanitizer-enabled CTest remains pending.
