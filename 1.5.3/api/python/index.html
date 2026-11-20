@@ -2554,6 +2554,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#explicit&#702;native&#702;tensor&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Native Tensor Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#model" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5021,6 +5032,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#explicit&#702;native&#702;tensor&#702;bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Native Tensor Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#model" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5396,6 +5418,31 @@ optional and is not built by this installation command.</p>
 <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">@</span> <span class="n">b</span>      <span class="c1"># __matmul__</span>
 <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span>         <span class="c1"># __neg__</span>
 </code></pre></div>
+<h3 id="explicit&#702;native&#702;tensor&#702;bridge">Explicit Native Tensor Bridge<a class="headerlink" href="#explicit&#702;native&#702;tensor&#702;bridge" title="Permanent link">&para;</a></h3>
+<p>The public <code>Tensor</code> class remains NumPy-backed by default. The compiled C
+<code>_Tensor</code> engine is available through an explicit, CPU-only conversion bridge;
+ordinary Python tensor operators do not automatically dispatch to the C engine.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="n">tensor</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">native</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">to_native</span><span class="p">()</span>                 <span class="c1"># copy into the compiled C engine</span>
+<span class="n">restored</span> <span class="o">=</span> <span class="n">Tensor</span><span class="o">.</span><span class="n">from_native</span><span class="p">(</span><span class="n">native</span><span class="p">)</span>       <span class="c1"># copy back to public Tensor</span>
+</code></pre></div>
+<p>The bridge maps all 13 public dtypes. BFLOAT16 and FLOAT8 use raw <code>uint16</code> and
+<code>uint8</code> storage because NumPy does not provide portable scalar dtypes for those
+formats. The bridge preserves the dtype label, but does not decode or encode
+their numeric formats.</p>
+<p>Conversions copy tensor data. They do not transfer Python autograd history,
+gradients, or device placement. Call <code>tensor.detach().to_native()</code> when the
+source participates in an autograd graph. <code>Tensor.from_native</code> currently
+supports CPU tensors only; requesting another device raises
+<code>NotImplementedError</code>. A returned tensor can optionally start a new gradient
+leaf with <code>requires_grad=True</code>, but the native computation graph is not
+imported.</p>
+<p>The compiled extension is optional. Check
+<code>SneppX_ALG.interface_bindings.c_tensor_bridge.available()</code> before depending
+on native conversion in an application.</p>
 <h3 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 
