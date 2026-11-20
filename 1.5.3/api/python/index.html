@@ -2562,6 +2562,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Explicit Native Tensor Bridge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit&#702;native&#702;operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit native operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -5040,6 +5057,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Explicit Native Tensor Bridge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit&#702;native&#702;operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit native operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -5443,6 +5477,16 @@ imported.</p>
 <p>The compiled extension is optional. Check
 <code>SneppX_ALG.interface_bindings.c_tensor_bridge.available()</code> before depending
 on native conversion in an application.</p>
+<h4 id="explicit&#702;native&#702;operations">Explicit native operations<a class="headerlink" href="#explicit&#702;native&#702;operations" title="Permanent link">&para;</a></h4>
+<p>The public tensor API also exposes opt-in <code>native_add()</code> and <code>native_matmul()</code>
+methods. These copy matching CPU tensors into the C engine, execute the native
+operation, and copy the result back. Both inputs must use the same dtype and
+must not carry autograd history. The result is a new, non-gradient tensor.
+Ordinary <code>+</code> and <code>@</code> operators remain on the existing Python/NumPy path; this
+does not silently change application behavior or autograd semantics.</p>
+<div class="highlight"><pre><span></span><code><span class="n">sum_tensor</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">native_add</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+<span class="n">product</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">native_matmul</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+</code></pre></div>
 <h3 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 
