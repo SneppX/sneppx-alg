@@ -232,3 +232,5 @@
 - Task 4A implementation pushed as a separate resource-control commit; a follow-up fix corrected an extra preprocessor terminator and ensured Winsock accept is unblocked on shutdown. The original commit's CI is recorded separately; the corrected HEAD must pass before Task 4B.
 
 - Process deviation: Task 4A received an immediate syntax/platform shutdown fixup while its first CI run was pending. The correction was made after source inspection found a duplicated `#endif`; no unrelated work was started before the corrected HEAD is green.
+
+- Follow-up compile review found that the new lifecycle helper referenced the platform close wrapper before its definition; a forward declaration was added before CI completed. This is tracked with the Task 4A fixups.

@@ -116,6 +116,8 @@ struct SNEPPX_HttpServer {
 };
 
 
+static void snepx_close(sock_t fd);
+
 /* ---- Bounded worker lifecycle ---- */
 static void server_lock(SNEPPX_HttpServer* srv) {
 #ifdef _WIN32
