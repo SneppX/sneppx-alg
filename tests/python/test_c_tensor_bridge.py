@@ -85,6 +85,51 @@ def test_public_tensor_native_conversion_preserves_low_precision_storage():
         assert restored.data.dtype == np.dtype(storage_dtype)
         assert np.array_equal(restored.data, raw)
 
+@pytest.mark.parametrize(
+    ("dtype_name", "values"),
+    [
+        ("float16", np.array([0.5, -1.25, 2.0], dtype=np.float16)),
+        ("float32", np.array([0.5, -1.25, 2.0], dtype=np.float32)),
+        ("float64", np.array([0.5, -1.25, 2.0], dtype=np.float64)),
+        ("bfloat16", np.array([0x3F80, 0x4000, 0x4040], dtype=np.uint16)),
+        ("float8", np.array([0x01, 0x7F, 0xFF], dtype=np.uint8)),
+        ("int32", np.array([-3, 0, 9], dtype=np.int32)),
+        ("int64", np.array([-3, 0, 9], dtype=np.int64)),
+        ("int16", np.array([-3, 0, 9], dtype=np.int16)),
+        ("int8", np.array([-3, 0, 9], dtype=np.int8)),
+        ("uint8", np.array([0, 9, 255], dtype=np.uint8)),
+        ("bool", np.array([True, False, True], dtype=np.bool_)),
+        ("complex64", np.array([1 + 2j, -3 + 0.5j], dtype=np.complex64)),
+        ("complex128", np.array([1 + 2j, -3 + 0.5j], dtype=np.complex128)),
+    ],
+)
+def test_public_tensor_native_round_trip_for_all_supported_dtypes(dtype_name, values):
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    public = Tensor(values, dtype=dtype_name)
+    native = public.to_native()
+    assert native.dtype_name == dtype_name
+    restored = Tensor.from_native(native)
+    assert restored.dtype_name == dtype_name
+    assert restored.data.dtype == values.dtype
+    assert np.array_equal(restored.data, values)
+
+
+def test_public_tensor_native_conversion_rejects_autograd_history():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    tracked = Tensor(np.array([1.0], dtype=np.float32), requires_grad=True)
+    with pytest.raises(RuntimeError, match="detach"):
+        tracked.to_native()
+
+
+def test_public_tensor_from_native_rejects_non_cpu_device():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    native = cb.from_numpy(np.array([1.0], dtype=np.float32))
+    with pytest.raises(NotImplementedError, match="CPU"):
+        Tensor.from_native(native, device="cuda")
+
 
 
 def test_python_tensor_independent_of_c_memory():

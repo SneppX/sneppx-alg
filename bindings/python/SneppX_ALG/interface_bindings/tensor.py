@@ -291,6 +291,10 @@ class Tensor:
             raise RuntimeError("native C tensor engine is not available")
         if self.device != "cpu":
             raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+        if self.requires_grad:
+            raise RuntimeError(
+                "native conversion does not transfer autograd history; call detach() first"
+            )
         try:
             native_dtype = getattr(c_tensor_bridge._ext.SNEPPXDtype, self.dtype.upper())
         except AttributeError as exc:
@@ -308,6 +312,8 @@ class Tensor:
 
         if not c_tensor_bridge.available():
             raise RuntimeError("native C tensor engine is not available")
+        if device != "cpu":
+            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
         dtype_name = native.dtype_name
         if dtype_name not in DTYPE_MAP:
             raise TypeError(f"unsupported native tensor dtype: {dtype_name}")

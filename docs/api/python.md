@@ -83,6 +83,38 @@ c = a @ b      # __matmul__
 c = -a         # __neg__
 ```
 
+### Explicit Native Tensor Bridge
+
+The public `Tensor` class remains NumPy-backed by default. The compiled C
+`_Tensor` engine is available through an explicit, CPU-only conversion bridge;
+ordinary Python tensor operators do not automatically dispatch to the C engine.
+
+```python
+import numpy as np
+from SneppX_ALG import Tensor
+
+tensor = Tensor(np.array([[1, 2], [3, 4]], dtype=np.float32))
+native = tensor.to_native()                 # copy into the compiled C engine
+restored = Tensor.from_native(native)       # copy back to public Tensor
+```
+
+The bridge maps all 13 public dtypes. BFLOAT16 and FLOAT8 use raw `uint16` and
+`uint8` storage because NumPy does not provide portable scalar dtypes for those
+formats. The bridge preserves the dtype label, but does not decode or encode
+their numeric formats.
+
+Conversions copy tensor data. They do not transfer Python autograd history,
+gradients, or device placement. Call `tensor.detach().to_native()` when the
+source participates in an autograd graph. `Tensor.from_native` currently
+supports CPU tensors only; requesting another device raises
+`NotImplementedError`. A returned tensor can optionally start a new gradient
+leaf with `requires_grad=True`, but the native computation graph is not
+imported.
+
+The compiled extension is optional. Check
+`SneppX_ALG.interface_bindings.c_tensor_bridge.available()` before depending
+on native conversion in an application.
+
 ### Model
 
 ```python
