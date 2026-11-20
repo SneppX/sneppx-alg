@@ -57,7 +57,7 @@ pytestmark = pytest.mark.skipif(
 def server():
     port = _free_port()
     env = os.environ.copy()
-    env["SNEPPX_HTTP_API_KEY"] = "sk-sneppx-test-token-2026-token-2026"
+    env["SNEPPX_HTTP_API_KEY"] = "sk-sneppx-test-token-2026"
     proc = subprocess.Popen(
         [BIN, str(port)],
         stdout=subprocess.DEVNULL,

@@ -207,3 +207,10 @@
 - Do not begin the next main commit until all required workflows for the preceding commit have completed successfully.
 - If a workflow fails, stop and diagnose; do not proceed to another commit.
 - Final completion requires fresh test output, actual commit SHAs, and workflow URLs.
+
+
+## Execution ledger
+
+- Task 1: Regression harness reproduced both fail-open conditions before implementation: null auth state continued, and an unregistered `sk-sneppx-` key was accepted.
+- Task 1: Ruling: Corrected the integration fixture's test-key value immediately after detecting a double-expanded test string during source review — the fixture must use exactly the same explicit key as the authenticated requests — cost if wrong: the integration test could falsely reject a valid registration or provide misleading evidence.
+- Process deviation: A follow-up fixture-only commit was necessary while the preceding commit's CI was still running. This avoids knowingly leaving the integration test inconsistent; the preceding commit's workflow result will still be recorded honestly.
