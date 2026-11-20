@@ -56,8 +56,10 @@ const char* SNEPPX_dtype_to_numpy(SNEPPXDtype d) {
         case SNEPPX_FLOAT32:   return "float32";
         case SNEPPX_FLOAT64:   return "float64";
         case SNEPPX_FLOAT16:   return "float16";
-        case SNEPPX_BFLOAT16:  return "bfloat16";
-        case SNEPPX_FLOAT8:    return "float8";
+        // NumPy has no portable bfloat16/float8 dtype. Expose their raw
+        // storage representations while dtype_name preserves semantic identity.
+        case SNEPPX_BFLOAT16:  return "uint16";
+        case SNEPPX_FLOAT8:    return "uint8";
         case SNEPPX_INT32:     return "int32";
         case SNEPPX_INT64:     return "int64";
         case SNEPPX_INT16:     return "int16";

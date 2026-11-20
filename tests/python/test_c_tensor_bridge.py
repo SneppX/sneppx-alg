@@ -61,6 +61,31 @@ def test_round_trip_int_and_bool_dtypes():
     b = np.array([[True, False], [False, True]])
     assert np.array_equal(b, cb.round_trip(b))
 
+@pytest.mark.parametrize(
+    ("dtype_name", "storage_dtype"),
+    [("bfloat16", np.uint16), ("float8", np.uint8)],
+)
+def test_low_precision_raw_storage_round_trip(dtype_name, storage_dtype):
+    raw = np.arange(8, dtype=storage_dtype).reshape(2, 4)
+    native = cb.from_numpy(raw, dtype=dtype_name)
+    assert native.dtype_name == dtype_name
+    assert cb.c_dtype_to_numpy(native.dtype) == np.dtype(storage_dtype)
+    assert np.array_equal(cb.to_numpy(native), raw)
+
+
+def test_public_tensor_native_conversion_preserves_low_precision_storage():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    for dtype_name, storage_dtype in [("bfloat16", np.uint16), ("float8", np.uint8)]:
+        raw = np.arange(6, dtype=storage_dtype).reshape(2, 3)
+        public = Tensor(raw, dtype=dtype_name)
+        native = public.to_native()
+        restored = Tensor.from_native(native)
+        assert restored.dtype_name == dtype_name
+        assert restored.data.dtype == np.dtype(storage_dtype)
+        assert np.array_equal(restored.data, raw)
+
+
 
 def test_python_tensor_independent_of_c_memory():
     # mutating the C tensor afterwards must not corrupt the numpy copy

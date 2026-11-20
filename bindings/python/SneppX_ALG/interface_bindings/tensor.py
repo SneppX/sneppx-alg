@@ -279,6 +279,46 @@ class Tensor:
         """Return an independent NumPy copy of this tensor's values."""
         return self._data.to_numpy()
 
+    def to_native(self):
+        """Copy this tensor's storage into the compiled native C tensor engine.
+
+        BFLOAT16 and FLOAT8 are transferred as raw uint16/uint8 storage. This
+        operation does not transfer Python autograd history or device state.
+        """
+        from . import c_tensor_bridge
+
+        if not c_tensor_bridge.available():
+            raise RuntimeError("native C tensor engine is not available")
+        if self.device != "cpu":
+            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+        try:
+            native_dtype = getattr(c_tensor_bridge._ext.SNEPPXDtype, self.dtype.upper())
+        except AttributeError as exc:
+            raise TypeError(f"unsupported native tensor dtype: {self.dtype}") from exc
+        return c_tensor_bridge.from_numpy(self.numpy(), dtype=native_dtype)
+
+    @classmethod
+    def from_native(cls, native, device="cpu", requires_grad=False):
+        """Copy a native C tensor into the public Python Tensor representation.
+
+        BFLOAT16 and FLOAT8 remain raw uint16/uint8 storage; no numerical
+        encoding conversion is implied.
+        """
+        from . import c_tensor_bridge
+
+        if not c_tensor_bridge.available():
+            raise RuntimeError("native C tensor engine is not available")
+        dtype_name = native.dtype_name
+        if dtype_name not in DTYPE_MAP:
+            raise TypeError(f"unsupported native tensor dtype: {dtype_name}")
+        array = c_tensor_bridge.to_numpy(native)
+        expected_dtype = np.dtype(DTYPE_MAP[dtype_name][2])
+        if array.dtype != expected_dtype:
+            raise TypeError(
+                f"native tensor {dtype_name} exposed {array.dtype}, expected {expected_dtype}"
+            )
+        return cls(array, dtype=dtype_name, device=device, requires_grad=requires_grad)
+
     def __array__(self, dtype=None, copy=None):
         """Expose tensor storage through NumPy's array protocol.
 

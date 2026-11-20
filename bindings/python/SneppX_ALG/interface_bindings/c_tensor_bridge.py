@@ -106,6 +106,9 @@ def c_dtype_to_numpy(c_dtype) -> np.dtype:
         D.FLOAT32: np.float32,
         D.FLOAT64: np.float64,
         D.FLOAT16: np.float16,
+        # NumPy exposes the raw storage; dtype_name retains BF16/F8 semantics.
+        D.BFLOAT16: np.uint16,
+        D.FLOAT8: np.uint8,
         D.INT32: np.int32,
         D.INT64: np.int64,
         D.INT16: np.int16,
@@ -134,20 +137,26 @@ def from_numpy(arr, dtype=None):
     else float32).
     """
     T = _get_Tensor()
-    a = np.ascontiguousarray(arr)
+    a = np.asarray(arr)
     if dtype is None:
         try:
             dtype = numpy_dtype_to_c(a.dtype)
         except TypeError:
             dtype = _ext.SNEPPXDtype.FLOAT32
-            a = a.astype(np.float32)
-    elif not hasattr(dtype, "value"):  # plain numpy dtype given
+    elif isinstance(dtype, str):
+        try:
+            dtype = getattr(_ext.SNEPPXDtype, dtype.upper())
+        except AttributeError as exc:
+            raise TypeError(f"unsupported C tensor dtype: {dtype!r}") from exc
+    elif isinstance(dtype, (np.dtype, type)):
         dtype = numpy_dtype_to_c(dtype)
+
+    storage_dtype = c_dtype_to_numpy(dtype)
+    a = np.ascontiguousarray(a.astype(storage_dtype, copy=False))
     shape = np.asarray(a.shape, dtype=np.int64)
     t = T.create(shape, dtype)
-    flat = np.ravel(a).view(a.dtype) if a.dtype.itemsize else np.ravel(a)
-    # set_data requires the numpy buffer byte size to equal the tensor's
-    t.set_data(flat)
+    # set_data validates the exact byte size before copying into C-owned memory.
+    t.set_data(np.ravel(a))
     return t
 
 
