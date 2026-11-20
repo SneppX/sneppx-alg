@@ -234,3 +234,5 @@
 - Process deviation: Task 4A received an immediate syntax/platform shutdown fixup while its first CI run was pending. The correction was made after source inspection found a duplicated `#endif`; no unrelated work was started before the corrected HEAD is green.
 
 - Follow-up compile review found that the new lifecycle helper referenced the platform close wrapper before its definition; a forward declaration was added before CI completed. This is tracked with the Task 4A fixups.
+
+- Compile fixup: the socket close wrapper is a platform macro, not a function; removed the incorrect forward declaration after CI reported the POSIX `close` type conflict.
