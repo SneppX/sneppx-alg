@@ -40,8 +40,8 @@
  *   GET  /v1/models/{id}       (public)
  *   POST /v1/generate          (requires Authorization: Bearer <key>)
  *
- * In auth stub mode (no SQLite), any key with the "sk-sneppx-" prefix
- * (or the admin key "sneppx-admin") is accepted for development.
+ * A protected API key must be supplied through SNEPPX_HTTP_API_KEY.
+ * No development-prefix or built-in administrator key is accepted.
  */
 
 int main(int argc, char** argv) {
@@ -71,17 +71,23 @@ int main(int argc, char** argv) {
     }
 
     SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create(db_path);
-    if (auth) {
-        SNEPPX_http_auth_add_public_path(auth, "/v1/health");
-        SNEPPX_http_auth_add_public_path(auth, "/v1/models");
-        SNEPPX_http_server_add_middleware(srv, SNEPPX_http_auth_middleware(auth), auth);
+    const char* api_key = getenv("SNEPPX_HTTP_API_KEY");
+    if (!auth || !api_key || SNEPPX_http_auth_add_key(auth, api_key) != 0 ||
+        SNEPPX_http_auth_add_public_path(auth, "/v1/health") != 0 ||
+        SNEPPX_http_auth_add_public_path(auth, "/v1/models") != 0 ||
+        SNEPPX_http_server_add_middleware(srv, SNEPPX_http_auth_middleware(auth), auth) != 0) {
+        fprintf(stderr, "ERROR: HTTP authentication setup failed; set SNEPPX_HTTP_API_KEY to a 16-256 byte key\n");
+        SNEPPX_http_auth_destroy(auth);
+        SNEPPX_http_api_destroy(api);
+        SNEPPX_http_server_destroy(srv);
+        return 1;
     }
 
     printf("SneppX C HTTP server listening on port %d\n", port);
     printf("  GET  /v1/health         (public)\n");
     printf("  GET  /v1/models         (public)\n");
     printf("  GET  /v1/models/{id}    (public)\n");
-    printf("  POST /v1/generate       (auth: Bearer sk-sneppx-...)\n");
+    printf("  POST /v1/generate       (auth: Bearer <configured key>)\n");
     printf("Press Ctrl+C to stop.\n\n");
 
     int ret = SNEPPX_http_server_start(srv);

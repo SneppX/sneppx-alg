@@ -808,7 +808,8 @@ For C/C++ applications that embed SneppX directly, the `net/http/` module provid
 SNEPPX_HttpServer* srv = SNEPPX_http_server_create(8080, 4);
 
 /* Add auth middleware */
-SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create("keys.db");
+SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create(NULL);
+SNEPPX_http_auth_add_key(auth, getenv("SNEPPX_HTTP_API_KEY"));
 SNEPPX_http_auth_add_public_path(auth, "/v1/health");
 SNEPPX_http_server_add_middleware(srv,
     SNEPPX_http_auth_middleware(auth), auth);
@@ -838,7 +839,8 @@ Return 0 on success. Use the accessor/setter functions from `http_server.h`.
 
 ```c
 /* Create auth state */
-SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create("path/to/keys.db");
+SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create(NULL);
+SNEPPX_http_auth_add_key(auth, getenv("SNEPPX_HTTP_API_KEY"));
 
 /* Mark public paths (no auth required) */
 SNEPPX_http_auth_add_public_path(auth, "/v1/health");

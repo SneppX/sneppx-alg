@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -11,6 +12,7 @@
 
 #define MAX_PUBLIC_PATHS 32
 #define MAX_HASHED_KEYS 256
+#define MAX_API_KEY_LENGTH 256
 
 /*
  * SNEPPX - Http Auth
@@ -28,149 +30,117 @@
  */
 
 
-/* ---- SQLite3 forward declarations (lightweight integration) ---- */
-
-/* We use a minimal inline SQLite binding to avoid external dependency.
- * If SQLite is not available via SNEPPX_USE_SQLITE, use no-op stub. */
-
-#ifndef SNEPPX_USE_SQLITE
-  /* Stub mode — accept any key starting with "sk-sneppx-" for development */
-  #define SNEPPX_AUTH_STUB 1
-#endif
-
 /* ---- Auth state ---- */
 
 struct SNEPPX_HttpAuth {
-    char db_path[512];
     char public_paths[MAX_PUBLIC_PATHS][128];
     int num_public_paths;
+    uint8_t hashed_keys[MAX_HASHED_KEYS][32];
+    int num_hashed_keys;
 };
 
 /* ---- SHA-256 helper ---- */
 
-static void sha256_hash(const char* input, unsigned char* output) {
-    /* Simple FIPS-180 SHA-256 implementation for portability */
-    unsigned long h[8] = {
-        0x6a09e667UL, 0xbb67ae85UL, 0x3c6ef372UL, 0xa54ff53aUL,
-        0x510e527fUL, 0x9b05688cUL, 0x1f83d9abUL, 0x5be0cd19UL
+typedef struct {
+    uint32_t state[8];
+    uint8_t buffer[64];
+} SNEPPX_HttpAuthSha256;
+
+static void http_auth_sha256_transform(SNEPPX_HttpAuthSha256* ctx) {
+    static const uint32_t k[64] = {
+        0x428a2f98U,0x71374491U,0xb5c0fbcfU,0xe9b5dba5U,0x3956c25bU,0x59f111f1U,0x923f82a4U,0xab1c5ed5U,
+        0xd807aa98U,0x12835b01U,0x243185beU,0x550c7dc3U,0x72be5d74U,0x80deb1feU,0x9bdc06a7U,0xc19bf174U,
+        0xe49b69c1U,0xefbe4786U,0x0fc19dc6U,0x240ca1ccU,0x2de92c6fU,0x4a7484aaU,0x5cb0a9dcU,0x76f988daU,
+        0x983e5152U,0xa831c66dU,0xb00327c8U,0xbf597fc7U,0xc6e00bf3U,0xd5a79147U,0x06ca6351U,0x14292967U,
+        0x27b70a85U,0x2e1b2138U,0x4d2c6dfcU,0x53380d13U,0x650a7354U,0x766a0abbU,0x81c2c92eU,0x92722c85U,
+        0xa2bfe8a1U,0xa81a664bU,0xc24b8b70U,0xc76c51a3U,0xd192e819U,0xd6990624U,0xf40e3585U,0x106aa070U,
+        0x19a4c116U,0x1e376c08U,0x2748774cU,0x34b0bcb5U,0x391c0cb3U,0x4ed8aa4aU,0x5b9cca4fU,0x682e6ff3U,
+        0x748f82eeU,0x78a5636fU,0x84c87814U,0x8cc70208U,0x90befffaU,0xa4506cebU,0xbef9a3f7U,0xc67178f2U
     };
-    unsigned long w[64];
-    size_t len = strlen(input);
-    unsigned char pad[72];
-    size_t pad_len = 0;
-    memcpy(pad, input, len);
-    pad[len] = 0x80;
-    pad_len = len + 1;
-    while ((pad_len % 64) != 56) pad[pad_len++] = 0;
-    unsigned long bit_len = (unsigned long)len * 8;
-    for (int i = 0; i < 8; i++)
-        pad[pad_len++] = (unsigned char)((bit_len >> (56 - i * 8)) & 0xff);
-
-#define ROTR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
-#define CH(e, f, g) (((e) & (f)) ^ (~(e) & (g)))
-#define MAJ(a, b, c) (((a) & (b)) ^ ((a) & (c)) ^ ((b) & (c)))
-#define SIG0(x) (ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22))
-#define SIG1(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
-#define sig0(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ ((x) >> 3))
-#define sig1(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ ((x) >> 10))
-
-    static const unsigned long k[64] = {
-        0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
-        0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
-        0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
-        0x72be5d74UL, 0x80deb1feUL, 0x9bdc06a7UL, 0xc19bf174UL,
-        0xe49b69c1UL, 0xefbe4786UL, 0x0fc19dc6UL, 0x240ca1ccUL,
-        0x2de92c6fUL, 0x4a7484aaUL, 0x5cb0a9dcUL, 0x76f988daUL,
-        0x983e5152UL, 0xa831c66dUL, 0xb00327c8UL, 0xbf597fc7UL,
-        0xc6e00bf3UL, 0xd5a79147UL, 0x06ca6351UL, 0x14292967UL,
-        0x27b70a85UL, 0x2e1b2138UL, 0x4d2c6dfcUL, 0x53380d13UL,
-        0x650a7354UL, 0x766a0abbUL, 0x81c2c92eUL, 0x92722c85UL,
-        0xa2bfe8a1UL, 0xa81a664bUL, 0xc24b8b70UL, 0xc76c51a3UL,
-        0xd192e819UL, 0xd6990624UL, 0xf40e3585UL, 0x106aa070UL,
-        0x19a4c116UL, 0x1e376c08UL, 0x2748774cUL, 0x34b0bcb5UL,
-        0x391c0cb3UL, 0x4ed8aa4aUL, 0x5b9cca4fUL, 0x682e6ff3UL,
-        0x748f82eeUL, 0x78a5636fUL, 0x84c87814UL, 0x8cc70208UL,
-        0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL
-    };
-
-    for (size_t chunk = 0; chunk < pad_len; chunk += 64) {
-        for (int i = 0; i < 16; i++) {
-            w[i] = ((unsigned long)pad[chunk + i * 4] << 24) |
-                   ((unsigned long)pad[chunk + i * 4 + 1] << 16) |
-                   ((unsigned long)pad[chunk + i * 4 + 2] << 8) |
-                   ((unsigned long)pad[chunk + i * 4 + 3]);
-        }
-        for (int i = 16; i < 64; i++)
-            w[i] = sig1(w[i - 2]) + w[i - 7] + sig0(w[i - 15]) + w[i - 16];
-        unsigned long a = h[0], b = h[1], c = h[2], d = h[3];
-        unsigned long e = h[4], f = h[5], g = h[6], hh = h[7];
-        for (int i = 0; i < 64; i++) {
-            unsigned long t1 = hh + SIG1(e) + CH(e, f, g) + k[i] + w[i];
-            unsigned long t2 = SIG0(a) + MAJ(a, b, c);
-            hh = g; g = f; f = e; e = d + t1;
-            d = c; c = b; b = a; a = t1 + t2;
-        }
-        h[0] += a; h[1] += b; h[2] += c; h[3] += d;
-        h[4] += e; h[5] += f; h[6] += g; h[7] += hh;
+    uint32_t w[64];
+    for (int i=0;i<16;i++) w[i]=((uint32_t)ctx->buffer[i*4]<<24)|((uint32_t)ctx->buffer[i*4+1]<<16)|((uint32_t)ctx->buffer[i*4+2]<<8)|(uint32_t)ctx->buffer[i*4+3];
+    for (int i=16;i<64;i++) {
+        uint32_t x=w[i-15],y=w[i-2];
+        uint32_t s0=((x>>7)|(x<<25))^((x>>18)|(x<<14))^(x>>3);
+        uint32_t s1=((y>>17)|(y<<15))^((y>>19)|(y<<13))^(y>>10);
+        w[i]=s1+w[i-7]+s0+w[i-16];
     }
-    for (int i = 0; i < 8; i++) {
-        output[i * 4]     = (unsigned char)(h[i] >> 24);
-        output[i * 4 + 1] = (unsigned char)(h[i] >> 16);
-        output[i * 4 + 2] = (unsigned char)(h[i] >> 8);
-        output[i * 4 + 3] = (unsigned char)(h[i]);
+    uint32_t a=ctx->state[0],b=ctx->state[1],c=ctx->state[2],d=ctx->state[3];
+    uint32_t e=ctx->state[4],f=ctx->state[5],g=ctx->state[6],h=ctx->state[7];
+    for(int i=0;i<64;i++) {
+        uint32_t s1=((e>>6)|(e<<26))^((e>>11)|(e<<21))^((e>>25)|(e<<7));
+        uint32_t ch=(e&f)^(~e&g);
+        uint32_t t1=h+s1+ch+k[i]+w[i];
+        uint32_t s0=((a>>2)|(a<<30))^((a>>13)|(a<<19))^((a>>22)|(a<<10));
+        uint32_t maj=(a&b)^(a&c)^(b&c);
+        uint32_t t2=s0+maj;
+        h=g;g=f;f=e;e=d+t1;d=c;c=b;b=a;a=t1+t2;
     }
-#undef ROTR
-#undef CH
-#undef MAJ
-#undef SIG0
-#undef SIG1
-#undef sig0
-#undef sig1
+    ctx->state[0]+=a;ctx->state[1]+=b;ctx->state[2]+=c;ctx->state[3]+=d;
+    ctx->state[4]+=e;ctx->state[5]+=f;ctx->state[6]+=g;ctx->state[7]+=h;
 }
+
+static void sha256_hash(const char* input, unsigned char output[32]) {
+    size_t len=strlen(input);
+    SNEPPX_HttpAuthSha256 ctx={{0x6a09e667U,0xbb67ae85U,0x3c6ef372U,0xa54ff53aU,0x510e527fU,0x9b05688cU,0x1f83d9abU,0x5be0cd19U},{0}};
+    size_t pos=0;
+    while(pos+64<=len){memcpy(ctx.buffer,input+pos,64);http_auth_sha256_transform(&ctx);pos+=64;}
+    size_t remaining=len-pos;
+    if(remaining)memcpy(ctx.buffer,input+pos,remaining);
+    ctx.buffer[remaining]=0x80;
+    if(remaining>=56){memset(ctx.buffer+remaining+1,0,63-remaining);http_auth_sha256_transform(&ctx);memset(ctx.buffer,0,56);}
+    else memset(ctx.buffer+remaining+1,0,55-remaining);
+    uint64_t bits=(uint64_t)len*8U;
+    for(int i=0;i<8;i++)ctx.buffer[63-i]=(uint8_t)(bits>>(i*8));
+    http_auth_sha256_transform(&ctx);
+    for(int i=0;i<8;i++){output[i*4]=(uint8_t)(ctx.state[i]>>24);output[i*4+1]=(uint8_t)(ctx.state[i]>>16);output[i*4+2]=(uint8_t)(ctx.state[i]>>8);output[i*4+3]=(uint8_t)ctx.state[i];}
+    memset(&ctx,0,sizeof(ctx));
+}
+
+static int constant_time_equal(const uint8_t* a,const uint8_t* b,size_t len) {
+    uint8_t difference=0;
+    for(size_t i=0;i<len;i++)difference|=(uint8_t)(a[i]^b[i]);
+    return difference==0;
+}
+
 
 /* ---- Key validation ---- */
 
 static int is_key_valid(SNEPPX_HttpAuth* auth, const char* raw_key) {
-    (void)auth;
-    if (!raw_key || !*raw_key) return 0;
-
-#ifdef SNEPPX_AUTH_STUB
-    /* In stub mode, accept any sk-sneppx- key */
-    if (strncmp(raw_key, "sk-sneppx-", 10) == 0 && strlen(raw_key) > 10)
-        return 1;
-    /* Also accept admin key "sneppx-admin" for development */
-    if (strcmp(raw_key, "sneppx-admin") == 0)
-        return 1;
-    return 0;
-#else
-    /* Real SQLite-backed validation */
-    /* Hash the key */
-    unsigned char hash[32];
-    sha256_hash(raw_key, hash);
-    char hex[65];
-    for (int i = 0; i < 32; i++)
-        snprintf(hex + i * 2, 3, "%02x", hash[i]);
-    hex[64] = '\0';
-
-    /* Query the database */
-    /* Note: In a real implementation, this would use sqlite3_open + sqlite3_prepare.
-     * For now, return 0. */
-    (void)auth;
-    return 0;
-#endif
+    if (!auth || !raw_key) return 0;
+    size_t key_len = strlen(raw_key);
+    if (key_len < 16 || key_len > MAX_API_KEY_LENGTH) return 0;
+    uint8_t candidate[32];
+    sha256_hash(raw_key, candidate);
+    uint8_t matched = 0;
+    for (int i = 0; i < auth->num_hashed_keys; i++)
+        matched |= (uint8_t)constant_time_equal(candidate, auth->hashed_keys[i], sizeof(candidate));
+    memset(candidate, 0, sizeof(candidate));
+    return matched != 0;
 }
 
 /* ---- Middleware implementation ---- */
 
 static int auth_middleware_impl(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, void* userdata) {
     SNEPPX_HttpAuth* auth = (SNEPPX_HttpAuth*)userdata;
-    if (!auth) return 0;
+    if (!req || !resp) return 1;
+    if (!auth) {
+        SNEPPX_http_response_set_status(resp, 503);
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"authentication_unavailable\"}");
+        return 1;
+    }
 
-    /* Check public paths */
+    /* Check public paths on complete path-segment boundaries. */
     const char* path = SNEPPX_http_request_path(req);
+    if (!path) {
+        SNEPPX_http_response_set_status(resp, 400);
+        return 1;
+    }
     for (int i = 0; i < auth->num_public_paths; i++) {
-        if (strncmp(path, auth->public_paths[i], strlen(auth->public_paths[i])) == 0)
-            return 0; /* Allow without auth */
+        size_t prefix_len = strlen(auth->public_paths[i]);
+        if (strncmp(path, auth->public_paths[i], prefix_len) == 0 &&
+            (path[prefix_len] == '\0' || path[prefix_len] == '/'))
+            return 0; /* Allow explicitly public path */
     }
 
     /* Extract Authorization header */
@@ -184,12 +154,20 @@ static int auth_middleware_impl(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* re
         return 1; /* Short-circuit */
     }
 
-    /* Strip "Bearer " prefix */
-    const char* key = auth_header;
-    if (strncmp(key, "Bearer ", 7) == 0)
-        key += 7;
+    /* Require a well-formed Bearer credential. */
+    if (strncmp(auth_header, "Bearer ", 7) != 0) {
+        SNEPPX_http_response_set_status(resp, 401);
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_authorization_scheme\"}");
+        return 1;
+    }
+    const char* key = auth_header + 7;
+    if (!*key || strpbrk(key, " \t\r\n")) {
+        SNEPPX_http_response_set_status(resp, 401);
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_api_key\"}");
+        return 1;
+    }
 
-    /* Validate key */
+    /* Validate only explicitly registered keys. */
     if (!is_key_valid(auth, key)) {
         SNEPPX_http_response_set_status(resp, 401);
         SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_api_key\",\"message\":\"Invalid or expired API key\"}");
@@ -207,17 +185,16 @@ static int auth_middleware_impl(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* re
  * @return Pointer on success, NULL on error.
  */
 SNEPPX_HttpAuth* SNEPPX_http_auth_create(const char* db_path) {
-    SNEPPX_HttpAuth* auth = (SNEPPX_HttpAuth*)calloc(1, sizeof(*auth));
-    if (!auth) return NULL;
-    strncpy(auth->db_path, db_path ? db_path : "", 511);
-    auth->db_path[511] = '\0';
-    return auth;
+    (void)db_path; /* Retained for source compatibility; no database backend is implemented. */
+    return (SNEPPX_HttpAuth*)calloc(1, sizeof(SNEPPX_HttpAuth));
 }
 
 /**
  * @brief Destroy Http Auth.
  */
 void SNEPPX_http_auth_destroy(SNEPPX_HttpAuth* auth) {
+    if (!auth) return;
+    memset(auth, 0, sizeof(*auth));
     free(auth);
 }
 
@@ -239,9 +216,32 @@ SNEPPX_http_middleware_fn SNEPPX_http_auth_middleware(SNEPPX_HttpAuth* auth) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_http_auth_add_public_path(SNEPPX_HttpAuth* auth, const char* path_prefix) {
-    if (!auth || auth->num_public_paths >= MAX_PUBLIC_PATHS) return -1;
-    strncpy(auth->public_paths[auth->num_public_paths], path_prefix, 127);
-    auth->public_paths[auth->num_public_paths][127] = '\0';
+    if (!auth || !path_prefix || path_prefix[0] != '/' || !path_prefix[1] ||
+        auth->num_public_paths >= MAX_PUBLIC_PATHS || strchr(path_prefix, '?') || strchr(path_prefix, '#'))
+        return -1;
+    size_t len = strlen(path_prefix);
+    if (len >= sizeof(auth->public_paths[0])) return -1;
+    for (int i = 0; i < auth->num_public_paths; i++)
+        if (strcmp(auth->public_paths[i], path_prefix) == 0) return 0;
+    memcpy(auth->public_paths[auth->num_public_paths], path_prefix, len + 1);
     auth->num_public_paths++;
+    return 0;
+}
+
+int SNEPPX_http_auth_add_key(SNEPPX_HttpAuth* auth, const char* raw_key) {
+    if (!auth || !raw_key) return -1;
+    size_t key_len = strlen(raw_key);
+    if (key_len < 16 || key_len > MAX_API_KEY_LENGTH || auth->num_hashed_keys >= MAX_HASHED_KEYS)
+        return -1;
+    uint8_t hash[32];
+    sha256_hash(raw_key, hash);
+    for (int i = 0; i < auth->num_hashed_keys; i++) {
+        if (constant_time_equal(hash, auth->hashed_keys[i], sizeof(hash))) {
+            memset(hash, 0, sizeof(hash));
+            return 0;
+        }
+    }
+    memcpy(auth->hashed_keys[auth->num_hashed_keys++], hash, sizeof(hash));
+    memset(hash, 0, sizeof(hash));
     return 0;
 }

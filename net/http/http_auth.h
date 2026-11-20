@@ -26,8 +26,8 @@ extern "C" {
 /* API key auth middleware state */
 typedef struct SNEPPX_HttpAuth SNEPPX_HttpAuth;
 
-/* Create an auth middleware that validates Authorization: Bearer <key>
- * against the store at db_path. Returns NULL on failure. */
+/* Create in-memory auth state. db_path is retained for source compatibility;
+ * the current implementation does not read a database. Returns NULL on failure. */
 /**
  * @brief Create Http Auth.
  *
@@ -67,6 +67,10 @@ SNEPPX_http_middleware_fn SNEPPX_http_auth_middleware(SNEPPX_HttpAuth* auth);
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_http_auth_add_public_path(SNEPPX_HttpAuth* auth, const char* path_prefix);
+
+/* Register a bearer API key. Keys are stored as SHA-256 digests in memory.
+ * Keys must contain 16–256 bytes. Returns 0 on success, -1 on invalid input/full store. */
+int SNEPPX_http_auth_add_key(SNEPPX_HttpAuth* auth, const char* raw_key);
 
 #ifdef __cplusplus
 }

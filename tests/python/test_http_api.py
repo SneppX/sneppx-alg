@@ -56,10 +56,13 @@ pytestmark = pytest.mark.skipif(
 @pytest.fixture(scope="module")
 def server():
     port = _free_port()
+    env = os.environ.copy()
+    env["SNEPPX_HTTP_API_KEY"] = "sk-sneppx-test-token-2026-token-2026"
     proc = subprocess.Popen(
         [BIN, str(port)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
+        env=env,
     )
     # wait for readiness
     url = "http://127.0.0.1:%d/v1/health" % port
@@ -127,12 +130,38 @@ def test_generate_requires_auth(server):
         pytest.skip("auth behaviour not deterministic")
 
 
+
+
+def test_generate_rejects_unregistered_prefixed_key(server):
+    port, _ = server
+    body = json.dumps({"model": "llama3-8B", "prompt": "hi"}).encode()
+    req = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-sneppx-attacker-controlled-value",
+        },
+    )
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        urllib.request.urlopen(req)
+    assert exc.value.code == 401
+
+
+def test_public_path_prefix_collision_is_not_public(server):
+    port, _ = server
+    req = urllib.request.Request("http://127.0.0.1:%d/v1/models-admin" % port)
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        urllib.request.urlopen(req)
+    assert exc.value.code == 401
+
+
 def test_generate_empty_body(server):
     port, _ = server
     req = urllib.request.Request(
         "http://127.0.0.1:%d/v1/generate" % port, data=b"",
         headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test"},
+                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
     )
     try:
         urllib.request.urlopen(req)
@@ -149,7 +178,7 @@ def test_generate_unknown_model(server):
     req = urllib.request.Request(
         "http://127.0.0.1:%d/v1/generate" % port, data=body,
         headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test"},
+                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
     )
     try:
         urllib.request.urlopen(req)
@@ -166,7 +195,7 @@ def test_generate_with_auth(server):
     req = urllib.request.Request(
         "http://127.0.0.1:%d/v1/generate" % port, data=body,
         headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test"},
+                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
     )
     try:
         with urllib.request.urlopen(req) as r:
@@ -179,7 +208,7 @@ def test_generate_with_auth(server):
             assert "model" in data
             assert data["model"] == "llama3-8B"
     except urllib.error.HTTPError as e:
-        assert e.code in (401, 403, 200)
+        pytest.fail("configured API key was rejected: HTTP %s" % e.code)
 
 
 def test_model_info_known(server):

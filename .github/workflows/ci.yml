@@ -103,6 +103,22 @@ jobs:
         if: steps.toolchain.outputs.available == 'true'
         run: |
           ctest --test-dir build/ci -C Release --output-on-failure --timeout 120
+      - name: Set up Python for HTTP integration tests
+        if: steps.toolchain.outputs.available == 'true'
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+      - name: Install HTTP integration test dependencies
+        if: steps.toolchain.outputs.available == 'true'
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Run C HTTP server integration tests
+        if: steps.toolchain.outputs.available == 'true'
+        env:
+          PYTHONPATH: bindings/python
+        run: |
+          HTTP_BIN="$(find build/ci -type f -name http_server_demo -perm -111 -print -quit)"
+          test -n "$HTTP_BIN"
+          SNEPPX_HTTP_BIN="$HTTP_BIN" python -m pytest tests/python/test_http_api.py -q -p no:cacheprovider
       - name: Skip notice (no toolchain)
         if: steps.toolchain.outputs.available == 'false'
         run: echo "No C toolchain (ninja/cmake/compiler) available in this runner; native build smoke skipped."
