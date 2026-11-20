@@ -176,6 +176,78 @@ static void test_signed_update_rejects_invalid_chunk_layout(void) {
               "out-of-order chunk index rejected");
 }
 
+static void test_bsdiff_roundtrip(void) {
+    static const uint8_t old_data[] = "prefix-old-suffix";
+    static const uint8_t new_data[] = "prefix-new-suffix";
+    uint8_t patch[128]; size_t patch_len = sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(old_data, sizeof(old_data)-1, new_data, sizeof(new_data)-1, patch, &patch_len) == 0,
+              "generate SXP1 patch");
+    SX_ASSERT(patch_len > 13 && memcmp(patch, "SXP1", 4) == 0, "SXP1 magic");
+    uint8_t output[64]; memset(output, 0xA5, sizeof(output)); size_t output_len = sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(old_data, sizeof(old_data)-1, patch, patch_len, output, &output_len) == 0,
+              "apply SXP1 patch");
+    SX_ASSERT(output_len == sizeof(new_data)-1 && memcmp(output, new_data, output_len) == 0,
+              "patch roundtrip bytes");
+}
+static void test_bsdiff_rejects_truncated_patch(void) {
+    static const uint8_t old_data[] = "prefix-old-suffix", new_data[] = "prefix-new-suffix";
+    uint8_t patch[128]; size_t patch_len = sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(old_data, sizeof(old_data)-1, new_data, sizeof(new_data)-1, patch, &patch_len) == 0,
+              "generate patch for truncation test");
+    for (size_t n=0;n<patch_len;n++) {
+        uint8_t output[64]; memset(output,0xA5,sizeof(output)); size_t output_len=sizeof(output);
+        int rc=SNEPPX_bspatch(old_data,sizeof(old_data)-1,patch,n,output,&output_len);
+        SX_ASSERT(rc == -1, "truncated patch rejected");
+        SX_ASSERT(output[0] == 0xA5, "truncated patch leaves output untouched");
+    }
+}
+static void test_bsdiff_rejects_malformed_records(void) {
+    static const uint8_t old_data[] = "prefix-old-suffix", new_data[] = "prefix-new-suffix";
+    uint8_t patch[128], malformed[130], output[64]; size_t patch_len=sizeof(patch), output_len;
+    SX_ASSERT(SNEPPX_bsdiff(old_data,sizeof(old_data)-1,new_data,sizeof(new_data)-1,patch,&patch_len)==0,
+              "generate malformed-input base patch");
+    memcpy(malformed,patch,patch_len); malformed[0]^=1; output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(old_data,sizeof(old_data)-1,malformed,patch_len,output,&output_len)==-1,
+              "invalid patch magic rejected");
+    memcpy(malformed,patch,patch_len); malformed[12]=0x7f; output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(old_data,sizeof(old_data)-1,malformed,patch_len,output,&output_len)==-1,
+              "invalid patch opcode rejected");
+    memcpy(malformed,patch,patch_len); malformed[patch_len]=0x55; output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(old_data,sizeof(old_data)-1,malformed,patch_len+1,output,&output_len)==-1,
+              "trailing patch bytes rejected");
+    memcpy(malformed,patch,patch_len); memset(malformed+13,0xff,8); output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(old_data,sizeof(old_data)-1,malformed,patch_len,output,&output_len)==-1,
+              "out-of-range COPY rejected");
+}
+static void test_bsdiff_rejects_oversized_insert_and_capacity(void) {
+    static const uint8_t insert_data[]="xyz";
+    uint8_t patch[64],output[8]; size_t patch_len=sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(NULL,0,insert_data,sizeof(insert_data)-1,patch,&patch_len)==0,
+              "generate INSERT-only patch");
+    memset(patch+13,0xff,8); size_t output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(NULL,0,patch,patch_len,output,&output_len)==-1,
+              "oversized INSERT length rejected");
+    patch_len=sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(NULL,0,insert_data,sizeof(insert_data)-1,patch,&patch_len)==0,
+              "regenerate INSERT-only patch");
+    memset(output,0xA5,sizeof(output)); output_len=1;
+    SX_ASSERT(SNEPPX_bspatch(NULL,0,patch,patch_len,output,&output_len)==-1,
+              "insufficient output capacity rejected");
+    SX_ASSERT(output[0]==0xA5,"capacity failure leaves output untouched");
+}
+static void test_bsdiff_handles_empty_inputs(void) {
+    static const uint8_t text[]="abc";
+    uint8_t patch[64],output[8]; size_t patch_len=sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(NULL,0,text,sizeof(text)-1,patch,&patch_len)==0,"empty old input supported");
+    size_t output_len=sizeof(output);
+    SX_ASSERT(SNEPPX_bspatch(NULL,0,patch,patch_len,output,&output_len)==0 &&
+              output_len==sizeof(text)-1 && memcmp(output,text,output_len)==0,"empty old input roundtrip");
+    patch_len=sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(text,sizeof(text)-1,NULL,0,patch,&patch_len)==0,"empty new input supported");
+    output_len=0;
+    SX_ASSERT(SNEPPX_bspatch(text,sizeof(text)-1,patch,patch_len,NULL,&output_len)==0 && output_len==0,
+              "empty output roundtrip");
+}
 static void test_tuf_init(void) {
     SNEPPXTUFMetadata tuf;
     SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "tuf init");
@@ -217,6 +289,11 @@ TEST(test_s7_updates, signed_update_rejects_payload_length_mismatch) { test_sign
 TEST(test_s7_updates, signed_update_rejects_missing_payload) { test_signed_update_rejects_missing_payload(); }
 TEST(test_s7_updates, signed_update_rejects_tampered_chunk_metadata) { test_signed_update_rejects_tampered_chunk_metadata(); }
 TEST(test_s7_updates, signed_update_rejects_invalid_chunk_layout) { test_signed_update_rejects_invalid_chunk_layout(); }
+TEST(test_s7_updates, bsdiff_roundtrip) { test_bsdiff_roundtrip(); }
+TEST(test_s7_updates, bsdiff_rejects_truncated_patch) { test_bsdiff_rejects_truncated_patch(); }
+TEST(test_s7_updates, bsdiff_rejects_malformed_records) { test_bsdiff_rejects_malformed_records(); }
+TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdiff_rejects_oversized_insert_and_capacity(); }
+TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
 TEST(test_s7_updates, tuf_init) { test_tuf_init(); }
 TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }

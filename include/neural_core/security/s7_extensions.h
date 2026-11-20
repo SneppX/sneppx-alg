@@ -69,7 +69,8 @@ int  SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t le
  */
 int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len);
 
-/* bsdiff delta generation */
+/* SXP1 format: 4-byte magic, 64-bit output size, COPY/INSERT records, END. */
+/* bsdiff delta generation. On entry *patch_len is capacity; on success it is bytes written. */
 /**
  * @brief Perform Bsdiff.
  *
@@ -83,6 +84,19 @@ int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_js
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len);
+/**
+ * @brief Apply an SXP1 patch. *new_len is output capacity on entry and actual size on success.
+ * Malformed input is validated before output is written.
+ *
+ * @param old_data [in] Old Data value.
+ * @param old_len [in] Old Len value.
+ * @param patch [in] Patch value.
+ * @param patch_len [in] Patch Len value.
+ * @param new_data [out] New Data value.
+ * @param new_len [in,out] Output capacity and resulting length.
+ *
+ * @return 0 on success, -1 on error.
+ */
 /**
  * @brief Perform Bspatch.
  *

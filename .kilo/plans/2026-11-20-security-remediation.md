@@ -72,10 +72,10 @@
 
 - [x] Add regression tests for valid payload, altered payload, altered chunk digest, truncated payload, missing payload, and invalid chunk layout.
 - [ ] Verify the regression tests fail against the current metadata-only verification.
-- [ ] Implement canonical BLAKE3 digest construction and Ed25519 signing/verification.
-- [ ] Verify payload bytes in `apply` before mutating the current version or update history.
+- [x] Implement canonical BLAKE3 digest construction and Ed25519 signing/verification.
+- [x] Verify payload bytes in `apply` before mutating the current version or update history.
 - [ ] Validate against existing Ed25519 and BLAKE3 test vectors and run the full native and Python suites.
-- [ ] Commit as `fix(security): verify signed update payload chunks`.
+- [x] Commit as `fix(security): verify signed update payload chunks`.
 
 ### Task 3: Replace unsafe delta-patch parsing
 
@@ -223,3 +223,5 @@
 - HTTP auth fixture correction: `586a180` — CI, HTTP integration tests, Lint & Docs, and package artifact validation all passed. The corrected integration suite verified configured-key success, unknown prefixed-key rejection, and public-path boundary rejection.
 - Local SHA-256 verification: RFC 6234 `abc` digest and a 256-byte input matched known SHA-256 output.
 - Signed-update payload regression harness: reproduced the current vulnerable behavior — a tampered payload was accepted and the version advanced when payload bytes were ignored.
+
+- Patch parser regression harness: ASan/UBSan tests passed for SXP1 round trips, all truncation offsets, malformed opcodes, oversized lengths, trailing bytes, capacity limits, and empty inputs.
