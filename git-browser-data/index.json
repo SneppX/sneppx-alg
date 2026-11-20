@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-20T11:04:04.268182+00:00",
+  "generated_at": "2026-11-20T11:11:14.038890+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -76,6 +76,15 @@
       "search_truncated": false
     },
     {
+      "name": "feature/native-tensor-reductions",
+      "id": "ZmVhdHVyZS9uYXRpdmUtdGVuc29yLXJlZHVjdGlvbnM",
+      "commit": "679b29099c5fc631c5669a39c92c61debcad7565",
+      "file_count": 1607,
+      "commit_count": 2583,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
       "name": "fix/model-config-c-roundtrip",
       "id": "Zml4L21vZGVsLWNvbmZpZy1jLXJvdW5kdHJpcA",
       "commit": "e8d63efdfc8d9072bc2686e8143887ceacf87e20",
@@ -96,18 +105,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "e0a3c66e36a3c71ac9af2d48607e9a2e807d29cb",
-      "file_count": 42473,
-      "commit_count": 98,
+      "commit": "72d511a5c3db320a92888f5fb557b5bdc8d757d3",
+      "file_count": 42479,
+      "commit_count": 100,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "6689fc61fe8c2465cc6fd7d2c398fce8adc106e5",
+      "commit": "6727bfb6db29f7ae6b6889f0461437601deef455",
       "file_count": 1607,
-      "commit_count": 2580,
+      "commit_count": 2584,
       "search_count": 0,
       "search_truncated": false
     },
