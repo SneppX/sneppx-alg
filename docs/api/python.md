@@ -123,7 +123,7 @@ operation, and copy the result back. Both inputs must use the same dtype and
 must not carry autograd history. The result is a new, non-gradient tensor. The same explicit bridge also exposes
 `native_sub()`, `native_mul()`, `native_div()`, `native_pow()`, `native_relu()`,
 `native_sigmoid()`, `native_tanh()`, `native_softmax(dim)`, `native_sum(dim)`,
-and `native_mean(dim)`.
+and `native_mean(dim)`, `native_var(dim)`, `native_std(dim)`, `native_cumsum(dim)`, and `native_cumprod(dim)`. Variance and standard deviation retain the reduced axis as a size-one dimension; cumulative operations preserve the input shape.
 Ordinary `+` and `@` operators remain on the existing Python/NumPy path; this
 does not silently change application behavior or autograd semantics.
 
