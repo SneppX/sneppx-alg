@@ -6,6 +6,8 @@ import math
 import os
 import numpy as np
 
+from .native_tensor_ops import NativeTensorOps
+
 # ---- Try to load the C (pybind11) backend ----
 _C_BACKEND = None
 try:
@@ -156,7 +158,7 @@ class _CTensorData:
         return np.frombuffer(self._data, dtype=np_dt).reshape(self.shape).copy()
 
 
-class Tensor:
+class Tensor(NativeTensorOps):
     """Multi-dimensional array with autograd tape support and dual C/NumPy storage.
 
     A Tensor encapsulates an n-dimensional data buffer, associated data type, device

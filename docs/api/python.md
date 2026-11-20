@@ -120,7 +120,10 @@ on native conversion in an application.
 The public tensor API also exposes opt-in `native_add()` and `native_matmul()`
 methods. These copy matching CPU tensors into the C engine, execute the native
 operation, and copy the result back. Both inputs must use the same dtype and
-must not carry autograd history. The result is a new, non-gradient tensor.
+must not carry autograd history. The result is a new, non-gradient tensor. The same explicit bridge also exposes
+`native_sub()`, `native_mul()`, `native_div()`, `native_pow()`, `native_relu()`,
+`native_sigmoid()`, `native_tanh()`, `native_softmax(dim)`, `native_sum(dim)`,
+and `native_mean(dim)`.
 Ordinary `+` and `@` operators remain on the existing Python/NumPy path; this
 does not silently change application behavior or autograd semantics.
 
