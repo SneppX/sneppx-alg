@@ -146,6 +146,16 @@ def run_sha3_256(crypto: Any, msg: bytes) -> bytes:
     return bytes(crypto.sha3_256(msg))
 
 
+def run_sha3_256_kat(crypto: Any, vector: Dict[str, Any]) -> bool:
+    """Run one SHA3-256 ACVP vector and compare its digest with the expected md."""
+    message = acvp_msg_bytes(vector["msg"], vector.get("len"))
+    expected = vector.get("md")
+    if not isinstance(expected, str):
+        raise ValueError("SHA3-256 ACVP vector is missing its expected md digest")
+    actual = run_sha3_256(crypto, message)
+    return b2h(actual) == expected.strip().upper()
+
+
 def mldsa_sigver_vectors() -> List[Dict[str, Any]]:
     """Official NIST FIPS 204 ML-DSA sigVer sample vectors."""
     doc = load_kat("mldsa_sigver_kat.json")
@@ -388,7 +398,7 @@ def run_all_pqc_kats(crypto: Any) -> Dict[str, Any]:
     ``overall`` is the merged report across all suites.
     """
     runners = {
-        "sha3_256": (sha3_256_vectors(), run_sha3_256),
+        "sha3_256": (sha3_256_vectors(), run_sha3_256_kat),
         "mlkem_keygen": (mlkem_keygen_vectors(), run_mlkem_keygen),
         "mlkem_encaps_decaps": (
             load_kat("mlkem_encaps_decaps_kat.json")["vectors"],
@@ -432,6 +442,7 @@ __all__ = [
     "acvp_msg_bytes",
     "sha3_256_vectors",
     "run_sha3_256",
+    "run_sha3_256_kat",
     "mldsa_sigver_vectors",
     "ml_dsa_variant_for_pk",
     "ml_dsa_variant_for_parameter_set",
