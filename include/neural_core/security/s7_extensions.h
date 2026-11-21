@@ -73,6 +73,18 @@ int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_js
 int SNEPPX_bsdiff_with_signature(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len, const uint8_t* signing_key, size_t key_len);
 int SNEPPX_manifest_verify_from_buffer(const uint8_t* manifest_data, size_t data_len, const uint8_t* signature, size_t sig_len);
 
+/* Legacy TUF-shaped APIs retained for ABI compatibility; all fail closed. */
+int SNEPPX_tuf_generate_keypair(int key_type);
+int SNEPPX_tuf_revoke_key(int key_type);
+int SNEPPX_tuf_is_initialized(SNEPPXTUFMetadata* tuf);
+int SNEPPX_tuf_get_key(SNEPPXTUFMetadata* tuf, int key_type, uint8_t* key_out, size_t key_len);
+int SNEPPX_tuf_set_key(SNEPPXTUFMetadata* tuf, int key_type, const uint8_t* key, size_t key_len);
+int SNEPPX_tuf_snapshot(uint8_t* snapshot_out, size_t* snapshot_len);
+int SNEPPX_tuf_timestamp(uint8_t* timestamp_out, size_t* timestamp_len);
+int SNEPPX_tuf_verify_snapshot(SNEPPXTUFMetadata* tuf, const uint8_t* snapshot, size_t snapshot_len);
+int SNEPPX_tuf_verify_timestamp(SNEPPXTUFMetadata* tuf, const uint8_t* timestamp, size_t timestamp_len);
+int SNEPPX_tuf_get_keys_loaded(SNEPPXTUFMetadata* tuf);
+
 /* SXP1 is a project-specific format, not BSDIFF40: 4-byte magic, 64-bit
  * output size, bounded COPY/INSERT records, and a final END marker.
  * The generator emits common-prefix COPY, middle INSERT, and common-suffix COPY. */

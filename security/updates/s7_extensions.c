@@ -123,14 +123,9 @@ static int patch_write_file(const char* path, const uint8_t* data, size_t len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
-    if (!tuf) return -1; memset(tuf, 0, sizeof(*tuf));
-    for (int i = 0; i < 32; i++) {
-        SNEPPX_random_bytes(&tuf->root_key[i], 1);
-        SNEPPX_random_bytes(&tuf->targets_key[i], 1);
-        SNEPPX_random_bytes(&tuf->snapshot_key[i], 1);
-        SNEPPX_random_bytes(&tuf->timestamp_key[i], 1);
-    }
-    tuf->initialized = 1; return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf;
+    return -1;
 }
 
 /**
@@ -144,7 +139,7 @@ int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len, uint8_t* sig, size_t* sig_len) {
-    /* The legacy 32-byte XOR output is not a cryptographic signature. */
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
     (void)tuf; (void)data; (void)len; (void)sig; (void)sig_len;
     return -1;
 }
@@ -158,7 +153,7 @@ int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len) {
-    /* A short keyed hash is not an authenticated TUF targets signature. */
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
     (void)tuf; (void)targets_json; (void)len;
     return -1;
 }
@@ -426,10 +421,9 @@ int SNEPPX_dep_resolver_resolve(SNEPPXDepResolver* dr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_generate_keypair(int key_type) {
-    if (key_type < 0 || key_type >= SNEPPX_TUF_MAX_KEYS) return -1;
-    uint8_t rb = 0;
-    SNEPPX_random_bytes(&rb, 1);
-    return key_type * 100 + (rb % 100);
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)key_type;
+    return -1;
 }
 
 /**
@@ -438,8 +432,9 @@ int SNEPPX_tuf_generate_keypair(int key_type) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_revoke_key(int key_type) {
-    if (key_type < 0 || key_type >= SNEPPX_TUF_MAX_KEYS) return -1;
-    return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)key_type;
+    return -1;
 }
 
 /**
@@ -556,7 +551,9 @@ static uint32_t hash_xor(const uint8_t* data, size_t len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_is_initialized(SNEPPXTUFMetadata* tuf) {
-    return tuf ? tuf->initialized : 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf;
+    return -1;
 }
 
 /**
@@ -569,16 +566,9 @@ int SNEPPX_tuf_is_initialized(SNEPPXTUFMetadata* tuf) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_get_key(SNEPPXTUFMetadata* tuf, int key_type, uint8_t* key_out, size_t key_len) {
-    if (!tuf || !key_out || !key_type_valid(key_type)) return -1;
-    if (key_len < 32) return -1;
-    switch (key_type) {
-        case 0: memcpy(key_out, tuf->root_key, 32); break;
-        case 1: memcpy(key_out, tuf->targets_key, 32); break;
-        case 2: memcpy(key_out, tuf->snapshot_key, 32); break;
-        case 3: memcpy(key_out, tuf->timestamp_key, 32); break;
-        default: return -1;
-    }
-    return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf; (void)key_type; (void)key_out; (void)key_len;
+    return -1;
 }
 
 /**
@@ -736,15 +726,9 @@ void SNEPPX_dep_resolver_reset(SNEPPXDepResolver* dr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_set_key(SNEPPXTUFMetadata* tuf, int key_type, const uint8_t* key, size_t key_len) {
-    if (!tuf || !key || key_len < 32 || !key_type_valid(key_type)) return -1;
-    switch (key_type) {
-        case 0: memcpy(tuf->root_key, key, 32); break;
-        case 1: memcpy(tuf->targets_key, key, 32); break;
-        case 2: memcpy(tuf->snapshot_key, key, 32); break;
-        case 3: memcpy(tuf->timestamp_key, key, 32); break;
-        default: return -1;
-    }
-    return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf; (void)key_type; (void)key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -838,16 +822,9 @@ int SNEPPX_manifest_hash(const char* manifest_path, uint8_t* hash_out, size_t ha
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_snapshot(uint8_t* snapshot_out, size_t* snapshot_len) {
-    if (!snapshot_out || !snapshot_len || *snapshot_len < 64) return -1;
-    memset(snapshot_out, 0, 64);
-    uint32_t ts = (uint32_t)time(NULL);
-    for (int i = 0; i < 4; i++) snapshot_out[i] = (uint8_t)(ts >> (i * 8));
-    snapshot_out[4] = 0x53;
-    snapshot_out[5] = 0x4E;
-    snapshot_out[6] = 0x50;
-    SNEPPX_random_bytes(&snapshot_out[7], 4);
-    *snapshot_len = 64;
-    return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)snapshot_out; (void)snapshot_len;
+    return -1;
 }
 
 /**
@@ -858,15 +835,9 @@ int SNEPPX_tuf_snapshot(uint8_t* snapshot_out, size_t* snapshot_len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_timestamp(uint8_t* timestamp_out, size_t* timestamp_len) {
-    if (!timestamp_out || !timestamp_len || *timestamp_len < 32) return -1;
-    memset(timestamp_out, 0, 32);
-    uint32_t ts = (uint32_t)time(NULL);
-    for (int i = 0; i < 4; i++) timestamp_out[i] = (uint8_t)(ts >> (i * 8));
-    timestamp_out[4] = 0x54;
-    timestamp_out[5] = 0x53;
-    timestamp_out[6] = 0x50;
-    *timestamp_len = 32;
-    return 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)timestamp_out; (void)timestamp_len;
+    return -1;
 }
 
 /**
@@ -878,12 +849,9 @@ int SNEPPX_tuf_timestamp(uint8_t* timestamp_out, size_t* timestamp_len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_verify_snapshot(SNEPPXTUFMetadata* tuf, const uint8_t* snapshot, size_t snapshot_len) {
-    if (!tuf || !snapshot) return -1;
-    (void)snapshot_len;
-    uint32_t h = 0;
-    for (int i = 0; i < 8; i++) h ^= (uint32_t)snapshot[i] << ((i % 4) * 8);
-    uint32_t expected = tuf->snapshot_key[0] | ((uint32_t)tuf->snapshot_key[1] << 8);
-    return (h == expected) ? 0 : -1;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf; (void)snapshot; (void)snapshot_len;
+    return -1;
 }
 
 /**
@@ -895,12 +863,9 @@ int SNEPPX_tuf_verify_snapshot(SNEPPXTUFMetadata* tuf, const uint8_t* snapshot, 
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_verify_timestamp(SNEPPXTUFMetadata* tuf, const uint8_t* timestamp, size_t timestamp_len) {
-    if (!tuf || !timestamp) return -1;
-    (void)timestamp_len;
-    uint32_t h = 0;
-    for (int i = 0; i < 4; i++) h ^= (uint32_t)timestamp[i] << ((i % 4) * 8);
-    uint32_t expected = tuf->timestamp_key[0] | ((uint32_t)tuf->timestamp_key[1] << 8);
-    return (h == expected) ? 0 : -1;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf; (void)timestamp; (void)timestamp_len;
+    return -1;
 }
 
 /**
@@ -909,14 +874,9 @@ int SNEPPX_tuf_verify_timestamp(SNEPPXTUFMetadata* tuf, const uint8_t* timestamp
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_get_keys_loaded(SNEPPXTUFMetadata* tuf) {
-    if (!tuf) return 0;
-    int count = 0;
-    for (int i = 0; i < 32; i++) {
-        if (tuf->root_key[i] || tuf->targets_key[i] || tuf->snapshot_key[i] || tuf->timestamp_key[i]) {
-            count++;
-        }
-    }
-    return count > 0 ? 4 : 0;
+    /* TUF metadata operations require a complete authenticated TUF implementation. */
+    (void)tuf;
+    return -1;
 }
 
 /**

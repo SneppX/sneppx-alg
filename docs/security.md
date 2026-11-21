@@ -271,7 +271,8 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - `SNEPPX_bsdiff_with_signature()` used XOR masking, not a digital signature; it now always fails closed.
 - `SNEPPX_manifest_verify_from_buffer()` compared a short non-cryptographic hash; it now always fails closed.
 - These compatibility APIs do not authenticate updates. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.
-- TUF metadata/key-management and TPM hardware operations are not yet production implementations; their remaining legacy entry points are being disabled and audited separately.
+- TUF metadata/key-management APIs are compatibility stubs and now all fail closed. They do not generate, expose, revoke, sign, or verify trusted metadata.
+- TPM hardware operations are not yet production implementations; their remaining legacy entry points are being disabled and audited separately.
 - Signed update bundles: Ed25519-signed update payloads with version rolling
 - Rollback protection: monotonic version counter preventing downgrade attacks
 - Staged rollout: gradual update distribution with health-check gating

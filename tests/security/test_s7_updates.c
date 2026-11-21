@@ -249,19 +249,39 @@ static void test_bsdiff_handles_empty_inputs(void) {
               "empty output roundtrip");
 }
 
-static void test_legacy_tuf_crypto_apis_fail_closed(void) {
-    SNEPPXTUFMetadata tuf;
+static void test_legacy_tuf_apis_fail_closed_without_mutating_outputs(void) {
+    SNEPPXTUFMetadata tuf, original;
+    memset(&tuf, 0xA5, sizeof(tuf));
+    memcpy(&original, &tuf, sizeof(tuf));
     uint8_t data[] = "metadata";
-    uint8_t signature[64] = {0};
-    size_t signature_len = sizeof(signature);
-    SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "initialize TUF metadata");
+    uint8_t signature[64], key_out[32], snapshot[64], timestamp[32];
+    memset(signature, 0x5A, sizeof(signature));
+    memset(key_out, 0x6B, sizeof(key_out));
+    memset(snapshot, 0x7C, sizeof(snapshot));
+    memset(timestamp, 0x3D, sizeof(timestamp));
+    size_t signature_len = sizeof(signature), snapshot_len = sizeof(snapshot), timestamp_len = sizeof(timestamp);
+    const uint8_t key[32] = {1};
+    SX_ASSERT(SNEPPX_tuf_init(&tuf) == -1, "unimplemented TUF init fails closed");
+    SX_ASSERT(memcmp(&tuf, &original, sizeof(tuf)) == 0, "TUF init preserves caller state");
     SX_ASSERT(SNEPPX_tuf_sign_root(&tuf, data, sizeof(data) - 1, signature, &signature_len) == -1,
-              "legacy XOR root signing is disabled");
-    SX_ASSERT(signature_len == sizeof(signature), "disabled signer leaves output length unchanged");
-    SX_ASSERT(SNEPPX_tuf_verify_targets(&tuf, data, sizeof(data) - 1) == -1,
-              "legacy keyed-hash targets verification is disabled");
+              "legacy TUF signer disabled");
+    SX_ASSERT(signature_len == sizeof(signature) && signature[0] == 0x5A, "disabled signer preserves outputs");
+    SX_ASSERT(SNEPPX_tuf_verify_targets(&tuf, data, sizeof(data) - 1) == -1, "TUF targets verifier disabled");
+    SX_ASSERT(SNEPPX_tuf_generate_keypair(0) == -1, "fake TUF keypair generation disabled");
+    SX_ASSERT(SNEPPX_tuf_revoke_key(0) == -1, "no-op TUF key revocation disabled");
+    SX_ASSERT(SNEPPX_tuf_is_initialized(&tuf) == -1, "TUF initialization state unavailable");
+    SX_ASSERT(SNEPPX_tuf_get_key(&tuf, 0, key_out, sizeof(key_out)) == -1, "TUF key export disabled");
+    SX_ASSERT(key_out[0] == 0x6B, "disabled key export preserves output");
+    SX_ASSERT(SNEPPX_tuf_set_key(&tuf, 0, key, sizeof(key)) == -1, "TUF key injection disabled");
+    SX_ASSERT(memcmp(&tuf, &original, sizeof(tuf)) == 0, "disabled TUF operations preserve metadata");
+    SX_ASSERT(SNEPPX_tuf_snapshot(snapshot, &snapshot_len) == -1, "unsigned TUF snapshot creation disabled");
+    SX_ASSERT(snapshot_len == sizeof(snapshot) && snapshot[0] == 0x7C, "disabled snapshot preserves outputs");
+    SX_ASSERT(SNEPPX_tuf_timestamp(timestamp, &timestamp_len) == -1, "unsigned TUF timestamp creation disabled");
+    SX_ASSERT(timestamp_len == sizeof(timestamp) && timestamp[0] == 0x3D, "disabled timestamp preserves outputs");
+    SX_ASSERT(SNEPPX_tuf_verify_snapshot(&tuf, snapshot, sizeof(snapshot)) == -1, "weak snapshot verification disabled");
+    SX_ASSERT(SNEPPX_tuf_verify_timestamp(&tuf, timestamp, sizeof(timestamp)) == -1, "weak timestamp verification disabled");
+    SX_ASSERT(SNEPPX_tuf_get_keys_loaded(&tuf) == -1, "fake TUF key state unavailable");
 }
-
 static void test_legacy_manifest_verification_fails_closed(void) {
     uint8_t signature[64] = {0};
     SX_ASSERT(SNEPPX_manifest_verify("CMakeLists.txt", signature, sizeof(signature)) == -1,
@@ -305,12 +325,6 @@ static void test_legacy_manifest_buffer_verification_fails_closed(void) {
               "32-bit hash manifest verifier is disabled");
 }
 
-static void test_tuf_init(void) {
-    SNEPPXTUFMetadata tuf;
-    SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "tuf init");
-    SX_ASSERT(tuf.initialized == 1, "tuf initialized");
-}
-
 static void test_ab_partition(void) {
     SNEPPXABPartition ab;
     SX_ASSERT(SNEPPX_ab_partition_init(&ab) == 0, "ab init");
@@ -351,12 +365,11 @@ TEST(test_s7_updates, bsdiff_rejects_truncated_patch) { test_bsdiff_rejects_trun
 TEST(test_s7_updates, bsdiff_rejects_malformed_records) { test_bsdiff_rejects_malformed_records(); }
 TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdiff_rejects_oversized_insert_and_capacity(); }
 TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
-TEST(test_s7_updates, legacy_tuf_crypto_apis_fail_closed) { test_legacy_tuf_crypto_apis_fail_closed(); }
+TEST(test_s7_updates, legacy_tuf_apis_fail_closed_without_mutating_outputs) { test_legacy_tuf_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_buffer_verification_fails_closed) { test_legacy_manifest_buffer_verification_fails_closed(); }
-TEST(test_s7_updates, tuf_init) { test_tuf_init(); }
 TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }
 TEST(test_s7_updates, dep_resolver) { test_dep_resolver(); }
