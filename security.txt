@@ -1,9 +1,0 @@
------BEGIN SECURITY CONTACT-----
-Contact: mailto:algoSNEPPX@gmail.com
-Expires: 2027-06-24T00:00:00Z
-Acknowledgments: https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md
-Policy: https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md
-Hiring: no
-Preferred-Languages: en
-Canonical: https://SNEPPX.dev/security.txt
------END SECURITY CONTACT-----

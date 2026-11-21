@@ -1,3 +1,0 @@
-add_executable(SNEPPX-cli command_line_interface/main.c)
-target_link_libraries(SNEPPX-cli PRIVATE neural_core_kernel neural_architecture_layer neural_security_c)
-apply_standard_settings(SNEPPX-cli)

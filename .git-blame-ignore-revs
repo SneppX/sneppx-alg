@@ -1,8 +1,0 @@
-# Git blame ignore revisions
-# Add commit hashes here to hide formatting-only changes from git blame.
-# Use: git config blame.ignoreRevsFile .git-blame-ignore-revs
-
-# Project-wide nomenclature restructuring
-9a06445
-# Project infrastructure init
-10cddd2
