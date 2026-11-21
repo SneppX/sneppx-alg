@@ -1,9 +1,7 @@
 #include "s7_extensions.h"
-#include "neural_core/security/cryptographic_random_generator.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 
 /*
  * SNEPPX - S7 Extensions
@@ -21,11 +19,6 @@
  */
 
 
-static uint32_t hash_djb2(const uint8_t* data, size_t len) {
-    uint32_t h = 5381;
-    for (size_t i = 0; i < len; i++) h = ((h << 5) + h) ^ data[i];
-    return h;
-}
 
 
 #define SNEPPX_PATCH_HEADER_SIZE 12U
@@ -516,15 +509,7 @@ int SNEPPX_offline_bundle_verify(SNEPPXOfflineBundle* bundle, const uint8_t* pub
     (void)bundle; (void)public_key; (void)key_len;
     return -1;
 }
-static int key_type_valid(int key_type) {
-    return (key_type >= 0 && key_type < SNEPPX_TUF_MAX_KEYS);
-}
 
-static uint32_t hash_xor(const uint8_t* data, size_t len) {
-    uint32_t h = 0;
-    for (size_t i = 0; i < len; i++) h ^= (uint32_t)data[i] << ((i % 4) * 8);
-    return h;
-}
 
 /**
  * @brief Perform Tuf Is Initialized.
@@ -785,16 +770,9 @@ int SNEPPX_ab_force_swap(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_hash(const char* manifest_path, uint8_t* hash_out, size_t hash_len) {
-    if (!manifest_path || !hash_out || hash_len < 4) return -1;
-    FILE* f = fopen(manifest_path, "rb");
-    if (!f) return -1;
-    fseek(f, 0, SEEK_END); long sz = ftell(f); fseek(f, 0, SEEK_SET);
-    uint8_t* buf = (uint8_t*)malloc((size_t)sz);
-    if (!buf) { fclose(f); return -1; }
-    fread(buf, 1, (size_t)sz, f); fclose(f);
-    uint32_t h = hash_djb2(buf, (size_t)sz); free(buf);
-    for (size_t i = 0; i < hash_len && i < 4; i++) hash_out[i] = (uint8_t)(h >> (i * 8));
-    return 0;
+    /* Legacy manifest formats use non-cryptographic hashes and cannot authenticate files. */
+    (void)manifest_path; (void)hash_out; (void)hash_len;
+    return -1;
 }
 
 /* ---- New S7 extension functions ---- */
@@ -984,23 +962,9 @@ int SNEPPX_ab_set_bootloader_slot(int slot) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_create(const char* path, const char** files, int file_count, uint8_t* manifest_out, size_t* manifest_len) {
-    if (!path || !files || !manifest_out || !manifest_len) return -1;
-    (void)path;
-    size_t pos = 0;
-    for (int i = 0; i < file_count; i++) {
-        if (!files[i]) continue;
-        size_t flen = strlen(files[i]);
-        if (pos + flen + 5 > *manifest_len) return -1;
-        manifest_out[pos++] = (uint8_t)(i + 1);
-        manifest_out[pos++] = (uint8_t)(flen & 0xFF);
-        manifest_out[pos++] = (uint8_t)((flen >> 8) & 0xFF);
-        memcpy(manifest_out + pos, files[i], flen);
-        pos += flen;
-        uint32_t h = hash_djb2((const uint8_t*)files[i], flen);
-        for (int b = 0; b < 2; b++) manifest_out[pos++] = (uint8_t)(h >> (b * 8));
-    }
-    *manifest_len = pos;
-    return 0;
+    /* Legacy manifest formats use non-cryptographic hashes and cannot authenticate files. */
+    (void)path; (void)files; (void)file_count; (void)manifest_out; (void)manifest_len;
+    return -1;
 }
 
 /**
@@ -1124,10 +1088,6 @@ static int tuf_validate_key(const uint8_t* key, size_t len) {
     return (check != 0) ? 1 : 0;
 }
 
-static uint32_t tuf_compute_metadata_hash(const uint8_t* meta, size_t len) {
-    if (!meta || len == 0) return 0;
-    return hash_djb2(meta, len);
-}
 
 static int bsdiff_validate_patch(const uint8_t* patch, size_t len) {
     if (!patch || len < 8) return -1;
@@ -1155,18 +1115,6 @@ static int canary_clamp_percent(int percent) {
     return percent;
 }
 
-static uint32_t manifest_compute_hash(const char* path) {
-    if (!path) return 0;
-    FILE* f = fopen(path, "rb");
-    if (!f) return 0;
-    fseek(f, 0, SEEK_END); long sz = ftell(f); fseek(f, 0, SEEK_SET);
-    uint8_t* buf = (uint8_t*)malloc((size_t)sz);
-    if (!buf) { fclose(f); return 0; }
-    fread(buf, 1, (size_t)sz, f); fclose(f);
-    uint32_t h = hash_djb2(buf, (size_t)sz);
-    free(buf);
-    return h;
-}
 
 static int tpm_check_pcr_range(int index) {
     if (index < 0 || index >= 24) return -1;
@@ -1243,11 +1191,6 @@ static int canary_get_node_group(SNEPPXCanaryRollout* cr, int node_id) {
     return (node_id < cr->canary_nodes) ? 0 : 1;
 }
 
-static int manifest_verify_entry_hash(const unsigned char* entry, size_t entry_len, uint32_t expected) {
-    if (!entry || entry_len == 0) return -1;
-    uint32_t actual = hash_djb2(entry, entry_len);
-    return (actual == expected) ? 0 : -1;
-}
 
 static int tpm_extend_pcr_simulation(int pcr_index, const uint8_t* data, size_t len) {
     if (pcr_index < 0 || pcr_index >= 24 || !data) return -1;

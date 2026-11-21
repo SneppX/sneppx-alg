@@ -179,6 +179,11 @@ int SNEPPX_ab_set_bootloader_slot(int slot);
  */
 int  SNEPPX_manifest_verify(const char* manifest_path, const uint8_t* signature, size_t sig_len);
 
+/* Legacy manifest helpers are retained for ABI compatibility and fail closed. */
+int SNEPPX_manifest_create(const char* path, const char** files, int file_count, uint8_t* manifest_out, size_t* manifest_len);
+int SNEPPX_manifest_hash(const char* manifest_path, uint8_t* hash_out, size_t hash_len);
+int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size_t key_len);
+
 /* TPM attestation */
 /**
  * @brief Read Tpm Pcr.

@@ -304,6 +304,23 @@ static void test_legacy_tpm_apis_fail_closed_without_mutating_outputs(void) {
     SX_ASSERT(SNEPPX_tpm_get_variable(1)==UINT32_MAX, "TPM NV read reports unavailable sentinel");
 }
 
+static void test_legacy_manifest_creation_and_hash_fail_closed_without_mutating_outputs(void) {
+    const char* files[] = {"payload.bin"};
+    uint8_t manifest[64], hash[32];
+    memset(manifest, 0xA6, sizeof(manifest));
+    memset(hash, 0xB7, sizeof(hash));
+    size_t manifest_len = sizeof(manifest);
+    SX_ASSERT(SNEPPX_manifest_create("manifest", files, 1, manifest, &manifest_len) == -1,
+              "weak manifest creation disabled");
+    SX_ASSERT(manifest_len == sizeof(manifest) && manifest[0] == 0xA6,
+              "disabled manifest creation preserves outputs");
+    SX_ASSERT(SNEPPX_manifest_hash("missing-manifest-file", hash, sizeof(hash)) == -1,
+              "short non-cryptographic manifest hash disabled");
+    SX_ASSERT(hash[0] == 0xB7, "disabled manifest hash preserves output");
+    SX_ASSERT(SNEPPX_manifest_verify_all("manifest", hash, sizeof(hash)) == -1,
+              "legacy manifest verification remains disabled");
+}
+
 static void test_legacy_manifest_verification_fails_closed(void) {
     uint8_t signature[64] = {0};
     SX_ASSERT(SNEPPX_manifest_verify("CMakeLists.txt", signature, sizeof(signature)) == -1,
@@ -403,6 +420,7 @@ TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdif
 TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
 TEST(test_s7_updates, legacy_tuf_apis_fail_closed_without_mutating_outputs) { test_legacy_tuf_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_tpm_apis_fail_closed_without_mutating_outputs) { test_legacy_tpm_apis_fail_closed_without_mutating_outputs(); }
+TEST(test_s7_updates, legacy_manifest_creation_and_hash_fail_closed_without_mutating_outputs) { test_legacy_manifest_creation_and_hash_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
