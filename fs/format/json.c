@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SNEPPX - JSON Format
  *
  * WHAT
@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 /* Forward declarations */
 #define SNEPPX_JSON_MAX_DEPTH 128
@@ -198,8 +199,25 @@ static SNEPPX_JsonValue* parse_string(const char* json, size_t* pos, size_t len)
     size_t start = *pos;
     size_t j = start;
     while (j < len && json[j] != '"') {
-        if (json[j] == '\\' && j + 1 < len) j += 2;
-        else j++;
+        unsigned char ch = (unsigned char)json[j];
+        if (ch < 0x20) return NULL; /* JSON strings cannot contain raw controls. */
+        if (json[j] == '\\') {
+            if (j + 1 >= len) return NULL;
+            char escape = json[j + 1];
+            if (escape == 'u') {
+                if (j + 5 >= len) return NULL;
+                for (size_t k = j + 2; k <= j + 5; k++)
+                    if (json_hexval(json[k]) < 0) return NULL;
+                j += 6;
+                continue;
+            }
+            if (escape != '"' && escape != '\\' && escape != '/' &&
+                escape != 'b' && escape != 'f' && escape != 'n' &&
+                escape != 'r' && escape != 't') return NULL;
+            j += 2;
+        } else {
+            j++;
+        }
     }
     if (j >= len) return NULL; /* unterminated string */
     SNEPPX_JsonValue* v = new_value(SNEPPX_JSON_STRING);
@@ -213,19 +231,34 @@ static SNEPPX_JsonValue* parse_string(const char* json, size_t* pos, size_t len)
 static SNEPPX_JsonValue* parse_number(const char* json, size_t* pos, size_t len) {
     size_t start = *pos;
     if (*pos < len && json[*pos] == '-') (*pos)++;
-    while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+    if (*pos >= len) return NULL;
+
+    if (json[*pos] == '0') {
+        (*pos)++;
+        if (*pos < len && isdigit((unsigned char)json[*pos])) return NULL;
+    } else if (json[*pos] >= '1' && json[*pos] <= '9') {
+        while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+    } else {
+        return NULL;
+    }
+
     if (*pos < len && json[*pos] == '.') {
         (*pos)++;
+        size_t fraction_start = *pos;
         while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+        if (*pos == fraction_start) return NULL;
     }
     if (*pos < len && (json[*pos] == 'e' || json[*pos] == 'E')) {
         (*pos)++;
         if (*pos < len && (json[*pos] == '+' || json[*pos] == '-')) (*pos)++;
+        size_t exponent_start = *pos;
         while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+        if (*pos == exponent_start) return NULL;
     }
+
     char* end = NULL;
     double val = strtod(json + start, &end);
-    if ((size_t)(end - json) != *pos) return NULL; /* didn't consume expected chars */
+    if ((size_t)(end - json) != *pos || !isfinite(val)) return NULL;
     SNEPPX_JsonValue* v = new_value(SNEPPX_JSON_NUMBER);
     if (!v) return NULL;
     v->number_val = val;

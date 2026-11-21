@@ -391,6 +391,86 @@ def test_generate_unknown_model(server):
         pytest.skip("unknown-model behaviour not deterministic")
 
 
+def _generate_request(port, body):
+    request = urllib.request.Request(
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-sneppx-test-token-2026",
+        },
+    )
+    return urllib.request.urlopen(request, timeout=5)
+
+
+def test_generate_json_uses_top_level_fields_and_decodes_escapes(server):
+    port, _ = server
+    prompt = 'quoted "model":"__fake__" and escaped\\slash'
+    body = json.dumps({
+        "metadata": {"model": "__nested_fake__"},
+        "model": "llama3-8B",
+        "prompt": prompt,
+        "max_new_tokens": 2,
+    }).encode()
+    with _generate_request(port, body) as response:
+        data = json.loads(response.read().decode())
+        assert response.status == 200
+        assert data["model"] == "llama3-8B"
+        assert data["prompt_tokens"] == len(prompt)
+
+
+def test_generate_rejects_duplicate_json_keys(server):
+    port, _ = server
+    body = b'{"model":"llama3-8B","model":"__fake__","prompt":"hello"}'
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        _generate_request(port, body)
+    assert exc.value.code == 400
+
+
+def test_generate_rejects_malformed_json_string(server):
+    port, _ = server
+    body = b'{"model":"llama3-8B","prompt":"unterminated}'
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        _generate_request(port, body)
+    assert exc.value.code == 400
+
+
+def test_generate_rejects_invalid_numeric_options(server):
+    port, _ = server
+    for body in (
+        b'{"model":"llama3-8B","prompt":"hello","max_new_tokens":"many"}',
+        b'{"model":"llama3-8B","prompt":"hello","max_new_tokens":2.5}',
+        b'{"model":"llama3-8B","prompt":"hello","temperature":true}',
+        b'{"model":"llama3-8B","prompt":"hello","temperature":-0.1}',
+        b'{"model":"llama3-8B","prompt":"hello","top_p":1.1}',
+    ):
+        with pytest.raises(urllib.error.HTTPError) as exc:
+            _generate_request(port, body)
+        assert exc.value.code == 400
+
+
+def test_generate_rejects_invalid_json_escapes_and_number_grammar(server):
+    port, _ = server
+    invalid_bodies = (
+        b'{"model":"llama3-8B","prompt":"bad\\qescape"}',
+        b'{"model":"llama3-8B","prompt":"hello","max_new_tokens":01}',
+        b'{"model":"llama3-8B","prompt":"hello","temperature":1.}',
+        b'{"model":"llama3-8B","prompt":"hello","temperature":1e}',
+    )
+    for body in invalid_bodies:
+        with pytest.raises(urllib.error.HTTPError) as exc:
+            _generate_request(port, body)
+        assert exc.value.code == 400
+
+
+def test_generate_rejects_overlong_prompt_instead_of_truncating(server):
+    port, _ = server
+    body = json.dumps({"model": "llama3-8B", "prompt": "x" * 17000}).encode()
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        _generate_request(port, body)
+    assert exc.value.code == 400
+
+
 def test_generate_with_auth(server):
     port, _ = server
     import json as _json

@@ -1,5 +1,8 @@
 #include "http_api.h"
 #include "model_zoo.h"
+#include "json.h"
+#include <math.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,96 +54,73 @@ struct SNEPPX_HttpApi {
     long start_time;
 };
 
-/* ---- JSON helpers ---- */
+/* ---- JSON request helpers ---- */
 
-static int json_get_string(const char* json, const char* key, char* out, size_t out_size) {
-    if (!json || !key || !out || out_size == 0) return -1;
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\"", key);
-    const char* p = strstr(json, search);
-    if (!p) return -1;
-    p = strchr(p, ':');
-    if (!p) return -1;
-    p++;
-    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
-    if (*p != '"') return -1;
-    p++;
-    size_t n = 0;
-    while (*p && *p != '"' && n + 1 < out_size) {
-        if (*p == '\\' && p[1]) {
-            switch (p[1]) {
-                case 'n': out[n++] = '\n'; break;
-                case 't': out[n++] = '\t'; break;
-                case 'r': out[n++] = '\r'; break;
-                case '\\': out[n++] = '\\'; break;
-                case '"': out[n++] = '"'; break;
-                default: out[n++] = p[1]; break;
+static SNEPPX_JsonValue* json_parse_request(const char* json, size_t body_len) {
+    if (!json || body_len == 0 || strlen(json) != body_len) return NULL;
+    SNEPPX_JsonValue* root = sneppx_json_parse(json);
+    if (!root || root->type != SNEPPX_JSON_OBJECT) {
+        sneppx_json_free(root);
+        return NULL;
+    }
+
+    /* Reject duplicate top-level keys instead of silently choosing one. */
+    for (SNEPPX_JsonObjectPair* a = root->object.head; a; a = a->next) {
+        for (SNEPPX_JsonObjectPair* b = a->next; b; b = b->next) {
+            if (strcmp(a->key, b->key) == 0) {
+                sneppx_json_free(root);
+                return NULL;
             }
-            p += 2;
-        } else {
-            out[n++] = *p++;
         }
     }
-    out[n] = '\0';
+    return root;
+}
+
+static SNEPPX_JsonValue* json_find_field(SNEPPX_JsonValue* root, const char* key) {
+    if (!root || root->type != SNEPPX_JSON_OBJECT || !key) return NULL;
+    for (SNEPPX_JsonObjectPair* pair = root->object.head; pair; pair = pair->next) {
+        if (strcmp(pair->key, key) == 0) return pair->value;
+    }
+    return NULL;
+}
+
+static int json_get_string(SNEPPX_JsonValue* root, const char* key,
+                           char* out, size_t out_size) {
+    if (!out || out_size == 0) return -1;
+    out[0] = '\0';
+    SNEPPX_JsonValue* value = json_find_field(root, key);
+    if (!value || value->type != SNEPPX_JSON_STRING || !value->string_val) return -1;
+    size_t len = strlen(value->string_val);
+    if (len >= out_size) return -1;
+    memcpy(out, value->string_val, len + 1);
     return 0;
 }
 
-/*
- * Read a JSON scalar for `key` into `out`. Unlike json_get_string this also
- * accepts unquoted numeric/boolean tokens (e.g. `"max_tokens": 32`), which is
- * how real JSON request bodies encode numeric fields.
- */
-static int json_get_scalar(const char* json, const char* key, char* out, size_t out_size) {
-    if (!json || !key || !out || out_size == 0) return -1;
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\"", key);
-    const char* p = strstr(json, search);
-    if (!p) return -1;
-    p = strchr(p, ':');
-    if (!p) return -1;
-    p++;
-    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
-    size_t n = 0;
-    if (*p == '"') {
-        p++;
-        while (*p && *p != '"' && n + 1 < out_size) {
-            if (*p == '\\' && p[1]) {
-                switch (p[1]) {
-                    case 'n': out[n++] = '\n'; break;
-                    case 't': out[n++] = '\t'; break;
-                    case 'r': out[n++] = '\r'; break;
-                    case '\\': out[n++] = '\\'; break;
-                    case '"': out[n++] = '"'; break;
-                    default: out[n++] = p[1]; break;
-                }
-                p += 2;
-            } else {
-                out[n++] = *p++;
-            }
-        }
-        out[n] = '\0';
-        return 0;
-    }
-    while (*p && *p != ',' && *p != '}' && *p != ']' &&
-           *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
-           n + 1 < out_size) {
-        out[n++] = *p++;
-    }
-    if (n == 0) return -1;
-    out[n] = '\0';
+/* Return 1 for a valid number, 0 when absent, and -1 for an invalid value. */
+static int json_get_number(SNEPPX_JsonValue* root, const char* key, double* out) {
+    SNEPPX_JsonValue* value = json_find_field(root, key);
+    if (!value) return 0;
+    if (value->type != SNEPPX_JSON_NUMBER || !isfinite(value->number_val)) return -1;
+    *out = value->number_val;
+    return 1;
+}
+
+static int json_get_int(SNEPPX_JsonValue* root, const char* key,
+                        long long def, long long* out) {
+    double number = 0.0;
+    int found = json_get_number(root, key, &number);
+    if (found == 0) { *out = def; return 0; }
+    if (found < 0 || number < -9223372036854775808.0 ||
+        number >= 9223372036854775808.0 || floor(number) != number) return -1;
+    *out = (long long)number;
     return 0;
 }
 
-static long long json_get_int(const char* json, const char* key, long long def) {
-    char buf[128];
-    if (json_get_scalar(json, key, buf, sizeof(buf)) != 0) return def;
-    return atoll(buf);
-}
-
-static double json_get_float(const char* json, const char* key, double def) {
-    char buf[128];
-    if (json_get_scalar(json, key, buf, sizeof(buf)) != 0) return def;
-    return atof(buf);
+static int json_get_float(SNEPPX_JsonValue* root, const char* key,
+                          double def, double* out) {
+    int found = json_get_number(root, key, out);
+    if (found == 0) { *out = def; return 0; }
+    return found < 0 ? -1 : 0;
 }
 
 /* ---- JSON output helpers ---- */
@@ -319,12 +299,23 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         return 0;
     }
 
+    SNEPPX_JsonValue* request = json_parse_request(body, body_len);
     char model[256] = {0};
     char prompt[16384] = {0};
-    if (json_get_string(body, "model", model, sizeof(model)) != 0 ||
-        json_get_string(body, "prompt", prompt, sizeof(prompt)) != 0) {
+    long long max_new_tokens = 32, seed = -1;
+    double temperature = 1.0, top_p = 1.0;
+    int valid = request &&
+        json_get_string(request, "model", model, sizeof(model)) == 0 &&
+        json_get_string(request, "prompt", prompt, sizeof(prompt)) == 0 &&
+        json_get_int(request, "max_new_tokens", 32, &max_new_tokens) == 0 &&
+        json_get_int(request, "seed", -1, &seed) == 0 &&
+        json_get_float(request, "temperature", 1.0, &temperature) == 0 &&
+        json_get_float(request, "top_p", 1.0, &top_p);
+    sneppx_json_free(request);
+    if (!valid || temperature < 0.0 || temperature > 2.0 ||
+        top_p <= 0.0 || top_p > 1.0) {
         SNEPPX_http_response_set_status(resp, 400);
-        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_request\",\"message\":\"'model' and 'prompt' (strings) are required\"}");
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_request\",\"message\":\"A valid JSON object with model and prompt strings and valid numeric options is required\"}");
         return 0;
     }
 
@@ -333,7 +324,7 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         SNEPPX_http_response_set_status(resp, 404);
         char err[256];
         snprintf(err, sizeof(err),
-            "{\"error\":\"model_not_found\",\"message\":\"Unknown model: %s\"}", model);
+            "{\"error\":\"model_not_found\",\"message\":\"Unknown model\"}");
         SNEPPX_http_response_set_json(resp, err);
         return 0;
     }
@@ -345,13 +336,8 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         return 0;
     }
 
-    long long max_new_tokens = json_get_int(body, "max_new_tokens", 32);
     if (max_new_tokens < 1) max_new_tokens = 1;
     if (max_new_tokens > 512) max_new_tokens = 512;
-
-    double temperature = json_get_float(body, "temperature", 1.0);
-    double top_p = json_get_float(body, "top_p", 1.0);
-    long long seed = json_get_int(body, "seed", -1);
 
     /* Encode prompt as char-code token ids (mirrors the Python fallback path). */
     int input_ids[16384];
@@ -403,12 +389,23 @@ static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* res
         return 0;
     }
 
+    SNEPPX_JsonValue* request = json_parse_request(body, body_len);
     char model[256] = {0};
     char prompt[16384] = {0};
-    if (json_get_string(body, "model", model, sizeof(model)) != 0 ||
-        json_get_string(body, "prompt", prompt, sizeof(prompt)) != 0) {
+    long long max_new_tokens = 32, seed = -1;
+    double temperature = 1.0, top_p = 1.0;
+    int valid = request &&
+        json_get_string(request, "model", model, sizeof(model)) == 0 &&
+        json_get_string(request, "prompt", prompt, sizeof(prompt)) == 0 &&
+        json_get_int(request, "max_tokens", 32, &max_new_tokens) == 0 &&
+        json_get_int(request, "seed", -1, &seed) == 0 &&
+        json_get_float(request, "temperature", 1.0, &temperature) == 0 &&
+        json_get_float(request, "top_p", 1.0, &top_p);
+    sneppx_json_free(request);
+    if (!valid || temperature < 0.0 || temperature > 2.0 ||
+        top_p <= 0.0 || top_p > 1.0) {
         SNEPPX_http_response_set_status(resp, 400);
-        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"'model' and 'prompt' are required\",\"type\":\"invalid_request_error\"}}");
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"A valid JSON object with model and prompt strings and valid numeric options is required\",\"type\":\"invalid_request_error\"}}");
         return 0;
     }
 
@@ -417,17 +414,13 @@ static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* res
         SNEPPX_http_response_set_status(resp, 404);
         char err[256];
         snprintf(err, sizeof(err),
-            "{\"error\":{\"message\":\"Unknown model: %s\",\"type\":\"invalid_request_error\"}}", model);
+            "{\"error\":{\"message\":\"Unknown model\",\"type\":\"invalid_request_error\"}}");
         SNEPPX_http_response_set_json(resp, err);
         return 0;
     }
 
-    long long max_new_tokens = json_get_int(body, "max_tokens", 32);
     if (max_new_tokens < 1) max_new_tokens = 1;
     if (max_new_tokens > 512) max_new_tokens = 512;
-    double temperature = json_get_float(body, "temperature", 1.0);
-    double top_p = json_get_float(body, "top_p", 1.0);
-    long long seed = json_get_int(body, "seed", -1);
 
     int input_ids[16384];
     int gen_ids[512];
