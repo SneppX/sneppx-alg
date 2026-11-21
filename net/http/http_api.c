@@ -57,10 +57,13 @@ struct SNEPPX_HttpApi {
 /* ---- JSON request helpers ---- */
 
 static SNEPPX_JsonValue* json_parse_request(const char* json, size_t body_len) {
-    if (!json || body_len == 0 || body_len > 32768 ||
-        memchr(json, '\0', body_len) != NULL) return NULL;
+    if (!json || body_len == 0 || body_len > 32768) return NULL;
 
-    /* Parse an owned, explicitly terminated copy of the exact HTTP body. */
+    /* Some request adapters include the final terminator in their length. */
+    if (json[body_len - 1] == '\0') body_len--;
+    if (body_len == 0 || memchr(json, '\0', body_len) != NULL) return NULL;
+
+    /* Parse an owned, explicitly terminated copy of the HTTP body. */
     char* input = (char*)malloc(body_len + 1);
     if (!input) return NULL;
     memcpy(input, json, body_len);
