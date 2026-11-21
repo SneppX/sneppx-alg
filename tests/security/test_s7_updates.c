@@ -104,6 +104,30 @@ static void test_signed_update_apply_succeeds_with_trusted_key(void) {
     SNEPPX_update_verifier_destroy(&uv);
 }
 
+static void test_signed_update_apply_rejects_same_version_replay(void) {
+    SNEPPX_update_verifier_clear_history();
+    SNEPPXUpdateVerifier uv;
+    SX_ASSERT(SNEPPX_update_verifier_init(&uv) == 0, "initialize verifier for replay test");
+    SNEPPXSignedUpdate update;
+    uint8_t seed[SNEPPX_ED25519_SEED_LEN];
+    static const uint8_t payload[] = "signed update replay payload";
+    SX_ASSERT(prepare_signed_update(&uv, &update, payload, sizeof(payload) - 1, seed, 1) == 0,
+              "prepare signed update for replay test");
+    SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == 0,
+              "first application of signed update succeeds");
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1, "first application recorded once");
+    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == 1,
+              "replayed update remains cryptographically valid");
+    SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == -1,
+              "already-applied version is rejected");
+    SX_ASSERT(uv.current_version[0] == 2 && uv.current_version[1] == 0 && uv.current_version[2] == 0,
+              "replay does not change current version");
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1,
+              "replay does not create a duplicate history entry");
+    SNEPPX_update_verifier_destroy(&uv);
+    SNEPPX_update_verifier_clear_history();
+}
+
 static void test_signed_update_rejects_tampered_payload(void) {
     SNEPPXUpdateVerifier uv;
     SNEPPX_update_verifier_init(&uv);
@@ -514,6 +538,7 @@ TEST(test_s7_updates, update_verifier_rollback_detect) { test_update_verifier_ro
 TEST(test_s7_updates, update_verifier_min_version) { test_update_verifier_min_version(); }
 TEST(test_s7_updates, signed_update_apply_requires_trusted_key) { test_signed_update_apply_requires_trusted_key(); }
 TEST(test_s7_updates, signed_update_apply_succeeds_with_trusted_key) { test_signed_update_apply_succeeds_with_trusted_key(); }
+TEST(test_s7_updates, signed_update_apply_rejects_same_version_replay) { test_signed_update_apply_rejects_same_version_replay(); }
 TEST(test_s7_updates, signed_update_rejects_tampered_payload) { test_signed_update_rejects_tampered_payload(); }
 TEST(test_s7_updates, signed_update_rejects_payload_length_mismatch) { test_signed_update_rejects_payload_length_mismatch(); }
 TEST(test_s7_updates, signed_update_rejects_missing_payload) { test_signed_update_rejects_missing_payload(); }

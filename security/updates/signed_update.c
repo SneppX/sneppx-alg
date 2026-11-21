@@ -177,6 +177,10 @@ int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
 int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update,
                                  const uint8_t* update_data, size_t data_len) {
     if (!uv || !update || !update_data || data_len == 0) return -1;
+    /* A valid signature does not make an already-applied version applicable again. */
+    if (update->version_major == uv->current_version[0] &&
+        update->version_minor == uv->current_version[1] &&
+        update->version_patch == uv->current_version[2]) return -1;
     if (!uv->verification_enabled || SNEPPX_update_verifier_check(uv, update) != 1) return -1;
     if (update_payload_matches(update, update_data, data_len) != 0) return -1;
     uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};

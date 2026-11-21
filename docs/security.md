@@ -278,6 +278,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - The legacy update-verifier private-key getter/setter now fail closed. The verifier stores only a trusted public key and never claims to retain or export a signing private key.
 - The legacy history-count setter rejects negative values and values beyond the fixed ten-entry history capacity.
 - Signed-update version and history state are process-local memory only. They are not persisted across restarts and are not a hardware-backed monotonic counter; deployments requiring durable anti-rollback must supply trusted persistent state.
+- Applying an already-current version is rejected to prevent same-version replay. Downgrade rejection still depends on the verifier's rollback-protection setting and its in-memory state.
 - The integrity-verification helper requires exactly a 32-byte Ed25519 public key and a 64-byte signature; truncated or trailing key/signature bytes are rejected.
 - Signed update bundles: Ed25519-signed update payloads with version rolling
 - Rollback protection: monotonic version counter preventing downgrade attacks
