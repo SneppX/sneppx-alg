@@ -19,6 +19,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdint.h>
 
 /* Forward declarations */
 #define SNEPPX_JSON_MAX_DEPTH 128
@@ -31,56 +32,94 @@ static SNEPPX_JsonValue* parse_number(const char* json, size_t* pos, size_t len)
 static SNEPPX_JsonValue* parse_literal(const char* json, size_t* pos, size_t len);
 
 static void skip_whitespace(const char* json, size_t* pos, size_t len) {
-    while (*pos < len && isspace((unsigned char)json[*pos])) (*pos)++;
+    while (*pos < len &&
+           (json[*pos] == ' ' || json[*pos] == '\\t' ||
+            json[*pos] == '\\r' || json[*pos] == '\\n')) (*pos)++;
+}
+
+static int json_is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+static int json_read_hex4(const char* s, size_t len, size_t start, uint32_t* value) {
+    if (!s || !value || start > len || len - start < 4) return 0;
+    uint32_t result = 0;
+    for (size_t i = 0; i < 4; ++i) {
+        int digit = json_hexval(s[start + i]);
+        if (digit < 0) return 0;
+        result = (result << 4) | (uint32_t)digit;
+    }
+    *value = result;
+    return 1;
+}
+
+static int json_append_utf8(char* out, size_t* used, uint32_t codepoint) {
+    if (!out || !used || codepoint == 0 || codepoint > 0x10FFFF ||
+        (codepoint >= 0xD800 && codepoint <= 0xDFFF)) return 0;
+    if (codepoint <= 0x7F) {
+        out[(*used)++] = (char)codepoint;
+    } else if (codepoint <= 0x7FF) {
+        out[(*used)++] = (char)(0xC0 | (codepoint >> 6));
+        out[(*used)++] = (char)(0x80 | (codepoint & 0x3F));
+    } else if (codepoint <= 0xFFFF) {
+        out[(*used)++] = (char)(0xE0 | (codepoint >> 12));
+        out[(*used)++] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+        out[(*used)++] = (char)(0x80 | (codepoint & 0x3F));
+    } else {
+        out[(*used)++] = (char)(0xF0 | (codepoint >> 18));
+        out[(*used)++] = (char)(0x80 | ((codepoint >> 12) & 0x3F));
+        out[(*used)++] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+        out[(*used)++] = (char)(0x80 | (codepoint & 0x3F));
+    }
+    return 1;
 }
 
 static char* unescape_string(const char* s, size_t len) {
+    if (!s || len == SIZE_MAX) return NULL;
     char* out = (char*)malloc(len + 1);
     if (!out) return NULL;
     size_t j = 0;
-    for (size_t i = 0; i < len; i++) {
-        if (s[i] == '\\' && i + 1 < len) {
-            i++;
-            switch (s[i]) {
-                case '"':  out[j++] = '"';  break;
-                case '\\': out[j++] = '\\'; break;
-                case '/':  out[j++] = '/';  break;
-                case 'n':  out[j++] = '\n'; break;
-                case 't':  out[j++] = '\t'; break;
-                case 'r':  out[j++] = '\r'; break;
-                case 'b':  out[j++] = '\b'; break;
-                case 'f':  out[j++] = '\f'; break;
-                case 'u': {
-                    if (i + 4 >= len) { out[j] = '\0'; return out; }
-                    unsigned int code = 0;
-                    for (int k = 0; k < 4; k++) {
-                        i++;
-                        char c = (char)json_hexval(s[i]);
-                        if (c < 0) { out[j] = '\0'; return out; }
-                        code = (code << 4) | (unsigned int)c;
-                    }
-                    if (code < 0x80) {
-                        out[j++] = (char)code;
-                    } else if (code < 0x800) {
-                        out[j++] = (char)(0xC0 | (code >> 6));
-                        out[j++] = (char)(0x80 | (code & 0x3F));
-                    } else {
-                        out[j++] = (char)(0xE0 | (code >> 12));
-                        out[j++] = (char)(0x80 | ((code >> 6) & 0x3F));
-                        out[j++] = (char)(0x80 | (code & 0x3F));
-                    }
-                    break;
-                }
-                default:
-                    out[j++] = s[i];
-                    break;
-            }
-        } else {
+    for (size_t i = 0; i < len; ++i) {
+        if (s[i] != '\\') {
             out[j++] = s[i];
+            continue;
+        }
+        if (++i >= len) goto invalid;
+        switch (s[i]) {
+            case '"':  out[j++] = '"'; break;
+            case '\\': out[j++] = '\\'; break;
+            case '/':  out[j++] = '/'; break;
+            case 'n':  out[j++] = '\n'; break;
+            case 't':  out[j++] = '\t'; break;
+            case 'r':  out[j++] = '\r'; break;
+            case 'b':  out[j++] = '\b'; break;
+            case 'f':  out[j++] = '\f'; break;
+            case 'u': {
+                uint32_t codepoint = 0;
+                if (!json_read_hex4(s, len, i + 1, &codepoint)) goto invalid;
+                i += 4;
+                if (codepoint >= 0xD800 && codepoint <= 0xDBFF) {
+                    uint32_t low = 0;
+                    if (i + 6 >= len || s[i + 1] != '\\' || s[i + 2] != 'u' ||
+                        !json_read_hex4(s, len, i + 3, &low) ||
+                        low < 0xDC00 || low > 0xDFFF) goto invalid;
+                    codepoint = 0x10000 + ((codepoint - 0xD800) << 10) + (low - 0xDC00);
+                    i += 6;
+                } else if (codepoint >= 0xDC00 && codepoint <= 0xDFFF) {
+                    goto invalid;
+                }
+                if (!json_append_utf8(out, &j, codepoint)) goto invalid;
+                break;
+            }
+            default: goto invalid;
         }
     }
     out[j] = '\0';
     return out;
+
+invalid:
+    free(out);
+    return NULL;
 }
 
 static int json_hexval(char c) {
@@ -115,7 +154,11 @@ static SNEPPX_JsonValue* parse_object(const char* json, size_t* pos, size_t len,
     if (!obj) return NULL;
     (*pos)++; /* skip '{' */
     skip_whitespace(json, pos, len);
-    if (*pos >= len || json[*pos] == '}') {
+    if (*pos >= len) {
+        sneppx_json_free(obj);
+        return NULL;
+    }
+    if (json[*pos] == '}') {
         (*pos)++;
         return obj;
     }
@@ -165,7 +208,11 @@ static SNEPPX_JsonValue* parse_array(const char* json, size_t* pos, size_t len, 
     if (!arr) return NULL;
     (*pos)++; /* skip '[' */
     skip_whitespace(json, pos, len);
-    if (*pos >= len || json[*pos] == ']') {
+    if (*pos >= len) {
+        sneppx_json_free(arr);
+        return NULL;
+    }
+    if (json[*pos] == ']') {
         (*pos)++;
         return arr;
     }
@@ -178,6 +225,12 @@ static SNEPPX_JsonValue* parse_array(const char* json, size_t* pos, size_t len, 
         SNEPPX_JsonValue* val = parse_value(json, pos, len, depth + 1);
         if (!val) { sneppx_json_free(arr); return NULL; }
         if (arr->array.size >= arr->array.capacity) {
+            if (arr->array.capacity > SIZE_MAX / 2 ||
+                arr->array.capacity * 2 > SIZE_MAX / sizeof(SNEPPX_JsonValue*)) {
+                sneppx_json_free(val);
+                sneppx_json_free(arr);
+                return NULL;
+            }
             size_t new_cap = arr->array.capacity * 2;
             SNEPPX_JsonValue** new_items = (SNEPPX_JsonValue**)realloc(arr->array.items, new_cap * sizeof(SNEPPX_JsonValue*));
             if (!new_items) { sneppx_json_free(val); sneppx_json_free(arr); return NULL; }
@@ -235,9 +288,9 @@ static SNEPPX_JsonValue* parse_number(const char* json, size_t* pos, size_t len)
 
     if (json[*pos] == '0') {
         (*pos)++;
-        if (*pos < len && isdigit((unsigned char)json[*pos])) return NULL;
+        if (*pos < len && json_is_digit(json[*pos])) return NULL;
     } else if (json[*pos] >= '1' && json[*pos] <= '9') {
-        while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+        while (*pos < len && json_is_digit(json[*pos])) (*pos)++;
     } else {
         return NULL;
     }
@@ -245,14 +298,14 @@ static SNEPPX_JsonValue* parse_number(const char* json, size_t* pos, size_t len)
     if (*pos < len && json[*pos] == '.') {
         (*pos)++;
         size_t fraction_start = *pos;
-        while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+        while (*pos < len && json_is_digit(json[*pos])) (*pos)++;
         if (*pos == fraction_start) return NULL;
     }
     if (*pos < len && (json[*pos] == 'e' || json[*pos] == 'E')) {
         (*pos)++;
         if (*pos < len && (json[*pos] == '+' || json[*pos] == '-')) (*pos)++;
         size_t exponent_start = *pos;
-        while (*pos < len && isdigit((unsigned char)json[*pos])) (*pos)++;
+        while (*pos < len && json_is_digit(json[*pos])) (*pos)++;
         if (*pos == exponent_start) return NULL;
     }
 
@@ -306,32 +359,48 @@ SNEPPX_JsonValue* sneppx_json_parse(const char* json) {
 
 SNEPPX_JsonValue* sneppx_json_find(SNEPPX_JsonValue* root, const char* path) {
     if (!root || !path) return NULL;
-    SNEPPX_JsonValue* cur = root;
-    char buf[256];
-    strncpy(buf, path, sizeof(buf) - 1);
-    buf[sizeof(buf) - 1] = '\0';
-    char* token = strtok(buf, ".");
-    while (token && cur) {
-        if (cur->type == SNEPPX_JSON_OBJECT) {
-            SNEPPX_JsonObjectPair* pair = cur->object.head;
-            cur = NULL;
+    if (*path == '\0') return root;
+
+    SNEPPX_JsonValue* current = root;
+    const char* cursor = path;
+    while (*cursor) {
+        const char* start = cursor;
+        while (*cursor && *cursor != '.') ++cursor;
+        const size_t token_len = (size_t)(cursor - start);
+        if (token_len == 0) return NULL;
+
+        if (current->type == SNEPPX_JSON_OBJECT) {
+            SNEPPX_JsonObjectPair* pair = current->object.head;
+            current = NULL;
             while (pair) {
-                if (strcmp(pair->key, token) == 0) {
-                    cur = pair->value;
+                if (strlen(pair->key) == token_len &&
+                    memcmp(pair->key, start, token_len) == 0) {
+                    current = pair->value;
                     break;
                 }
                 pair = pair->next;
             }
-        } else if (cur->type == SNEPPX_JSON_ARRAY) {
-            int idx = atoi(token);
-            if (idx < 0 || (size_t)idx >= cur->array.size) return NULL;
-            cur = cur->array.items[idx];
+            if (!current) return NULL;
+        } else if (current->type == SNEPPX_JSON_ARRAY) {
+            size_t index = 0;
+            for (size_t i = 0; i < token_len; ++i) {
+                if (!json_is_digit(start[i])) return NULL;
+                const size_t digit = (size_t)(start[i] - '0');
+                if (index > (SIZE_MAX - digit) / 10) return NULL;
+                index = index * 10 + digit;
+            }
+            if (index >= current->array.size) return NULL;
+            current = current->array.items[index];
         } else {
             return NULL;
         }
-        token = strtok(NULL, ".");
+
+        if (*cursor == '.') {
+            ++cursor;
+            if (*cursor == '\0') return NULL;
+        }
     }
-    return cur;
+    return current;
 }
 
 void sneppx_json_free(SNEPPX_JsonValue* v) {
