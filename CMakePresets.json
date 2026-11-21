@@ -1,0 +1,124 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "description": "Debug build with full symbols",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "SNEPPX_BUILD_TESTS": "ON",
+                "SNEPPX_BUILD_TOOLS": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "description": "Optimized release build",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "SNEPPX_BUILD_TESTS": "ON",
+                "SNEPPX_BUILD_TOOLS": "ON",
+                "SNEPPX_USE_LTO": "ON"
+            }
+        },
+        {
+            "name": "asan",
+            "displayName": "Address Sanitizer",
+            "description": "Debug build with AddressSanitizer",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/asan",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "SNEPPX_BUILD_TESTS": "ON",
+                "SNEPPX_USE_ASAN": "ON"
+            }
+        },
+        {
+            "name": "cuda",
+            "displayName": "CUDA Release",
+            "description": "Release build with CUDA backend",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/cuda",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "SNEPPX_BUILD_CUDA": "ON",
+                "SNEPPX_BUILD_TESTS": "ON",
+                "SNEPPX_BUILD_PYTHON": "ON"
+            }
+        },
+        {
+            "name": "python",
+            "displayName": "Python bindings",
+            "description": "Debug build with Python bindings",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/python",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "SNEPPX_BUILD_PYTHON": "ON",
+                "SNEPPX_BUILD_TESTS": "ON"
+            }
+        },
+    {
+        "name": "minimal",
+        "displayName": "Minimal",
+        "description": "Minimal build (no tests, no tools)",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/min",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "SNEPPX_BUILD_TESTS": "OFF",
+            "SNEPPX_BUILD_BENCHMARKS": "OFF",
+            "SNEPPX_BUILD_TOOLS": "OFF"
+        }
+    },
+    {
+        "name": "vs",
+        "displayName": "Visual Studio 17 2022",
+        "description": "Native C build via Visual Studio generator (fallback when Ninja is absent)",
+        "generator": "Visual Studio 17 2022",
+        "binaryDir": "${sourceDir}/build/vs",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "SNEPPX_BUILD_TESTS": "ON",
+            "SNEPPX_BUILD_TOOLS": "ON",
+            "SNEPPX_BUILD_HTTP": "ON",
+            "SNEPPX_BUILD_CUDA": "OFF"
+        }
+    }
+    ],
+    "buildPresets": [
+        { "name": "debug", "configurePreset": "debug" },
+        { "name": "release", "configurePreset": "release" },
+        { "name": "asan", "configurePreset": "asan" },
+        { "name": "cuda", "configurePreset": "cuda" },
+        { "name": "python", "configurePreset": "python" },
+        { "name": "minimal", "configurePreset": "minimal" },
+        { "name": "vs", "configurePreset": "vs" }
+    ],
+    "testPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug",
+            "output": { "outputOnFailure": true },
+            "execution": { "timeout": 120 }
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "output": { "outputOnFailure": true },
+            "execution": { "timeout": 120 }
+        },
+        {
+            "name": "python",
+            "configurePreset": "python",
+            "filter": { "name": "py_" },
+            "output": { "outputOnFailure": true },
+            "execution": { "timeout": 300 }
+        }
+    ]
+}

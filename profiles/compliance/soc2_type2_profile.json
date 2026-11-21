@@ -1,0 +1,18 @@
+{
+  "profile_name": "SOC 2 Type II - Security",
+  "profile_version": "2.0.0",
+  "description": "SOC 2 Type II trust services criteria for Security category",
+  "framework": "SOC 2",
+  "type": "Type II",
+  "criteria": [
+    {"id": "CC1.1", "title": "COSO Principles", "category": "Control Environment"},
+    {"id": "CC2.1", "title": "Communications", "category": "Communication"},
+    {"id": "CC3.1", "title": "Risk Assessment", "category": "Risk Assessment"},
+    {"id": "CC4.1", "title": "Monitoring", "category": "Monitoring"},
+    {"id": "CC5.1", "title": "Control Activities", "category": "Control Activities"},
+    {"id": "CC6.1", "title": "Logical and Physical Access", "category": "Control Activities"},
+    {"id": "CC7.1", "title": "System Operations", "category": "Control Activities"},
+    {"id": "CC8.1", "title": "Change Management", "category": "Control Activities"},
+    {"id": "CC9.1", "title": "Risk Mitigation", "category": "Risk Mitigation"}
+  ]
+}

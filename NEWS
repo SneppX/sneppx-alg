@@ -1,0 +1,19 @@
+ARIX-Algo NEWS
+==============
+v0.1.0  2026-06-24  Initial release. Structural prototype.
+
+  Core: Tensor operations (50+ ops), secure memory allocator, thread pool
+  HSS:  Forward pass, sequential scan, first-order discretization
+  SER:  Top-k routing, expert forward, load balance loss
+  ARC:  Z-score input guard, gradient noise, output consistency verification
+  NPE:  Bytecode VM (32 opcodes), attention/MLP compilers, static verifier
+  FM:   Single-node memory banks, all-reduce sync, gradient compression
+  Security S0: Ed25519, ChaCha20-Poly1305, SHA-3, BLAKE3, secure random
+  Security S1: Guard pages, canaries, ASLR, locked memory, constant-time ops
+  Security S2: Control flow flattening, string encryption (partial stubs)
+  Security S3: Behavioral monitor structure
+  Tests: 50+ unit tests, 4 integration tests, 3 benchmarks
+  Build: CMake, cross-platform (Linux, macOS, Windows)
+
+  Limitations: Autodiff stub, no GPU, no distributed training,
+  partial Python API, S2-S3 partial.

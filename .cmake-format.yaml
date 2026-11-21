@@ -1,0 +1,57 @@
+additional_commands:
+  add_subdirectory:
+    kwargs:
+      EXCLUDE_FROM_ALL: 1
+  target_link_libraries:
+    kwargs:
+      PRIVATE: 1
+      PUBLIC: 1
+      INTERFACE: 1
+  target_include_directories:
+    kwargs:
+      PRIVATE: 1
+      PUBLIC: 1
+      INTERFACE: 1
+  target_compile_options:
+    kwargs:
+      PRIVATE: 1
+      PUBLIC: 1
+      INTERFACE: 1
+  target_compile_definitions:
+    kwargs:
+      PRIVATE: 1
+      PUBLIC: 1
+      INTERFACE: 1
+  find_package:
+    kwargs:
+      REQUIRED: 1
+      QUIET: 1
+      MODULE: 1
+      CONFIG: 1
+      COMPONENTS: '*'
+      OPTIONAL_COMPONENTS: '*'
+  add_test:
+    kwargs:
+      NAME: 1
+      COMMAND: 1
+      CONFIGURATIONS: '*'
+      WORKING_DIRECTORY: 1
+  set_tests_properties:
+    kwargs:
+      PROPERTIES: '*'
+  file:
+    kwargs:
+      GLOB: 1
+      COPY: 1
+      WRITE: 1
+      APPEND: 1
+      READ: 1
+line_width: 100
+tab_size: 4
+max_subargs_per_line: 4
+separate_ctrl_name_with_space: false
+separate_fn_name_with_space: false
+dangle_parens: true
+enable_markup: false
+first_comment_is_literal: true
+literal_comment_pattern: '# File:'

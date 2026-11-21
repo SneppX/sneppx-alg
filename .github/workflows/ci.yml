@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-safe-tests:
+    name: Python safe tests (CPU-only, no LLM/GPU/downloads)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pytest pyyaml fastapi cryptography
+      - name: Run safe per-file tests
+        env:
+          PYTHONPATH: bindings/python
+        run: |
+          python -m pytest \
+            tests/python/test_readme_integrity.py \
+            tests/python/test_ctm_tools.py \
+            tests/python/test_serve_cli.py \
+            tests/python/test_auth_header.py \
+            tests/python/test_hub_client_transport_source.py \
+            tests/python/test_route_auth_contract.py \
+            tests/python/test_autograd_regressions.py \
+            tests/python/test_autograd_grad_api.py \
+            tests/python/test_autograd_grad_mode.py \
+            tests/python/test_hf_safetensors.py \
+            tests/python/test_hf_integration.py \
+            tests/python/test_model_zoo.py \
+            tests/python/test_checkpoint.py \
+            tests/python/test_crypto_sign.py \
+            tests/python/test_data_loader.py \
+            tests/python/test_distributed_sampler_contract.py \
+            tests/python/test_tokenizer.py \
+            tests/python/test_tensor.py \
+            model_hub/tests/test_client_transport_security.py \
+            tests/python/test_acvp_kat_harness.py \
+            tests/python/test_nn.py \
+            tests/python/test_optim.py \
+            tests/python/test_state_dict.py \
+            tests/python/test_init.py \
+            tests/python/test_norm.py \
+            tests/python/test_phase2_ops.py \
+            tests/python/test_firewall.py \
+            tests/python/test_firewall_network.py \
+            tests/python/test_firewall_application.py \
+            tests/python/test_firewall_transport.py \
+            tests/python/test_firewall_network_hardening.py \
+            tests/python/test_firewall_application_hardening.py \
+            tests/python/test_firewall_asgi.py \
+            tests/python/test_firewall_policy.py \
+            tests/python/test_firewall_transport_hardening.py \
+            tests/python/test_user_store.py \
+            tests/python/test_api_key_manager.py \
+            tests/python/test_api_gateway.py \
+            tests/python/test_user_store_sessions.py \
+            tests/python/test_session_authentication.py \
+            tests/python/test_api_gateway_security.py \
+            tests/python/test_security_runtime_hardening.py \
+            -q -p no:cacheprovider
+
+  native-build-smoke:
+    name: Native build and targeted tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake build-essential
+      - name: Check toolchain availability
+        id: toolchain
+        run: |
+          if command -v ninja >/dev/null 2>&1 && command -v cmake >/dev/null 2>&1 && (command -v gcc >/dev/null 2>&1 || command -v cc >/dev/null 2>&1); then
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Configure (if toolchain present)
+        if: steps.toolchain.outputs.available == 'true'
+        run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_CUDA=OFF
+      - name: Build (if toolchain present)
+        if: steps.toolchain.outputs.available == 'true'
+        run: cmake --build build/ci --config Release -j 2
+      - name: Run complete native test suite (if built)
+        if: steps.toolchain.outputs.available == 'true'
+        run: |
+          ctest --test-dir build/ci -C Release --output-on-failure --timeout 120
+      - name: Set up Python for HTTP integration tests
+        if: steps.toolchain.outputs.available == 'true'
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+      - name: Install HTTP integration test dependencies
+        if: steps.toolchain.outputs.available == 'true'
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Run C HTTP server integration tests
+        if: steps.toolchain.outputs.available == 'true'
+        env:
+          PYTHONPATH: bindings/python
+        run: |
+          HTTP_BIN="$(find build/ci -type f -name http_server_demo -perm -111 -print -quit)"
+          test -n "$HTTP_BIN"
+          SNEPPX_HTTP_BIN="$HTTP_BIN" python -m pytest tests/python/test_http_api.py -q -p no:cacheprovider
+      - name: Skip notice (no toolchain)
+        if: steps.toolchain.outputs.available == 'false'
+        run: echo "No C toolchain (ninja/cmake/compiler) available in this runner; native build smoke skipped."

@@ -1,0 +1,8 @@
+.sx-shortcuts { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; }
+.sx-shortcuts--open { display: flex; }
+.sx-shortcuts__box { background: var(--md-default-bg-color, #fff); padding: 1.2rem 1.5rem; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); min-width: 320px; }
+.sx-shortcuts__box h3 { margin-top: 0; }
+.sx-shortcuts__box table { width: 100%; border-collapse: collapse; }
+.sx-shortcuts__box td { padding: 0.35rem 0.5rem; }
+.sx-shortcuts__box kbd { background: rgba(127,127,127,0.15); border: 1px solid rgba(127,127,127,0.3); border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.8rem; }
+.sx-shortcuts__hint { font-size: 0.75rem; opacity: 0.6; margin-bottom: 0; }

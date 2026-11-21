@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ammar49-cyber/sneppx-toolkit/main/schemas/tools-manifest.schema.json",
+  "name": "sneppx-alg",
+  "version": "1.1.1",
+  "tools": {
+    "analyze": {
+      "install": "pip install sneppx-analyze",
+      "scan_dirs": ["kernel", "algorithms", "net", "security", "drivers"],
+      "languages": ["C", "C++", "CUDA"],
+      "usage": "sneppx-analyze --dirs kernel algorithms net security"
+    },
+    "format": {
+      "install": "pip install sneppx-format",
+      "scan_dirs": ["kernel", "algorithms", "net", "security"],
+      "usage": "sneppx-format --lint kernel, algorithms, net",
+      "fix": "sneppx-format --fix ."
+    },
+    "deps": {
+      "install": "pip install sneppx-deps",
+      "scan_root": ".",
+      "usage": "sneppx-deps --circular .",
+      "dot_export": "sneppx-deps --dot build/deps.dot ."
+    },
+    "stats": {
+      "install": "pip install sneppx-stats",
+      "scan_root": ".",
+      "history_file": ".sneppx/stats.json",
+      "usage": "sneppx-stats --save .sneppx/stats.json ."
+    },
+    "test": {
+      "install": "pip install sneppx-test",
+      "build_dir": "build",
+      "exclude": ["cuda"],
+      "usage": "sneppx-test --build-dir build --exclude cuda"
+    },
+    "bench": {
+      "install": "pip install sneppx-bench",
+      "build_dir": "build",
+      "baseline": ".sneppx/bench-baseline.json",
+      "usage": "sneppx-bench --build-dir build --save-baseline .sneppx/bench-baseline.json"
+    },
+    "serve": {
+      "install": "pip install sneppx-serve",
+      "usage": "sneppx-serve start --port 8080"
+    }
+  },
+  "workflow": {
+    "pre_commit": ["analyze", "format", "deps"],
+    "release_gate": ["analyze", "test", "bench"]
+  },
+  "scripts": {
+    "dev_chain": "scripts/dev-tools.sh [--all] [--no-test]",
+    "dev_chain_windows": "powershell -ExecutionPolicy Bypass -File scripts\\dev-tools.ps1 [--all] [--no-test]"
+  }
+}

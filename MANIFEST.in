@@ -1,0 +1,34 @@
+include README.md
+include LICENSE
+include VERSION
+include CHANGELOG.md
+include CONTRIBUTING.md
+include SECURITY.md
+include MANIFEST.in
+
+# Include C headers
+recursive-include include/neural_core *.h
+
+# Include Python bindings
+recursive-include bindings/python/SneppX_ALG/interface_bindings *.py
+
+# Include tests
+recursive-include tests/python *.py
+
+# Include docs
+recursive-include docs *.md *.rst *.jpeg *.jpg *.png *.svg
+
+# Include native extensions
+global-include *.pyd *.so *.dylib *.dll
+
+# Exclude build directories
+prune build
+prune build_py
+prune build_bench
+prune build_check
+prune build_py
+prune build_test
+prune target
+prune .git
+prune .pytest_cache
+prune __pycache__

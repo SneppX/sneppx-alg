@@ -1,0 +1,46 @@
+# SNEPPX-ALG CPU-Only Runtime Image
+# Self-contained single-stage build (no builder dependency)
+
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv \
+    libopenblas0 \
+    libomp5 \
+    libstdc++6 \
+    libgomp1 \
+    ca-certificates \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r sneppx && useradd -r -g sneppx sneppx
+
+WORKDIR /sneppx
+
+COPY bindings/python ./bindings/python
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip3 install --no-cache-dir ./bindings/python
+
+RUN rm -rf bindings/python
+
+ENV SNEPPX_DEVICE=cpu
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /workspace
+
+USER sneppx
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python3 -c "import sneppx_alg; print('SNEPPX-ALG CPU ready')" || exit 1
+
+LABEL org.opencontainers.image.title="SNEPPX-ALG CPU"
+LABEL org.opencontainers.image.description="SNEPPX-ALG CPU-only runtime for inference and training"
+LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.authors="Ammar [SNEPPX] <algoSNEPPX@gmail.com>"
+LABEL org.opencontainers.image.source="https://github.com/ammar49-cyber/sneppx-alg"
+LABEL org.opencontainers.image.licenses="MIT"
+
+ENTRYPOINT ["python3", "-c", "import sneppx_alg; print(f'SNEPPX-ALG v{sneppx_alg.__version__} ready')"]

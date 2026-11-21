@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  build:
+    build:
+      context: .
+      target: builder
+    command: >
+      sh -c "cd build && cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+      && cmake --build . -j\"\$(nproc)\" && ctest --output-on-failure"
+    profiles:
+      - build
+
+  dev:
+    build:
+      context: .
+      target: builder
+    volumes:
+      - .:/src
+    working_dir: /src
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    profiles:
+      - dev
+
+  fuzz:
+    build:
+      context: .
+      target: builder
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+    command: >
+      sh -c "cd build && cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+      && cmake --build . -j\"\$(nproc)\" && ctest --repeat until-fail:100 --output-on-failure"
+    profiles:
+      - fuzz
+
+  serve:
+    build:
+      context: .
+      target: py-runtime
+    ports:
+      - "8000:8000"
+    environment:
+      - SNEPPX_SERVE_HOST=0.0.0.0
+      - SNEPPX_SERVE_PORT=8000
+      - FIREWALL_CONFIG=${FIREWALL_CONFIG:-}
+    command: >
+      sh -c "pip install uvicorn && sneppx-serve --host 0.0.0.0 --port 8000"
+    profiles:
+      - serve

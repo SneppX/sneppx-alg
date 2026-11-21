@@ -1,0 +1,118 @@
+# Docker ignore patterns
+# =====================================================================
+# Build artifacts
+**/build*/
+**/build_*/
+**/build_bench*/
+**/build_check*/
+**/build_py*/
+**/build_test*/
+**/build_standalone*/
+**/CMakeFiles*/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/CMakeLists.txt.user
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyo
+*.egg-info/
+*.egg
+*.dist-info/
+*.whl
+.pytest_cache/
+.coverage
+.tox/
+.venv/
+venv/
+env/
+
+# Build outputs
+*.pyd
+*.so
+*.dll
+*.dylib
+*.lib
+*.a
+*.o
+*.obj
+
+# Logs
+*.log
+*.out
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation build
+docs/_build/
+site/
+
+# Test outputs
+*.xml
+*.html
+
+# Temporary
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Model weights (large files)
+*.bin
+*.safetensors
+*.gguf
+*.ggml
+
+# Keys and secrets
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.secret
+*.env
+!.env.example
+
+# Documentation
+docs/_build/
+site/
+
+# Large data
+data/
+datasets/
+*.tar.gz
+*.zip
+*.rar
+
+# Profiling
+*.prof
+*.profraw
+*.gcda
+*.gcno
+*.gcov
+
+# Coverage
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+*.pdf

@@ -1,0 +1,67 @@
+# Auto-detect text files and normalize to LF
+* text=auto eol=lf
+
+# C/C++ source
+*.c   text
+*.h   text
+*.cpp text
+*.hpp text
+
+# Assembly
+*.asm text
+*.s   text
+
+# Python
+*.py  text
+*.pyi text
+
+# Scripts
+*.sh  text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Build system
+CMakeLists.txt text
+*.cmake        text
+
+# Documentation
+*.md  text
+*.txt text
+*.ini text
+*.cfg text
+
+# Configuration
+*.yml     text
+*.yaml    text
+*.json    text
+*.toml    text
+*.editorconfig text
+*.gitconfig    text
+
+# Binary files
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.pdf     binary
+*.tar.gz  binary
+*.zip     binary
+*.sig     binary
+*.o       binary
+*.a       binary
+*.so      binary
+*.dylib   binary
+*.dll     binary
+*.exe     binary
+*.pdb     binary
+
+# Linguist overrides
+src/security/asm/** linguist-language=Assembly
+src/security/c/**   linguist-language=C
+src/core/src/autodiff/** linguist-language=C++
+
+# Export ignore (not included in release tarballs)
+tests/      export-ignore
+benchmarks/ export-ignore
+examples/   export-ignore

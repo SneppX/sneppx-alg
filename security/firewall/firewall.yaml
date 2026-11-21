@@ -1,0 +1,44 @@
+firewall:
+  enabled: true
+  block_all_by_default: false
+
+  transport:
+    tls_enabled: false
+    certfile: ""
+    keyfile: ""
+    cafile: ""
+    require_client_cert: false
+    min_version: TLSv1_2
+    ciphers: ""
+    pinned_cert_fingerprints: []
+    alpn_protocols:
+      - h2
+      - http/1.1
+
+  network:
+    allowlist_enabled: false
+    denylist_enabled: false
+    allowlist: []
+    denylist: []
+    max_connections: 1000
+    max_blocked_ips: 100000
+    rate_limit:
+      enabled: true
+      max_requests: 100
+      window_seconds: 60.0
+    block_duration_seconds: 300
+    knock_ports: []
+    knock_window_ms: 5000
+    geoip_enabled: false
+    geoip_db_path: ""
+
+  application:
+    max_body_size: 1048576
+    allowed_methods:
+      - GET
+      - POST
+    max_concurrent_per_ip: 10
+    allowed_paths: []
+    enable_injection_filter: true
+    allowed_content_types:
+      - application/json

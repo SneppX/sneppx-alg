@@ -1,0 +1,27 @@
+[package]
+name = "neural-core-distributed"
+version = "1.1.1"
+edition = "2021"
+authors = ["Ammar [SNEPPX] <algoSNEPPX@gmail.com>"]
+description = "Distributed training coordination for SNEPPX-ALG: node discovery, ring all-reduce, parameter sync, fault tolerance, differential privacy"
+license = "MIT"
+repository = "https://github.com/SneppX/sneppx-alg"
+homepage = "https://github.com/SneppX/sneppx-alg"
+keywords = ["distributed-training", "all-reduce", "machine-learning", "neural-networks", "fault-tolerance"]
+categories = ["algorithms", "science::robotics", "network-programming"]
+
+[lib]
+crate-type = ["cdylib", "staticlib", "lib"]
+
+[dependencies]
+tokio = { version = "1", features = ["full", "rt-multi-thread", "sync", "net", "time", "io-util"] }
+libc = "0.2"
+rand = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3

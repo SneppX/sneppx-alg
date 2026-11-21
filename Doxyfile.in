@@ -1,0 +1,82 @@
+# SneppX-ALG Doxygen configuration
+# Generate with: cmake -B build && cmake --build build --target docs
+
+PROJECT_NAME           = "SneppX-ALG"
+PROJECT_NUMBER         = @PROJECT_VERSION@
+PROJECT_BRIEF          = "Composable 5-component AI algorithm pipeline"
+OUTPUT_DIRECTORY       = @CMAKE_BINARY_DIR@/docs/html
+INPUT                  = @CMAKE_SOURCE_DIR@/include \
+                         @CMAKE_SOURCE_DIR@/kernel \
+                         @CMAKE_SOURCE_DIR@/docs/guide
+RECURSIVE              = YES
+FILE_PATTERNS          = *.h *.c *.md
+EXTENSION_MAPPING      = md=markdown
+
+# Extract all documented and undocumented entities
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# HTML output
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+HTML_HEADER            =
+HTML_FOOTER            =
+HTML_STYLESHEET        =
+HTML_EXTRA_STYLESHEET  =
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_DYNAMIC_MENUS     = YES
+
+# Use MathJax for formulas
+USE_MATHJAX            = YES
+MATHJAX_EXTENSIONS     = TeX/AMSmath TeX/AMSsymbols
+
+# Diagrams
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+DOT_TRANSPARENT        = YES
+UML_LOOK               = YES
+TEMPLATE_RELATIONS     = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+# Grouping
+SHOW_GROUPED_MEMB_INC  = YES
+GROUP_NESTED_COMPOUNDS = YES
+
+# Optimize for C
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+# Tag files for cross-referencing
+GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/sneppx-alg.tag
+
+# Preprocessing
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = "__cplusplus" \
+                         "NEURAL_CORE_API= " \
+                         "PLATFORM_WINDOWS=1" \
+                         "PLATFORM_LINUX= " \
+                         "PLATFORM_APPLE= " \
+                         "SNEPPX_INLINE=inline"
+
+# Quiet mode
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+WARN_FORMAT            = "$file:$line: $text"
+WARN_LOGFILE           =

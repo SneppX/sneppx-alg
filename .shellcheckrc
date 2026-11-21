@@ -1,0 +1,7 @@
+enable-avoid-nullary-conditions: true
+enable-deprecate-which: true
+enable-quoted-conditional: true
+severity: style
+source-path=./scripts
+shell=bash
+external-sources=true

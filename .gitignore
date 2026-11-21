@@ -1,0 +1,113 @@
+# Build artifacts
+build*/
+build_py/
+build_bench/
+build-coverage/
+build_standalone/
+out/
+dist/
+site/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeUserPresets.json
+compile_commands.json
+Testing/
+
+# Object and library files
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.lib
+*.exp
+*.obj
+*.pdb
+*.ilk
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+src/python/arix_algo/Release/
+src/python/arix_algo/Debug/
+bindings/python/arix_algo/Release/
+bindings/python/arix_algo/Debug/
+bindings/python/arix_algo/_arix_c*.pyd
+bindings/python/arix_algo/_arix_c*.so
+
+# Node
+node_modules/
+
+# opencode
+.opencode/
+
+# kilo
+.kilo/
+
+# Local dev-tools data (lint logs, stats)
+.sneppx/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.log
+*.bak
+
+# Release artifacts
+releases/
+*.tar.gz
+*.zip
+*.sig
+SUMS
+
+# Standalone test files
+test_chacha_ref.py
+test_chacha_standalone.c
+test_qr.c
+CMakeLists_standalone.txt
+
+# DO NOT ignore security-sensitive files
+# *.key, *.pem, *.secret — should never be in repo; block via pre-commit
+
+target/
+Cargo.lock
+
+# Audit deliverables (local working memory, not committed — see AGENTS.md)
+CAPABILITY_MATRIX.md
+MISSING_FEATURES.md
+IMPLEMENTATION_STATUS.md
+BENCHMARK_PLAN.md
+SECURITY_AUDIT.md
+COMPATIBILITY.md
+
+
+# Docs playground bundle is intentionally committed
+!docs/assets/sneppx_py.zip
+
+# External
+.kilo/
+
+# mkdocs social plugin cache (PNGs only)
+.cache/*.png

@@ -1,0 +1,16 @@
+{
+  "profile_name": "CIS Level 1 - Baseline",
+  "profile_version": "1.0.0",
+  "description": "CIS Benchmark Level 1 profile for foundational security hygiene",
+  "framework": "CIS",
+  "level": "Level 1",
+  "controls": [
+    {"id": "1.1", "title": "Filesystem Configuration", "scored": true},
+    {"id": "1.2", "title": "Configure Software Updates", "scored": true},
+    {"id": "2.1", "title": "inetd Services", "scored": true},
+    {"id": "3.1", "title": "Network Parameters", "scored": true},
+    {"id": "4.1", "title": "Configure System Accounting", "scored": false},
+    {"id": "5.1", "title": "Configure cron", "scored": true},
+    {"id": "6.1", "title": "System Access", "scored": true}
+  ]
+}

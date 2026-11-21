@@ -1,0 +1,611 @@
+# -*- coding: utf-8 -*-
+"""C `_Tensor` engine <-> numpy bridge tests (issue #14).
+
+Validates that the true C tensor engine (``SneppX_ALG._SNEPPX_c._Tensor``)
+round-trips numpy data losslessly and computes operations (add, matmul,
+conv2d, activations, reductions, shape ops) in agreement with numpy.
+
+Also guards two binding-correctness properties discovered while building the
+bridge:
+- ``t.data()`` must expose C *element* strides as numpy *byte* strides
+  (``tensor_bindings.cpp`` conversion),
+- ops that receive impossible inputs must raise ``RuntimeError`` (the C
+  layer returns NULL) instead of segfaulting.
+"""
+
+import shutil
+import tempfile
+
+import numpy as np
+import pytest
+
+import SneppX_ALG.interface_bindings.c_tensor_bridge as cb
+
+
+pytest.importorskip(
+    "SneppX_ALG.interface_bindings.c_tensor_bridge",
+    reason="bridge import failed",
+)
+
+
+def _ext_available():
+    try:
+        return cb.available()
+    except Exception:
+        return False
+
+
+pytestmark = pytest.mark.skipif(
+    not _ext_available(), reason="C _SNEPPX_c extension not built"
+)
+
+
+# ---------------------------------------------------------------------------
+# conversions
+# ---------------------------------------------------------------------------
+
+
+def test_round_trip_2d_float32():
+    a = np.arange(12, dtype=np.float32).reshape(3, 4)
+    assert np.array_equal(a, cb.round_trip(a))
+
+
+def test_round_trip_3d_float64():
+    a = np.arange(24, dtype=np.float64).reshape(2, 3, 4)
+    assert np.array_equal(a, cb.round_trip(a))
+
+
+def test_round_trip_int_and_bool_dtypes():
+    i32 = np.arange(8, dtype=np.int32).reshape(4, 2) * 3 - 7
+    assert np.array_equal(i32, cb.round_trip(i32))
+    b = np.array([[True, False], [False, True]])
+    assert np.array_equal(b, cb.round_trip(b))
+
+@pytest.mark.parametrize(
+    ("dtype_name", "storage_dtype"),
+    [("bfloat16", np.uint16), ("float8", np.uint8)],
+)
+def test_low_precision_raw_storage_round_trip(dtype_name, storage_dtype):
+    raw = np.arange(8, dtype=storage_dtype).reshape(2, 4)
+    native = cb.from_numpy(raw, dtype=dtype_name)
+    assert native.dtype_name == dtype_name
+    assert cb.c_dtype_to_numpy(native.dtype) == np.dtype(storage_dtype)
+    assert np.array_equal(cb.to_numpy(native), raw)
+
+
+def test_public_tensor_native_conversion_preserves_low_precision_storage():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    for dtype_name, storage_dtype in [("bfloat16", np.uint16), ("float8", np.uint8)]:
+        raw = np.arange(6, dtype=storage_dtype).reshape(2, 3)
+        public = Tensor(raw, dtype=dtype_name)
+        native = public.to_native()
+        restored = Tensor.from_native(native)
+        assert restored.dtype_name == dtype_name
+        assert restored.data.dtype == np.dtype(storage_dtype)
+        assert np.array_equal(restored.data, raw)
+
+@pytest.mark.parametrize(
+    ("dtype_name", "values"),
+    [
+        ("float16", np.array([0.5, -1.25, 2.0], dtype=np.float16)),
+        ("float32", np.array([0.5, -1.25, 2.0], dtype=np.float32)),
+        ("float64", np.array([0.5, -1.25, 2.0], dtype=np.float64)),
+        ("bfloat16", np.array([0x3F80, 0x4000, 0x4040], dtype=np.uint16)),
+        ("float8", np.array([0x01, 0x7F, 0xFF], dtype=np.uint8)),
+        ("int32", np.array([-3, 0, 9], dtype=np.int32)),
+        ("int64", np.array([-3, 0, 9], dtype=np.int64)),
+        ("int16", np.array([-3, 0, 9], dtype=np.int16)),
+        ("int8", np.array([-3, 0, 9], dtype=np.int8)),
+        ("uint8", np.array([0, 9, 255], dtype=np.uint8)),
+        ("bool", np.array([True, False, True], dtype=np.bool_)),
+        ("complex64", np.array([1 + 2j, -3 + 0.5j], dtype=np.complex64)),
+        ("complex128", np.array([1 + 2j, -3 + 0.5j], dtype=np.complex128)),
+    ],
+)
+def test_public_tensor_native_round_trip_for_all_supported_dtypes(dtype_name, values):
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    public = Tensor(values, dtype=dtype_name)
+    native = public.to_native()
+    assert native.dtype_name == dtype_name
+    restored = Tensor.from_native(native)
+    assert restored.dtype_name == dtype_name
+    assert restored.data.dtype == values.dtype
+    assert np.array_equal(restored.data, values)
+
+
+def test_native_shape_conversion_accepts_integer_dtypes_and_strides():
+    T = cb._get_Tensor()
+    dtype = cb._ext.SNEPPXDtype.FLOAT32
+    shape = np.array([2, 99, 3], dtype=np.int32)[::2]
+    tensor = T.zeros(shape, dtype)
+    assert tensor.shape == (2, 3)
+
+
+@pytest.mark.parametrize(
+    "shape",
+    [
+        np.array([-1, 3], dtype=np.int64),
+        np.array([2.5, 3.0], dtype=np.float64),
+        np.ones((2, 2), dtype=np.int64),
+    ],
+)
+def test_native_shape_conversion_rejects_invalid_dimensions(shape):
+    with pytest.raises((ValueError, RuntimeError, TypeError)):
+        cb._get_Tensor().create(shape, cb._ext.SNEPPXDtype.FLOAT32)
+
+
+def test_native_shape_conversion_preserves_supported_high_rank_tensors():
+    tensor = cb._get_Tensor().zeros(
+        np.ones(17, dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32
+    )
+    assert tensor.ndim == 17
+    assert tensor.shape == (1,) * 17
+    with pytest.raises(RuntimeError, match="16 dimensions"):
+        tensor.tile(np.ones(17, dtype=np.int64))
+
+
+def test_native_set_data_copies_non_contiguous_arrays():
+    T = cb._get_Tensor()
+    tensor = T.zeros(np.array([2, 3], dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32)
+    source = np.arange(12, dtype=np.float32).reshape(2, 6)[:, ::2]
+    tensor.set_data(source)
+    assert np.array_equal(tensor.data(), source)
+
+
+def test_native_indexing_rejects_negative_missing_and_extra_indices():
+    T = cb._get_Tensor()
+    tensor = T.zeros(np.array([2, 3], dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32)
+    with pytest.raises(IndexError):
+        _ = tensor[-1, 0]
+    with pytest.raises(IndexError):
+        _ = tensor[2, 0]
+    with pytest.raises(IndexError):
+        _ = tensor[0]
+    with pytest.raises(IndexError):
+        _ = tensor[0, 0, 0]
+    with pytest.raises(IndexError):
+        tensor[-1, 0] = 1.0
+    with pytest.raises(IndexError):
+        tensor[0] = 1.0
+    tensor[1, 2] = 7.0
+    assert float(tensor[1, 2]) == 7.0
+
+
+def test_native_split_uses_allocator_contract_and_validates_failures():
+    T = cb._get_Tensor()
+    tensor = cb.from_numpy(np.arange(12, dtype=np.float32).reshape(4, 3))
+    parts = tensor.split(2, 0)
+    assert len(parts) == 2
+    assert np.array_equal(parts[0].data(), np.arange(6, dtype=np.float32).reshape(2, 3))
+    assert np.array_equal(parts[1].data(), np.arange(6, 12, dtype=np.float32).reshape(2, 3))
+    with pytest.raises(RuntimeError):
+        tensor.split(3, 0)
+
+
+def test_public_tensor_native_conversion_rejects_autograd_history():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    tracked = Tensor(np.array([1.0], dtype=np.float32), requires_grad=True)
+    with pytest.raises(RuntimeError, match="detach"):
+        tracked.to_native()
+
+
+def test_public_tensor_from_native_rejects_non_cpu_device():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    native = cb.from_numpy(np.array([1.0], dtype=np.float32))
+    with pytest.raises(NotImplementedError, match="CPU"):
+        Tensor.from_native(native, device="cuda")
+
+
+
+def test_python_tensor_independent_of_c_memory():
+    # mutating the C tensor afterwards must not corrupt the numpy copy
+    a = np.arange(4, dtype=np.float32)
+    t = cb.from_numpy(a)
+    out = cb.to_numpy(t)
+    t.fill_f32(100.0)
+    assert np.array_equal(out, a)
+
+
+def test_shape_and_dtype_metadata():
+    a = np.arange(12, dtype=np.float32).reshape(3, 4)
+    t = cb.from_numpy(a)
+    assert t.shape == (3, 4)
+    assert t.ndim == 2
+    assert t.numel == 12
+    assert t.dtype_name == "float32"
+
+
+# ---------------------------------------------------------------------------
+# operations parity
+# ---------------------------------------------------------------------------
+
+
+def _parity(a, b, c_ref, op):
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    return np.max(np.abs(cb.to_numpy(op(ta, tb)) - c_ref))
+
+
+def test_add_parity():
+    a = np.random.RandomState(0).rand(4, 5).astype(np.float32)
+    b = np.random.RandomState(1).rand(4, 5).astype(np.float32)
+    err = _parity(a, b, a + b, lambda x, y: x.add(y))
+    assert err <= 1e-6
+
+
+def test_sub_mul_div_parity():
+    rs = np.random.RandomState(2)
+    a = (rs.rand(3, 3) + 1.0).astype(np.float32)
+    b = (rs.rand(3, 3) + 1.0).astype(np.float32)
+    assert _parity(a, b, a - b, lambda x, y: x.sub(y)) <= 1e-6
+    assert _parity(a, b, a * b, lambda x, y: x.mul(y)) <= 1e-6
+    assert _parity(a, b, a / b, lambda x, y: x.div(y)) <= 1e-5
+
+
+def test_matmul_parity_square():
+    a = np.random.RandomState(3).rand(4, 4).astype(np.float32)
+    b = np.random.RandomState(4).rand(4, 4).astype(np.float32)
+    err = _parity(a, b, a @ b, lambda x, y: x.matmul(y))
+    assert err <= 1e-4
+
+
+def test_matmul_parity_rectangular():
+    a = np.random.RandomState(5).rand(2, 6).astype(np.float32)
+    b = np.random.RandomState(6).rand(6, 3).astype(np.float32)
+    err = _parity(a, b, a @ b, lambda x, y: x.matmul(y))
+    assert err <= 1e-5
+
+
+def test_matmul_parity_float64_exact_dtype():
+    """f64 matmul must stay f64 (was hardcoded float32 downcast)."""
+    a = np.random.RandomState(14).rand(3, 5)
+    b = np.random.RandomState(15).rand(5, 4)
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    out = ta.matmul(tb)
+    assert cb.c_dtype_to_numpy(out.dtype) == np.float64
+    got = cb.to_numpy(out)
+    assert np.max(np.abs(got - (a @ b))) <= 1e-12
+
+
+def test_matmul_parity_batched():
+    a = np.random.RandomState(7).rand(3, 4, 5).astype(np.float32)
+    b = np.random.RandomState(8).rand(3, 5, 2).astype(np.float32)
+    ref = np.stack([a[i] @ b[i] for i in range(3)])
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    got = cb.to_numpy(ta.matmul(tb))
+    assert np.max(np.abs(got - ref)) <= 1e-4
+
+
+def test_dot_parity_float32_float64():
+    """dot() must read f64 storage correctly (was misread as f32 -> garbage)."""
+    a = np.random.RandomState(21).rand(8).astype(np.float32)
+    b = np.random.RandomState(22).rand(8).astype(np.float32)
+    assert np.isclose(cb.from_numpy(a).dot(cb.from_numpy(b)), float(a @ b), rtol=1e-5)
+    a64 = np.random.RandomState(23).rand(8)
+    b64 = np.random.RandomState(24).rand(8)
+    # float return type caps precision; garbage misread would be far off
+    assert np.isclose(
+        cb.from_numpy(a64).dot(cb.from_numpy(b64)), float(a64 @ b64), rtol=1e-6
+    )
+
+
+def test_reductions_sum_mean_float64_dtype_following():
+    """f64 sum/mean must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(25).rand(3, 5)
+    t = cb.from_numpy(a)
+    s = t.sum(1)
+    assert cb.c_dtype_to_numpy(s.dtype) == np.float64
+    assert np.allclose(cb.to_numpy(s), a.sum(axis=1, keepdims=True), rtol=0, atol=1e-13)
+    m = t.mean(0)
+    assert cb.c_dtype_to_numpy(m.dtype) == np.float64
+    assert np.allclose(
+        cb.to_numpy(m), a.mean(axis=0, keepdims=True), rtol=0, atol=1e-13
+    )
+    # f32 inputs keep f32
+    a32 = a.astype(np.float32)
+    t32 = cb.from_numpy(a32)
+    assert cb.c_dtype_to_numpy(t32.sum(1).dtype) == np.float32
+    assert np.allclose(
+        cb.to_numpy(t32.mean(0)), a32.mean(axis=0, keepdims=True), atol=1e-6
+    )
+
+
+def test_binary_ops_float64_dtype_following():
+    """f64 add/sub/mul/div/pow must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(26).rand(3, 4) + 0.5
+    b = np.random.RandomState(27).rand(3, 4) + 0.5
+    ta, tb = cb.from_numpy(a), cb.from_numpy(b)
+    for name, np_ref in [
+        ("add", a + b),
+        ("sub", a - b),
+        ("mul", a * b),
+        ("div", a / (b + 1e-10)),  # C div adds an epsilon stabilizer
+        ("pow_", a**b),
+    ]:
+        out = getattr(ta, name)(tb)
+        assert cb.c_dtype_to_numpy(out.dtype) == np.float64, name
+        got = cb.to_numpy(out)
+        assert np.allclose(got, np_ref, rtol=0, atol=1e-12), name
+    # mixed dtype -> clean NULL -> RuntimeError, not garbage
+    with pytest.raises(RuntimeError):
+        ta.sub(cb.from_numpy(b.astype(np.float32)))
+
+
+def test_unary_ops_float64_dtype_following():
+    """f64 unary ops must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(28).rand(3, 4) + 0.3
+    ta = cb.from_numpy(a)
+    for name, np_ref in [
+        ("neg", -a),
+        ("abs", np.abs(a)),
+        ("sign", np.sign(a)),
+        ("floor", np.floor(a)),
+        ("ceil", np.ceil(a)),
+        ("round", np.round(a)),
+        ("exp", np.exp(a)),
+        ("log", np.log(a)),
+        ("sqrt", np.sqrt(a)),
+        ("sin", np.sin(a)),
+        ("cos", np.cos(a)),
+        ("tanh", np.tanh(a)),
+    ]:
+        out = getattr(ta, name)()
+        assert cb.c_dtype_to_numpy(out.dtype) == np.float64, name
+        got = cb.to_numpy(out)
+        assert np.allclose(got, np_ref, rtol=0, atol=1e-12), name
+
+
+def test_var_std_float64_dtype_following():
+    """f64 var/std must stay f64 and match numpy exactly."""
+    a = np.random.RandomState(29).rand(3, 5)
+    ta = cb.from_numpy(a)
+    for name, np_ref in [
+        ("var", lambda: a.var(axis=1, keepdims=True)),
+        ("std", lambda: a.std(axis=1, keepdims=True)),
+    ]:
+        out = getattr(ta, name)(1)
+        assert cb.c_dtype_to_numpy(out.dtype) == np.float64, name
+        got = cb.to_numpy(out)
+        assert np.allclose(got, np_ref(), rtol=0, atol=1e-10), name
+    # f32 inputs keep f32
+    a32 = a.astype(np.float32)
+    ta32 = cb.from_numpy(a32)
+    assert cb.c_dtype_to_numpy(ta32.var(1).dtype) == np.float32
+    assert np.allclose(
+        cb.to_numpy(ta32.std(1)), a32.std(axis=1, keepdims=True), atol=1e-6
+    )
+
+
+def test_conv1d_float64_dtype_following():
+    """f64 conv1d must stay f64 and match a numpy conv1d reference."""
+    rs = np.random.RandomState(31)
+    x = rs.rand(2, 3, 10).astype(np.float64)
+    w = rs.rand(4, 3, 3).astype(np.float64)  # (C_out, C_in, K)
+    tx, tw = cb.from_numpy(x), cb.from_numpy(w)
+    out = tx.conv1d(tw, 1, 0)
+    assert cb.c_dtype_to_numpy(out.dtype) == np.float64
+    got = cb.to_numpy(out)
+    ref = np.zeros((2, 4, 8), dtype=np.float64)
+    for b in range(2):
+        for co in range(4):
+            for ci in range(3):
+                for pos in range(8):
+                    ref[b, co, pos] += np.sum(x[b, ci, pos : pos + 3] * w[co, ci, :])
+    assert np.allclose(got, ref, rtol=0, atol=1e-12)
+
+
+def test_conv2d_float64_dtype_following():
+    """f64 conv2d must stay f64 and match a numpy conv2d reference."""
+    rs = np.random.RandomState(32)
+    x = rs.rand(2, 3, 8, 8).astype(np.float64)
+    w = rs.rand(4, 3, 3, 3).astype(np.float64)  # (C_out, C_in, KH, KW)
+    tx, tw = cb.from_numpy(x), cb.from_numpy(w)
+    out = tx.conv2d(tw, 1, 1, 0, 0)
+    assert cb.c_dtype_to_numpy(out.dtype) == np.float64
+    got = cb.to_numpy(out)
+    ref = np.zeros((2, 4, 6, 6), dtype=np.float64)
+    for b in range(2):
+        for co in range(4):
+            for ci in range(3):
+                for oh in range(6):
+                    for ow in range(6):
+                        ref[b, co, oh, ow] += np.sum(
+                            x[b, ci, oh : oh + 3, ow : ow + 3] * w[co, ci, :, :]
+                        )
+    assert np.allclose(got, ref, rtol=0, atol=1e-12)
+
+
+def _conv2d_numpy(x, k, stride_h=1, stride_w=1, pad_h=0, pad_w=0):
+    x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
+    n, c, h, w = x.shape
+    kh, kw = k.shape[-2:]
+    out_h = (h - kh) // stride_h + 1
+    out_w = (w - kw) // stride_w + 1
+    c_out = k.shape[0]
+    out = np.zeros((n, c_out, out_h, out_w), dtype=np.float32)
+    for i in range(out_h):
+        for j in range(out_w):
+            win = x[
+                :, :, i * stride_h : i * stride_h + kh, j * stride_w : j * stride_w + kw
+            ]
+            for co in range(c_out):
+                out[:, co, i, j] = (win * k[co]).sum(axis=(1, 2, 3))
+    return out
+
+
+def test_conv2d_parity_stride1_pad0():
+    rs = np.random.RandomState(9)
+    x = rs.rand(1, 3, 8, 8).astype(np.float32)
+    k = rs.rand(1, 3, 3, 3).astype(np.float32)
+    # C conv2d follows torch semantics: w (C_out, C_in, KH, KW), x (N, C, H, W)
+    # -> out (N, C_out, H_out, W_out)
+    ref = _conv2d_numpy(x, k)
+    tx, tk = cb.from_numpy(x), cb.from_numpy(k)
+    got = cb.to_numpy(tx.conv2d(tk, 1, 1, 0, 0))
+    assert got.shape == ref.shape, (got.shape, ref.shape)
+    err = np.max(np.abs(got - ref))
+    assert err <= 1e-4, f"conv2d mismatch {err}"
+
+
+def test_relu_sigmoid_exp_parity():
+    rs = np.random.RandomState(10)
+    a = rs.rand(3, 4).astype(np.float32) * 4.0 - 2.0
+    t = cb.from_numpy(a)
+    assert np.allclose(cb.to_numpy(t.relu()), np.maximum(a, 0), atol=1e-6)
+    assert np.allclose(cb.to_numpy(t.sigmoid()), 1 / (1 + np.exp(-a)), atol=1e-6)
+    assert np.allclose(cb.to_numpy(t.exp()), np.exp(a), atol=1e-5)
+
+
+def test_reductions_sum_mean_softmax():
+    a = np.random.RandomState(11).rand(4, 5).astype(np.float32)
+    t = cb.from_numpy(a)
+    assert np.allclose(cb.to_numpy(t.sum(0)).ravel(), a.sum(axis=0), atol=1e-5)
+    # C reductions keep the reduced dim: mean(dim=1) -> (N, 1)
+    assert np.allclose(cb.to_numpy(t.mean(1)).ravel(), a.mean(axis=1), atol=1e-5)
+    sm = cb.to_numpy(t.softmax(1))
+    e = np.exp(a - a.max(axis=1, keepdims=True))
+    ref = e / e.sum(axis=1, keepdims=True)
+    assert np.allclose(sm, ref, atol=1e-5)
+
+
+def test_shape_ops_reshape_transpose_reshape_back():
+    a = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    t = cb.from_numpy(a)
+    r = cb.to_numpy(t.reshape(np.array([6, 4]))).reshape(6, 4)
+    assert np.array_equal(r, a.reshape(6, 4))
+    # C transpose(dim1, dim2) swaps the two named axes (torch semantics)
+    tr = cb.to_numpy(t.transpose(1, 2)).reshape(2, 4, 3)
+    assert np.array_equal(tr, a.transpose(0, 2, 1))
+
+
+# ---------------------------------------------------------------------------
+# robustness guards
+# ---------------------------------------------------------------------------
+
+
+def test_invalid_op_raises_runtime_error_not_crash():
+    a = cb.from_numpy(np.ones((2, 3), dtype=np.float32))
+    # inner dims 3 vs 2 -> C returns NULL -> must raise, not segfault
+    with pytest.raises(RuntimeError):
+        a.matmul(cb.from_numpy(np.eye(2, dtype=np.float32)))
+
+
+def test_metadata_round_trip_after_c_ops():
+    a = np.random.RandomState(12).rand(2, 4).astype(np.float32)
+    b = np.random.RandomState(13).rand(4, 3).astype(np.float32)
+    out = cb.from_numpy(a).matmul(cb.from_numpy(b))
+    assert out.shape == (2, 3)
+    # result can be converted back and remains finite
+    assert np.isfinite(cb.to_numpy(out)).all()
+
+
+def test_public_tensor_native_add_matches_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[1.0, -2.0], [3.5, 4.0]], dtype=np.float32)
+    right_values = np.array([[0.5, 5.0], [-1.5, 2.0]], dtype=np.float32)
+    left = Tensor(left_values, dtype="float32")
+    right = Tensor(right_values, dtype="float32")
+
+    result = left.native_add(right)
+
+    assert result.dtype == "float32"
+    assert result.requires_grad is False
+    assert np.allclose(result.data, left_values + right_values, rtol=0, atol=1e-6)
+
+
+def test_public_tensor_native_matmul_matches_numpy_float64():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[1.25, -2.0, 0.5], [3.0, 4.5, -1.0]], dtype=np.float64)
+    right_values = np.array([[2.0, 1.0], [-0.5, 3.0], [4.0, -2.0]], dtype=np.float64)
+    left = Tensor(left_values, dtype="float64")
+    right = Tensor(right_values, dtype="float64")
+
+    result = left.native_matmul(right)
+
+    assert result.dtype == "float64"
+    assert result.requires_grad is False
+    assert np.allclose(result.data, left_values @ right_values, rtol=0, atol=1e-12)
+
+
+def test_public_tensor_native_binary_ops_reject_dtype_mismatch_and_autograd():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    float32 = Tensor(np.array([1.0], dtype=np.float32), dtype="float32")
+    float64 = Tensor(np.array([1.0], dtype=np.float64), dtype="float64")
+    with pytest.raises(TypeError, match="matching dtypes"):
+        float32.native_add(float64)
+
+    tracked = Tensor(np.array([1.0], dtype=np.float32), dtype="float32", requires_grad=True)
+    with pytest.raises(RuntimeError, match="detach"):
+        tracked.native_add(float32)
+
+
+def test_public_tensor_native_arithmetic_and_activations_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    left_values = np.array([[-2.0, 3.0], [4.0, 8.0]], dtype=np.float32)
+    right_values = np.array([[2.0, 1.0], [2.0, 4.0]], dtype=np.float32)
+    left = Tensor(left_values, dtype="float32")
+    right = Tensor(right_values, dtype="float32")
+
+    assert np.allclose(left.native_sub(right).data, left_values - right_values)
+    assert np.allclose(left.native_mul(right).data, left_values * right_values)
+    assert np.allclose(left.native_div(right).data, left_values / right_values)
+    assert np.allclose(left.native_pow(right).data, left_values ** right_values)
+    assert np.allclose(left.native_relu().data, np.maximum(left_values, 0))
+    assert np.allclose(
+        left.native_sigmoid().data,
+        1.0 / (1.0 + np.exp(-left_values)),
+        rtol=1e-6,
+        atol=1e-6,
+    )
+    assert np.allclose(left.native_tanh().data, np.tanh(left_values), rtol=1e-6, atol=1e-6)
+
+
+def test_public_tensor_native_softmax_and_reductions_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+    shifted = values - np.max(values, axis=1, keepdims=True)
+    expected_softmax = np.exp(shifted) / np.sum(np.exp(shifted), axis=1, keepdims=True)
+
+    assert np.allclose(tensor.native_softmax(dim=1).data, expected_softmax, rtol=1e-5, atol=1e-6)
+    assert np.allclose(tensor.native_sum(dim=1).data, np.sum(values, axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(tensor.native_mean(dim=1).data, np.mean(values, axis=1), rtol=1e-5, atol=1e-6)
+
+
+
+def test_public_tensor_native_variance_and_std_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 4.0], [3.0, 5.0, 8.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+
+    variance = tensor.native_var(dim=1)
+    deviation = tensor.native_std(dim=1)
+
+    assert variance.shape == (2, 1)
+    assert deviation.shape == (2, 1)
+    assert np.allclose(variance.data.ravel(), values.var(axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(deviation.data.ravel(), values.std(axis=1), rtol=1e-5, atol=1e-6)
+
+
+def test_public_tensor_native_cumulative_ops_match_numpy():
+    from SneppX_ALG.interface_bindings.tensor import Tensor
+
+    values = np.array([[1.0, 2.0, 3.0], [2.0, 3.0, 4.0]], dtype=np.float32)
+    tensor = Tensor(values, dtype="float32")
+
+    cumulative_sum = tensor.native_cumsum(dim=1)
+    cumulative_product = tensor.native_cumprod(dim=1)
+
+    assert cumulative_sum.shape == values.shape
+    assert cumulative_product.shape == values.shape
+    assert np.allclose(cumulative_sum.data, np.cumsum(values, axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(cumulative_product.data, np.cumprod(values, axis=1), rtol=1e-5, atol=1e-6)
