@@ -365,7 +365,8 @@ static void add_header(SNEPPX_HttpResponse* resp, const char* name, const char* 
     if (!resp || !name || !value || resp->num_headers >= MAX_HEADERS) return;
     size_t name_len = strlen(name);
     size_t value_len = strlen(value);
-    if (name_len == 0 || name_len + 2 + value_len >= sizeof(resp->headers[0])) return;
+    if (name_len == 0 || name_len > sizeof(resp->headers[0]) - 3 ||
+        value_len > sizeof(resp->headers[0]) - name_len - 3) return;
     for (size_t i = 0; i < name_len; i++)
         if (!is_http_token_char((unsigned char)name[i])) return;
     for (size_t i = 0; i < value_len; i++) {
@@ -1011,14 +1012,28 @@ void SNEPPX_http_server_destroy(SNEPPX_HttpServer* srv) {
  */
 int SNEPPX_http_server_add_route(SNEPPX_HttpServer* srv, const char* method, const char* path,
                                   SNEPPX_http_handler_fn handler, void* userdata) {
-    if (!srv || srv->num_routes >= MAX_ROUTES) return -1;
-    int i = srv->num_routes++;
-    strncpy(srv->routes[i].method, method, 15);
-    srv->routes[i].method[15] = '\0';
-    strncpy(srv->routes[i].path_pattern, path, 255);
-    srv->routes[i].path_pattern[255] = '\0';
+    if (!srv || !method || !path || !handler || srv->num_routes >= MAX_ROUTES) return -1;
+    size_t method_len = strlen(method);
+    size_t path_len = strlen(path);
+    if (method_len == 0 || method_len >= sizeof(srv->routes[0].method) ||
+        path_len == 0 || path_len >= sizeof(srv->routes[0].path_pattern) ||
+        path[0] != '/' || strchr(path, '?') || strchr(path, '#') || strchr(path, '\\')) return -1;
+    for (size_t i = 0; i < method_len; i++)
+        if (!is_http_token_char((unsigned char)method[i])) return -1;
+    for (size_t i = 0; i < path_len; i++) {
+        unsigned char ch = (unsigned char)path[i];
+        if (ch < 0x21 || ch == 0x7f) return -1;
+    }
+    for (int i = 0; i < srv->num_routes; i++) {
+        if (strcmp(srv->routes[i].method, method) == 0 &&
+            strcmp(srv->routes[i].path_pattern, path) == 0) return -1;
+    }
+    int i = srv->num_routes;
+    memcpy(srv->routes[i].method, method, method_len + 1);
+    memcpy(srv->routes[i].path_pattern, path, path_len + 1);
     srv->routes[i].handler = handler;
     srv->routes[i].userdata = userdata;
+    srv->num_routes++;
     return 0;
 }
 
@@ -1057,10 +1072,11 @@ int SNEPPX_http_server_add_static_dir(SNEPPX_HttpServer* srv, const char* url_pr
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_http_server_add_middleware(SNEPPX_HttpServer* srv, SNEPPX_http_middleware_fn mw, void* userdata) {
-    if (!srv || srv->num_middleware >= MAX_MIDDLEWARE) return -1;
-    int i = srv->num_middleware++;
+    if (!srv || !mw || srv->num_middleware >= MAX_MIDDLEWARE) return -1;
+    int i = srv->num_middleware;
     srv->middleware[i].fn = mw;
     srv->middleware[i].userdata = userdata;
+    srv->num_middleware++;
     return 0;
 }
 
@@ -1071,13 +1087,13 @@ int SNEPPX_http_server_add_middleware(SNEPPX_HttpServer* srv, SNEPPX_http_middle
  *
  * @return Pointer on success, NULL on error.
  */
-const char* SNEPPX_http_request_method(SNEPPX_HttpRequest* req) { return req->method; }
+const char* SNEPPX_http_request_method(SNEPPX_HttpRequest* req) { return req ? req->method : NULL; }
 /**
  * @brief Perform Http Request Path.
  *
  * @return Pointer on success, NULL on error.
  */
-const char* SNEPPX_http_request_path(SNEPPX_HttpRequest* req) { return req->path; }
+const char* SNEPPX_http_request_path(SNEPPX_HttpRequest* req) { return req ? req->path : NULL; }
 /**
  * @brief Perform Http Request Header.
  *
@@ -1094,7 +1110,7 @@ const char* SNEPPX_http_request_header(SNEPPX_HttpRequest* req, const char* name
  *
  * @return Pointer on success, NULL on error.
  */
-const char* SNEPPX_http_request_body(SNEPPX_HttpRequest* req, size_t* len) { if (len) *len = req->body_len; return req->body; }
+const char* SNEPPX_http_request_body(SNEPPX_HttpRequest* req, size_t* len) { if (!req) { if (len) *len = 0; return NULL; } if (len) *len = req->body_len; return req->body; }
 /**
  * @brief Perform Http Request Query.
  *
@@ -1103,7 +1119,7 @@ const char* SNEPPX_http_request_body(SNEPPX_HttpRequest* req, size_t* len) { if 
  * @return Pointer on success, NULL on error.
  */
 const char* SNEPPX_http_request_query(SNEPPX_HttpRequest* req, const char* key) {
-    if (!req->query[0] || !key) return NULL;
+    if (!req || !req->query[0] || !key) return NULL;
     const char* q = req->query;
     while (*q) {
         while (*q == '&') q++;
@@ -1123,7 +1139,7 @@ const char* SNEPPX_http_request_query(SNEPPX_HttpRequest* req, const char* key) 
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_http_request_userdata(SNEPPX_HttpRequest* req) { return req->userdata; }
+void* SNEPPX_http_request_userdata(SNEPPX_HttpRequest* req) { return req ? req->userdata : NULL; }
 /**
  * @brief Perform Http Request Param.
  *
@@ -1147,7 +1163,7 @@ const char* SNEPPX_http_request_param(SNEPPX_HttpRequest* req, const char* name)
  *
  * @param resp [out] Resp value.
  */
-void SNEPPX_http_response_set_status(SNEPPX_HttpResponse* resp, int status_code) { resp->status_code = status_code; }
+void SNEPPX_http_response_set_status(SNEPPX_HttpResponse* resp, int status_code) { if (resp && status_code >= 100 && status_code <= 599) resp->status_code = status_code; }
 /**
  * @brief Perform Http Response Set Header.
  *
@@ -1164,8 +1180,9 @@ void SNEPPX_http_response_set_header(SNEPPX_HttpResponse* resp, const char* name
  * @param data [in] Data value.
  */
 void SNEPPX_http_response_set_body(SNEPPX_HttpResponse* resp, const char* data, size_t len) {
+    if (!resp || (!data && len > 0)) return;
     if (len > BUF_SIZE - 1) len = BUF_SIZE - 1;
-    memcpy(resp->body, data, len);
+    if (len) memcpy(resp->body, data, len);
     resp->body[len] = '\0';
     resp->body_len = len;
 }
@@ -1175,6 +1192,7 @@ void SNEPPX_http_response_set_body(SNEPPX_HttpResponse* resp, const char* data, 
  * @param resp [out] Resp value.
  */
 void SNEPPX_http_response_set_body_str(SNEPPX_HttpResponse* resp, const char* str) {
+    if (!resp || !str) return;
     SNEPPX_http_response_set_body(resp, str, strlen(str));
 }
 /**
@@ -1183,6 +1201,7 @@ void SNEPPX_http_response_set_body_str(SNEPPX_HttpResponse* resp, const char* st
  * @param resp [out] Resp value.
  */
 void SNEPPX_http_response_set_json(SNEPPX_HttpResponse* resp, const char* json_str) {
+    if (!resp || !json_str) return;
     add_header(resp, "Content-Type", "application/json");
     SNEPPX_http_response_set_body_str(resp, json_str);
 }
