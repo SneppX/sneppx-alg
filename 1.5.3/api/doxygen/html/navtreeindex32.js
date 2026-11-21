@@ -1,5 +1,15 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXCISBenchmark.html#a15f9b6d40d3a5858a417734f1e197c86":[1,0,180,3],
+"structSNEPPXCISBenchmark.html#a1e20fb655c7259a20c8526d5606602c9":[1,0,180,11],
+"structSNEPPXCISBenchmark.html#a25290ab9e5758ac7b575c2fcb51e7292":[1,0,180,7],
+"structSNEPPXCISBenchmark.html#a68c97fc1bbe2a829b169ec45f76b3126":[1,0,180,10],
+"structSNEPPXCISBenchmark.html#a83f0d7a9dd27828aed34a9a378facba7":[1,0,180,1],
+"structSNEPPXCISBenchmark.html#a89c1a4c480d4358db428d064e9eaef8d":[1,0,180,12],
+"structSNEPPXCISBenchmark.html#aa4dcd04d90266dbb61f431a629bc41be":[1,0,180,4],
+"structSNEPPXCISBenchmark.html#ac65db757fa82b8be0aa7861fd34d4463":[1,0,180,5],
+"structSNEPPXCISBenchmark.html#ad58f0e543b1357d3751d2da347475042":[1,0,180,6],
+"structSNEPPXCISBenchmark.html#adc86214730037e0b6c34ac362123ec56":[1,0,180,13],
 "structSNEPPXCISBenchmark.html#add11f6fa8ea984f8577ff47fb5c95eb0":[1,0,180,8],
 "structSNEPPXCISBenchmark.html#ae3571bfc01b3b302065de2f143b8f383":[1,0,180,14],
 "structSNEPPXCISBenchmark.html#af09fd5978219e14327e23d095a9c8299":[1,0,180,2],
@@ -239,15 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXElasticTraining.html#ab566ab494f95a17273c70e4c1430b607":[1,0,197,6],
 "structSNEPPXElasticTraining.html#ac8a9966bc0aeadab410f7f5c559fc09e":[1,0,197,3],
 "structSNEPPXElasticTraining.html#ad399afe87dc7e529dc0a438598aab2e6":[1,0,197,7],
-"structSNEPPXElasticTraining.html#ae686a2645a781961efddfce7bb318845":[1,0,197,16],
-"structSNEPPXElasticTraining.html#aed4c189c594f9f5fae6771a2b06bd2e2":[1,0,197,1],
-"structSNEPPXElasticTraining.html#aedd008e6cb312476e1c981cb7e6e85ec":[1,0,197,11],
-"structSNEPPXElasticTraining.html#af72692976072869832e66562a914398b":[1,0,197,9],
-"structSNEPPXEntropyPool.html":[1,0,198],
-"structSNEPPXEntropyPool.html#a0c0fcbbe9d53022e909a5a6a28088472":[1,0,198,1],
-"structSNEPPXEntropyPool.html#a3e5dfc6f0f0fbef921e8bae6b5f70d65":[1,0,198,3],
-"structSNEPPXEntropyPool.html#a43c23182cbd80e58513558ca595255e5":[1,0,198,4],
-"structSNEPPXEntropyPool.html#a827591a7804a106fecf69807f43072ef":[1,0,198,2],
-"structSNEPPXEntropyPool.html#a9f629ffe574b52dd6694fbe694949464":[1,0,198,0],
-"structSNEPPXEpisodicBuffer.html":[1,0,199]
+"structSNEPPXElasticTraining.html#ae686a2645a781961efddfce7bb318845":[1,0,197,16]
 };

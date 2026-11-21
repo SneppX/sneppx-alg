@@ -6005,7 +6005,8 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <li><code>SNEPPX_bsdiff_with_signature()</code> used XOR masking, not a digital signature; it now always fails closed.</li>
 <li><code>SNEPPX_manifest_verify_from_buffer()</code> compared a short non-cryptographic hash; it now always fails closed.</li>
 <li>These compatibility APIs do not authenticate updates. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.</li>
-<li>TUF metadata/key-management and TPM hardware operations are not yet production implementations; their remaining legacy entry points are being disabled and audited separately.</li>
+<li>TUF metadata/key-management APIs are compatibility stubs and now all fail closed. They do not generate, expose, revoke, sign, or verify trusted metadata.</li>
+<li>TPM hardware operations are not yet production implementations; their remaining legacy entry points are being disabled and audited separately.</li>
 <li>Signed update bundles: Ed25519-signed update payloads with version rolling</li>
 <li>Rollback protection: monotonic version counter preventing downgrade attacks</li>
 <li>Staged rollout: gradual update distribution with health-check gating</li>

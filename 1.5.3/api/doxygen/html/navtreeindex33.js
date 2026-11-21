@@ -1,5 +1,15 @@
 var NAVTREEINDEX33 =
 {
+"structSNEPPXElasticTraining.html#aed4c189c594f9f5fae6771a2b06bd2e2":[1,0,197,1],
+"structSNEPPXElasticTraining.html#aedd008e6cb312476e1c981cb7e6e85ec":[1,0,197,11],
+"structSNEPPXElasticTraining.html#af72692976072869832e66562a914398b":[1,0,197,9],
+"structSNEPPXEntropyPool.html":[1,0,198],
+"structSNEPPXEntropyPool.html#a0c0fcbbe9d53022e909a5a6a28088472":[1,0,198,1],
+"structSNEPPXEntropyPool.html#a3e5dfc6f0f0fbef921e8bae6b5f70d65":[1,0,198,3],
+"structSNEPPXEntropyPool.html#a43c23182cbd80e58513558ca595255e5":[1,0,198,4],
+"structSNEPPXEntropyPool.html#a827591a7804a106fecf69807f43072ef":[1,0,198,2],
+"structSNEPPXEntropyPool.html#a9f629ffe574b52dd6694fbe694949464":[1,0,198,0],
+"structSNEPPXEpisodicBuffer.html":[1,0,199],
 "structSNEPPXEpisodicBuffer.html#a52f80b076cd6ffca3b247941161d4495":[1,0,199,1],
 "structSNEPPXEpisodicBuffer.html#a7c48709f9be3e888c1549c7014d0376a":[1,0,199,0],
 "structSNEPPXEpisodicBuffer.html#a8aca3ae260c754999246c338efe5b252":[1,0,199,5],
@@ -239,15 +249,5 @@ var NAVTREEINDEX33 =
 "structSNEPPXFuncPtrDetector.html":[1,0,229],
 "structSNEPPXFuncPtrDetector.html#a7d0c0af3ea9f35ae425bf8bb0455bb30":[1,0,229,2],
 "structSNEPPXFuncPtrDetector.html#a85352ce266b7f3c7420cd5d8855ea2a5":[1,0,229,1],
-"structSNEPPXFuncPtrDetector.html#af8f5297a1875c416e8e88c93b232f16d":[1,0,229,0],
-"structSNEPPXFuture.html":[1,0,230],
-"structSNEPPXFuture.html#a22b212a20e7e3e068707d3f62b5d59a9":[1,0,230,2],
-"structSNEPPXFuture.html#a4a4c7817fc5c0c5643cc43d4c718ee1e":[1,0,230,1],
-"structSNEPPXFuture.html#a6a3bc913a64f1d7a35493ae79c154cd0":[1,0,230,3],
-"structSNEPPXFuture.html#a91a17cb90ddb0664e7c0dd76d6521907":[1,0,230,0],
-"structSNEPPXFuzzHarness.html":[1,0,231],
-"structSNEPPXFuzzHarness.html#a25d6bde4ec2cd815ecc1b33194064e73":[1,0,231,1],
-"structSNEPPXFuzzHarness.html#a32e15c46a3f2bdd3faca45f4b39cd6df":[1,0,231,0],
-"structSNEPPXFuzzHarness.html#af9d00a28ca761d91627687ac24d1b7c0":[1,0,231,2],
-"structSNEPPXGDPRBreachNotification.html":[1,0,233]
+"structSNEPPXFuncPtrDetector.html#af8f5297a1875c416e8e88c93b232f16d":[1,0,229,0]
 };

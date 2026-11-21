@@ -1,5 +1,15 @@
 var NAVTREEINDEX44 =
 {
+"structSNEPPX__OptimizerState.html#a4f5278aead95b25efd01edfa718742dd":[1,0,124,9],
+"structSNEPPX__OptimizerState.html#a6d13f524415b66d9de991dda0cbeea34":[1,0,124,18],
+"structSNEPPX__OptimizerState.html#a7602c911bdaab168c891866077ba33c0":[1,0,124,21],
+"structSNEPPX__OptimizerState.html#a8225f9d795864246df5cac51bfcd469e":[1,0,124,11],
+"structSNEPPX__OptimizerState.html#a8fd3ae4d71a7915b6a06ab0795243414":[1,0,124,2],
+"structSNEPPX__OptimizerState.html#aa2be718a792e83bad92db56b3072c254":[1,0,124,1],
+"structSNEPPX__OptimizerState.html#aa47de713ec59d53735c3c3b48b76400f":[1,0,124,13],
+"structSNEPPX__OptimizerState.html#aaf6893edd447e91eb442983618595ca0":[1,0,124,22],
+"structSNEPPX__OptimizerState.html#ab675d9ee2e76468f84415641ec069565":[1,0,124,4],
+"structSNEPPX__OptimizerState.html#ac928c0c3ccff25032cbf14ddc179e104":[1,0,124,12],
 "structSNEPPX__OptimizerState.html#ace22b71707bdd15c5f2766df51b9b24c":[1,0,124,17],
 "structSNEPPX__OptimizerState.html#ace3262ea04d8ff222ddfd47fbdbac771":[1,0,124,15],
 "structSNEPPX__OptimizerState.html#ad02505494ea3876011e812d40b647cd9":[1,0,124,6],
@@ -239,15 +249,5 @@ var NAVTREEINDEX44 =
 "structfuzz__config__t.html#a319611cbb8fac7bb003d84bb80dd29c5":[1,0,45,3],
 "structfuzz__config__t.html#a3ba2e9c1bd06091a9a75ede47e989206":[1,0,45,9],
 "structfuzz__config__t.html#a44e9debee8c6441a37031d97f9ecbfe0":[1,0,45,4],
-"structfuzz__config__t.html#a771e8b2ff274f9dc19b30071ac727452":[1,0,45,1],
-"structfuzz__config__t.html#aa13a300995c38bc345cf6d5a9500c56e":[1,0,45,7],
-"structfuzz__config__t.html#ab12fab2843cb18f506a06613ed32376b":[1,0,45,5],
-"structfuzz__config__t.html#ac4e355a233f88de284981d7d336bbf55":[1,0,45,2],
-"structfuzz__config__t.html#ae2e12a7b5f61e20fcef0dec491af1f4a":[1,0,45,8],
-"structfuzz__config__t.html#afe3da4044c510d51e467e58fd735af1e":[1,0,45,6],
-"structfuzz__coverage__t.html":[1,0,46],
-"structfuzz__coverage__t.html#a123e0142adb605133db0ce28b7600d10":[1,0,46,2],
-"structfuzz__coverage__t.html#a1df2769a4e3d7c9d3a1b8ea6ef375688":[1,0,46,0],
-"structfuzz__coverage__t.html#ae67c3ab45d0ac182e63cf703d0078685":[1,0,46,1],
-"structfuzz__input__t.html":[1,0,47]
+"structfuzz__config__t.html#a771e8b2ff274f9dc19b30071ac727452":[1,0,45,1]
 };

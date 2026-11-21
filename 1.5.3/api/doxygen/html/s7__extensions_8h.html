@@ -146,6 +146,26 @@ Functions</h2></td></tr>
 <tr class="memdesc:a706df364052bb9e23a5b594a2aaf310f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff With Signature.  <br /></td></tr>
 <tr class="memitem:a35c2bb466f6991aee2eaa65f3974592a" id="r_a35c2bb466f6991aee2eaa65f3974592a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35c2bb466f6991aee2eaa65f3974592a">SNEPPX_manifest_verify_from_buffer</a> (const uint8_t *manifest_data, size_t data_len, const uint8_t *signature, size_t sig_len)</td></tr>
 <tr class="memdesc:a35c2bb466f6991aee2eaa65f3974592a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Manifest Verify From Buffer.  <br /></td></tr>
+<tr class="memitem:ae6adb17fd32287417d685af6ce25efdf" id="r_ae6adb17fd32287417d685af6ce25efdf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6adb17fd32287417d685af6ce25efdf">SNEPPX_tuf_generate_keypair</a> (int key_type)</td></tr>
+<tr class="memdesc:ae6adb17fd32287417d685af6ce25efdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Generate Keypair.  <br /></td></tr>
+<tr class="memitem:a726d1ed2caccaa06cecbbce25d37b789" id="r_a726d1ed2caccaa06cecbbce25d37b789"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a726d1ed2caccaa06cecbbce25d37b789">SNEPPX_tuf_revoke_key</a> (int key_type)</td></tr>
+<tr class="memdesc:a726d1ed2caccaa06cecbbce25d37b789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Revoke Key.  <br /></td></tr>
+<tr class="memitem:a23829e6a51109a495d595de57ad4bc5f" id="r_a23829e6a51109a495d595de57ad4bc5f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23829e6a51109a495d595de57ad4bc5f">SNEPPX_tuf_is_initialized</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf)</td></tr>
+<tr class="memdesc:a23829e6a51109a495d595de57ad4bc5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Is Initialized.  <br /></td></tr>
+<tr class="memitem:a92462b98393037dd268f70c0723b054c" id="r_a92462b98393037dd268f70c0723b054c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92462b98393037dd268f70c0723b054c">SNEPPX_tuf_get_key</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, int key_type, uint8_t *key_out, size_t key_len)</td></tr>
+<tr class="memdesc:a92462b98393037dd268f70c0723b054c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Get Key.  <br /></td></tr>
+<tr class="memitem:a5ad86664b148ed2fb882f51150f33241" id="r_a5ad86664b148ed2fb882f51150f33241"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ad86664b148ed2fb882f51150f33241">SNEPPX_tuf_set_key</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, int key_type, const uint8_t *key, size_t key_len)</td></tr>
+<tr class="memdesc:a5ad86664b148ed2fb882f51150f33241"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Set Key.  <br /></td></tr>
+<tr class="memitem:a248236ef7cadd6661b6f6fb9c42e3a6a" id="r_a248236ef7cadd6661b6f6fb9c42e3a6a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a248236ef7cadd6661b6f6fb9c42e3a6a">SNEPPX_tuf_snapshot</a> (uint8_t *snapshot_out, size_t *snapshot_len)</td></tr>
+<tr class="memdesc:a248236ef7cadd6661b6f6fb9c42e3a6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Snapshot.  <br /></td></tr>
+<tr class="memitem:a275149dbba3bdf3cf00d4856b3f75bde" id="r_a275149dbba3bdf3cf00d4856b3f75bde"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a275149dbba3bdf3cf00d4856b3f75bde">SNEPPX_tuf_timestamp</a> (uint8_t *timestamp_out, size_t *timestamp_len)</td></tr>
+<tr class="memdesc:a275149dbba3bdf3cf00d4856b3f75bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Timestamp.  <br /></td></tr>
+<tr class="memitem:a342d3edb931fb8e11890cfa251617934" id="r_a342d3edb931fb8e11890cfa251617934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a342d3edb931fb8e11890cfa251617934">SNEPPX_tuf_verify_snapshot</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, const uint8_t *snapshot, size_t snapshot_len)</td></tr>
+<tr class="memdesc:a342d3edb931fb8e11890cfa251617934"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Verify Snapshot.  <br /></td></tr>
+<tr class="memitem:aa094e46e1efaf6cd1c440c155d4f6877" id="r_aa094e46e1efaf6cd1c440c155d4f6877"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa094e46e1efaf6cd1c440c155d4f6877">SNEPPX_tuf_verify_timestamp</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, const uint8_t *timestamp, size_t timestamp_len)</td></tr>
+<tr class="memdesc:aa094e46e1efaf6cd1c440c155d4f6877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Verify Timestamp.  <br /></td></tr>
+<tr class="memitem:aabb05a7ef4de6264ce9d3a37af70f034" id="r_aabb05a7ef4de6264ce9d3a37af70f034"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabb05a7ef4de6264ce9d3a37af70f034">SNEPPX_tuf_get_keys_loaded</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf)</td></tr>
+<tr class="memdesc:aabb05a7ef4de6264ce9d3a37af70f034"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Get Keys Loaded.  <br /></td></tr>
 <tr class="memitem:a7128fb627688e73dbabaa4aad0728c08" id="r_a7128fb627688e73dbabaa4aad0728c08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7128fb627688e73dbabaa4aad0728c08">SNEPPX_bsdiff</a> (const uint8_t *old_data, size_t old_len, const uint8_t *new_data, size_t new_len, uint8_t *patch, size_t *patch_len)</td></tr>
 <tr class="memdesc:a7128fb627688e73dbabaa4aad0728c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff.  <br /></td></tr>
 <tr class="memitem:a6689c4b8497f7913aeb47e9a3619d50f" id="r_a6689c4b8497f7913aeb47e9a3619d50f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6689c4b8497f7913aeb47e9a3619d50f">SNEPPX_bspatch</a> (const uint8_t *old_data, size_t old_len, const uint8_t *patch, size_t patch_len, uint8_t *new_data, size_t *new_len)</td></tr>
@@ -239,7 +259,7 @@ Functions</h2></td></tr>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00248">248</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00243">243</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -279,7 +299,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00259">259</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00254">254</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -309,7 +329,7 @@ Functions</h2></td></tr>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00272">272</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00267">267</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -377,7 +397,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00177">177</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00172">172</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -435,7 +455,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00956">956</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00916">916</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -524,7 +544,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00458">458</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00453">453</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -593,7 +613,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00228">228</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00223">223</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -655,7 +675,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00968">968</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00928">928</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -731,7 +751,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00336">336</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00331">331</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -761,7 +781,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00346">346</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00341">341</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -822,7 +842,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00388">388</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00383">383</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -852,7 +872,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00374">374</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00369">369</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -882,7 +902,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00412">412</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00407">407</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -940,7 +960,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00290">290</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00285">285</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -984,7 +1004,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00650">650</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00640">640</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1045,7 +1065,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00363">363</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00358">358</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1092,7 +1112,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00304">304</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00299">299</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1156,7 +1176,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00319">319</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00314">314</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1167,6 +1187,94 @@ Here is the call graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="155,17,190,19,184,19,155,22"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="ae6adb17fd32287417d685af6ce25efdf" name="ae6adb17fd32287417d685af6ce25efdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6adb17fd32287417d685af6ce25efdf">&#9670;&#160;</a></span>SNEPPX_tuf_generate_keypair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_generate_keypair </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>key_type</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Generate Keypair. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00423">423</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a92462b98393037dd268f70c0723b054c" name="a92462b98393037dd268f70c0723b054c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92462b98393037dd268f70c0723b054c">&#9670;&#160;</a></span>SNEPPX_tuf_get_key()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_get_key </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>key_type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>key_out</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>key_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Get Key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tuf</td><td>[out] Tuf value. </td></tr>
+    <tr><td class="paramname">key_type</td><td>[in] Key Type value. </td></tr>
+    <tr><td class="paramname">key_out</td><td>[out] Key Out value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00568">568</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="aabb05a7ef4de6264ce9d3a37af70f034" name="aabb05a7ef4de6264ce9d3a37af70f034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb05a7ef4de6264ce9d3a37af70f034">&#9670;&#160;</a></span>SNEPPX_tuf_get_keys_loaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_get_keys_loaded </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Get Keys Loaded. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00876">876</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1197,16 +1305,94 @@ Here is the call graph for this function:</div>
 0 on success, -1 on error. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00125">125</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8h_a1fe4ef6801561881c12f84361df11b21_cgraph.png" border="0" usemap="#as7__extensions_8h_a1fe4ef6801561881c12f84361df11b21_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8h_a1fe4ef6801561881c12f84361df11b21_cgraph" id="as7__extensions_8h_a1fe4ef6801561881c12f84361df11b21_cgraph">
-<area shape="rect" title="Initialize Tuf." alt="" coords="5,5,131,33"/>
-<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="179,5,351,33"/>
-<area shape="poly" title=" " alt="" coords="131,17,166,19,160,19,131,22"/>
-</map>
+
 </div>
+</div>
+<a id="a23829e6a51109a495d595de57ad4bc5f" name="a23829e6a51109a495d595de57ad4bc5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23829e6a51109a495d595de57ad4bc5f">&#9670;&#160;</a></span>SNEPPX_tuf_is_initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_is_initialized </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Is Initialized. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00553">553</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a726d1ed2caccaa06cecbbce25d37b789" name="a726d1ed2caccaa06cecbbce25d37b789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a726d1ed2caccaa06cecbbce25d37b789">&#9670;&#160;</a></span>SNEPPX_tuf_revoke_key()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_revoke_key </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>key_type</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Revoke Key. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00434">434</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a5ad86664b148ed2fb882f51150f33241" name="a5ad86664b148ed2fb882f51150f33241"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad86664b148ed2fb882f51150f33241">&#9670;&#160;</a></span>SNEPPX_tuf_set_key()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_set_key </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>key_type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>key_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Set Key. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tuf</td><td>[out] Tuf value. </td></tr>
+    <tr><td class="paramname">key_type</td><td>[in] Key Type value. </td></tr>
+    <tr><td class="paramname">key</td><td>[in] Key value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00728">728</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1267,7 +1453,109 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00146">146</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00141">141</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a248236ef7cadd6661b6f6fb9c42e3a6a" name="a248236ef7cadd6661b6f6fb9c42e3a6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a248236ef7cadd6661b6f6fb9c42e3a6a">&#9670;&#160;</a></span>SNEPPX_tuf_snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_snapshot </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>snapshot_out</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>snapshot_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Snapshot. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshot_out</td><td>[out] Snapshot Out value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00824">824</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a275149dbba3bdf3cf00d4856b3f75bde" name="a275149dbba3bdf3cf00d4856b3f75bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a275149dbba3bdf3cf00d4856b3f75bde">&#9670;&#160;</a></span>SNEPPX_tuf_timestamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_timestamp </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>timestamp_out</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>timestamp_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Timestamp. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timestamp_out</td><td>[out] Timestamp Out value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00837">837</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a342d3edb931fb8e11890cfa251617934" name="a342d3edb931fb8e11890cfa251617934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a342d3edb931fb8e11890cfa251617934">&#9670;&#160;</a></span>SNEPPX_tuf_verify_snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_verify_snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>snapshot</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>snapshot_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Verify Snapshot. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tuf</td><td>[out] Tuf value. </td></tr>
+    <tr><td class="paramname">snapshot</td><td>[in] Snapshot value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00851">851</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1314,7 +1602,45 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00160">160</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00155">155</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="aa094e46e1efaf6cd1c440c155d4f6877" name="aa094e46e1efaf6cd1c440c155d4f6877"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa094e46e1efaf6cd1c440c155d4f6877">&#9670;&#160;</a></span>SNEPPX_tuf_verify_timestamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_tuf_verify_timestamp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>tuf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>timestamp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>timestamp_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Tuf Verify Timestamp. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tuf</td><td>[out] Tuf value. </td></tr>
+    <tr><td class="paramname">timestamp</td><td>[in] Timestamp value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00865">865</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>

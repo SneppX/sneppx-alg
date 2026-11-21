@@ -1,5 +1,15 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__DifferentialAttn.html#add930e2a6eed37e2c504ff50267a1dce":[1,0,99,1],
+"structSNEPPX__DifferentialAttn.html#aeb222e9d737b6bf9ca0d8930f7de6db1":[1,0,99,4],
+"structSNEPPX__DistributedConfig.html":[1,0,100],
+"structSNEPPX__DistributedConfig.html#a04c594759cc011b9e20906a2a4ee9f9b":[1,0,100,7],
+"structSNEPPX__DistributedConfig.html#a0707566cf88b2fd7e492c2e79c87f7a9":[1,0,100,19],
+"structSNEPPX__DistributedConfig.html#a20d174c52b1a767844a87cd90631b3ab":[1,0,100,5],
+"structSNEPPX__DistributedConfig.html#a2adfbcb03f15c067b1ae07eb8f83a1a5":[1,0,100,3],
+"structSNEPPX__DistributedConfig.html#a355bf13f549f591db90931f90bd7a8ac":[1,0,100,4],
+"structSNEPPX__DistributedConfig.html#a3896a08284682b51065a439f82e650be":[1,0,100,24],
+"structSNEPPX__DistributedConfig.html#a41fec338f9427db4bd4d6240accd5771":[1,0,100,18],
 "structSNEPPX__DistributedConfig.html#a42fe4882dd181c180bb25a17ecdd1506":[1,0,100,8],
 "structSNEPPX__DistributedConfig.html#a505d1c88e910f1c00bc5f8aa14f8e99e":[1,0,100,12],
 "structSNEPPX__DistributedConfig.html#a57fe10b87cdb68b9b2bea106d2c4d145":[1,0,100,14],
@@ -239,15 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__OptimizerState.html#a1e1228f025ed7d0025acaa5d7162cef3":[1,0,124,14],
 "structSNEPPX__OptimizerState.html#a32f6a996f403f4a2d6a1a7b776a66416":[1,0,124,3],
 "structSNEPPX__OptimizerState.html#a347ae38cee8a8831fbf8e24aaa564207":[1,0,124,20],
-"structSNEPPX__OptimizerState.html#a36fc186a7afe02cf9c0ec9588eb05f0b":[1,0,124,16],
-"structSNEPPX__OptimizerState.html#a4f5278aead95b25efd01edfa718742dd":[1,0,124,9],
-"structSNEPPX__OptimizerState.html#a6d13f524415b66d9de991dda0cbeea34":[1,0,124,18],
-"structSNEPPX__OptimizerState.html#a7602c911bdaab168c891866077ba33c0":[1,0,124,21],
-"structSNEPPX__OptimizerState.html#a8225f9d795864246df5cac51bfcd469e":[1,0,124,11],
-"structSNEPPX__OptimizerState.html#a8fd3ae4d71a7915b6a06ab0795243414":[1,0,124,2],
-"structSNEPPX__OptimizerState.html#aa2be718a792e83bad92db56b3072c254":[1,0,124,1],
-"structSNEPPX__OptimizerState.html#aa47de713ec59d53735c3c3b48b76400f":[1,0,124,13],
-"structSNEPPX__OptimizerState.html#aaf6893edd447e91eb442983618595ca0":[1,0,124,22],
-"structSNEPPX__OptimizerState.html#ab675d9ee2e76468f84415641ec069565":[1,0,124,4],
-"structSNEPPX__OptimizerState.html#ac928c0c3ccff25032cbf14ddc179e104":[1,0,124,12]
+"structSNEPPX__OptimizerState.html#a36fc186a7afe02cf9c0ec9588eb05f0b":[1,0,124,16]
 };

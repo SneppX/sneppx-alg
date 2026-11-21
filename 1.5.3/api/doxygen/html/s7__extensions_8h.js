@@ -25,7 +25,17 @@ var s7__extensions_8h =
     [ "SNEPPX_offline_bundle_create", "s7__extensions_8h.html#a5cc5a0d0c0f8f8d7d417dd2b0577bd6b", null ],
     [ "SNEPPX_tpm_pcr_read", "s7__extensions_8h.html#a9c7e446ae9202b339b98eb9b61afa744", null ],
     [ "SNEPPX_tpm_quote", "s7__extensions_8h.html#a69507816dba7393969bc090bff9d2be7", null ],
+    [ "SNEPPX_tuf_generate_keypair", "s7__extensions_8h.html#ae6adb17fd32287417d685af6ce25efdf", null ],
+    [ "SNEPPX_tuf_get_key", "s7__extensions_8h.html#a92462b98393037dd268f70c0723b054c", null ],
+    [ "SNEPPX_tuf_get_keys_loaded", "s7__extensions_8h.html#aabb05a7ef4de6264ce9d3a37af70f034", null ],
     [ "SNEPPX_tuf_init", "s7__extensions_8h.html#a1fe4ef6801561881c12f84361df11b21", null ],
+    [ "SNEPPX_tuf_is_initialized", "s7__extensions_8h.html#a23829e6a51109a495d595de57ad4bc5f", null ],
+    [ "SNEPPX_tuf_revoke_key", "s7__extensions_8h.html#a726d1ed2caccaa06cecbbce25d37b789", null ],
+    [ "SNEPPX_tuf_set_key", "s7__extensions_8h.html#a5ad86664b148ed2fb882f51150f33241", null ],
     [ "SNEPPX_tuf_sign_root", "s7__extensions_8h.html#a4100eddb976aca8b816b4ae9c6d9ac4e", null ],
-    [ "SNEPPX_tuf_verify_targets", "s7__extensions_8h.html#ad9e2b8d07bfa0cffe55e4097bb285682", null ]
+    [ "SNEPPX_tuf_snapshot", "s7__extensions_8h.html#a248236ef7cadd6661b6f6fb9c42e3a6a", null ],
+    [ "SNEPPX_tuf_timestamp", "s7__extensions_8h.html#a275149dbba3bdf3cf00d4856b3f75bde", null ],
+    [ "SNEPPX_tuf_verify_snapshot", "s7__extensions_8h.html#a342d3edb931fb8e11890cfa251617934", null ],
+    [ "SNEPPX_tuf_verify_targets", "s7__extensions_8h.html#ad9e2b8d07bfa0cffe55e4097bb285682", null ],
+    [ "SNEPPX_tuf_verify_timestamp", "s7__extensions_8h.html#aa094e46e1efaf6cd1c440c155d4f6877", null ]
 ];
