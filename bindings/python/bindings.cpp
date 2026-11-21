@@ -104,7 +104,7 @@ size_t SNEPPX_dtype_itemsize(SNEPPXDtype d) {
     return SNEPPX_tensor_dtype_size(d);
 }
 
-static std::vector<size_t> pyarray_to_sizevec(py::array a) {
+static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0) {
     if (!a) throw std::invalid_argument("shape/repetitions array is required");
     py::buffer_info original = a.request();
     if (original.ndim != 1)
@@ -112,8 +112,8 @@ static std::vector<size_t> pyarray_to_sizevec(py::array a) {
     const std::string kind = py::cast<std::string>(a.dtype().attr("kind"));
     if (kind != "i" && kind != "u")
         throw std::invalid_argument("shape/repetitions must contain integers");
-    if (original.size > 16)
-        throw std::invalid_argument("tensor dimensions cannot exceed 16");
+    if (max_dims != 0 && static_cast<size_t>(original.size) > max_dims)
+        throw std::invalid_argument("dimension count exceeds the operation limit");
 
     using ShapeArray = py::array_t<py::ssize_t,
         py::array::c_style | py::array::forcecast>;

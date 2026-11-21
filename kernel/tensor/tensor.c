@@ -1015,8 +1015,9 @@ SNEPPXTensor** SNEPPX_tensor_split(const SNEPPXTensor* src, size_t num_splits, s
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_tile(const SNEPPXTensor* src, const size_t* reps, size_t reps_ndim) {
-    if (!src || !reps) return NULL;
+    if (!src || !reps || reps_ndim > 16) return NULL;
     size_t out_ndim = (src->ndim > reps_ndim) ? src->ndim : reps_ndim;
+    if (out_ndim > 16) return NULL;
     size_t out_shape[16];
     size_t offset = out_ndim - src->ndim;
     for (size_t i = 0; i < out_ndim; i++) {

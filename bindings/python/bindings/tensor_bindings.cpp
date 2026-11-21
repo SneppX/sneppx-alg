@@ -167,7 +167,7 @@ public:
         if (itemsize == 0 || ptr->size > std::numeric_limits<size_t>::max() / itemsize)
             throw std::overflow_error("tensor byte size is invalid");
         const size_t nbytes = ptr->size * itemsize;
-        if (buf.size < 0 || buf.itemsize < 0 ||
+        if (buf.size < 0 || buf.itemsize <= 0 ||
             static_cast<size_t>(buf.size) > std::numeric_limits<size_t>::max() /
                 static_cast<size_t>(buf.itemsize) ||
             static_cast<size_t>(buf.size) * static_cast<size_t>(buf.itemsize) != nbytes)
@@ -341,7 +341,10 @@ public:
     }
 
     PyTensor tile(py::array reps) const {
-        auto sv = pyarray_to_sizevec(reps);
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        if (ptr->ndim > 16)
+            throw std::runtime_error("tile supports tensors with at most 16 dimensions");
+        auto sv = pyarray_to_sizevec(reps, 16);
         return PyTensor(SNEPPX_tensor_tile(ptr, sv.data(), sv.size()));
     }
 
@@ -489,7 +492,6 @@ public:
 
 static void init_tensor(py::module& m) {
     py::class_<PyTensor>(m, "_Tensor")
-        .def(py::init<>())
         .def_static("create", &PyTensor::create)
         .def_static("empty", &PyTensor::empty)
         .def_static("zeros", &PyTensor::zeros)

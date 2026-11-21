@@ -129,12 +129,21 @@ def test_native_shape_conversion_accepts_integer_dtypes_and_strides():
         np.array([-1, 3], dtype=np.int64),
         np.array([2.5, 3.0], dtype=np.float64),
         np.ones((2, 2), dtype=np.int64),
-        np.ones(17, dtype=np.int64),
     ],
 )
 def test_native_shape_conversion_rejects_invalid_dimensions(shape):
     with pytest.raises((ValueError, RuntimeError, TypeError)):
         cb._get_Tensor().create(shape, cb._ext.SNEPPXDtype.FLOAT32)
+
+
+def test_native_shape_conversion_preserves_supported_high_rank_tensors():
+    tensor = cb._get_Tensor().zeros(
+        np.ones(17, dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32
+    )
+    assert tensor.ndim == 17
+    assert tensor.shape == (1,) * 17
+    with pytest.raises(RuntimeError, match="16 dimensions"):
+        tensor.tile(np.ones(17, dtype=np.int64))
 
 
 def test_native_set_data_copies_non_contiguous_arrays():
