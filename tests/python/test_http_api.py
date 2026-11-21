@@ -197,6 +197,7 @@ def static_server(tmp_path):
     static_root = tmp_path / "public"
     static_root.mkdir()
     (static_root / "hello.txt").write_text("safe static content", encoding="utf-8")
+    (static_root / "empty.txt").write_bytes(b"")
     outside = tmp_path / "secret.txt"
     outside.write_text("must not be exposed", encoding="utf-8")
     env = os.environ.copy()
@@ -258,6 +259,33 @@ def test_static_file_symlink_escape_is_blocked(static_server):
     )
     assert not response.startswith(b"HTTP/1.1 200")
     assert outside.read_text(encoding="utf-8").encode() not in response
+
+
+
+def test_static_file_empty_file_is_served(static_server):
+    port, _, _ = static_server
+    response = _raw_http_request(
+        port, b"GET /static/empty.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+    )
+    assert response.startswith(b"HTTP/1.1 200")
+    assert b"Content-Length: 0\r\n" in response
+
+
+def test_static_file_prefix_collision_is_not_served(static_server):
+    port, _, _ = static_server
+    response = _raw_http_request(
+        port, b"GET /staticity/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+    )
+    assert response.startswith(b"HTTP/1.1 404")
+
+
+def test_static_file_rejects_non_get_method(static_server):
+    port, _, _ = static_server
+    response = _raw_http_request(
+        port, b"POST /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\nContent-Length: 0\r\n\r\n"
+    )
+    assert response.startswith(b"HTTP/1.1 405 Method Not Allowed")
+    assert b"Allow: GET\r\n" in response
 
 
 def test_health_endpoint(server):

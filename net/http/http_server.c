@@ -360,9 +360,27 @@ static const char* find_header(SNEPPX_HttpRequest* req, const char* name) {
     return NULL;
 }
 
+static int is_http_token_char(unsigned char ch);
 static void add_header(SNEPPX_HttpResponse* resp, const char* name, const char* value) {
-    if (resp->num_headers >= MAX_HEADERS) return;
-    snprintf(resp->headers[resp->num_headers++], 256, "%s: %s", name, value);
+    if (!resp || !name || !value || resp->num_headers >= MAX_HEADERS) return;
+    size_t name_len = strlen(name);
+    size_t value_len = strlen(value);
+    if (name_len == 0 || name_len + 2 + value_len >= sizeof(resp->headers[0])) return;
+    for (size_t i = 0; i < name_len; i++)
+        if (!is_http_token_char((unsigned char)name[i])) return;
+    for (size_t i = 0; i < value_len; i++) {
+        unsigned char ch = (unsigned char)value[i];
+        if ((ch < 0x20 && ch != '\t') || ch == 0x7f) return;
+    }
+    if ((name_len == 14 && ascii_equal_n(name, "Content-Length", 14)) ||
+        (name_len == 17 && ascii_equal_n(name, "Transfer-Encoding", 17))) return;
+    char* dest = resp->headers[resp->num_headers];
+    memcpy(dest, name, name_len);
+    dest[name_len] = ':';
+    dest[name_len + 1] = ' ';
+    memcpy(dest + name_len + 2, value, value_len);
+    dest[name_len + 2 + value_len] = '\0';
+    resp->num_headers++;
 }
 
 /* ---- Parse HTTP request ---- */
@@ -517,40 +535,62 @@ static int parse_http_request(const char* raw, size_t raw_len, SNEPPX_HttpReques
 /* ---- Build HTTP response ---- */
 
 static int build_response(SNEPPX_HttpResponse* resp, char* out, size_t out_max) {
-    const char* status_text = "OK";
+    if (!resp || !out || out_max == 0 || resp->num_headers < 0 ||
+        resp->num_headers > MAX_HEADERS || resp->body_len >= sizeof(resp->body)) return -1;
     int sc = resp->status_code;
-    if (sc == 404) status_text = "Not Found";
-    else if (sc == 401) status_text = "Unauthorized";
-    else if (sc == 403) status_text = "Forbidden";
-    else if (sc == 500) status_text = "Internal Server Error";
-    else if (sc == 429) status_text = "Too Many Requests";
-    else if (sc == 400) status_text = "Bad Request";
-
-    /* Default content-type if not set */
-    int has_content_type = 0;
-    for (int i = 0; i < resp->num_headers; i++) {
-        if (str_starts_with(resp->headers[i], "Content-Type")) { has_content_type = 1; break; }
+    if (sc < 100 || sc > 599) return -1;
+    const char* status_text = "Unknown";
+    switch (sc) {
+        case 200: status_text = "OK"; break;
+        case 201: status_text = "Created"; break;
+        case 202: status_text = "Accepted"; break;
+        case 204: status_text = "No Content"; break;
+        case 400: status_text = "Bad Request"; break;
+        case 401: status_text = "Unauthorized"; break;
+        case 403: status_text = "Forbidden"; break;
+        case 404: status_text = "Not Found"; break;
+        case 405: status_text = "Method Not Allowed"; break;
+        case 408: status_text = "Request Timeout"; break;
+        case 413: status_text = "Payload Too Large"; break;
+        case 415: status_text = "Unsupported Media Type"; break;
+        case 422: status_text = "Unprocessable Content"; break;
+        case 429: status_text = "Too Many Requests"; break;
+        case 431: status_text = "Request Header Fields Too Large"; break;
+        case 500: status_text = "Internal Server Error"; break;
+        case 503: status_text = "Service Unavailable"; break;
+        default: break;
     }
-
     size_t pos = 0;
     int n = snprintf(out, out_max, "HTTP/1.1 %d %s\r\n", sc, status_text);
-    if (n > 0) pos += (size_t)n;
+    if (n < 0 || (size_t)n >= out_max) return -1;
+    pos = (size_t)n;
+    int has_content_type = 0;
     for (int i = 0; i < resp->num_headers; i++) {
-        n = snprintf(out + pos, out_max - pos, "%s\r\n", resp->headers[i]);
-        if (n > 0) pos += (size_t)n;
+        const char* colon = strchr(resp->headers[i], ':');
+        if (!colon) return -1;
+        size_t name_len = (size_t)(colon - resp->headers[i]);
+        if (name_len == 12 && ascii_equal_n(resp->headers[i], "Content-Type", 12))
+            has_content_type = 1;
+        size_t remaining = out_max - pos;
+        n = snprintf(out + pos, remaining, "%s\r\n", resp->headers[i]);
+        if (n < 0 || (size_t)n >= remaining) return -1;
+        pos += (size_t)n;
     }
     if (!has_content_type) {
-        n = snprintf(out + pos, out_max - pos, "Content-Type: text/plain\r\n");
-        if (n > 0) pos += (size_t)n;
+        size_t remaining = out_max - pos;
+        n = snprintf(out + pos, remaining, "Content-Type: text/plain\r\n");
+        if (n < 0 || (size_t)n >= remaining) return -1;
+        pos += (size_t)n;
     }
-    n = snprintf(out + pos, out_max - pos, "Content-Length: %u\r\n\r\n", (unsigned)resp->body_len);
-    if (n > 0) pos += (size_t)n;
-    if (resp->body_len > 0 && pos + resp->body_len < out_max) {
-        memcpy(out + pos, resp->body, resp->body_len);
-        pos += resp->body_len;
-    }
+    size_t remaining = out_max - pos;
+    n = snprintf(out + pos, remaining, "Content-Length: %u\r\n\r\n", (unsigned)resp->body_len);
+    if (n < 0 || (size_t)n >= remaining) return -1;
+    pos += (size_t)n;
+    if (pos >= out_max || resp->body_len > out_max - pos - 1) return -1;
+    if (resp->body_len) memcpy(out + pos, resp->body, resp->body_len);
+    pos += resp->body_len;
     out[pos] = '\0';
-    return (int)pos;
+    return pos > (size_t)INT_MAX ? -1 : (int)pos;
 }
 
 /* ---- Handle single connection ---- */
@@ -648,36 +688,74 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
     if (!abort) {
         int handled = 0;
         for (int i = 0; i < srv->num_static_dirs; i++) {
-            if (str_starts_with(req.path, srv->static_dirs[i][0])) {
-                const char* rel = req.path + strlen(srv->static_dirs[i][0]);
-                if (*rel == '/') rel++;
-                char filepath[512];
-                int path_len = snprintf(filepath, sizeof(filepath), "%s/%s", srv->static_dirs[i][1], rel);
-                if (path_len < 0 || (size_t)path_len >= sizeof(filepath) ||
-                    !path_is_within_directory(srv->static_dirs[i][1], filepath)) continue;
-                FILE* f = fopen(filepath, "rb");
-                if (f) {
-                    fseek(f, 0, SEEK_END);
-                    long flen = ftell(f);
-                    fseek(f, 0, SEEK_SET);
-                    if (flen > 0 && (size_t)flen < BUF_SIZE) {
-                        resp.body_len = (size_t)fread(resp.body, 1, (size_t)flen, f);
-                        add_header(&resp, "Content-Type", "application/octet-stream");
-                        const char* ext = strrchr(filepath, '.');
-                        if (ext) {
-                            if (strcmp(ext, ".html") == 0) add_header(&resp, "Content-Type", "text/html");
-                            else if (strcmp(ext, ".css") == 0) add_header(&resp, "Content-Type", "text/css");
-                            else if (strcmp(ext, ".js") == 0) add_header(&resp, "Content-Type", "application/javascript");
-                            else if (strcmp(ext, ".json") == 0) add_header(&resp, "Content-Type", "application/json");
-                            else if (strcmp(ext, ".png") == 0) add_header(&resp, "Content-Type", "image/png");
-                            else if (strcmp(ext, ".jpg") == 0 || strcmp(ext, ".jpeg") == 0) add_header(&resp, "Content-Type", "image/jpeg");
-                        }
-                    }
-                    fclose(f);
-                    handled = 1;
-                    break;
-                }
+            const char* prefix = srv->static_dirs[i][0];
+            size_t prefix_len = strlen(prefix);
+            if (strncmp(req.path, prefix, prefix_len) != 0 ||
+                (req.path[prefix_len] != '\0' && req.path[prefix_len] != '/')) continue;
+            handled = 1;
+            if (strcmp(req.method, "GET") != 0) {
+                resp.status_code = 405;
+                add_header(&resp, "Allow", "GET");
+                SNEPPX_http_response_set_body_str(&resp, "Method Not Allowed");
+                break;
             }
+            const char* rel = req.path + prefix_len;
+            if (*rel == '/') rel++;
+            if (!*rel) {
+                resp.status_code = 404;
+                SNEPPX_http_response_set_body_str(&resp, "Not Found");
+                break;
+            }
+            char filepath[512];
+            int path_len = snprintf(filepath, sizeof(filepath), "%s/%s", srv->static_dirs[i][1], rel);
+            if (path_len < 0 || (size_t)path_len >= sizeof(filepath) ||
+                !path_is_within_directory(srv->static_dirs[i][1], filepath)) {
+                resp.status_code = 404;
+                SNEPPX_http_response_set_body_str(&resp, "Not Found");
+                break;
+            }
+            FILE* f = fopen(filepath, "rb");
+            if (!f) {
+                resp.status_code = 404;
+                SNEPPX_http_response_set_body_str(&resp, "Not Found");
+                break;
+            }
+            if (fseek(f, 0, SEEK_END) != 0) {
+                fclose(f);
+                resp.status_code = 500;
+                SNEPPX_http_response_set_body_str(&resp, "Static file read failed");
+                break;
+            }
+            long flen = ftell(f);
+            if (flen < 0 || (unsigned long)flen >= sizeof(resp.body) || fseek(f, 0, SEEK_SET) != 0) {
+                fclose(f);
+                resp.status_code = 413;
+                SNEPPX_http_response_set_body_str(&resp, "Static file is too large");
+                break;
+            }
+            size_t file_size = (size_t)flen;
+            size_t bytes_read = file_size ? fread(resp.body, 1, file_size, f) : 0;
+            int read_failed = bytes_read != file_size || ferror(f);
+            fclose(f);
+            if (read_failed) {
+                resp.status_code = 500;
+                SNEPPX_http_response_set_body_str(&resp, "Static file read failed");
+                break;
+            }
+            resp.body_len = file_size;
+            resp.body[file_size] = '\0';
+            const char* content_type = "application/octet-stream";
+            const char* ext = strrchr(filepath, '.');
+            if (ext) {
+                if (strcmp(ext, ".html") == 0) content_type = "text/html";
+                else if (strcmp(ext, ".css") == 0) content_type = "text/css";
+                else if (strcmp(ext, ".js") == 0) content_type = "application/javascript";
+                else if (strcmp(ext, ".json") == 0) content_type = "application/json";
+                else if (strcmp(ext, ".png") == 0) content_type = "image/png";
+                else if (strcmp(ext, ".jpg") == 0 || strcmp(ext, ".jpeg") == 0) content_type = "image/jpeg";
+            }
+            add_header(&resp, "Content-Type", content_type);
+            break;
         }
         if (!handled) {
             for (int i = 0; i < srv->num_routes; i++) {
@@ -953,12 +1031,20 @@ int SNEPPX_http_server_add_route(SNEPPX_HttpServer* srv, const char* method, con
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_http_server_add_static_dir(SNEPPX_HttpServer* srv, const char* url_prefix, const char* dir_path) {
-    if (!srv || srv->num_static_dirs >= MAX_ROUTES) return -1;
-    int i = srv->num_static_dirs++;
-    strncpy(srv->static_dirs[i][0], url_prefix, 255);
-    srv->static_dirs[i][0][255] = '\0';
-    strncpy(srv->static_dirs[i][1], dir_path, 255);
-    srv->static_dirs[i][1][255] = '\0';
+    if (!srv || !url_prefix || !dir_path || !url_prefix[0] || !dir_path[0] ||
+        srv->num_static_dirs >= MAX_ROUTES) return -1;
+    size_t prefix_len = strlen(url_prefix);
+    size_t dir_len = strlen(dir_path);
+    if (prefix_len < 2 || prefix_len >= sizeof(srv->static_dirs[0][0]) ||
+        dir_len >= sizeof(srv->static_dirs[0][1]) || url_prefix[0] != '/' ||
+        url_prefix[prefix_len - 1] == '/' || strchr(url_prefix, '?') ||
+        strchr(url_prefix, '#') || strchr(url_prefix, '\\')) return -1;
+    for (int i = 0; i < srv->num_static_dirs; i++)
+        if (strcmp(srv->static_dirs[i][0], url_prefix) == 0) return -1;
+    int i = srv->num_static_dirs;
+    memcpy(srv->static_dirs[i][0], url_prefix, prefix_len + 1);
+    memcpy(srv->static_dirs[i][1], dir_path, dir_len + 1);
+    srv->num_static_dirs++;
     return 0;
 }
 
