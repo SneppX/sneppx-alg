@@ -38,6 +38,7 @@
   #include <dirent.h>
   #include <sys/stat.h>
   #include <fcntl.h>
+  #include <limits.h>
   typedef int sock_t;
   #define SNEPPX_INVALID_SOCKET (-1)
   #define snepx_close close
@@ -242,6 +243,47 @@ static void server_send_busy_response(sock_t client_fd) {
 static int str_starts_with(const char* s, const char* prefix) {
     while (*prefix) { if (*s++ != *prefix++) return 0; }
     return 1;
+}
+
+/* Resolve both paths before comparing them so traversal and symlink escapes
+ * cannot expose files outside a configured static directory. */
+static int path_is_within_directory(const char* root, const char* candidate) {
+#ifdef _WIN32
+    char resolved_root[MAX_PATH * 4];
+    char resolved_candidate[MAX_PATH * 4];
+    HANDLE root_handle = CreateFileA(root, FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL,
+        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    if (root_handle == INVALID_HANDLE_VALUE) return 0;
+    HANDLE candidate_handle = CreateFileA(candidate, FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL,
+        OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    if (candidate_handle == INVALID_HANDLE_VALUE) {
+        CloseHandle(root_handle);
+        return 0;
+    }
+    DWORD root_len = GetFinalPathNameByHandleA(root_handle, resolved_root,
+        (DWORD)sizeof(resolved_root), FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+    DWORD candidate_len = GetFinalPathNameByHandleA(candidate_handle, resolved_candidate,
+        (DWORD)sizeof(resolved_candidate), FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+    CloseHandle(candidate_handle);
+    CloseHandle(root_handle);
+    if (root_len == 0 || candidate_len == 0 ||
+        root_len >= sizeof(resolved_root) || candidate_len >= sizeof(resolved_candidate) ||
+        candidate_len <= root_len) return 0;
+    if (_strnicmp(resolved_root, resolved_candidate, root_len) != 0) return 0;
+    return resolved_root[root_len - 1] == '\\' || resolved_root[root_len - 1] == '/' ||
+           resolved_candidate[root_len] == '\\' || resolved_candidate[root_len] == '/';
+#else
+    char resolved_root[PATH_MAX];
+    char resolved_candidate[PATH_MAX];
+    if (!realpath(root, resolved_root) || !realpath(candidate, resolved_candidate)) return 0;
+    size_t root_len = strlen(resolved_root);
+    size_t candidate_len = strlen(resolved_candidate);
+    if (candidate_len <= root_len || strncmp(resolved_root, resolved_candidate, root_len) != 0) return 0;
+    if (root_len == 1 && resolved_root[0] == '/') return resolved_candidate[0] == '/';
+    return resolved_candidate[root_len] == '/';
+#endif
 }
 
 static void split_query(const char* path, char* out_path, char* out_query) {
@@ -610,7 +652,9 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv) {
                 const char* rel = req.path + strlen(srv->static_dirs[i][0]);
                 if (*rel == '/') rel++;
                 char filepath[512];
-                snprintf(filepath, sizeof(filepath), "%s/%s", srv->static_dirs[i][1], rel);
+                int path_len = snprintf(filepath, sizeof(filepath), "%s/%s", srv->static_dirs[i][1], rel);
+                if (path_len < 0 || (size_t)path_len >= sizeof(filepath) ||
+                    !path_is_within_directory(srv->static_dirs[i][1], filepath)) continue;
                 FILE* f = fopen(filepath, "rb");
                 if (f) {
                     fseek(f, 0, SEEK_END);

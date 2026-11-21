@@ -32,7 +32,7 @@
 /* Demo: run the SneppX C HTTP server with the standard /v1/* REST endpoints.
  *
  * Usage:
- *   http_server_demo [port] [api_key_db]
+ *   http_server_demo [port] [api_key_db] [static_dir]
  *
  * Endpoints:
  *   GET  /v1/health            (public)
@@ -70,6 +70,14 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    if (argc > 3 && argv[3][0] != '\0' &&
+        SNEPPX_http_server_add_static_dir(srv, "/static", argv[3]) != 0) {
+        fprintf(stderr, "ERROR: failed to register static directory\n");
+        SNEPPX_http_api_destroy(api);
+        SNEPPX_http_server_destroy(srv);
+        return 1;
+    }
+
     SNEPPX_HttpAuth* auth = SNEPPX_http_auth_create(db_path);
     const char* api_key = getenv("SNEPPX_HTTP_API_KEY");
     if (!auth || !api_key || SNEPPX_http_auth_add_key(auth, api_key) != 0 ||
@@ -85,6 +93,8 @@ int main(int argc, char** argv) {
 
     printf("SneppX C HTTP server listening on 127.0.0.1:%d (loopback only; no TLS)\n", port);
     printf("For remote access, place a TLS reverse proxy in front of this listener.\n");
+    if (argc > 3 && argv[3][0] != '\0')
+        printf("Static files: http://127.0.0.1:%d/static/\n", port);
     printf("  GET  /v1/health         (public)\n");
     printf("  GET  /v1/models         (public)\n");
     printf("  GET  /v1/models/{id}    (public)\n");

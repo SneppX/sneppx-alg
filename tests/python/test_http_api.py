@@ -191,6 +191,74 @@ def test_incomplete_declared_body_is_rejected(server):
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
 
+@pytest.fixture
+def static_server(tmp_path):
+    port = _free_port()
+    static_root = tmp_path / "public"
+    static_root.mkdir()
+    (static_root / "hello.txt").write_text("safe static content", encoding="utf-8")
+    outside = tmp_path / "secret.txt"
+    outside.write_text("must not be exposed", encoding="utf-8")
+    env = os.environ.copy()
+    env["SNEPPX_HTTP_API_KEY"] = "sk-sneppx-test-token-2026"
+    proc = subprocess.Popen(
+        [BIN, str(port), str(tmp_path / "keys.db"), str(static_root)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        env=env,
+    )
+    url = "http://127.0.0.1:%d/static/hello.txt" % port
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=1) as response:
+                if response.status == 200:
+                    break
+        except Exception:
+            time.sleep(0.2)
+    else:
+        proc.terminate()
+        pytest.fail("HTTP static-file server did not become ready")
+    yield port, static_root, outside
+    proc.terminate()
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+
+
+def test_static_file_inside_root_is_served(static_server):
+    port, _, _ = static_server
+    response = _raw_http_request(
+        port, b"GET /static/hello.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+    )
+    assert response.startswith(b"HTTP/1.1 200")
+    assert b"safe static content" in response
+
+
+def test_static_file_parent_traversal_is_blocked(static_server):
+    port, _, outside = static_server
+    response = _raw_http_request(
+        port, b"GET /static/../secret.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+    )
+    assert not response.startswith(b"HTTP/1.1 200")
+    assert outside.read_text(encoding="utf-8").encode() not in response
+
+
+def test_static_file_symlink_escape_is_blocked(static_server, tmp_path):
+    port, static_root, outside = static_server
+    link = static_root / "outside.txt"
+    try:
+        link.symlink_to(outside)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink creation is unavailable on this platform")
+    response = _raw_http_request(
+        port, b"GET /static/outside.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+    )
+    assert not response.startswith(b"HTTP/1.1 200")
+    assert outside.read_text(encoding="utf-8").encode() not in response
+
+
 def test_health_endpoint(server):
     port, _ = server
     with urllib.request.urlopen("http://127.0.0.1:%d/v1/health" % port) as r:
