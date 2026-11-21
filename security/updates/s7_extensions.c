@@ -241,7 +241,9 @@ int SNEPPX_bspatch(const uint8_t* old_data, size_t old_len,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_init(SNEPPXABPartition* ab) {
-    if (!ab) return -1; memset(ab, 0, sizeof(*ab)); ab->active_slot = 0; ab->inactive_slot = 1; ab->swap_ready = 0; return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -252,11 +254,9 @@ int SNEPPX_ab_partition_init(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_mark_good(SNEPPXABPartition* ab, int slot) {
-    if (!ab) return -1;
-    uint8_t* target = slot == 0 ? ab->slot_a_hash : ab->slot_b_hash;
-    uint64_t t = (uint64_t)time(NULL) ^ (uint64_t)(uintptr_t)ab;
-    for (int i = 0; i < 32; i++) { target[i] = (uint8_t)(t >> (i % 8) * 8) ^ (uint8_t)(i * 17); }
-    return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab; (void)slot;
+    return -1;
 }
 
 /**
@@ -265,13 +265,9 @@ int SNEPPX_ab_partition_mark_good(SNEPPXABPartition* ab, int slot) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_swap(SNEPPXABPartition* ab) {
-    if (!ab) return -1;
-    uint8_t* active_hash = ab->active_slot == 0 ? ab->slot_a_hash : ab->slot_b_hash;
-    int active_good = 0;
-    for (int i = 0; i < 32; i++) { if (active_hash[i]) { active_good = 1; break; } }
-    if (!active_good) return -1;
-    int tmp = ab->active_slot; ab->active_slot = ab->inactive_slot; ab->inactive_slot = tmp; ab->swap_ready = 1;
-    return 1;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -460,8 +456,9 @@ int SNEPPX_bsdiff_with_signature(const uint8_t* old_data, size_t old_len, const 
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_rollback(int slot) {
-    if (slot < 0 || slot > 1) return -1;
-    return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)slot;
+    return -1;
 }
 
 /**
@@ -591,7 +588,9 @@ int SNEPPX_bsdiff_total_size(const uint8_t* patch, size_t patch_len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_get_active_slot(SNEPPXABPartition* ab) {
-    return ab ? ab->active_slot : -1;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -600,7 +599,9 @@ int SNEPPX_ab_partition_get_active_slot(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_get_inactive_slot(SNEPPXABPartition* ab) {
-    return ab ? ab->inactive_slot : -1;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -609,7 +610,9 @@ int SNEPPX_ab_partition_get_inactive_slot(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_is_swap_ready(SNEPPXABPartition* ab) {
-    return ab ? ab->swap_ready : 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -724,10 +727,9 @@ int SNEPPX_tuf_set_key(SNEPPXTUFMetadata* tuf, int key_type, const uint8_t* key,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_mark_slot_bad(SNEPPXABPartition* ab, int slot) {
-    if (!ab || (slot != 0 && slot != 1)) return -1;
-    uint8_t* target = slot == 0 ? ab->slot_a_hash : ab->slot_b_hash;
-    memset(target, 0, 32);
-    return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab; (void)slot;
+    return -1;
 }
 
 /**
@@ -738,10 +740,9 @@ int SNEPPX_ab_mark_slot_bad(SNEPPXABPartition* ab, int slot) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_slot_is_good(SNEPPXABPartition* ab, int slot) {
-    if (!ab || (slot != 0 && slot != 1)) return 0;
-    uint8_t* target = slot == 0 ? ab->slot_a_hash : ab->slot_b_hash;
-    for (int i = 0; i < 32; i++) if (target[i]) return 1;
-    return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab; (void)slot;
+    return -1;
 }
 
 /**
@@ -770,12 +771,9 @@ uint32_t SNEPPX_tpm_get_variable(int index) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_force_swap(SNEPPXABPartition* ab) {
-    if (!ab) return -1;
-    int tmp = ab->active_slot;
-    ab->active_slot = ab->inactive_slot;
-    ab->inactive_slot = tmp;
-    ab->swap_ready = 1;
-    return 0;
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -948,7 +946,9 @@ int SNEPPX_bspatch_apply_patch(const char* old_path, const char* patch_path, con
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_get_active(SNEPPXABPartition* ab) {
-    return SNEPPX_ab_partition_get_active_slot(ab);
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -957,7 +957,9 @@ int SNEPPX_ab_partition_get_active(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_partition_get_inactive(SNEPPXABPartition* ab) {
-    return SNEPPX_ab_partition_get_inactive_slot(ab);
+    /* No real A/B storage or bootloader integration is configured. */
+    (void)ab;
+    return -1;
 }
 
 /**
@@ -966,8 +968,9 @@ int SNEPPX_ab_partition_get_inactive(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ab_set_bootloader_slot(int slot) {
+    /* No real A/B storage or bootloader integration is configured. */
     (void)slot;
-    return 0;
+    return -1;
 }
 
 /**

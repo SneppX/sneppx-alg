@@ -155,6 +155,18 @@ int  SNEPPX_ab_partition_mark_good(SNEPPXABPartition* ab, int slot);
  */
 int  SNEPPX_ab_partition_swap(SNEPPXABPartition* ab);
 
+/* A/B compatibility APIs are disabled until real slot storage and bootloader integration exist. */
+int SNEPPX_ab_rollback(int slot);
+int SNEPPX_ab_partition_get_active_slot(SNEPPXABPartition* ab);
+int SNEPPX_ab_partition_get_inactive_slot(SNEPPXABPartition* ab);
+int SNEPPX_ab_partition_is_swap_ready(SNEPPXABPartition* ab);
+int SNEPPX_ab_mark_slot_bad(SNEPPXABPartition* ab, int slot);
+int SNEPPX_ab_slot_is_good(SNEPPXABPartition* ab, int slot);
+int SNEPPX_ab_force_swap(SNEPPXABPartition* ab);
+int SNEPPX_ab_partition_get_active(SNEPPXABPartition* ab);
+int SNEPPX_ab_partition_get_inactive(SNEPPXABPartition* ab);
+int SNEPPX_ab_set_bootloader_slot(int slot);
+
 /* Manifest verification */
 /**
  * @brief Verify Manifest.

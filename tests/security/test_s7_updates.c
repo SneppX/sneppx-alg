@@ -347,11 +347,25 @@ static void test_legacy_manifest_buffer_verification_fails_closed(void) {
               "32-bit hash manifest verifier is disabled");
 }
 
-static void test_ab_partition(void) {
-    SNEPPXABPartition ab;
-    SX_ASSERT(SNEPPX_ab_partition_init(&ab) == 0, "ab init");
-    SX_ASSERT(SNEPPX_ab_partition_mark_good(&ab, 0) == 0, "mark slot 0 good");
-    SX_ASSERT(SNEPPX_ab_partition_swap(&ab) == 1, "swap ready");
+static void test_legacy_ab_apis_fail_closed_without_mutating_state(void) {
+    SNEPPXABPartition ab, original;
+    memset(&ab, 0xA5, sizeof(ab));
+    memcpy(&original, &ab, sizeof(ab));
+    SX_ASSERT(SNEPPX_ab_partition_init(&ab) == -1, "unimplemented A/B init fails closed");
+    SX_ASSERT(memcmp(&ab, &original, sizeof(ab)) == 0, "A/B init preserves caller state");
+    SX_ASSERT(SNEPPX_ab_partition_mark_good(&ab, 0) == -1, "fake slot-good marking disabled");
+    SX_ASSERT(SNEPPX_ab_partition_swap(&ab) == -1, "simulated A/B swap disabled");
+    SX_ASSERT(SNEPPX_ab_rollback(0) == -1, "no-op rollback disabled");
+    SX_ASSERT(SNEPPX_ab_partition_get_active_slot(&ab) == -1, "active slot state unavailable");
+    SX_ASSERT(SNEPPX_ab_partition_get_inactive_slot(&ab) == -1, "inactive slot state unavailable");
+    SX_ASSERT(SNEPPX_ab_partition_is_swap_ready(&ab) == -1, "swap-ready state unavailable");
+    SX_ASSERT(SNEPPX_ab_mark_slot_bad(&ab, 0) == -1, "fake bad-slot marking disabled");
+    SX_ASSERT(SNEPPX_ab_slot_is_good(&ab, 0) == -1, "unverified slot-good result unavailable");
+    SX_ASSERT(SNEPPX_ab_force_swap(&ab) == -1, "force swap disabled");
+    SX_ASSERT(SNEPPX_ab_partition_get_active(&ab) == -1, "active slot alias unavailable");
+    SX_ASSERT(SNEPPX_ab_partition_get_inactive(&ab) == -1, "inactive slot alias unavailable");
+    SX_ASSERT(SNEPPX_ab_set_bootloader_slot(1) == -1, "bootloader slot operation disabled");
+    SX_ASSERT(memcmp(&ab, &original, sizeof(ab)) == 0, "failed A/B operations preserve state");
 }
 
 static void test_canary_rollout(void) {
@@ -393,6 +407,6 @@ TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_m
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_buffer_verification_fails_closed) { test_legacy_manifest_buffer_verification_fails_closed(); }
-TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
+TEST(test_s7_updates, legacy_ab_apis_fail_closed_without_mutating_state) { test_legacy_ab_apis_fail_closed_without_mutating_state(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }
 TEST(test_s7_updates, dep_resolver) { test_dep_resolver(); }
