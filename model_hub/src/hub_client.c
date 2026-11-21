@@ -209,9 +209,25 @@ static int winhttp_request(
         return -1;
     }
 
-    /* Convert wide chars to UTF-8 */
-    WideCharToMultiByte(CP_UTF8, 0, uc.lpszHostName, -1, host, sizeof(host), NULL, NULL);
-    WideCharToMultiByte(CP_UTF8, 0, uc.lpszUrlPath, -1, url_path, sizeof(url_path), NULL, NULL);
+    /* Convert wide chars to UTF-8 and validate the parsed URL scheme. */
+    host[0] = '\\0';
+    url_path[0] = '\\0';
+    if (!WideCharToMultiByte(CP_UTF8, 0, uc.lpszHostName, -1, host, sizeof(host), NULL, NULL)) {
+        set_error(ctx, "Failed to decode URL host");
+        return -1;
+    }
+    if (uc.nScheme != INTERNET_SCHEME_HTTP && uc.nScheme != INTERNET_SCHEME_HTTPS) {
+        set_error(ctx, "Only HTTP and HTTPS Hub URLs are supported");
+        return -1;
+    }
+    int use_tls = (uc.nScheme == INTERNET_SCHEME_HTTPS);
+    int is_loopback = (_stricmp(host, "localhost") == 0 ||
+                       strcmp(host, "127.0.0.1") == 0 ||
+                       strcmp(host, "::1") == 0);
+    if (ctx->api_key[0] && !use_tls && !is_loopback) {
+        set_error(ctx, "Refusing to send Hub API key over non-local HTTP; use HTTPS");
+        return -1;
+    }
 
     hConnect = WinHttpConnect(ctx->hSession, uc.lpszHostName, uc.nPort, 0);
     if (!hConnect) {
@@ -222,8 +238,7 @@ static int winhttp_request(
     utf8_to_wide(wide_method, sizeof(wide_method) / sizeof(WCHAR), method);
     utf8_to_wide(wide_path, sizeof(wide_path) / sizeof(WCHAR), path);
     hRequest = WinHttpOpenRequest(hConnect, wide_method, wide_path, NULL, NULL, NULL,
-                                  uc.nPort == INTERNET_DEFAULT_HTTPS_PORT ?
-                                  WINHTTP_FLAG_SECURE : 0);
+                                  use_tls ? WINHTTP_FLAG_SECURE : 0);
     if (!hRequest) {
         set_error(ctx, "Failed to create HTTP request");
         WinHttpCloseHandle(hConnect);

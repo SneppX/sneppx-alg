@@ -48,6 +48,7 @@ jobs:
             tests/python/test_distributed_sampler_contract.py \
             tests/python/test_tokenizer.py \
             tests/python/test_tensor.py \
+            model_hub/tests/test_client_transport_security.py \\
             tests/python/test_acvp_kat_harness.py \
             tests/python/test_nn.py \
             tests/python/test_optim.py \
