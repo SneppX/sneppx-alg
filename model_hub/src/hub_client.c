@@ -57,6 +57,29 @@ static char *str_dup(const char *s) {
 }
 
 #ifdef SNEPPX_HUB_USE_WINHTTP
+static int custom_header_contains_credentials(const SNEPPXHubContext *ctx) {
+    static const char *sensitive_names[] = {
+        "Authorization", "Proxy-Authorization", "Cookie", "X-API-Key",
+        "API-Key", "X-Auth-Token", "X-Access-Token"
+    };
+    if (!ctx) return 0;
+    for (int i = 0; i < ctx->num_custom_headers; i++) {
+        const char *header = ctx->custom_headers[i];
+        const char *colon = strchr(header, ':');
+        if (!colon) continue;
+        const char *name = header;
+        while (name < colon && (*name == ' ' || *name == '\\t')) name++;
+        size_t name_len = (size_t)(colon - name);
+        while (name_len && (name[name_len - 1] == ' ' || name[name_len - 1] == '\\t')) name_len--;
+        for (size_t j = 0; j < sizeof(sensitive_names) / sizeof(sensitive_names[0]); j++) {
+            size_t expected_len = strlen(sensitive_names[j]);
+            if (name_len == expected_len && _strnicmp(name, sensitive_names[j], name_len) == 0)
+                return 1;
+        }
+    }
+    return 0;
+}
+
 static void utf8_to_wide(WCHAR *dst, size_t dst_chars, const char *src) {
     if (!dst || dst_chars == 0) return;
     if (!src) {
@@ -223,9 +246,11 @@ static int winhttp_request(
     int use_tls = (uc.nScheme == INTERNET_SCHEME_HTTPS);
     int is_loopback = (_stricmp(host, "localhost") == 0 ||
                        strcmp(host, "127.0.0.1") == 0 ||
-                       strcmp(host, "::1") == 0);
-    if (ctx->api_key[0] && !use_tls && !is_loopback) {
-        set_error(ctx, "Refusing to send Hub API key over non-local HTTP; use HTTPS");
+                       strcmp(host, "::1") == 0 ||
+                       strcmp(host, "[::1]") == 0);
+    if ((ctx->api_key[0] || custom_header_contains_credentials(ctx)) &&
+        !use_tls && !is_loopback) {
+        set_error(ctx, "Refusing to send Hub credentials over non-local HTTP; use HTTPS");
         return -1;
     }
 
