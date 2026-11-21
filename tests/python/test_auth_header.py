@@ -1,5 +1,7 @@
 """Focused tests for HTTP Authorization header parsing."""
 
+import pytest
+
 from SneppX_ALG.interface_bindings.security_middleware import (
     AuthConfig,
     Authenticator,
@@ -7,6 +9,7 @@ from SneppX_ALG.interface_bindings.security_middleware import (
     SecurityConfig,
     SecurityMiddleware,
 )
+from SneppX_ALG.interface_bindings.serving_client import ServingClient
 
 
 def test_bearer_scheme_is_case_insensitive():
@@ -94,3 +97,28 @@ def test_disabled_rate_limiter_allows_requests():
     )
     assert middleware.check_rate_limit("user", "static") == (True, "")
     assert middleware.check_rate_limit("user", "static") == (True, "")
+
+
+@pytest.mark.parametrize("url", ["http://api.example.com", "http://127.0.0.1.evil"])
+def test_serving_client_rejects_api_key_over_remote_http(url):
+    with pytest.raises(ValueError, match="HTTPS"):
+        ServingClient(base_url=url, api_key="test-api-key")
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://localhost:8300",
+        "http://127.0.0.1:8300",
+        "http://[::1]:8300",
+        "https://api.example.com",
+    ],
+)
+def test_serving_client_allows_api_key_over_tls_or_loopback(url):
+    client = ServingClient(base_url=url, api_key="test-api-key")
+    assert client.api_key == "test-api-key"
+
+
+def test_serving_client_allows_remote_http_without_api_key():
+    client = ServingClient(base_url="http://api.example.com")
+    assert client.base_url == "http://api.example.com"

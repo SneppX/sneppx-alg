@@ -12,6 +12,7 @@ import json
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 from typing import Any, Dict, List, Optional, Tuple
 
 __all__ = ["ServingClient", "ServingError"]
@@ -26,6 +27,17 @@ class ServingClient:
 
     def __init__(self, base_url: str = "http://127.0.0.1:8300",
                  api_key: Optional[str] = None, timeout: float = 10.0):
+        try:
+            parsed_url = urlsplit(base_url)
+            hostname = (parsed_url.hostname or "").lower()
+        except ValueError as exc:
+            raise ValueError("base_url must be a valid HTTP(S) URL") from exc
+        if parsed_url.scheme not in {"http", "https"} or not hostname:
+            raise ValueError("base_url must be a valid HTTP(S) URL")
+        is_loopback = hostname in {"localhost", "127.0.0.1", "::1"}
+        if api_key and parsed_url.scheme != "https" and not is_loopback:
+            raise ValueError("refusing to send a serving API key over non-local HTTP; use HTTPS")
+
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout = timeout
