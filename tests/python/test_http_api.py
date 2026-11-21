@@ -107,20 +107,24 @@ def _raw_http_request(port, payload, shutdown_write=False):
         client.close()
 
 
-def test_slow_client_is_closed_by_receive_timeout(server):
+def test_slow_client_receives_timeout_response_and_is_closed(server):
     port, _ = server
     client = socket.create_connection(("127.0.0.1", port), timeout=2)
     try:
         client.sendall(b"GET /v1/health HTTP/1.1\r\nHost: localhost\r\n")
         client.settimeout(8)
         started = time.monotonic()
-        data = client.recv(1)
+        response = bytearray()
+        while True:
+            chunk = client.recv(4096)
+            if not chunk:
+                break
+            response.extend(chunk)
         elapsed = time.monotonic() - started
-        assert data == b""
+        assert bytes(response).startswith(b"HTTP/1.1 408 Request Timeout")
         assert 3.0 <= elapsed < 8.0
     finally:
         client.close()
-
 
 def test_connection_limit_returns_service_unavailable(server):
     port, _ = server
