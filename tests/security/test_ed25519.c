@@ -106,6 +106,26 @@ void test_reject_noncanonical_point_encoding(void) {
             SNEPPX_ed25519_verify(public_key, message, sizeof(message), &sig) == -1);
 }
 
+
+void test_reject_small_order_public_key(void) {
+    uint8_t public_key[32] = {1}; /* Encoded identity point. */
+    uint8_t message[] = "small-order public key";
+    SNEPPXEd25519Signature sig;
+    memset(&sig, 0, sizeof(sig));
+    SX_TEST("reject identity public key",
+            SNEPPX_ed25519_verify(public_key, message, sizeof(message), &sig) == 0);
+}
+
+void test_reject_negative_zero_point_encoding(void) {
+    uint8_t public_key[32] = {1};
+    public_key[31] = 0x80; /* x = 0 with sign bit set. */
+    uint8_t message[] = "negative zero point";
+    SNEPPXEd25519Signature sig;
+    memset(&sig, 0, sizeof(sig));
+    SX_TEST("reject negative-zero public-key encoding",
+            SNEPPX_ed25519_verify(public_key, message, sizeof(message), &sig) == -1);
+}
+
 void test_large_message(void) {
     printf("\n--- test_large_message ---\n");
     SNEPPXEd25519Keypair kp;
@@ -128,4 +148,6 @@ TEST(test_ed25519, test_sign_verify) { test_sign_verify(); }
 TEST(test_ed25519, test_signature_malleability) { test_signature_malleability(); }
 TEST(test_ed25519, test_reject_noncanonical_scalar) { test_reject_noncanonical_scalar(); }
 TEST(test_ed25519, test_reject_noncanonical_point_encoding) { test_reject_noncanonical_point_encoding(); }
+TEST(test_ed25519, test_reject_small_order_public_key) { test_reject_small_order_public_key(); }
+TEST(test_ed25519, test_reject_negative_zero_point_encoding) { test_reject_negative_zero_point_encoding(); }
 TEST(test_ed25519, test_large_message) { test_large_message(); }

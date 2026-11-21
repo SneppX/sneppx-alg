@@ -276,6 +276,10 @@ static int point_from_bytes(point* p, const uint8_t b[32]) {
         if (!SNEPPX_ct_is_zero(ck, 32)) { return -1; }
         fe_mul(&p->X, &p->X, &SQRTM1);
     }
+    /* RFC 8032 forbids the negative-zero encoding (x = 0, sign bit = 1). */
+    uint8_t x_encoding[32];
+    fe_to_bytes(x_encoding, &p->X);
+    if (SNEPPX_ct_is_zero(x_encoding, sizeof(x_encoding)) && (b[31] & 0x80)) return -1;
     if ((p->X.v[0] & 1) != (b[31] >> 7)) fe_neg(&p->X, &p->X);
     fe_mul(&p->T, &p->X, &p->Y);
     return 0;
@@ -405,6 +409,27 @@ static int scalar_is_canonical(const uint8_t scalar[32]) {
         if (scalar[i] > L_BYTES[i]) return 0;
     }
     return 0;
+}
+
+/* Strict verification requires A and R to be non-identity points in the
+ * prime-order subgroup. Checking [L]P = identity rejects torsion components;
+ * checking [8]P != identity also rejects the identity/small-order points. */
+static int point_is_identity(point* p) {
+    point_normalize(p);
+    uint8_t x[32], y[32], zero[32] = {0}, one[32] = {1};
+    fe_to_bytes(x, &p->X);
+    fe_to_bytes(y, &p->Y);
+    return SNEPPX_ct_equal(x, zero, sizeof(x)) &&
+           SNEPPX_ct_equal(y, one, sizeof(y));
+}
+
+static int point_is_valid_verification_point(const point* p) {
+    static const uint8_t eight[32] = {8};
+    point order_check, cofactor_check;
+    point_scalar_mult(&order_check, L_BYTES, sizeof(L_BYTES), p);
+    if (!point_is_identity(&order_check)) return 0;
+    point_scalar_mult(&cofactor_check, eight, sizeof(eight), p);
+    return !point_is_identity(&cofactor_check);
 }
 
 /* Subtract L << (8*shift) from t[64]; return 0 if result >= 0, 1 if borrow */
@@ -604,6 +629,8 @@ static int ed25519_verify_core(const uint8_t* public_key, const uint8_t* message
     point R;
     int ret_R = point_from_bytes(&R, sig->data);
     if (ret_R != 0) return -1;
+    if (!point_is_valid_verification_point(&A) ||
+        !point_is_valid_verification_point(&R)) return 0;
 
     /* Verify: [S]B = R + [h]A */
     uint8_t h_scalar[32];
