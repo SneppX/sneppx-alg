@@ -26,6 +26,18 @@ extern "C" {
 #endif
 
 // ============================================================================
+// Communication Backend Abstraction
+// ============================================================================
+
+typedef enum {
+    SNEPPX_BACKEND_NCCL,
+    SNEPPX_BACKEND_TCP, // Placeholder for future implementation
+    SNEPPX_BACKEND_NONE
+} SNEPPX_BackendType;
+
+typedef struct SNEPPX_CommBackend SNEPPX_CommBackend;
+
+// ============================================================================
 // NCCL Communication Primitives
 // ============================================================================
 

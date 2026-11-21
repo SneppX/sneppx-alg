@@ -48,10 +48,18 @@ typedef struct {
     int (*ncclGetErrorString)(int, const char**);
     
     int loaded;
-} SNEPPX_NCCLBackend;
+} SNEPPX_NCCL_Impl;
 
-static SNEPPX_NCCLBackend g_nccl_backend = {0};
-static int g_nccl_initialized = 0;
+typedef struct {
+    int type;
+    union {
+        SNEPPX_NCCL_Impl nccl;
+    } impl;
+    int initialized;
+} SNEPPX_CommBackend;
+
+static SNEPPX_NCCL_Impl g_nccl_impl = {0};
+static SNEPPX_CommBackend g_comm_backend = {0};
 
 // Convert SNEPPX data type to NCCL data type
 static int sneppx_nccl_to_nccl_dtype(SNEPPX_NCCL_DataType dt) {
@@ -85,7 +93,7 @@ int sneppx_dlclose(void* handle);
 
 // Try to load NCCL library dynamically
 static int sneppx_nccl_try_load(void) {
-    if (g_nccl_backend.loaded) return 1;
+    if (g_comm_backend.impl.nccl.loaded) return 1;
     
 #if defined(_WIN32) || defined(_WIN64)
     const char* libs[] = {"nccl.dll", "libnccl.dll"};
@@ -94,30 +102,30 @@ static int sneppx_nccl_try_load(void) {
 #endif
     
     for (int i = 0; i < sizeof(libs) / sizeof(libs[0]); i++) {
-        g_nccl_backend.handle = sneppx_dlopen(libs[i], 1);
-        if (g_nccl_backend.handle) break;
+        g_comm_backend.impl.nccl.handle = sneppx_dlopen(libs[i], 1);
+        if (g_comm_backend.impl.nccl.handle) break;
     }
     
-    if (!g_nccl_backend.handle) {
+    if (!g_comm_backend.impl.nccl.handle) {
         fprintf(stderr, "[SNEPPX NCCL] Warning: NCCL library not found, using CPU fallback\n");
         return 0;
     }
     
     // Load symbols
-    g_nccl_backend.ncclGetVersion = (int (*)(int*))sneppx_dlsym(g_nccl_backend.handle, "ncclGetVersion");
-    g_nccl_backend.ncclGetUniqueId = (int (*)(void*))sneppx_dlsym(g_nccl_backend.handle, "ncclGetUniqueId");
-    g_nccl_backend.ncclCommInitRank = (int (*)(void**, int, void*, int))sneppx_dlsym(g_nccl_backend.handle, "ncclCommInitRank");
-    g_nccl_backend.ncclCommDestroy = (int (*)(void*))sneppx_dlsym(g_nccl_backend.handle, "ncclCommDestroy");
-    g_nccl_backend.ncclAllReduce = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclAllReduce");
-    g_nccl_backend.ncclAllGather = (int (*)(const void*, void*, size_t, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclAllGather");
-    g_nccl_backend.ncclBroadcast = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclBroadcast");
-    g_nccl_backend.ncclReduce = (int (*)(const void*, void*, size_t, int, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclReduce");
-    g_nccl_backend.ncclReduceScatter = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclReduceScatter");
-    g_nccl_backend.ncclSend = (int (*)(const void*, size_t, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclSend");
-    g_nccl_backend.ncclRecv = (int (*)(void*, size_t, int, int, void*, void*))sneppx_dlsym(g_nccl_backend.handle, "ncclRecv");
-    g_nccl_backend.ncclGetErrorString = (int (*)(int, const char**))sneppx_dlsym(g_nccl_backend.handle, "ncclGetErrorString");
+    g_comm_backend.impl.nccl.ncclGetVersion = (int (*)(int*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclGetVersion");
+    g_comm_backend.impl.nccl.ncclGetUniqueId = (int (*)(void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclGetUniqueId");
+    g_comm_backend.impl.nccl.ncclCommInitRank = (int (*)(void**, int, void*, int))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclCommInitRank");
+    g_comm_backend.impl.nccl.ncclCommDestroy = (int (*)(void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclCommDestroy");
+    g_comm_backend.impl.nccl.ncclAllReduce = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclAllReduce");
+    g_comm_backend.impl.nccl.ncclAllGather = (int (*)(const void*, void*, size_t, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclAllGather");
+    g_comm_backend.impl.nccl.ncclBroadcast = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclBroadcast");
+    g_comm_backend.impl.nccl.ncclReduce = (int (*)(const void*, void*, size_t, int, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclReduce");
+    g_comm_backend.impl.nccl.ncclReduceScatter = (int (*)(const void*, void*, size_t, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclReduceScatter");
+    g_comm_backend.impl.nccl.ncclSend = (int (*)(const void*, size_t, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclSend");
+    g_comm_backend.impl.nccl.ncclRecv = (int (*)(void*, size_t, int, int, void*, void*))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclRecv");
+    g_comm_backend.impl.nccl.ncclGetErrorString = (int (*)(int, const char**))sneppx_dlsym(g_comm_backend.impl.nccl.handle, "ncclGetErrorString");
     
-    g_nccl_backend.loaded = 1;
+    g_comm_backend.impl.nccl.loaded = 1;
     return 1;
 }
 
@@ -133,18 +141,18 @@ struct SNEPPX_NCCLComm {
 };
 
 int sneppx_nccl_initialize(void) {
-    if (g_nccl_initialized) return 0;
+    if (g_comm_backend.initialized) return 0;
     sneppx_nccl_try_load();
-    g_nccl_initialized = 1;
+    g_comm_backend.initialized = 1;
     return 0;
 }
 
 int sneppx_nccl_finalize(void) {
-    if (g_nccl_backend.handle) {
-        sneppx_dlclose(g_nccl_backend.handle);
-        memset(&g_nccl_backend, 0, sizeof(g_nccl_backend));
+    if (g_comm_backend.impl.nccl.handle) {
+        sneppx_dlclose(g_comm_backend.impl.nccl.handle);
+        memset(&g_comm_backend.impl.nccl, 0, sizeof(g_comm_backend.impl.nccl));
     }
-    g_nccl_initialized = 0;
+    g_comm_backend.initialized = 0;
     return 0;
 }
 
@@ -159,15 +167,15 @@ int sneppx_nccl_comm_init_rank(
     
     c->rank = rank;
     c->size = ndev;
-    c->use_nccl = g_nccl_backend.loaded;
+    c->use_nccl = g_comm_backend.impl.nccl.loaded;
     
-    if (c->use_nccl && g_nccl_backend.ncclCommInitRank) {
+    if (c->use_nccl && g_comm_backend.impl.nccl.ncclCommInitRank) {
         cudaSetDevice(devs ? devs[rank] : rank);
         
         void* uid = malloc(128);
         memset(uid, 0, 128);
         
-        int ret = g_nccl_backend.ncclCommInitRank(&c->nccl_comm, ndev, uid, rank);
+        int ret = g_comm_backend.impl.nccl.ncclCommInitRank(&c->nccl_comm, ndev, uid, rank);
         free(uid);
         
         if (ret != 0) {
@@ -182,8 +190,8 @@ int sneppx_nccl_comm_init_rank(
 
 int sneppx_nccl_comm_destroy(SNEPPX_NCCLComm* comm) {
     if (!comm) return -1;
-    if (comm->use_nccl && comm->nccl_comm && g_nccl_backend.ncclCommDestroy) {
-        g_nccl_backend.ncclCommDestroy(comm->nccl_comm);
+    if (comm->use_nccl && comm->nccl_comm && g_comm_backend.impl.nccl.ncclCommDestroy) {
+        g_comm_backend.impl.nccl.ncclCommDestroy(comm->nccl_comm);
     }
     free(comm);
     return 0;
@@ -233,8 +241,8 @@ int sneppx_nccl_all_reduce(
 ) {
     if (!comm || !sendbuf || !recvbuf) return -1;
     
-    if (comm->use_nccl && g_nccl_backend.ncclAllReduce) {
-        int ret = g_nccl_backend.ncclAllReduce(
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclAllReduce) {
+        int ret = g_comm_backend.impl.nccl.ncclAllReduce(
             sendbuf, recvbuf, count,
             sneppx_nccl_to_nccl_dtype(datatype),
             sneppx_nccl_to_nccl_op(op),
@@ -261,8 +269,8 @@ int sneppx_nccl_all_gather(
 ) {
     if (!comm || !sendbuf || !recvbuf) return -1;
     
-    if (comm->use_nccl && g_nccl_backend.ncclAllGather) {
-        int ret = g_nccl_backend.ncclAllGather(
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclAllGather) {
+        int ret = g_comm_backend.impl.nccl.ncclAllGather(
             sendbuf, recvbuf, sendcount,
             sneppx_nccl_to_nccl_dtype(datatype),
             comm->nccl_comm, stream
@@ -290,8 +298,8 @@ int sneppx_nccl_reduce(
 ) {
     if (!comm || !sendbuf || !recvbuf) return -1;
     
-    if (comm->use_nccl && g_nccl_backend.ncclReduce) {
-        int ret = g_nccl_backend.ncclReduce(
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclReduce) {
+        int ret = g_comm_backend.impl.nccl.ncclReduce(
             sendbuf, recvbuf, count,
             sneppx_nccl_to_nccl_dtype(datatype),
             sneppx_nccl_to_nccl_op(op), root,
@@ -324,8 +332,8 @@ int sneppx_nccl_reduce_scatter(
 ) {
     if (!comm || !sendbuf || !recvbuf) return -1;
     
-    if (comm->use_nccl && g_nccl_backend.ncclReduceScatter) {
-        int ret = g_nccl_backend.ncclReduceScatter(
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclReduceScatter) {
+        int ret = g_comm_backend.impl.nccl.ncclReduceScatter(
             sendbuf, recvbuf, recvcount,
             sneppx_nccl_to_nccl_dtype(datatype),
             sneppx_nccl_to_nccl_op(op),
@@ -348,8 +356,8 @@ int sneppx_nccl_send(
     SNEPPX_NCCLComm* comm, cudaStream_t stream
 ) {
     if (!comm || !buf) return -1;
-    if (comm->use_nccl && g_nccl_backend.ncclSend) {
-        return g_nccl_backend.ncclSend(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclSend) {
+        return g_comm_backend.impl.nccl.ncclSend(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
     }
     return 0;
 }
@@ -360,8 +368,8 @@ int sneppx_nccl_recv(
     SNEPPX_NCCLComm* comm, cudaStream_t stream
 ) {
     if (!comm || !buf) return -1;
-    if (comm->use_nccl && g_nccl_backend.ncclRecv) {
-        return g_nccl_backend.ncclRecv(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
+    if (comm->use_nccl && g_comm_backend.impl.nccl.ncclRecv) {
+        return g_comm_backend.impl.nccl.ncclRecv(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
     }
     return 0;
 }
