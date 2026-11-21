@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 from typing import Any, Dict, List, Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 try:
     import requests
@@ -38,8 +38,20 @@ class HubAPIClient:
     """HTTP client for the SNEPPX Model Hub API."""
 
     def __init__(self, base_url: str = "http://localhost:8000", api_key: Optional[str] = None):
-        self._base = base_url.rstrip("/")
+        try:
+            parsed_url = urlsplit(base_url)
+            hostname = (parsed_url.hostname or "").lower()
+        except ValueError as exc:
+            raise ValueError("base_url must be a valid HTTP(S) URL") from exc
+        if parsed_url.scheme not in {"http", "https"} or not hostname:
+            raise ValueError("base_url must be a valid HTTP(S) URL")
+
         self._api_key = api_key or os.environ.get("SNEPPX_HUB_API_KEY")
+        is_loopback = hostname in {"localhost", "127.0.0.1", "::1"}
+        if self._api_key and parsed_url.scheme != "https" and not is_loopback:
+            raise ValueError("refusing to send a Hub API key over non-local HTTP; use HTTPS")
+
+        self._base = base_url.rstrip("/")
         self._session = requests.Session() if requests else None
         if self._api_key and self._session:
             self._session.headers.update({"Authorization": f"Bearer {self._api_key}"})
