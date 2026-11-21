@@ -1,5 +1,13 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__DeviceProps.html":[1,0,98],
+"structSNEPPX__DeviceProps.html#a0b49ea71da2064d186d8850e8cacc545":[1,0,98,0],
+"structSNEPPX__DeviceProps.html#a0d99e080f94a96ffd1ab79178fe7bec5":[1,0,98,6],
+"structSNEPPX__DeviceProps.html#a0e8c94d75e4a598e4df379ee10c04a00":[1,0,98,4],
+"structSNEPPX__DeviceProps.html#a15202134b12a789b97d4a60ae0056193":[1,0,98,2],
+"structSNEPPX__DeviceProps.html#a27d3301e06b9069d998d9c9b6cce423e":[1,0,98,15],
+"structSNEPPX__DeviceProps.html#a2c57fe65e4ef67317f16171fe30d9125":[1,0,98,3],
+"structSNEPPX__DeviceProps.html#a2d6e7d5cf2524972981bfa89c7d1f3d6":[1,0,98,7],
 "structSNEPPX__DeviceProps.html#a327c741728f12d2f52848b68b03eb391":[1,0,98,5],
 "structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11],
 "structSNEPPX__DeviceProps.html#a801b9a8e6cda5b1a468e450d39d1dd62":[1,0,98,14],
@@ -241,13 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__MemoryStats.html#a54538f9d67e71cb6988c53f77366b7f9":[1,0,122,6],
 "structSNEPPX__MemoryStats.html#a65d4101453edb60b381cc6467d8d114e":[1,0,122,5],
 "structSNEPPX__MemoryStats.html#a7453ec5eb9e283f8aa5f0c599cbd45b2":[1,0,122,0],
-"structSNEPPX__MemoryStats.html#a7aa1e90fd4ffd53dd801f955122057a3":[1,0,122,2],
-"structSNEPPX__MemoryStats.html#add25e76ab580c40890b2e86a916b3f28":[1,0,122,3],
-"structSNEPPX__MemoryStats.html#af0f03aaf30f9f7b07c404dbeec8b955d":[1,0,122,4],
-"structSNEPPX__OptimizerConfig.html":[1,0,123],
-"structSNEPPX__OptimizerConfig.html#a12b917d8b7c704152d507a6745c396af":[1,0,123,2],
-"structSNEPPX__OptimizerConfig.html#a141a45d7a4b92177aede64bfcc1caddf":[1,0,123,8],
-"structSNEPPX__OptimizerConfig.html#a233544dc4a859d227ec9cfbafc55de11":[1,0,123,5],
-"structSNEPPX__OptimizerConfig.html#a3c5a14804b01cd04f48047d3e0d7ccf9":[1,0,123,6],
-"structSNEPPX__OptimizerConfig.html#a422291b9f4081f36a360c0be3d5fc998":[1,0,123,4]
+"structSNEPPX__MemoryStats.html#a7aa1e90fd4ffd53dd801f955122057a3":[1,0,122,2]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX29 =
 {
+"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da70e6a58d68e774802f314ff8001cc9e6":[2,0,2,1,0,8,1],
+"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85dab56874e620871ac88e1d2978dddebd10":[2,0,2,1,0,8,4],
+"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85dae87c6f787f3245e1186d1b3bf38d7e2c":[2,0,2,1,0,8,5],
+"soar__engine_8h.html#ad602035688ff80490d64a2669b90526b":[2,0,2,1,0,12],
+"soar__engine_8h.html#adab43b74a2afa60b258735f0ae639c5c":[2,0,2,1,0,20],
+"soar__engine_8h.html#ade817d6a92db0cb2395ab371a5ff93fc":[2,0,2,1,0,16],
+"soar__engine_8h_source.html":[2,0,2,1,0],
+"soc2__framework_8h.html":[2,0,2,5,4],
 "soc2__framework_8h.html#a2f108d87a4716ed3156df711f4f6d9ca":[2,0,2,5,4,12],
 "soc2__framework_8h.html#a313a3e1ffb3d74db951a0589ae28b66d":[2,0,2,5,4,3],
 "soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975":[2,0,2,5,4,6],
@@ -241,13 +249,5 @@ var NAVTREEINDEX29 =
 "structDropoutCtx.html#ad3cb390b34b2c8b010ec53ce0b8ded5d":[1,0,36,1],
 "structEmbeddingCtx.html":[1,0,37],
 "structEmbeddingCtx.html#a769deea67f361d4af5127b954c3b7560":[1,0,37,0],
-"structEmbeddingCtx.html#acdfc4a8ad291e4e32471d248a8d64d81":[1,0,37,1],
-"structEventLogEntry.html":[1,0,38],
-"structEventLogEntry.html#a2dda8602cc0560941e99ef3f57d46bf1":[1,0,38,0],
-"structEventLogEntry.html#a339a70d43f90027bc9c92e923b657991":[1,0,38,1],
-"structEventLogEntry.html#a9b5fe119b59bce7d322f8da0dac4f90e":[1,0,38,5],
-"structEventLogEntry.html#aa51c5532180b81e84ed16824f664ab7a":[1,0,38,4],
-"structEventLogEntry.html#ac1c46873eee38c0d2b237f4203bc54b7":[1,0,38,2],
-"structEventLogEntry.html#afd6d802c0630ff3cb2a103a30627e0e4":[1,0,38,3],
-"structExpCtx.html":[1,0,39]
+"structEmbeddingCtx.html#acdfc4a8ad291e4e32471d248a8d64d81":[1,0,37,1]
 };

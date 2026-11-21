@@ -1,5 +1,13 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXBlockedTopic.html#a72217b80adc37a04991233998b31791b":[1,0,165,1],
+"structSNEPPXBlockedTopic.html#a75b00f34afb8817ac610cdf7937e0b65":[1,0,165,0],
+"structSNEPPXBogusCF.html":[1,0,166],
+"structSNEPPXBogusCF.html#a3036ea8a5d2cd5eb7407ae7dc155dfb9":[1,0,166,1],
+"structSNEPPXBogusCF.html#a307f8d14f0d336d4a29d3c9f639cd5f8":[1,0,166,0],
+"structSNEPPXBugBountyTriage.html":[1,0,167],
+"structSNEPPXBugBountyTriage.html#a828adc62ea41633f8bd2577c2777e02e":[1,0,167,0],
+"structSNEPPXBugBountyTriage.html#ac3ffa284c69c76b202cd1508fffb4113":[1,0,167,1],
 "structSNEPPXBugBountyTriage.html#af208d3eab3c25829c9a93655049c635a":[1,0,167,2],
 "structSNEPPXCFG.html":[1,0,172],
 "structSNEPPXCFG.html#aa0df861ea11076869bc274e87cd757a1":[1,0,172,1],
@@ -241,13 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXDriverEntry.html#a882e3b043daa6a8f14d4f02c873ffff5":[1,0,193,8],
 "structSNEPPXDriverEntry.html#a92452c3ebcd046cb299ba75d60719a27":[1,0,193,5],
 "structSNEPPXDriverEntry.html#a995a5e769d67b13e4f7f1c5d7799e25d":[1,0,193,3],
-"structSNEPPXDriverEntry.html#a9bf6785afe37a6cc7f955aafca5b3267":[1,0,193,4],
-"structSNEPPXDriverEntry.html#a9caa20646aad6b34cc11d41e8a515867":[1,0,193,10],
-"structSNEPPXDriverEntry.html#aa5d989b60d378d69b14a727c9d8f4ee0":[1,0,193,0],
-"structSNEPPXDriverEntry.html#aab47b80bbb175347c3b08925fc8b5efc":[1,0,193,11],
-"structSNEPPXDriverInfo.html":[1,0,194],
-"structSNEPPXDriverInfo.html#a0eacb468064e35693455ab96368f98ce":[1,0,194,1],
-"structSNEPPXDriverInfo.html#ae811bc24537b112110bdcc3b0f5bc3c9":[1,0,194,0],
-"structSNEPPXEd25519Keypair.html":[1,0,195],
-"structSNEPPXEd25519Keypair.html#a3302e6d76e3d12010dd2b0791a720b9b":[1,0,195,0]
+"structSNEPPXDriverEntry.html#a9bf6785afe37a6cc7f955aafca5b3267":[1,0,193,4]
 };

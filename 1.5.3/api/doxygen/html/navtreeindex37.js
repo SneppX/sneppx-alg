@@ -1,5 +1,13 @@
 var NAVTREEINDEX37 =
 {
+"structSNEPPXNoiseHandshake.html#aaa495f9b34ed1854ce3fafc1dda68e11":[1,0,310,2],
+"structSNEPPXNoiseHandshakeState.html":[1,0,311],
+"structSNEPPXNoiseHandshakeState.html#a01d280f0a525b09f36aac9444bb7b640":[1,0,311,13],
+"structSNEPPXNoiseHandshakeState.html#a04264a99f44192ea5c21d1fd456bac71":[1,0,311,16],
+"structSNEPPXNoiseHandshakeState.html#a08c65a790ca9348fef70bca538b1e16f":[1,0,311,23],
+"structSNEPPXNoiseHandshakeState.html#a0b4d96f65647a75b603bf2b3fed4d820":[1,0,311,2],
+"structSNEPPXNoiseHandshakeState.html#a0f3a76592970cf50ddde3ce986b2a783":[1,0,311,20],
+"structSNEPPXNoiseHandshakeState.html#a2c7ded3130897168d41a6fcb50a023ce":[1,0,311,8],
 "structSNEPPXNoiseHandshakeState.html#a323e3b44c9b00e6c60c658a2ec3e2e84":[1,0,311,6],
 "structSNEPPXNoiseHandshakeState.html#a3dc9d41bfba0d2b7341825a8204cf957":[1,0,311,12],
 "structSNEPPXNoiseHandshakeState.html#a44a5d3342f2e492756da375acaaae57e":[1,0,311,5],
@@ -241,13 +249,5 @@ var NAVTREEINDEX37 =
 "structSNEPPXProceduralCache.html":[1,0,340],
 "structSNEPPXProceduralCache.html#a1273cb8a15af80488da35b7d0d5bbb64":[1,0,340,7],
 "structSNEPPXProceduralCache.html#a1b68a85d6f5400b6c0ddb2ad5024e448":[1,0,340,1],
-"structSNEPPXProceduralCache.html#a1e31a0e93a83bbfcbfa21133494b862e":[1,0,340,3],
-"structSNEPPXProceduralCache.html#a7520583fae4050dff1cc67d054c564b4":[1,0,340,4],
-"structSNEPPXProceduralCache.html#aa2c6e53e03a55044b5dc51b2968aff95":[1,0,340,2],
-"structSNEPPXProceduralCache.html#ab854b65cb1778d1de6d8894639921dd0":[1,0,340,5],
-"structSNEPPXProceduralCache.html#abd95c98cd92d06cdaec8d5b34488809b":[1,0,340,0],
-"structSNEPPXProceduralCache.html#ac65425f2c18052027a0139133aaa82bd":[1,0,340,6],
-"structSNEPPXProceduralConfig.html":[1,0,341],
-"structSNEPPXProceduralConfig.html#a4b7dcaec55f52c893abf31db20b4eb9a":[1,0,341,3],
-"structSNEPPXProceduralConfig.html#a74924133d62d5836bca2fc73b5bdf88e":[1,0,341,0]
+"structSNEPPXProceduralCache.html#a1e31a0e93a83bbfcbfa21133494b862e":[1,0,340,3]
 };

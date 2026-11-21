@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-21T11:18:30.765033+00:00",
+  "generated_at": "2026-11-21T11:32:20.510174+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -105,18 +105,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "70ceb2351985e506757300ba0f45b025bae34f26",
-      "file_count": 42572,
-      "commit_count": 114,
+      "commit": "ac5db8acce90e61e35122840044dde1b1d9cfdfc",
+      "file_count": 42578,
+      "commit_count": 116,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "80c50a40eee15ede08d7f01cb652b72b0bf61014",
+      "commit": "b6280777751ddda54c9b3b56a4a88386703a95b8",
       "file_count": 1613,
-      "commit_count": 2629,
+      "commit_count": 2630,
       "search_count": 0,
       "search_truncated": false
     },
@@ -297,6 +297,24 @@
       "commit": "c5d61ada96e7ebae635a59becbaef0373e42224e",
       "file_count": 1612,
       "commit_count": 2618,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/signed-update-api-hardening",
+      "id": "c2VjdXJpdHkvc2lnbmVkLXVwZGF0ZS1hcGktaGFyZGVuaW5n",
+      "commit": "150a7cf6395d5d1efdb32f6ed05916b2f4e96d96",
+      "file_count": 1613,
+      "commit_count": 2630,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/signed-update-api-hardening-clean",
+      "id": "c2VjdXJpdHkvc2lnbmVkLXVwZGF0ZS1hcGktaGFyZGVuaW5nLWNsZWFu",
+      "commit": "b6280777751ddda54c9b3b56a4a88386703a95b8",
+      "file_count": 1613,
+      "commit_count": 2630,
       "search_count": 0,
       "search_truncated": false
     },

@@ -1,5 +1,13 @@
 var NAVTREEINDEX33 =
 {
+"structSNEPPXDriverEntry.html#a9caa20646aad6b34cc11d41e8a515867":[1,0,193,10],
+"structSNEPPXDriverEntry.html#aa5d989b60d378d69b14a727c9d8f4ee0":[1,0,193,0],
+"structSNEPPXDriverEntry.html#aab47b80bbb175347c3b08925fc8b5efc":[1,0,193,11],
+"structSNEPPXDriverInfo.html":[1,0,194],
+"structSNEPPXDriverInfo.html#a0eacb468064e35693455ab96368f98ce":[1,0,194,1],
+"structSNEPPXDriverInfo.html#ae811bc24537b112110bdcc3b0f5bc3c9":[1,0,194,0],
+"structSNEPPXEd25519Keypair.html":[1,0,195],
+"structSNEPPXEd25519Keypair.html#a3302e6d76e3d12010dd2b0791a720b9b":[1,0,195,0],
 "structSNEPPXEd25519Keypair.html#aa74fce81aa544291f3cf972247e874ca":[1,0,195,1],
 "structSNEPPXEd25519Signature.html":[1,0,196],
 "structSNEPPXEd25519Signature.html#a7fa7866628ad1d46ef131f64634e98dc":[1,0,196,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX33 =
 "structSNEPPXFirewallRule.html#ab95a237b670de1eb40a21759ea058a4f":[1,0,218,4],
 "structSNEPPXFirewallRule.html#ac1039519cb8b60ad225dbf3e56e73390":[1,0,218,12],
 "structSNEPPXFirewallRule.html#ac69b65b23b71b0ff7f39b387eb07fc3a":[1,0,218,1],
-"structSNEPPXFirewallRule.html#acfdb2c3e4eb512d079e83ad363d87e7d":[1,0,218,9],
-"structSNEPPXFirewallRule.html#ae2c02a44661994bd4d0c9223ca6712b3":[1,0,218,8],
-"structSNEPPXFirewallRule.html#ae65d2b09db7ee4144608e0efbf778b1b":[1,0,218,14],
-"structSNEPPXFirewallRule.html#af24c37bbd141742bcd315e3adcd6bad6":[1,0,218,15],
-"structSNEPPXFirewallStats.html":[1,0,219],
-"structSNEPPXFirewallStats.html#a0a2ef4c36736d6c98841c436b8abbfb4":[1,0,219,4],
-"structSNEPPXFirewallStats.html#a44e165b2800df3e733b17084f00d54b4":[1,0,219,2],
-"structSNEPPXFirewallStats.html#ae339a4c66f13ca260a96cc9929147f28":[1,0,219,1],
-"structSNEPPXFirewallStats.html#ae708453febcfa344bf4366f2cddd879b":[1,0,219,0]
+"structSNEPPXFirewallRule.html#acfdb2c3e4eb512d079e83ad363d87e7d":[1,0,218,9]
 };

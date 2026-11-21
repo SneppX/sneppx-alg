@@ -1,5 +1,13 @@
 var NAVTREEINDEX44 =
 {
+"structSNEPPX__MemoryStats.html#add25e76ab580c40890b2e86a916b3f28":[1,0,122,3],
+"structSNEPPX__MemoryStats.html#af0f03aaf30f9f7b07c404dbeec8b955d":[1,0,122,4],
+"structSNEPPX__OptimizerConfig.html":[1,0,123],
+"structSNEPPX__OptimizerConfig.html#a12b917d8b7c704152d507a6745c396af":[1,0,123,2],
+"structSNEPPX__OptimizerConfig.html#a141a45d7a4b92177aede64bfcc1caddf":[1,0,123,8],
+"structSNEPPX__OptimizerConfig.html#a233544dc4a859d227ec9cfbafc55de11":[1,0,123,5],
+"structSNEPPX__OptimizerConfig.html#a3c5a14804b01cd04f48047d3e0d7ccf9":[1,0,123,6],
+"structSNEPPX__OptimizerConfig.html#a422291b9f4081f36a360c0be3d5fc998":[1,0,123,4],
 "structSNEPPX__OptimizerConfig.html#a4c044b38cf989813663209aef6480992":[1,0,123,11],
 "structSNEPPX__OptimizerConfig.html#a5ef7672c93cddf9f0c6e9f5badd3adda":[1,0,123,10],
 "structSNEPPX__OptimizerConfig.html#a6214bb430f51f8da53da5de9d9554dd0":[1,0,123,12],
@@ -241,13 +249,5 @@ var NAVTREEINDEX44 =
 "structdp__budget__t.html":[1,0,32],
 "structdp__budget__t.html#a8ff7cb927cb20cdead93c225a4f4702b":[1,0,32,0],
 "structdp__budget__t.html#acac1243b394d142b9ed3fc22485b49b7":[1,0,32,1],
-"structdp__composition__t.html":[1,0,33],
-"structdp__composition__t.html#a2e8958154a68f2bdee7d96790167497b":[1,0,33,2],
-"structdp__composition__t.html#a9521118bbe68c666ea18141c9c45fa7d":[1,0,33,1],
-"structdp__composition__t.html#ae1a9218c0958b6bbae1ae11c9c2f9703":[1,0,33,0],
-"structdp__composition__t.html#af2183673eac6aa9b3ad19c22b19c6dbe":[1,0,33,3],
-"structdp__composition__t.html#af6ffe687b5e02985c62c0b345a4a94f8":[1,0,33,4],
-"structdp__mechanism__t.html":[1,0,34],
-"structdp__mechanism__t.html#a737ca8143868cbebd1aeb8e4ef2ae795":[1,0,34,3],
-"structdp__mechanism__t.html#a90ffe39f735aab30e0b33697703a1653":[1,0,34,1]
+"structdp__composition__t.html":[1,0,33]
 };

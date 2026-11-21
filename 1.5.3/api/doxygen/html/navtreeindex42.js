@@ -1,5 +1,13 @@
 var NAVTREEINDEX42 =
 {
+"structSNEPPXWorkingSlot.html#a5afdf1276e368f2b5d2167f13776583a":[1,0,455,0],
+"structSNEPPXWorkingSlot.html#a7d36170ccc6f0e63f13b7a368f5789e5":[1,0,455,2],
+"structSNEPPXWorkingSlot.html#ad409b0631dbbb1961475962f1a156763":[1,0,455,1],
+"structSNEPPXWorkingSlot.html#adb16dd49a8f5efe4d86fbc36e872b9e1":[1,0,455,4],
+"structSNEPPXWorkingSlot.html#af0df6bc4940fe35a570b7743733aa567":[1,0,455,3],
+"structSNEPPXWorkload.html":[1,0,456],
+"structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d":[1,0,456,0],
+"structSNEPPXZTCondition.html":[1,0,458],
 "structSNEPPXZTCondition.html#a080578ada6d96cc3d1fa221d8f808344":[1,0,458,3],
 "structSNEPPXZTCondition.html#a0a04c002569d00e5840ea97b44c93df8":[1,0,458,0],
 "structSNEPPXZTCondition.html#a49410664bbd27d8179c398029cf2223c":[1,0,458,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX42 =
 "structSNEPPX__CudaTimer.html":[1,0,97],
 "structSNEPPX__CudaTimer.html#a066bf1db4b10bd357a0ef1d7d490de9e":[1,0,97,1],
 "structSNEPPX__CudaTimer.html#ab70b35148e63e8a1ec463e27cf1e7a97":[1,0,97,2],
-"structSNEPPX__CudaTimer.html#ae350e640d87a9613a0e27fb07197abed":[1,0,97,0],
-"structSNEPPX__DeviceProps.html":[1,0,98],
-"structSNEPPX__DeviceProps.html#a0b49ea71da2064d186d8850e8cacc545":[1,0,98,0],
-"structSNEPPX__DeviceProps.html#a0d99e080f94a96ffd1ab79178fe7bec5":[1,0,98,6],
-"structSNEPPX__DeviceProps.html#a0e8c94d75e4a598e4df379ee10c04a00":[1,0,98,4],
-"structSNEPPX__DeviceProps.html#a15202134b12a789b97d4a60ae0056193":[1,0,98,2],
-"structSNEPPX__DeviceProps.html#a27d3301e06b9069d998d9c9b6cce423e":[1,0,98,15],
-"structSNEPPX__DeviceProps.html#a2c57fe65e4ef67317f16171fe30d9125":[1,0,98,3],
-"structSNEPPX__DeviceProps.html#a2d6e7d5cf2524972981bfa89c7d1f3d6":[1,0,98,7]
+"structSNEPPX__CudaTimer.html#ae350e640d87a9613a0e27fb07197abed":[1,0,97,0]
 };

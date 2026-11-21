@@ -1,5 +1,13 @@
 var NAVTREEINDEX40 =
 {
+"structSNEPPXSignedUpdate.html#a9ee56b19229467e26d51e282da2e8891":[1,0,388,8],
+"structSNEPPXSignedUpdate.html#a9f8286939e7ade01829bef63ba58d6b4":[1,0,388,6],
+"structSNEPPXSignedUpdate.html#aaa4544d937bd4e7992350ea5c0ec37f1":[1,0,388,0],
+"structSNEPPXSignedUpdate.html#ad0045a73f73653de6d9728cbaa64c184":[1,0,388,3],
+"structSNEPPXSignedUpdate.html#af55a548219364efbddb7077456c98d02":[1,0,388,2],
+"structSNEPPXSignedUpdate.html#af939b8b6711f2a21174e8fa01e599959":[1,0,388,4],
+"structSNEPPXSipHash.html":[1,0,389],
+"structSNEPPXSipHash.html#a219a7adf30e38e5da43281f9e57ea5ea":[1,0,389,5],
 "structSNEPPXSipHash.html#a282faee6ef470d677c8adb3481b1c6b9":[1,0,389,3],
 "structSNEPPXSipHash.html#a5aa92c82fa6a4da53cb952a59fd18056":[1,0,389,4],
 "structSNEPPXSipHash.html#a7094af9b3c949180f6477f6e44a2f1cd":[1,0,389,6],
@@ -241,13 +249,5 @@ var NAVTREEINDEX40 =
 "structSNEPPXTensor.html#a53661a8471d16d07014e4b1caf2b7949":[1,0,410,5],
 "structSNEPPXTensor.html#a73a8e704cca8d9d0d93b18691dd444e9":[1,0,410,10],
 "structSNEPPXTensor.html#a82d9948b400dc339245d7b4f1a0307fc":[1,0,410,2],
-"structSNEPPXTensor.html#a85440ed1e73ae3282dcfacba8a2fac2a":[1,0,410,6],
-"structSNEPPXTensor.html#aadc94fc3161831b71d392c0ec34ae0f1":[1,0,410,1],
-"structSNEPPXTensor.html#aae82e08caf9cd29307ea95a26e5ef739":[1,0,410,12],
-"structSNEPPXTensor.html#ac2070d040b8773244c543251e8635cad":[1,0,410,7],
-"structSNEPPXTensor.html#ad0e6fce8a822e044fa607c255689ad75":[1,0,410,11],
-"structSNEPPXTextDataset.html":[1,0,411],
-"structSNEPPXTextDataset.html#a19f7d619e6a3fe7654524c8b329aefb0":[1,0,411,3],
-"structSNEPPXTextDataset.html#a250188f815f7e5013743f612e1bac6b9":[1,0,411,1],
-"structSNEPPXTextDataset.html#a45ecd0d30d26b113e9925a897c5da0a6":[1,0,411,5]
+"structSNEPPXTensor.html#a85440ed1e73ae3282dcfacba8a2fac2a":[1,0,410,6]
 };
