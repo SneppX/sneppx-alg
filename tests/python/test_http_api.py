@@ -211,7 +211,8 @@ def static_server(tmp_path):
     deadline = time.time() + 10
     while time.time() < deadline:
         try:
-            with urllib.request.urlopen(url, timeout=1) as response:
+            request = urllib.request.Request(url, headers={"Authorization": "Bearer sk-sneppx-test-token-2026"})
+            with urllib.request.urlopen(request, timeout=1) as response:
                 if response.status == 200:
                     break
         except Exception:
@@ -230,7 +231,7 @@ def static_server(tmp_path):
 def test_static_file_inside_root_is_served(static_server):
     port, _, _ = static_server
     response = _raw_http_request(
-        port, b"GET /static/hello.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+        port, b"GET /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
     )
     assert response.startswith(b"HTTP/1.1 200")
     assert b"safe static content" in response
@@ -239,13 +240,13 @@ def test_static_file_inside_root_is_served(static_server):
 def test_static_file_parent_traversal_is_blocked(static_server):
     port, _, outside = static_server
     response = _raw_http_request(
-        port, b"GET /static/../secret.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+        port, b"GET /static/../secret.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
     )
     assert not response.startswith(b"HTTP/1.1 200")
     assert outside.read_text(encoding="utf-8").encode() not in response
 
 
-def test_static_file_symlink_escape_is_blocked(static_server, tmp_path):
+def test_static_file_symlink_escape_is_blocked(static_server):
     port, static_root, outside = static_server
     link = static_root / "outside.txt"
     try:
@@ -253,7 +254,7 @@ def test_static_file_symlink_escape_is_blocked(static_server, tmp_path):
     except (OSError, NotImplementedError):
         pytest.skip("symlink creation is unavailable on this platform")
     response = _raw_http_request(
-        port, b"GET /static/outside.txt HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n"
+        port, b"GET /static/outside.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
     )
     assert not response.startswith(b"HTTP/1.1 200")
     assert outside.read_text(encoding="utf-8").encode() not in response
