@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-20T15:01:22.018596+00:00",
+  "generated_at": "2026-11-21T10:55:28.818870+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -15,9 +15,9 @@
     {
       "name": "ci-gated/self-audit-export-hardening",
       "id": "Y2ktZ2F0ZWQvc2VsZi1hdWRpdC1leHBvcnQtaGFyZGVuaW5n",
-      "commit": "cbd6e7f0e482bcf47a763247739aeccd8f08dee2",
+      "commit": "8d8170469796155256d34d16b1c49e92ff54c8db",
       "file_count": 1588,
-      "commit_count": 2516,
+      "commit_count": 2519,
       "search_count": 0,
       "search_truncated": false
     },
@@ -42,9 +42,9 @@
     {
       "name": "dev",
       "id": "ZGV2",
-      "commit": "b89a13f0c94b4ad67b06bcceada1b8f931406e83",
+      "commit": "2c3f90488d4304732b09fefb8c02ce252c00863a",
       "file_count": 1101,
-      "commit_count": 395,
+      "commit_count": 396,
       "search_count": 0,
       "search_truncated": false
     },
@@ -60,9 +60,9 @@
     {
       "name": "docs/quickstart",
       "id": "ZG9jcy9xdWlja3N0YXJ0",
-      "commit": "6fcb29527cf8b9914422fea4d6e6e09be606dfde",
-      "file_count": 1117,
-      "commit_count": 443,
+      "commit": "ec5a535763c3f1f7455b6cf3788460aaf2bd4573",
+      "file_count": 1613,
+      "commit_count": 2626,
       "search_count": 0,
       "search_truncated": false
     },
@@ -105,18 +105,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "10ac202039a5797288acb1b43682e8c21a17fc41",
-      "file_count": 42485,
-      "commit_count": 102,
+      "commit": "6b87244866f8f6825a53e6f626517e42c92a1fe0",
+      "file_count": 42491,
+      "commit_count": 104,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "4c87c21892c3814cf70f4cb436718e64b1b31304",
-      "file_count": 1609,
-      "commit_count": 2589,
+      "commit": "15f49a44f9c937a82736cdcc8f4121953ffd2a47",
+      "file_count": 1613,
+      "commit_count": 2624,
       "search_count": 0,
       "search_truncated": false
     },
@@ -153,6 +153,105 @@
       "commit": "d136a5edacf4eb838b7757bc0a055cad0ed1bc5c",
       "file_count": 1573,
       "commit_count": 2478,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/disable-legacy-signed-diff",
+      "id": "c2VjdXJpdHkvZGlzYWJsZS1sZWdhY3ktc2lnbmVkLWRpZmY",
+      "commit": "cdbbe34261fbbd95175729ee6f4ae6fc7a9f9b1c",
+      "file_count": 1613,
+      "commit_count": 2625,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/disable-legacy-signed-diff-clean",
+      "id": "c2VjdXJpdHkvZGlzYWJsZS1sZWdhY3ktc2lnbmVkLWRpZmYtY2xlYW4",
+      "commit": "15f49a44f9c937a82736cdcc8f4121953ffd2a47",
+      "file_count": 1613,
+      "commit_count": 2624,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/disable-legacy-tuf-scaffolding",
+      "id": "c2VjdXJpdHkvZGlzYWJsZS1sZWdhY3ktdHVmLXNjYWZmb2xkaW5n",
+      "commit": "d2d999b289452b7bb48797ba6a78fa379d9c1a5f",
+      "file_count": 1613,
+      "commit_count": 2625,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/ed25519-canonical-inputs",
+      "id": "c2VjdXJpdHkvZWQyNTUxOS1jYW5vbmljYWwtaW5wdXRz",
+      "commit": "92110cc83e791401d87ff5b61155a8bb8038ca47",
+      "file_count": 1611,
+      "commit_count": 2615,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/ed25519-subgroup-validation",
+      "id": "c2VjdXJpdHkvZWQyNTUxOS1zdWJncm91cC12YWxpZGF0aW9u",
+      "commit": "e0aff069703c80fdd2bd8ac6834740c6a1f22b57",
+      "file_count": 1611,
+      "commit_count": 2616,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/fix-winhttp-header-trimming",
+      "id": "c2VjdXJpdHkvZml4LXdpbmh0dHAtaGVhZGVyLXRyaW1taW5n",
+      "commit": "d1d466f51d4943f03b8f702403c3f5ae16149487",
+      "file_count": 1613,
+      "commit_count": 2623,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/fix-winhttp-header-trimming-clean",
+      "id": "c2VjdXJpdHkvZml4LXdpbmh0dHAtaGVhZGVyLXRyaW1taW5nLWNsZWFu",
+      "commit": "75d6f887404023f9276a3432dbec2ae2da55fa9f",
+      "file_count": 1613,
+      "commit_count": 2623,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/model-hub-credential-transport",
+      "id": "c2VjdXJpdHkvbW9kZWwtaHViLWNyZWRlbnRpYWwtdHJhbnNwb3J0",
+      "commit": "af4c0382fcc0f333c8fb9d7e1fd3eed3837db8dd",
+      "file_count": 1612,
+      "commit_count": 2618,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/model-hub-credential-transport-clean",
+      "id": "c2VjdXJpdHkvbW9kZWwtaHViLWNyZWRlbnRpYWwtdHJhbnNwb3J0LWNsZWFu",
+      "commit": "5c949753acb4d7f389429806cb8fe04dd6a84b4b",
+      "file_count": 1612,
+      "commit_count": 2617,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/s7-fail-closed-crypto-stubs",
+      "id": "c2VjdXJpdHkvczctZmFpbC1jbG9zZWQtY3J5cHRvLXN0dWJz",
+      "commit": "80f981fe439bdc952f0be4b8f19d55f415d48901",
+      "file_count": 1611,
+      "commit_count": 2613,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/serving-client-credential-transport",
+      "id": "c2VjdXJpdHkvc2VydmluZy1jbGllbnQtY3JlZGVudGlhbC10cmFuc3BvcnQ",
+      "commit": "c5d61ada96e7ebae635a59becbaef0373e42224e",
+      "file_count": 1612,
+      "commit_count": 2618,
       "search_count": 0,
       "search_truncated": false
     },
