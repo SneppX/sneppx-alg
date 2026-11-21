@@ -403,6 +403,94 @@ static void test_legacy_ab_apis_fail_closed_without_mutating_state(void) {
     SX_ASSERT(memcmp(&ab, &original, sizeof(ab)) == 0, "failed A/B operations preserve state");
 }
 
+static void test_update_integrity_verification_checks_exact_lengths(void) {
+    static const uint8_t payload[] = "integrity verification payload";
+    uint8_t seed[32];
+    uint8_t hash[SNEPPX_UPDATE_HASH_LEN];
+    SNEPPXEd25519Keypair keypair;
+    SNEPPXEd25519Signature signature;
+    memset(seed, 0x29, sizeof(seed));
+    memset(&keypair, 0, sizeof(keypair));
+    memset(&signature, 0, sizeof(signature));
+    SX_ASSERT(SNEPPX_ed25519_secret_key_expand(keypair.private_key, seed) == 0,
+              "expand integrity test signing seed");
+    SX_ASSERT(SNEPPX_ed25519_publickey_from_seed(seed, keypair.public_key) == 0,
+              "derive integrity test public key");
+    SNEPPXBlake3State ctx;
+    SNEPPX_blake3_init(&ctx);
+    SNEPPX_blake3_update(&ctx, payload, sizeof(payload) - 1);
+    SNEPPX_blake3_finish(&ctx, hash);
+    SX_ASSERT(SNEPPX_ed25519_sign(&keypair, hash, sizeof(hash), &signature) == 0,
+              "sign integrity test digest");
+    SX_ASSERT(SNEPPX_update_verifier_verify_integrity(NULL, payload, sizeof(payload) - 1,
+              signature.data, sizeof(signature.data), keypair.public_key,
+              sizeof(keypair.public_key)) == 0, "valid integrity signature accepted");
+    SX_ASSERT(SNEPPX_update_verifier_verify_integrity(NULL, payload, sizeof(payload) - 1,
+              signature.data, sizeof(signature.data), keypair.public_key,
+              sizeof(keypair.public_key) - 1) == -1, "short public key rejected");
+    SX_ASSERT(SNEPPX_update_verifier_verify_integrity(NULL, payload, sizeof(payload) - 1,
+              signature.data, sizeof(signature.data), keypair.public_key,
+              sizeof(keypair.public_key) + 1) == -1, "oversized public key rejected");
+    SX_ASSERT(SNEPPX_update_verifier_verify_integrity(NULL, payload, sizeof(payload) - 1,
+              signature.data, sizeof(signature.data) - 1, keypair.public_key,
+              sizeof(keypair.public_key)) == -1, "short signature rejected");
+    uint8_t oversized_signature[SNEPPX_ED25519_SIGNATURE_LEN + 1];
+    memcpy(oversized_signature, signature.data, sizeof(signature.data));
+    oversized_signature[sizeof(signature.data)] = 0;
+    SX_ASSERT(SNEPPX_update_verifier_verify_integrity(NULL, payload, sizeof(payload) - 1,
+              oversized_signature, sizeof(oversized_signature), keypair.public_key,
+              sizeof(keypair.public_key)) == -1, "oversized signature rejected");
+    memset(hash, 0, sizeof(hash));
+    memset(seed, 0, sizeof(seed));
+    memset(&keypair, 0, sizeof(keypair));
+    memset(&signature, 0, sizeof(signature));
+}
+
+static void test_legacy_signing_key_accessors_fail_closed(void) {
+    SNEPPXUpdateVerifier uv, original;
+    SX_ASSERT(SNEPPX_update_verifier_init(&uv) == 0, "initialize verifier for key accessor test");
+    memset(uv.trusted_pubkey, 0x4D, sizeof(uv.trusted_pubkey));
+    uv.has_trusted_key = 1;
+    memcpy(&original, &uv, sizeof(uv));
+    uint8_t key_out[64];
+    memset(key_out, 0xA7, sizeof(key_out));
+    SX_ASSERT(SNEPPX_update_verifier_get_signing_key(&uv, key_out, sizeof(key_out)) == -1,
+              "private signing key getter is unavailable");
+    for (size_t i = 0; i < sizeof(key_out); ++i)
+        SX_ASSERT(key_out[i] == 0xA7, "failed key getter preserves output");
+    uint8_t input_key[32];
+    memset(input_key, 0xB8, sizeof(input_key));
+    SX_ASSERT(SNEPPX_update_verifier_set_signing_key(&uv, input_key, sizeof(input_key)) == -1,
+              "private signing key setter is unavailable");
+    SX_ASSERT(memcmp(&uv, &original, sizeof(uv)) == 0,
+              "failed key setter preserves verifier state");
+    SNEPPX_update_verifier_destroy(&uv);
+}
+
+static void test_history_count_rejects_out_of_range_values(void) {
+    SNEPPX_update_verifier_clear_history();
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 0, "history starts empty");
+    SNEPPX_update_verifier_set_history_count(-1);
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 0, "negative history count ignored");
+    SNEPPX_update_verifier_set_history_count(11);
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 0, "oversized history count ignored");
+    SNEPPXSignedUpdate update;
+    memset(&update, 0, sizeof(update));
+    update.version_major = 7;
+    SX_ASSERT(SNEPPX_update_verifier_record_history(&update) == 0, "record history entry");
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1, "one history entry recorded");
+    SNEPPX_update_verifier_set_history_count(-1);
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1, "invalid count preserves valid history");
+    SNEPPX_update_verifier_set_history_count(11);
+    SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1, "oversized count preserves valid history");
+    uint32_t major = 0, minor = 0, patch = 0;
+    uint64_t timestamp = 0;
+    SX_ASSERT(SNEPPX_update_verifier_get_history_entry(0, &major, &minor, &patch, &timestamp) == 0,
+              "recorded history remains readable");
+    SX_ASSERT(major == 7, "history entry contents preserved");
+    SNEPPX_update_verifier_clear_history();
+}
+
 static void test_canary_rollout(void) {
     SNEPPXCanaryRollout cr;
     SX_ASSERT(SNEPPX_canary_rollout_init(&cr, 100, 5) == 0, "canary init");
@@ -445,5 +533,8 @@ TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_buffer_verification_fails_closed) { test_legacy_manifest_buffer_verification_fails_closed(); }
 TEST(test_s7_updates, legacy_ab_apis_fail_closed_without_mutating_state) { test_legacy_ab_apis_fail_closed_without_mutating_state(); }
+TEST(test_s7_updates, update_integrity_verification_checks_exact_lengths) { test_update_integrity_verification_checks_exact_lengths(); }
+TEST(test_s7_updates, legacy_signing_key_accessors_fail_closed) { test_legacy_signing_key_accessors_fail_closed(); }
+TEST(test_s7_updates, history_count_rejects_out_of_range_values) { test_history_count_rejects_out_of_range_values(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }
 TEST(test_s7_updates, dep_resolver) { test_dep_resolver(); }
