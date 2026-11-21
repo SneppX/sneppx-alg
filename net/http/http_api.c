@@ -57,8 +57,16 @@ struct SNEPPX_HttpApi {
 /* ---- JSON request helpers ---- */
 
 static SNEPPX_JsonValue* json_parse_request(const char* json, size_t body_len) {
-    if (!json || body_len == 0 || strlen(json) != body_len) return NULL;
-    SNEPPX_JsonValue* root = sneppx_json_parse(json);
+    if (!json || body_len == 0 || body_len > 32768 ||
+        memchr(json, '\0', body_len) != NULL) return NULL;
+
+    /* Parse an owned, explicitly terminated copy of the exact HTTP body. */
+    char* input = (char*)malloc(body_len + 1);
+    if (!input) return NULL;
+    memcpy(input, json, body_len);
+    input[body_len] = '\0';
+    SNEPPX_JsonValue* root = sneppx_json_parse(input);
+    free(input);
     if (!root || root->type != SNEPPX_JSON_OBJECT) {
         sneppx_json_free(root);
         return NULL;
