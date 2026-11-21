@@ -38,6 +38,7 @@ extern "C" {
 #include <cstring>
 #include <string>
 #include <vector>
+#include <limits>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -56,8 +57,10 @@ const char* SNEPPX_dtype_to_numpy(SNEPPXDtype d) {
         case SNEPPX_FLOAT32:   return "float32";
         case SNEPPX_FLOAT64:   return "float64";
         case SNEPPX_FLOAT16:   return "float16";
-        case SNEPPX_BFLOAT16:  return "bfloat16";
-        case SNEPPX_FLOAT8:    return "float8";
+        // NumPy has no portable bfloat16/float8 dtype. Expose their raw
+        // storage representations while dtype_name preserves semantic identity.
+        case SNEPPX_BFLOAT16:  return "uint16";
+        case SNEPPX_FLOAT8:    return "uint8";
         case SNEPPX_INT32:     return "int32";
         case SNEPPX_INT64:     return "int64";
         case SNEPPX_INT16:     return "int16";
@@ -101,11 +104,30 @@ size_t SNEPPX_dtype_itemsize(SNEPPXDtype d) {
     return SNEPPX_tensor_dtype_size(d);
 }
 
-static std::vector<size_t> pyarray_to_sizevec(py::array a) {
-    py::buffer_info buf = a.request();
-    if (buf.ndim != 1) throw std::runtime_error("expected 1-D array");
-    const auto* ptr = static_cast<const size_t*>(buf.ptr);
-    return std::vector<size_t>(ptr, ptr + buf.size);
+static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0) {
+    if (!a) throw std::invalid_argument("shape/repetitions array is required");
+    py::buffer_info original = a.request();
+    if (original.ndim != 1)
+        throw std::invalid_argument("shape/repetitions must be a 1-D integer array");
+    const std::string kind = py::cast<std::string>(a.dtype().attr("kind"));
+    if (kind != "i" && kind != "u")
+        throw std::invalid_argument("shape/repetitions must contain integers");
+    if (max_dims != 0 && static_cast<size_t>(original.size) > max_dims)
+        throw std::invalid_argument("dimension count exceeds the operation limit");
+
+    using ShapeArray = py::array_t<py::ssize_t,
+        py::array::c_style | py::array::forcecast>;
+    ShapeArray converted(a);
+    py::buffer_info buf = converted.request();
+    const auto* values = static_cast<const py::ssize_t*>(buf.ptr);
+    std::vector<size_t> result;
+    result.reserve(static_cast<size_t>(buf.size));
+    for (py::ssize_t i = 0; i < buf.size; ++i) {
+        if (values[i] < 0)
+            throw std::invalid_argument("shape/repetitions cannot contain negative values");
+        result.push_back(static_cast<size_t>(values[i]));
+    }
+    return result;
 }
 
 // ---- Include split module files ----

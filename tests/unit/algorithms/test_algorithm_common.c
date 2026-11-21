@@ -25,8 +25,9 @@
  */
 
 #include <stdio.h>
+#include "test_gtest.h"
 
-int main(void) {
+TEST(test_algorithm_common, suite) {
     printf("test_algorithm: skeleton — no algorithm unit tests implemented\n");
-    return 0;
+    return;
 }

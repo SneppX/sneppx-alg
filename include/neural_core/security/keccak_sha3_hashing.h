@@ -1,6 +1,10 @@
 #ifndef SNEPPX_SHA3_H
 #define SNEPPX_SHA3_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -62,4 +66,8 @@ void SNEPPX_sha3_update(SNEPPXSHA3State* state, const uint8_t* data, size_t len)
  */
 void SNEPPX_sha3_finish(SNEPPXSHA3State* state, uint8_t* hash);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

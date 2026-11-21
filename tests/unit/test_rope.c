@@ -1,4 +1,5 @@
 #include "multi_head_attention_module.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -18,38 +19,15 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-#define ASSERT_NEAR(a, b, eps, msg) do { \
-    if (fabsf((a) - (b)) > (eps)) { \
-        printf("FAIL: %s (got %f, expected %f)\n", msg, (float)(a), (float)(b)); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_rope_precompute(void) {
     SNEPPXTensor* cos = SNEPPX_rope_precompute(8, 4, 10000.0f);
-    ASSERT(cos != NULL, "precomputed cos table");
-    ASSERT(cos->shape[0] == 8, "seq_len dim");
-    ASSERT(cos->shape[1] == 4, "head_dim dim");
+    SX_ASSERT(cos != NULL, "precomputed cos table");
+    SX_ASSERT(cos->shape[0] == 8, "seq_len dim");
+    SX_ASSERT(cos->shape[1] == 4, "head_dim dim");
     SNEPPX_tensor_destroy(cos);
 }
 
@@ -68,7 +46,7 @@ static void test_rope_apply_changes_values(void) {
     float* q_out = (float*)q->data;
     int changed = 0;
     for (size_t i = 0; i < 8; i++) if (q_out[i] != 1.0f) { changed = 1; break; }
-    ASSERT(changed, "rope rotates q values");
+    SX_ASSERT(changed, "rope rotates q values");
 
     SNEPPX_tensor_destroy(sin);
     SNEPPX_tensor_destroy(cos);
@@ -86,15 +64,15 @@ static void test_attention_self_attention(void) {
     cfg.use_rope = 0;
     cfg.rope_base = 10000.0f;
     SNEPPXAttentionWeights* attn = SNEPPX_attn_weights_create(cfg, 42);
-    ASSERT(attn != NULL, "attention layer created");
+    SX_ASSERT(attn != NULL, "attention layer created");
 
     size_t seq_len = 3;
     size_t shape[] = {seq_len, cfg.num_heads * cfg.head_dim};
     SNEPPXTensor* x = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* output = SNEPPX_attn_forward(attn, x, NULL, NULL);
-    ASSERT(output != NULL, "attention forward output");
-    ASSERT(output->shape[0] == seq_len, "output seq_len");
-    ASSERT(output->shape[1] == shape[1], "output feat dim");
+    SX_ASSERT(output != NULL, "attention forward output");
+    SX_ASSERT(output->shape[0] == seq_len, "output seq_len");
+    SX_ASSERT(output->shape[1] == shape[1], "output feat dim");
 
     SNEPPX_tensor_destroy(output);
     SNEPPX_tensor_destroy(x);
@@ -116,18 +94,15 @@ static void test_attention_causal_mask(void) {
     size_t shape[] = {seq_len, cfg.num_heads * cfg.head_dim};
     SNEPPXTensor* x = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* output = SNEPPX_attn_forward(attn, x, NULL, NULL);
-    ASSERT(output != NULL, "causal masked forward");
+    SX_ASSERT(output != NULL, "causal masked forward");
 
     SNEPPX_tensor_destroy(output);
     SNEPPX_tensor_destroy(x);
     SNEPPX_attn_weights_destroy(attn);
 }
 
-int main(void) {
-    run_test("rope_precompute", test_rope_precompute);
-    run_test("rope_apply_changes_values", test_rope_apply_changes_values);
-    run_test("attention_self_attention", test_attention_self_attention);
-    run_test("attention_causal_mask", test_attention_causal_mask);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_rope, rope_precompute) { test_rope_precompute(); }
+TEST(test_rope, rope_apply_changes_values) { test_rope_apply_changes_values(); }
+TEST(test_rope, attention_self_attention) { test_attention_self_attention(); }
+TEST(test_rope, attention_causal_mask) { test_attention_causal_mask(); }

@@ -23,8 +23,9 @@
  */
 
 #include <stdio.h>
+#include "test_gtest.h"
 
-int main(void) {
+TEST(test_kernel_common, suite) {
     printf("test_kernel: skeleton — no kernel unit tests implemented\n");
-    return 0;
+    return;
 }

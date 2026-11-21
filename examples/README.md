@@ -80,7 +80,7 @@ The examples directory showcases different aspects of the SNEPPX-Alg system, fro
 
 ```bash
 # Build all examples
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 
 # Run a specific example
@@ -250,7 +250,7 @@ To add a new example:
 
 ```bash
 # Build and test all examples
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 cd build && ctest -C Release
 

@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifndef _WIN32
+#include <fcntl.h>
+#endif
+
 #ifdef _WIN32
 #pragma comment(lib, "ws2_32.lib")
 /*

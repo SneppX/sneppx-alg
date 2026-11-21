@@ -164,26 +164,37 @@ SNEPPXTensor* SNEPPX_rope_precompute(size_t seq_len, size_t head_dim, float base
  */
 void SNEPPX_rope_apply(SNEPPXTensor* q, SNEPPXTensor* k, const SNEPPXTensor* cos, const SNEPPXTensor* sin,
                      size_t offset) {
-    if (!q || !k || !cos || !sin) return;
+    if (!q || !k || !cos) return;
     size_t d = q->shape[q->ndim - 1];
     size_t half = d / 2;
+    if (half == 0) return;
     size_t total = q->size;
     float* qd = (float*)q->data;
     float* kd = (float*)k->data;
-    float* cd = (float*)cos->data;
-    float* sd = (float*)sin->data;
-    for (size_t i = 0; i < total; i++) {
-        size_t pos = (i / d) + offset;
-        size_t j = i % d;
-        size_t idx;
-        if (j < half) idx = pos * d + j;
-        else idx = pos * d + (j - half);
-        float c = cd[idx], s = sd[idx];
-        float qv = qd[i];
-        float kv = kd[i];
-        size_t partner = (j < half) ? (i + half) : (i - half);
-        qd[i] = qv * c - qd[partner] * s;
-        kd[i] = kv * c - kd[partner] * s;
+    const float* cd = (const float*)cos->data;
+    size_t cd_last = cos->shape[cos->ndim - 1];
+    (void)sin;
+    /* SNEPPX_rope_precompute returns a combined [S, d] table: first half =
+       cos, second half = sin. Every caller passes this combined table as
+       `cos` (and `sin` is NULL or the same pointer). Process each (x_i,
+       x_{i+half}) pair together from the ORIGINAL values so the in-place
+       rotation is not contaminated by earlier writes. */
+    /* The [B,H,S,hd] layout means base/d is the flat [B*H*S] index, not the
+       sequence position. pos must be (base/d)%S so multi-head tensors with
+       S=1 do not index past the [S,hd] cos table. */
+    size_t seq_len = (q->ndim >= 2) ? q->shape[q->ndim - 2] : 1;
+    for (size_t base = 0; base < total; base += d) {
+        size_t pos = ((base / d) % seq_len) + offset;
+        for (size_t j = 0; j < half; j++) {
+            float cosv = cd[pos * cd_last + j];
+            float sinv = cd[pos * cd_last + half + j];
+            float qv = qd[base + j];      float qvp = qd[base + j + half];
+            float kv = kd[base + j];      float kvp = kd[base + j + half];
+            qd[base + j]       = qv * cosv - qvp * sinv;
+            qd[base + j + half] = qv * sinv + qvp * cosv;
+            kd[base + j]       = kv * cosv - kvp * sinv;
+            kd[base + j + half] = kv * sinv + kvp * cosv;
+        }
     }
 }
 
@@ -348,13 +359,21 @@ static SNEPPXTensor* matmul_3d(const SNEPPXTensor* a, const SNEPPXTensor* b) {
 SNEPPXTensor* SNEPPX_attn_forward(const SNEPPXAttentionWeights* w, const SNEPPXTensor* x,
                                SNEPPXTensor* cos_t, SNEPPXTensor* sin_t) {
     if (!w || !x) return NULL;
-    size_t B = x->shape[0], S = x->shape[1], D = w->config.d_model;
+    /* Accept a 2D [seq_len, d_model] input as a single batch element. */
+    int orig_ndim = x->ndim;
+    SNEPPXTensor* x_work = (SNEPPXTensor*)x;
+    if (x->ndim == 2) {
+        size_t shp3[] = {1, x->shape[0], x->shape[1]};
+        x_work = SNEPPX_tensor_reshape(x, shp3, 3);
+        if (!x_work) return NULL;
+    }
+    size_t B = x_work->shape[0], S = x_work->shape[1], D = w->config.d_model;
     size_t H = w->config.num_heads, hd = w->config.head_dim;
 
     /* Q, K, V projections: [B, S, D] → [B, S, H*hd] */
-    SNEPPXTensor* q = matmul_3d(x, w->w_q);
-    SNEPPXTensor* k = matmul_3d(x, w->w_k);
-    SNEPPXTensor* v = matmul_3d(x, w->w_v);
+    SNEPPXTensor* q = matmul_3d(x_work, w->w_q);
+    SNEPPXTensor* k = matmul_3d(x_work, w->w_k);
+    SNEPPXTensor* v = matmul_3d(x_work, w->w_v);
     if (!q || !k || !v) {
         SNEPPX_tensor_destroy(q); SNEPPX_tensor_destroy(k); SNEPPX_tensor_destroy(v);
         return NULL;
@@ -422,6 +441,14 @@ SNEPPXTensor* SNEPPX_attn_forward(const SNEPPXAttentionWeights* w, const SNEPPXT
     SNEPPXTensor* result = matmul_3d(out_r, w->w_o);
     SNEPPX_tensor_destroy(out_r);
     SNEPPX_tensor_destroy(q_r); SNEPPX_tensor_destroy(k_r); SNEPPX_tensor_destroy(v_r);
+    if (orig_ndim == 2) {
+        size_t shp2[] = {x->shape[0], x->shape[1]};
+        SNEPPXTensor* squeezed = SNEPPX_tensor_reshape(result, shp2, 2);
+        SNEPPX_tensor_destroy(result);
+        if (x_work != x) SNEPPX_tensor_destroy(x_work);
+        return squeezed;
+    }
+    if (x_work != x) SNEPPX_tensor_destroy(x_work);
     return result;
 }
 

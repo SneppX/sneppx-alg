@@ -1,4 +1,5 @@
 #include "automatic_differentiation_framework.h"
+#include "test_gtest.h"
 #include "gradient_optimization_suite.h"
 #include "polymorphic_memory_allocator.h"
 #include <stdio.h>
@@ -20,32 +21,9 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-#define ASSERT_NEAR(a, b, eps, msg) do { \
-    if (fabsf((float)(a) - (float)(b)) > (float)(eps)) { \
-        printf("FAIL: %s (got %f, expected %f, eps %f)\n", msg, (float)(a), (float)(b), (float)(eps)); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_mul_gradient(void) {
     size_t sh[] = {2};
@@ -63,10 +41,10 @@ static void test_mul_gradient(void) {
     SNEPPX_tape_backward(tape, loss);
     float* xg = (float*)x->grad->data;
     float* wg = (float*)w->grad->data;
-    ASSERT_NEAR(xg[0], 0.5f, 1e-5f, "d(sum(x*w))/dx[0] = w[0]");
-    ASSERT_NEAR(xg[1], 2.0f, 1e-5f, "d(sum(x*w))/dx[1] = w[1]");
-    ASSERT_NEAR(wg[0], 2.0f, 1e-5f, "d(sum(x*w))/dw[0] = x[0]");
-    ASSERT_NEAR(wg[1], 3.0f, 1e-5f, "d(sum(x*w))/dw[1] = x[1]");
+    SX_ASSERT_NEAR(xg[0], 0.5f, 1e-5f, "d(sum(x*w))/dx[0] = w[0]");
+    SX_ASSERT_NEAR(xg[1], 2.0f, 1e-5f, "d(sum(x*w))/dx[1] = w[1]");
+    SX_ASSERT_NEAR(wg[0], 2.0f, 1e-5f, "d(sum(x*w))/dw[0] = x[0]");
+    SX_ASSERT_NEAR(wg[1], 3.0f, 1e-5f, "d(sum(x*w))/dw[1] = x[1]");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -81,10 +59,10 @@ static void test_relu_gradient(void) {
     SNEPPXVariable* loss = SNEPPX_sum(tape, y, 0);
     SNEPPX_tape_backward(tape, loss);
     float* xg = (float*)x->grad->data;
-    ASSERT_NEAR(xg[0], 0.0f, 1e-5f, "relu'(-2) = 0");
-    ASSERT_NEAR(xg[1], 0.0f, 1e-5f, "relu'(-1) = 0");
-    ASSERT_NEAR(xg[2], 0.0f, 1e-5f, "relu'(0) = 0");
-    ASSERT_NEAR(xg[3], 1.0f, 1e-5f, "relu'(3) = 1");
+    SX_ASSERT_NEAR(xg[0], 0.0f, 1e-5f, "relu'(-2) = 0");
+    SX_ASSERT_NEAR(xg[1], 0.0f, 1e-5f, "relu'(-1) = 0");
+    SX_ASSERT_NEAR(xg[2], 0.0f, 1e-5f, "relu'(0) = 0");
+    SX_ASSERT_NEAR(xg[3], 1.0f, 1e-5f, "relu'(3) = 1");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -99,9 +77,9 @@ static void test_mse_gradient(void) {
     SNEPPXVariable* loss = SNEPPX_mse_loss(tape, pred, target);
     SNEPPX_tape_backward(tape, loss);
     float* pg = (float*)pred->grad->data;
-    ASSERT_NEAR(pg[0], 2.0f/3.0f, 1e-5f, "mse grad[0] = 2*(1-0)/3");
-    ASSERT_NEAR(pg[1], 4.0f/3.0f, 1e-5f, "mse grad[1] = 2*(2-0)/3");
-    ASSERT_NEAR(pg[2], 2.0f, 1e-5f, "mse grad[2] = 2*(3-0)/3");
+    SX_ASSERT_NEAR(pg[0], 2.0f/3.0f, 1e-5f, "mse grad[0] = 2*(1-0)/3");
+    SX_ASSERT_NEAR(pg[1], 4.0f/3.0f, 1e-5f, "mse grad[1] = 2*(2-0)/3");
+    SX_ASSERT_NEAR(pg[2], 2.0f, 1e-5f, "mse grad[2] = 2*(3-0)/3");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -118,8 +96,8 @@ static void test_chain_gradient(void) {
     SNEPPXVariable* d = SNEPPX_mul(tape, c, a);
     SNEPPXVariable* loss = SNEPPX_sum(tape, d, 0);
     SNEPPX_tape_backward(tape, loss);
-    ASSERT_NEAR(((float*)a->grad->data)[0], 4.0f, 1e-5f, "chain a[0] = 4");
-    ASSERT_NEAR(((float*)a->grad->data)[1], 6.0f, 1e-5f, "chain a[1] = 6");
+    SX_ASSERT_NEAR(((float*)a->grad->data)[0], 4.0f, 1e-5f, "chain a[0] = 4");
+    SX_ASSERT_NEAR(((float*)a->grad->data)[1], 6.0f, 1e-5f, "chain a[1] = 6");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -136,27 +114,24 @@ static void test_optimizer_step(void) {
     SNEPPXVariable* y = SNEPPX_mul(tape, w, x);
     SNEPPXVariable* loss = SNEPPX_sum(tape, y, 0);
     SNEPPX_tape_backward(tape, loss);
-    ASSERT(w->grad != NULL, "w has gradient");
+    SX_ASSERT(w->grad != NULL, "w has gradient");
     float old_w0 = ((float*)w->data->data)[0];
     SNEPPXOptimizerConfig opt_cfg = SNEPPX_optimizer_config_default();
     opt_cfg.learning_rate = 0.1f;
     SNEPPXOptimizer* opt = SNEPPX_optimizer_create(&opt_cfg);
-    ASSERT(opt != NULL, "optimizer created");
+    SX_ASSERT(opt != NULL, "optimizer created");
     SNEPPXTensor* params[] = {w->data};
     SNEPPXTensor* grads[] = {w->grad};
     SNEPPX_optimizer_step(opt, params, grads, 1);
     float new_w0 = ((float*)w->data->data)[0];
-    ASSERT(new_w0 != old_w0, "weight changed after step");
+    SX_ASSERT(new_w0 != old_w0, "weight changed after step");
     SNEPPX_optimizer_destroy(opt);
     SNEPPX_tape_destroy(tape);
 }
 
-int main(void) {
-    run_test("mul_gradient", test_mul_gradient);
-    run_test("relu_gradient", test_relu_gradient);
-    run_test("mse_gradient", test_mse_gradient);
-    run_test("chain_gradient", test_chain_gradient);
-    run_test("optimizer_step", test_optimizer_step);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_gradient_flow, mul_gradient) { test_mul_gradient(); }
+TEST(test_gradient_flow, relu_gradient) { test_relu_gradient(); }
+TEST(test_gradient_flow, mse_gradient) { test_mse_gradient(); }
+TEST(test_gradient_flow, chain_gradient) { test_chain_gradient(); }
+TEST(test_gradient_flow, optimizer_step) { test_optimizer_step(); }

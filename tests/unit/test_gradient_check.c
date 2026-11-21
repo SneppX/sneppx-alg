@@ -1,4 +1,5 @@
 #include "automatic_differentiation_framework.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,18 +21,8 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } \
-} while(0)
 
-#define FLOAT_CLOSE(a,b) (fabsf((a)-(b)) < 5e-2f)
-
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout);
-    fn(); printf("PASS\n"); tests_passed++;
-}
 
 static void test_grad_add(void) {
     size_t sh[] = {3};
@@ -45,8 +36,8 @@ static void test_grad_add(void) {
     SNEPPXVariable* c = SNEPPX_add(tape, a, b);
     SNEPPX_tape_backward(tape, c);
     for (size_t i = 0; i < 3; i++) {
-        ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[i], 1.0f), "add da = 1");
-        ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[i], 1.0f), "add db = 1");
+        SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[i], 1.0f), "add da = 1");
+        SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[i], 1.0f), "add db = 1");
     }
     SNEPPX_tape_destroy(tape);
 }
@@ -62,8 +53,8 @@ static void test_grad_mul(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_mul(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 5.0f) && FLOAT_CLOSE(((float*)a->grad->data)[1], 6.0f), "mul da = b");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[0], 3.0f) && FLOAT_CLOSE(((float*)b->grad->data)[1], 4.0f), "mul db = a");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 5.0f) && SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 6.0f), "mul da = b");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[0], 3.0f) && SX_FLOAT_CLOSE(((float*)b->grad->data)[1], 4.0f), "mul db = a");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -76,10 +67,10 @@ static void test_grad_matmul(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_matmul(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 15), "matmul da[0]=15");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[5], 23), "matmul da[5]=23");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[0], 5), "matmul db[0]=5");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[5], 9), "matmul db[5]=9");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 15), "matmul da[0]=15");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[5], 23), "matmul da[5]=23");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[0], 5), "matmul db[0]=5");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[5], 9), "matmul db[5]=9");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -93,8 +84,8 @@ static void test_grad_div(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_div(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 0.5f), "div da = 1/b");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[0], -2.5f), "div db = -a/b^2");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 0.5f), "div da = 1/b");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[0], -2.5f), "div db = -a/b^2");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -108,7 +99,7 @@ static void test_grad_relu(void) {
     SNEPPXVariable* r = SNEPPX_relu(tape, a);
     SNEPPX_tape_backward(tape, r);
     float* ag = (float*)a->grad->data;
-    ASSERT(FLOAT_CLOSE(ag[0], 0.0f) && FLOAT_CLOSE(ag[1], 0.0f) && FLOAT_CLOSE(ag[2], 1.0f), "relu grad");
+    SX_ASSERT(SX_FLOAT_CLOSE(ag[0], 0.0f) && SX_FLOAT_CLOSE(ag[1], 0.0f) && SX_FLOAT_CLOSE(ag[2], 1.0f), "relu grad");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -120,7 +111,7 @@ static void test_grad_sigmoid(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* s = SNEPPX_sigmoid(tape, a);
     SNEPPX_tape_backward(tape, s);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 0.25f), "sigmoid grad at 0 = 0.25");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 0.25f), "sigmoid grad at 0 = 0.25");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -132,7 +123,7 @@ static void test_grad_tanh(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* h = SNEPPX_tanh(tape, a);
     SNEPPX_tape_backward(tape, h);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "tanh grad at 0 = 1");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "tanh grad at 0 = 1");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -145,7 +136,7 @@ static void test_grad_exp_log(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* e = SNEPPX_exp(tape, a);
     SNEPPX_tape_backward(tape, e);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f) && FLOAT_CLOSE(((float*)a->grad->data)[1], 2.71828f), "exp grad");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f) && SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 2.71828f), "exp grad");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -160,8 +151,8 @@ static void test_grad_pow(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* p = SNEPPX_pow(tape, a, b);
     SNEPPX_tape_backward(tape, p);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 4.0f), "pow da = b*a^(b-1): 4");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 27.0f), "pow da: 3*3^2=27");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 4.0f), "pow da = b*a^(b-1): 4");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 27.0f), "pow da: 3*3^2=27");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -174,8 +165,8 @@ static void test_grad_sin_cos(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* s = SNEPPX_sin(tape, a);
     SNEPPX_tape_backward(tape, s);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "sin grad at 0 = cos(0) = 1");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 0.0f), "sin grad at pi/2 = cos(pi/2) = 0");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "sin grad at 0 = cos(0) = 1");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 0.0f), "sin grad at pi/2 = cos(pi/2) = 0");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -192,8 +183,8 @@ static void test_grad_chain_shared_input(void) {
     SNEPPXVariable* d = SNEPPX_mul(tape, c, a);
     SNEPPXVariable* loss = SNEPPX_sum(tape, d, 0);
     SNEPPX_tape_backward(tape, loss);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 4.0f), "chain shared a[0]=4");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 6.0f), "chain shared a[1]=6");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 4.0f), "chain shared a[0]=4");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 6.0f), "chain shared a[1]=6");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -208,7 +199,7 @@ static void test_grad_mse(void) {
     SNEPPXVariable* loss = SNEPPX_mse_loss(tape, pred, target);
     SNEPPX_tape_backward(tape, loss);
     float* pg = (float*)pred->grad->data;
-    ASSERT(FLOAT_CLOSE(pg[0], 2.0f/3.0f) && FLOAT_CLOSE(pg[1], 4.0f/3.0f) && FLOAT_CLOSE(pg[2], 2.0f), "mse grad = 2*(pred-target)/N");
+    SX_ASSERT(SX_FLOAT_CLOSE(pg[0], 2.0f/3.0f) && SX_FLOAT_CLOSE(pg[1], 4.0f/3.0f) && SX_FLOAT_CLOSE(pg[2], 2.0f), "mse grad = 2*(pred-target)/N");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -223,7 +214,7 @@ static void test_grad_softmax(void) {
     SNEPPX_tape_backward(tape, s);
     float* ag = (float*)a->grad->data;
     float sum = ag[0] + ag[1] + ag[2];
-    ASSERT(FLOAT_CLOSE(sum, 0.0f), "softmax grads sum to 0");
+    SX_ASSERT(SX_FLOAT_CLOSE(sum, 0.0f), "softmax grads sum to 0");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -240,8 +231,8 @@ static void test_grad_cross_entropy(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* loss = SNEPPX_cross_entropy(tape, pred, target);
     SNEPPX_tape_backward(tape, loss);
-    ASSERT(pred->grad != NULL, "cross_entropy grad exists");
-    ASSERT(pred->grad->size == 6, "cross_entropy grad size matches pred");
+    SX_ASSERT(pred->grad != NULL, "cross_entropy grad exists");
+    SX_ASSERT(pred->grad->size == 6, "cross_entropy grad size matches pred");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -250,17 +241,20 @@ static void test_grad_embedding(void) {
     SNEPPXTensor* tw = SNEPPX_tensor_zeros(wsh, 2, SNEPPX_FLOAT32);
     for (size_t i = 0; i < 8; i++) ((float*)tw->data)[i] = (float)(i + 1);
     size_t ish[] = {3};
-    SNEPPXTensor* ti = SNEPPX_tensor_zeros(ish, 1, SNEPPX_FLOAT32);
+    SNEPPXTensor* ti = SNEPPX_tensor_zeros(ish, 1, SNEPPX_INT32);
     size_t idx_vals[] = {0, 2, 1};
-    memcpy(ti->data, idx_vals, 3 * sizeof(size_t));
     SNEPPXVariable* w = SNEPPX_variable_create(tw, 1);
     SNEPPXVariable* idx = SNEPPX_variable_create(ti, 0);
+    /* index tensor must carry integer values (read_index honors INT32 via
+       dtype) instead of size_t bit-patterns memcpy'd into a float buffer. */
+    int32_t* iv = (int32_t*)ti->data;
+    iv[0] = (int32_t)idx_vals[0]; iv[1] = (int32_t)idx_vals[1]; iv[2] = (int32_t)idx_vals[2];
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* e = SNEPPX_embedding(tape, w, idx);
     SNEPPX_tape_backward(tape, e);
-    ASSERT(w->grad != NULL, "embedding grad exists");
+    SX_ASSERT(w->grad != NULL, "embedding grad exists");
     float* wg = (float*)w->grad->data;
-    ASSERT(FLOAT_CLOSE(wg[0], 1.0f) && FLOAT_CLOSE(wg[1], 1.0f) && FLOAT_CLOSE(wg[2], 1.0f), "embedding grad at used indices");
+    SX_ASSERT(SX_FLOAT_CLOSE(wg[0], 1.0f) && SX_FLOAT_CLOSE(wg[1], 1.0f) && SX_FLOAT_CLOSE(wg[2], 1.0f), "embedding grad at used indices");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -275,9 +269,9 @@ static void test_grad_layer_norm(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* ln = SNEPPX_layer_norm(tape, a, g, beta, 1e-5f);
     SNEPPX_tape_backward(tape, ln);
-    ASSERT(a->grad != NULL, "ln a grad");
-    ASSERT(g->grad != NULL, "ln gamma grad");
-    ASSERT(beta->grad != NULL, "ln beta grad");
+    SX_ASSERT(a->grad != NULL, "ln a grad");
+    SX_ASSERT(g->grad != NULL, "ln gamma grad");
+    SX_ASSERT(beta->grad != NULL, "ln beta grad");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -294,8 +288,8 @@ static void test_grad_multiple_consumers(void) {
     SNEPPXVariable* loss = SNEPPX_sum(tape, d, 0);
     SNEPPX_tape_backward(tape, loss);
     float* ag = (float*)a->grad->data;
-    ASSERT(FLOAT_CLOSE(ag[0], 4.0f + 7.389f), "multi-consumer grad da = 2*a + exp(a)");
-    ASSERT(FLOAT_CLOSE(ag[1], 6.0f + 20.085f), "multi-consumer grad da = 2*a + exp(a)");
+    SX_ASSERT(SX_FLOAT_CLOSE(ag[0], 4.0f + 7.389f), "multi-consumer grad da = 2*a + exp(a)");
+    SX_ASSERT(SX_FLOAT_CLOSE(ag[1], 6.0f + 20.085f), "multi-consumer grad da = 2*a + exp(a)");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -308,8 +302,8 @@ static void test_grad_no_grad_leaves_zero(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_add(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(a->grad == NULL, "no_grad a has no grad");
-    ASSERT(b->grad != NULL, "no_grad b has grad");
+    SX_ASSERT(a->grad == NULL, "no_grad a has no grad");
+    SX_ASSERT(b->grad != NULL, "no_grad b has grad");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -321,8 +315,8 @@ static void test_grad_transpose(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* t = SNEPPX_transpose(tape, a, 0, 1);
     SNEPPX_tape_backward(tape, t);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "transpose grad preserved");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[2], 1.0f), "transpose grad preserved");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "transpose grad preserved");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[2], 1.0f), "transpose grad preserved");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -333,7 +327,7 @@ static void test_grad_dropout(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* d = SNEPPX_dropout(tape, a, 0.5f, 42);
     SNEPPX_tape_backward(tape, d);
-    ASSERT(a->grad != NULL, "dropout grad exists");
+    SX_ASSERT(a->grad != NULL, "dropout grad exists");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -345,8 +339,8 @@ static void test_grad_neg(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* n = SNEPPX_neg(tape, a);
     SNEPPX_tape_backward(tape, n);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], -1.0f), "neg grad = -1");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], -1.0f), "neg grad = -1");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], -1.0f), "neg grad = -1");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], -1.0f), "neg grad = -1");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -358,7 +352,7 @@ static void test_grad_sum_mean(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* m = SNEPPX_mean(tape, a, 1);
     SNEPPX_tape_backward(tape, m);
-    ASSERT(a->grad != NULL, "sum+mean grad exists");
+    SX_ASSERT(a->grad != NULL, "sum+mean grad exists");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -371,8 +365,8 @@ static void test_grad_sqrt_abs(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* r = SNEPPX_sqrt(tape, a);
     SNEPPX_tape_backward(tape, r);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 0.25f), "sqrt grad = 0.5/sqrt(x): 0.25");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 1.0f/6.0f), "sqrt grad = 0.5/sqrt(9) = 1/6");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 0.25f), "sqrt grad = 0.5/sqrt(x): 0.25");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 1.0f/6.0f), "sqrt grad = 0.5/sqrt(9) = 1/6");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -384,7 +378,7 @@ static void test_grad_var_std(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* v = SNEPPX_var(tape, a, 0);
     SNEPPX_tape_backward(tape, v);
-    ASSERT(a->grad != NULL, "var grad exists");
+    SX_ASSERT(a->grad != NULL, "var grad exists");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -397,10 +391,10 @@ static void test_grad_log_softmax(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* l = SNEPPX_log_softmax(tape, a, 0);
     SNEPPX_tape_backward(tape, l);
-    ASSERT(a->grad != NULL, "log_softmax grad exists");
+    SX_ASSERT(a->grad != NULL, "log_softmax grad exists");
     float sum = 0;
     for (size_t i = 0; i < 3; i++) sum += ((float*)a->grad->data)[i];
-    ASSERT(FLOAT_CLOSE(sum, 0.0f), "log_softmax grads sum to 0");
+    SX_ASSERT(SX_FLOAT_CLOSE(sum, 0.0f), "log_softmax grads sum to 0");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -414,7 +408,7 @@ static void test_grad_concat(void) {
     SNEPPXVariable* c = SNEPPX_concat(tape, vars, 2, 1);
     SNEPPXVariable* s = SNEPPX_sum(tape, c, 0);
     SNEPPX_tape_backward(tape, s);
-    ASSERT(a->grad != NULL && b->grad != NULL, "concat grad exists");
+    SX_ASSERT(a->grad != NULL && b->grad != NULL, "concat grad exists");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -427,7 +421,7 @@ static void test_grad_silu_gelu(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* s = SNEPPX_silu(tape, a);
     SNEPPX_tape_backward(tape, s);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 0.5f), "silu grad at 0 = 0.5");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 0.5f), "silu grad at 0 = 0.5");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -447,7 +441,7 @@ static void test_grad_numerical_stability(void) {
     SNEPPXVariable* s = SNEPPX_sqrt(tape, SNEPPX_abs(tape, a));
     (void)s;
     SNEPPX_tape_backward(tape, s);
-    ASSERT(a->grad != NULL, "numerical stability: grad exists");
+    SX_ASSERT(a->grad != NULL, "numerical stability: grad exists");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -462,9 +456,9 @@ static void test_grad_tape_clear(void) {
     SNEPPX_tape_record(tape, b);
     SNEPPXVariable* c = SNEPPX_add(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(a->grad != NULL, "grad exists before clear");
+    SX_ASSERT(a->grad != NULL, "grad exists before clear");
     SNEPPX_tape_zero_grad(tape);
-    ASSERT(a->grad == NULL, "grad cleared");
+    SX_ASSERT(a->grad == NULL, "grad cleared");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -483,7 +477,7 @@ static void test_grad_global_norm(void) {
     SNEPPX_tape_backward(tape, c);
     if (c->grad) { SNEPPX_tensor_destroy(c->grad); c->grad = NULL; }
     float gn = SNEPPX_tape_global_norm(tape);
-    ASSERT(FLOAT_CLOSE(gn, sqrtf(4)), "global norm = 2");
+    SX_ASSERT(SX_FLOAT_CLOSE(gn, sqrtf(4)), "global norm = 2");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -503,7 +497,7 @@ static void test_grad_clip_grad_norm(void) {
     if (c->grad) { SNEPPX_tensor_destroy(c->grad); c->grad = NULL; }
     SNEPPX_tape_clip_grad_norm(tape, 1.0f);
     float gn = SNEPPX_tape_global_norm(tape);
-    ASSERT(FLOAT_CLOSE(gn, 1.0f), "clipped norm = 1");
+    SX_ASSERT(SX_FLOAT_CLOSE(gn, 1.0f), "clipped norm = 1");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -518,12 +512,12 @@ static void test_grad_minimum(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_minimum(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "min a[0]=1 (< b[0])");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 0.0f), "min a[1]=0 (> b[1])");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[2], 1.0f), "min a[2]=1 (< b[2])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[0], 0.0f), "min b[0]=0 (> a[0])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[1], 1.0f), "min b[1]=1 (< a[1])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[2], 0.0f), "min b[2]=0 (> a[2])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 1.0f), "min a[0]=1 (< b[0])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 0.0f), "min a[1]=0 (> b[1])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[2], 1.0f), "min a[2]=1 (< b[2])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[0], 0.0f), "min b[0]=0 (> a[0])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[1], 1.0f), "min b[1]=1 (< a[1])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[2], 0.0f), "min b[2]=0 (> a[2])");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -538,12 +532,12 @@ static void test_grad_maximum(void) {
     SNEPPXTape* tape = SNEPPX_tape_create();
     SNEPPXVariable* c = SNEPPX_maximum(tape, a, b);
     SNEPPX_tape_backward(tape, c);
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[0], 0.0f), "max a[0]=0 (< b[0])");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[1], 1.0f), "max a[1]=1 (> b[1])");
-    ASSERT(FLOAT_CLOSE(((float*)a->grad->data)[2], 0.0f), "max a[2]=0 (< b[2])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[0], 1.0f), "max b[0]=1 (> a[0])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[1], 0.0f), "max b[1]=0 (< a[1])");
-    ASSERT(FLOAT_CLOSE(((float*)b->grad->data)[2], 1.0f), "max b[2]=1 (> a[2])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[0], 0.0f), "max a[0]=0 (< b[0])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[1], 1.0f), "max a[1]=1 (> b[1])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)a->grad->data)[2], 0.0f), "max a[2]=0 (< b[2])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[0], 1.0f), "max b[0]=1 (> a[0])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[1], 0.0f), "max b[1]=0 (< a[1])");
+    SX_ASSERT(SX_FLOAT_CLOSE(((float*)b->grad->data)[2], 1.0f), "max b[2]=1 (> a[2])");
     SNEPPX_tape_destroy(tape);
 }
 
@@ -584,7 +578,7 @@ static void test_grad_conv2d(void) {
         float fd = (lp - lm) / (2.0f * eps);
         float ad = ((float*)va->grad->data)[idx];
         float ratio = fabsf(fd) > 1e-6f ? fabsf(ad - fd) / (fabsf(fd) + 1e-6f) : fabsf(ad - fd);
-        ASSERT(ratio < 0.15f, "conv2d input grad finite-diff match");
+        SX_ASSERT(ratio < 0.15f, "conv2d input grad finite-diff match");
     }
 
     for (size_t idx = 0; idx < 4; idx++) {
@@ -604,51 +598,45 @@ static void test_grad_conv2d(void) {
         float fd = (lp - lm) / (2.0f * eps);
         float ad = ((float*)vk->grad->data)[idx];
         float ratio = fabsf(fd) > 1e-6f ? fabsf(ad - fd) / (fabsf(fd) + 1e-6f) : fabsf(ad - fd);
-        ASSERT(ratio < 0.15f, "conv2d kernel grad finite-diff match");
+        SX_ASSERT(ratio < 0.15f, "conv2d kernel grad finite-diff match");
     }
 
     SNEPPX_variable_destroy(target);
     SNEPPX_tape_destroy(tape);
 }
 
-int main(void) {
-    run_test("add grad",              test_grad_add);
-    run_test("mul grad",              test_grad_mul);
-    run_test("matmul grad",           test_grad_matmul);
-    run_test("div grad",              test_grad_div);
-    run_test("relu grad",             test_grad_relu);
-    run_test("sigmoid grad",          test_grad_sigmoid);
-    run_test("tanh grad",             test_grad_tanh);
-    run_test("exp/log grad",          test_grad_exp_log);
-    run_test("pow grad",              test_grad_pow);
-    run_test("sin/cos grad",          test_grad_sin_cos);
-    run_test("chain shared input",    test_grad_chain_shared_input);
-    run_test("mse loss grad",         test_grad_mse);
-    run_test("softmax grad",          test_grad_softmax);
-    run_test("cross_entropy grad",    test_grad_cross_entropy);
-    run_test("embedding grad",        test_grad_embedding);
-    run_test("layer_norm grad",       test_grad_layer_norm);
-    run_test("multi-consumer grad",   test_grad_multiple_consumers);
-    run_test("no_grad leaves zero",   test_grad_no_grad_leaves_zero);
-    run_test("transpose grad",        test_grad_transpose);
-    run_test("dropout grad",          test_grad_dropout);
-    run_test("neg grad",              test_grad_neg);
-    run_test("sum/mean grad",         test_grad_sum_mean);
-    run_test("sqrt/abs grad",         test_grad_sqrt_abs);
-    run_test("var/std grad",          test_grad_var_std);
-    run_test("log_softmax grad",      test_grad_log_softmax);
-    run_test("concat grad",           test_grad_concat);
-    run_test("silu/gelu grad",        test_grad_silu_gelu);
-    run_test("numerical stability",   test_grad_numerical_stability);
-    run_test("tape zero_grad",        test_grad_tape_clear);
-    run_test("global norm",           test_grad_global_norm);
-    run_test("clip grad norm",        test_grad_clip_grad_norm);
 
-    run_test("min grad",              test_grad_minimum);
-    run_test("max grad",              test_grad_maximum);
-    run_test("conv2d grad",           test_grad_conv2d);
-
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+TEST(test_gradient_check, add_grad) { test_grad_add(); }
+TEST(test_gradient_check, mul_grad) { test_grad_mul(); }
+TEST(test_gradient_check, matmul_grad) { test_grad_matmul(); }
+TEST(test_gradient_check, div_grad) { test_grad_div(); }
+TEST(test_gradient_check, relu_grad) { test_grad_relu(); }
+TEST(test_gradient_check, sigmoid_grad) { test_grad_sigmoid(); }
+TEST(test_gradient_check, tanh_grad) { test_grad_tanh(); }
+TEST(test_gradient_check, exp_log_grad) { test_grad_exp_log(); }
+TEST(test_gradient_check, pow_grad) { test_grad_pow(); }
+TEST(test_gradient_check, sin_cos_grad) { test_grad_sin_cos(); }
+TEST(test_gradient_check, chain_shared_input) { test_grad_chain_shared_input(); }
+TEST(test_gradient_check, mse_loss_grad) { test_grad_mse(); }
+TEST(test_gradient_check, softmax_grad) { test_grad_softmax(); }
+TEST(test_gradient_check, cross_entropy_grad) { test_grad_cross_entropy(); }
+TEST(test_gradient_check, embedding_grad) { test_grad_embedding(); }
+TEST(test_gradient_check, layer_norm_grad) { test_grad_layer_norm(); }
+TEST(test_gradient_check, multi_consumer_grad) { test_grad_multiple_consumers(); }
+TEST(test_gradient_check, no_grad_leaves_zero) { test_grad_no_grad_leaves_zero(); }
+TEST(test_gradient_check, transpose_grad) { test_grad_transpose(); }
+TEST(test_gradient_check, dropout_grad) { test_grad_dropout(); }
+TEST(test_gradient_check, neg_grad) { test_grad_neg(); }
+TEST(test_gradient_check, sum_mean_grad) { test_grad_sum_mean(); }
+TEST(test_gradient_check, sqrt_abs_grad) { test_grad_sqrt_abs(); }
+TEST(test_gradient_check, var_std_grad) { test_grad_var_std(); }
+TEST(test_gradient_check, log_softmax_grad) { test_grad_log_softmax(); }
+TEST(test_gradient_check, concat_grad) { test_grad_concat(); }
+TEST(test_gradient_check, silu_gelu_grad) { test_grad_silu_gelu(); }
+TEST(test_gradient_check, numerical_stability) { test_grad_numerical_stability(); }
+TEST(test_gradient_check, tape_zero_grad) { test_grad_tape_clear(); }
+TEST(test_gradient_check, global_norm) { test_grad_global_norm(); }
+TEST(test_gradient_check, clip_grad_norm) { test_grad_clip_grad_norm(); }
+TEST(test_gradient_check, min_grad) { test_grad_minimum(); }
+TEST(test_gradient_check, max_grad) { test_grad_maximum(); }
+TEST(test_gradient_check, conv2d_grad) { test_grad_conv2d(); }

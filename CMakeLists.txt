@@ -1,5 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
-project(cognitive_processing_system VERSION 1.1.1 LANGUAGES C CXX ASM_MASM)
+project(cognitive_processing_system VERSION 1.5.3 LANGUAGES C CXX ASM_MASM)
+
+# Under the Ninja generator CMake's ASM_MASM language latches onto a bare
+# 'ml', which only exists under the HostX86 toolset path and is therefore
+# missing from a plain vcvars64 (x64) environment, yielding a build failure
+# ("CreateProcess failed: The system cannot find the file specified").
+# Pin the assembler to ml64.exe -- the native x64 MASM that lives alongside
+# cl.exe in the x64 toolset directory -- so that a stock
+#   cmake -B build -G Ninja
+# works without extra flags. The EXISTS guards mean x86 builds are untouched.
+if(ASM_MASM AND MSVC)
+  get_filename_component(_sneppx_msvc_bin_dir "${CMAKE_C_COMPILER}" DIRECTORY)
+  if(EXISTS "${_sneppx_msvc_bin_dir}/ml64.exe")
+    set(CMAKE_ASM_MASM_COMPILER "${_sneppx_msvc_bin_dir}/ml64.exe"
+        CACHE FILEPATH "MASM assembler" FORCE)
+  endif()
+endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -9,7 +25,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(SNEPPX_BUILD_TESTS "Build test suite" ON)
 set(BUILD_TESTING ${SNEPPX_BUILD_TESTS})
 option(SNEPPX_BUILD_BENCHMARKS "Build benchmarks" ON)
+option(SNEPPX_USE_GTEST "Build the C test suite against GoogleTest (FetchContent when not installed)" ON)
 option(SNEPPX_BUILD_PYTHON "Build Python bindings" OFF)
+option(SNEPPX_ENABLE_TEST_RNG "Enable deterministic RNG hooks for test-only builds (never for production)" OFF)
 option(SNEPPX_BUILD_CUDA "Build CUDA kernels" OFF)
 option(SNEPPX_BUILD_TOOLS "Build CLI tools" OFF)
 # Opt-in accelerator backends (OFF by default).
@@ -33,8 +51,15 @@ option(SNEPPX_USE_UBSAN "Enable UndefinedBehaviorSanitizer (GCC/Clang only)" OFF
 option(SNEPPX_USE_LTO "Enable Link-Time Optimization (Release only)" OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -fPIC")
+    # Force-include the standard headers that MSVC injects implicitly but
+    # GCC/Clang require explicitly. Without this the codebase fails to
+    # compile on Linux (e.g. uintptr_t, snprintf, memcpy, math fns, off64_t).
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE -include stdint.h -include stdlib.h -include string.h -include stdio.h -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE -include cstdint -include cstdlib -include cstring -include cstdio -include cmath -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lm")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
     if(SNEPPX_USE_ASAN)
         set(CMAKE_C_FLAGS_DEBUG "-g -fsanitize=address -fno-omit-frame-pointer")
         set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address -fno-omit-frame-pointer")
@@ -98,11 +123,13 @@ endif()
 
 file(GLOB_RECURSE CORE_KERNEL_SRC kernel/*.c drivers/*.c)
 file(GLOB_RECURSE NET_HTTP_SRC net/http/*.c)
+list(FILTER NET_HTTP_SRC EXCLUDE REGEX "vizmon\\.c$")
 file(GLOB_RECURSE CORE_LIB_SRC lib/internal/*.c)
 file(GLOB_RECURSE CORE_SECURITY_C_SRC security/crypto/c/*.c)
+file(GLOB_RECURSE FS_FORMAT_SRC fs/format/*.c)
 file(GLOB_RECURSE FS_SNAPSHOT_SRC fs/*.c)
 
-add_library(neural_core_kernel STATIC ${CORE_KERNEL_SRC} ${CORE_LIB_SRC} ${FS_SNAPSHOT_SRC} ${NET_HTTP_SRC})
+add_library(neural_core_kernel STATIC ${CORE_KERNEL_SRC} ${CORE_LIB_SRC} ${FS_SNAPSHOT_SRC} ${FS_FORMAT_SRC} ${NET_HTTP_SRC})
 target_include_directories(neural_core_kernel PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/kernel>
@@ -162,6 +189,47 @@ if(NOT MSVC)
     target_link_libraries(neural_core_kernel PUBLIC m)
 endif()
 
+# ---- SneppX vizmon: lightweight C visualization & monitoring control plane ----
+# Separate static library (libvizmon) per the dashboard requirement: pure-C,
+# no third-party deps (on Windows links ws2_32). Compile-only (ON by default).
+option(SNEPPX_BUILD_VIZMON "Build the SneppX visualization/monitoring dashboard" ON)
+if(SNEPPX_BUILD_VIZMON)
+    file(GLOB SNEPPX_VIZMON_SRC net/http/vizmon.c)
+    if(MSVC)
+        # On Windows, build as SHARED (DLL) so ctypes can load it
+        add_library(sneppx_vizmon SHARED ${SNEPPX_VIZMON_SRC})
+        target_compile_definitions(sneppx_vizmon PRIVATE SNEPPX_VIZMON_EXPORTS)
+    else()
+        # On Unix, static is fine (can be dlopen'd)
+        add_library(sneppx_vizmon STATIC ${SNEPPX_VIZMON_SRC})
+    endif()
+    target_include_directories(sneppx_vizmon PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+    if(NOT MSVC)
+        target_link_libraries(sneppx_vizmon PUBLIC m)
+    endif()
+    if(MSVC)
+        target_link_libraries(sneppx_vizmon PUBLIC ws2_32)
+        target_compile_definitions(sneppx_vizmon PRIVATE SNEPPX_BUILD_HTTP)
+    endif()
+endif()
+
+# ---- Model Hub C client library ----
+option(SNEPPX_BUILD_HUB "Build the SNEPPX Model Hub C client library" ON)
+if(SNEPPX_BUILD_HUB)
+    add_library(sneppx_hub_client STATIC model_hub/src/hub_client.c)
+    target_include_directories(sneppx_hub_client PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/model_hub/include>
+        $<INSTALL_INTERFACE:include/neural_core>
+    )
+    if(MSVC)
+        target_link_libraries(sneppx_hub_client PUBLIC winhttp)
+    endif()
+    target_compile_definitions(sneppx_hub_client PRIVATE SNEPPX_HUB_EXPORTS)
+endif()
+
 file(GLOB_RECURSE NEURAL_ARCHITECTURE_SRC algorithms/*/core/*.c)
 
 add_library(neural_architecture_layer STATIC ${NEURAL_ARCHITECTURE_SRC})
@@ -180,9 +248,14 @@ add_subdirectory(algorithms/model_zoo)
 
 if(CORE_SECURITY_C_SRC)
     add_library(neural_security_c STATIC ${CORE_SECURITY_C_SRC})
+    if(SNEPPX_ENABLE_TEST_RNG)
+        target_compile_definitions(neural_security_c PUBLIC SNEPPX_ENABLE_TEST_RNG)
+        message(WARNING "SNEPPX_ENABLE_TEST_RNG is ON: deterministic RNG controls are compiled in. Do not ship this build.")
+    endif()
     target_include_directories(neural_security_c PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-        $<INSTALL_INTERFACE:include/neural_core/security>
+        $<INSTALL_INTERFACE:include>
     )
     target_compile_definitions(neural_security_c PRIVATE $<$<CONFIG:Release>:SNEPPX_S1_SECURE_MEMORY>)
 
@@ -298,6 +371,12 @@ file(GLOB_RECURSE SNEPPX_S4_NETWORK_SRC security/network/*.c)
 if(SNEPPX_S4_NETWORK_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S4_NETWORK_SRC})
     target_compile_definitions(neural_security_c PRIVATE SNEPPX_S4_NETWORK_SECURITY)
+endif()
+
+file(GLOB_RECURSE SNEPPX_FIREWALL_C_SRC security/firewall/c/*.c)
+if(SNEPPX_FIREWALL_C_SRC)
+    target_sources(neural_security_c PRIVATE ${SNEPPX_FIREWALL_C_SRC})
+    target_compile_definitions(neural_security_c PRIVATE SNEPPX_FIREWALL_POLICY_ENGINE)
 endif()
 
 file(GLOB_RECURSE SNEPPX_S5_AI_SRC security/ai/*.c)

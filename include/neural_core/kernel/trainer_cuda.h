@@ -1,6 +1,10 @@
 #ifndef SNEPPX_TRAINER_CUDA_H
 #define SNEPPX_TRAINER_CUDA_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "gradient_optimization_suite.h"
 #include <stddef.h>
@@ -70,4 +74,8 @@ int SNEPPX_trainer_cuda_transfer_to_device(SNEPPXTensor** params, size_t n);
  */
 int SNEPPX_trainer_cuda_transfer_to_host(SNEPPXTensor** params, size_t n);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_TRAINER_CUDA_H */

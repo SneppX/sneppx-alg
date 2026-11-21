@@ -10,6 +10,6 @@ This directory contains CMake preset files and build profile configurations.
 ## Usage
 
 ```bash
-cmake -B build -C profiles/release-optimized.cmake
-cmake -B build-debug -C profiles/debug-full.cmake
+cmake -B build -G Ninja -C profiles/release-optimized.cmake
+cmake -B build-debug -G Ninja -C profiles/debug-full.cmake
 ```

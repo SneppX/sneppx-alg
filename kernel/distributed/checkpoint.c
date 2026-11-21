@@ -13,40 +13,14 @@
 
 #ifdef SNEPPX_HAS_CUDA
 
-#ifdef _WIN32
-#include <windows.h>
 /*
- * SNEPPX - Checkpoint
- *
- * WHAT
- *   Checkpoint.
- *
- * CONCEPT
- *   Provides checkpointing and fault tolerance.
- *
- * ROLE
- *   SNEPPX-Algo core component. See docs/COMMENTING.md for the
- *   four-layer commenting standard used across this codebase.
- *
+ * The current checkpoint writer performs the host transfer and disk write
+ * synchronously. Do not create an idle background thread and advertise it as
+ * asynchronous; callers can inspect async_save to see the effective mode.
  */
 
-
-typedef HANDLE snepx_thread_t;
-typedef DWORD (WINAPI *snepx_thread_fn)(LPVOID);
-static DWORD WINAPI snepx_thread_wrapper(LPVOID arg) {
-    void (*fn)(void*) = (void (*)(void*))((void**)arg)[0];
-    void* data = ((void**)arg)[1];
-    fn(data);
-    free(arg);
-    return 0;
-}
-#else
-#include <pthread.h>
-typedef pthread_t snepx_thread_t;
-#endif
-
 /* =========================================================================
- * Double-buffered async checkpoint internals
+ * Double-buffered checkpoint staging internals
  * ========================================================================= */
 
 #define SNEPPX_CKPT_NUM_BUFFERS 2
@@ -65,11 +39,6 @@ struct SNEPPXCkptAsync {
     cudaStream_t copy_stream;
     cudaStream_t save_stream;
 
-    snepx_thread_t io_thread;
-    int io_running;
-    int io_pending;
-    char pending_path[512];
-
     char checkpoint_dir[512];
     int world_size;
     int rank;
@@ -82,58 +51,48 @@ struct SNEPPXCkptAsync {
     int header_allocated;
 };
 
-static void snepx_ckpt_io_thread_fn(void* arg) {
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)arg;
-    while (ckpt->io_running) {
-        if (ckpt->io_pending) {
-            cudaStreamSynchronize(ckpt->save_stream);
-            ckpt->buffers[ckpt->save_idx].in_use = 0;
-            ckpt->io_pending = 0;
-        }
-#ifdef _WIN32
-        Sleep(1);
-#else
-        struct timespec ts = {0, 1000000};
-        nanosleep(&ts, NULL);
-#endif
-    }
-}
-
 /* Write checkpoint file using the checkpoint_reader format */
 static int snepx_ckpt_write_file(const char* path, const void* data,
                                   size_t data_size, int step) {
     SNEPPXCheckpointHeader hdr;
+    SNEPPXTensorRecord rec;
+    char metadata[64];
+    size_t metadata_len = 0;
+    void* handle = NULL;
+    int write_result;
+
+    if (!path || !data || data_size == 0 || step < 0 ||
+        data_size > UINT64_MAX) return -1;
+
     memset(&hdr, 0, sizeof(hdr));
     hdr.magic_lo = SNEPPX_CKPT_MAGIC;
     hdr.magic_hi = SNEPPX_CKPT_MAGIC_HI;
     hdr.version = SNEPPX_CKPT_VERSION;
     hdr.num_tensors = 1;
-    hdr.metadata_offset = 0;
-    hdr.metadata_size = 0;
 
-    void* handle = NULL;
-    if (SNEPPX_ckpt_write_open(path, &hdr, &handle) != 0) {
-        /* Fallback: raw write */
-        FILE* f = fopen(path, "wb");
-        if (!f) return -1;
-        fwrite(&step, sizeof(int), 1, f);
-        fwrite(&data_size, sizeof(size_t), 1, f);
-        fwrite(data, 1, data_size, f);
-        fclose(f);
-        return 0;
-    }
+    /* Never silently change formats: callers must see every write failure. */
+    if (SNEPPX_ckpt_write_open(path, &hdr, &handle) != 0 || !handle)
+        return -1;
 
-    SNEPPXTensorRecord rec;
     memset(&rec, 0, sizeof(rec));
     rec.shape[0] = (uint64_t)data_size;
     rec.ndim = 1;
     rec.dtype = 0; /* float32 */
-    rec.data_offset = 0;
     rec.data_size = (uint64_t)data_size;
 
-    SNEPPX_ckpt_write_tensor(handle, data, &rec);
-    SNEPPX_ckpt_write_close(handle);
-    return 0;
+    write_result = SNEPPX_ckpt_write_tensor(handle, data, &rec);
+    if (write_result == 0) {
+        if (SNEPPX_ckpt_format_step_metadata(step, metadata,
+                                                sizeof(metadata),
+                                                &metadata_len) != 0 ||
+            SNEPPX_ckpt_write_metadata(handle, metadata, metadata_len) != 0)
+            write_result = -1;
+    }
+
+    /* Close always releases the writer; its result is part of save success. */
+    if (SNEPPX_ckpt_write_close(handle) != 0)
+        write_result = -1;
+    return write_result;
 }
 
 /* =========================================================================
@@ -156,10 +115,23 @@ int SNEPPX_checkpoint_init(SNEPPX_CheckpointCoord** cp,
                             const char* dir, int world_size, int rank,
                             int save_interval, int keep_last,
                             int async_enabled) {
-    if (!cp || !dir) return -1;
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)calloc(1, sizeof(struct SNEPPXCkptAsync));
-    if (!ckpt) return -1;
-    strncpy(ckpt->checkpoint_dir, dir, 511);
+    struct SNEPPXCkptAsync* ckpt = NULL;
+    SNEPPX_CheckpointCoord* coord = NULL;
+    size_t dir_len;
+
+    if (!cp) return -1;
+    *cp = NULL;
+    if (!dir || world_size <= 0 || rank < 0 || rank >= world_size)
+        return -1;
+    dir_len = strlen(dir);
+    if (dir_len == 0 || dir_len >= sizeof(((struct SNEPPXCkptAsync*)0)->checkpoint_dir))
+        return -1;
+
+    ckpt = (struct SNEPPXCkptAsync*)calloc(1, sizeof(*ckpt));
+    coord = (SNEPPX_CheckpointCoord*)calloc(1, sizeof(*coord));
+    if (!ckpt || !coord) goto fail;
+
+    memcpy(ckpt->checkpoint_dir, dir, dir_len + 1);
     ckpt->world_size = world_size;
     ckpt->rank = rank;
     ckpt->save_interval_steps = save_interval > 0 ? save_interval : 100;
@@ -167,102 +139,102 @@ int SNEPPX_checkpoint_init(SNEPPX_CheckpointCoord** cp,
     ckpt->current_step = 0;
     ckpt->write_idx = 0;
     ckpt->save_idx = -1;
-    ckpt->io_pending = 0;
-    ckpt->io_running = async_enabled;
 
-    cudaStreamCreateWithFlags(&ckpt->copy_stream, cudaStreamNonBlocking);
-    cudaStreamCreateWithFlags(&ckpt->save_stream, cudaStreamNonBlocking);
+    if (cudaStreamCreateWithFlags(&ckpt->copy_stream,
+                                  cudaStreamNonBlocking) != cudaSuccess)
+        goto fail;
+    if (cudaStreamCreateWithFlags(&ckpt->save_stream,
+                                  cudaStreamNonBlocking) != cudaSuccess)
+        goto fail;
 
-    for (int i = 0; i < SNEPPX_CKPT_NUM_BUFFERS; i++) {
-        ckpt->buffers[i].host_buffer = NULL;
-        ckpt->buffers[i].host_capacity = 0;
-        ckpt->buffers[i].in_use = 0;
-        cudaEventCreateWithFlags(&ckpt->buffers[i].copy_event,
-                                  cudaEventDisableTiming);
+    for (int i = 0; i < SNEPPX_CKPT_NUM_BUFFERS; ++i) {
+        if (cudaEventCreateWithFlags(&ckpt->buffers[i].copy_event,
+                                     cudaEventDisableTiming) != cudaSuccess)
+            goto fail;
     }
 
-    if (async_enabled) {
-#ifdef _WIN32
-        void* arg = malloc(2 * sizeof(void*));
-        ((void**)arg)[0] = snepx_ckpt_io_thread_fn;
-        ((void**)arg)[1] = ckpt;
-        ckpt->io_thread = CreateThread(NULL, 0, snepx_thread_wrapper, arg, 0, NULL);
-#else
-        pthread_create(&ckpt->io_thread, NULL,
-                       (void* (*)(void*))snepx_ckpt_io_thread_fn, ckpt);
-#endif
-    }
-
-    SNEPPX_CheckpointCoord* coord = (SNEPPX_CheckpointCoord*)calloc(1, sizeof(SNEPPX_CheckpointCoord));
-    if (!coord) { free(ckpt); return -1; }
     coord->_async_state = ckpt;
     coord->world_size = world_size;
     coord->rank = rank;
-    coord->save_interval_steps = save_interval;
-    coord->keep_last_n = keep_last;
-    coord->async_save = async_enabled;
+    coord->save_interval_steps = ckpt->save_interval_steps;
+    coord->keep_last_n = ckpt->keep_last_n;
+    /* Async disk I/O is not implemented yet; report the effective mode. */
+    coord->async_save = 0;
     coord->current_step = 0;
     coord->save_in_progress = 0;
     *cp = coord;
+    (void)async_enabled;
     return 0;
+
+fail:
+    if (ckpt) {
+        for (int i = 0; i < SNEPPX_CKPT_NUM_BUFFERS; ++i) {
+            if (ckpt->buffers[i].copy_event)
+                (void)cudaEventDestroy(ckpt->buffers[i].copy_event);
+            free(ckpt->buffers[i].host_buffer);
+        }
+        if (ckpt->save_stream) (void)cudaStreamDestroy(ckpt->save_stream);
+        if (ckpt->copy_stream) (void)cudaStreamDestroy(ckpt->copy_stream);
+        free(ckpt->header);
+        free(ckpt);
+    }
+    free(coord);
+    return -1;
 }
 
 void sneppx_checkpoint_destroy(SNEPPX_CheckpointCoord* cp) {
+    struct SNEPPXCkptAsync* ckpt;
     if (!cp) return;
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
+    ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
     if (ckpt) {
-        ckpt->io_running = 0;
-        if (ckpt->io_thread) {
-#ifdef _WIN32
-            WaitForSingleObject(ckpt->io_thread, 5000);
-            CloseHandle(ckpt->io_thread);
-#else
-            pthread_join(ckpt->io_thread, NULL);
-#endif
-        }
-        if (ckpt->io_pending) {
-            cudaStreamSynchronize(ckpt->save_stream);
-        }
-        for (int i = 0; i < SNEPPX_CKPT_NUM_BUFFERS; i++) {
+        /* Attempt every cleanup even if one CUDA destructor reports an error. */
+        for (int i = 0; i < SNEPPX_CKPT_NUM_BUFFERS; ++i) {
             free(ckpt->buffers[i].host_buffer);
-            cudaEventDestroy(ckpt->buffers[i].copy_event);
+            if (ckpt->buffers[i].copy_event)
+                (void)cudaEventDestroy(ckpt->buffers[i].copy_event);
         }
-        cudaStreamDestroy(ckpt->copy_stream);
-        cudaStreamDestroy(ckpt->save_stream);
+        if (ckpt->copy_stream) (void)cudaStreamDestroy(ckpt->copy_stream);
+        if (ckpt->save_stream) (void)cudaStreamDestroy(ckpt->save_stream);
         free(ckpt->header);
         free(ckpt);
     }
     free(cp);
 }
 
-static void sneppx_build_checkpoint_path(SNEPPX_CheckpointCoord* cp,
-                                          int step, char* path, size_t path_size) {
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
-    snprintf(path, path_size, "%s/checkpoint_%d_rank_%d.sneppx",
-             ckpt->checkpoint_dir, step, cp->rank);
+static int sneppx_build_checkpoint_path(SNEPPX_CheckpointCoord* cp,
+                                         int step, char* path, size_t path_size) {
+    struct SNEPPXCkptAsync* ckpt;
+    int length;
+    if (!cp || !path || path_size == 0 || !cp->_async_state || step < 0)
+        return -1;
+    ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
+    length = snprintf(path, path_size, "%s/checkpoint_%d_rank_%d.sneppx",
+                      ckpt->checkpoint_dir, step, cp->rank);
+    return length < 0 || (size_t)length >= path_size ? -1 : 0;
 }
 
 int sneppx_checkpoint_save(SNEPPX_CheckpointCoord* cp,
                             const void* model_state, size_t state_size,
                             int current_step, cudaStream_t stream) {
-    if (!cp || !model_state) return -1;
-    struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
-    if (!ckpt) return -1;
+    struct SNEPPXCkptAsync* ckpt;
+    SNEPPXCkptBuffer* buf;
+    cudaStream_t transfer_stream;
+    cudaError_t cuda_status;
+    char path[512];
+    int buf_idx;
+    int write_status;
 
-    ckpt->current_step = current_step;
+    if (!cp || !model_state || state_size == 0 || current_step < 0 ||
+        !cp->_async_state) return -1;
+    ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
+    if (ckpt->save_interval_steps <= 0) return -1;
     if (current_step % ckpt->save_interval_steps != 0) return 0;
 
-    /* Wait for previous save to finish */
-    if (ckpt->io_pending) {
-        cudaStreamSynchronize(ckpt->save_stream);
-        ckpt->buffers[ckpt->save_idx].in_use = 0;
-        ckpt->io_pending = 0;
-    }
+    buf_idx = ckpt->write_idx;
+    if (buf_idx < 0 || buf_idx >= SNEPPX_CKPT_NUM_BUFFERS) return -1;
+    buf = &ckpt->buffers[buf_idx];
+    if (buf->in_use) return -1;
 
-    int buf_idx = ckpt->write_idx;
-    SNEPPXCkptBuffer* buf = &ckpt->buffers[buf_idx];
-
-    /* Allocate host buffer if needed */
     if (!buf->host_buffer || buf->host_capacity < state_size) {
         char* new_buf = (char*)realloc(buf->host_buffer, state_size);
         if (!new_buf) return -1;
@@ -270,31 +242,33 @@ int sneppx_checkpoint_save(SNEPPX_CheckpointCoord* cp,
         buf->host_capacity = state_size;
     }
 
-    /* Async D2D copy via temporary device buffer, then D2H */
-    void* d_tmp = NULL;
-    cudaError_t err = cudaMalloc(&d_tmp, state_size);
-    if (err != cudaSuccess) return -1;
-    cudaMemcpyAsync(d_tmp, model_state, state_size,
-                    cudaMemcpyDeviceToDevice, ckpt->copy_stream);
-    cudaMemcpyAsync(buf->host_buffer, d_tmp, state_size,
-                    cudaMemcpyDeviceToHost, ckpt->copy_stream);
-    cudaEventRecord(buf->copy_event, ckpt->copy_stream);
-    cudaStreamWaitEvent(ckpt->save_stream, buf->copy_event, 0);
-    cudaFree(d_tmp);
+    /* Use the caller's stream when supplied; otherwise use the owned stream. */
+    transfer_stream = stream ? stream : ckpt->copy_stream;
+    cuda_status = cudaMemcpyAsync(buf->host_buffer, model_state, state_size,
+                                  cudaMemcpyDeviceToHost, transfer_stream);
+    if (cuda_status != cudaSuccess) return -1;
+    cuda_status = cudaStreamSynchronize(transfer_stream);
+    if (cuda_status != cudaSuccess) return -1;
 
-    /* Build path */
-    char path[512];
-    sneppx_build_checkpoint_path(cp, current_step, path, sizeof(path));
+    if (sneppx_build_checkpoint_path(cp, current_step, path, sizeof(path)) != 0)
+        return -1;
 
-    /* Sync save stream, then write to disk */
-    cudaStreamSynchronize(ckpt->save_stream);
-    snepx_ckpt_write_file(path, buf->host_buffer, state_size, current_step);
+    write_status = snepx_ckpt_write_file(path, buf->host_buffer,
+                                         state_size, current_step);
+    if (write_status != 0) return -1;
 
-    strncpy(ckpt->last_checkpoint_path, path, 511);
+    /* Publish success only after the complete checkpoint is on disk. */
+    if (snprintf(ckpt->last_checkpoint_path,
+                 sizeof(ckpt->last_checkpoint_path), "%s", path) >=
+        (int)sizeof(ckpt->last_checkpoint_path)) return -1;
+    if (snprintf(cp->last_checkpoint_path,
+                 sizeof(cp->last_checkpoint_path), "%s", path) >=
+        (int)sizeof(cp->last_checkpoint_path)) return -1;
+    ckpt->current_step = current_step;
+    cp->current_step = current_step;
     ckpt->write_idx = (ckpt->write_idx + 1) % SNEPPX_CKPT_NUM_BUFFERS;
     buf->in_use = 0;
 
-    cp->current_step = current_step;
     if (cp->rank == 0)
         printf("[SNEPPX Checkpoint] Saved to %s (step %d)\n", path, current_step);
     return 0;
@@ -307,38 +281,58 @@ int sneppx_checkpoint_load(SNEPPX_CheckpointCoord* cp,
     struct SNEPPXCkptAsync* ckpt = (struct SNEPPXCkptAsync*)cp->_async_state;
     if (!ckpt) return -1;
 
-    if (ckpt->io_pending) {
-        cudaStreamSynchronize(ckpt->save_stream);
-        ckpt->buffers[ckpt->save_idx].in_use = 0;
-        ckpt->io_pending = 0;
-    }
-
     char path[512];
     if (ckpt->last_checkpoint_path[0]) {
-        strncpy(path, ckpt->last_checkpoint_path, 511);
-    } else {
-        sneppx_build_checkpoint_path(cp, ckpt->current_step, path, sizeof(path));
+        memcpy(path, ckpt->last_checkpoint_path,
+               sizeof(path) - 1);
+        path[sizeof(path) - 1] = '\0';
+    } else if (sneppx_build_checkpoint_path(cp, ckpt->current_step,
+                                             path, sizeof(path)) != 0) {
+        return -1;
     }
 
     int step = ckpt->current_step;
 
-    /* Check if it's the new format */
+    /* New-format checkpoints are staged in host memory and copied to the device. */
     if (SNEPPX_ckpt_validate(path) == 0) {
         void* handle = NULL;
         SNEPPXCheckpointHeader header;
-        if (SNEPPX_ckpt_read_open(path, &header, &handle) != 0) {
+        char* host_buffer = NULL;
+        char* metadata = NULL;
+        size_t metadata_len = 0;
+        size_t offset = 0;
+        int read_result = 0;
+        if (state_size == 0 ||
+            SNEPPX_ckpt_read_open(path, &header, &handle) != 0) return -1;
+        host_buffer = (char*)malloc(state_size);
+        if (!host_buffer) {
+            SNEPPX_ckpt_read_close(handle);
             return -1;
         }
-        size_t offset = 0;
-        for (uint32_t i = 0; i < header.num_tensors; i++) {
+        for (uint32_t i = 0; i < header.num_tensors; ++i) {
             SNEPPXTensorRecord rec;
-            if (SNEPPX_ckpt_read_tensor(handle, i, (uint8_t*)model_state + offset, &rec) != 0) {
-                SNEPPX_ckpt_read_close(handle);
-                return -1;
+            if (SNEPPX_ckpt_get_tensor_record(handle, i, &rec) != 0 ||
+                rec.data_size > state_size - offset ||
+                SNEPPX_ckpt_read_tensor_sized(handle, i, host_buffer + offset,
+                                               state_size - offset, NULL) != 0) {
+                read_result = -1;
+                break;
             }
             offset += (size_t)rec.data_size;
         }
-        SNEPPX_ckpt_read_close(handle);
+        if (read_result == 0 && offset != state_size) read_result = -1;
+        if (read_result == 0 &&
+            (SNEPPX_ckpt_read_metadata(handle, &metadata, &metadata_len) != 0 ||
+             SNEPPX_ckpt_parse_step_metadata(metadata, metadata_len, &step) != 0))
+            read_result = -1;
+        free(metadata);
+        if (SNEPPX_ckpt_read_close(handle) != 0) read_result = -1;
+        if (read_result == 0 &&
+            cudaMemcpy(model_state, host_buffer, state_size,
+                       cudaMemcpyHostToDevice) != cudaSuccess)
+            read_result = -1;
+        free(host_buffer);
+        if (read_result != 0) return -1;
     } else {
         /* Fallback: raw binary */
         FILE* f = fopen(path, "rb");
@@ -350,9 +344,19 @@ int sneppx_checkpoint_load(SNEPPX_CheckpointCoord* cp,
         if (saved_size > state_size) { fclose(f); return -1; }
         char* host_buf = (char*)malloc(saved_size);
         if (!host_buf) { fclose(f); return -1; }
-        fread(host_buf, 1, saved_size, f);
-        fclose(f);
-        cudaMemcpy(model_state, host_buf, saved_size, cudaMemcpyHostToDevice);
+        {
+            size_t bytes_read = fread(host_buf, 1, saved_size, f);
+            int close_status = fclose(f);
+            if (bytes_read != saved_size || close_status != 0) {
+                free(host_buf);
+                return -1;
+            }
+        }
+        if (cudaMemcpy(model_state, host_buf, saved_size,
+                       cudaMemcpyHostToDevice) != cudaSuccess) {
+            free(host_buf);
+            return -1;
+        }
         free(host_buf);
         step = file_step;
     }
@@ -368,10 +372,11 @@ int sneppx_checkpoint_coordinated_save(SNEPPX_CheckpointCoord* cp,
                                          const void* model_state, size_t state_size,
                                          int current_step, cudaStream_t stream,
                                          int (*barrier_fn)(void)) {
+    int ret;
     if (!cp || !model_state) return -1;
-    if (barrier_fn) barrier_fn();
-    int ret = sneppx_checkpoint_save(cp, model_state, state_size, current_step, stream);
-    if (barrier_fn) barrier_fn();
+    if (barrier_fn && barrier_fn() != 0) return -1;
+    ret = sneppx_checkpoint_save(cp, model_state, state_size, current_step, stream);
+    if (barrier_fn && barrier_fn() != 0) return -1;
     return ret;
 }
 

@@ -1,4 +1,5 @@
 #include "system_architecture_definitions.h"
+#include "test_gtest.h"
 #include "differentiable_training_pipeline.h"
 #include "automatic_differentiation_framework.h"
 #include <stdio.h>
@@ -22,12 +23,6 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_ser_train_step(void) {
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.input_dim = 4;
@@ -37,10 +32,10 @@ static void test_ser_train_step(void) {
     cfg.num_active = 2;
 
     SNEPPXSERModel* model = SNEPPX_ser_model_create(&cfg, 42, 1);
-    ASSERT(model != NULL, "model created");
+    SX_ASSERT(model != NULL, "model created");
 
     size_t nw = SNEPPX_ser_get_params(model, NULL, 0);
-    ASSERT(nw > 0, "has params");
+    SX_ASSERT(nw > 0, "has params");
 
     SNEPPXTensor** params = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_ser_get_params(model, params, nw);
@@ -57,15 +52,15 @@ static void test_ser_train_step(void) {
     SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
     SNEPPXVariable* outv = NULL;
     int ret = SNEPPX_ser_build_train_graph(model, tape, inv, wv, nw, &outv);
-    ASSERT(ret == 0, "build graph ok");
-    ASSERT(outv != NULL, "output non-null");
+    SX_ASSERT(ret == 0, "build graph ok");
+    SX_ASSERT(outv != NULL, "output non-null");
 
     SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
     SNEPPXVariable* loss_v = SNEPPX_mse_loss(tape, outv, tgv);
-    ASSERT(loss_v != NULL, "loss non-null");
+    SX_ASSERT(loss_v != NULL, "loss non-null");
     float loss = ((float*)loss_v->data->data)[0];
-    ASSERT(isfinite(loss), "loss finite");
-    ASSERT(loss >= 0.0f, "loss non-negative");
+    SX_ASSERT(isfinite(loss), "loss finite");
+    SX_ASSERT(loss >= 0.0f, "loss non-negative");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(target);
@@ -101,7 +96,7 @@ static void test_ser_train_convergence(void) {
     SNEPPXOptimizer* opt = SNEPPX_optimizer_create(&opt_cfg);
 
     size_t nw = SNEPPX_ser_get_params(model->ser_model, NULL, 0);
-    ASSERT(nw > 0, "ser has params");
+    SX_ASSERT(nw > 0, "ser has params");
 
     SNEPPXTensor** params = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_ser_get_params(model->ser_model, params, nw);
@@ -183,7 +178,7 @@ static void test_ser_train_convergence(void) {
         free(wv);
     }
 
-    ASSERT(final_loss < init_loss * 0.9f, "loss decreased >10%%");
+    SX_ASSERT(final_loss < init_loss * 0.9f, "loss decreased >10%%");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(target);
@@ -192,9 +187,6 @@ static void test_ser_train_convergence(void) {
     free(params);
 }
 
-int main(void) {
-    run_test("test_ser_train_step", test_ser_train_step);
-    run_test("test_ser_train_convergence", test_ser_train_convergence);
-    printf("\nSER training tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_ser_train, test_ser_train_step) { test_ser_train_step(); }
+TEST(test_ser_train, test_ser_train_convergence) { test_ser_train_convergence(); }

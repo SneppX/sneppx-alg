@@ -1,4 +1,6 @@
 import json
+
+import numpy as np
 import os
 import struct
 from pathlib import Path
@@ -13,12 +15,14 @@ from .tensor import Tensor, _HAS_C_BACKEND
 # ModelConfig - Unified config dataclass (Phase 1)
 # =========================================================================
 
+
 @dataclass
 class ModelConfig:
     """Unified model configuration matching C ModelConfig schema.
-    
+
     Supports JSON serialization, validation, and conversion to/from C config.
     """
+
     # Identity
     name: str = ""
     version: str = "0.1.0"
@@ -27,12 +31,12 @@ class ModelConfig:
     license: str = ""
     repository: str = ""
     homepage: str = ""
-    
+
     # Architecture
     architecture: str = "transformer"
     model_type: str = "causal-lm"  # e.g., "causal-lm", "seq2seq", "vision"
     framework: str = "sneppx"
-    
+
     # Model details
     num_parameters: int = 0
     num_layers: int = 0
@@ -42,44 +46,45 @@ class ModelConfig:
     num_key_value_heads: int = 0
     intermediate_size: int = 0
     vocab_size: int = 0
+    max_position_embeddings: int = 0
     max_seq_len: int = 0
-    
+
     # Normalization
     layer_norm_eps: float = 1e-5
     rms_norm_eps: float = 1e-6
     use_rms_norm: bool = True
-    
+
     # Activations
     hidden_act: str = "silu"
     ffn_act: str = "silu"
     gated_ffn: bool = True
-    
+
     # Attention
     attention_type: str = "causal"
     attention_dropout: float = 0.0
     hidden_dropout: float = 0.0
     use_flash_attention: bool = True
     sliding_window: int = 0
-    
+
     # Position encoding
     pos_encoding: str = "rope"
     rope_theta: float = 10000.0
     rope_scaling: int = 0
-    
+
     # Initialization
     initializer_range: float = 0.02
     tie_word_embeddings: bool = False
-    
+
     # Quantization
     quantize: bool = False
     quant_bits: int = 0
     quant_group_size: int = 128
-    
+
     # Distributed
     tensor_parallel_size: int = 1
     pipeline_parallel_size: int = 1
     sequence_parallel: bool = False
-    
+
     # Training
     learning_rate: float = 2e-4
     weight_decay: float = 0.01
@@ -88,46 +93,49 @@ class ModelConfig:
     max_steps: int = 0
     gradient_accumulation_steps: int = 1
     mixed_precision: bool = True
-    
+
     # MoE
     num_experts: int = 0
     num_experts_per_token: int = 0
     router_aux_loss_coef: float = 0.0
-    
+
     # Custom fields (key-value pairs)
     custom: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary, excluding empty/zero values."""
-        return {k: v for k, v in asdict(self).items() if v not in ("", 0, 0.0, False, None, {})}
-    
+        """Convert to a lossless dictionary representation."""
+        # False and zero are meaningful configuration values. Filtering them
+        # out makes JSON round-trips silently restore dataclass defaults, which
+        # can invert feature flags or change numeric settings.
+        return asdict(self)
+
     def to_json(self, pretty: bool = True) -> str:
         """Serialize to JSON string."""
         return json.dumps(self.to_dict(), indent=2 if pretty else None)
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ModelConfig":
         """Create from dictionary, ignoring unknown fields."""
         valid_fields = {f.name for f in cls.__dataclass_fields__.values()}
         filtered = {k: v for k, v in data.items() if k in valid_fields}
         return cls(**filtered)
-    
+
     @classmethod
     def from_json(cls, json_str: str) -> "ModelConfig":
         """Create from JSON string."""
         return cls.from_dict(json.loads(json_str))
-    
+
     def save(self, path: str) -> None:
         """Save to JSON file."""
         with open(path, "w") as f:
             f.write(self.to_json(pretty=True))
-    
+
     @classmethod
     def load(cls, path: str) -> "ModelConfig":
         """Load from JSON file."""
         with open(path) as f:
             return cls.from_json(f.read())
-    
+
     def validate(self) -> List[str]:
         """Validate config, return list of errors (empty if valid)."""
         errors = []
@@ -146,7 +154,7 @@ class ModelConfig:
         if self.learning_rate <= 0:
             errors.append("learning_rate must be positive")
         return errors
-    
+
     def to_c_config(self) -> Dict[str, Any]:
         """Convert to dict suitable for C ModelConfig."""
         return {
@@ -158,12 +166,12 @@ class ModelConfig:
             "architecture": self.architecture,
             "vocab_size": self.vocab_size,
             "hidden_size": self.hidden_size,
-            "num_layers": self.num_layers,
+            "num_layers": self.num_layers or self.num_hidden_layers,
             "num_heads": self.num_attention_heads,
             "num_kv_heads": self.num_key_value_heads,
             "intermediate_size": self.intermediate_size,
-            "max_position_embeddings": self.max_position_embeddings,
-            "max_seq_len": self.max_seq_len,
+            "max_position_embeddings": self.max_position_embeddings or self.max_seq_len,
+            "max_seq_len": self.max_seq_len or self.max_position_embeddings,
             "layer_norm_eps": self.layer_norm_eps,
             "rms_norm_eps": self.rms_norm_eps,
             "use_rms_norm": self.use_rms_norm,
@@ -197,7 +205,7 @@ class ModelConfig:
             "num_experts_per_token": self.num_experts_per_token,
             "router_aux_loss_coef": self.router_aux_loss_coef,
         }
-    
+
     @classmethod
     def from_c_config(cls, c_config: Dict[str, Any]) -> "ModelConfig":
         """Create from C ModelConfig dict."""
@@ -210,12 +218,21 @@ class ModelConfig:
             architecture=c_config.get("architecture", "transformer"),
             vocab_size=c_config.get("vocab_size", 32000),
             hidden_size=c_config.get("hidden_size", 4096),
-            num_layers=c_config.get("num_layers", 32),
+            num_layers=c_config.get("num_layers", c_config.get("num_hidden_layers", 32)),
+            num_hidden_layers=c_config.get(
+                "num_hidden_layers", c_config.get("num_layers", 32)
+            ),
             num_attention_heads=c_config.get("num_heads", 32),
-            num_key_value_heads=c_config.get("num_kv_heads", c_config.get("num_heads", 32)),
+            num_key_value_heads=c_config.get(
+                "num_kv_heads", c_config.get("num_heads", 32)
+            ),
             intermediate_size=c_config.get("intermediate_size", 11008),
-            max_position_embeddings=c_config.get("max_position_embeddings", 2048),
-            max_seq_len=c_config.get("max_seq_len", 2048),
+            max_position_embeddings=c_config.get(
+                "max_position_embeddings", c_config.get("max_seq_len", 2048)
+            ),
+            max_seq_len=c_config.get(
+                "max_seq_len", c_config.get("max_position_embeddings", 2048)
+            ),
             layer_norm_eps=c_config.get("layer_norm_eps", 1e-5),
             rms_norm_eps=c_config.get("rms_norm_eps", 1e-6),
             use_rms_norm=c_config.get("use_rms_norm", True),
@@ -283,7 +300,7 @@ class LlamaConfig:
     num_experts_per_tok: int = 0
     router_aux_loss_coef: float = 0.0
     custom: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Additional fields for ModelConfig compatibility
     name: str = "llama"
     version: str = "0.1.0"
@@ -325,20 +342,20 @@ class LlamaConfig:
     num_experts_per_token: int = 0
     router_aux_loss_coef: float = 0.0
     custom: Dict[str, Any] = field(default_factory=dict)
-    
-# Property aliases for backward compatibility
+
+    # Property aliases for backward compatibility
     @property
     def num_head_dim(self) -> int:
         return self.head_dim
-    
+
     @property
     def num_kv_heads(self) -> int:
         return self.num_key_value_heads
-    
+
     @property
     def num_layers(self) -> int:
         return self.num_hidden_layers
-    
+
     def to_model_config(self) -> "ModelConfig":
         """Convert to unified ModelConfig."""
         return ModelConfig(
@@ -385,7 +402,7 @@ class LlamaConfig:
             num_experts_per_token=self.num_experts_per_tok,
             router_aux_loss_coef=0.0,
         )
-    
+
     @classmethod
     def from_model_config(cls, config: "ModelConfig") -> "LlamaConfig":
         """Create LlamaConfig from unified ModelConfig."""
@@ -425,7 +442,7 @@ class MistralConfig:
     head_dim: int = 128
     attention_dropout: float = 0.0
     hidden_dropout: float = 0.0
-    
+
     # Additional fields for ModelConfig compatibility
     name: str = "mistral"
     version: str = "0.1.0"
@@ -436,17 +453,12 @@ class MistralConfig:
     num_parameters: int = 0
     max_seq_len: int = 32768
     layer_norm_eps: float = 1e-5
-    rms_norm_eps: float = 1e-6
     use_rms_norm: bool = True
     ffn_act: str = "silu"
     gated_ffn: bool = True
     attention_type: str = "causal"
-    attention_dropout: float = 0.0
-    hidden_dropout: float = 0.0
     use_flash_attention: bool = True
-    sliding_window: int = 4096
     pos_encoding: str = "rope"
-    rope_theta: float = 10000.0
     rope_scaling: int = 0
     initializer_range: float = 0.02
     tie_word_embeddings: bool = False
@@ -467,20 +479,20 @@ class MistralConfig:
     num_experts_per_token: int = 0
     router_aux_loss_coef: float = 0.0
     custom: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Property aliases for backward compatibility
     @property
     def num_head_dim(self) -> int:
         return self.head_dim
-    
+
     @property
     def num_kv_heads(self) -> int:
         return self.num_key_value_heads
-    
+
     @property
     def num_layers(self) -> int:
         return self.num_hidden_layers
-    
+
     def to_model_config(self) -> "ModelConfig":
         """Convert to unified ModelConfig."""
         return ModelConfig(
@@ -526,7 +538,7 @@ class MistralConfig:
             num_experts_per_token=0,
             router_aux_loss_coef=0.0,
         )
-    
+
     @classmethod
     def from_model_config(cls, config: "ModelConfig") -> "MistralConfig":
         """Create MistralConfig from unified ModelConfig."""
@@ -561,7 +573,7 @@ class Qwen2Config:
     head_dim: int = 128
     attention_dropout: float = 0.0
     hidden_dropout: float = 0.0
-    
+
     # Additional fields for ModelConfig compatibility
     name: str = "qwen2"
     version: str = "0.1.0"
@@ -602,24 +614,24 @@ class Qwen2Config:
     num_experts_per_token: int = 0
     router_aux_loss_coef: float = 0.0
     custom: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Property aliases for backward compatibility
     @property
     def num_head_dim(self) -> int:
         return self.head_dim
-    
+
     @property
     def num_kv_heads(self) -> int:
         return self.num_key_value_heads
-    
+
     @property
     def num_layers(self) -> int:
         return self.num_hidden_layers
-    
+
     @property
     def max_seq_len(self) -> int:
         return self.max_position_embeddings
-    
+
     def to_model_config(self) -> "ModelConfig":
         """Convert to unified ModelConfig."""
         return ModelConfig(
@@ -665,7 +677,7 @@ class Qwen2Config:
             num_experts_per_token=self.num_experts_per_token,
             router_aux_loss_coef=0.0,
         )
-    
+
     @classmethod
     def from_model_config(cls, config: "ModelConfig") -> "Qwen2Config":
         """Create Qwen2Config from unified ModelConfig."""
@@ -699,7 +711,7 @@ class DeepSeekV2Config:
     head_dim: int = 128
     attention_dropout: float = 0.0
     hidden_dropout: float = 0.0
-    
+
     # Additional fields for ModelConfig compatibility
     name: str = "deepseek_v2"
     version: str = "0.1.0"
@@ -740,24 +752,24 @@ class DeepSeekV2Config:
     num_experts_per_token: int = 0
     router_aux_loss_coef: float = 0.0
     custom: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Property aliases for backward compatibility
     @property
     def num_head_dim(self) -> int:
         return self.head_dim
-    
+
     @property
     def num_kv_heads(self) -> int:
         return self.num_key_value_heads
-    
+
     @property
     def num_layers(self) -> int:
         return self.num_hidden_layers
-    
+
     @property
     def max_seq_len(self) -> int:
         return self.max_position_embeddings
-    
+
     def to_model_config(self) -> "ModelConfig":
         """Convert to unified ModelConfig."""
         return ModelConfig(
@@ -803,7 +815,7 @@ class DeepSeekV2Config:
             num_experts_per_token=self.num_experts_per_tok,
             router_aux_loss_coef=0.0,
         )
-    
+
     @classmethod
     def from_model_config(cls, config: "ModelConfig") -> "DeepSeekV2Config":
         """Create DeepSeekV2Config from unified ModelConfig."""
@@ -963,19 +975,22 @@ def get_model_config(family: str, size: str) -> dict:
             f"Unknown size '{size}' for {family}. "
             f"Available: {list(_MODEL_REGISTRY[family].keys())}"
         )
-    return dict(_MODEL_REGISTRY[family][size])
+    cfg = dict(_MODEL_REGISTRY[family][size])
+    cfg["family"] = family
+    cfg["size"] = size
+    return cfg
 
 
 def get_model_config_obj(family: str, size: str) -> "ModelConfig":
     """Get a ModelConfig object by family and size name.
-    
+
     Creates a unified ModelConfig from the registry data.
     """
     config_dict = get_model_config(family, size)
     config_dict["name"] = f"{family}-{size}"
     config_dict["version"] = "0.1.0"
     config_dict["description"] = f"{family.upper()} {size} model"
-    
+
     # Map registry keys to ModelConfig fields
     if "num_hidden_layers" in config_dict:
         config_dict["num_layers"] = config_dict.pop("num_hidden_layers")
@@ -985,7 +1000,7 @@ def get_model_config_obj(family: str, size: str) -> "ModelConfig":
         config_dict["num_attention_heads"] = config_dict["num_attention_heads"]
     if "num_key_value_heads" in config_dict:
         config_dict["num_key_value_heads"] = config_dict["num_key_value_heads"]
-    
+
     return ModelConfig.from_dict(config_dict)
 
 
@@ -1023,7 +1038,7 @@ def extend_context(
     elif scaling == "linear":
         pass  # linear scaling uses theta unchanged
     elif scaling == "yarn":
-        rope_theta *= scale ** 0.8  # YaRN: partial NTK interpolation
+        rope_theta *= scale**0.8  # YaRN: partial NTK interpolation
 
     config["max_position_embeddings"] = target_len
     config["rope_theta"] = rope_theta
@@ -1083,6 +1098,9 @@ HF_WEIGHT_MAP: Dict[str, Dict[str, str]] = {
         "self_attn.k_proj.weight": "attn.k_proj.weight",
         "self_attn.v_proj.weight": "attn.v_proj.weight",
         "self_attn.o_proj.weight": "attn.o_proj.weight",
+        "self_attn.q_proj.bias": "attn.q_proj.bias",
+        "self_attn.k_proj.bias": "attn.k_proj.bias",
+        "self_attn.v_proj.bias": "attn.v_proj.bias",
         "mlp.gate_proj.weight": "mlp.gate_proj.weight",
         "mlp.up_proj.weight": "mlp.up_proj.weight",
         "mlp.down_proj.weight": "mlp.down_proj.weight",
@@ -1315,7 +1333,7 @@ def build_model_from_config(
     result = {
         "config": config,
         "total_params": params,
-        "param_str": f"{params/1e9:.2f}B",
+        "param_str": f"{params / 1e9:.2f}B",
         "estimated_memory_gb": params * 4 / (1024**3),  # FP32
         "layers": num_layers,
         "hidden_size": hidden_size,
@@ -1383,15 +1401,18 @@ def from_pretrained(
     force_download: bool = False,
     verbose: bool = True,
 ) -> dict:
-    """Load a pretrained model configuration.
+    """Resolve a known model ID to a SneppX config/architecture skeleton (local-only metadata).
 
-    This is a simplified version that returns a config dict. In production,
-    this would download weights from HuggingFace and build the full model.
+    This does **not** download weights or contact HuggingFace. It returns a config
+    dict produced by :func:`build_model_from_config`. To load local HF-format
+    weights from a snapshot directory, use
+    :func:`SneppX_ALG.interface_bindings.hf_integration.from_pretrained` with
+    ``cache_dir=<local snapshot path>``.
 
     Args:
         model_id: HF-style model ID (e.g., 'meta-llama/Llama-2-7b-hf')
-        cache_dir: Cache directory for downloaded files
-        force_download: Re-download even if cached
+        cache_dir: Unused (retained for API compatibility; local-only).
+        force_download: Unused (local-only).
         verbose: Print progress
 
     Returns:
@@ -1420,12 +1441,12 @@ def from_pretrained(
 
     if family is None:
         raise ValueError(
-            f"Unknown model_id '{model_id}'. " f"Supported: {[p[0] for p in mapping]}"
+            f"Unknown model_id '{model_id}'. Supported: {[p[0] for p in mapping]}"
         )
 
     config = get_model_config(family, size)
     if verbose:
-        print(f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size}")
+        print(f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size} (config only; no weights downloaded)")
         print(
             f"  hidden_size={config['hidden_size']}, "
             f"layers={config['num_hidden_layers']}, "
@@ -1444,19 +1465,22 @@ def from_pretrained(
 # Model Hub - High-level pretrained model loading/saving
 # =========================================================================
 
+
 class ModelHub:
     """High-level interface for loading and saving pretrained models.
-    
+
     Example:
         >>> hub = ModelHub()
         >>> model = hub.from_pretrained("llama-2-7b")
         >>> hub.save_pretrained(model, "./my-model")
     """
-    
+
     def __init__(self, cache_dir: Optional[str] = None):
-        self.cache_dir = Path(cache_dir or os.path.join(os.path.expanduser("~"), ".cache", "sneppx"))
+        self.cache_dir = Path(
+            cache_dir or os.path.join(os.path.expanduser("~"), ".cache", "sneppx")
+        )
         os.makedirs(self.cache_dir, exist_ok=True)
-    
+
     def from_pretrained(
         self,
         model_id: str,
@@ -1465,18 +1489,18 @@ class ModelHub:
         verbose: bool = True,
     ) -> Dict[str, Any]:
         """Load a pretrained model by ID.
-        
+
         Args:
             model_id: Model identifier (e.g., "llama-2-7b", "mistral-7b")
             revision: Model revision/tag (not yet implemented)
             local_files_only: If True, only use local cached files
             verbose: Print progress messages
-        
+
         Returns:
             Dictionary with keys: model_id, family, size, config, architecture, weights
         """
         return from_pretrained(model_id, verbose=True)
-    
+
     def save_pretrained(
         self,
         model: Dict[str, Any],
@@ -1485,7 +1509,7 @@ class ModelHub:
         max_shard_size: str = "5GB",
     ) -> None:
         """Save a model to disk in SneppX format.
-        
+
         Args:
             model: Model dictionary from from_pretrained
             save_directory: Directory to save the model
@@ -1494,28 +1518,43 @@ class ModelHub:
         """
         save_dir = Path(save_directory)
         save_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Save config
         config = model.get("config", {})
         config_path = save_dir / "config.json"
         with open(config_path, "w") as f:
             json.dump(config, f, indent=2)
-        
-        # Save weights (stub - would save actual weights in real implementation)
+
+        # Save weights. Prefer safetensors when available; fall back to np.savez
+        # (torch/safetensors are optional deps in this environment).
         weights = model.get("weights", {})
         if weights:
-            weights_path = save_dir / "model.safetensors"
-            # safetensors.torch.save_file(weights, weights_path)
-            pass
-        
+            arrays = {}
+            for name, val in weights.items():
+                if hasattr(val, "data"):
+                    arrays[name] = np.asarray(val.data)
+                elif hasattr(val, "detach"):
+                    arrays[name] = val.detach().cpu().numpy()
+                else:
+                    arrays[name] = np.asarray(val)
+            try:
+                import safetensors.numpy as _st
+
+                weights_path = save_dir / "model.safetensors"
+                _st.save_file(arrays, str(weights_path))
+            except Exception:
+                weights_path = save_dir / "model.npz"
+                np.savez(str(weights_path), **arrays)
+            print(f"Weights saved to {weights_path}")
+
         # Save model card
         model_card = model.get("model_card", "")
         if not model_card:
             model_card = self._generate_model_card(model)
         (save_dir / "README.md").write_text(model_card)
-        
+
         print(f"Model saved to {save_dir}")
-    
+
     def _generate_model_card(self, model: Dict[str, Any]) -> str:
         """Generate a basic model card."""
         model_id = model.get("model_id", "unknown")
@@ -1537,6 +1576,6 @@ class ModelHub:
 ```python
 from sneppx_alg import ModelHub
 hub = ModelHub()
-model = hub.from_pretrained("{model_id.lower().replace('-', '-')}")
+model = hub.from_pretrained("{model_id.lower().replace("-", "-")}")
 ```
 """

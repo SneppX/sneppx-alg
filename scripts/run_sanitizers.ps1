@@ -14,7 +14,7 @@ Write-Host "=== SNEPPX Sanitizer CI ===" -ForegroundColor Cyan
 
 # 1. Build with ASan (MSVC)
 Write-Host "`n--- Building with AddressSanitizer ---" -ForegroundColor Yellow
-cmake -B $BuildDir -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_ASAN=ON
+cmake -B $BuildDir -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_ASAN=ON
 if ($LASTEXITCODE -ne 0) { Write-Host "ASan build failed" -ForegroundColor Red; exit 1 }
 cmake --build $BuildDir --config Debug
 if ($LASTEXITCODE -ne 0) { Write-Host "ASan build failed" -ForegroundColor Red; exit 1 }

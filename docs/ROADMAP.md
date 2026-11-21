@@ -16,15 +16,16 @@ All 8 development phases complete, API frozen for stability, full regression sui
 | Profiling | Profiler, structured logging, NVTX, sanitizer scripts | **Done** |
 | CUDA Backend | Tensor-core GEMM, Flash Attention v2/v3, autodiff, memory pool, RNG | **Done** |
 
-## v1.1 — Model Serving & Inference Optimization (Next)
+## v1.1 — Model Serving, Fine-Tuning & Model Hub (Completed — v1.1.1)
 
-| Area | Deliverable | Metric |
+| Area | Deliverable | Status |
 |------|-------------|--------|
-| **Serving** | TensorRT-LLM / vLLM integration, OpenAI-compatible API | <5ms TTFT at 7B |
-| **Continuing Pre-training** | Distributed checkpoint resume, FSDP integration | 10k tokens/s/node |
-| **Fine-tuning** | LoRA/QLoRA adapters, DPO/GRPO trainers | 2x memory reduction — **Done (v1.1.0)** |
-| **Evaluation** | LM Eval Harness integration, standard benchmarks | MMLU/GSM8K/HumanEval |
-| **Deployment** | pip-installable wheel, Docker Compose for serving | One-command deploy |
+| **Serving** | C HTTP Server, FastAPI inference engine, continuous batching | **Done (v1.1.1)** |
+| **Fine-tuning** | LoRA/QLoRA adapters, DPO/GRPO trainers | **Done (v1.1.0)** |
+| **Evaluation** | Synthetic and benchmark eval harnesses (MMLU, GSM8K, HumanEval) | **Done (v1.1.0)** |
+| **Model Hub** | Centralized registry, CLI (`sneppx-hub`), storage backend, C WinHTTP client | **Done (v1.1.1)** |
+| **Security Hardening** | C safety refactoring, Dilithium/Kyber crypto fixes, Ninja build presets | **Done (v1.1.1)** |
+| **ONNX toolkit** | Standalone numpy-only parse/serialize/check/infer/optimize/QDQ/external-data, numpy + onnxruntime runtimes, `sneppx-onnx` CLI, legacy-wire-compatible exporter bridge | **Done (Unreleased)** |
 
 ## v1.2 — Production Hardening
 
@@ -34,6 +35,18 @@ All 8 development phases complete, API frozen for stability, full regression sui
 | **Memory** | PagedAttention v2, vLLM-style KV cache | 4x batch size increase |
 | **Reliability** | Circuit breakers, retry logic, health checks for distributed training | 99.9% job success |
 | **Monitoring** | Prometheus metrics, Grafana dashboards, tracing | Real-time visibility |
+
+## v1.5 — Python DL Ecosystem, Higher-Order AD & Site Polish
+
+| Area | Deliverable | Status |
+|------|-------------|--------|
+| **Higher-Order AD** | `create_graph=True`, JVP/VJP forward/reverse tangent engine, Hessian-vector products | **Done (v1.5.0)** |
+| **NN Module Parity** | `InstanceNorm1d/2d/3d`, `BatchNorm3d`, `Conv3d`, `ConvTranspose*`, `Unfold`/`Fold` | **Done (v1.5.0)** |
+| **Functional API** | Pure `F.*` namespace with ~70 differentiable operations and loss functions | **Done (v1.5.0)** |
+| **Sparse Tensors** | COO/CSR/CSC/BSR formats with `sparse_mm`, `sparse_addmm`, and `SparseAdam` | **Done (v1.5.0)** |
+| **Community Health** | Canonical Contributor Covenant v2.1, structured issue templates, secret scanning | **Done (v1.5.1)** |
+| **Interactive Docs** | Pyodide browser playground, Model Zoo browser, API explorer, and smooth UX | **Done (v1.5.2)** |
+| **PyPI Discovery** | Multi-directory packaging resolution and PyPI build configuration | **Done (v1.5.2)** |
 
 ## v2.0 — Competitive with LLaMA-3
 

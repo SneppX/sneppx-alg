@@ -3,8 +3,8 @@
 ## Running Tests
 
 ```powershell
-# From build directory:
-cd build
+# From the active build directory (e.g. build/release after `cmake --preset release`):
+cd build\release
 
 # All C tests
 ctest -C Release --output-on-failure
@@ -45,6 +45,9 @@ python tests/python/test_profiler.py
 
 # Model zoo tests (49 tests)
 python tests/python/test_model_zoo.py
+
+# ONNX toolkit tests (25 tests)
+python -m pytest onnx/tests/
 ```
 
 ## Test Categories
@@ -109,12 +112,17 @@ These are accepted as pre-existing and do not indicate regression.
 ### C Tests (all must pass before release)
 
 ```powershell
-.\build_test\algorithms\model_zoo\Release\test_model_config.exe
-.\build_test\algorithms\model_zoo\Release\test_model_registry.exe
-.\build_test\algorithms\model_zoo\Release\test_model_weights.exe
-.\build_test\algorithms\model_zoo\Release\test_model_card.exe
-.\build_test\algorithms\model_zoo\Release\test_model_factory.exe
-.\build_test\algorithms\model_zoo\Release\test_integration.exe
+# Via ctest (recommended):
+cd build\release
+ctest -C Release -R "test_model_(config|registry|weights|card|factory|integration)" --output-on-failure
+
+# ...or run the binaries directly:
+.\build\release\algorithms\model_zoo\test_model_config.exe
+.\build\release\algorithms\model_zoo\test_model_registry.exe
+.\build\release\algorithms\model_zoo\test_model_weights.exe
+.\build\release\algorithms\model_zoo\test_model_card.exe
+.\build\release\algorithms\model_zoo\test_model_factory.exe
+.\build\release\algorithms\model_zoo\test_integration.exe
 ```
 
 ### Python Tests

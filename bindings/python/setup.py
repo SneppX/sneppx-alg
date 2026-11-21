@@ -8,6 +8,7 @@ Canonical metadata lives in pyproject.toml. This file exists only to:
 """
 import os
 import re
+import sys
 
 from setuptools import setup
 from setuptools.dist import Distribution
@@ -72,12 +73,17 @@ except ImportError:
     pass
 
 
+_readme = os.path.join(os.path.dirname(__file__), "README.md")
+if not os.path.exists(_readme):
+    _readme = os.path.join(os.path.dirname(__file__), "..", "..", "README.md")
+
+_long_description = ""
+if os.path.exists(_readme):
+    with open(_readme, encoding="utf-8") as readme_file:
+        _long_description = readme_file.read()
+
 setup(
-    long_description=(
-        open(os.path.join(os.path.dirname(__file__), "..", "..", "README.md"), encoding="utf-8").read()
-        if os.path.exists(os.path.join(os.path.dirname(__file__), "..", "..", "README.md"))
-        else ""
-    ),
+    long_description=_long_description,
     long_description_content_type="text/markdown",
     distclass=BinaryDistribution,
     cmdclass=_cmdclass,

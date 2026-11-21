@@ -1,4 +1,6 @@
 #include "sparse_expert_routing.h"
+#include "test_gtest.h"
+#include "polymorphic_memory_allocator.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -18,32 +20,9 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-#define ASSERT_NEAR(a, b, eps, msg) do { \
-    if (fabsf((a) - (b)) > (eps)) { \
-        printf("FAIL: %s (got %f, expected %f)\n", msg, (float)(a), (float)(b)); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_ser_importance_loss(void) {
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
@@ -57,9 +36,9 @@ static void test_ser_importance_loss(void) {
     int* expert_indices = NULL;
     SNEPPX_ser_route(layer, input, &gate_weights, &expert_indices);
     float imp_loss = SNEPPX_ser_importance_loss(gate_weights, expert_indices, 4);
-    ASSERT(imp_loss >= 0.0f, "importance loss >= 0");
+    SX_ASSERT(imp_loss >= 0.0f, "importance loss >= 0");
     SNEPPX_tensor_destroy(gate_weights);
-    free(expert_indices);
+    SNEPPX_free(expert_indices, 2 * 2 * sizeof(int));
     SNEPPX_tensor_destroy(input);
     SNEPPX_ser_layer_destroy(layer);
 }
@@ -71,13 +50,10 @@ static void test_ser_aux_loss_balanced(void) {
     for (size_t i = 0; i < 8; i++) ((float*)gate_weights->data)[i] = data[i];
     int expert_indices[] = {0, 1, 0, 0};
     float aux = SNEPPX_ser_aux_load_balance(gate_weights, expert_indices, 4, 2);
-    ASSERT(aux >= 0.0f, "aux loss >= 0");
+    SX_ASSERT(aux >= 0.0f, "aux loss >= 0");
     SNEPPX_tensor_destroy(gate_weights);
 }
 
-int main(void) {
-    run_test("ser_importance_loss", test_ser_importance_loss);
-    run_test("ser_aux_loss_balanced", test_ser_aux_loss_balanced);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_ser_loss, ser_importance_loss) { test_ser_importance_loss(); }
+TEST(test_ser_loss, ser_aux_loss_balanced) { test_ser_aux_loss_balanced(); }

@@ -6,6 +6,8 @@ import math
 import os
 import numpy as np
 
+from .native_tensor_ops import NativeTensorOps
+
 # ---- Try to load the C (pybind11) backend ----
 _C_BACKEND = None
 try:
@@ -31,40 +33,75 @@ else:
 if not _HAS_C_BACKEND:
 
     class Dtype:
+        # Keep these numeric values identical to SNEPPXDtype in the C ABI.
         FLOAT32 = 0
         FLOAT64 = 1
         FLOAT16 = 2
         BFLOAT16 = 3
-        INT32 = 4
-        INT64 = 5
-        INT16 = 6
-        INT8 = 7
-        UINT8 = 8
-        BOOL = 9
+        FLOAT8 = 4
+        INT32 = 5
+        INT64 = 6
+        INT16 = 7
+        INT8 = 8
+        UINT8 = 9
+        BOOL = 10
+        COMPLEX64 = 11
+        COMPLEX128 = 12
 
     class Device:
+        # Keep these numeric values identical to SNEPPXDevice in the C ABI.
         CPU = 0
         CUDA = 1
         METAL = 2
         VULKAN = 3
+        TPU = 4
+        NPU = 5
 
     class Layout:
-        DENSE = 0
-        CSR = 1
-        COO = 2
+        # Native SNEPPXLayout values. Sparse storage formats are separate APIs.
+        ROW_MAJOR = 0
+        COL_MAJOR = 1
+        CHANNELS_LAST = 2
+        TILED = 3
+        DENSE = ROW_MAJOR  # Backward-compatible alias.
 
 
 DTYPE_MAP = {
     "float32": (ctypes.c_float, 4, np.float32),
+    "float64": (ctypes.c_double, 8, np.float64),
     "float16": (ctypes.c_uint16, 2, np.float16),
+    "bfloat16": (ctypes.c_uint16, 2, np.uint16),
+    # NumPy has no universally available float8 scalar dtype; store the raw
+    # one-byte representation and leave numeric encoding to explicit codecs.
+    "float8": (ctypes.c_uint8, 1, np.uint8),
     "int32": (ctypes.c_int32, 4, np.int32),
     "int64": (ctypes.c_int64, 8, np.int64),
+    "int16": (ctypes.c_int16, 2, np.int16),
+    "int8": (ctypes.c_int8, 1, np.int8),
     "uint8": (ctypes.c_uint8, 1, np.uint8),
+    "bool": (ctypes.c_uint8, 1, np.bool_),
+    "complex64": (ctypes.c_float, 8, np.complex64),
+    "complex128": (ctypes.c_double, 16, np.complex128),
 }
 
 _NP_TO_DTYPE = {}
 for k, (_, _, np_dt) in DTYPE_MAP.items():
     _NP_TO_DTYPE[np.dtype(np_dt)] = k
+
+
+def _cuda_available() -> bool:
+    """Best-effort detection of a usable CUDA device.
+
+    Returns ``False`` when torch is unavailable or no GPU is present so that
+    the (CPU-backed) simulation path is taken instead of enforcing strict
+    device matching between cuda-labelled and cpu tensors.
+    """
+    try:
+        import torch
+
+        return bool(getattr(torch.cuda, "is_available", lambda: False)())
+    except Exception:
+        return False
 
 
 def _resolve_dtype(dtype) -> str:
@@ -81,6 +118,22 @@ def _resolve_dtype(dtype) -> str:
 
 def _numpy_dtype(dtype) -> np.dtype:
     return DTYPE_MAP.get(_resolve_dtype(dtype), (None, None, np.float32))[2]
+
+
+class _TensorData(np.ndarray):
+    """ndarray subclass that allows ``float()`` and ``item()`` on size-1 arrays."""
+
+    def __float__(self):
+        if self.size != 1:
+            raise TypeError("only size-1 tensors can be converted to Python scalars")
+        return float(super().item())
+
+    def item(self, *args):
+        if args:
+            return super().item(*args)
+        if self.size != 1:
+            raise ValueError("can only convert an array of size 1 to a Python scalar")
+        return super().item()
 
 
 class _CTensorData:
@@ -105,21 +158,37 @@ class _CTensorData:
         return np.frombuffer(self._data, dtype=np_dt).reshape(self.shape).copy()
 
 
-class Tensor:
+class Tensor(NativeTensorOps):
+    """Multi-dimensional array with autograd tape support and dual C/NumPy storage.
+
+    A Tensor encapsulates an n-dimensional data buffer, associated data type, device
+    placement, and gradient history. When ``requires_grad=True``, mathematical operations
+    record backward functions on the computation graph for reverse-mode automatic differentiation.
+
+    Attributes:
+        data (np.ndarray): Copy of the underlying tensor data as a NumPy array.
+        shape (tuple): Shape of the multi-dimensional tensor.
+        dtype: Data type enumeration or descriptor (e.g. float32, float64, int32).
+        device (str): Device placement string (e.g. "cpu", "cuda:0").
+        requires_grad (bool): Whether gradients are tracked for this tensor.
+        grad (Optional[Tensor]): Accumulated gradient tensor after ``backward()``.
+    """
+
     def __init__(
         self, data=None, shape=None, dtype="float32", device="cpu", requires_grad=False
     ):
         self.device = device
+        self.layout = "strided"
         self.dtype = _resolve_dtype(dtype)
         self.requires_grad = requires_grad
         self.grad = None
         self._grad_fn = None
-        if isinstance(data, (int, float, np.integer, np.floating)):
+        if isinstance(data, (int, float, complex, np.integer, np.floating, np.complexfloating)):
             shape = shape or (1,)
             self._data = _CTensorData(
                 shape, self.dtype, is_cuda=(device.startswith("cuda"))
             )
-            arr = np.full(shape, float(data), dtype=_numpy_dtype(self.dtype))
+            arr = np.full(shape, data, dtype=_numpy_dtype(self.dtype))
             self._data._copy_from(arr)
             self.shape = shape
         elif isinstance(data, (list, tuple)):
@@ -188,7 +257,7 @@ class Tensor:
 
     @property
     def data(self) -> np.ndarray:
-        return self._data.to_numpy()
+        return self._data.to_numpy().view(_TensorData)
 
     @data.setter
     def data(self, arr: np.ndarray):
@@ -209,7 +278,97 @@ class Tensor:
         return self.transpose(0, 1)
 
     def numpy(self) -> np.ndarray:
+        """Return an independent NumPy copy of this tensor's values."""
         return self._data.to_numpy()
+
+    def to_native(self):
+        """Copy this tensor's storage into the compiled native C tensor engine.
+
+        BFLOAT16 and FLOAT8 are transferred as raw uint16/uint8 storage. This
+        operation does not transfer Python autograd history or device state.
+        """
+        from . import c_tensor_bridge
+
+        if not c_tensor_bridge.available():
+            raise RuntimeError("native C tensor engine is not available")
+        if self.device != "cpu":
+            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+        if self.requires_grad:
+            raise RuntimeError(
+                "native conversion does not transfer autograd history; call detach() first"
+            )
+        try:
+            native_dtype = getattr(c_tensor_bridge._ext.SNEPPXDtype, self.dtype.upper())
+        except AttributeError as exc:
+            raise TypeError(f"unsupported native tensor dtype: {self.dtype}") from exc
+        return c_tensor_bridge.from_numpy(self.numpy(), dtype=native_dtype)
+
+    @classmethod
+    def from_native(cls, native, device="cpu", requires_grad=False):
+        """Copy a native C tensor into the public Python Tensor representation.
+
+        BFLOAT16 and FLOAT8 remain raw uint16/uint8 storage; no numerical
+        encoding conversion is implied.
+        """
+        from . import c_tensor_bridge
+
+        if not c_tensor_bridge.available():
+            raise RuntimeError("native C tensor engine is not available")
+        if device != "cpu":
+            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+        dtype_name = native.dtype_name
+        if dtype_name not in DTYPE_MAP:
+            raise TypeError(f"unsupported native tensor dtype: {dtype_name}")
+        array = c_tensor_bridge.to_numpy(native)
+        expected_dtype = np.dtype(DTYPE_MAP[dtype_name][2])
+        if array.dtype != expected_dtype:
+            raise TypeError(
+                f"native tensor {dtype_name} exposed {array.dtype}, expected {expected_dtype}"
+            )
+        return cls(array, dtype=dtype_name, device=device, requires_grad=requires_grad)
+
+    def _native_binary(self, other, operation):
+        """Run a supported binary operation explicitly in the native C engine."""
+        if not isinstance(other, Tensor):
+            raise TypeError("native tensor operations require another Tensor")
+        if self.device != "cpu" or other.device != "cpu":
+            raise NotImplementedError("native tensor operations currently support CPU tensors only")
+        if self.dtype != other.dtype:
+            raise TypeError("native tensor operations require matching dtypes")
+        native_left = self.to_native()
+        native_right = other.to_native()
+        native_result = getattr(native_left, operation)(native_right)
+        return Tensor.from_native(native_result)
+
+    def native_add(self, other):
+        """Add tensors with the native C engine (explicit opt-in, no autograd)."""
+        return self._native_binary(other, "add")
+
+    def native_matmul(self, other):
+        """Multiply matrices with the native C engine (explicit opt-in, no autograd)."""
+        return self._native_binary(other, "matmul")
+
+    def __array__(self, dtype=None, copy=None):
+        """Expose tensor storage through NumPy's array protocol.
+
+        A matching dtype returns a view backed by this tensor's byte buffer.
+        A dtype conversion requires a copy; explicit copy=False rejects it.
+        """
+        array = np.frombuffer(
+            self._data._data, dtype=_numpy_dtype(self.dtype)
+        ).reshape(self.shape)
+        if dtype is not None:
+            requested_dtype = np.dtype(dtype)
+            if requested_dtype != array.dtype:
+                if copy is False:
+                    raise ValueError(
+                        "Unable to avoid a copy when converting tensor dtype "
+                        f"from {array.dtype} to {requested_dtype}"
+                    )
+                array = array.astype(requested_dtype, copy=True)
+        if copy is True:
+            array = array.copy()
+        return array
 
     def cuda(self):
         return self.to("cuda")
@@ -221,8 +380,10 @@ class Tensor:
         if isinstance(other, Tensor):
             dev_self = self.device.split(":")[0]
             dev_other = other.device.split(":")[0]
-            # Allow mixing cuda and cpu in simulation mode (no real CUDA backend)
-            if _HAS_C_BACKEND and dev_self != dev_other:
+            # Allow mixing cuda and cpu in simulation mode (no real CUDA backend
+            # or no usable GPU). Strict matching is only enforced when an actual
+            # CUDA device is available.
+            if dev_self != dev_other and _cuda_available():
                 raise RuntimeError(
                     f"Expected all tensors to be on the same device, "
                     f"but found at least two devices: {self.device} and {other.device}"
@@ -257,8 +418,44 @@ class Tensor:
         t._data._data[:] = self._data._data[:]
         return t
 
-    def item(self) -> float:
-        return float(self.data.flat[0])
+    def to_sparse(self, layout="sparse_coo", k=None):
+        """Convert a dense tensor to a sparse tensor (2-D supported)."""
+        if k is not None:
+            raise ValueError("top-k sparse conversion is not supported; use k=None")
+        from .sparse import SparseTensor, _S_TO_LAYOUT
+
+        lconst = _S_TO_LAYOUT.get(layout, 1)
+        return SparseTensor.from_tensor(self, layout=lconst)
+
+    def to_sparse_coo(self, k=None):
+        return self.to_sparse("sparse_coo", k)
+
+    def to_sparse_csr(self, k=None):
+        return self.to_sparse("sparse_csr", k).to_sparse_csr()
+
+    def to_sparse_csc(self, k=None):
+        return self.to_sparse("sparse_csc", k).to_sparse_csc()
+
+    def to_sparse_bsr(self, blocksize, k=None):
+        if k is not None:
+            raise ValueError("top-k sparse conversion is not supported; use k=None")
+        from .sparse import SparseTensor
+
+        sp = SparseTensor.from_tensor(self, layout=4)
+        return sp.to_sparse_bsr(blocksize)
+
+    def to_dense(self):
+        """Dense tensors are already dense; returns a copy."""
+        return Tensor(np.asarray(self.data), dtype=self.dtype, device=self.device)
+
+    def item(self):
+        """Return the Python scalar value; the tensor must contain one element."""
+        if self.numel != 1:
+            raise ValueError(
+                f"only one-element tensors can be converted to Python scalars; "
+                f"got {self.numel} elements"
+            )
+        return self.data.item()
 
     def view(self, *shape):
         from .autograd_ops import Reshape
@@ -418,6 +615,56 @@ class Tensor:
             return Tensor(float(self.data.std()), dtype=self.dtype)
         return Tensor(self.data.std(axis=dim), dtype=self.dtype)
 
+    def prod(self, dim=None, keepdim=False):
+        from .autograd_ops import Prod
+
+        return Prod.apply(self, dim, keepdim)
+
+    def logsumexp(self, dim, keepdim=False):
+        from .autograd_ops import LogSumExp
+
+        return LogSumExp.apply(self, dim, keepdim)
+
+    def amin(self, dim=None, keepdim=False):
+        from .autograd_ops import MinDim
+
+        return MinDim.apply(self, dim, keepdim)
+
+    def amax(self, dim=None, keepdim=False):
+        from .autograd_ops import MaxDim
+
+        return MaxDim.apply(self, dim, keepdim)
+
+    def argmin(self, dim=None, keepdim=False):
+        xd = np.asarray(self.data)
+        if dim is None:
+            idx = np.asarray(np.argmin(xd), dtype=np.int64)
+            return Tensor(idx, dtype="int64")
+        idx = np.asarray(np.argmin(xd, axis=dim), dtype=np.int64)
+        if keepdim:
+            idx = np.expand_dims(idx, axis=dim)
+        return Tensor(idx, dtype="int64")
+
+    def argmax(self, dim=None, keepdim=False):
+        xd = np.asarray(self.data)
+        if dim is None:
+            idx = np.asarray(np.argmax(xd), dtype=np.int64)
+            return Tensor(idx, dtype="int64")
+        idx = np.asarray(np.argmax(xd, axis=dim), dtype=np.int64)
+        if keepdim:
+            idx = np.expand_dims(idx, axis=dim)
+        return Tensor(idx, dtype="int64")
+
+    def trace(self):
+        from .autograd_ops import Trace
+
+        return Trace.apply(self)
+
+    def diagonal(self, offset=0, dim1=0, dim2=1):
+        from .autograd_ops import Diagonal
+
+        return Diagonal.apply(self, offset, dim1, dim2)
+
     def min(self):
         return float(self.data.min())
 
@@ -439,10 +686,60 @@ class Tensor:
 
         return Log.apply(self)
 
+    def log1p(self):
+        from .autograd_ops import Log1p
+
+        return Log1p.apply(self)
+
+    def expm1(self):
+        from .autograd_ops import Expm1
+
+        return Expm1.apply(self)
+
     def abs(self):
         from .autograd_ops import Abs
 
         return Abs.apply(self)
+
+    def square(self):
+        from .autograd_ops import Square
+
+        return Square.apply(self)
+
+    def reciprocal(self):
+        from .autograd_ops import Reciprocal
+
+        return Reciprocal.apply(self)
+
+    def sign(self):
+        from .autograd_ops import Sign
+
+        return Sign.apply(self)
+
+    def clamp(self, min_val=None, max_val=None):
+        from .autograd_ops import Clamp
+
+        lo = -np.inf if min_val is None else min_val
+        hi = np.inf if max_val is None else max_val
+        return Clamp.apply(self, lo, hi)
+
+    def clamp_min(self, min_val):
+        from .autograd_ops import Clamp
+
+        return Clamp.apply(self, min_val, np.inf)
+
+    def clamp_max(self, max_val):
+        from .autograd_ops import Clamp
+
+        return Clamp.apply(self, -np.inf, max_val)
+
+    def remainder(self, divisor):
+        from .autograd_ops import Remainder
+
+        return Remainder.apply(self, divisor)
+
+    def mod(self, divisor):
+        return self.remainder(divisor)
 
     def relu(self):
         from .autograd_ops import Relu
@@ -474,6 +771,76 @@ class Tensor:
 
         return Silu.apply(self)
 
+    def leaky_relu(self, negative_slope=0.01):
+        from .autograd_ops import LeakyRelu
+
+        return LeakyRelu.apply(self, negative_slope)
+
+    def elu(self, alpha=1.0):
+        from .autograd_ops import Elu
+
+        return Elu.apply(self, alpha)
+
+    def selu(self):
+        from .autograd_ops import SELU
+
+        return SELU.apply(self)
+
+    def softplus(self, beta=1.0, threshold=20.0):
+        from .autograd_ops import Softplus
+
+        return Softplus.apply(self, beta, threshold)
+
+    def softsign(self):
+        from .autograd_ops import Softsign
+
+        return Softsign.apply(self)
+
+    def hardswish(self):
+        from .autograd_ops import Hardswish
+
+        return Hardswish.apply(self)
+
+    def hardtanh(self, min_val=-1.0, max_val=1.0):
+        from .autograd_ops import Hardtanh
+
+        return Hardtanh.apply(self, min_val, max_val)
+
+    def mish(self):
+        from .autograd_ops import Mish
+
+        return Mish.apply(self)
+
+    def hardsigmoid(self):
+        from .autograd_ops import Hardsigmoid
+
+        return Hardsigmoid.apply(self)
+
+    def hardshrink(self, lambd=0.5):
+        from .autograd_ops import Hardshrink
+
+        return Hardshrink.apply(self, lambd)
+
+    def softshrink(self, lambd=0.5):
+        from .autograd_ops import Softshrink
+
+        return Softshrink.apply(self, lambd)
+
+    def tanhshrink(self):
+        from .autograd_ops import Tanhshrink
+
+        return Tanhshrink.apply(self)
+
+    def threshold(self, threshold=0.0, value=0.0):
+        from .autograd_ops import Threshold
+
+        return Threshold.apply(self, threshold, value)
+
+    def glu(self, dim=-1):
+        from .autograd_ops import GLU
+
+        return GLU.apply(self, dim)
+
     def softmax(self, dim=-1):
         from .autograd_ops import Softmax
 
@@ -490,9 +857,70 @@ class Tensor:
         return Transpose.apply(self, dim1, dim2)
 
     def permute(self, *dims):
-        """Permute tensor dimensions."""
-        # Use numpy for permutation
-        return Tensor(self.data.transpose(*dims), dtype=self.dtype, device=self.device)
+        """Permute tensor dimensions (differentiable)."""
+        from .autograd_ops import Permute
+
+        if len(dims) == 1 and isinstance(dims[0], (tuple, list)):
+            dims = tuple(dims[0])
+        return Permute.apply(self, dims)
+
+    def scatter_add(self, dim, index, src):
+        """Return a copy with source values added at indexed destinations."""
+        from .autograd_ops import ScatterAdd
+
+        if isinstance(index, Tensor):
+            index = index.data
+        if not isinstance(src, Tensor):
+            src = Tensor(src, dtype=self.dtype)
+        return ScatterAdd.apply(self, dim, np.asarray(index), src)
+
+    def gather(self, dim, index):
+        """Gather values using an index tensor with the same rank as the input."""
+        from .autograd_ops import Gather
+
+        if isinstance(index, Tensor):
+            index = index.data
+        return Gather.apply(self, dim, np.asarray(index))
+
+    def index_select(self, dim, index):
+        """Select entries along one dimension using a one-dimensional index."""
+        from .autograd_ops import IndexSelect
+
+        if isinstance(index, Tensor):
+            index = index.data
+        return IndexSelect.apply(self, dim, np.asarray(index))
+
+    def flip(self, dims=None):
+        """Reverse tensor elements along one or more dimensions."""
+        from .autograd_ops import Flip
+
+        if isinstance(dims, (int, np.integer)):
+            dims = (int(dims),)
+        elif dims is not None:
+            dims = tuple(dims)
+        return Flip.apply(self, dims)
+
+    def roll(self, shifts, dims=None):
+        """Roll tensor elements along dimensions, or over the flattened tensor."""
+        from .autograd_ops import Roll
+
+        if isinstance(dims, (int, np.integer)):
+            dims = int(dims)
+        elif dims is not None:
+            dims = tuple(dims)
+        return Roll.apply(self, shifts, dims)
+
+    def tril(self, diagonal=0):
+        """Return the lower-triangular part of the last two dimensions."""
+        from .autograd_ops import Tril
+
+        return Tril.apply(self, diagonal)
+
+    def triu(self, diagonal=0):
+        """Return the upper-triangular part of the last two dimensions."""
+        from .autograd_ops import Triu
+
+        return Triu.apply(self, diagonal)
 
     def squeeze(self, dim=None):
         from .autograd_ops import Squeeze
@@ -509,10 +937,10 @@ class Tensor:
 
         return Expand.apply(self, shape)
 
-    def backward(self, grad_output=None):
+    def backward(self, grad_output=None, create_graph=False):
         from .autograd import _wrap_tensor_backward
 
-        _wrap_tensor_backward(self, grad_output)
+        _wrap_tensor_backward(self, grad_output, create_graph=create_graph)
 
     def detach(self):
         t = Tensor(self)
@@ -538,25 +966,89 @@ class Tensor:
         return CrossEntropyLoss.apply(self, target)
 
     def mae_loss(self, target):
+        from .autograd_ops import Abs, Mean, Sub
+
+        if getattr(self, "requires_grad", False) or getattr(
+            target, "requires_grad", False
+        ):
+            return Mean.apply(Abs.apply(Sub.apply(self, target)))
         return Tensor(
             np.array([np.mean(np.abs(self.data - target.data))]), dtype="float32"
         )
 
     def nll_loss(self, target):
-        return Tensor(np.array([-np.mean(self.data * target.data)]), dtype="float32")
+        from .autograd_ops import NLLLoss
+
+        return NLLLoss.apply(self, target)
 
     def kl_div(self, target):
-        return Tensor(
-            np.array(
-                [np.mean(target.data * (np.log(target.data + 1e-10) - self.data))]
-            ),
-            dtype="float32",
-        )
+        from .autograd_ops import KLDivLoss
+
+        return KLDivLoss.apply(self, target)
+
+    def smooth_l1_loss(self, target, beta=1.0):
+        from .autograd_ops import SmoothL1Loss
+
+        return SmoothL1Loss.apply(self, target, beta)
+
+    def huber_loss(self, target, delta=1.0):
+        from .autograd_ops import HuberLoss
+
+        return HuberLoss.apply(self, target, delta)
+
+    def bce_loss(self, target):
+        from .autograd_ops import BCELoss
+
+        return BCELoss.apply(self, target)
+
+    def bce_with_logits_loss(self, target):
+        from .autograd_ops import BCEWithLogitsLoss
+
+        return BCEWithLogitsLoss.apply(self, target)
 
     def binary_cross_entropy(self, target):
-        p = np.clip(self.data, 1e-10, 1 - 1e-10)
-        loss = -np.mean(target.data * np.log(p) + (1 - target.data) * np.log(1 - p))
-        return Tensor(np.array([loss]), dtype="float32")
+        from .autograd_ops import BCELoss
+
+        return BCELoss.apply(self, target)
+
+    def focal_loss(self, target, gamma=2.0, alpha=1.0):
+        from .autograd_ops import FocalLoss
+
+        return FocalLoss.apply(self, target, gamma, alpha)
+
+    def triplet_margin_loss(self, positive, negative, margin=1.0):
+        from .autograd_ops import TripletMarginLoss
+
+        return TripletMarginLoss.apply(self, positive, negative, margin)
+
+    def contrastive_loss(self, other, y, margin=1.0):
+        from .autograd_ops import ContrastiveLoss
+
+        return ContrastiveLoss.apply(self, other, y, margin)
+
+    def cosine_embedding_loss(self, other, y, margin=0.0):
+        from .autograd_ops import CosineEmbeddingLoss
+
+        return CosineEmbeddingLoss.apply(self, other, y, margin)
+
+    def margin_ranking_loss(self, other, y, margin=0.0):
+        from .autograd_ops import MarginRankingLoss
+
+        return MarginRankingLoss.apply(self, other, y, margin)
+
+    def ctc_loss(
+        self,
+        targets,
+        blank=0,
+        input_lengths=None,
+        target_lengths=None,
+        reduction="mean",
+    ):
+        from .autograd_ops import CTCLoss
+
+        return CTCLoss.apply(
+            self, targets, blank, input_lengths, target_lengths, reduction
+        )
 
     def conv1d(self, kernel, stride=1, padding=0):
         from .autograd_ops import Conv1d
@@ -648,11 +1140,15 @@ class Tensor:
 
     @staticmethod
     def cat(tensors: List["Tensor"], dim=0) -> "Tensor":
-        return Tensor(np.concatenate([t.data for t in tensors], axis=dim))
+        from .autograd_ops import Cat
+
+        return Cat.apply(*tensors, dim)
 
     @staticmethod
     def stack(tensors: List["Tensor"], dim=0) -> "Tensor":
-        return Tensor(np.stack([t.data for t in tensors], axis=dim))
+        from .autograd_ops import Stack
+
+        return Stack.apply(*tensors, dim)
 
     @staticmethod
     def concat(tensors: List["Tensor"], dim=0) -> "Tensor":

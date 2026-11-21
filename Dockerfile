@@ -26,12 +26,11 @@ WORKDIR /sneppx
 COPY . .
 
 # Build CMake project
-RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
+RUN cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
     -DSNEPPX_BUILD_TESTS=ON \
     -DSNEPPX_BUILD_PYTHON=ON \
     -DSNEPPX_BUILD_CUDA=ON \
-    -DCMAKE_INSTALL_PREFIX=/usr/local \
-    -DSNEPPX_BUILD_CUDA=ON && \
+    -DCMAKE_INSTALL_PREFIX=/usr/local && \
     cmake --build build -j$(nproc) && \
     cmake --install build --prefix /install
 

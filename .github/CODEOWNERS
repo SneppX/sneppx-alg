@@ -1,0 +1,9 @@
+# CODEOWNERS for SNEPPX-Alg 🤖
+# Every PR to these paths gets a review request from the listed owners.
+
+# Default owner for the whole repo
+*       @ammar49-cyber
+
+# Security & crypto layers
+/security/      @ammar49-cyber
+/kernel/        @ammar49-cyber

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include "polynomial_authentication_mac.h"
 
@@ -18,13 +19,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_vectors(void) {
     printf("\n--- test_vectors (RFC 8439) ---\n");
@@ -50,7 +45,7 @@ void test_vectors(void) {
         printf("  Got:      "); for (int i = 0; i < 16; i++) printf("%02x", mac[i]); printf("\n");
         printf("  Expected: "); for (int i = 0; i < 16; i++) printf("%02x", expected[i]); printf("\n");
     }
-    TEST("RFC 8439 test vector", match);
+    SX_TEST("RFC 8439 test vector", match);
 }
 
 void test_key_reuse(void) {
@@ -68,14 +63,9 @@ void test_key_reuse(void) {
     SNEPPX_poly1305_update(&s, (uint8_t*)"Message two", 11);
     SNEPPX_poly1305_finish(&s, mac2);
 
-    TEST("different messages = different tags", memcmp(mac1, mac2, 16) != 0);
+    SX_TEST("different messages = different tags", memcmp(mac1, mac2, 16) != 0);
 }
 
-int main(void) {
-    printf("=== SNEPPX-Poly1305 Test Suite ===\n");
-    test_vectors();
-    test_key_reuse();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_poly1305, test_vectors) { test_vectors(); }
+TEST(test_poly1305, test_key_reuse) { test_key_reuse(); }

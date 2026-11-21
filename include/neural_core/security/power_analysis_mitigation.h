@@ -1,6 +1,10 @@
 #ifndef SNEPPX_POWER_H
 #define SNEPPX_POWER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 /*
  * SNEPPX - Power Analysis Mitigation
@@ -60,4 +64,8 @@ int SNEPPX_power_cmp_const_time(int a, int b);
  */
 uint64_t SNEPPX_power_mask_gen(int condition);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

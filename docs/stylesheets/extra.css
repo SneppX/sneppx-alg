@@ -1,0 +1,506 @@
+/* ==========================================================================
+   SNEPPX-Alg site styles
+   - scroll reveal (driven by javascripts/extra.js)
+   - word-by-word heading reveal
+   - misc polish (nav hover, code fade, hero gradient, counters)
+   All animations respect prefers-reduced-motion (see media query at bottom).
+   ========================================================================== */
+
+/* --- Dark/light theme transition ------------------------ */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.md-header, .md-sidebar, .md-content, .md-footer {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Page transition fade ------------------------------- */
+.md-content {
+    animation: sx-fade-in 0.35s ease-out;
+}
+@keyframes sx-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Code block copy flash ------------------------------- */
+.md-typeset .md-clipboard {
+    transition: transform 0.15s ease;
+}
+.md-typeset .md-clipboard:active {
+    transform: scale(0.9);
+}
+.md-typeset pre > code {
+    transition: background-color 0.3s ease;
+}
+.md-typeset pre.copied > code {
+    background-color: rgba(76, 175, 80, 0.15);
+}
+
+/* --- TOC active highlight ------------------------------- */
+.md-nav--secondary .sx-toc-active {
+    color: var(--md-accent-fg-color);
+    font-weight: 600;
+}
+
+/* --- Back-to-top button ---------------------------------- */
+.sx-back-to-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--md-primary-fg-color);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.sx-back-to-top--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.sx-back-to-top:hover {
+    transform: translateY(-2px);
+}
+
+/* --- Scroll reveal -------------------------------------------------------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+}
+.reveal.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Word-by-word heading reveal ------------------------------------------ */
+h1 .word,
+h2 .word,
+h3 .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.4em);
+    animation: wordIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--word-index, 0) * 60ms);
+}
+@keyframes wordIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Home hero ------------------------------------------------------------ */
+.sx-hero {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+}
+.sx-hero h1 {
+    font-size: 2.4rem;
+    background: linear-gradient(
+        90deg,
+        var(--md-primary-fg-color),
+        var(--md-accent-fg-color),
+        var(--md-primary-fg-color)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: heroGradient 6s linear infinite;
+}
+@keyframes heroGradient {
+    to {
+        background-position: 200% center;
+    }
+}
+.sx-hero p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    max-width: 46rem;
+    margin: 0.75rem auto 1.5rem;
+}
+
+/* --- Stat counters -------------------------------------------------------- */
+.sx-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0 0.5rem;
+}
+.sx-stat {
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    padding: 0.9rem 1.4rem;
+    min-width: 8.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+.sx-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border-color: var(--md-accent-fg-color);
+}
+.sx-stat .sx-stat-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--md-primary-fg-color);
+    display: block;
+}
+.sx-stat .sx-stat-label {
+    font-size: 0.78rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* --- Feature cards (home page) -------------------------------------------- */
+.sx-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+.sx-card {
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    padding: 1rem 1.1rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease;
+    text-decoration: none;
+    display: block;
+}
+.sx-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border-color: var(--md-primary-fg-color);
+}
+.sx-card h3 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+.sx-card p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* --- Nav / misc polish ---------------------------------------------------- */
+.md-nav__link {
+    transition: color 0.2s, background-color 0.2s;
+}
+.md-nav__link:hover {
+    color: var(--md-accent-fg-color);
+}
+.md-typeset table:not([class]) {
+    transition: box-shadow 0.2s ease;
+}
+.md-typeset table:not([class]):hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Scroll progress bar -------------------------------------------------- */
+.sx-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(
+        90deg,
+        var(--md-primary-fg-color),
+        var(--md-accent-fg-color)
+    );
+    z-index: 6;
+    transition: width 0.1s linear;
+}
+
+/* --- Dark-mode aware logo ------------------------------------------------- */
+[data-md-color-scheme="slate"] .md-header__button.md-logo img,
+[data-md-color-scheme="slate"] .md-nav__button.md-logo img {
+    filter: brightness(1.15);
+}
+
+/* --- Mermaid diagram polish ----------------------------------------------- */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node polygon,
+.mermaid .node path {
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+.mermaid .node:hover rect,
+.mermaid .node:hover circle,
+.mermaid .node:hover polygon,
+.mermaid .node:hover path {
+    filter: drop-shadow(0 0 6px var(--md-accent-fg-color));
+}
+.mermaid .edgePath path {
+    transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+.mermaid .edgePath:hover path {
+    stroke: var(--md-accent-fg-color);
+    stroke-width: 2px;
+}
+
+/* --- Feedback widget ------------------------------------------------------ */
+.sx-feedback {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
+.sx-feedback button {
+    cursor: pointer;
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.4rem;
+    background: transparent;
+    color: inherit;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.sx-feedback button:hover {
+    transform: translateY(-2px);
+    border-color: var(--md-accent-fg-color);
+}
+.sx-feedback .sx-feedback-thanks {
+    color: var(--md-primary-fg-color);
+    font-weight: 600;
+}
+
+/* --- Version pill --------------------------------------------------------- */
+.sx-version-pill {
+    margin-left: 0.6rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    align-self: center;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+}
+
+/* --- Hero illustration ---------------------------------------------------- */
+.sx-hero-art {
+    margin: 0.6rem auto 0.2rem;
+    max-width: 40rem;
+}
+.sx-hero-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.sx-art-node rect {
+    fill: var(--md-primary-fg-color);
+    fill-opacity: 0.12;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 1.5;
+}
+.sx-art-label text {
+    fill: var(--md-default-fg-color);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--md-text-font-family);
+}
+.sx-art-edge line {
+    stroke: var(--md-default-fg-color--lighter);
+    stroke-width: 2;
+}
+.sx-art-arrow {
+    fill: var(--md-default-fg-color--lighter);
+}
+.sx-art-sec path {
+    fill: var(--md-primary-fg-color);
+    fill-opacity: 0.18;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 1.2;
+}
+.sx-art-sec text {
+    fill: var(--md-primary-fg-color);
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--md-text-font-family);
+}
+[data-md-color-scheme="slate"] .sx-art-node rect {
+    fill-opacity: 0.24;
+}
+[data-md-color-scheme="slate"] .sx-art-sec path {
+    fill-opacity: 0.3;
+}
+
+/* --- 404 page ------------------------------------------------------------- */
+.sx-404-art {
+    max-width: 11rem;
+    margin: 0.5rem auto 1rem;
+}
+.sx-404-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.sx-404-art .sx-ring {
+    fill: none;
+    stroke: var(--md-primary-fg-color);
+    stroke-width: 2;
+    opacity: 0.55;
+}
+.sx-404-art .sx-ticks line {
+    stroke: var(--md-default-fg-color--lighter);
+    stroke-width: 2;
+}
+.sx-404-art .sx-needle-n {
+    fill: var(--md-primary-fg-color);
+}
+.sx-404-art .sx-needle-s {
+    fill: var(--md-default-fg-color--lighter);
+}
+.sx-404-art .sx-center {
+    fill: var(--md-primary-fg-color);
+}
+.sx-404-art .sx-404-num {
+    fill: var(--md-default-fg-color--light);
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--md-text-font-family);
+}
+.sx-404-url {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.3rem;
+    font-size: 0.8em;
+    word-break: break-all;
+    color: var(--md-code-fg-color);
+    background: var(--md-code-bg-color);
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-404-search {
+    cursor: pointer;
+    border: none;
+    border-radius: 0.35rem;
+    padding: 0.4rem 1rem;
+    margin: 0.4rem 0 0.2rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+.sx-404-search:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+[data-md-color-scheme="slate"] .sx-404-art .sx-ring {
+    opacity: 0.7;
+}
+
+/* --- Playground ----------------------------------------------------------- */
+.sx-playground {
+    margin: 1.2rem 0;
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: var(--md-code-bg-color);
+}
+.sx-pg-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-pg-run {
+    cursor: pointer;
+    border: none;
+    border-radius: 0.35rem;
+    padding: 0.35rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--md-primary-bg-color);
+    background: var(--md-primary-fg-color);
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+.sx-pg-run:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+.sx-pg-status {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+.sx-pg-status.sx-pg-ready {
+    color: #2e7d32;
+    opacity: 1;
+}
+.sx-pg-status.sx-pg-error {
+    color: #c62828;
+    opacity: 1;
+}
+.sx-pg-editor {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    resize: vertical;
+    padding: 0.8rem;
+    font-family: var(--md-code-font), monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--md-code-fg-color);
+    background: transparent;
+    outline: none;
+}
+.sx-pg-output {
+    margin: 0;
+    padding: 0.8rem;
+    max-height: 20rem;
+    overflow: auto;
+    font-family: var(--md-code-font), monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* --- Announcement bar ----------------------------------------------------- */
+.md-announcement {
+    background: var(--md-primary-fg-color);
+    color: var(--md-primary-bg-color);
+}
+.md-announcement a {
+    color: var(--md-primary-bg-color);
+}
+
+/* --- Accessibility: honor reduced motion ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal.reveal-visible,
+    h1 .word,
+    h2 .word,
+    h3 .word,
+    .sx-hero h1,
+    .sx-stat,
+    .sx-card,
+    .sx-back-to-top {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

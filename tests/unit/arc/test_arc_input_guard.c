@@ -1,4 +1,5 @@
 #include "adversarial_robustness_certification.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -19,23 +20,17 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_guard_create(void) {
-    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 42);
-    ASSERT(g != NULL, "guard not null");
-    ASSERT(g->projection_matrix->shape[0] == 64, "proj rows 64");
-    ASSERT(g->projection_matrix->shape[1] == 64, "proj cols 64");
+    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 64, 42);
+    SX_ASSERT(g != NULL, "guard not null");
+    SX_ASSERT(g->projection_matrix->shape[0] == 64, "proj rows 64");
+    SX_ASSERT(g->projection_matrix->shape[1] == 64, "proj cols 64");
     SNEPPX_input_guard_destroy(g);
 }
 
 static void test_guard_normal_input(void) {
-    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 42);
-    ASSERT(g != NULL, "guard not null");
+    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 64, 42);
+    SX_ASSERT(g != NULL, "guard not null");
 
     size_t shape_in[] = {8, 64};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
@@ -49,10 +44,10 @@ static void test_guard_normal_input(void) {
     SNEPPXTensor* sanitized = NULL;
     float score = 0.0f;
     SNEPPX_arc_input_guard_forward(g, input, &sanitized, &score);
-    ASSERT(sanitized != NULL, "sanitized not null");
-    ASSERT(score < 0.1f, "anomaly_score < 0.1");
-    ASSERT(sanitized->shape[0] == 8, "batch ok");
-    ASSERT(sanitized->shape[1] == 64, "dim ok");
+    SX_ASSERT(sanitized != NULL, "sanitized not null");
+    SX_ASSERT(score < 0.1f, "anomaly_score < 0.1");
+    SX_ASSERT(sanitized->shape[0] == 8, "batch ok");
+    SX_ASSERT(sanitized->shape[1] == 64, "dim ok");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(sanitized);
@@ -60,8 +55,8 @@ static void test_guard_normal_input(void) {
 }
 
 static void test_guard_anomaly_input(void) {
-    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 42);
-    ASSERT(g != NULL, "guard not null");
+    SNEPPXInputGuard* g = SNEPPX_input_guard_create(64, 64, 42);
+    SX_ASSERT(g != NULL, "guard not null");
 
     size_t shape_in[] = {8, 64};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
@@ -75,18 +70,15 @@ static void test_guard_anomaly_input(void) {
     SNEPPXTensor* sanitized = NULL;
     float score = 0.0f;
     SNEPPX_arc_input_guard_forward(g, input, &sanitized, &score);
-    ASSERT(sanitized != NULL, "sanitized not null");
-    ASSERT(score > 0.5f, "anomaly_score > 0.5");
+    SX_ASSERT(sanitized != NULL, "sanitized not null");
+    SX_ASSERT(score > 0.5f, "anomaly_score > 0.5");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(sanitized);
     SNEPPX_input_guard_destroy(g);
 }
 
-int main(void) {
-    run_test("test_guard_create", test_guard_create);
-    run_test("test_guard_normal_input", test_guard_normal_input);
-    run_test("test_guard_anomaly_input", test_guard_anomaly_input);
-    printf("\nInput guard tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_arc_input_guard, test_guard_create) { test_guard_create(); }
+TEST(test_arc_input_guard, test_guard_normal_input) { test_guard_normal_input(); }
+TEST(test_arc_input_guard, test_guard_anomaly_input) { test_guard_anomaly_input(); }

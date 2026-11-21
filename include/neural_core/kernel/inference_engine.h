@@ -1,6 +1,10 @@
 #ifndef SNEPPX_INFERENCE_ENGINE_H
 #define SNEPPX_INFERENCE_ENGINE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multi_head_attention_module.h"
 #include "subword_tokenization_pipeline.h"
 #include "multidimensional_tensor_engine.h"
@@ -126,4 +130,8 @@ int SNEPPX_generate_tokens(SNEPPXTensor* embed_weight, SNEPPXTensor* unembed_wei
                          int* output_ids, size_t max_output_len,
                          SNEPPXGenerationConfig* cfg);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

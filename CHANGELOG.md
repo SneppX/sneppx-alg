@@ -2,6 +2,121 @@
 
 All notable changes to SNEPPX-Algo.
 
+## [v1.5.2] - 2026-10-23
+
+### Packaging, Site UX, Playground & Documentation
+- **PyPI packaging discovery**: fixed setuptools find specification in `pyproject.toml` pointing explicitly to `bindings/python`, ensured `README.md` metadata is included on PyPI package builds.
+- **Site UX enhancements**:
+  - Added smooth dark/light theme transition CSS.
+  - Keyboard shortcuts: `/` to focus documentation search, `Esc` to dismiss modal.
+  - Smooth scroll behavior for in-page anchor links.
+  - Dynamic Table of Contents (TOC) auto-highlighting on scroll.
+  - Back-to-top button integration respecting `prefers-reduced-motion`.
+- **Playground persistence**: client-side `localStorage` state saving/restoring and curated example snippets for interactive browser tensor experiments.
+- **Documentation expansion**:
+  - Added interactive `model-zoo-browser` page.
+  - Added interactive `api-explorer` page with runnable snippets.
+  - Added comprehensive `contributing` page with local-only validation guidance.
+
+## [v1.5.1] - 2026-10-19
+
+### GitHub credibility, community health & docs polish
+- **Social preview card**: new 1280×640 PNG at `docs/assets/social-preview.png` (dark palette, WCAG AA contrast), verified by a programmatic layout QA (margins, overlaps, contrast ratios).
+- **Open Graph / Twitter cards**: `overrides/main.html` now emits `og:*` and `twitter:*` meta tags — previously absent because Material's social-card plugin is disabled (cairosvg cannot load `libcairo-2.dll`). Deployed live via mike; `og:image` resolves.
+- **README**: verified-runnable Python quickstart (loss 7.4 → 0.04 in 200 steps), honest "Why SNEPPX-Alg" comparison table vs PyTorch/JAX, and a "By the numbers" proof section.
+- **Community health**: adopted Contributor Covenant v2.1 (verbatim canonical); GitHub now detects it as `contributor_covenant`. Issue templates fixed (stale "ARIX-Algo" branding removed; `mailto:` contact links — which failed GitHub's template validation — replaced with valid `https://` links). Secret scanning + push protection + dependabot security updates enabled.
+- **Stale PR cleanup**: closed duplicate/mistitled PRs #12 and #7; residual Ed25519 cofactor-8 question tracked in issue #21.
+- **Security hardening (settings)**: secret scanning + push protection enabled on the public repo.
+
+## [Unreleased]
+
+### Release candidate 1.5.3-rc.1 (2026-11-18)
+
+- Prepared a patch candidate with corrected autograd behavior, aligned Python build metadata, and artifact-level regression validation. This candidate has not been published.
+
+- **Autograd patch candidate (1.5.3):** include the corrected vector/matrix
+  multiplication VJPs, broadcast-gradient reduction, and multi-output
+  gradient accumulation in the next distribution. The current-main source
+  build passes the focused 19-test regression suite; the published 1.5.2
+  artifact remains unchanged and retains two known external failures.
+- **Packaging consistency:** align the standalone bindings metadata with the
+  workspace metadata, including Alpha maturity, runtime dependencies,
+  project URLs, and the ONNX CLI entry point. Extend validation to check all
+  release-relevant metadata fields.
+- **Build metadata:** align the CMake and Python runtime version to 1.5.3.
+  This is a release candidate only; no PyPI upload or GitHub release has
+  been performed.
+
+
+- **P0 version alignment:** CMake, Python bindings `__version__`, inference server health/app version, ONNX, README/bindings badges aligned to 1.5.2.
+- **P1 Python inference:** `inference_server` requires a registered tokenizer for text encode/decode (HTTP 422 with clear message); removed silent `ord/chr` char-code fallbacks. `serve_cli` validates local config/tokenizer/checkpoint paths and reports checkpoint-loading status clearly.
+- **P2 HF/model zoo (local-only):** `hf_integration` loaders no longer call `huggingface_hub.snapshot_download` and raise clear `FileNotFoundError` for missing local snapshots (`cache_dir=<local .safetensors/.bin dir>`). `model_zoo.from_pretrained` documented as config/skeleton metadata only (no weights download/network).
+- **P3 PQC/S7/S8 truthfulness:** docs/README aligned to implementation — PQC ACVP harness/tests with documented FIPS wire/interop gaps (not overclaimed); S7 Ed25519 over BLAKE3 fail-closed without trusted key; S8 `model_minimize` clarified as reachable-state reduction (not full bisimulation), bounded/safety-oriented LTL scope documented.
+- **P4 C HTTP truthfulness (edit-only, no C build here):** `/v1/generate` and `/v1/completions` responses include `mode:"reference_scaffold"` + warning (deterministic char-code/LCG reference, no trained weights/forward pass). Demo version aligned to 1.5.2.
+- **Tests (edited, not run per AGENTS):** `tests/python/test_inference_server.py` aligned with tokenizer-required contract.
+- **Validation (CPU-safe):** `test_readme_integrity`, `test_hf_safetensors`, `test_hf_integration`, `test_model_zoo`, `test_data_loader` passed in-session; ACVP/crypto KAT suites skip-safe without built `_SNEPPX_c` extension. LLM/CUDA/inference-server tests not run (AGENTS constraints).
+
+### Build
+- Standardized on the **Ninja** generator across all CMake presets
+  (`CMakePresets.json`): `debug`, `release`, `asan`, `cuda`, `python`,
+  `minimal`, each writing to a per-config `build/<name>` directory.
+- CMake now resolves the x64 MASM assembler automatically (`ml64` next to
+  `cl.exe`), so `cmake -B build -G Ninja` works on Windows without manually
+  passing `-DCMAKE_ASM_MASM_COMPILER`. Fixed a stale bare-`ml` resolution that
+  broke the Ninja + MSVC + MASM path.
+- `docs/build.md`, `docs/TESTING.md`, `QUICKSTART.md`, and `AGENTS.md`
+  updated to the Ninja preset workflow.
+
+### ONNX import/export toolkit
+- New standalone, numpy-only `onnx/` package (`import onnx`, exposed as
+  `SneppX_ALG.onnx`): canonical protobuf wire-format reader/writer
+  (`wire.py`), data model (`model.py`), `parse_model`/`load_model`/
+  `serialize_model`/`save_model`, shape inference (`infer_shapes`),
+  structural + shape checker (`check_model`), optimizer passes
+  (`constant_fold`, `dead_code_elimination`, `eliminate_identity`), QDQ
+  quantizer (`quantize_model`, per-channel or tensor-wise, bias-skipping),
+  external-data save/load, a pure-numpy executor (`onnx.Session`) and an
+  optional onnxruntime adapter (`OnnxRuntimeSession`).
+- `sneppx-onnx` CLI (`onnx/cli.py`, wired as `sneppx-onnx` entry point via
+  `bindings/python/.../interface_bindings/onnx_cli.py`) with `info`, `check`,
+  `shapes`, `optimize`, `convert`, `quantize`, `run`, `save-external`,
+  `load-external` subcommands.
+- `onnx/exporter.py` bridges to the legacy `interface_bindings` exporter
+  (`from_sneppx_graph`/`to_sneppx_graph`); wire format is byte-compatible in
+  both directions.
+- Fixed `bindings/python/.../interface_bindings/__init__.py`: `GraphOptimizer`
+  was in `__all__`/star-import but never imported, breaking
+  `import SneppX_ALG`; added the missing `graph_optimizer` import.
+- Tests: `onnx/tests/test_onnx.py` (25 tests, all numpy-only, all pass).
+
+### Security
+- Fixed `dilithium_zetas[256]` in `security/crypto/c/dilithium.c`: one
+  corrupted twiddle factor (`…568` → `…596`) cascaded through the 8-layer
+  negacyclic NTT and broke `poly_mul`, invalidating Dilithium (ML-DSA)
+  sign/verify. Table is now the verbatim `pq-crystals/dilithium ref/ntt.c`
+  reference. Verified via `test_crypto_sign.py` (ML-DSA 44/65/87).
+- Fixed Kyber NTT twiddle table, Montgomery reduction, and `fq_reduce`/
+  `barrett_reduce` (`security/crypto/c/kyber.c`); relaxed DRBG minimum
+  entropy input (`security/crypto/c/drbg.c`).
+- Fixed Ed25519 `init_base_point` in `security/crypto/c/ed25519.c`: T
+  coordinate was computed before parity negation, producing an off-curve
+  base point and invalidating sign + verify. All 4 RFC 8032 test vectors
+  now pass.
+
+### Profiling
+- Added `[BENCH]` `fprintf(stderr,...)` start/end markers to HSS forward
+  pass (`algorithms/hss/core/forward.c`) and SER layer forward
+  (`algorithms/ser/core/forward_layer.c`) for integration with
+  `sneppx-bench` regression tracking.
+- Captured performance baselines for `bench_tensor`, `bench_npe`,
+  `bench_pq_crypto`. HSS/SER timeout at 300s (no CUDA toolchain available).
+
+### S2 Obfuscation Audit
+- Audit report published in `docs/security/obf_audit.md` (7 findings,
+  3 critical). Key issues: `rand()` used for obfuscation decisions (CWE-338),
+  whitebox AES timing side-channel (CWE-208), no restore path in bogus CF
+  redirect (CWE-717), hardcoded XOR constant (CWE-327).
+
 ## [1.1.1] — 2026-08-01
 
 ### Security

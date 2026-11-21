@@ -1,11 +1,27 @@
 import time
 import struct
 import json
+import base64
 import threading
 import os
 import tempfile
+import numpy as np
 from dataclasses import dataclass, field
 from typing import Optional, Callable, List
+
+from .crypto_sign import Ed25519
+from .crypto_hash import Blake3
+
+# Map between tensor dtype codes (matching bindings/python tensor Dtype) and numpy dtypes
+_DTYPE_CODE_TO_NP = {
+    0: np.float32,
+    1: np.float64,
+    2: np.float16,
+    4: np.int32,
+    5: np.int64,
+    8: np.uint8,
+}
+_NP_TO_DTYPE_CODE = {v: k for k, v in _DTYPE_CODE_TO_NP.items()}
 
 SNEPPX_CKPT_MAGIC = 0x41524958
 SNEPPX_CKPT_MAGIC_HI = 0x434B5054
@@ -81,11 +97,13 @@ def _pack_tensor_record(r: TensorRecord) -> bytes:
 
 def _unpack_tensor_record(data: bytes, offset: int = 0) -> TensorRecord:
     vals = struct.unpack(TENSOR_RECORD_FMT, data[offset : offset + TENSOR_RECORD_SIZE])
-    shape = tuple(v for v in vals[:8] if v != 0)
-    strides = tuple(v for v in vals[12:] if v != 0)
+    ndim = vals[8]
+    shape = tuple(vals[:min(ndim, 8)])
+    stride_values = tuple(vals[12:12 + min(ndim, 8)])
+    strides = stride_values if any(stride_values) else ()
     return TensorRecord(
         shape=shape,
-        ndim=vals[8],
+        ndim=ndim,
         dtype=vals[9],
         data_offset=vals[10],
         data_size=vals[11],
@@ -94,13 +112,14 @@ def _unpack_tensor_record(data: bytes, offset: int = 0) -> TensorRecord:
 
 
 class CheckpointWriter:
-    def __init__(self, path: str):
+    def __init__(self, path: str, signing_key: Optional[bytes] = None):
         self.path = path
         self.file = open(path, "wb")
         self.header = CheckpointHeader()
         self.records: List[TensorRecord] = []
         self._data_parts: List[bytes] = []
         self._meta = {}
+        self._signing_key = signing_key
 
     def write_tensor(
         self, data: bytes, shape: tuple = (), dtype: int = 0, strides: tuple = ()
@@ -120,7 +139,7 @@ class CheckpointWriter:
         self._meta.update(meta)
 
     def close(self):
-        # Layout: header | records | tensor_data | metadata
+        # Layout: header | records | tensor_data | metadata [| signature]
         records_offset = CHECKPOINT_HEADER_SIZE
         data_offset = records_offset + len(self.records) * TENSOR_RECORD_SIZE
 
@@ -134,15 +153,31 @@ class CheckpointWriter:
         self.file.seek(0)
         self.file.write(_pack_header(self.header))
 
-        # Write records
+        # Write records + tensor data, capturing body bytes for hashing
+        body = bytearray()
         for rec in self.records:
-            self.file.write(_pack_tensor_record(rec))
-
-        # Write tensor data
+            rec_bytes = _pack_tensor_record(rec)
+            self.file.write(rec_bytes)
+            body.extend(rec_bytes)
         for part in self._data_parts:
             self.file.write(part)
+            body.extend(part)
 
-        # Write metadata
+        # Integrity: BLAKE3(body) + Ed25519 signature over the digest
+        body_digest = Blake3().hash(bytes(body))
+        signature = None
+        if self._signing_key is not None:
+            signature = Ed25519.sign(self._signing_key, body_digest)
+
+        # Write metadata (integrity folded into the JSON so the region is a
+        # single valid document)
+        if signature is not None:
+            self._meta["_integrity"] = {
+                "hash_alg": "blake3",
+                "hash": body_digest.hex(),
+                "sig_alg": "ed25519",
+                "signature": base64.b64encode(signature).decode("ascii"),
+            }
         meta_data = json.dumps(self._meta).encode("utf-8") if self._meta else b""
         meta_offset = self.file.tell()
         self.header.metadata_offset = meta_offset
@@ -160,25 +195,116 @@ class CheckpointWriter:
 
 
 class CheckpointReader:
-    def __init__(self, path: str):
+    def __init__(self, path: str, trusted_public_key: Optional[bytes] = None):
         self.path = path
         self.file = open(path, "rb")
-        header_data = self.file.read(CHECKPOINT_HEADER_SIZE)
-        self.header = _unpack_header(header_data)
-        if (
-            self.header.magic_lo != SNEPPX_CKPT_MAGIC
-            or self.header.magic_hi != SNEPPX_CKPT_MAGIC_HI
-        ):
-            raise ValueError(f"Invalid checkpoint magic at {path}")
-        if self.header.version > SNEPPX_CKPT_VERSION:
-            raise ValueError(f"Unsupported version {self.header.version}")
-        self.records: List[TensorRecord] = []
-        for i in range(self.header.num_tensors):
-            rec_data = self.file.read(TENSOR_RECORD_SIZE)
-            if len(rec_data) < TENSOR_RECORD_SIZE:
-                raise ValueError(f"Truncated tensor record {i}")
-            rec = _unpack_tensor_record(rec_data, 0)
-            self.records.append(rec)
+        try:
+            file_size = os.fstat(self.file.fileno()).st_size
+            header_data = self.file.read(CHECKPOINT_HEADER_SIZE)
+            if len(header_data) != CHECKPOINT_HEADER_SIZE:
+                raise ValueError("Truncated checkpoint header")
+            self.header = _unpack_header(header_data)
+            if (
+                self.header.magic_lo != SNEPPX_CKPT_MAGIC
+                or self.header.magic_hi != SNEPPX_CKPT_MAGIC_HI
+            ):
+                raise ValueError(f"Invalid checkpoint magic at {path}")
+            if self.header.version != SNEPPX_CKPT_VERSION:
+                raise ValueError(f"Unsupported version {self.header.version}")
+            if self.header.total_size != file_size:
+                raise ValueError("Checkpoint total_size does not match file size")
+
+            records_end = CHECKPOINT_HEADER_SIZE + self.header.num_tensors * TENSOR_RECORD_SIZE
+            if records_end > file_size:
+                raise ValueError("Checkpoint tensor record table exceeds file size")
+
+            if self.header.metadata_size:
+                if (
+                    self.header.metadata_offset < records_end
+                    or self.header.metadata_offset > file_size
+                    or self.header.metadata_size > file_size - self.header.metadata_offset
+                    or self.header.metadata_offset + self.header.metadata_size != file_size
+                ):
+                    raise ValueError("Checkpoint metadata region is out of bounds")
+                data_limit = self.header.metadata_offset
+            else:
+                if self.header.metadata_offset != file_size:
+                    raise ValueError("Checkpoint metadata offset is inconsistent")
+                data_limit = file_size
+
+            self.records: List[TensorRecord] = []
+            expected_data_offset = records_end
+            for i in range(self.header.num_tensors):
+                rec_data = self.file.read(TENSOR_RECORD_SIZE)
+                if len(rec_data) != TENSOR_RECORD_SIZE:
+                    raise ValueError(f"Truncated tensor record {i}")
+                rec = _unpack_tensor_record(rec_data, 0)
+                if rec.ndim > 8:
+                    raise ValueError(f"Invalid tensor rank in record {i}")
+                if rec.data_offset != expected_data_offset:
+                    raise ValueError(f"Invalid tensor data offset in record {i}")
+                if rec.data_size > data_limit - expected_data_offset:
+                    raise ValueError(f"Tensor data in record {i} exceeds data region")
+                expected_data_offset += rec.data_size
+                self.records.append(rec)
+
+            if expected_data_offset != data_limit:
+                raise ValueError("Checkpoint tensor data region has an invalid size")
+
+            self.trusted_public_key = trusted_public_key
+            self.verified = False
+            self._verify_integrity()
+        except Exception:
+            self.file.close()
+            raise
+
+    def _verify_integrity(self) -> None:
+        """Recompute BLAKE3 over the body and verify the embedded Ed25519
+        signature against ``trusted_public_key``. Fail-closed: a configured
+        trusted key with a missing or invalid signature raises ValueError."""
+        if self.trusted_public_key is None:
+            return
+
+        body = bytearray()
+        for rec in self.records:
+            body.extend(_pack_tensor_record(rec))
+            self.file.seek(rec.data_offset)
+            body.extend(self.file.read(rec.data_size))
+
+        body_digest = Blake3().hash(bytes(body))
+
+        meta = {}
+        if self.header.metadata_size > 0:
+            self.file.seek(self.header.metadata_offset)
+            raw = self.file.read(self.header.metadata_size)
+            try:
+                meta = json.loads(raw.decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                meta = {}
+
+        integrity = meta.get("_integrity") if isinstance(meta, dict) else None
+        signature_b64 = None
+        stored_hash = None
+        if isinstance(integrity, dict):
+            signature_b64 = integrity.get("signature")
+            stored_hash = integrity.get("hash")
+
+        if signature_b64 is None or stored_hash is None:
+            raise ValueError(
+                "Checkpoint is signed but no integrity record found; refusing to load"
+            )
+
+        if stored_hash != body_digest.hex():
+            raise ValueError("Checkpoint integrity hash mismatch; refusing to load")
+
+        try:
+            signature = base64.b64decode(signature_b64)
+        except Exception:
+            signature = b""
+        if not Ed25519.verify(self.trusted_public_key, body_digest, signature):
+            raise ValueError("Checkpoint signature verification failed; refusing to load")
+
+        self.verified = True
 
     def read_tensor(self, idx: int) -> bytes:
         rec = self.records[idx]
@@ -196,9 +322,9 @@ class CheckpointReader:
         self.file.close()
 
 
-def validate_checkpoint(path: str) -> bool:
+def validate_checkpoint(path: str, trusted_public_key: Optional[bytes] = None) -> bool:
     try:
-        r = CheckpointReader(path)
+        r = CheckpointReader(path, trusted_public_key=trusted_public_key)
         r.close()
         return True
     except Exception:
@@ -232,9 +358,17 @@ class CheckpointCoordinator:
             self.checkpoint_dir, f"checkpoint_{step}_rank_{self.rank}.sneppx"
         )
 
-    def _do_async_save(self, path: str, state: bytes, step: int, meta: dict):
+    def _do_async_save(
+        self,
+        path: str,
+        state_bytes: bytes,
+        step: int,
+        meta: dict,
+        shape: tuple,
+        dtype_code: int,
+    ):
         w = CheckpointWriter(path)
-        w.write_tensor(state, shape=(len(state),), dtype=0)
+        w.write_tensor(state_bytes, shape=shape, dtype=dtype_code)
         w.write_metadata(meta)
         w.close()
         if self.rank == 0:
@@ -242,7 +376,7 @@ class CheckpointCoordinator:
 
     def save(
         self,
-        state: bytes,
+        state,
         step: int,
         metadata: Optional[dict] = None,
         barrier_fn: Optional[Callable] = None,
@@ -257,13 +391,24 @@ class CheckpointCoordinator:
         if metadata:
             meta.update(metadata)
 
+        if isinstance(state, np.ndarray):
+            dtype_code = _NP_TO_DTYPE_CODE.get(np.dtype(state.dtype), 0)
+            shape = tuple(state.shape)
+            state_bytes = state.tobytes()
+        else:
+            state_bytes = bytes(state)
+            shape = (len(state_bytes),)
+            dtype_code = 8  # np.uint8 — round-trips raw bytes losslessly
+            meta["_raw_bytes"] = True
+
         if self.async_save:
             self._save_thread = threading.Thread(
-                target=self._do_async_save, args=(path, state, step, meta)
+                target=self._do_async_save,
+                args=(path, state_bytes, step, meta, shape, dtype_code),
             )
             self._save_thread.start()
         else:
-            self._do_async_save(path, state, step, meta)
+            self._do_async_save(path, state_bytes, step, meta, shape, dtype_code)
 
         self.last_checkpoint_path = path
         self._cleanup_old()
@@ -290,12 +435,17 @@ class CheckpointCoordinator:
         if not os.path.exists(path):
             raise FileNotFoundError(f"No checkpoint found at {path}")
         r = CheckpointReader(path)
-        data = r.read_tensor(0)
+        rec = r.records[0]
+        data_bytes = r.read_tensor(0)
+        np_dtype = _DTYPE_CODE_TO_NP.get(rec.dtype, np.float32)
+        data = np.frombuffer(data_bytes, dtype=np_dtype).reshape(rec.shape).copy()
         meta = r.read_metadata()
         r.close()
         self.current_step = meta.get("step", 0)
         if self.rank == 0:
             print(f"[SNEPPX Checkpoint] Loaded from {path} (step {self.current_step})")
+        if meta.get("_raw_bytes"):
+            return bytes(data), meta
         return data, meta
 
     def coordinated_save(

@@ -36,6 +36,7 @@ typedef struct {
     char cve_ids[SNEPPX_VULN_MAX_CVE][32];
     int cve_count;
     int scan_complete;
+    int check_results[SNEPPX_VULN_MAX_CVE];
 } SNEPPXVulnScanner;
 
 /**

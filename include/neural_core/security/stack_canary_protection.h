@@ -1,6 +1,10 @@
 #ifndef SNEPPX_CANARY_H
 #define SNEPPX_CANARY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -50,4 +54,8 @@ int SNEPPX_canary_verify(const SNEPPXCanary* expected, const uint8_t* memory);
  */
 void SNEPPX_canary_write(const SNEPPXCanary* canary, uint8_t* memory);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

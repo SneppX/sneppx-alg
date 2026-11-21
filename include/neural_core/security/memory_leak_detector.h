@@ -1,6 +1,10 @@
 #ifndef SNEPPX_MEMORY_LEAK_DETECTOR_H
 #define SNEPPX_MEMORY_LEAK_DETECTOR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -152,4 +156,8 @@ void *SNEPPX_leak_calloc(size_t nmemb, size_t size, const char *file, int line, 
  */
 void *SNEPPX_leak_realloc(void *ptr, size_t size, const char *file, int line, const char *func);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

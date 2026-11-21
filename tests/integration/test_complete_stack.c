@@ -1,4 +1,5 @@
 #include "hierarchical_state_space.h"
+#include "test_gtest.h"
 #include "sparse_expert_routing.h"
 #include "adversarial_robustness_certification.h"
 #include "neural_programming_engine.h"
@@ -24,31 +25,25 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_complete_stack(void) {
     SNEPPXHSSConfig hss_cfg = SNEPPX_hss_config_default();
     hss_cfg.state_dim = 4; hss_cfg.input_dim = 16; hss_cfg.output_dim = 16;
     hss_cfg.num_layers = 1; hss_cfg.use_hierarchical = 0;
     SNEPPXHSSModel* hss = SNEPPX_hss_model_create(&hss_cfg, 42);
-    ASSERT(hss != NULL, "hss model");
+    SX_ASSERT(hss != NULL, "hss model");
 
     SNEPPXSERConfig ser_cfg = SNEPPX_ser_config_default();
     ser_cfg.num_experts = 2; ser_cfg.num_active = 1; ser_cfg.input_dim = 16;
     ser_cfg.expert_dim = 32; ser_cfg.output_dim = 16;
     SNEPPXSERModel* ser = SNEPPX_ser_model_create(&ser_cfg, 99, 1);
-    ASSERT(ser != NULL, "ser model");
+    SX_ASSERT(ser != NULL, "ser model");
 
     SNEPPXARCConfig arc_cfg = SNEPPX_arc_config_default();
     SNEPPXARCLayer* arc = SNEPPX_arc_layer_create(&arc_cfg, 16, 16, 200);
-    ASSERT(arc != NULL, "arc layer");
+    SX_ASSERT(arc != NULL, "arc layer");
 
     SNEPPXNPEProgram* npe_prog = SNEPPX_npe_compile_mlp(16, 32);
-    ASSERT(npe_prog != NULL, "npe program");
+    SX_ASSERT(npe_prog != NULL, "npe program");
     unsigned long s = 42;
     for (size_t i = 0; i < 16 * 32 + 32 + 32 * 16 + 16; i++) {
         s = s * 1103515245UL + 12345UL;
@@ -65,15 +60,15 @@ static void test_complete_stack(void) {
     fm_cfg.memory_capacity = 32;
     fm_cfg.sync_interval = 1000;
     SNEPPXFMController* fm = SNEPPX_fm_controller_create(&fm_cfg);
-    ASSERT(fm != NULL, "fm controller");
+    SX_ASSERT(fm != NULL, "fm controller");
 
     size_t shape_in[] = {1, 4, 16};
     SNEPPXTensor* input = SNEPPX_tensor_randn(shape_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input");
+    SX_ASSERT(input != NULL, "input");
 
     SNEPPXTensor* hss_out = NULL;
     int ret = SNEPPX_hss_forward(hss, input, &hss_out);
-    ASSERT(ret == 0 && hss_out != NULL && hss_out->shape[0] == 1 && hss_out->shape[1] == 4 && hss_out->shape[2] == 16, "hss ok");
+    SX_ASSERT(ret == 0 && hss_out != NULL && hss_out->shape[0] == 1 && hss_out->shape[1] == 4 && hss_out->shape[2] == 16, "hss ok");
 
     size_t merged = 4;
     SNEPPXTensor flat;
@@ -84,31 +79,31 @@ static void test_complete_stack(void) {
 
     SNEPPXTensor* ser_out = NULL;
     SNEPPX_ser_forward(ser->layers[0], &flat, &ser_out);
-    ASSERT(ser_out != NULL && ser_out->shape[0] == merged && ser_out->shape[1] == 16, "ser ok");
+    SX_ASSERT(ser_out != NULL && ser_out->shape[0] == merged && ser_out->shape[1] == 16, "ser ok");
 
     SNEPPXTensor* arc_out = NULL;
     float metrics[4];
     SNEPPX_arc_forward(arc, ser_out, &arc_out, metrics);
-    ASSERT(arc_out != NULL && arc_out->shape[0] == merged && arc_out->shape[1] == 16, "arc ok");
+    SX_ASSERT(arc_out != NULL && arc_out->shape[0] == merged && arc_out->shape[1] == 16, "arc ok");
 
     SNEPPXTensor* npe_out = NULL;
     SNEPPX_npe_vm_run(vm, arc_out, &npe_out);
-    ASSERT(npe_out != NULL && npe_out->shape[0] == merged && npe_out->shape[1] == 16, "npe ok");
+    SX_ASSERT(npe_out != NULL && npe_out->shape[0] == merged && npe_out->shape[1] == 16, "npe ok");
 
     SNEPPXTensor* fm_out = NULL;
     ret = SNEPPX_fm_forward(fm, 0, npe_out, &fm_out);
-    ASSERT(ret == 0 && fm_out != NULL, "fm ok");
-    ASSERT(fm_out->shape[0] == merged && fm_out->shape[1] == 16, "fm shape ok");
+    SX_ASSERT(ret == 0 && fm_out != NULL, "fm ok");
+    SX_ASSERT(fm_out->shape[0] == merged && fm_out->shape[1] == 16, "fm shape ok");
 
-    ASSERT(vm->trace_length > 0, "execution trace non-empty");
+    SX_ASSERT(vm->trace_length > 0, "execution trace non-empty");
     int has_nan = 0, has_inf = 0;
     float* od = (float*)fm_out->data;
     for (size_t i = 0; i < fm_out->size; i++) {
         if (isnan(od[i])) has_nan = 1;
         if (isinf(od[i])) has_inf = 1;
     }
-    ASSERT(!has_nan && !has_inf, "no nan/inf");
-    ASSERT(fm->nodes[0]->memory_bank->num_entries > 0, "memory has entries");
+    SX_ASSERT(!has_nan && !has_inf, "no nan/inf");
+    SX_ASSERT(fm->nodes[0]->memory_bank->num_entries > 0, "memory has entries");
 
     printf("  FM memory entries: %zu\n", fm->nodes[0]->memory_bank->num_entries);
 
@@ -126,8 +121,5 @@ static void test_complete_stack(void) {
     SNEPPX_fm_controller_destroy(fm);
 }
 
-int main(void) {
-    run_test("test_complete_stack", test_complete_stack);
-    printf("\nComplete stack integration test: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_complete_stack, test_complete_stack) { test_complete_stack(); }

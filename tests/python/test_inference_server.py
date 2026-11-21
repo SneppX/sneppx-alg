@@ -1,4 +1,10 @@
-"""Tests for inference_server.py — FastAPI serving."""
+"""Tests for inference_server.py — FastAPI serving.
+
+NOTE (AGENTS.md): this file is listed under "NEVER attempt/run" (LLM/inference
+server tests) on this machine. This edit aligns the test with the intentional
+P1 contract: text generation endpoints require a registered tokenizer (422 if
+missing). Do not run this test here; validate via CPU-safe tests only.
+"""
 
 import json
 import pytest
@@ -13,6 +19,7 @@ except ImportError:
 
 from SneppX_ALG.interface_bindings import Tensor, Module
 from SneppX_ALG.interface_bindings.generation import GenerationConfig
+from SneppX_ALG.interface_bindings.tokenizer import Tokenizer
 from SneppX_ALG.interface_bindings.inference_server import (
     app,
     register_model,
@@ -22,7 +29,7 @@ from SneppX_ALG.interface_bindings.inference_server import (
 
 
 class DummyGenModel(Module):
-    def __init__(self, vocab_size=100):
+    def __init__(self, vocab_size=32000):
         super().__init__()
         self.vocab_size = vocab_size
 
@@ -43,7 +50,7 @@ class DummyGenModel(Module):
 
         logits = npp.random.randn(batch, seq, self.vocab_size).astype(npp.float32)
         logits[:, -1, :] = -100.0
-        logits[:, -1, 42] = 100.0
+        logits[:, -1, min(42, self.vocab_size - 1)] = 100.0
         return {
             "logits": Tensor(logits),
             "past_key_values": (
@@ -61,6 +68,7 @@ def setup():
     register_model(
         model_id="test-model",
         model=model,
+        tokenizer=Tokenizer(vocab_size=model.vocab_size),
         default_config=GenerationConfig(max_new_tokens=5, do_sample=False),
         meta={"vocab_size": model.vocab_size},
     )
@@ -218,6 +226,137 @@ def test_no_models():
 # ===========================================================================
 
 
+def test_serving_control_and_batch_routes_require_authentication():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-protected"])))
+    try:
+        client = TestClient(app)
+        requests = [
+            client.post(
+                "/v1/generate/continuous-batch",
+                json={"prompts": ["hello"], "max_new_tokens": 1},
+            ),
+            client.post("/v1/models/quantize?model_id=test-model"),
+            client.post("/v1/deploy?model=test-model"),
+            client.post("/v1/traffic?model=test-model&split=v1:100"),
+            client.get("/metrics"),
+        ]
+        assert [response.status_code for response in requests] == [401] * len(requests)
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_regular_api_key_cannot_mutate_serving_control_plane():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-user"])))
+    try:
+        client = TestClient(app)
+        headers = {"Authorization": "Bearer sk-user"}
+        responses = [
+            client.post("/v1/deploy?model=test-model", headers=headers),
+            client.post("/v1/traffic?model=test-model&split=v1:100", headers=headers),
+            client.post("/v1/models/quantize?model_id=test-model", headers=headers),
+        ]
+        assert [response.status_code for response in responses] == [401, 401, 401]
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_admin_auth_uses_authorization_header_not_query_parameter():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    schema = app.openapi()
+    for method in ("get", "post"):
+        parameters = schema["paths"]["/v1/admin/keys"][method].get("parameters", [])
+        auth_parameters = [p for p in parameters if p["name"] == "Authorization"]
+        assert len(auth_parameters) == 1
+        assert auth_parameters[0]["in"] == "header"
+
+
+def test_admin_keys_reject_query_credentials_and_accept_header():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from unittest.mock import patch
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
+
+    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    try:
+        with patch(
+            "SneppX_ALG.interface_bindings.inference_server.get_key_manager"
+        ) as get_key_manager:
+            get_key_manager.return_value.list_keys.return_value = []
+            client = TestClient(app)
+            query_auth = client.get(
+                "/v1/admin/keys?Authorization=test-admin-secret"
+            )
+            assert query_auth.status_code == 401
+
+            header_auth = client.get(
+                "/v1/admin/keys",
+                headers={"Authorization": "Bearer test-admin-secret"},
+            )
+            assert header_auth.status_code == 200
+            assert header_auth.json() == {"keys": [], "count": 0}
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_admin_authentication_attempts_are_rate_limited():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(
+        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1))
+    )
+    try:
+        client = TestClient(app)
+        first = client.get("/v1/admin/keys")
+        second = client.get("/v1/admin/keys")
+        assert first.status_code == 401
+        assert second.status_code == 429
+        assert second.headers["Retry-After"] == "60"
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_admin_bearer_scheme_is_case_insensitive():
+    from SneppX_ALG.interface_bindings.inference_server import (
+        _verify_admin_auth,
+        set_security,
+    )
+    from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
+
+    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    try:
+        assert _verify_admin_auth("Bearer test-admin-secret")
+        assert _verify_admin_auth("bearer test-admin-secret")
+        assert _verify_admin_auth("BEARER test-admin-secret")
+        assert not _verify_admin_auth("Basic test-admin-secret")
+        assert not _verify_admin_auth(None)
+    finally:
+        set_security(SecurityConfig())
+
+
 def test_auth_bearer_required():
     if not _HAS_TEST_CLIENT:
         pytest.skip("TestClient not available")
@@ -338,6 +477,54 @@ def test_rate_limiter():
         # May be 200 or 429 depending on timing
         assert resp.status_code in (200, 429)
     set_security(SecurityConfig())
+
+
+def test_authenticated_requests_enforce_configured_rate_limit():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        AuthConfig,
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(
+        SecurityConfig(
+            auth=AuthConfig(mode="bearer", api_keys=["sk-rate-limited"]),
+            rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1),
+        )
+    )
+    try:
+        client = TestClient(app)
+        headers = {"Authorization": "Bearer sk-rate-limited"}
+        payload = {"prompt": "hello", "max_new_tokens": 1}
+        assert client.post("/v1/generate", json=payload, headers=headers).status_code == 200
+        limited = client.post("/v1/generate", json=payload, headers=headers)
+        assert limited.status_code == 429
+        assert limited.headers["Retry-After"] == "60"
+    finally:
+        set_security(SecurityConfig())
+
+
+def test_loopback_unauthenticated_requests_are_rate_limited():
+    if not _HAS_TEST_CLIENT:
+        pytest.skip("TestClient not available")
+    from SneppX_ALG.interface_bindings.inference_server import set_security
+    from SneppX_ALG.interface_bindings.security_middleware import (
+        RateLimitConfig,
+        SecurityConfig,
+    )
+
+    set_security(SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1)))
+    try:
+        client = TestClient(app)
+        payload = {"prompt": "hello", "max_new_tokens": 1}
+        assert client.post("/v1/generate", json=payload).status_code == 200
+        limited = client.post("/v1/generate", json=payload)
+        assert limited.status_code == 429
+    finally:
+        set_security(SecurityConfig())
 
 
 def test_auth_noop_when_disabled():

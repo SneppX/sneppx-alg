@@ -1,6 +1,10 @@
 #ifndef SNEPPX_ARGON2_H
 #define SNEPPX_ARGON2_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -61,4 +65,8 @@ int SNEPPX_argon2id(const uint8_t* password, size_t password_len, const uint8_t*
 int SNEPPX_argon2id_verify(const uint8_t* password, size_t password_len, const uint8_t* salt, size_t salt_len,
                          const SNEPPXArgon2Config* config, const uint8_t* expected_hash);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

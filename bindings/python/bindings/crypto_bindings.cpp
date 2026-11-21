@@ -17,6 +17,10 @@
 // Crypto wrappers — extracted from bindings.cpp lines 988–1127, 1657–1672
 #pragma once
 
+#include "neural_core/security/sphincsplus.h"
+#include "neural_core/security/dilithium.h"
+#include "neural_core/security/kyber.h"
+
 static void init_crypto(py::module& m) {
     py::module_ crypto = m.def_submodule("crypto", "Cryptographic functions");
 
@@ -79,8 +83,8 @@ static void init_crypto(py::module& m) {
         SNEPPXEd25519Signature sig_struct;
         memcpy(sig_struct.data, sig.data(), 64);
         return SNEPPX_ed25519_verify((const uint8_t*)pk.data(),
-                                   (const uint8_t*)m.data(), m.size(),
-                                   &sig_struct);
+                                    (const uint8_t*)m.data(), m.size(),
+                                    &sig_struct) == 1;
     });
 
     crypto.def("poly1305_mac", [](py::bytes key, py::bytes message) {
@@ -133,10 +137,25 @@ static void init_crypto(py::module& m) {
     });
 
     crypto.def("random_bytes", [](size_t n) {
+        if (n == 0) return py::bytes();
         std::string out(n, 0);
-        SNEPPX_random_bytes((uint8_t*)out.data(), n);
+        if (SNEPPX_random_bytes((uint8_t*)out.data(), n) != 0)
+            throw std::runtime_error("system cryptographic random source unavailable");
         return py::bytes(out);
     });
+
+#ifdef SNEPPX_ENABLE_TEST_RNG
+    // Available only in explicit test builds; never ship deterministic RNG controls.
+    crypto.def("random_set_seed", [](py::bytes seed) {
+        std::string s = seed;
+        if (s.size() < 32) throw std::runtime_error("seed must be >= 32 bytes");
+        SNEPPX_random_bytes_set_seed((const uint8_t*)s.data());
+    });
+
+    crypto.def("random_clear_seed", []() {
+        SNEPPX_random_bytes_clear_seed();
+    });
+#endif
 
     crypto.def("secure_zero", [](py::bytes data) {
         std::string d = data;
@@ -146,5 +165,134 @@ static void init_crypto(py::module& m) {
     crypto.def("ct_compare", [](py::bytes a, py::bytes b) {
         std::string sa = a, sb = b;
         return SNEPPX_ct_equal((const uint8_t*)sa.data(), (const uint8_t*)sb.data(), sa.size());
+    });
+
+    // ---- SPHINCS+ (SLH-DSA) -------------------------------------------------
+    // NOTE: the C implementation uses a single fixed parameter set
+    // (pk = SPHINCS_PUBLICKEYBYTES, sk = SPHINCS_SECRETKEYBYTES,
+    //  sig = SPHINCS_SIGBYTES); the `variant` argument is currently ignored.
+    crypto.def("sphincs_keygen", [](int variant) {
+        uint8_t pk[SPHINCS_PUBLICKEYBYTES];
+        uint8_t sk[SPHINCS_SECRETKEYBYTES];
+        // The keygen only fills the first 48 bytes (sk_seed || sk_prf ||
+        // pub_seed); the remaining 16 bytes of the 64-byte secret key are
+        // unused padding. Initialise the whole buffer so the tail is
+        // deterministic rather than uninitialised stack memory.
+        std::memset(sk, 0, SPHINCS_SECRETKEYBYTES);
+        SNEPPX_sphincs_keygen(pk, sk, variant);
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(pk), SPHINCS_PUBLICKEYBYTES),
+            py::bytes(reinterpret_cast<char*>(sk), SPHINCS_SECRETKEYBYTES));
+    });
+
+    crypto.def("sphincs_sign", [](py::bytes sk_bytes, py::bytes msg, int variant) {
+        std::string sk = sk_bytes, m = msg;
+        if (sk.size() < SPHINCS_SECRETKEYBYTES)
+            throw std::runtime_error("sphincs secret key must be >= 64 bytes");
+        size_t siglen = 0;
+        std::vector<uint8_t> sig(SPHINCS_SIGBYTES);
+        SNEPPX_sphincs_sign(sig.data(), &siglen,
+                            (const uint8_t*)m.data(), m.size(),
+                            (const uint8_t*)sk.data(), variant);
+        return py::bytes(reinterpret_cast<char*>(sig.data()), siglen);
+    });
+
+    crypto.def("sphincs_verify", [](py::bytes sig, py::bytes msg, py::bytes pk_bytes, int variant) {
+        std::string s = sig, m = msg, pk = pk_bytes;
+        return SNEPPX_sphincs_verify((const uint8_t*)s.data(), s.size(),
+                                     (const uint8_t*)m.data(), m.size(),
+                                     (const uint8_t*)pk.data(), variant) == 0;
+    });
+
+    // ---- Dilithium (ML-DSA) ------------------------------------------------
+    // `variant` selects the parameter set (2 -> k=4, 3 -> k=6, 5 -> k=8).
+    // pk = 32 + k*320, sk = 96 + k*608 (same formulas used by the C keygen).
+    crypto.def("dilithium_keygen", [](int variant) {
+        int k = (variant == 2) ? 4 : (variant == 3) ? 6 : 8;
+        int eta = (variant == 2) ? 2 : 4;
+        int s_bytes = (eta == 2) ? 608 : 672;
+        int pk_size = 32 + k * 320;
+        int sk_size = 96 + k * s_bytes;
+        std::vector<uint8_t> pk(pk_size), sk(sk_size);
+        SNEPPX_dilithium_keygen(pk.data(), sk.data(), variant);
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(pk.data()), pk_size),
+            py::bytes(reinterpret_cast<char*>(sk.data()), sk_size));
+    });
+
+    crypto.def("dilithium_sign", [](py::bytes sk_bytes, py::bytes msg, int variant) {
+        std::string sk = sk_bytes, m = msg;
+        int k = (variant == 2) ? 4 : (variant == 3) ? 6 : 8;
+        int eta = (variant == 2) ? 2 : 4;
+        int sk_size = 96 + k * (eta == 2 ? 608 : 672);
+        if ((int)sk.size() < sk_size)
+            throw std::runtime_error("dilithium secret key too short for variant");
+        size_t siglen = 0;
+        std::vector<uint8_t> sig(6000);
+        SNEPPX_dilithium_sign(sig.data(), &siglen,
+                              (const uint8_t*)m.data(), m.size(),
+                              (const uint8_t*)sk.data(), variant);
+        return py::bytes(reinterpret_cast<char*>(sig.data()), siglen);
+    });
+
+    crypto.def("dilithium_verify", [](py::bytes sig, py::bytes msg, py::bytes pk_bytes, int variant) {
+        std::string s = sig, m = msg, pk = pk_bytes;
+        return SNEPPX_dilithium_verify((const uint8_t*)s.data(), s.size(),
+                                       (const uint8_t*)m.data(), m.size(),
+                                       (const uint8_t*)pk.data(), variant);
+    });
+
+    // ---- Kyber (ML-KEM, FIPS 203) -------------------------------------------
+    // variant: 2 -> ML-KEM-512, 3 -> ML-KEM-768, 4 -> ML-KEM-1024
+    // pk sizes: 800 / 1184 / 1568; sk sizes: 1632 / 2400 / 3168; ct: 768 / 1088 / 1568
+    crypto.def("kyber_keygen", [](int variant) {
+        std::map<int, std::pair<int, int>> sizes = {
+            {2, {800, 1632}}, {3, {1184, 2400}}, {4, {1568, 3168}}};
+        auto it = sizes.find(variant);
+        if (it == sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int pk_size = it->second.first, sk_size = it->second.second;
+        std::vector<uint8_t> pk(pk_size), sk(sk_size);
+        if (SNEPPX_kyber_keygen(pk.data(), sk.data(), variant) != 0)
+            throw std::runtime_error("kyber_keygen failed");
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(pk.data()), pk_size),
+            py::bytes(reinterpret_cast<char*>(sk.data()), sk_size));
+    });
+
+    crypto.def("kyber_encaps", [](py::bytes pk_bytes, int variant) {
+        std::map<int, std::pair<int, int>> ct_sizes = {
+            {2, {768, 800}}, {3, {1088, 1184}}, {4, {1568, 1568}}};
+        auto it = ct_sizes.find(variant);
+        if (it == ct_sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int ct_size = it->second.first, pk_size = it->second.second;
+        std::string pk = pk_bytes;
+        if ((int)pk.size() != pk_size)
+            throw std::runtime_error("kyber public key wrong size for variant");
+        std::vector<uint8_t> ct(ct_size), ss(32);
+        if (SNEPPX_kyber_encaps(ct.data(), ss.data(),
+                                (const uint8_t*)pk.data(), variant) != 0)
+            throw std::runtime_error("kyber_encaps failed");
+        return py::make_tuple(
+            py::bytes(reinterpret_cast<char*>(ct.data()), ct_size),
+            py::bytes(reinterpret_cast<char*>(ss.data()), 32));
+    });
+
+    crypto.def("kyber_decaps", [](py::bytes ct_bytes, py::bytes sk_bytes, int variant) {
+        std::map<int, std::pair<int, int>> ct_sk_sizes = {
+            {2, {768, 1632}}, {3, {1088, 2400}}, {4, {1568, 3168}}};
+        auto it = ct_sk_sizes.find(variant);
+        if (it == ct_sk_sizes.end()) throw std::runtime_error("unsupported kyber variant");
+        int ct_size = it->second.first, sk_size = it->second.second;
+        std::string ct = ct_bytes, sk = sk_bytes;
+        if ((int)ct.size() != ct_size)
+            throw std::runtime_error("kyber ciphertext wrong size for variant");
+        if ((int)sk.size() != sk_size)
+            throw std::runtime_error("kyber secret key wrong size for variant");
+        std::vector<uint8_t> ss(32);
+        if (SNEPPX_kyber_decaps(ss.data(),
+                                (const uint8_t*)ct.data(),
+                                (const uint8_t*)sk.data(), variant) != 0)
+            throw std::runtime_error("kyber_decaps failed");
+        return py::bytes(reinterpret_cast<char*>(ss.data()), 32);
     });
 }

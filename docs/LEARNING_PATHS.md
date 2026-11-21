@@ -81,7 +81,7 @@ Track-specific roadmaps for progressing from Explorer to Senior Contributor. Eac
 
 | Month | Goal | Deliverable |
 |-------|------|-------------|
-| 1 | Build CUDA backend, read CUDA kernels | `cmake -B build -DSNEPPX_BUILD_CUDA=ON`, run cuda_test_suite |
+| 1 | Build CUDA backend, read CUDA kernels | `cmake -B build -G Ninja -DSNEPPX_BUILD_CUDA=ON`, run cuda_test_suite |
 | 2 | Optimize an existing CUDA kernel | Profile with ncu, optimize occupancy/memory, measure speedup |
 | 3 | Implement a new CUDA kernel | Write a fused kernel (e.g., bias+activation+GEMM), benchmark |
 | 4 | Add CUDA kernel documentation | Document kernel strategy, grid/block sizing, shared mem usage |

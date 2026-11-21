@@ -1,6 +1,10 @@
 #ifndef SNEPPX_KYBER_H
 #define SNEPPX_KYBER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -64,4 +68,8 @@ int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant
  */
 int SNEPPX_kyber_decaps(uint8_t *ss, const uint8_t *ct, const uint8_t *sk, int variant);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

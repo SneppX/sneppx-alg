@@ -4,7 +4,7 @@
 
 ```bash
 # Configure with coverage flags
-cmake -B build-coverage -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON \
+cmake -B build-coverage -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON \
     -DCMAKE_C_FLAGS="--coverage -g -O0" \
     -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 

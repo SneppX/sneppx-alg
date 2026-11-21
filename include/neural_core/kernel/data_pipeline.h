@@ -1,6 +1,10 @@
 #ifndef SNEPPX_DATA_PIPELINE_H
 #define SNEPPX_DATA_PIPELINE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "subword_tokenization_pipeline.h"
 #include "multidimensional_tensor_engine.h"
 #include <stddef.h>
@@ -117,4 +121,8 @@ size_t SNEPPX_text_dataset_size(const SNEPPXTextDataset* ds);
 int SNEPPX_text_dataset_get_batch(const SNEPPXTextDataset* ds, size_t start_idx, size_t batch_size,
                                  SNEPPXTensor** input_ids, SNEPPXTensor** target_ids);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

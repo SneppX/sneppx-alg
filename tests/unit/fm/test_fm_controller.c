@@ -1,4 +1,5 @@
 #include "fractal_memory_orchestrator.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -20,12 +21,6 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_controller_create(void) {
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.num_nodes = 4;
@@ -33,16 +28,16 @@ static void test_controller_create(void) {
     cfg.memory_capacity = 16;
 
     SNEPPXFMController* ctrl = SNEPPX_fm_controller_create(&cfg);
-    ASSERT(ctrl != NULL, "ctrl not null");
-    ASSERT(ctrl->nodes != NULL, "nodes not null");
-    ASSERT(ctrl->config.num_nodes == 4, "4 nodes");
+    SX_ASSERT(ctrl != NULL, "ctrl not null");
+    SX_ASSERT(ctrl->nodes != NULL, "nodes not null");
+    SX_ASSERT(ctrl->config.num_nodes == 4, "4 nodes");
     for (size_t i = 0; i < 4; i++) {
-        ASSERT(ctrl->nodes[i] != NULL, "node allocated");
-        ASSERT(ctrl->nodes[i]->node_id == i, "node id");
-        ASSERT(ctrl->nodes[i]->is_online == 1, "online");
+        SX_ASSERT(ctrl->nodes[i] != NULL, "node allocated");
+        SX_ASSERT(ctrl->nodes[i]->node_id == i, "node id");
+        SX_ASSERT(ctrl->nodes[i]->is_online == 1, "online");
     }
-    ASSERT(ctrl->sync_state.global_memory != NULL, "global memory");
-    ASSERT(ctrl->sync_state.sync_round == 0, "sync round 0");
+    SX_ASSERT(ctrl->sync_state.global_memory != NULL, "global memory");
+    SX_ASSERT(ctrl->sync_state.sync_round == 0, "sync round 0");
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
@@ -54,17 +49,17 @@ static void test_controller_forward(void) {
     cfg.sync_interval = 1000;
 
     SNEPPXFMController* ctrl = SNEPPX_fm_controller_create(&cfg);
-    ASSERT(ctrl != NULL, "ctrl");
+    SX_ASSERT(ctrl != NULL, "ctrl");
 
     size_t sh[] = {8, 16};
     SNEPPXTensor* input = SNEPPX_tensor_zeros(sh, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* output = NULL;
 
     int r = SNEPPX_fm_forward(ctrl, 0, input, &output);
-    ASSERT(r == 0, "forward ok");
-    ASSERT(output != NULL, "output not null");
-    ASSERT(output->shape[0] == 8, "output rows 8");
-    ASSERT(output->shape[1] == 16, "output cols 16");
+    SX_ASSERT(r == 0, "forward ok");
+    SX_ASSERT(output != NULL, "output not null");
+    SX_ASSERT(output->shape[0] == 8, "output rows 8");
+    SX_ASSERT(output->shape[1] == 16, "output cols 16");
 
     int has_nan = 0, has_inf = 0;
     float* od = (float*)output->data;
@@ -72,17 +67,14 @@ static void test_controller_forward(void) {
         if (isnan(od[i])) has_nan = 1;
         if (isinf(od[i])) has_inf = 1;
     }
-    ASSERT(!has_nan, "no nan");
-    ASSERT(!has_inf, "no inf");
+    SX_ASSERT(!has_nan, "no nan");
+    SX_ASSERT(!has_inf, "no inf");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(output);
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-int main(void) {
-    run_test("test_controller_create", test_controller_create);
-    run_test("test_controller_forward", test_controller_forward);
-    printf("\nController tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_fm_controller, test_controller_create) { test_controller_create(); }
+TEST(test_fm_controller, test_controller_forward) { test_controller_forward(); }

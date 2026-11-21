@@ -1,6 +1,10 @@
 #ifndef SNEPPX_TOKENIZER_H
 #define SNEPPX_TOKENIZER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include <stddef.h>
 
@@ -154,4 +158,8 @@ SNEPPXTensor*     SNEPPX_tokenizer_ids_to_tensor(const SNEPPXTokenizer* tok, con
  */
 int*            SNEPPX_tokenizer_tensor_to_ids(const SNEPPXTensor* t, size_t* out_len);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

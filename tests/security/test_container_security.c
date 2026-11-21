@@ -1,4 +1,5 @@
 #include "container_security.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,18 +19,18 @@
  */
 
 
-int main() {
+TEST(test_container_security, suite) {
     container_manifest_t manifest;
     uint8_t test_manifest[] = "{\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"schemaVersion\":2,\"config\":{}}";
     if (SNEPPX_container_parse_manifest(test_manifest, sizeof(test_manifest), &manifest) != 0) {
-        printf("FAIL: parse manifest\n"); return 1;
+        printf("FAIL: parse manifest\n"); FAIL() << "early exit (legacy return 1)";
     }
     printf("Manifest parsed: mediaType=%s layers=%d\n", manifest.media_type, manifest.num_layers);
     sbom_doc_t doc;
     SNEPPX_sbom_generate(&doc, "SNEPPX-algo:latest", "0.7.5");
     SNEPPX_sbom_add_component(&doc, "libssl", "3.0.12", "library", "OpenSSL Foundation");
     SNEPPX_sbom_add_component(&doc, "libcurl", "8.4.0", "library", "curl project");
-    if (SNEPPX_sbom_validate(&doc) != 0) { printf("FAIL: SBOM validate\n"); return 1; }
+    if (SNEPPX_sbom_validate(&doc) != 0) { printf("FAIL: SBOM validate\n"); FAIL() << "early exit (legacy return 1)"; }
     char json[4096];
     SNEPPX_sbom_export_json(&doc, json, sizeof(json));
     printf("SBOM JSON:\n%s\n", json);
@@ -41,5 +42,5 @@ int main() {
     SNEPPX_container_get_stats(&stats);
     printf("Container stats: vulns=%d crit=%d high=%d\n", stats.num_vulns_in_db, stats.critical_count, stats.high_count);
     printf("PASS: Container security OK\n");
-    return 0;
+    return;
 }

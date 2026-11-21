@@ -1,4 +1,5 @@
 #include "fractal_memory_orchestrator.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -20,31 +21,22 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_node_create(void) {
     SNEPPXFMNode* node = SNEPPX_fm_node_create(0, 16, 32);
-    ASSERT(node != NULL, "node not null");
-    ASSERT(node->node_id == 0, "id 0");
-    ASSERT(node->memory_bank != NULL, "memory bank not null");
-    ASSERT(node->gradient_accumulator != NULL, "grad accum not null");
+    SX_ASSERT(node != NULL, "node not null");
+    SX_ASSERT(node->node_id == 0, "id 0");
+    SX_ASSERT(node->memory_bank != NULL, "memory bank not null");
+    SX_ASSERT(node->gradient_accumulator != NULL, "grad accum not null");
     SNEPPX_fm_node_destroy(node);
 }
 
 static void test_node_online(void) {
     SNEPPXFMNode* node = SNEPPX_fm_node_create(1, 8, 16);
-    ASSERT(node->is_online == 1, "online true");
-    ASSERT(fabsf(node->trust_score - 1.0f) < 1e-5f, "trust 1.0");
+    SX_ASSERT(node->is_online == 1, "online true");
+    SX_ASSERT(fabsf(node->trust_score - 1.0f) < 1e-5f, "trust 1.0");
     SNEPPX_fm_node_destroy(node);
 }
 
-int main(void) {
-    run_test("test_node_create", test_node_create);
-    run_test("test_node_online", test_node_online);
-    printf("\nNode tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_fm_node, test_node_create) { test_node_create(); }
+TEST(test_fm_node, test_node_online) { test_node_online(); }

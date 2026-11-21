@@ -1,4 +1,6 @@
 #include "sha512_hashing_implementation.h"
+#include "asm_exports.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,24 +20,8 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_sha512_hash(void) {
     unsigned char hash[64];
@@ -43,7 +29,7 @@ static void test_sha512_hash(void) {
     SNEPPX_sha512_hash(input, 5, hash);
     int non_zero = 0;
     for (int i = 0; i < 64; i++) if (hash[i]) non_zero++;
-    ASSERT(non_zero > 0, "sha512 hash produced non-zero output");
+    SX_ASSERT(non_zero > 0, "sha512 hash produced non-zero output");
 }
 
 static void test_sha512_deterministic(void) {
@@ -51,7 +37,7 @@ static void test_sha512_deterministic(void) {
     const unsigned char* input = (const unsigned char*)"test";
     SNEPPX_sha512_hash(input, 4, h1);
     SNEPPX_sha512_hash(input, 4, h2);
-    ASSERT(memcmp(h1, h2, 64) == 0, "sha512 deterministic");
+    SX_ASSERT(memcmp(h1, h2, 64) == 0, "sha512 deterministic");
 }
 
 static void test_sha512_diff_input(void) {
@@ -60,7 +46,7 @@ static void test_sha512_diff_input(void) {
     const unsigned char* in2 = (const unsigned char*)"abd";
     SNEPPX_sha512_hash(in1, 3, h1);
     SNEPPX_sha512_hash(in2, 3, h2);
-    ASSERT(memcmp(h1, h2, 64) != 0, "sha512 different for diff input");
+    SX_ASSERT(memcmp(h1, h2, 64) != 0, "sha512 different for diff input");
 }
 
 static void test_sha512_hmac(void) {
@@ -70,14 +56,11 @@ static void test_sha512_hmac(void) {
     SNEPPX_sha512_hmac(key, 3, msg, 7, hmac);
     int non_zero = 0;
     for (int i = 0; i < 64; i++) if (hmac[i]) non_zero++;
-    ASSERT(non_zero > 0, "sha512 hmac produced output");
+    SX_ASSERT(non_zero > 0, "sha512 hmac produced output");
 }
 
-int main(void) {
-    run_test("sha512_hash", test_sha512_hash);
-    run_test("sha512_deterministic", test_sha512_deterministic);
-    run_test("sha512_diff_input", test_sha512_diff_input);
-    run_test("sha512_hmac", test_sha512_hmac);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_sha512, sha512_hash) { test_sha512_hash(); }
+TEST(test_sha512, sha512_deterministic) { test_sha512_deterministic(); }
+TEST(test_sha512, sha512_diff_input) { test_sha512_diff_input(); }
+TEST(test_sha512, sha512_hmac) { test_sha512_hmac(); }

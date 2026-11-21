@@ -1,6 +1,10 @@
 #ifndef SNEPPX_LOCK_H
 #define SNEPPX_LOCK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
 /*
@@ -87,4 +91,8 @@ int SNEPPX_munlock(void* ptr, size_t len);
  */
 int SNEPPX_mlockall_possible(void);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

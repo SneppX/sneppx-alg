@@ -1,6 +1,10 @@
 #ifndef SNEPPX_POLY1305_H
 #define SNEPPX_POLY1305_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -49,4 +53,8 @@ void SNEPPX_poly1305_update(SNEPPXPoly1305State* state, const uint8_t* data, siz
  */
 void SNEPPX_poly1305_finish(SNEPPXPoly1305State* state, uint8_t mac[16]);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

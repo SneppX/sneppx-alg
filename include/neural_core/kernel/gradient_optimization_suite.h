@@ -1,6 +1,10 @@
 #ifndef SNEPPX_OPTIMIZER_H
 #define SNEPPX_OPTIMIZER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include <stddef.h>
 
@@ -227,4 +231,8 @@ void SNEPPX_lr_scheduler_destroy(SNEPPXLRScheduler* sched);
  */
 void SNEPPX_lr_scheduler_step(SNEPPXLRScheduler* sched, float current_loss);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

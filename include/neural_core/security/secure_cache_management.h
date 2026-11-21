@@ -1,6 +1,10 @@
 #ifndef SNEPPX_CACHE_H
 #define SNEPPX_CACHE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
 /*
@@ -37,4 +41,8 @@ void SNEPPX_cache_prefetch(const void* ptr);
  */
 void SNEPPX_cache_barrier(void);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

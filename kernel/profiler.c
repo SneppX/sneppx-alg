@@ -1,4 +1,5 @@
 #include "profiler.h"
+#include "security/obfuscator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -242,7 +243,11 @@ void SNEPPX_profiler_reset(SNEPPX_Profiler* prof) {
  */
 void SNEPPX_profiler_print(const SNEPPX_Profiler* prof) {
     if (!prof) return;
-    printf("\n=== SNEPPX Profiler Summary ===\n");
+    char obf_summary[64];
+    sneppx_obfuscate_string("SNEPPX Profiler Summary", obf_summary, sizeof(obf_summary));
+    char deobf_summary[64];
+    sneppx_deobfuscate_string(obf_summary, deobf_summary, sizeof(deobf_summary));
+    printf("\n=== %s ===\n", deobf_summary);
     printf("%-32s %8s %12s %10s %10s %10s\n",
            "Operation", "Calls", "Total(ms)", "Avg(ms)", "Min(ms)", "Max(ms)");
     printf("------------------------------------------------------------\n");

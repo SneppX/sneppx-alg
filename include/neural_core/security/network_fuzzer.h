@@ -1,6 +1,10 @@
 #ifndef SNEPPX_NETWORK_FUZZER_H
 #define SNEPPX_NETWORK_FUZZER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -143,4 +147,8 @@ int SNEPPX_fuzzer_reset(void);
  */
 int SNEPPX_fuzzer_fuzz_target(const uint8_t *target_data, size_t target_len, int iterations, fuzz_result_t *results, int max_results);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

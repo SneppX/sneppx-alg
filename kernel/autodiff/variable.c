@@ -31,7 +31,7 @@ SNEPPXVariable* SNEPPX_variable_create(SNEPPXTensor* data, int requires_grad) {
     if (!var) return NULL;
     memset(var, 0, sizeof(SNEPPXVariable));
     var->data = data;
-    var->requires_grad = requires_grad;
+    var->requires_grad = SNEPPX_no_grad_is_active() ? 0 : requires_grad;
     var->grad = NULL;
     var->backward_fn = NULL;
     var->backward_ctx = NULL;

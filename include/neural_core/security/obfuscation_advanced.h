@@ -165,23 +165,20 @@ typedef struct {
  */
 int  SNEPPX_bogus_cf_init(SNEPPXBogusCF* bcf);
 /**
- * @brief Perform Bogus Cf Add Fake Block.
+ * @brief Add a fake control-flow block.
  *
- * @param bcf [out] Bcf value.
- * @param fake_code [in] Fake Code value.
- * @param fake_len [in] Fake Len value.
- *
- * @return 0 on success, -1 on error.
+ * @warning Disabled until a reversible, relocation-safe transformation is
+ *          implemented. The current implementation always returns -1.
+ * @return -1 while the feature is disabled.
  */
 int  SNEPPX_bogus_cf_add_fake_block(SNEPPXBogusCF* bcf, const uint8_t* fake_code, size_t fake_len);
 /**
- * @brief Perform Bogus Cf Redirect.
+ * @brief Apply a bogus control-flow redirect.
  *
- * @param bcf [out] Bcf value.
- * @param code [out] Code value.
- * @param code_len [in] Code Len value.
- *
- * @return 0 on success, -1 on error.
+ * @warning Disabled because the former implementation could corrupt caller
+ *          code and had no safe restoration path. The input buffer is not
+ *          modified; this function always returns -1.
+ * @return -1 while the feature is disabled.
  */
 int  SNEPPX_bogus_cf_redirect(SNEPPXBogusCF* bcf, uint8_t* code, size_t code_len);
 
@@ -235,17 +232,17 @@ typedef struct {
 } SNEPPXWhiteBoxAES;
 
 /**
- * @brief Initialize Whitebox Aes.
+ * @brief Disabled whitebox AES placeholder.
  *
- * @param wb [out] Wb value.
- *
- * @return 0 on success, -1 on error.
+ * The former lookup-table implementation was not standards-compliant AES
+ * and had secret-dependent memory access. The structure is zeroed and -1
+ * is returned until a reviewed constant-time implementation is available.
  */
 int  SNEPPX_whitebox_aes_init(SNEPPXWhiteBoxAES* wb, const uint8_t key[16]);
 /**
- * @brief Encrypt Whitebox Aes.
+ * @brief Disabled whitebox AES placeholder.
  *
- * @param wb [out] Wb value.
+ * The output buffer is zeroed when non-NULL. This function does not encrypt.
  */
 void SNEPPX_whitebox_aes_encrypt(SNEPPXWhiteBoxAES* wb, const uint8_t in[16], uint8_t out[16]);
 
@@ -309,9 +306,10 @@ int  SNEPPX_seh_obfuscation_install(SNEPPXSEHObfuscation* seh, void* handler);
 /* TLS callback obfuscation */
 int  SNEPPX_tls_callback_register(void (*cb)(void*, int, void*));
 /**
- * @brief Perform Tls Callback Obfuscate.
+ * @brief Disabled TLS callback pointer obfuscation.
  *
- * @return 0 on success, -1 on error.
+ * The previous transformation had no safe restoration path. Returns -1
+ * without changing registered callbacks.
  */
 int  SNEPPX_tls_callback_obfuscate(void);
 
@@ -324,27 +322,22 @@ typedef struct {
 } SNEPPXAntiDump;
 
 /**
- * @brief Initialize Antidump.
+ * @brief Disabled anti-dump placeholder.
  *
- * @param ad [out] Ad value.
- *
- * @return 0 on success, -1 on error.
+ * The former code used invalid image-base assumptions and mutated live
+ * executable headers. Init zeroes the structure and returns -1.
  */
 int  SNEPPX_antidump_init(SNEPPXAntiDump* ad);
 /**
- * @brief Perform Antidump Protect.
+ * @brief Disabled anti-dump placeholder.
  *
- * @param ad [out] Ad value.
- *
- * @return 0 on success, -1 on error.
+ * Returns -1 and never changes process memory.
  */
 int  SNEPPX_antidump_protect(SNEPPXAntiDump* ad);
 /**
- * @brief Verify Antidump.
+ * @brief Disabled anti-dump placeholder.
  *
- * @param ad [out] Ad value.
- *
- * @return 0 on success, -1 on error.
+ * Returns -1; no anti-dump integrity claim is made.
  */
 int  SNEPPX_antidump_verify(SNEPPXAntiDump* ad);
 

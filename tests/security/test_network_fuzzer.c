@@ -1,4 +1,5 @@
 #include "network_fuzzer.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +19,7 @@
  */
 
 
-int main() {
+TEST(test_network_fuzzer, suite) {
     fuzz_stats_t stats;
     SNEPPX_fuzzer_init(FUZZ_PROTO_RAW);
     uint8_t buf[1024];
@@ -40,5 +41,5 @@ int main() {
     SNEPPX_fuzzer_get_stats(&stats);
     printf("TLS fuzzer: exec=%llu mut=%llu\n", stats.total_executions, stats.total_mutations);
     printf("PASS: Network fuzzer OK\n");
-    return 0;
+    return;
 }

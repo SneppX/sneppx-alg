@@ -1,4 +1,106 @@
-"""Advanced tensor operations — convolution, pooling, RNN, transformer blocks."""
+"""Advanced tensor operations â€” convolution, pooling, RNN, transformer blocks."""
+
+__all__ = [
+    "conv1d",
+    "conv2d",
+    "max_pool2d",
+    "avg_pool2d",
+    "adaptive_avg_pool2d",
+    "adaptive_max_pool2d",
+    "rnn_cell",
+    "lstm_cell",
+    "gru_cell",
+    "multi_head_attention",
+    "transformer_block",
+    "sigmoid",
+    "softmax",
+    "topk",
+    "cross_entropy",
+    "log_softmax",
+    "kl_divergence",
+    "rope",
+    "apply_rotary_pos_emb",
+    "gelu",
+    "layernorm",
+    "linear",
+    "dropout",
+    "embedding",
+    "batch_norm",
+    "group_norm",
+    "instance_norm",
+    "layer_norm",
+    "rmsnorm",
+    "cat",
+    "stack",
+    "split",
+    "chunk",
+    "repeat",
+    "tile",
+    "expand",
+    "reshape",
+    "view",
+    "permute",
+    "transpose",
+    "squeeze",
+    "unsqueeze",
+    "flatten",
+    "pad",
+    "flip",
+    "rot90",
+    "roll",
+    "gather",
+    "scatter",
+    "scatter_add",
+    "index_select",
+    "masked_select",
+    "where",
+    "clamp",
+    "clamp_",
+    "sum",
+    "mean",
+    "var",
+    "std",
+    "max",
+    "min",
+    "prod",
+    "cumsum",
+    "cumprod",
+    "norm",
+    "add",
+    "sub",
+    "mul",
+    "div",
+    "pow",
+    "eq",
+    "ne",
+    "lt",
+    "le",
+    "gt",
+    "ge",
+    "binary_op",
+    "abs",
+    "neg",
+    "sign",
+    "sqrt",
+    "rsqrt",
+    "exp",
+    "log",
+    "log1p",
+    "sin",
+    "cos",
+    "tan",
+    "asin",
+    "acos",
+    "atan",
+    "sinh",
+    "cosh",
+    "tanh",
+    "relu",
+    "gelu",
+    "silu",
+    "relu6",
+    "hardswish",
+]
 
 from typing import Optional, Tuple, List, Union, Callable
 import numpy as np
@@ -6,14 +108,13 @@ import numpy as np
 from .tensor import Tensor, Dtype
 
 
-def conv2d(
+def _conv2d_single_group(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
     stride: Tuple[int, int] = (1, 1),
     padding: Tuple[int, int] = (0, 0),
     dilation: Tuple[int, int] = (1, 1),
-    groups: int = 1,
 ) -> Tensor:
     """2D convolution with optional bias.
 
@@ -34,8 +135,6 @@ def conv2d(
 
     N, C_in, H, W = x.shape
     C_out, C_in_g, kH, kW = w.shape
-
-    assert C_in == C_in_g * groups, "Input channels must match weight channels * groups"
 
     # Calculate output dimensions
     pad_h, pad_w = padding
@@ -66,8 +165,8 @@ def conv2d(
     w_mat = w.reshape(C_out, -1)
 
     # Convolution via GEMM
-    out = w_mat @ col  # [C_out, N * H_out * W_out]
-    out = out.reshape(C_out, N, H_out, W_out).transpose(1, 0, 2, 3)
+    out = w_mat @ col  # (N, C_out, H_out * W_out)
+    out = out.reshape(N, C_out, H_out, W_out)
 
     if bias is not None:
         b = np.asarray(bias.data, dtype=np.float64)
@@ -76,22 +175,20 @@ def conv2d(
     return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
 
 
-def conv1d(
+def _conv1d_single_group(
     input: Tensor,
     weight: Tensor,
     bias: Optional[Tensor] = None,
     stride: int = 1,
     padding: int = 0,
     dilation: int = 1,
-    groups: int = 1,
 ) -> Tensor:
-    """1D convolution."""
+    """1D convolution (single group)."""
     x = np.asarray(input.data, dtype=np.float64)
     w = np.asarray(weight.data, dtype=np.float64)
 
     N, C_in, L = x.shape
     C_out, C_in_g, kL = w.shape
-    assert C_in == C_in_g * groups
 
     L_out = (L + 2 * padding - dilation * (kL - 1) - 1) // stride + 1
 
@@ -107,12 +204,45 @@ def conv1d(
 
     w_mat = w.reshape(C_out, -1)
     out = w_mat @ col
-    out = out.reshape(C_out, N, L_out).transpose(1, 0, 2)
 
     if bias is not None:
         b = np.asarray(bias.data, dtype=np.float64)
         out += b.reshape(1, -1, 1)
 
+    return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
+
+
+def conv1d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    dilation: int = 1,
+    groups: int = 1,
+) -> Tensor:
+    """1D convolution with optional groups."""
+    if groups == 1:
+        return _conv1d_single_group(input, weight, bias, stride, padding, dilation)
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, L = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    L_out = (L + 2 * padding - dilation * (w.shape[2] - 1) - 1) // stride + 1
+    out = np.zeros((N, C_out, L_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv1d_single_group(xi, wi, bi, stride, padding, dilation)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
     return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
 
 
@@ -397,9 +527,14 @@ def multi_head_attention(
     training: bool = True,
 ) -> Tensor:
     """Multi-head attention."""
-    q = np.asarray(query.data, dtype=np.float64)
-    k = np.asarray(key.data, dtype=np.float64)
-    v = np.asarray(value.data, dtype=np.float64)
+    _to_arr = lambda t: (
+        np.asarray(t.data, dtype=np.float64)
+        if hasattr(t, "data")
+        else np.asarray(t, dtype=np.float64)
+    )
+    q = _to_arr(query)
+    k = _to_arr(key)
+    v = _to_arr(value)
 
     N, L_q, D = q.shape
     _, L_k, _ = k.shape
@@ -416,7 +551,7 @@ def multi_head_attention(
     attn = q @ k.transpose(0, 1, 3, 2) * scale
 
     if mask is not None:
-        m = np.asarray(mask.data, dtype=np.float64)
+        m = _to_arr(mask)
         attn = attn + m.reshape(N, 1, 1, -1) * -1e9
 
     attn = softmax(attn, axis=-1)
@@ -475,6 +610,34 @@ def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
     x_max = np.max(x, axis=axis, keepdims=True)
     e = np.exp(x - x_max)
     return e / np.sum(e, axis=axis, keepdims=True)
+
+
+def topk(x: Tensor, k: int, dim: int = -1):
+    """Return the top-k values and indices along ``dim`` (descending)."""
+    data = np.asarray(x.data, dtype=np.float32)
+    axis = dim if dim >= 0 else data.ndim + dim
+    idx = np.argpartition(-data, k - 1, axis=axis)[..., :k]
+    vals = np.take_along_axis(data, idx, axis=axis)
+    order = np.argsort(-vals, axis=axis)
+    idx = np.take_along_axis(idx, order, axis=axis)
+    vals = np.take_along_axis(vals, order, axis=axis)
+    return Tensor.from_numpy(vals.astype(np.float32)), Tensor.from_numpy(
+        idx.astype(np.int64)
+    )
+
+
+def cross_entropy(logits: Tensor, targets: Tensor) -> Tensor:
+    """Negative log-likelihood of targets given logits (mean-reduced)."""
+    l = np.asarray(logits.data, dtype=np.float32)
+    t = np.asarray(targets.data if hasattr(targets, "data") else targets)
+    orig_shape = t.shape
+    l = l.reshape(-1, l.shape[-1])
+    t = t.reshape(-1).astype(np.int64)
+    lmax = l.max(axis=-1, keepdims=True)
+    logsumexp = np.log(np.exp(l - lmax).sum(axis=-1, keepdims=True)) + lmax
+    logp = l - logsumexp
+    loss = -logp[np.arange(l.shape[0]), t]
+    return Tensor.from_numpy(loss.reshape(orig_shape).astype(np.float32))
 
 
 def log_softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
@@ -630,33 +793,32 @@ def instance_norm(
 
 def layer_norm(
     input: Tensor,
-    normalized_shape: Tuple[int, ...],
+    normalized_shape_or_weight,
     weight: Optional[Tensor] = None,
     bias: Optional[Tensor] = None,
     eps: float = 1e-5,
 ) -> Tensor:
-    """Layer normalization."""
+    """Layer normalization over the last dimension.
+
+    Supports both calling conventions used across the codebase:
+        layer_norm(x, weight, bias)                 # last-dim normalize
+        layer_norm(x, normalized_shape, weight, bias)
+    """
+    if isinstance(normalized_shape_or_weight, (tuple, list)):
+        w, b = weight, bias
+    else:
+        w, b = normalized_shape_or_weight, weight
+
     x = np.asarray(input.data, dtype=np.float64)
-    # normalized_shape indicates the last dims to normalize over
-    ndim = len(normalized_shape)
-    dims = tuple(range(-ndim, 0))
+    ww = np.asarray(w.data, dtype=np.float64) if w is not None else 1.0
+    bb = np.asarray(b.data, dtype=np.float64) if b is not None else 0.0
 
-    mean = np.mean(x, axis=dims, keepdims=True)
-    var = np.var(x, axis=dims, keepdims=True)
+    mean = np.mean(x, axis=-1, keepdims=True)
+    var = np.var(x, axis=-1, keepdims=True)
     x_norm = (x - mean) / np.sqrt(var + eps)
+    out = x_norm * ww + bb
 
-    if weight is not None:
-        w = np.asarray(weight.data, dtype=np.float64).reshape(
-            [1] * (x.ndim - ndim) + list(normalized_shape)
-        )
-        x_norm = x_norm * w
-    if bias is not None:
-        b = np.asarray(bias.data, dtype=np.float64).reshape(
-            [1] * (x.ndim - ndim) + list(normalized_shape)
-        )
-        x_norm = x_norm + b
-
-    return Tensor.from_numpy(x_norm.astype(np.float32))
+    return Tensor.from_numpy(out.astype(np.float32))
 
 
 def rmsnorm(input: Tensor, weight: Tensor, eps: float = 1e-5) -> Tensor:
@@ -1158,7 +1320,8 @@ def relu(input: Tensor) -> Tensor:
 
 def gelu(input: Tensor) -> Tensor:
     x = np.asarray(input.data, dtype=np.float64)
-    return Tensor.from_numpy(gelu(x).astype(np.float32))
+    out = x * 0.5 * (1.0 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * x**3)))
+    return Tensor.from_numpy(out.astype(np.float32))
 
 
 def silu(input: Tensor) -> Tensor:
@@ -1217,3 +1380,329 @@ def softsign(input: Tensor) -> Tensor:
 def mish(input: Tensor) -> Tensor:
     x = np.asarray(input.data, dtype=np.float64)
     return Tensor.from_numpy((x * np.tanh(np.log1p(np.exp(x)))).astype(np.float32))
+
+
+def topk(input: Tensor, k: int, dim: int = -1):
+    """Return the k largest elements and their indices along ``dim``."""
+    x = np.asarray(input.data, dtype=np.float64)
+    axis = dim if dim >= 0 else x.ndim + dim
+    partitioned = np.argpartition(-x, k - 1, axis=axis)
+    index = [slice(None)] * x.ndim
+    index[axis] = slice(0, k)
+    idx = partitioned[tuple(index)]
+    values = np.take_along_axis(x, idx, axis=axis)
+    return (
+        Tensor.from_numpy(values.astype(np.float32)),
+        Tensor.from_numpy(idx.astype(np.int64)),
+    )
+
+
+def _conv3d_single_group(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int, int] = (1, 1, 1),
+    padding: Tuple[int, int, int] = (0, 0, 0),
+    dilation: Tuple[int, int, int] = (1, 1, 1),
+    groups: int = 1,
+) -> Tensor:
+    """3D convolution (NCDHW layout) via im2col GEMM.
+
+    input: [N, C_in, D, H, W]
+    weight: [C_out, C_in // groups, kD, kH, kW]
+    """
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    N, C_in, D, H, W = x.shape
+    C_out, C_in_g, kD, kH, kW = w.shape
+    pad_d, pad_h, pad_w = padding
+    dil_d, dil_h, dil_w = dilation
+    str_d, str_h, str_w = stride
+    D_out = (D + 2 * pad_d - dil_d * (kD - 1) - 1) // str_d + 1
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // str_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // str_w + 1
+    if pad_d or pad_h or pad_w:
+        x = np.pad(
+            x,
+            ((0, 0), (0, 0), (pad_d, pad_d), (pad_h, pad_h), (pad_w, pad_w)),
+            mode="constant",
+        )
+    col = np.zeros((N, C_in * kD * kH * kW, D_out * H_out * W_out), dtype=np.float64)
+    o = 0
+    for i in range(D_out):
+        d_start = i * str_d
+        for j in range(H_out):
+            h_start = j * str_h
+            for k in range(W_out):
+                w_start = k * str_w
+                col[:, :, o] = x[
+                    :,
+                    :,
+                    d_start : d_start + kD * dil_d : dil_d,
+                    h_start : h_start + kH * dil_h : dil_h,
+                    w_start : w_start + kW * dil_w : dil_w,
+                ].reshape(N, -1)
+                o += 1
+    w_mat = w.reshape(C_out, -1)
+    out = w_mat @ col  # (N, C_out, D_out * H_out * W_out)
+    out = out.reshape(N, C_out, D_out, H_out, W_out)
+    if bias is not None:
+        out += np.asarray(bias.data, dtype=np.float64).reshape(1, -1, 1, 1, 1)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+
+def _conv_transpose2d_impl(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor],
+    stride: Tuple[int, int],
+    padding: Tuple[int, int],
+    output_padding: Tuple[int, int],
+    groups: int,
+) -> Tensor:
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    C_in_g, C_out, kH, kW = w.shape
+    str_h, str_w = stride
+    pad_h, pad_w = padding
+    op_h, op_w = output_padding
+    H_out = (H - 1) * str_h - 2 * pad_h + kH + op_h
+    W_out = (W - 1) * str_w - 2 * pad_w + kW + op_w
+    out = np.zeros((N, C_out * groups, H_out, W_out), dtype=np.float64)
+    g = groups
+    ng = C_in // g
+    oc_g = C_out  # output channels per group
+    for ci in range(C_in):
+        gi = ci // ng
+        for co in range(C_out):
+            co_global = gi * oc_g + co
+            wv = w[ci % ng, co]
+            for i in range(H):
+                for j in range(W):
+                    th = i * str_h - pad_h
+                    tw = j * str_w - pad_w
+                    for kh in range(kH):
+                        ah = th + kh
+                        if ah < 0 or ah >= H_out:
+                            continue
+                        for kw in range(kW):
+                            aw = tw + kw
+                            if aw < 0 or aw >= W_out:
+                                continue
+                            out[:, co_global, ah, aw] += x[:, ci, i, j] * wv[kh, kw]
+    if bias is not None:
+        out += np.asarray(bias.data, dtype=np.float64).reshape(1, -1, 1, 1)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+
+def conv_transpose2d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Union[int, Tuple[int, int]] = (1, 1),
+    padding: Union[int, Tuple[int, int]] = (0, 0),
+    output_padding: Union[int, Tuple[int, int]] = (0, 0),
+    groups: int = 1,
+    dilation: Union[int, Tuple[int, int]] = 1,
+) -> Tensor:
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups, dilation
+    )
+
+
+def _to_ntuple(value, ndim: int) -> Tuple[int, ...]:
+    if isinstance(value, (tuple, list)):
+        return tuple(int(v) for v in value)
+    return (int(value),) * ndim
+
+
+def _conv_transpose_nd_impl(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor],
+    stride,
+    padding,
+    output_padding,
+    groups: int,
+    dilation=1,
+) -> Tensor:
+    """Generic N-D transposed convolution (scatter formulation).
+
+    ``input`` has shape ``(N, C_in, *S_in)`` and ``weight`` has shape
+    ``(C_in // groups, C_out, *K)``.  Produces ``(N, C_out * groups, *S_out)``
+    where ``S_out[d] = (S_in[d] - 1) * stride[d] - 2 * padding[d] + K[d] + output_padding[d]``.
+    Works for 1-D, 2-D and 3-D (and any higher rank).
+    """
+    x = np.asarray(input.data, dtype=np.float64)
+    w = np.asarray(weight.data, dtype=np.float64)
+    ndim = x.ndim - 2
+    if ndim < 1:
+        raise ValueError("transposed conv input must have at least 3 dims")
+    N, C_in = x.shape[0], x.shape[1]
+    spatial_in = tuple(x.shape[2:])
+    C_in_w, C_out_g = w.shape[0], w.shape[1]
+    kshape = tuple(w.shape[2:])
+    if len(kshape) != ndim:
+        raise ValueError("weight spatial rank must match input spatial rank")
+    if C_in_w != C_in:
+        raise ValueError(
+            f"weight in_channels ({C_in_w}) must match input channels ({C_in})"
+        )
+    if C_in % groups != 0:
+        raise ValueError("input channels must be divisible by groups")
+
+    stride = _to_ntuple(stride, ndim)
+    padding = _to_ntuple(padding, ndim)
+    output_padding = _to_ntuple(output_padding, ndim)
+    dilation = _to_ntuple(dilation, ndim)
+
+    S_out = tuple(
+        (spatial_in[d] - 1) * stride[d]
+        - 2 * padding[d]
+        + (kshape[d] - 1) * dilation[d]
+        + 1
+        + output_padding[d]
+        for d in range(ndim)
+    )
+    for d in range(ndim):
+        if output_padding[d] >= stride[d] and output_padding[d] > 0:
+            raise ValueError(f"output_padding[{d}] must be smaller than stride[{d}]")
+        if S_out[d] < 1:
+            raise ValueError(f"output spatial dim {d} is non-positive")
+
+    ng = C_in // groups
+    out = np.zeros((N, C_out_g * groups) + S_out, dtype=np.float64)
+
+    for ci in range(C_in):
+        gi = ci // ng
+        w_ci = w[ci]  # (C_out_g, *K)
+        for co in range(C_out_g):
+            co_global = gi * C_out_g + co
+            wv = w_ci[co]  # (*K)
+            for sidx in np.ndindex(*spatial_in):
+                base = tuple(sidx[d] * stride[d] - padding[d] for d in range(ndim))
+                x_slice = x[(slice(None), ci) + sidx]  # (N,)
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(base[d] + kidx[d] * dilation[d] for d in range(ndim))
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    out[(slice(None), co_global) + oidx] += x_slice * wv[kidx]
+
+    if bias is not None:
+        b = np.asarray(bias.data, dtype=np.float64).reshape((1, -1) + (1,) * ndim)
+        out += b
+    return Tensor.from_numpy(out.astype(np.float32), dtype="float32")
+
+
+def conv_transpose1d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    output_padding: int = 0,
+    groups: int = 1,
+    dilation: int = 1,
+) -> Tensor:
+    """1-D transposed convolution (a.k.a. deconvolution)."""
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups, dilation
+    )
+
+
+def conv_transpose3d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: int = 1,
+    padding: int = 0,
+    output_padding: int = 0,
+    groups: int = 1,
+    dilation: int = 1,
+) -> Tensor:
+    """3-D transposed convolution."""
+    return _conv_transpose_nd_impl(
+        input, weight, bias, stride, padding, output_padding, groups, dilation
+    )
+
+
+def conv2d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int] = (1, 1),
+    padding: Tuple[int, int] = (0, 0),
+    dilation: Tuple[int, int] = (1, 1),
+    groups: int = 1,
+) -> Tensor:
+    # 2D convolution with optional bias and groups.
+    if groups == 1:
+        return _conv2d_single_group(input, weight, bias, stride, padding, dilation)
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, H, W = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    pad_h, pad_w = padding
+    dil_h, dil_w = dilation
+    stride_h, stride_w = stride
+    kH, kW = w.shape[2], w.shape[3]
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // stride_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // stride_w + 1
+    out = np.zeros((N, C_out, H_out, W_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv2d_single_group(xi, wi, bi, stride, padding, dilation)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
+    return Tensor.from_numpy(out.astype(np.float32))
+
+
+def conv3d(
+    input: Tensor,
+    weight: Tensor,
+    bias: Optional[Tensor] = None,
+    stride: Tuple[int, int, int] = (1, 1, 1),
+    padding: Tuple[int, int, int] = (0, 0, 0),
+    dilation: Tuple[int, int, int] = (1, 1, 1),
+    groups: int = 1,
+) -> Tensor:
+    # 3D convolution with optional bias and groups.
+    if groups == 1:
+        return _conv3d_single_group(
+            input, weight, bias, stride, padding, dilation, groups=1
+        )
+    x = np.asarray(input.data)
+    w = np.asarray(weight.data)
+    N, C_in, D, H, W = x.shape
+    C_out = w.shape[0]
+    cin_g = C_in // groups
+    cout_g = C_out // groups
+    pad_d, pad_h, pad_w = padding
+    dil_d, dil_h, dil_w = dilation
+    str_d, str_h, str_w = stride
+    kD, kH, kW = w.shape[2], w.shape[3], w.shape[4]
+    D_out = (D + 2 * pad_d - dil_d * (kD - 1) - 1) // str_d + 1
+    H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // str_h + 1
+    W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // str_w + 1
+    out = np.zeros((N, C_out, D_out, H_out, W_out), dtype=np.float64)
+    for g in range(groups):
+        xg = x[:, g * cin_g : (g + 1) * cin_g]
+        wg = w[g * cout_g : (g + 1) * cout_g]
+        bg = None
+        if bias is not None:
+            bg = np.asarray(bias.data)[g * cout_g : (g + 1) * cout_g]
+        xi = Tensor.from_numpy(xg.astype(np.float32))
+        wi = Tensor.from_numpy(wg.astype(np.float32))
+        bi = Tensor.from_numpy(bg.astype(np.float32)) if bg is not None else None
+        og = _conv3d_single_group(xi, wi, bi, stride, padding, dilation, groups=1)
+        out[:, g * cout_g : (g + 1) * cout_g] = np.asarray(og.data, dtype=np.float64)
+    return Tensor.from_numpy(out.astype(np.float32))

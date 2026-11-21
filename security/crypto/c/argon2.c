@@ -95,7 +95,6 @@ int SNEPPX_argon2id(const uint8_t* password, size_t password_len, const uint8_t*
     memcpy(v, input, 128);
     memcpy(v + 8, input, 64);
     memcpy(msg, input, 128);
-    memcpy(msg + 8, input, 64);
     blake2b_round(v, msg);
     memcpy(h0, v, 64);
 

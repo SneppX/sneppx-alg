@@ -1,6 +1,10 @@
 #ifndef SNEPPX_BLAKE3_H
 #define SNEPPX_BLAKE3_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -54,4 +58,8 @@ void SNEPPX_blake3_update(SNEPPXBlake3State* state, const uint8_t* data, size_t 
  */
 void SNEPPX_blake3_finish(SNEPPXBlake3State* state, uint8_t* hash);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

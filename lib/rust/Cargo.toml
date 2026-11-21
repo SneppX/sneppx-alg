@@ -5,8 +5,8 @@ edition = "2021"
 authors = ["Ammar [SNEPPX] <algoSNEPPX@gmail.com>"]
 description = "Rust bindings for SNEPPX-ALG tensor library — tensor ops, model building, training loop"
 license = "MIT"
-repository = "https://github.com/ammar49-cyber/sneppx-alg"
-homepage = "https://github.com/ammar49-cyber/sneppx-alg"
+repository = "https://github.com/SneppX/sneppx-alg"
+homepage = "https://github.com/SneppX/sneppx-alg"
 keywords = ["tensor", "neural-network", "machine-learning", "deep-learning"]
 categories = ["science::robotics", "algorithms"]
 

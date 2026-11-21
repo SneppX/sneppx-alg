@@ -1,4 +1,5 @@
 #include "memory_leak_detector.h"
+#include "test_gtest.h"
 #include <stdio.h>
 
 /*
@@ -17,7 +18,7 @@
  */
 
 
-int main() {
+TEST(test_memory_leak, suite) {
     SNEPPX_leak_init();
     leak_stats_t stats;
     void *p1 = SNEPPX_leak_malloc(1024, "test.c", 10, "main");
@@ -33,5 +34,5 @@ int main() {
         printf("  Leak: ptr=%p size=%zu at %s:%d\n", reports[i].ptr, reports[i].size, reports[i].file, reports[i].line);
     SNEPPX_leak_free(p2);
     printf("PASS: Memory leak detector OK\n");
-    return 0;
+    return;
 }

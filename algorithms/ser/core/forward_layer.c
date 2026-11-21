@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 /*
  * SNEPPX - SER Layer Forward Pass
  *
@@ -28,6 +29,7 @@
  * @param input [in] Input value.
  */
 void SNEPPX_ser_forward(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPXTensor** output) {
+    fprintf(stderr, "[BENCH] SER layer forward start\n");
     size_t num_tokens = input->shape[0];
     size_t i_dim = input->shape[1];
     size_t n_exp = layer->config.num_experts;
@@ -43,7 +45,7 @@ void SNEPPX_ser_forward(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPX
     *output = SNEPPX_tensor_zeros(shape_out, 2, SNEPPX_FLOAT32);
     if (!*output) {
         SNEPPX_tensor_destroy(gate_weights);
-        free(expert_indices);
+        SNEPPX_free(expert_indices, num_tokens * n_act * sizeof(int));
         return;
     }
 
@@ -137,5 +139,5 @@ void SNEPPX_ser_forward(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPX
     }
 
     SNEPPX_tensor_destroy(gate_weights);
-    free(expert_indices);
+    SNEPPX_free(expert_indices, num_tokens * n_act * sizeof(int));
 }

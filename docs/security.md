@@ -1,8 +1,12 @@
+---
+description: "Architecture and implementation status of SneppX-ALG security components S0-S9, with limitations and validation notes."
+---
+
 # Security Architecture
 
 ## Overview
 
-SNEPPX-Algo implements security in ten phases (S0-S9). All ten phases (S0-S9) are complete and use real cryptographic primitives, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure.
+SNEPPX-Algo organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.
 
 Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.
 
@@ -14,12 +18,12 @@ Core  Secure Engine  Engine  Sec   San    Sec   Sec    Verif  Report
       Mem
 ```
 
-## S0 — Cryptographic Core ✅
+## S0 — Cryptographic Core (experimental)
 
-**Status**: Complete
+**Status**: Experimental / partial
 **Source**: `security/crypto/c/` and `include/neural_core/security/`
 
-All crypto source files follow the four-layer commenting standard in [COMMENTING.md](../COMMENTING.md): Layer 1 file headers, Layer 2 concept blocks, Layer 3 inline "why" comments, and Layer 4 Doxygen API docs on every public `SNEPPX_*` function.
+All crypto source files follow the four-layer commenting standard in [COMMENTING.md](COMMENTING.md): Layer 1 file headers, Layer 2 concept blocks, Layer 3 inline "why" comments, and Layer 4 Doxygen API docs on every public `SNEPPX_*` function.
 
 ### Primitives
 
@@ -33,9 +37,19 @@ All crypto source files follow the four-layer commenting standard in [COMMENTING
 | BLAKE3    | Reference | Fast hashing | Reference test vectors |
 | Argon2id  | RFC 9106 | Secure KDF | Test vectors + timing defense |
 | Secure Random | OS CPRG | Entropy | Windows CNG / Linux getrandom |
-| Kyber-512/768/1024 | FIPS 203 (ML-KEM) | PQ key encapsulation | NIST KAT vectors |
-| Dilithium-2/3/5 | FIPS 204 (ML-DSA) | PQ digital signatures | NIST KAT vectors |
-| SPHINCS+-128/192/256 | FIPS 205 (SLH-DSA) | Stateless PQ signatures | NIST KAT vectors |
+| Kyber-512/768/1024 | FIPS 203 (ML-KEM) | PQ key encapsulation | Partial ACVP checks; see report |
+| Dilithium-2/3/5 | FIPS 204 (ML-DSA) | PQ digital signatures | Experimental; valid-vector interoperability incomplete |
+| SPHINCS+-128/192/256 | FIPS 205 (SLH-DSA) | Stateless PQ signatures | Experimental; valid-vector interoperability incomplete |
+
+> **PQC validation limitations.** The repository includes official NIST ACVP
+> sample vectors and a harness, but this does not establish FIPS validation or
+> full standards interoperability. SHA3-256 vectors match; ML-KEM checks include
+> key-generation comparisons and encapsulation/decapsulation tests. The current
+> ML-DSA and SLH-DSA C implementations reject invalid vectors but cannot yet
+> verify all valid finalized FIPS signatures because their signature formats
+> remain pre-finalization. See [`docs/pqc_kat.md`](pqc_kat.md) for the detailed
+> per-algorithm interop report. PQC remains experimental and should not be used
+> as the sole protection for production secrets.
 
 ### API
 
@@ -71,13 +85,13 @@ SNEPPX_sphincsplus_verify(sig, siglen, msg, msglen, pk, variant);
 
 ### Known Issues
 
-1. **Ed25519 verification**: 2 of 306 test vectors fail under specific edge conditions (batch verification edge cases). These do not represent security vulnerabilities.
-2. **Argon2 timing**: 1 of 4 timing tests shows variation on certain hardware. Mitigated by noise injection.
-3. **PQ primitives**: Kyber, Dilithium, and SPHINCS+ implementations are reference-style and may not be optimized for constant-time execution on all platforms.
+1. **Ed25519 verification**: historical documentation records 304/306 vectors passing. Re-run the current RFC 8032 vector suite and reconcile the remaining failures before claiming full compliance.
+2. **Argon2 timing**: historical tests reported timing variation on some hardware. Noise injection is not a substitute for constant-time design or side-channel analysis.
+3. **PQ primitives**: the ML-KEM checks are partial; ML-DSA and SLH-DSA valid-signature interoperability remains incomplete for finalized FIPS formats.
 
-## S1 — Secure Memory ✅
+## S1 — Secure Memory (partial)
 
-**Status**: Complete
+**Status**: Partial; independent audit required
 **Source**: `security/memory/` and `include/neural_core/security/`
 
 ### Features
@@ -121,9 +135,16 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - **Windows**: Automatic via `VirtualLock`
 - **macOS**: Not fully supported (limited mlock)
 
-## S2 — Obfuscation Engine ✅
+## S2 — Obfuscation Engine (known high-risk findings)
 
-**Status**: Complete
+> **Current remediation:** `obfuscation_advanced.cpp` no longer uses
+> `rand()` / `srand()` for junk-pattern selection; it uses the S0
+> `SNEPPX_random_bytes` interface. The unsafe bogus control-flow rewrite
+> APIs now fail closed and do not modify the supplied code buffer. This
+> disables that feature rather than making it functional. Whitebox AES
+> timing/alignment concerns and IAT concurrency findings remain open.
+
+**Status**: Known high-risk findings remain open
 **Source**: `security/obfuscation/` and `security/cpp/`
 
 ### Implemented
@@ -144,9 +165,9 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - Multi-VM diversity: multiple bytecode handlers with slot switching
 - Instruction scheduling randomization: basic-block-level instruction reordering
 
-## S3 — Behavioral Monitor ✅
+## S3 — Behavioral Monitor (partial)
 
-**Status**: Complete
+**Status**: Partial
 **Source**: `security/monitor/`
 
 ### Implemented
@@ -157,9 +178,9 @@ SNEPPX_memory_leak_detector_report(); // prints leaks to stderr
 - Timing analysis: detect side-channel probing via rdtsc and execution time measurement
 - Anomaly detection: statistical baseline comparison for runtime behavior
 
-## S4 — Network Security ✅
+## S4 — Network Security (experimental)
 
-**Status**: Complete
+**Status**: Experimental / partial
 **Source**: `security/network/`
 
 ### Implemented
@@ -188,9 +209,9 @@ SNEPPX_transport_sec_init(&ts);
 SNEPPX_transport_sec_handshake(&ts, cert, cert_len, key);
 ```
 
-## S5 — AI Sanitizer ✅
+## S5 — AI Sanitizer (partial)
 
-**Status**: Complete
+**Status**: Partial
 **Source**: `security/ai/`
 
 ### Implemented
@@ -225,9 +246,9 @@ SNEPPX_poison_detect_feed_gradient(&pd, grad, grad_len);
 int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 ```
 
-## S6 — Security UI ✅
+## S6 — Security UI (incomplete)
 
-**Status**: Complete
+**Status**: Incomplete
 **Source**: `security/ui/`
 
 ### Implemented
@@ -236,9 +257,9 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - Key vault: in-memory encrypted key store with PIN-protected access
 - Dashboard: (see `docs/api/c.md` for C API or `bindings/python/` for Python bindings)
 
-## S7 — Secure Updates ✅
+## S7 — Secure Updates (incomplete)
 
-**Status**: Complete
+**Status**: Incomplete
 **Source**: `security/updates/`
 
 ### Implemented
@@ -267,9 +288,9 @@ SNEPPX_signed_update_init(&su, signing_sk);
 SNEPPX_signed_update_create(&su, update_data, update_len, &bundle, &bundle_len);
 ```
 
-## S8 — Formal Verification ✅
+## S8 — Formal Verification (not fully verified)
 
-**Status**: Complete
+**Status**: Not formally verified
 **Source**: `security/formal/`
 
 ### Implemented
@@ -297,9 +318,9 @@ SNEPPX_breakout_detect_init(&bd);
 SNEPPX_breakout_detect_watch_syscall(&bd, "mount", BREAKOUT_FLAG_NAMESPACE_ESCAPE);
 ```
 
-## S9 — Penetration Testing ✅
+## S9 — Penetration Testing (tooling only; no independent audit)
 
-**Status**: Complete
+**Status**: Not independently audited
 **Source**: `security/pentest/`
 
 ### Implemented
@@ -349,7 +370,7 @@ SNEPPX_fuzzer_run(&fz, duration_sec, &report);
 
 ## Reporting Vulnerabilities
 
-See [SECURITY.md](../SECURITY.md)
+See [SECURITY.md](https://github.com/SneppX/sneppx-alg/blob/main/../SECURITY.md)
 
 ## Security Best Practices
 

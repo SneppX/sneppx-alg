@@ -1,4 +1,5 @@
 #include "secure_allocator.h"
+#include "neural_core/security/cryptographic_random_generator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -103,7 +104,7 @@ static void secure_scrub(void* ptr, size_t len) {
     } else if (g_scrub_pattern == SNEPPX_SCRUB_PATTERN_ONE) {
         for (size_t i = 0; i < len; i++) p[i] = 0xFF;
     } else {
-        for (size_t i = 0; i < len; i++) p[i] = (unsigned char)(rand() & 0xFF);
+        SNEPPX_random_bytes((uint8_t*)p, len);
     }
 }
 

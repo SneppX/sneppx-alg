@@ -1,4 +1,5 @@
 #include "checkpoint_reader.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,40 +19,24 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_checkpoint_validate(void) {
     int ret = SNEPPX_ckpt_validate("/tmp/nonexistent.ckpt");
-    ASSERT(ret == -1, "validate nonexistent file returns -1");
+    SX_ASSERT(ret == -1, "validate nonexistent file returns -1");
 }
 
 static void test_checkpoint_supports_version(void) {
-    ASSERT(SNEPPX_ckpt_supports_version(1) == 1, "supports version 1");
-    ASSERT(SNEPPX_ckpt_supports_version(2) == 0, "does not support version 2");
+    SX_ASSERT(SNEPPX_ckpt_supports_version(1) == 1, "supports version 1");
+    SX_ASSERT(SNEPPX_ckpt_supports_version(2) == 0, "does not support version 2");
 }
 
 static void test_checkpoint_open(void) {
     void* handle = NULL;
     SNEPPXCheckpointHeader header = {0};
     int ret = SNEPPX_ckpt_read_open("/nonexistent.ckpt", &header, NULL);
-    ASSERT(ret != 0, "open nonexistent returns error");
+    SX_ASSERT(ret != 0, "open nonexistent returns error");
 }
 
 static void test_checkpoint_write_read(void) {
@@ -61,7 +46,7 @@ static void test_checkpoint_write_read(void) {
     void* handle = NULL;
     
     int ret = SNEPPX_ckpt_write_open(path, &header, &handle);
-    ASSERT(ret == 0, "write open succeeds");
+    SX_ASSERT(ret == 0, "write open succeeds");
     
     SNEPPXTensorRecord record = {0};
     record.ndim = 1;
@@ -71,32 +56,29 @@ static void test_checkpoint_write_read(void) {
     float data[4] = {1.0f, 2.0f, 3.0f, 4.0f};
     
     ret = SNEPPX_ckpt_write_tensor(handle, data, &record);
-    ASSERT(ret == 0, "write tensor succeeds");
+    SX_ASSERT(ret == 0, "write tensor succeeds");
     
     ret = SNEPPX_ckpt_write_close(handle);
-    ASSERT(ret == 0, "write close succeeds");
+    SX_ASSERT(ret == 0, "write close succeeds");
     
     // Read back
     SNEPPXCheckpointHeader read_header = {0};
     void* read_handle = NULL;
     ret = SNEPPX_ckpt_read_open(path, &read_header, &handle);
-    ASSERT(ret == 0, "read open succeeds");
-    ASSERT(read_header.num_tensors == 1, "num_tensors matches");
+    SX_ASSERT(ret == 0, "read open succeeds");
+    SX_ASSERT(read_header.num_tensors == 1, "num_tensors matches");
     
     float read_data[4] = {0};
     SNEPPXTensorRecord read_record = {0};
     ret = SNEPPX_ckpt_read_tensor(handle, 0, read_data, &read_record);
-    ASSERT(ret == 0, "read tensor succeeds");
-    ASSERT(read_data[0] == 1.0f && read_data[3] == 4.0f, "data matches");
+    SX_ASSERT(ret == 0, "read tensor succeeds");
+    SX_ASSERT(read_data[0] == 1.0f && read_data[3] == 4.0f, "data matches");
     
     SNEPPX_ckpt_read_close(handle);
 }
 
-int main(void) {
-    run_test("checkpoint_validate", test_checkpoint_validate);
-    run_test("checkpoint_supports_version", test_checkpoint_supports_version);
-    run_test("checkpoint_open", test_checkpoint_open);
-    run_test("checkpoint_write_read", test_checkpoint_write_read);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_checkpoint, checkpoint_validate) { test_checkpoint_validate(); }
+TEST(test_checkpoint, checkpoint_supports_version) { test_checkpoint_supports_version(); }
+TEST(test_checkpoint, checkpoint_open) { test_checkpoint_open(); }
+TEST(test_checkpoint, checkpoint_write_read) { test_checkpoint_write_read(); }

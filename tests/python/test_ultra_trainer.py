@@ -1,21 +1,23 @@
-import sys, os, time, math
-import tempfile, shutil, json, numpy as np
+import os
+import shutil
+import sys
+import tempfile
+import time
+
+import numpy as np
 
 sys.path.insert(
     0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../bindings/python")
 )
-import SneppX_ALG.interface_bindings.tensor as tensor
-from SneppX_ALG.interface_bindings.tensor import Tensor as TensorCls
-
-from SneppX_ALG.interface_bindings.profiler import Timer
-from SneppX_ALG.interface_bindings.train import Optimizer, SGD, AdamW
-from SneppX_ALG.interface_bindings.nn import Module, Linear
+from SneppX_ALG.interface_bindings import tensor
 from SneppX_ALG.interface_bindings.amp import GradScaler, autocast
-from SneppX_ALG.interface_bindings.grad_checkpoint import GradientCheckpointer
-from SneppX_ALG.interface_bindings.schedulers import LRScheduler
-from SneppX_ALG.interface_bindings.quantization import quantize_int8_sym
-from SneppX_ALG.interface_bindings.model_zoo import get_model_config
 from SneppX_ALG.interface_bindings.checkpoint import CheckpointCoordinator
+from SneppX_ALG.interface_bindings.model_zoo import get_model_config
+from SneppX_ALG.interface_bindings.nn import Linear, Module
+from SneppX_ALG.interface_bindings.profiler import Timer
+from SneppX_ALG.interface_bindings.quantization import quantize_int8_sym
+from SneppX_ALG.interface_bindings.schedulers import LRScheduler
+from SneppX_ALG.interface_bindings.train import SGD
 
 
 # Simple test model
@@ -69,28 +71,35 @@ def test_basic_training():
 
 
 def test_autocast():
-    with autocast(enabled=True, dtype="float16"):
-        with Timer("autocast_block"):
-            a = tensor.Tensor.from_numpy(
-                np.array([1.0, 2.0, 3.0]), dtype="float32"
-            )
-            b = tensor.Tensor.from_numpy(
-                np.array([0.5, 1.0, 1.5]), dtype="float32"
-            )
-            c = a * b
-            result = c.sum()
-            print(f"  Autocast done, dtype = {a.dtype_name}")
+    with autocast(enabled=True, dtype="float16"), Timer("autocast_block"):
+        a = tensor.Tensor.from_numpy(
+            np.array([1.0, 2.0, 3.0]), dtype="float32"
+        )
+        b = tensor.Tensor.from_numpy(
+            np.array([0.5, 1.0, 1.5]), dtype="float32"
+        )
+        c = a * b
+        c.sum()
+        print(f"  Autocast done, dtype = {a.dtype_name}")
 
 
 def test_amp():
     scaler = GradScaler(init_scale=2.0**16, growth_factor=2.0)
     params = [
-        tensor.Tensor.from_numpy(
-            np.array([1.0, 2.0, 3.0], dtype=np.float32), dtype="float32"
+        tensor.Tensor(
+            np.array([1.0, 2.0, 3.0], dtype=np.float32),
+            dtype="float32",
+            requires_grad=True,
         )
     ]
-    loss = params[0] * params[0]
-    print(f"  AMPLoss (scaled): {float(loss.data.item())}")
+    loss = (params[0] * params[0]).sum()
+    scaled_loss = scaler.scale_loss(loss)
+    assert float(scaled_loss.data.item()) == float(loss.data.item()) * scaler.scale
+    scaled_loss.backward()
+    assert params[0].grad is not None
+    scaler.unscale_([params[0].grad])
+    np.testing.assert_allclose(params[0].grad.data, [2.0, 4.0, 6.0], rtol=1e-5, atol=1e-6)
+    print(f"  AMPLoss (scaled): {float(scaled_loss.data.item())}")
 
 
 def test_schedule():

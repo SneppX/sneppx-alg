@@ -1,4 +1,5 @@
 #include "hierarchical_state_space.h"
+#include "test_gtest.h"
 #include "automatic_differentiation_framework.h"
 #include "gradient_optimization_suite.h"
 #include <stdio.h>
@@ -22,16 +23,7 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } \
-} while(0)
-
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout);
-    fn(); printf("PASS\n"); tests_passed++;
-}
 
 static void test_hss_train_step(void) {
     size_t s_dim = 4, i_dim = 4, o_dim = 4, seq_len = 1;
@@ -42,17 +34,17 @@ static void test_hss_train_step(void) {
     cfg.dt_min = 0.01f; cfg.dt_max = 0.1f; cfg.use_hierarchical = 0;
 
     SNEPPXHSSModel* model = SNEPPX_hss_model_create(&cfg, 42);
-    ASSERT(model != NULL, "model created");
+    SX_ASSERT(model != NULL, "model created");
 
     size_t shape_in[] = {seq_len, i_dim};
     SNEPPXTensor* input = SNEPPX_tensor_randn(shape_in, 2, SNEPPX_FLOAT32);
     size_t shape_tgt[] = {o_dim};
     SNEPPXTensor* target = SNEPPX_tensor_randn(shape_tgt, 1, SNEPPX_FLOAT32);
-    ASSERT(input != NULL && target != NULL, "tensors created");
+    SX_ASSERT(input != NULL && target != NULL, "tensors created");
 
     SNEPPXTensor* initial_out = NULL;
     int ret = SNEPPX_hss_forward(model, input, &initial_out);
-    ASSERT(ret == 0 && initial_out != NULL, "initial forward ok");
+    SX_ASSERT(ret == 0 && initial_out != NULL, "initial forward ok");
 
     float init_loss = 0.0f;
     {
@@ -74,7 +66,7 @@ static void test_hss_train_step(void) {
     SNEPPXOptimizer* opt = SNEPPX_optimizer_create(&opt_cfg);
 
     size_t nw = SNEPPX_hss_get_params(model, NULL, 0);
-    ASSERT(nw == 9, "9 params");
+    SX_ASSERT(nw == 9, "9 params");
 
     SNEPPXTensor** pt = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_hss_get_params(model, pt, nw);
@@ -90,12 +82,12 @@ static void test_hss_train_step(void) {
 
         SNEPPXVariable* outv = NULL;
         ret = SNEPPX_hss_build_train_graph(model, tape, inv, wv, nw, &outv);
-        ASSERT(ret == 0, "build graph");
+        SX_ASSERT(ret == 0, "build graph");
 
         SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
 
         SNEPPXVariable* loss = SNEPPX_mse_loss(tape, outv, tgv);
-        ASSERT(loss != NULL, "loss");
+        SX_ASSERT(loss != NULL, "loss");
 
         if (s == 0) { printf("bw..."); fflush(stdout); }
         SNEPPX_tape_backward(tape, loss);
@@ -129,7 +121,7 @@ static void test_hss_train_step(void) {
 
     SNEPPXTensor* final_out = NULL;
     SNEPPX_hss_forward(model, input, &final_out);
-    ASSERT(final_out != NULL, "final forward");
+    SX_ASSERT(final_out != NULL, "final forward");
 
     float final_loss = 0.0f;
     {
@@ -146,7 +138,7 @@ static void test_hss_train_step(void) {
     printf("  init=%.6f final=%.6f ratio=%.4f\n",
            (double)init_loss, (double)final_loss,
            (double)(final_loss / (init_loss + 1e-10f)));
-    ASSERT(final_loss < init_loss * 0.5f, "loss decreased >50%%");
+    SX_ASSERT(final_loss < init_loss * 0.5f, "loss decreased >50%%");
 
     SNEPPX_tensor_destroy(final_out);
     SNEPPX_tensor_destroy(input);
@@ -155,8 +147,5 @@ static void test_hss_train_step(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-int main(void) {
-    run_test("test_hss_train_step", test_hss_train_step);
-    printf("Results: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_train_integration, test_hss_train_step) { test_hss_train_step(); }

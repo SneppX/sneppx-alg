@@ -1,4 +1,5 @@
 #include "system_architecture_definitions.h"
+#include "test_gtest.h"
 #include "differentiable_training_pipeline.h"
 #include <stdio.h>
 #include <math.h>
@@ -20,16 +21,7 @@
  *
  */
 
-
-static int tests_passed = 0, tests_failed = 0, tests_skipped = 0;
 static int g_skip = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout);
-    g_skip = 0; fn();
-    if (g_skip) { tests_skipped++; }
-    else { printf("PASS\n"); tests_passed++; }
-}
 
 static void test_trainer_create(void) {
     SNEPPXArchConfig arch_cfg = SNEPPX_arch_config_default();
@@ -43,17 +35,17 @@ static void test_trainer_create(void) {
     arch_cfg.fm_config.memory_capacity = 16;
 
     SNEPPXModel* model = SNEPPX_model_create(&arch_cfg);
-    ASSERT(model != NULL, "model created");
+    SX_ASSERT(model != NULL, "model created");
 
     SNEPPXTrainConfig train_cfg = SNEPPX_train_config_default();
     train_cfg.learning_rate = 0.01f;
     train_cfg.log_interval = 100;
 
     SNEPPXTrainer* trainer = SNEPPX_trainer_create(model, &train_cfg);
-    ASSERT(trainer != NULL, "trainer created");
-    ASSERT(trainer->model == model, "model set");
-    ASSERT(trainer->optimizer != NULL, "optimizer created");
-    ASSERT(trainer->loss_history != NULL, "loss history");
+    SX_ASSERT(trainer != NULL, "trainer created");
+    SX_ASSERT(trainer->model == model, "model set");
+    SX_ASSERT(trainer->optimizer != NULL, "optimizer created");
+    SX_ASSERT(trainer->loss_history != NULL, "loss history");
 
     SNEPPX_trainer_destroy(trainer);
     SNEPPX_model_destroy(model);
@@ -161,13 +153,13 @@ static void test_checkpoint(void) {
     SNEPPXTrainer* trainer = SNEPPX_trainer_create(model, &train_cfg);
 
     int r = SNEPPX_trainer_save_checkpoint(trainer, "test_checkpoint.bin");
-    ASSERT(r == 0, "save ok");
+    SX_ASSERT(r == 0, "save ok");
 
     SNEPPXModel* model2 = SNEPPX_model_create(&arch_cfg);
     SNEPPXTrainer* trainer2 = SNEPPX_trainer_create(model2, &train_cfg);
     r = SNEPPX_trainer_load_checkpoint(trainer2, "test_checkpoint.bin");
-    ASSERT(r == 0, "load ok");
-    ASSERT(trainer2->step_count == trainer->step_count, "step count restored");
+    SX_ASSERT(r == 0, "load ok");
+    SX_ASSERT(trainer2->step_count == trainer->step_count, "step count restored");
 
     remove("test_checkpoint.bin");
     SNEPPX_trainer_destroy(trainer);
@@ -176,11 +168,8 @@ static void test_checkpoint(void) {
     SNEPPX_model_destroy(model2);
 }
 
-int main(void) {
-    run_test("test_trainer_create", test_trainer_create);
-    run_test("test_train_step", test_train_step);
-    run_test("test_evaluate", test_evaluate);
-    run_test("test_checkpoint", test_checkpoint);
-    printf("\nTraining tests: %d passed, %d failed, %d skipped\n", tests_passed, tests_failed, tests_skipped);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_trainer, test_trainer_create) { test_trainer_create(); }
+TEST(test_trainer, test_train_step) { test_train_step(); }
+TEST(test_trainer, test_evaluate) { test_evaluate(); }
+TEST(test_trainer, test_checkpoint) { test_checkpoint(); }

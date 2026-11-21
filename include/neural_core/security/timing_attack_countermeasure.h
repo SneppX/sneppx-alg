@@ -1,6 +1,10 @@
 #ifndef SNEPPX_TIMING_H
 #define SNEPPX_TIMING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 /*
@@ -52,4 +56,8 @@ void SNEPPX_timing_random_delay(uint32_t min_ns, uint32_t max_ns);
  */
 int SNEPPX_timing_safe_equal(const uint8_t* a, const uint8_t* b, size_t len, uint64_t* timing_ns);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

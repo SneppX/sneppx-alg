@@ -27,7 +27,7 @@ all: build
 
 # ---- C/C++ core ----
 build:
-	cmake -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_ARGS)
+	cmake -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_ARGS)
 	cmake --build $(BUILD_DIR) -j$(NPROC)
 
 test: build
@@ -38,7 +38,7 @@ clean:
 
 # ---- Python bindings ----
 python-build:
-	cmake -B $(BUILD_PY_DIR) -DSNEPPX_BUILD_PYTHON=ON -DSNEPPX_BUILD_TESTS=OFF -DSNEPPX_BUILD_BENCHMARKS=OFF
+	cmake -B $(BUILD_PY_DIR) -G Ninja -DSNEPPX_BUILD_PYTHON=ON -DSNEPPX_BUILD_TESTS=OFF -DSNEPPX_BUILD_BENCHMARKS=OFF
 	cmake --build $(BUILD_PY_DIR) --target _arix_c --config $(BUILD_TYPE) -j$(NPROC)
 
 python-test: python-build
@@ -48,7 +48,7 @@ python-test: python-build
 bench: bench-build bench-run
 
 bench-build:
-	cmake -B $(BUILD_BENCH_DIR) -DSNEPPX_BUILD_BENCHMARKS=ON -DSNEPPX_BUILD_TESTS=OFF
+	cmake -B $(BUILD_BENCH_DIR) -G Ninja -DSNEPPX_BUILD_BENCHMARKS=ON -DSNEPPX_BUILD_TESTS=OFF
 	cmake --build $(BUILD_BENCH_DIR) --target bench_pq_crypto --config $(BUILD_TYPE) -j$(NPROC)
 
 bench-run:
@@ -73,7 +73,9 @@ coverage:
 	@scripts/coverage.sh
 
 docs:
-	@echo "See docs/ directory for project documentation."
+	pip install mkdocs mkdocs-material "mkdocstrings[python]" mike mkdocs-autorefs mkdocs-gen-files mkdocs-section-index mkdocs-literate-nav || true
+	doxygen Doxyfile || true
+	mkdocs build --config-file mkdocs.autodoc.yml
 
 stats:
 	@scripts/stats.sh
@@ -92,5 +94,6 @@ help:
 	@echo "  format       — Format source files in-place"
 	@echo "  lint         — Check formatting without modifying"
 	@echo "  coverage     — Generate coverage report (Linux, GCC)"
+	@echo "  docs         — Build the documentation site (mkdocs + Doxygen)"
 	@echo "  stats        — Show project statistics"
 	@echo "  install      — Install built artifacts"

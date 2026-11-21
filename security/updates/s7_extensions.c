@@ -1,4 +1,5 @@
 #include "s7_extensions.h"
+#include "neural_core/security/cryptographic_random_generator.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,6 +27,96 @@ static uint32_t hash_djb2(const uint8_t* data, size_t len) {
     return h;
 }
 
+
+#define SNEPPX_PATCH_HEADER_SIZE 12U
+static void patch_write_u64(uint8_t* out, uint64_t value) {
+    for (int i = 0; i < 8; i++) out[i] = (uint8_t)(value >> (i * 8));
+}
+static uint64_t patch_read_u64(const uint8_t* in) {
+    uint64_t value = 0;
+    for (int i = 0; i < 8; i++) value |= (uint64_t)in[i] << (i * 8);
+    return value;
+}
+static int patch_parse(const uint8_t* old_data, size_t old_len,
+                       const uint8_t* patch, size_t patch_len,
+                       uint8_t* new_data, size_t new_capacity,
+                       size_t* result_len, int emit) {
+    static const uint8_t magic[4] = {'S', 'X', 'P', '1'};
+    if (!patch || !result_len || (old_len && !old_data) ||
+        patch_len < SNEPPX_PATCH_HEADER_SIZE + 1 ||
+        memcmp(patch, magic, sizeof(magic)) != 0) return -1;
+    uint64_t expected64 = patch_read_u64(patch + 4);
+    if (expected64 > (uint64_t)SIZE_MAX) return -1;
+    size_t expected = (size_t)expected64;
+    if (expected > new_capacity) return -1;
+    size_t pos = SNEPPX_PATCH_HEADER_SIZE, produced = 0;
+    while (pos < patch_len) {
+        uint8_t opcode = patch[pos++];
+        if (opcode == 0) {
+            if (pos != patch_len || produced != expected) return -1;
+            *result_len = produced;
+            return 0;
+        }
+        if (opcode == 1) {
+            if (patch_len - pos < 16) return -1;
+            uint64_t offset64 = patch_read_u64(patch + pos);
+            uint64_t length64 = patch_read_u64(patch + pos + 8);
+            pos += 16;
+            if (offset64 > (uint64_t)old_len || length64 > (uint64_t)SIZE_MAX ||
+                length64 == 0 || length64 > (uint64_t)old_len - offset64) return -1;
+            size_t offset = (size_t)offset64, length = (size_t)length64;
+            if (produced > expected || length > expected - produced) return -1;
+            if (emit) memcpy(new_data + produced, old_data + offset, length);
+            produced += length;
+            continue;
+        }
+        if (opcode == 2) {
+            if (patch_len - pos < 8) return -1;
+            uint64_t length64 = patch_read_u64(patch + pos);
+            pos += 8;
+            if (length64 == 0 || length64 > (uint64_t)SIZE_MAX ||
+                length64 > (uint64_t)(patch_len - pos)) return -1;
+            size_t length = (size_t)length64;
+            if (produced > expected || length > expected - produced) return -1;
+            if (emit) memcpy(new_data + produced, patch + pos, length);
+            pos += length;
+            produced += length;
+            continue;
+        }
+        return -1;
+    }
+    return -1;
+}
+static int patch_read_file(const char* path, uint8_t** data_out, size_t* len_out) {
+    if (!path || !data_out || !len_out) return -1;
+    *data_out = NULL;
+    *len_out = 0;
+    FILE* file = fopen(path, "rb");
+    if (!file) return -1;
+    if (fseek(file, 0, SEEK_END) != 0) { fclose(file); return -1; }
+    long end = ftell(file);
+    if (end < 0 || fseek(file, 0, SEEK_SET) != 0) { fclose(file); return -1; }
+    size_t len = (size_t)end;
+    uint8_t* data = (uint8_t*)malloc(len ? len : 1);
+    if (!data) { fclose(file); return -1; }
+    if (len && fread(data, 1, len, file) != len) {
+        free(data); fclose(file); return -1;
+    }
+    if (fclose(file) != 0) { free(data); return -1; }
+    *data_out = data;
+    *len_out = len;
+    return 0;
+}
+static int patch_write_file(const char* path, const uint8_t* data, size_t len) {
+    if (!path || (len && !data)) return -1;
+    FILE* file = fopen(path, "wb");
+    if (!file) return -1;
+    int ok = !len || fwrite(data, 1, len, file) == len;
+    if (fclose(file) != 0) ok = 0;
+    if (!ok) { remove(path); return -1; }
+    return 0;
+}
+
 /**
  * @brief Initialize Tuf.
  *
@@ -33,7 +124,12 @@ static uint32_t hash_djb2(const uint8_t* data, size_t len) {
  */
 int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
     if (!tuf) return -1; memset(tuf, 0, sizeof(*tuf));
-    for (int i = 0; i < 32; i++) { tuf->root_key[i] = (uint8_t)(rand() % 256); tuf->targets_key[i] = (uint8_t)(rand() % 256); tuf->snapshot_key[i] = (uint8_t)(rand() % 256); tuf->timestamp_key[i] = (uint8_t)(rand() % 256); }
+    for (int i = 0; i < 32; i++) {
+        SNEPPX_random_bytes(&tuf->root_key[i], 1);
+        SNEPPX_random_bytes(&tuf->targets_key[i], 1);
+        SNEPPX_random_bytes(&tuf->snapshot_key[i], 1);
+        SNEPPX_random_bytes(&tuf->timestamp_key[i], 1);
+    }
     tuf->initialized = 1; return 0;
 }
 
@@ -48,10 +144,9 @@ int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len, uint8_t* sig, size_t* sig_len) {
-    if (!tuf || !data || !sig || !sig_len || *sig_len < 32) return -1;
-    for (size_t i = 0; i < len && i < 32; i++) sig[i] = data[i] ^ tuf->root_key[i];
-    for (size_t i = len; i < 32; i++) sig[i] = tuf->root_key[i];
-    *sig_len = 32; return 0;
+    /* The legacy 32-byte XOR output is not a cryptographic signature. */
+    (void)tuf; (void)data; (void)len; (void)sig; (void)sig_len;
+    return -1;
 }
 
 /**
@@ -63,10 +158,9 @@ int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len) {
-    if (!tuf || !targets_json) return -1;
-    uint32_t h = hash_djb2(targets_json, len);
-    uint32_t expected = tuf->targets_key[0] | ((uint32_t)tuf->targets_key[1] << 8) | ((uint32_t)tuf->targets_key[2] << 16) | ((uint32_t)tuf->targets_key[3] << 24);
-    return (h == expected) ? 0 : -1;
+    /* A short keyed hash is not an authenticated TUF targets signature. */
+    (void)tuf; (void)targets_json; (void)len;
+    return -1;
 }
 
 /**
@@ -80,30 +174,44 @@ int SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_jso
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len) {
-    if (!old_data || !new_data || !patch || !patch_len) return -1;
-    size_t pos = 0, old_pos = 0, new_pos = 0;
-    while (old_pos < old_len && new_pos < new_len) {
-        size_t match = 0;
-        while (old_pos + match < old_len && new_pos + match < new_len && old_data[old_pos + match] == new_data[new_pos + match]) match++;
-        if (pos + 8 + match > *patch_len) return -1;
-        patch[pos++] = (uint8_t)(match >> 24); patch[pos++] = (uint8_t)(match >> 16); patch[pos++] = (uint8_t)(match >> 8); patch[pos++] = (uint8_t)match;
-        for (size_t i = 0; i < match && new_pos < new_len; i++) patch[pos++] = new_data[new_pos++];
-        old_pos += match;
-        size_t diff = 0;
-        while (old_pos < old_len && new_pos < new_len && old_data[old_pos] != new_data[new_pos]) { diff++; new_pos++; }
-        if (pos + 4 + diff > *patch_len) return -1;
-        patch[pos++] = 0xFF; patch[pos++] = (uint8_t)(diff >> 8); patch[pos++] = (uint8_t)diff;
-        for (size_t i = 0; i < diff && new_pos < new_len; i++) patch[pos++] = new_data[new_pos++];
+int SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len,
+                   const uint8_t* new_data, size_t new_len,
+                   uint8_t* patch, size_t* patch_len) {
+    static const uint8_t magic[4] = {'S', 'X', 'P', '1'};
+    if (!patch || !patch_len || (old_len && !old_data) || (new_len && !new_data) ||
+        new_len > SIZE_MAX - 64) return -1;
+    size_t prefix = 0;
+    while (prefix < old_len && prefix < new_len && old_data[prefix] == new_data[prefix]) prefix++;
+    size_t suffix = 0;
+    while (suffix < old_len - prefix && suffix < new_len - prefix &&
+           old_data[old_len - 1 - suffix] == new_data[new_len - 1 - suffix]) suffix++;
+    size_t insert_len = new_len - prefix - suffix;
+    size_t required = SNEPPX_PATCH_HEADER_SIZE + 1;
+    if (prefix) required += 17;
+    if (insert_len) required += 9 + insert_len;
+    if (suffix) required += 17;
+    if (*patch_len < required) { *patch_len = required; return -1; }
+    size_t pos = 0;
+    memcpy(patch + pos, magic, sizeof(magic)); pos += sizeof(magic);
+    patch_write_u64(patch + pos, (uint64_t)new_len); pos += 8;
+    if (prefix) {
+        patch[pos++] = 1;
+        patch_write_u64(patch + pos, 0); pos += 8;
+        patch_write_u64(patch + pos, (uint64_t)prefix); pos += 8;
     }
-    while (new_pos < new_len) {
-        size_t remaining = new_len - new_pos;
-        size_t chunk = remaining < 256 ? remaining : 256;
-        if (pos + 4 + chunk > *patch_len) return -1;
-        patch[pos++] = 0xFE; patch[pos++] = (uint8_t)(chunk >> 8); patch[pos++] = (uint8_t)chunk;
-        for (size_t i = 0; i < chunk; i++) patch[pos++] = new_data[new_pos++];
+    if (insert_len) {
+        patch[pos++] = 2;
+        patch_write_u64(patch + pos, (uint64_t)insert_len); pos += 8;
+        memcpy(patch + pos, new_data + prefix, insert_len); pos += insert_len;
     }
-    *patch_len = pos; return 0;
+    if (suffix) {
+        patch[pos++] = 1;
+        patch_write_u64(patch + pos, (uint64_t)(old_len - suffix)); pos += 8;
+        patch_write_u64(patch + pos, (uint64_t)suffix); pos += 8;
+    }
+    patch[pos++] = 0;
+    *patch_len = pos;
+    return 0;
 }
 
 /**
@@ -117,23 +225,19 @@ int SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_da
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_bspatch(const uint8_t* old_data, size_t old_len, const uint8_t* patch, size_t patch_len, uint8_t* new_data, size_t* new_len) {
-    (void)old_data; (void)old_len;
-    if (!patch || !new_data || !new_len) return -1;
-    size_t pos = 0, out_pos = 0;
-    while (pos < patch_len) {
-        if (pos + 4 > patch_len) break;
-        uint32_t match = ((uint32_t)patch[pos] << 24) | ((uint32_t)patch[pos + 1] << 16) | ((uint32_t)patch[pos + 2] << 8) | patch[pos + 3]; pos += 4;
-        if (match > 0x00FFFFFF) {
-            size_t len = (size_t)patch[pos] << 8 | patch[pos + 1]; pos += 2;
-            if (out_pos + len > *new_len) return -1;
-            memcpy(new_data + out_pos, patch + pos, len); pos += len; out_pos += len;
-        } else {
-            if (out_pos + match > *new_len) return -1;
-            memcpy(new_data + out_pos, patch + pos, match); pos += match; out_pos += match;
-        }
-    }
-    *new_len = out_pos; return 0;
+int SNEPPX_bspatch(const uint8_t* old_data, size_t old_len,
+                    const uint8_t* patch, size_t patch_len,
+                    uint8_t* new_data, size_t* new_len) {
+    if (!new_len || (*new_len && !new_data)) return -1;
+    size_t capacity = *new_len, validated_len = 0;
+    if (patch_parse(old_data, old_len, patch, patch_len, NULL, capacity, &validated_len, 0) != 0)
+        return -1;
+    if (validated_len && !new_data) return -1;
+    size_t written_len = 0;
+    if (patch_parse(old_data, old_len, patch, patch_len, new_data, capacity, &written_len, 1) != 0 ||
+        written_len != validated_len) return -1;
+    *new_len = written_len;
+    return 0;
 }
 
 /**
@@ -167,11 +271,12 @@ int SNEPPX_ab_partition_mark_good(SNEPPXABPartition* ab, int slot) {
  */
 int SNEPPX_ab_partition_swap(SNEPPXABPartition* ab) {
     if (!ab) return -1;
-    uint8_t* target_hash = ab->active_slot == 0 ? ab->slot_b_hash : ab->slot_a_hash;
-    int all_zero = 1;
-    for (int i = 0; i < 32; i++) { if (target_hash[i]) all_zero = 0; }
-    if (all_zero) return -1;
-    int tmp = ab->active_slot; ab->active_slot = ab->inactive_slot; ab->inactive_slot = tmp; ab->swap_ready = 1; return 0;
+    uint8_t* active_hash = ab->active_slot == 0 ? ab->slot_a_hash : ab->slot_b_hash;
+    int active_good = 0;
+    for (int i = 0; i < 32; i++) { if (active_hash[i]) { active_good = 1; break; } }
+    if (!active_good) return -1;
+    int tmp = ab->active_slot; ab->active_slot = ab->inactive_slot; ab->inactive_slot = tmp; ab->swap_ready = 1;
+    return 1;
 }
 
 /**
@@ -183,14 +288,9 @@ int SNEPPX_ab_partition_swap(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_verify(const char* manifest_path, const uint8_t* signature, size_t sig_len) {
-    if (!manifest_path || !signature) return -1;
-    FILE* f = fopen(manifest_path, "rb"); if (!f) return -1;
-    fseek(f, 0, SEEK_END); long sz = ftell(f); fseek(f, 0, SEEK_SET);
-    uint8_t* buf = (uint8_t*)malloc(sz); if (!buf) { fclose(f); return -1; }
-    fread(buf, 1, sz, f); fclose(f);
-    uint32_t h = hash_djb2(buf, (size_t)sz); free(buf);
-    uint32_t sig_val = 0; for (size_t i = 0; i < sig_len && i < 4; i++) sig_val |= (uint32_t)signature[i] << (i * 8);
-    return (h == sig_val) ? 0 : 1;
+    /* This API has no trusted public-key parameter; never treat a 32-bit hash as a signature. */
+    (void)manifest_path; (void)signature; (void)sig_len;
+    return -1;
 }
 
 /**
@@ -261,14 +361,9 @@ int SNEPPX_canary_rollout_promote(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_create(SNEPPXOfflineBundle* ob, const uint8_t* data, size_t data_len, const uint8_t* signing_key, size_t key_len) {
-    if (!ob || !data || !signing_key) return -1;
-    memset(ob, 0, sizeof(*ob));
-    ob->bundle_size = data_len;
-    uint32_t h = 0xDEADBEEF;
-    for (size_t i = 0; i < data_len; i++) h = ((h << 5) + h) ^ data[i];
-    for (size_t i = 0; i < key_len && i < 32; i++) h ^= (uint32_t)signing_key[i] << (i % 4 * 8);
-    for (int i = 0; i < 32; i++) ob->bundle_hash[i] = (uint8_t)(h >> (i % 4 * 8));
-    ob->signed_offline = 1; return 0;
+    /* The legacy keyed 32-bit hash is forgeable and must not mark a bundle as signed. */
+    (void)ob; (void)data; (void)data_len; (void)signing_key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -332,7 +427,9 @@ int SNEPPX_dep_resolver_resolve(SNEPPXDepResolver* dr) {
  */
 int SNEPPX_tuf_generate_keypair(int key_type) {
     if (key_type < 0 || key_type >= SNEPPX_TUF_MAX_KEYS) return -1;
-    return key_type * 100 + (rand() % 100);
+    uint8_t rb = 0;
+    SNEPPX_random_bytes(&rb, 1);
+    return key_type * 100 + (rb % 100);
 }
 
 /**
@@ -441,12 +538,9 @@ int SNEPPX_canary_rollout_get_percentage(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_verify(SNEPPXOfflineBundle* bundle, const uint8_t* public_key, size_t key_len) {
-    if (!bundle || !public_key) return -1;
-    (void)key_len;
-    if (!bundle->signed_offline) return -1;
-    uint32_t h = 0;
-    for (int i = 0; i < 32 && i < 4; i++) h |= (uint32_t)bundle->bundle_hash[i] << (i * 8);
-    return (h != 0) ? 0 : -1;
+    /* The legacy verifier checked only a nonzero prefix and ignored the public key. */
+    (void)bundle; (void)public_key; (void)key_len;
+    return -1;
 }
 static int key_type_valid(int key_type) {
     return (key_type >= 0 && key_type < SNEPPX_TUF_MAX_KEYS);
@@ -755,7 +849,7 @@ int SNEPPX_tuf_snapshot(uint8_t* snapshot_out, size_t* snapshot_len) {
     snapshot_out[4] = 0x53;
     snapshot_out[5] = 0x4E;
     snapshot_out[6] = 0x50;
-    for (int i = 0; i < 4; i++) snapshot_out[7 + i] = (uint8_t)(rand() % 256);
+    SNEPPX_random_bytes(&snapshot_out[7], 4);
     *snapshot_len = 64;
     return 0;
 }
@@ -839,32 +933,20 @@ int SNEPPX_tuf_get_keys_loaded(SNEPPXTUFMetadata* tuf) {
  */
 int SNEPPX_bsdiff_create_patch_file(const char* old_path, const char* new_path, const char* patch_path) {
     if (!old_path || !new_path || !patch_path) return -1;
-    FILE* f_old = fopen(old_path, "rb");
-    if (!f_old) return -1;
-    fseek(f_old, 0, SEEK_END); long old_sz = ftell(f_old); fseek(f_old, 0, SEEK_SET);
-    uint8_t* old_buf = (uint8_t*)malloc((size_t)old_sz);
-    if (!old_buf) { fclose(f_old); return -1; }
-    fread(old_buf, 1, (size_t)old_sz, f_old); fclose(f_old);
-
-    FILE* f_new = fopen(new_path, "rb");
-    if (!f_new) { free(old_buf); return -1; }
-    fseek(f_new, 0, SEEK_END); long new_sz = ftell(f_new); fseek(f_new, 0, SEEK_SET);
-    uint8_t* new_buf = (uint8_t*)malloc((size_t)new_sz);
-    if (!new_buf) { free(old_buf); fclose(f_new); return -1; }
-    fread(new_buf, 1, (size_t)new_sz, f_new); fclose(f_new);
-
-    size_t patch_cap = (size_t)(old_sz + new_sz + 256);
-    uint8_t* patch_buf = (uint8_t*)malloc(patch_cap);
-    if (!patch_buf) { free(old_buf); free(new_buf); return -1; }
-    size_t patch_sz = patch_cap;
-    int ret = SNEPPX_bsdiff(old_buf, (size_t)old_sz, new_buf, (size_t)new_sz, patch_buf, &patch_sz);
-    if (ret == 0) {
-        FILE* f_patch = fopen(patch_path, "wb");
-        if (f_patch) { fwrite(patch_buf, 1, patch_sz, f_patch); fclose(f_patch); }
-        else ret = -1;
+    uint8_t *old_data = NULL, *new_data = NULL, *patch = NULL;
+    size_t old_len = 0, new_len = 0, patch_len = 0;
+    int rc = patch_read_file(old_path, &old_data, &old_len);
+    if (rc == 0) rc = patch_read_file(new_path, &new_data, &new_len);
+    if (rc == 0 && new_len > SIZE_MAX - 64) rc = -1;
+    if (rc == 0) {
+        patch_len = new_len + 64;
+        patch = (uint8_t*)malloc(patch_len ? patch_len : 1);
+        if (!patch) rc = -1;
     }
-    free(old_buf); free(new_buf); free(patch_buf);
-    return ret;
+    if (rc == 0) rc = SNEPPX_bsdiff(old_data, old_len, new_data, new_len, patch, &patch_len);
+    if (rc == 0) rc = patch_write_file(patch_path, patch, patch_len);
+    free(old_data); free(new_data); free(patch);
+    return rc;
 }
 
 /**
@@ -888,33 +970,33 @@ int SNEPPX_bsdiff_apply_patch(const char* old_path, const char* patch_path, cons
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_bspatch_apply_patch(const char* old_path, const char* patch_path, const char* new_path) {
+    static const uint8_t magic[4] = {'S', 'X', 'P', '1'};
     if (!old_path || !patch_path || !new_path) return -1;
-    FILE* f_old = fopen(old_path, "rb");
-    if (!f_old) return -1;
-    fseek(f_old, 0, SEEK_END); long old_sz = ftell(f_old); fseek(f_old, 0, SEEK_SET);
-    uint8_t* old_buf = (uint8_t*)malloc((size_t)old_sz);
-    if (!old_buf) { fclose(f_old); return -1; }
-    fread(old_buf, 1, (size_t)old_sz, f_old); fclose(f_old);
-
-    FILE* f_patch = fopen(patch_path, "rb");
-    if (!f_patch) { free(old_buf); return -1; }
-    fseek(f_patch, 0, SEEK_END); long patch_sz = ftell(f_patch); fseek(f_patch, 0, SEEK_SET);
-    uint8_t* patch_buf = (uint8_t*)malloc((size_t)patch_sz);
-    if (!patch_buf) { free(old_buf); fclose(f_patch); return -1; }
-    fread(patch_buf, 1, (size_t)patch_sz, f_patch); fclose(f_patch);
-
-    size_t new_cap = (size_t)(old_sz + patch_sz + 256);
-    uint8_t* new_buf = (uint8_t*)malloc(new_cap);
-    if (!new_buf) { free(old_buf); free(patch_buf); return -1; }
-    size_t new_sz = new_cap;
-    int ret = SNEPPX_bspatch(old_buf, (size_t)old_sz, patch_buf, (size_t)patch_sz, new_buf, &new_sz);
-    if (ret == 0) {
-        FILE* f_new = fopen(new_path, "wb");
-        if (f_new) { fwrite(new_buf, 1, new_sz, f_new); fclose(f_new); }
-        else ret = -1;
+    uint8_t *old_data = NULL, *patch = NULL, *new_data = NULL;
+    size_t old_len = 0, patch_len = 0;
+    int rc = patch_read_file(old_path, &old_data, &old_len);
+    if (rc == 0) rc = patch_read_file(patch_path, &patch, &patch_len);
+    if (rc == 0 && (patch_len < SNEPPX_PATCH_HEADER_SIZE + 1 ||
+                    memcmp(patch, magic, sizeof(magic)) != 0)) rc = -1;
+    size_t output_len = 0;
+    if (rc == 0) {
+        uint64_t output64 = patch_read_u64(patch + 4);
+        if (output64 > (uint64_t)SIZE_MAX || old_len > SIZE_MAX - patch_len ||
+            output64 > (uint64_t)(old_len + patch_len)) rc = -1;
+        else output_len = (size_t)output64;
     }
-    free(old_buf); free(patch_buf); free(new_buf);
-    return ret;
+    if (rc == 0) {
+        new_data = (uint8_t*)malloc(output_len ? output_len : 1);
+        if (!new_data) rc = -1;
+    }
+    if (rc == 0) {
+        size_t capacity = output_len;
+        rc = SNEPPX_bspatch(old_data, old_len, patch, patch_len, new_data, &capacity);
+        if (rc == 0 && capacity != output_len) rc = -1;
+    }
+    if (rc == 0) rc = patch_write_file(new_path, new_data, output_len);
+    free(old_data); free(patch); free(new_data);
+    return rc;
 }
 
 /**
@@ -984,12 +1066,9 @@ int SNEPPX_manifest_create(const char* path, const char** files, int file_count,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size_t key_len) {
-    if (!path || !public_key) return -1;
-    (void)path;
-    (void)key_len;
-    uint32_t check = 0;
-    for (size_t i = 0; i < key_len && i < 4; i++) check |= (uint32_t)public_key[i] << (i * 8);
-    return (check != 0) ? 0 : -1;
+    /* The previous implementation accepted any nonzero key without reading the manifest. */
+    (void)path; (void)public_key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -1001,7 +1080,7 @@ int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size
  */
 int SNEPPX_tpm_get_random(uint8_t* bytes, int count) {
     if (!bytes || count <= 0) return -1;
-    for (int i = 0; i < count; i++) bytes[i] = (uint8_t)(rand() % 256);
+    SNEPPX_random_bytes(bytes, (size_t)count);
     return 0;
 }
 
@@ -1037,12 +1116,9 @@ int SNEPPX_canary_rollout_is_promoted(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_sign(SNEPPXOfflineBundle* bundle, const uint8_t* signing_key, size_t key_len) {
-    if (!bundle || !signing_key) return -1;
-    bundle->signed_offline = 1;
-    uint32_t h = 0;
-    for (size_t i = 0; i < key_len && i < 32; i++) h ^= (uint32_t)signing_key[i] << ((i % 4) * 8);
-    for (int i = 0; i < 4; i++) bundle->bundle_hash[i] = (uint8_t)(h >> (i * 8));
-    return 0;
+    /* XOR-derived tags are not signatures; fail closed until Ed25519 is wired in. */
+    (void)bundle; (void)signing_key; (void)key_len;
+    return -1;
 }
 
 /**

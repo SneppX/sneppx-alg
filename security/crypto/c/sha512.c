@@ -126,6 +126,34 @@ void SNEPPX_sha512_finish(SNEPPXSHA512Context* ctx, uint8_t digest[SNEPPX_SHA512
     size_t remaining = SNEPPX_SHA512_BLOCK_SIZE - ((ctx->buflen + 1 + 16) % SNEPPX_SHA512_BLOCK_SIZE);
     if (remaining == SNEPPX_SHA512_BLOCK_SIZE) remaining = 0;
     while (remaining--) pad[padlen++] = 0;
+    uint64_t bits = ctx->count[1];
+    uint64_t bits_lo = ctx->count[0];
+    for (int i = 0; i < 8; i++) pad[padlen++] = (uint8_t)(bits >> (56 - i * 8));
+    for (int i = 0; i < 8; i++) pad[padlen++] = (uint8_t)(bits_lo >> (56 - i * 8));
+    SNEPPX_sha512_update(ctx, pad, padlen);
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            digest[i * 8 + j] = (uint8_t)(ctx->state[i] >> (56 - j * 8));
+}
+
+/**
+ * @brief Perform Sha512 Finish (Legacy / Pre-Fix Behavior).
+ *
+ * Reproduces the original (pre-RFC-8032-compliance) length-encoding
+ * defect for backward-compatible verification of manifests signed
+ * before the fix.  count[] is maintained in bits in update(), but this
+ * variant erroneously multiplies by 8 again (<< 3), yielding a length
+ * field that is 8× too large.
+ *
+ * @param ctx [out] Ctx value.
+ */
+void SNEPPX_sha512_legacy_finish(SNEPPXSHA512Context* ctx, uint8_t digest[SNEPPX_SHA512_DIGEST_SIZE]) {
+    uint8_t pad[SNEPPX_SHA512_BLOCK_SIZE * 2];
+    size_t padlen = 0;
+    pad[padlen++] = 0x80;
+    size_t remaining = SNEPPX_SHA512_BLOCK_SIZE - ((ctx->buflen + 1 + 16) % SNEPPX_SHA512_BLOCK_SIZE);
+    if (remaining == SNEPPX_SHA512_BLOCK_SIZE) remaining = 0;
+    while (remaining--) pad[padlen++] = 0;
     uint64_t bits = (ctx->count[1] << 3) | (ctx->count[0] >> 61);
     uint64_t bits_lo = ctx->count[0] << 3;
     for (int i = 0; i < 8; i++) pad[padlen++] = (uint8_t)(bits >> (56 - i * 8));
@@ -147,4 +175,17 @@ void SNEPPX_sha512(const uint8_t* data, size_t len, uint8_t digest[SNEPPX_SHA512
     SNEPPX_sha512_init(&ctx);
     SNEPPX_sha512_update(&ctx, data, len);
     SNEPPX_sha512_finish(&ctx, digest);
+}
+
+/**
+ * @brief Legacy SHA-512 (pre-RFC-8032 length encoding).
+ *
+ * @param data [in] Data value.
+ * @param len [in] Len value.
+ */
+void SNEPPX_sha512_legacy(const uint8_t* data, size_t len, uint8_t digest[SNEPPX_SHA512_DIGEST_SIZE]) {
+    SNEPPXSHA512Context ctx;
+    SNEPPX_sha512_init(&ctx);
+    SNEPPX_sha512_update(&ctx, data, len);
+    SNEPPX_sha512_legacy_finish(&ctx, digest);
 }

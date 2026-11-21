@@ -40,7 +40,7 @@ static void sha256_f(const uint8_t* in, size_t in_len, uint8_t out[32]) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_drbg_init(SNEPPXDRBG* ctx, const uint8_t* entropy, size_t entropy_len, const uint8_t* nonce, size_t nonce_len) {
-    if (!ctx||!entropy||entropy_len<48) return -1;
+    if (!ctx||!entropy||entropy_len<32) return -1;
     memset(ctx,0,sizeof(*ctx));
 
     uint8_t seed[SNEPPX_DRBG_SEED_SIZE] = {0};

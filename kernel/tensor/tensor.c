@@ -31,24 +31,62 @@ static size_t compute_offset(const SNEPPXTensor* tensor, const size_t* indices) 
     return offset;
 }
 
-static size_t compute_offset_flat(const SNEPPXTensor* tensor, size_t flat_idx) {
-    size_t offset = 0;
-    size_t remaining = flat_idx;
-    for (size_t i = 0; i < tensor->ndim; i++) {
-        size_t idx = remaining / (tensor->size / (tensor->strides[i] * tensor->shape[i]));
-        if (tensor->size > 0 && tensor->strides[i] > 0) {
-            size_t dim_stride = tensor->strides[i];
-            size_t dim_size = tensor->shape[i];
-            idx = (flat_idx / dim_stride) % dim_size;
-        }
-        offset += idx * tensor->strides[i];
-        if (tensor->strides[i] > 0) {
-            remaining = flat_idx % tensor->strides[i];
-        } else {
-            remaining = 0;
-        }
+static int compute_offset_checked(
+    const SNEPPXTensor* tensor,
+    const size_t* indices,
+    size_t* out_offset
+) {
+    if (!tensor || !out_offset || !tensor->data ||
+        (tensor->ndim > 0 && (!indices || !tensor->shape || !tensor->strides))) {
+        return 0;
     }
-    return offset;
+
+    size_t offset = 0;
+    for (size_t i = 0; i < tensor->ndim; ++i) {
+        if (indices[i] >= tensor->shape[i]) return 0;
+        if (tensor->strides[i] != 0 &&
+            indices[i] > (SIZE_MAX - offset) / tensor->strides[i]) return 0;
+        offset += indices[i] * tensor->strides[i];
+    }
+
+    if (tensor->item_size == 0) return 0;
+    if (tensor->storage) {
+        if (tensor->storage->num_bytes % tensor->item_size != 0) return 0;
+        const size_t capacity = tensor->storage->num_bytes / tensor->item_size;
+        if (tensor->offset > capacity || offset >= capacity - tensor->offset) return 0;
+    }
+    *out_offset = offset;
+    return 1;
+}
+
+static int compute_offset_flat_checked(
+    const SNEPPXTensor* tensor,
+    size_t flat_index,
+    size_t* out_offset
+) {
+    if (!tensor || !out_offset || !tensor->data || flat_index >= tensor->size ||
+        (tensor->ndim > 0 && (!tensor->shape || !tensor->strides))) return 0;
+
+    size_t remaining = flat_index;
+    size_t offset = 0;
+    for (size_t i = tensor->ndim; i > 0; --i) {
+        const size_t dim = tensor->shape[i - 1];
+        if (dim == 0) return 0;
+        const size_t coordinate = remaining % dim;
+        remaining /= dim;
+        const size_t stride = tensor->strides[i - 1];
+        if (stride != 0 && coordinate > (SIZE_MAX - offset) / stride) return 0;
+        offset += coordinate * stride;
+    }
+
+    if (tensor->item_size == 0) return 0;
+    if (tensor->storage) {
+        if (tensor->storage->num_bytes % tensor->item_size != 0) return 0;
+        const size_t capacity = tensor->storage->num_bytes / tensor->item_size;
+        if (tensor->offset > capacity || offset >= capacity - tensor->offset) return 0;
+    }
+    *out_offset = offset;
+    return 1;
 }
 
 static void* aligned_alloc_wrapper(size_t size, size_t alignment) {
@@ -95,15 +133,20 @@ void SNEPPX_storage_release(SNEPPXStorage* s) {
 
 /* ===== View creation helpers ===== */
 
-static SNEPPXTensor* tensor_view_alloc(const SNEPPXTensor* src) {
+static SNEPPXTensor* tensor_view_alloc(const SNEPPXTensor* src, size_t view_ndim) {
+    (void)src;
+    const size_t ndim = view_ndim > 0 ? view_ndim : 1;
+    if (ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t metadata_bytes = ndim * sizeof(size_t);
+
     SNEPPXTensor* t = (SNEPPXTensor*)aligned_alloc_wrapper(sizeof(SNEPPXTensor), 64);
     if (!t) return NULL;
-    size_t ndim = src->ndim > 0 ? src->ndim : 1;
-    t->shape = (size_t*)aligned_alloc_wrapper(ndim * sizeof(size_t), 64);
-    t->strides = (size_t*)aligned_alloc_wrapper(ndim * sizeof(size_t), 64);
+    memset(t, 0, sizeof(*t));
+    t->shape = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    t->strides = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
     if (!t->shape || !t->strides) {
-        SNEPPX_free(t->shape, ndim * sizeof(size_t));
-        SNEPPX_free(t->strides, ndim * sizeof(size_t));
+        SNEPPX_free(t->shape, metadata_bytes);
+        SNEPPX_free(t->strides, metadata_bytes);
         SNEPPX_free(t, sizeof(SNEPPXTensor));
         return NULL;
     }
@@ -121,19 +164,44 @@ static SNEPPXTensor* tensor_view_alloc(const SNEPPXTensor* src) {
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, const size_t* shape, size_t ndim, const size_t* strides) {
-    if (!src) return NULL;
-    SNEPPXTensor* t = tensor_view_alloc(src);
+    if (!src || !src->storage || src->item_size == 0 ||
+        (ndim > 0 && (!shape || !strides))) return NULL;
+    if (src->storage->num_bytes % src->item_size != 0) return NULL;
+
+    size_t view_size = 1;
+    size_t max_offset = offset;
+    int is_empty = 0;
+    for (size_t i = 0; i < ndim; ++i) {
+        if (shape[i] == 0) {
+            is_empty = 1;
+            view_size = 0;
+        } else {
+            if (view_size > SIZE_MAX / shape[i]) return NULL;
+            view_size *= shape[i];
+            const size_t last_index = shape[i] - 1;
+            if (strides[i] != 0 && last_index > SIZE_MAX / strides[i]) return NULL;
+            const size_t delta = last_index * strides[i];
+            if (max_offset > SIZE_MAX - delta) return NULL;
+            max_offset += delta;
+        }
+    }
+
+    const size_t capacity = src->storage->num_bytes / src->item_size;
+    if (offset > capacity) return NULL;
+    if (!is_empty && max_offset >= capacity) return NULL;
+
+    SNEPPXTensor* t = tensor_view_alloc(src, ndim);
     if (!t) return NULL;
+    for (size_t i = 0; i < ndim; ++i) {
+        t->shape[i] = shape[i];
+        t->strides[i] = strides[i];
+    }
+
     SNEPPX_storage_retain(src->storage);
     t->storage = src->storage;
     t->offset = offset;
     t->ndim = ndim;
-    t->size = 1;
-    for (size_t i = 0; i < ndim; i++) {
-        t->shape[i] = shape[i];
-        t->strides[i] = strides[i];
-        t->size *= shape[i];
-    }
+    t->size = view_size;
     t->dtype = src->dtype;
     t->item_size = src->item_size;
     t->device = src->device;
@@ -141,10 +209,11 @@ SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, c
     t->layout = src->layout;
     t->owns_data = 0;
     t->backend_handle = NULL;
-    t->data = (unsigned char*)src->storage->data + offset * t->item_size;
+    t->data = src->storage->data
+        ? (unsigned char*)src->storage->data + offset * t->item_size
+        : NULL;
     return t;
 }
-
 /**
  * @brief Perform Tensor Narrow.
  *
@@ -155,17 +224,37 @@ SNEPPXTensor* SNEPPX_tensor_as_strided(const SNEPPXTensor* src, size_t offset, c
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_narrow(const SNEPPXTensor* src, size_t dim, size_t start, size_t size) {
-    if (!src || dim >= src->ndim || start + size > src->shape[dim]) return NULL;
-    size_t new_shape[16], new_strides[16];
-    for (size_t i = 0; i < src->ndim; i++) {
-        new_shape[i] = src->shape[i];
-        new_strides[i] = src->strides[i];
-    }
-    new_shape[dim] = size;
-    size_t offset = src->offset + start * src->strides[dim];
-    return SNEPPX_tensor_as_strided(src, offset, new_shape, src->ndim, new_strides);
-}
+    if (!src || !src->shape || !src->strides || dim >= src->ndim) return NULL;
+    if (start > src->shape[dim] || size > src->shape[dim] - start) return NULL;
+    if (start != 0 && src->strides[dim] > SIZE_MAX / start) return NULL;
 
+    const size_t ndim = src->ndim;
+    if (ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t bytes = ndim * sizeof(size_t);
+    size_t* new_shape = (size_t*)SNEPPX_malloc(bytes, 64);
+    size_t* new_strides = (size_t*)SNEPPX_malloc(bytes, 64);
+    if (!new_shape || !new_strides) {
+        SNEPPX_free(new_shape, bytes);
+        SNEPPX_free(new_strides, bytes);
+        return NULL;
+    }
+
+    memcpy(new_shape, src->shape, bytes);
+    memcpy(new_strides, src->strides, bytes);
+    new_shape[dim] = size;
+
+    const size_t delta = start * src->strides[dim];
+    if (src->offset > SIZE_MAX - delta) {
+        SNEPPX_free(new_shape, bytes);
+        SNEPPX_free(new_strides, bytes);
+        return NULL;
+    }
+    const size_t offset = src->offset + delta;
+    SNEPPXTensor* view = SNEPPX_tensor_as_strided(src, offset, new_shape, ndim, new_strides);
+    SNEPPX_free(new_shape, bytes);
+    SNEPPX_free(new_strides, bytes);
+    return view;
+}
 /* ===== Backward-compat: ensure storage exists for legacy code paths ===== */
 static SNEPPXStorage* ensure_storage(SNEPPXTensor* t) {
     if (!t->storage) {
@@ -186,87 +275,71 @@ static SNEPPXStorage* ensure_storage(SNEPPXTensor* t) {
  *
  * @param t [out] T value.
  */
-static void SNEPPX_tensor_fill_scalar(SNEPPXTensor* t, double value) {
-    unsigned char* data = (unsigned char*)t->data;
-    size_t n = t->size;
-    switch (t->dtype) {
-        case SNEPPX_FLOAT32: { float v = (float)value; for (size_t i = 0; i < n; i++) ((float*)data)[i] = v; break; }
-        case SNEPPX_FLOAT64: { double v = value; for (size_t i = 0; i < n; i++) ((double*)data)[i] = v; break; }
-        case SNEPPX_FLOAT16:
-        case SNEPPX_BFLOAT16:
-        case SNEPPX_FLOAT8:  { float v = (float)value; for (size_t i = 0; i < n; i++) ((float*)data)[i] = v; break; }
-        case SNEPPX_INT32:   { int32_t v = (int32_t)value; for (size_t i = 0; i < n; i++) ((int32_t*)data)[i] = v; break; }
-        case SNEPPX_INT64:   { int64_t v = (int64_t)value; for (size_t i = 0; i < n; i++) ((int64_t*)data)[i] = v; break; }
-        case SNEPPX_INT16:   { int16_t v = (int16_t)value; for (size_t i = 0; i < n; i++) ((int16_t*)data)[i] = v; break; }
-        case SNEPPX_INT8:    { int8_t v = (int8_t)value; for (size_t i = 0; i < n; i++) ((int8_t*)data)[i] = v; break; }
-        case SNEPPX_UINT8:   { uint8_t v = (uint8_t)value; for (size_t i = 0; i < n; i++) ((uint8_t*)data)[i] = v; break; }
-        case SNEPPX_BOOL:    { uint8_t v = value != 0.0 ? 1 : 0; for (size_t i = 0; i < n; i++) ((uint8_t*)data)[i] = v; break; }
-        case SNEPPX_COMPLEX64:
-        case SNEPPX_COMPLEX128: { memset(data, 0, n * t->item_size); break; }
-    }
-}
-
-/**
- * @brief Create Tensor.
- *
- * @param shape [in] Shape value.
- * @param ndim [in] Ndim value.
- *
- * @return Pointer on success, NULL on error.
- */
 SNEPPXTensor* SNEPPX_tensor_create(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
     if (ndim > 0 && !shape) return NULL;
+
+    const size_t item_size = SNEPPX_tensor_dtype_size(dtype);
+    if (item_size == 0) return NULL;
+
+    size_t total = 1;
+    for (size_t i = 0; i < ndim; ++i) {
+        if (shape[i] != 0 && total > SIZE_MAX / shape[i]) return NULL;
+        total *= shape[i];
+    }
+
+    /* Validate row-major stride products independently, including zero-sized shapes. */
+    size_t stride = 1;
+    for (size_t i = ndim; i > 0; --i) {
+        const size_t dim = shape[i - 1];
+        if (dim != 0 && stride > SIZE_MAX / dim) return NULL;
+        stride *= dim;
+    }
+
+    if (total != 0 && item_size > SIZE_MAX / total) return NULL;
+    const size_t num_bytes = total * item_size;
+    const size_t safe_ndim = ndim > 0 ? ndim : 1;
+    if (safe_ndim > SIZE_MAX / sizeof(size_t)) return NULL;
+    const size_t metadata_bytes = safe_ndim * sizeof(size_t);
+
     SNEPPXTensor* tensor = (SNEPPXTensor*)aligned_alloc_wrapper(sizeof(SNEPPXTensor), 64);
     if (!tensor) return NULL;
+    memset(tensor, 0, sizeof(*tensor));
+
+    tensor->shape = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    tensor->strides = (size_t*)aligned_alloc_wrapper(metadata_bytes, 64);
+    if (!tensor->shape || !tensor->strides) {
+        SNEPPX_free(tensor->shape, metadata_bytes);
+        SNEPPX_free(tensor->strides, metadata_bytes);
+        SNEPPX_free(tensor, sizeof(SNEPPXTensor));
+        return NULL;
+    }
 
     tensor->ndim = ndim;
+    tensor->size = total;
     tensor->dtype = dtype;
-    tensor->item_size = SNEPPX_tensor_dtype_size(dtype);
+    tensor->item_size = item_size;
     tensor->device = SNEPPX_DEVICE_CPU;
     tensor->device_id = 0;
     tensor->layout = SNEPPX_LAYOUT_ROW_MAJOR;
     tensor->owns_data = 1;
-    tensor->backend_handle = NULL;
-    tensor->storage = NULL;
-    tensor->offset = 0;
 
-    size_t safe_ndim = ndim > 0 ? ndim : 1;
-    tensor->shape = (size_t*)aligned_alloc_wrapper(safe_ndim * sizeof(size_t), 64);
-    tensor->strides = (size_t*)aligned_alloc_wrapper(safe_ndim * sizeof(size_t), 64);
-    if (!tensor->shape || !tensor->strides) {
-        SNEPPX_free(tensor->shape, safe_ndim * sizeof(size_t));
-        SNEPPX_free(tensor->strides, safe_ndim * sizeof(size_t));
-        SNEPPX_free(tensor, sizeof(SNEPPXTensor));
-        return NULL;
-    }
-
-    size_t total = 1;
-    for (size_t i = 0; i < ndim; i++) {
-        tensor->shape[i] = shape[i];
-        total *= shape[i];
-    }
-    if (ndim == 0) total = 1;
-    tensor->size = total;
-
-    size_t stride = 1;
-    for (size_t i = ndim; i > 0; i--) {
+    stride = 1;
+    for (size_t i = ndim; i > 0; --i) {
+        tensor->shape[i - 1] = shape[i - 1];
         tensor->strides[i - 1] = stride;
         stride *= shape[i - 1];
     }
 
-    size_t num_bytes = total * tensor->item_size;
     tensor->storage = SNEPPX_storage_create(num_bytes);
     if (!tensor->storage) {
-        SNEPPX_free(tensor->shape, ndim * sizeof(size_t));
-        SNEPPX_free(tensor->strides, ndim * sizeof(size_t));
+        SNEPPX_free(tensor->shape, metadata_bytes);
+        SNEPPX_free(tensor->strides, metadata_bytes);
         SNEPPX_free(tensor, sizeof(SNEPPXTensor));
         return NULL;
     }
     tensor->data = tensor->storage->data;
-
     return tensor;
 }
-
 /**
  * @brief Destroy Tensor.
  */
@@ -287,8 +360,9 @@ void SNEPPX_tensor_destroy(SNEPPXTensor* tensor) {
  * @return The result value, or 0 on error.
  */
 float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_FLOAT32) return 0.0f;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return 0.0f;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0.0f;
     return ((float*)tensor->data)[offset];
 }
 
@@ -299,8 +373,9 @@ float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices) {
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float value) {
-    if (tensor->dtype != SNEPPX_FLOAT32) return;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((float*)tensor->data)[offset] = value;
 }
 
@@ -312,8 +387,9 @@ void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float va
  * @return The result value, or 0 on error.
  */
 double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_FLOAT64) return 0.0;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return 0.0;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0.0;
     return ((double*)tensor->data)[offset];
 }
 
@@ -324,8 +400,9 @@ double SNEPPX_tensor_get_f64(const SNEPPXTensor* tensor, const size_t* indices) 
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double value) {
-    if (tensor->dtype != SNEPPX_FLOAT64) return;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((double*)tensor->data)[offset] = value;
 }
 
@@ -337,8 +414,9 @@ void SNEPPX_tensor_set_f64(SNEPPXTensor* tensor, const size_t* indices, double v
  * @return 0 on success, -1 on error.
  */
 int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_INT32) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_INT32) return 0;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int32_t*)tensor->data)[offset];
 }
 
@@ -349,8 +427,9 @@ int32_t SNEPPX_tensor_get_i32(const SNEPPXTensor* tensor, const size_t* indices)
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t value) {
-    if (tensor->dtype != SNEPPX_INT32) return;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_INT32) return;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int32_t*)tensor->data)[offset] = value;
 }
 
@@ -362,8 +441,9 @@ void SNEPPX_tensor_set_i32(SNEPPXTensor* tensor, const size_t* indices, int32_t 
  * @return 0 on success, -1 on error.
  */
 int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_INT64) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_INT64) return 0;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((int64_t*)tensor->data)[offset];
 }
 
@@ -374,8 +454,9 @@ int64_t SNEPPX_tensor_get_i64(const SNEPPXTensor* tensor, const size_t* indices)
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t value) {
-    if (tensor->dtype != SNEPPX_INT64) return;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_INT64) return;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((int64_t*)tensor->data)[offset] = value;
 }
 
@@ -387,8 +468,9 @@ void SNEPPX_tensor_set_i64(SNEPPXTensor* tensor, const size_t* indices, int64_t 
  * @return 0 on success, -1 on error.
  */
 uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices) {
-    if (tensor->dtype != SNEPPX_BOOL) return 0;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_BOOL) return 0;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return 0;
     return ((uint8_t*)tensor->data)[offset];
 }
 
@@ -399,8 +481,9 @@ uint8_t SNEPPX_tensor_get_bool(const SNEPPXTensor* tensor, const size_t* indices
  * @param indices [in] Indices value.
  */
 void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t value) {
-    if (tensor->dtype != SNEPPX_BOOL) return;
-    size_t offset = compute_offset(tensor, indices);
+    if (!tensor || tensor->dtype != SNEPPX_BOOL) return;
+    size_t offset = 0;
+    if (!compute_offset_checked(tensor, indices, &offset)) return;
     ((uint8_t*)tensor->data)[offset] = value ? 1 : 0;
 }
 
@@ -412,7 +495,11 @@ void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t
 void SNEPPX_tensor_fill_f32(SNEPPXTensor* tensor, float value) {
     if (!tensor || tensor->dtype != SNEPPX_FLOAT32) return;
     float* data = (float*)tensor->data;
-    for (size_t i = 0; i < tensor->size; i++) data[i] = value;
+    for (size_t i = 0; i < tensor->size; ++i) {
+        size_t offset = 0;
+        if (!compute_offset_flat_checked(tensor, i, &offset)) return;
+        data[offset] = value;
+    }
 }
 
 /**
@@ -423,7 +510,11 @@ void SNEPPX_tensor_fill_f32(SNEPPXTensor* tensor, float value) {
 void SNEPPX_tensor_fill_f64(SNEPPXTensor* tensor, double value) {
     if (!tensor || tensor->dtype != SNEPPX_FLOAT64) return;
     double* data = (double*)tensor->data;
-    for (size_t i = 0; i < tensor->size; i++) data[i] = value;
+    for (size_t i = 0; i < tensor->size; ++i) {
+        size_t offset = 0;
+        if (!compute_offset_flat_checked(tensor, i, &offset)) return;
+        data[offset] = value;
+    }
 }
 
 /**
@@ -449,7 +540,9 @@ SNEPPXTensor* SNEPPX_tensor_empty(const size_t* shape, size_t ndim, SNEPPXDtype 
 SNEPPXTensor* SNEPPX_tensor_zeros(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
     SNEPPXTensor* tensor = SNEPPX_tensor_create(shape, ndim, dtype);
     if (!tensor) return NULL;
-    memset(tensor->data, 0, tensor->size * tensor->item_size);
+    if (tensor->size > 0) {
+        memset(tensor->data, 0, tensor->size * tensor->item_size);
+    }
     return tensor;
 }
 
@@ -462,21 +555,82 @@ SNEPPXTensor* SNEPPX_tensor_zeros(const size_t* shape, size_t ndim, SNEPPXDtype 
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_ones(const size_t* shape, size_t ndim, SNEPPXDtype dtype) {
+    /* FLOAT8 has no single declared encoding (E4M3 and E5M2 differ). */
+    if (dtype == SNEPPX_FLOAT8) return NULL;
+
     SNEPPXTensor* tensor = SNEPPX_tensor_create(shape, ndim, dtype);
     if (!tensor) return NULL;
-    size_t n = tensor->size;
-    if (dtype == SNEPPX_FLOAT32 || dtype == SNEPPX_FLOAT16 || dtype == SNEPPX_BFLOAT16 || dtype == SNEPPX_FLOAT8) {
-        float* data = (float*)tensor->data;
-        for (size_t i = 0; i < n; i++) data[i] = 1.0f;
-    } else if (dtype == SNEPPX_FLOAT64) {
-        double* data = (double*)tensor->data;
-        for (size_t i = 0; i < n; i++) data[i] = 1.0;
-    } else if (dtype == SNEPPX_INT32 || dtype == SNEPPX_INT64 || dtype == SNEPPX_INT16 || dtype == SNEPPX_INT8 || dtype == SNEPPX_UINT8 || dtype == SNEPPX_BOOL) {
-        memset(tensor->data, 1, n * tensor->item_size);
+
+    switch (dtype) {
+        case SNEPPX_FLOAT32: {
+            float* data = (float*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1.0f;
+            break;
+        }
+        case SNEPPX_FLOAT64: {
+            double* data = (double*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1.0;
+            break;
+        }
+        case SNEPPX_FLOAT16: {
+            uint16_t* data = (uint16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = UINT16_C(0x3c00);
+            break;
+        }
+        case SNEPPX_BFLOAT16: {
+            uint16_t* data = (uint16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = UINT16_C(0x3f80);
+            break;
+        }
+        case SNEPPX_INT32: {
+            int32_t* data = (int32_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT64: {
+            int64_t* data = (int64_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT16: {
+            int16_t* data = (int16_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_INT8: {
+            int8_t* data = (int8_t*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) data[i] = 1;
+            break;
+        }
+        case SNEPPX_UINT8:
+        case SNEPPX_BOOL:
+            if (tensor->size > 0) {
+                memset(tensor->data, 1, tensor->size * tensor->item_size);
+            }
+            break;
+        case SNEPPX_COMPLEX64: {
+            float* data = (float*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) {
+                data[2 * i] = 1.0f;
+                data[2 * i + 1] = 0.0f;
+            }
+            break;
+        }
+        case SNEPPX_COMPLEX128: {
+            double* data = (double*)tensor->data;
+            for (size_t i = 0; i < tensor->size; ++i) {
+                data[2 * i] = 1.0;
+                data[2 * i + 1] = 0.0;
+            }
+            break;
+        }
+        case SNEPPX_FLOAT8:
+        default:
+            SNEPPX_tensor_destroy(tensor);
+            return NULL;
     }
     return tensor;
 }
-
 /**
  * @brief Perform Tensor Full.
  *
@@ -861,8 +1015,9 @@ SNEPPXTensor** SNEPPX_tensor_split(const SNEPPXTensor* src, size_t num_splits, s
  * @return Pointer on success, NULL on error.
  */
 SNEPPXTensor* SNEPPX_tensor_tile(const SNEPPXTensor* src, const size_t* reps, size_t reps_ndim) {
-    if (!src || !reps) return NULL;
+    if (!src || !reps || reps_ndim > 16) return NULL;
     size_t out_ndim = (src->ndim > reps_ndim) ? src->ndim : reps_ndim;
+    if (out_ndim > 16) return NULL;
     size_t out_shape[16];
     size_t offset = out_ndim - src->ndim;
     for (size_t i = 0; i < out_ndim; i++) {
@@ -1277,20 +1432,33 @@ SNEPPXTensor* SNEPPX_tensor_gt(const SNEPPXTensor* a, const SNEPPXTensor* b) { r
  */
 SNEPPXTensor* SNEPPX_tensor_ge(const SNEPPXTensor* a, const SNEPPXTensor* b) { return compare_op(a, b, cmp_ge); }
 
-/* Helper: binary op with contiguity support */
-#define BINARY_OP_F32(name, body) \
+/* Helper: binary op with contiguity support.
+ * Dtype-following: f32/f64 inputs compute and stay in their dtype; any
+ * other (or mixed) dtype combination returns NULL instead of misreading
+ * the storage as f32 (which produced garbage). */
+#define BINARY_OP_F32(name, body_f32, body_f64) \
     SNEPPXTensor* SNEPPX_tensor_##name(const SNEPPXTensor* a, const SNEPPXTensor* b) { \
     if (!a || !b) return NULL; \
     SNEPPXTensor* ta = NULL, *tb = NULL; \
     a = tensor_prep_contiguous(a, &ta); \
     b = tensor_prep_contiguous(b, &tb); \
     size_t sz = a->size < b->size ? a->size : b->size; \
-    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, SNEPPX_FLOAT32); \
+    if (a->dtype != b->dtype || (a->dtype != SNEPPX_FLOAT32 && a->dtype != SNEPPX_FLOAT64)) { \
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; \
+    } \
+    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, a->dtype); \
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; } \
-    float* rd = (float*)result->data; \
-    float* ad = (float*)a->data; \
-    float* bd = (float*)b->data; \
-    for (size_t i = 0; i < sz; i++) { body; } \
+    if (a->dtype == SNEPPX_FLOAT64) { \
+        double* rd = (double*)result->data; \
+        double* ad = (double*)a->data; \
+        double* bd = (double*)b->data; \
+        for (size_t i = 0; i < sz; i++) { body_f64; } \
+    } else { \
+        float* rd = (float*)result->data; \
+        float* ad = (float*)a->data; \
+        float* bd = (float*)b->data; \
+        for (size_t i = 0; i < sz; i++) { body_f32; } \
+    } \
     if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); \
     return result; \
 }
@@ -1309,8 +1477,24 @@ SNEPPXTensor* SNEPPX_tensor_add(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     a = tensor_prep_contiguous(a, &ta);
     b = tensor_prep_contiguous(b, &tb);
     size_t sz = a->size < b->size ? a->size : b->size;
-    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, SNEPPX_FLOAT32);
+    if (a->dtype != b->dtype || (a->dtype != SNEPPX_FLOAT32 && a->dtype != SNEPPX_FLOAT64)) {
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL;
+    }
+    SNEPPXTensor* result = SNEPPX_tensor_create(a->shape, a->ndim, a->dtype);
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; }
+    if (a->dtype == SNEPPX_FLOAT64) {
+        const double* ad = (const double*)a->data;
+        const double* bd = (const double*)b->data;
+        double* rd = (double*)result->data;
+        if (a->size == b->size) {
+            for (size_t i = 0; i < sz; i++) rd[i] = ad[i] + bd[i];
+        } else {
+            size_t last = a->shape[a->ndim - 1];
+            for (size_t i = 0; i < a->size; i++) rd[i] = ad[i] + bd[i % last];
+        }
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return result;
+    }
     float* rd = (float*)result->data;
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
@@ -1323,12 +1507,12 @@ SNEPPXTensor* SNEPPX_tensor_add(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
     return result;
 }
-BINARY_OP_F32(sub, rd[i] = ad[i] - bd[i])
-BINARY_OP_F32(mul, rd[i] = ad[i] * bd[i])
-BINARY_OP_F32(div, rd[i] = ad[i] / (bd[i] + 1e-10f))
-BINARY_OP_F32(minimum, rd[i] = ad[i] < bd[i] ? ad[i] : bd[i])
-BINARY_OP_F32(maximum, rd[i] = ad[i] > bd[i] ? ad[i] : bd[i])
-BINARY_OP_F32(pow, rd[i] = powf(ad[i], bd[i]))
+BINARY_OP_F32(sub, rd[i] = ad[i] - bd[i], rd[i] = ad[i] - bd[i])
+BINARY_OP_F32(mul, rd[i] = ad[i] * bd[i], rd[i] = ad[i] * bd[i])
+BINARY_OP_F32(div, rd[i] = ad[i] / (bd[i] + 1e-10f), rd[i] = ad[i] / (bd[i] + 1e-10))
+BINARY_OP_F32(minimum, rd[i] = ad[i] < bd[i] ? ad[i] : bd[i], rd[i] = ad[i] < bd[i] ? ad[i] : bd[i])
+BINARY_OP_F32(maximum, rd[i] = ad[i] > bd[i] ? ad[i] : bd[i], rd[i] = ad[i] > bd[i] ? ad[i] : bd[i])
+BINARY_OP_F32(pow, rd[i] = powf(ad[i], bd[i]), rd[i] = pow(ad[i], bd[i]))
 
 /* ===== Contiguity helper =====
  * If src is non-contiguous, creates a contiguous copy and returns it via *out.
@@ -1342,21 +1526,31 @@ static const SNEPPXTensor* tensor_prep_contiguous(const SNEPPXTensor* src, SNEPP
     return *out ? *out : src;
 }
 
-static SNEPPXTensor* unary_op_f32(const SNEPPXTensor* src, float (*op)(float)) {
+static SNEPPXTensor* unary_op(const SNEPPXTensor* src, float (*opf32)(float), double (*opf64)(double)) {
     if (!src) return NULL;
     SNEPPXTensor* tmp = NULL;
     src = tensor_prep_contiguous(src, &tmp);
-    SNEPPXTensor* result = SNEPPX_tensor_create(src->shape, src->ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 inputs stay f64 (was f32 hardcode -> misread garbage) */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_create(src->shape, src->ndim, dt);
     if (!result) { if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* rd = (float*)result->data;
-    for (size_t i = 0; i < src->size; i++) rd[i] = op(sd[i]);
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        double* rd = (double*)result->data;
+        for (size_t i = 0; i < src->size; i++) rd[i] = opf64(sd[i]);
+    } else {
+        float* sd = (float*)src->data;
+        float* rd = (float*)result->data;
+        for (size_t i = 0; i < src->size; i++) rd[i] = opf32(sd[i]);
+    }
     if (tmp) SNEPPX_tensor_destroy(tmp);
     return result;
 }
 
 static float negate_f32(float x) { return -x; }
 static float sign_f32(float x) { return (x > 0) ? 1.0f : (x < 0) ? -1.0f : 0.0f; }
+static double negate_f64(double x) { return -x; }
+static double sign_f64(double x) { return (x > 0) ? 1.0 : (x < 0) ? -1.0 : 0.0; }
 
 /**
  * @brief Perform Tensor Neg.
@@ -1365,7 +1559,7 @@ static float sign_f32(float x) { return (x > 0) ? 1.0f : (x < 0) ? -1.0f : 0.0f;
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op_f32(src, negate_f32); }
+SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op(src, negate_f32, negate_f64); }
 /**
  * @brief Perform Tensor Abs.
  *
@@ -1373,7 +1567,7 @@ SNEPPXTensor* SNEPPX_tensor_neg(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op_f32(src, fabsf); }
+SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op(src, fabsf, fabs); }
 /**
  * @brief Sign Tensor.
  *
@@ -1381,7 +1575,7 @@ SNEPPXTensor* SNEPPX_tensor_abs(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op_f32(src, sign_f32); }
+SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op(src, sign_f32, sign_f64); }
 /**
  * @brief Perform Tensor Floor.
  *
@@ -1389,7 +1583,7 @@ SNEPPXTensor* SNEPPX_tensor_sign(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op_f32(src, floorf); }
+SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op(src, floorf, floor); }
 /**
  * @brief Perform Tensor Ceil.
  *
@@ -1397,7 +1591,7 @@ SNEPPXTensor* SNEPPX_tensor_floor(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op_f32(src, ceilf); }
+SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op(src, ceilf, ceil); }
 /**
  * @brief Perform Tensor Round.
  *
@@ -1405,7 +1599,7 @@ SNEPPXTensor* SNEPPX_tensor_ceil(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op_f32(src, roundf); }
+SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op(src, roundf, round); }
 /**
  * @brief Perform Tensor Trunc.
  *
@@ -1413,7 +1607,7 @@ SNEPPXTensor* SNEPPX_tensor_round(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op_f32(src, truncf); }
+SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op(src, truncf, trunc); }
 /**
  * @brief Perform Tensor Exp.
  *
@@ -1421,7 +1615,7 @@ SNEPPXTensor* SNEPPX_tensor_trunc(const SNEPPXTensor* src) { return unary_op_f32
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op_f32(src, expf); }
+SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op(src, expf, exp); }
 /**
  * @brief Perform Tensor Log.
  *
@@ -1429,7 +1623,7 @@ SNEPPXTensor* SNEPPX_tensor_exp(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op_f32(src, logf); }
+SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op(src, logf, log); }
 /**
  * @brief Perform Tensor Sqrt.
  *
@@ -1437,7 +1631,7 @@ SNEPPXTensor* SNEPPX_tensor_log(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op_f32(src, sqrtf); }
+SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op(src, sqrtf, sqrt); }
 /**
  * @brief Perform Tensor Sin.
  *
@@ -1445,7 +1639,7 @@ SNEPPXTensor* SNEPPX_tensor_sqrt(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op_f32(src, sinf); }
+SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op(src, sinf, sin); }
 /**
  * @brief Perform Tensor Cos.
  *
@@ -1453,7 +1647,7 @@ SNEPPXTensor* SNEPPX_tensor_sin(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op_f32(src, cosf); }
+SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op(src, cosf, cos); }
 /**
  * @brief Perform Tensor Tan.
  *
@@ -1461,7 +1655,7 @@ SNEPPXTensor* SNEPPX_tensor_cos(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op_f32(src, tanf); }
+SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op(src, tanf, tan); }
 /**
  * @brief Perform Tensor Asin.
  *
@@ -1469,7 +1663,7 @@ SNEPPXTensor* SNEPPX_tensor_tan(const SNEPPXTensor* src) { return unary_op_f32(s
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op_f32(src, asinf); }
+SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op(src, asinf, asin); }
 /**
  * @brief Perform Tensor Acos.
  *
@@ -1477,7 +1671,7 @@ SNEPPXTensor* SNEPPX_tensor_asin(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op_f32(src, acosf); }
+SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op(src, acosf, acos); }
 /**
  * @brief Perform Tensor Atan.
  *
@@ -1485,7 +1679,7 @@ SNEPPXTensor* SNEPPX_tensor_acos(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op_f32(src, atanf); }
+SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op(src, atanf, atan); }
 /**
  * @brief Perform Tensor Sinh.
  *
@@ -1493,7 +1687,7 @@ SNEPPXTensor* SNEPPX_tensor_atan(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op_f32(src, sinhf); }
+SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op(src, sinhf, sinh); }
 /**
  * @brief Perform Tensor Cosh.
  *
@@ -1501,7 +1695,7 @@ SNEPPXTensor* SNEPPX_tensor_sinh(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op_f32(src, coshf); }
+SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op(src, coshf, cosh); }
 /**
  * @brief Perform Tensor Tanh.
  *
@@ -1509,7 +1703,7 @@ SNEPPXTensor* SNEPPX_tensor_cosh(const SNEPPXTensor* src) { return unary_op_f32(
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_tensor_tanh(const SNEPPXTensor* src) { return unary_op_f32(src, tanhf); }
+SNEPPXTensor* SNEPPX_tensor_tanh(const SNEPPXTensor* src) { return unary_op(src, tanhf, tanh); }
 
 /**
  * @brief Perform Tensor Sum.
@@ -1525,17 +1719,28 @@ SNEPPXTensor* SNEPPX_tensor_sum(const SNEPPXTensor* src, size_t dim) {
     size_t out_ndim = src->ndim;
     size_t out_shape[16];
     for (size_t i = 0; i < src->ndim; i++) out_shape[i] = (i == dim) ? 1 : src->shape[i];
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 reductions stay f64 (f32 hardcoded downcast) */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) { if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* rd = (float*)result->data;
     size_t inner = 1, outer = 1, reduce = src->shape[dim];
     for (size_t i = 0; i < dim; i++) outer *= src->shape[i];
     for (size_t i = dim + 1; i < src->ndim; i++) inner *= src->shape[i];
-    for (size_t o = 0; o < outer; o++) {
-        for (size_t r = 0; r < reduce; r++) {
-            for (size_t i = 0; i < inner; i++) {
-                rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        double* rd = (double*)result->data;
+        for (size_t o = 0; o < outer; o++)
+            for (size_t r = 0; r < reduce; r++)
+                for (size_t i = 0; i < inner; i++)
+                    rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+    } else {
+        float* sd = (float*)src->data;
+        float* rd = (float*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    rd[o * inner + i] += sd[o * reduce * inner + r * inner + i];
+                }
             }
         }
     }
@@ -1554,6 +1759,12 @@ SNEPPXTensor* SNEPPX_tensor_mean(const SNEPPXTensor* src, size_t dim) {
     if (!src || dim >= src->ndim) return NULL;
     SNEPPXTensor* sum = SNEPPX_tensor_sum(src, dim);
     if (!sum) return NULL;
+    if (sum->dtype == SNEPPX_FLOAT64) {
+        double* rd64 = (double*)sum->data;
+        double inv_n64 = 1.0 / (double)src->shape[dim];
+        for (size_t i = 0; i < sum->size; i++) rd64[i] *= inv_n64;
+        return sum;
+    }
     float* rd = (float*)sum->data;
     float inv_n = 1.0f / (float)src->shape[dim];
     for (size_t i = 0; i < sum->size; i++) rd[i] *= inv_n;
@@ -1576,21 +1787,44 @@ SNEPPXTensor* SNEPPX_tensor_var(const SNEPPXTensor* src, size_t dim) {
     size_t inner = 1, outer = 1, reduce = src->shape[dim];
     for (size_t i = 0; i < dim; i++) outer *= src->shape[i];
     for (size_t i = dim + 1; i < src->ndim; i++) inner *= src->shape[i];
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(mean->shape, mean->ndim, SNEPPX_FLOAT32);
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = (src->dtype == SNEPPX_FLOAT64) ? SNEPPX_FLOAT64 : SNEPPX_FLOAT32;
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(mean->shape, mean->ndim, dt);
     if (!result) { SNEPPX_tensor_destroy(mean); if (tmp) SNEPPX_tensor_destroy(tmp); return NULL; }
-    float* sd = (float*)src->data;
-    float* md = (float*)mean->data;
-    float* rd = (float*)result->data;
-    for (size_t o = 0; o < outer; o++) {
-        for (size_t r = 0; r < reduce; r++) {
-            for (size_t i = 0; i < inner; i++) {
-                float d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
-                rd[o * inner + i] += d * d;
+    if (dt == SNEPPX_FLOAT64) {
+        const double* sd = (const double*)src->data;
+        const double* md = (const double*)mean->data;
+        double* rd = (double*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    double d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
+                    rd[o * inner + i] += d * d;
+                }
+            }
+        }
+    } else {
+        float* sd = (float*)src->data;
+        float* md = (float*)mean->data;
+        float* rd = (float*)result->data;
+        for (size_t o = 0; o < outer; o++) {
+            for (size_t r = 0; r < reduce; r++) {
+                for (size_t i = 0; i < inner; i++) {
+                    float d = sd[o * reduce * inner + r * inner + i] - md[o * inner + i];
+                    rd[o * inner + i] += d * d;
+                }
             }
         }
     }
-    float inv_n = 1.0f / (float)reduce;
-    for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    if (dt == SNEPPX_FLOAT64) {
+        double inv_n = 1.0 / (double)reduce;
+        double* rd = (double*)result->data;
+        for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    } else {
+        float inv_n = 1.0f / (float)reduce;
+        float* rd = (float*)result->data;
+        for (size_t i = 0; i < result->size; i++) rd[i] *= inv_n;
+    }
     SNEPPX_tensor_destroy(mean);
     if (tmp) SNEPPX_tensor_destroy(tmp);
     return result;
@@ -1606,8 +1840,13 @@ SNEPPXTensor* SNEPPX_tensor_var(const SNEPPXTensor* src, size_t dim) {
 SNEPPXTensor* SNEPPX_tensor_std(const SNEPPXTensor* src, size_t dim) {
     SNEPPXTensor* v = SNEPPX_tensor_var(src, dim);
     if (!v) return NULL;
-    float* d = (float*)v->data;
-    for (size_t i = 0; i < v->size; i++) d[i] = sqrtf(d[i]);
+    if (v->dtype == SNEPPX_FLOAT64) {
+        double* d = (double*)v->data;
+        for (size_t i = 0; i < v->size; i++) d[i] = sqrt(d[i]);
+    } else {
+        float* d = (float*)v->data;
+        for (size_t i = 0; i < v->size; i++) d[i] = sqrtf(d[i]);
+    }
     return v;
 }
 
@@ -1736,6 +1975,17 @@ SNEPPXTensor* SNEPPX_tensor_cumprod(const SNEPPXTensor* src, size_t dim) {
  */
 float SNEPPX_tensor_dot(const SNEPPXTensor* a, const SNEPPXTensor* b) {
     if (!a || !b || a->size != b->size) return 0.0f;
+    if (a->dtype != b->dtype) return 0.0f;
+    if (a->dtype == SNEPPX_FLOAT64) {
+        /* float64 inputs: accumulate in double (the float return caps the
+         * final precision, but the accumulation must not misread the
+         * f64 storage as f32 — that produced garbage). */
+        const double* ad = (const double*)a->data;
+        const double* bd = (const double*)b->data;
+        double sum = 0.0;
+        for (size_t i = 0; i < a->size; i++) sum += ad[i] * bd[i];
+        return (float)sum;
+    }
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
     float sum = 0.0f;
@@ -1757,6 +2007,7 @@ SNEPPXTensor* SNEPPX_tensor_matmul(const SNEPPXTensor* a, const SNEPPXTensor* b)
     b = tensor_prep_contiguous(b, &tb);
 
     int a1 = (a->ndim == 1), b1 = (b->ndim == 1);
+    if (a1 && b1) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; }
     size_t a_m = a1 ? 1 : a->shape[a->ndim - 2];
     size_t a_k = a1 ? a->shape[0] : a->shape[a->ndim - 1];
     size_t b_k = b1 ? b->shape[0] : b->shape[b->ndim - 2];
@@ -1783,14 +2034,58 @@ SNEPPXTensor* SNEPPX_tensor_matmul(const SNEPPXTensor* a, const SNEPPXTensor* b)
     for (size_t i = 0; i < out_lead_ndim; i++) out_shape[i] = out_lead[i];
     if (!a1) out_shape[out_lead_ndim] = a_m;
     if (!b1) out_shape[out_lead_ndim + (a1 ? 0 : 1)] = b_n;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXDtype mm_dtype = (a->dtype == b->dtype) ? a->dtype : SNEPPX_FLOAT32;
+    if (mm_dtype != SNEPPX_FLOAT32 && mm_dtype != SNEPPX_FLOAT64) {
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return NULL;
+    }
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, mm_dtype);
     if (!result) { if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb); return NULL; }
+
+    size_t batches = 1; for (size_t i = 0; i < out_lead_ndim; i++) batches *= out_lead[i];
+    if (batches == 0) batches = 1;
+
+    if (mm_dtype == SNEPPX_FLOAT64) {
+        /* float64 path — element offsets are in double counts */
+        const double* a64 = (const double*)a->data;
+        const double* b64 = (const double*)b->data;
+        double* r64 = (double*)result->data;
+        for (size_t batch2 = 0; batch2 < batches; batch2++) {
+            size_t rem64 = batch2, coords64[8];
+            for (long i = (long)out_lead_ndim - 1; i >= 0; i--) { coords64[i] = rem64 % out_lead[i]; rem64 /= out_lead[i]; }
+            long aoff64 = 0, boff64 = 0;
+            for (size_t i = 0; i < out_lead_ndim; i++) {
+                long ai = (long)i - (long)(out_lead_ndim - a_lead_ndim);
+                long bi = (long)i - (long)(out_lead_ndim - b_lead_ndim);
+                size_t ac = ai >= 0 ? (a_lead[ai] == 1 ? 0 : coords64[i]) : 0;
+                size_t bc = bi >= 0 ? (b_lead[bi] == 1 ? 0 : coords64[i]) : 0;
+                if (ai >= 0) { size_t pre = 1; for (long k = 0; k < ai; k++) pre *= a_lead[k]; aoff64 += (long)(ac * pre); }
+                if (bi >= 0) { size_t pre = 1; for (long k = 0; k < bi; k++) pre *= b_lead[k]; boff64 += (long)(bc * pre); }
+            }
+            size_t Ab = (size_t)aoff64 * (a1 ? a_k : a_m * a_k);
+            size_t Bb = (size_t)boff64 * (b1 ? b_k : b_k * b_n);
+            size_t Cb = batch2 * (a1 ? 0 : a_m) * (b1 ? 0 : b_n);
+            if (a1 && b1) {
+                double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + l] * b64[Bb + l];
+                r64[batch2] = s;
+            } else if (a1) {
+                for (size_t j = 0; j < b_n; j++) { double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + l] * b64[Bb + l * b_n + j]; r64[Cb + j] = s; }
+            } else if (b1) {
+                for (size_t i = 0; i < a_m; i++) { double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + i * a_k + l] * b64[Bb + l]; r64[Cb + i] = s; }
+            } else {
+                for (size_t i = 0; i < a_m; i++) for (size_t j = 0; j < b_n; j++) {
+                    double s = 0.0f; for (size_t l = 0; l < a_k; l++) s += a64[Ab + i * a_k + l] * b64[Bb + l * b_n + j];
+                    r64[Cb + i * b_n + j] = s;
+                }
+            }
+        }
+        if (ta) SNEPPX_tensor_destroy(ta); if (tb) SNEPPX_tensor_destroy(tb);
+        return result;
+    }
 
     float* ad = (float*)a->data;
     float* bd = (float*)b->data;
     float* rd = (float*)result->data;
-    size_t batches = 1; for (size_t i = 0; i < out_lead_ndim; i++) batches *= out_lead[i];
-    if (batches == 0) batches = 1;
 
     for (size_t batch = 0; batch < batches; batch++) {
         /* decompose batch into out_lead coords */
@@ -1934,29 +2229,65 @@ SNEPPXTensor* SNEPPX_tensor_conv1d(const SNEPPXTensor* input, const SNEPPXTensor
     size_t K = kernel->shape[kernel->ndim - 1];
     size_t out_len = (L + 2 * padding - K) / stride + 1;
     if (out_len == 0) return NULL;
+    size_t in_channels = input->shape[input->ndim - 2];
+    /* torch conv1d weight layout is (C_out, C_in, K): the output-channel
+     * count lives at shape[ndim-3] (or is absent for a (C_in, K) kernel). */
+    size_t kernel_channels =
+        kernel->ndim >= 3 ? kernel->shape[kernel->ndim - 3] : 1;
+    size_t kernel_in_channels = kernel->shape[kernel->ndim - 2];
+    if (kernel_in_channels != in_channels) return NULL;
+    if (input->dtype != kernel->dtype ||
+        (input->dtype != SNEPPX_FLOAT32 && input->dtype != SNEPPX_FLOAT64))
+        return NULL;
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = input->dtype;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
-    for (size_t i = 0; i < out_ndim - 1; i++) out_shape[i] = input->shape[i];
+    for (size_t i = 0; i < out_ndim - 1; i++)
+        /* channel axis (ndim-2) must report the KERNEL's out-channel count,
+         * not the input's (torch conv1d: (N, C_out, L_out)). */
+        out_shape[i] = (i == out_ndim - 2) ? kernel_channels : input->shape[i];
     out_shape[out_ndim - 1] = out_len;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) return NULL;
-    float* id = (float*)input->data;
-    float* kd = (float*)kernel->data;
-    float* rd = (float*)result->data;
-    size_t in_channels = input->shape[input->ndim - 2];
-    size_t kernel_channels = kernel->shape[kernel->ndim - 2];
     size_t batch = input->size / (in_channels * L);
-    for (size_t b = 0; b < batch; b++) {
-        for (size_t c_in = 0; c_in < in_channels; c_in++) {
-            for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
-                for (size_t pos = 0; pos < out_len; pos++) {
-                    float sum = 0.0f;
-                    for (size_t k = 0; k < K; k++) {
-                        int inp_pos = (int)(pos * stride + k) - (int)padding;
-                        if (inp_pos >= 0 && inp_pos < (int)L)
-                            sum += id[b * in_channels * L + c_in * L + inp_pos] * kd[c_out * in_channels * K + c_in * K + k];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* id = (const double*)input->data;
+        const double* kd = (const double*)kernel->data;
+        double* rd = (double*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t c_in = 0; c_in < in_channels; c_in++) {
+                for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
+                    for (size_t pos = 0; pos < out_len; pos++) {
+                        double sum = 0.0;
+                        for (size_t k = 0; k < K; k++) {
+                            int inp_pos = (int)(pos * stride + k) - (int)padding;
+                            if (inp_pos >= 0 && inp_pos < (int)L)
+                                sum += id[b * in_channels * L + c_in * L + (size_t)inp_pos]
+                                     * kd[c_out * in_channels * K + c_in * K + k];
+                        }
+                        rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
                     }
-                    rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
+                }
+            }
+        }
+    } else {
+        float* id = (float*)input->data;
+        float* kd = (float*)kernel->data;
+        float* rd = (float*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t c_in = 0; c_in < in_channels; c_in++) {
+                for (size_t c_out = 0; c_out < kernel_channels; c_out++) {
+                    for (size_t pos = 0; pos < out_len; pos++) {
+                        float sum = 0.0f;
+                        for (size_t k = 0; k < K; k++) {
+                            int inp_pos = (int)(pos * stride + k) - (int)padding;
+                            if (inp_pos >= 0 && inp_pos < (int)L)
+                                sum += id[b * in_channels * L + c_in * L + (size_t)inp_pos]
+                                     * kd[c_out * in_channels * K + c_in * K + k];
+                        }
+                        rd[b * kernel_channels * out_len + c_out * out_len + pos] += sum;
+                    }
                 }
             }
         }
@@ -1982,35 +2313,75 @@ SNEPPXTensor* SNEPPX_tensor_conv2d(const SNEPPXTensor* input, const SNEPPXTensor
     size_t out_h = (H + 2 * pad_h - KH) / stride_h + 1;
     size_t out_w = (W + 2 * pad_w - KW) / stride_w + 1;
     if (out_h == 0 || out_w == 0) return NULL;
+    size_t in_channels = input->shape[input->ndim - 3];
+    /* torch conv2d weight layout is (C_out, C_in, KH, KW): the output-
+     * channel count lives at shape[ndim-4] (absent for a (C_in, KH, KW)
+     * kernel, i.e. single output channel). */
+    size_t out_channels = kernel->ndim >= 4 ? kernel->shape[kernel->ndim - 4] : 1;
+    size_t kernel_in_channels = kernel->shape[kernel->ndim - 3];
+    if (kernel_in_channels != in_channels) return NULL;
+    if (input->dtype != kernel->dtype ||
+        (input->dtype != SNEPPX_FLOAT32 && input->dtype != SNEPPX_FLOAT64))
+        return NULL;
+    /* dtype-following: f64 inputs stay f64 */
+    SNEPPXDtype dt = input->dtype;
     size_t out_ndim = input->ndim;
     size_t out_shape[16];
-    for (size_t i = 0; i < out_ndim - 2; i++) out_shape[i] = input->shape[i];
+    for (size_t i = 0; i < out_ndim - 2; i++)
+        /* channel axis (ndim-3) must report the KERNEL's out-channel count,
+         * not the input's (torch conv2d: (N, C_out, H_out, W_out)). */
+        out_shape[i] = (i == out_ndim - 3) ? out_channels : input->shape[i];
     out_shape[out_ndim - 2] = out_h;
     out_shape[out_ndim - 1] = out_w;
-    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, SNEPPX_FLOAT32);
+    SNEPPXTensor* result = SNEPPX_tensor_zeros(out_shape, out_ndim, dt);
     if (!result) return NULL;
-    float* id = (float*)input->data;
-    float* kd = (float*)kernel->data;
-    float* rd = (float*)result->data;
-    size_t in_channels = input->shape[input->ndim - 3];
-    size_t out_channels = kernel->shape[kernel->ndim - 3];
     size_t batch = input->size / (in_channels * H * W);
-    for (size_t b = 0; b < batch; b++) {
-        for (size_t co = 0; co < out_channels; co++) {
-            for (size_t ci = 0; ci < in_channels; ci++) {
-                for (size_t oh = 0; oh < out_h; oh++) {
-                    for (size_t ow = 0; ow < out_w; ow++) {
-                        float sum = 0.0f;
-                        for (size_t kh = 0; kh < KH; kh++) {
-                            int ih = (int)(oh * stride_h + kh) - (int)pad_h;
-                            for (size_t kw = 0; kw < KW; kw++) {
-                                int iw = (int)(ow * stride_w + kw) - (int)pad_w;
-                                if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
-                                    sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
-                                         * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+    if (dt == SNEPPX_FLOAT64) {
+        const double* id = (const double*)input->data;
+        const double* kd = (const double*)kernel->data;
+        double* rd = (double*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t co = 0; co < out_channels; co++) {
+                for (size_t ci = 0; ci < in_channels; ci++) {
+                    for (size_t oh = 0; oh < out_h; oh++) {
+                        for (size_t ow = 0; ow < out_w; ow++) {
+                            double sum = 0.0;
+                            for (size_t kh = 0; kh < KH; kh++) {
+                                int ih = (int)(oh * stride_h + kh) - (int)pad_h;
+                                for (size_t kw = 0; kw < KW; kw++) {
+                                    int iw = (int)(ow * stride_w + kw) - (int)pad_w;
+                                    if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
+                                        sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
+                                             * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+                                }
                             }
+                            rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
                         }
-                        rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
+                    }
+                }
+            }
+        }
+    } else {
+        float* id = (float*)input->data;
+        float* kd = (float*)kernel->data;
+        float* rd = (float*)result->data;
+        for (size_t b = 0; b < batch; b++) {
+            for (size_t co = 0; co < out_channels; co++) {
+                for (size_t ci = 0; ci < in_channels; ci++) {
+                    for (size_t oh = 0; oh < out_h; oh++) {
+                        for (size_t ow = 0; ow < out_w; ow++) {
+                            float sum = 0.0f;
+                            for (size_t kh = 0; kh < KH; kh++) {
+                                int ih = (int)(oh * stride_h + kh) - (int)pad_h;
+                                for (size_t kw = 0; kw < KW; kw++) {
+                                    int iw = (int)(ow * stride_w + kw) - (int)pad_w;
+                                    if (ih >= 0 && ih < (int)H && iw >= 0 && iw < (int)W)
+                                        sum += id[b * in_channels * H * W + ci * H * W + (size_t)ih * W + (size_t)iw]
+                                             * kd[co * in_channels * KH * KW + ci * KH * KW + kh * KW + kw];
+                                }
+                            }
+                            rd[b * out_channels * out_h * out_w + co * out_h * out_w + oh * out_w + ow] += sum;
+                        }
                     }
                 }
             }
@@ -2164,6 +2535,32 @@ SNEPPXTensor* SNEPPX_tensor_relu(const SNEPPXTensor* src) {
     if (!result) return NULL;
     float* rd = (float*)result->data;
     for (size_t i = 0; i < result->size; i++) if (rd[i] < 0) rd[i] = 0.0f;
+    return result;
+}
+
+/**
+ * @brief Perform Tensor Fake Quant (symmetric affine).
+ *
+ * @param src [in] Src value.
+ * @param scale [in] Scale value (> 0).
+ * @param bits [in] Bit width (2..16).
+ *
+ * @return Pointer on success, NULL on error.
+ */
+SNEPPXTensor* SNEPPX_tensor_fake_quant(const SNEPPXTensor* src, float scale, int bits) {
+    if (!src || !src->data || scale <= 0.0f || bits < 2 || bits > 16) return NULL;
+    int qmax = (1 << (bits - 1)) - 1;
+    int qmin = -(1 << (bits - 1));
+    float inv_scale = 1.0f / scale;
+    SNEPPXTensor* result = SNEPPX_tensor_copy(src);
+    if (!result) return NULL;
+    float* rd = (float*)result->data;
+    for (size_t i = 0; i < result->size; i++) {
+        float qf = floorf(rd[i] * inv_scale + 0.5f);
+        if (qf < (float)qmin) qf = (float)qmin;
+        if (qf > (float)qmax) qf = (float)qmax;
+        rd[i] = qf * scale;
+    }
     return result;
 }
 
@@ -2724,3 +3121,4 @@ const char* SNEPPX_tensor_dtype_name(SNEPPXDtype dtype) {
     }
     return "unknown";
 }
+

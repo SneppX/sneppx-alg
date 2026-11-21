@@ -69,7 +69,9 @@ int  SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t le
  */
 int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len);
 
-/* bsdiff delta generation */
+/* SXP1 is a project-specific format, not BSDIFF40: 4-byte magic, 64-bit
+ * output size, bounded COPY/INSERT records, and a final END marker.
+ * The generator emits common-prefix COPY, middle INSERT, and common-suffix COPY. */
 /**
  * @brief Perform Bsdiff.
  *
@@ -78,24 +80,29 @@ int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_js
  * @param new_data [in] New Data value.
  * @param new_len [in] New Len value.
  * @param patch [out] Patch value.
- * @param patch_len [out] Patch Len value.
+ * @param patch_len [in,out] Patch capacity on entry; bytes written on success.
+ *                      If capacity is insufficient, the required size is returned.
  *
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len);
 /**
- * @brief Perform Bspatch.
+ * @brief Apply an SXP1 patch after validating the complete record stream.
  *
- * @param old_data [in] Old Data value.
- * @param old_len [in] Old Len value.
- * @param patch [in] Patch value.
- * @param patch_len [in] Patch Len value.
- * @param new_data [out] New Data value.
- * @param new_len [out] New Len value.
+ * @param old_data [in] Source data; may be NULL only when old_len is zero.
+ * @param old_len [in] Source data length.
+ * @param patch [in] Complete SXP1 patch.
+ * @param patch_len [in] Patch length in bytes.
+ * @param new_data [out] Destination buffer; may be NULL only for empty output.
+ * @param new_len [in,out] Destination capacity on entry; actual output size on success.
  *
- * @return 0 on success, -1 on error.
+ * @return 0 on success, -1 on malformed input or insufficient capacity.
  */
 int  SNEPPX_bspatch(const uint8_t* old_data, size_t old_len, const uint8_t* patch, size_t patch_len, uint8_t* new_data, size_t* new_len);
+
+/* File-based delta helpers used by the update pipeline. */
+int  SNEPPX_bsdiff_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
+int  SNEPPX_bspatch_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
 
 /* A/B partition management */
 typedef struct {

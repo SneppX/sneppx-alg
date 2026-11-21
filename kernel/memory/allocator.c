@@ -78,7 +78,14 @@ void* SNEPPX_malloc(size_t size, size_t alignment) {
 #ifdef _WIN32
     ptr = _aligned_malloc(size, alignment);
 #elif defined(__linux__) || defined(__APPLE__)
-    if (posix_memalign(&ptr, alignment, size) != 0) {
+    size_t align = alignment;
+    if (align < sizeof(void*)) align = sizeof(void*);
+    if ((align & (align - 1)) != 0) {
+        size_t p = 1;
+        while (p < align) p <<= 1;
+        align = p;
+    }
+    if (posix_memalign(&ptr, align, size) != 0) {
         return NULL;
     }
 #else

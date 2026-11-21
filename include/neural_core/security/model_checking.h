@@ -102,7 +102,20 @@ int  SNEPPX_model_set_property(SNEPPXFormalModel* model, const char* property);
  * @return The result value, or 0 on error.
  */
 SNEPPXModelCheckResult SNEPPX_model_check(SNEPPXFormalModel* model);
+int  SNEPPX_model_check_deadlock(SNEPPXFormalModel* model);
+int  SNEPPX_model_check_reachability(SNEPPXFormalModel* model, uint32_t from_state, uint32_t to_state);
+int  SNEPPX_model_check_liveness(SNEPPXFormalModel* model, const char* property);
 int  SNEPPX_model_verify_invariant(SNEPPXFormalModel* model, int (*invariant)(uint32_t state_id));
+/**
+ * @brief Perform Model Get Counterexample.
+ *
+ * @param model [in] Model value.
+ * @param trace [out] Trace array of state IDs (initial -> error).
+ * @param max_len [in] Max length of trace array.
+ *
+ * @return Number of states in trace, or 0 if no counterexample, -1 on error.
+ */
+int  SNEPPX_model_get_counterexample(SNEPPXFormalModel* model, uint32_t* trace, int max_len);
 
 #ifdef __cplusplus
 }

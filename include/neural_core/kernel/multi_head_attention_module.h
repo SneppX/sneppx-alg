@@ -1,6 +1,10 @@
 #ifndef SNEPPX_ATTENTION_H
 #define SNEPPX_ATTENTION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 
@@ -198,4 +202,8 @@ int SNEPPX_attn_build_train_graph(SNEPPXAttentionWeights* w, SNEPPXTape* tape,
                                  SNEPPXVariable** output_var,
                                  SNEPPXTensor* cos, SNEPPXTensor* sin);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

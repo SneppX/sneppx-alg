@@ -1,6 +1,10 @@
 #ifndef SNEPPX_NPE_H
 #define SNEPPX_NPE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 #include <stddef.h>
@@ -321,4 +325,8 @@ SNEPPXNPEProgram* SNEPPX_npe_jit_optimize(SNEPPXNPEJITProfile* profile, const SN
  */
 int SNEPPX_npe_vm_optimize(SNEPPXNPEVM* vm);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_NPE_H */

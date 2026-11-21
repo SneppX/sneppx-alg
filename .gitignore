@@ -6,6 +6,7 @@ build-coverage/
 build_standalone/
 out/
 dist/
+site/
 
 # CMake
 CMakeCache.txt
@@ -13,6 +14,7 @@ CMakeFiles/
 cmake_install.cmake
 CMakeUserPresets.json
 compile_commands.json
+Testing/
 
 # Object and library files
 *.o
@@ -50,6 +52,9 @@ node_modules/
 
 # opencode
 .opencode/
+
+# kilo
+.kilo/
 
 # Local dev-tools data (lint logs, stats)
 .sneppx/
@@ -89,3 +94,20 @@ CMakeLists_standalone.txt
 target/
 Cargo.lock
 
+# Audit deliverables (local working memory, not committed — see AGENTS.md)
+CAPABILITY_MATRIX.md
+MISSING_FEATURES.md
+IMPLEMENTATION_STATUS.md
+BENCHMARK_PLAN.md
+SECURITY_AUDIT.md
+COMPATIBILITY.md
+
+
+# Docs playground bundle is intentionally committed
+!docs/assets/sneppx_py.zip
+
+# External
+.kilo/
+
+# mkdocs social plugin cache (PNGs only)
+.cache/*.png

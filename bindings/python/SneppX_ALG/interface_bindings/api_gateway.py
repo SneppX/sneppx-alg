@@ -4,7 +4,7 @@ import time
 import logging
 from typing import Optional, Dict, Any, List
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Header
 from pydantic import BaseModel, Field, EmailStr
 
 from .user_store import UserStore, get_user_store
@@ -83,12 +83,16 @@ def _get_user_id_from_key(authorization: Optional[str]) -> Optional[str]:
     if not authorization:
         return None
     key = authorization.strip()
-    if key.startswith("Bearer "):
-        key = key[7:]
+    scheme, separator, credential = key.partition(" ")
+    if separator and scheme.casefold() == "bearer":
+        key = credential.strip()
     km = get_key_manager()
     info = km.validate_key(key)
     if info and info.get("user_id"):
         return info["user_id"]
+    session = get_user_store().validate_session_token(key)
+    if session:
+        return session["user_id"]
     return None
 
 
@@ -118,27 +122,26 @@ async def register(req: RegisterRequest):
     )
 
 
+@router.post("/logout")
+async def logout(authorization: Optional[str] = Header(default=None, alias="Authorization")):
+    if not authorization:
+        raise HTTPException(401, "Authentication required")
+    token = authorization.strip()
+    scheme, separator, credential = token.partition(" ")
+    if separator and scheme.casefold() == "bearer":
+        token = credential.strip()
+    if not get_user_store().revoke_session_token(token):
+        raise HTTPException(401, "Invalid or expired session")
+    return {"status": "logged_out"}
+
+
 @router.post("/login", response_model=LoginResponse)
 async def login(req: LoginRequest):
     us = get_user_store()
     user = us.authenticate_user(email=req.email, password=req.password)
     if user is None:
         raise HTTPException(401, "Invalid email or password")
-    km = get_key_manager()
-    keys = km.list_keys()
-    user_keys = [k for k in keys if k.get("user_id") == user["id"]]
-    if not user_keys:
-        key_result = km.create_key(
-            name=f"Session key for {req.email}",
-            tier=user.get("tier", "free"),
-            user_id=user["id"],
-        )
-        token = key_result["key"]
-    else:
-        token = None
-        for k in user_keys:
-            stored = km._store.get_key(k["id"]) if hasattr(km, "_store") else None
-        token = "sk-session-placeholder"
+    token = us.create_session_token(user["id"], expires_in_seconds=86400)
     return LoginResponse(
         user_id=user["id"],
         email=user["email"],
@@ -155,7 +158,7 @@ self_service_router = APIRouter(tags=["keys"])
 
 
 @self_service_router.get("/v1/keys", response_model=KeyListResponse)
-async def list_my_keys(authorization: Optional[str] = Query(default=None, alias="Authorization")):
+async def list_my_keys(authorization: Optional[str] = Header(default=None, alias="Authorization")):
     user_id = _get_user_id_from_key(authorization)
     if not user_id:
         raise HTTPException(401, "Authentication required")
@@ -168,7 +171,7 @@ async def list_my_keys(authorization: Optional[str] = Query(default=None, alias=
 @self_service_router.post("/v1/keys", response_model=Dict[str, Any])
 async def create_my_key(
     req: KeyCreateRequest,
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     user_id = _get_user_id_from_key(authorization)
     if not user_id:
@@ -197,7 +200,7 @@ async def create_my_key(
 @self_service_router.delete("/v1/keys/{key_id}")
 async def revoke_my_key(
     key_id: str,
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     user_id = _get_user_id_from_key(authorization)
     if not user_id:
@@ -213,7 +216,7 @@ async def revoke_my_key(
 @self_service_router.get("/v1/usage")
 async def my_usage(
     since: Optional[float] = Query(default=None),
-    authorization: Optional[str] = Query(default=None, alias="Authorization"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
     user_id = _get_user_id_from_key(authorization)
     if not user_id:

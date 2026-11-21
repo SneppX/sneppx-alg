@@ -1,6 +1,10 @@
 #ifndef SNEPPX_DDOS_MITIGATION_H
 #define SNEPPX_DDOS_MITIGATION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -124,4 +128,8 @@ int SNEPPX_ddos_update_config(const ddos_config_t *config);
  */
 int SNEPPX_ddos_reset(void);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

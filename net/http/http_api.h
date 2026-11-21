@@ -29,10 +29,15 @@ extern "C" {
  *   GET  /v1/health          - liveness + version + uptime
  *   GET  /v1/models          - list known model presets
  *   GET  /v1/models/{id}     - single model configuration
- *   POST /v1/generate        - generate text from a prompt
+ *   POST /v1/generate        - generate text from a prompt (reference scaffold)
+ *   POST /v1/completions     - OpenAI-style completions (reference scaffold)
  *
- * The generate handler parses the JSON request body and produces a
- * deterministic continuation (no LLM weights are required to serve).
+ * The generate/completions handlers parse JSON request bodies and produce
+ * deterministic continuations (char-code/LCG reference path). They do NOT run
+ * a trained model forward pass or load weights; responses include
+ * mode/runtime/warning metadata so callers can detect scaffold behavior.
+ * A real C inference runtime requires wiring a tokenizer, weight loader, and
+ * model forward/logits path (not yet implemented in this C layer).
  */
 
 typedef struct SNEPPX_HttpApi SNEPPX_HttpApi;

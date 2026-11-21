@@ -23,8 +23,9 @@
  */
 
 #include <stdio.h>
+#include "test_gtest.h"
 
-int main(void) {
+TEST(test_security_common, suite) {
     printf("test_security: skeleton — no security unit tests implemented\n");
-    return 0;
+    return;
 }

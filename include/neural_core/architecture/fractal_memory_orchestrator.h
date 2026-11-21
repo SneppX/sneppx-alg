@@ -1,6 +1,10 @@
 #ifndef SNEPPX_FM_H
 #define SNEPPX_FM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 #include <stddef.h>
@@ -331,4 +335,8 @@ int SNEPPX_fm_send_gradients(SNEPPXFMController* ctrl, size_t node_id, const SNE
  */
 int SNEPPX_fm_receive_gradients(SNEPPXFMController* ctrl, size_t node_id, SNEPPXTensor* aggregated);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_FM_H */

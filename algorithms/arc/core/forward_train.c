@@ -2,24 +2,9 @@
 #include "automatic_differentiation_framework.h"
 #include "polymorphic_memory_allocator.h"
 #include <string.h>
+#include <math.h>
 #include <stdlib.h>
-/*
- * SNEPPX - ARC Forward (Training)
- *
- * WHAT
- *   ARC Forward (Training).
- *
- * CONCEPT
- *   ARC forward pass with training-mode adversarial perturbation and gradient obfuscation.
- *
- * ROLE
- *   Training variant that computes adversarial perturbations on-the-fly and applies gradient obfuscation for robustness.
- *
- * REFERENCES
- *   None (internal algorithm).
- */
-
-
+#include <stdio.h>
 
 /**
  * @brief Perform Arc Build Train Graph.
@@ -47,7 +32,7 @@ int SNEPPX_arc_build_train_graph(SNEPPXARCLayer* layer, SNEPPXTape* tape,
     /* Input guard: project through projection_matrix (always sanitize during training) */
     SNEPPXVariable* proj_w_t = SNEPPX_transpose(tape, proj_w, 0, 1);
     SNEPPXVariable* current = SNEPPX_matmul(tape, input_var, proj_w_t);
-
+    
     /* Output verifier: MLP with ReLU */
     for (size_t l = 0; l < n_verifier_layers; l++) {
         SNEPPXVariable* w = weight_vars[wi++];
@@ -94,7 +79,9 @@ int SNEPPX_arc_build_adversarial_train_graph(SNEPPXARCLayer* layer, SNEPPXTape* 
 
     SNEPPXTensor* adv_t = NULL;
     SNEPPX_arc_simulate_attack(input_var->data, first_type, epsilon, &adv_t);
-    if (!adv_t) return -1;
+    if (!adv_t) {
+        return -1;
+    }
 
     SNEPPXVariable* adv_var = SNEPPX_variable_create(adv_t, 0);
     SNEPPX_tape_record(tape, adv_var);

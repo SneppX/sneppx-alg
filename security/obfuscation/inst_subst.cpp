@@ -488,7 +488,6 @@ void SNEPPXObfSubst::substitute_add(SNEPPXObfBlock& block) {
 void SNEPPXObfSubst::substitute_logic(SNEPPXObfBlock& block) {
     for (size_t i = 0; i < block.instructions.size(); i++) {
         auto& inst = block.instructions[i];
-        if (!choose_substitution()) continue;
         std::vector<SNEPPXObfInstruction> seq;
         if (inst.type == SNEPPXObfInstType::ADD) {
             int mode = rng() % 2;

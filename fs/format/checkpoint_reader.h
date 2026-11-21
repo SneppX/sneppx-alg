@@ -127,6 +127,12 @@ int SNEPPX_ckpt_read_open(const char* path, SNEPPXCheckpointHeader* header, void
  *
  * @return 0 on success, -1 on error.
  */
+/* Read validated tensor metadata before allocating the destination buffer. */
+int SNEPPX_ckpt_get_tensor_record(void* handle, size_t tensor_idx, SNEPPXTensorRecord* record);
+/* Capacity-checked read; rejects undersized buffers before writing any bytes. */
+int SNEPPX_ckpt_read_tensor_sized(void* handle, size_t tensor_idx, void* tensor_data,
+                                  size_t buffer_size, SNEPPXTensorRecord* record);
+/* Legacy ABI: caller must provide at least record->data_size bytes. */
 int SNEPPX_ckpt_read_tensor(void* handle, size_t tensor_idx, void* tensor_data, SNEPPXTensorRecord* record);
 /**
  * @brief Perform Ckpt Read Metadata.
@@ -146,6 +152,12 @@ int SNEPPX_ckpt_read_metadata(void* handle, char** metadata_json, size_t* json_l
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_ckpt_read_close(void* handle);
+
+/* Canonical training-step metadata helpers used by distributed checkpoints. */
+int SNEPPX_ckpt_format_step_metadata(int step, char* buffer, size_t capacity,
+                                     size_t* written);
+int SNEPPX_ckpt_parse_step_metadata(const char* metadata, size_t length,
+                                    int* step);
 
 /* ---------- Utility ---------- */
 /**

@@ -1,6 +1,7 @@
 #include "../../include/neural_core/architecture/distributed.h"
 #ifdef SNEPPX_HAS_CUDA
 #include <cuda_runtime.h>
+#include "../../net/distributed/nccl.h"
 #endif
 #include <stdlib.h>
 #include <string.h>
@@ -48,6 +49,9 @@ struct SNEPPX_ZeroOptimizer {
     float* exp_avg;
     float* exp_avg_sq;
     size_t local_numel;
+    float* full_params;   // ZeRO-3 reconstructed full parameter buffer
+    size_t full_numel;
+    SNEPPX_ProcessGroup* pg;
 };
 
 static size_t sneppx_zero_partition_size(int total, int world_size, int rank) {
@@ -103,7 +107,15 @@ int sneppx_zero_init(SNEPPX_ZeroOptimizer** opt, int num_params,
     o->partitions[0].param_idx = 0;
     o->partitions[0].owning_rank = rank;
     o->partitions[0].numel = local_n;
-    
+
+    if (stage >= 3) {
+        o->full_numel = local_n * (size_t)world_size;
+        cudaMalloc(&o->full_params, o->full_numel * sizeof(float));
+        cudaMemset(o->full_params, 0, o->full_numel * sizeof(float));
+    }
+    sneppx_nccl_initialize();
+    sneppx_pg_create(&o->pg, world_size, rank);
+
     *opt = o;
     return 0;
 }
@@ -150,22 +162,19 @@ int sneppx_zero_step(SNEPPX_ZeroOptimizer* opt, float* grads,
         opt->epsilon, opt->weight_decay, opt->local_numel
     );
     
-    // Stage 3: broadcast updated params to all ranks
-    if (opt->stage >= 3) {
-        // All-gather params
-        size_t total = opt->partitions[0].numel * opt->world_size;
-        float* buffer;
-        cudaMalloc(&buffer, total * sizeof(float));
-        cudaMemcpy(buffer + sneppx_zero_partition_start(
-            total * opt->world_size, opt->world_size, opt->rank),
-            opt->params_fp32, opt->local_numel * sizeof(float),
-            cudaMemcpyDeviceToDevice);
-        // Broadcast
-        cudaMemcpy(opt->params_fp32, buffer, total * sizeof(float),
-                   cudaMemcpyDeviceToDevice);
-        cudaFree(buffer);
+    // Stage 3: all-gather updated params so every rank holds the full buffer
+    if (opt->stage >= 3 && opt->pg) {
+        size_t start = sneppx_zero_partition_start(opt->full_numel, opt->world_size, opt->rank);
+        cudaMemcpy(opt->full_params + start, opt->params_fp32,
+                   opt->local_numel * sizeof(float), cudaMemcpyDeviceToDevice);
+        int ret = sneppx_nccl_all_gather(opt->params_fp32, opt->full_params,
+                                         opt->local_numel, SNEPPX_NCCL_FLOAT,
+                                         opt->pg->comms[0], stream);
+        if (ret != 0) return ret;
+        // opt->params_fp32 keeps the local shard for the optimizer; the full
+        // reconstructed parameters live in opt->full_params for the forward pass.
     }
-    
+
     return 0;
 }
 
@@ -174,6 +183,8 @@ int sneppx_zero_destroy(SNEPPX_ZeroOptimizer* opt) {
     if (opt->exp_avg) cudaFree(opt->exp_avg);
     if (opt->exp_avg_sq) cudaFree(opt->exp_avg_sq);
     if (opt->grad_buffer) cudaFree(opt->grad_buffer);
+    if (opt->full_params) cudaFree(opt->full_params);
+    if (opt->pg) sneppx_pg_destroy(opt->pg);
     free(opt->partitions);
     free(opt);
     return 0;

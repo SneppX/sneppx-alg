@@ -12,7 +12,7 @@ try:
 except NameError:
     _base = os.path.join(
         os.environ.get(
-            "ARIX_TEST_DIR", "C:/Users/PC/sneppx-ultra/ARIX_Algo/tests/python"
+            "ARIX_TEST_DIR", "C:/Users/PC/SneppX/sneppx-alg/tests/python"
         )
     )
 sys.path.insert(0, os.path.join(os.path.dirname(_base), "../../bindings/python"))

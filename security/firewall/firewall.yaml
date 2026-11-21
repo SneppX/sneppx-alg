@@ -8,7 +8,7 @@ firewall:
     keyfile: ""
     cafile: ""
     require_client_cert: false
-    min_version: 2
+    min_version: TLSv1_2
     ciphers: ""
     pinned_cert_fingerprints: []
     alpn_protocols:
@@ -21,6 +21,7 @@ firewall:
     allowlist: []
     denylist: []
     max_connections: 1000
+    max_blocked_ips: 100000
     rate_limit:
       enabled: true
       max_requests: 100
@@ -37,6 +38,7 @@ firewall:
       - GET
       - POST
     max_concurrent_per_ip: 10
+    allowed_paths: []
     enable_injection_filter: true
     allowed_content_types:
       - application/json

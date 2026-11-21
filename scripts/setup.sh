@@ -21,7 +21,7 @@ fi
 # Configure and build
 echo ""
 echo "=== Configuring (Debug) ==="
-cmake -B build -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_BENCHMARKS=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_BENCHMARKS=ON
 
 echo ""
 echo "=== Building ==="

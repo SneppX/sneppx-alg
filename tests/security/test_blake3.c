@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include "cryptographic_hashing_blake3.h"
 
@@ -18,13 +19,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_vectors(void) {
     printf("\n--- test_vectors ---\n");
@@ -36,7 +31,7 @@ void test_vectors(void) {
     SNEPPX_blake3_finish(&state, hash);
     uint8_t non_zero = 0;
     for (int i = 0; i < 32; i++) non_zero |= hash[i];
-    TEST("hash non-zero", non_zero != 0);
+    SX_TEST("hash non-zero", non_zero != 0);
 
     uint8_t expected_short[] = {
         0x64,0x37,0x64,0x80,0x53,0xe3,0x71,0x9a,
@@ -48,7 +43,7 @@ void test_vectors(void) {
     if (!match) {
         printf("  INFO: hash != reference (expected variant is fine)\n");
     }
-    TEST("hash matches reference", match || 1);
+    SX_TEST("hash matches reference", match || 1);
 }
 
 void test_incremental(void) {
@@ -68,14 +63,9 @@ void test_incremental(void) {
     uint8_t h2[32];
     SNEPPX_blake3_finish(&inc, h2);
 
-    TEST("incremental == single", memcmp(h1, h2, 32) == 0);
+    SX_TEST("incremental == single", memcmp(h1, h2, 32) == 0);
 }
 
-int main(void) {
-    printf("=== SNEPPX-BLAKE3 Test Suite ===\n");
-    test_vectors();
-    test_incremental();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_blake3, test_vectors) { test_vectors(); }
+TEST(test_blake3, test_incremental) { test_incremental(); }

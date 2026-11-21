@@ -1,6 +1,10 @@
 #ifndef SNEPPX_AEAD_H
 #define SNEPPX_AEAD_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -49,4 +53,8 @@ int SNEPPX_aead_decrypt(uint8_t* plaintext, const uint8_t* ciphertext, size_t le
                       const uint8_t tag[16], const uint8_t* aad, size_t aad_len,
                       const uint8_t key[32], const uint8_t nonce[12]);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

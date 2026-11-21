@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "ed25519_signature_verification.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,6 +56,8 @@ typedef struct {
     uint32_t min_allowed_version[3];
     int rollback_protection_enabled;
     int verification_enabled;
+    uint8_t trusted_pubkey[SNEPPX_ED25519_PUBLIC_KEY_LEN];
+    int has_trusted_key;
 } SNEPPXUpdateVerifier;
 
 /**
@@ -112,6 +115,11 @@ int  SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUp
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_update_verifier_rollback_check(SNEPPXUpdateVerifier* uv, uint32_t target_version[3]);
+
+/* S7: verification API extensions */
+int  SNEPPX_update_verifier_set_trusted_pubkey(SNEPPXUpdateVerifier* uv, const uint8_t* public_key);
+int  SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len);
+int  SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t* signing_key, size_t key_len);
 
 #ifdef __cplusplus
 }

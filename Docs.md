@@ -8,11 +8,11 @@ This file contains practical documentation and quick start guides for working wi
 
 ```bash
 # Clone the project
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Configure build
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
 # Build everything
 cmake --build build --config Release -j$(nproc)
@@ -155,14 +155,14 @@ fn main() {
 **Debug Build (for development):**
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Debug
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --config Debug
 ```
 
 **Release Build (for production):**
 
 ```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release -j$(nproc)
 ```
 
@@ -170,19 +170,19 @@ cmake --build build --config Release -j$(nproc)
 
 ```bash
 # Build with Python bindings
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_PYTHON=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_PYTHON=ON
 
 # Build with CUDA support
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=ON
 
 # Build with all security layers
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_SECURITY=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_SECURITY=ON
 
 # Build opt-in reference backends (real computation; OFF by default)
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_VULKAN=ON
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TPU=ON
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_HTTP=ON
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_ZK=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_VULKAN=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TPU=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_HTTP=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_ZK=ON
 
 # Build with tests
 -DSNEPPX_BUILD_TESTS=ON
@@ -467,7 +467,7 @@ fn main() {
 
 ```bash
 # Clone the repo
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
 # Install Python dependencies
@@ -506,12 +506,12 @@ python bindings/python/SneppX_ALG/interface_bindings/tests/test_integration.py
 python -m pytest tests/python/test_tensor.py -v
 
 # Model Zoo C tests
-.\build_test\algorithms\model_zoo\Release\test_model_config.exe
-.\build_test\algorithms\model_zoo\Release\test_model_registry.exe
-.\build_test\algorithms\model_zoo\Release\test_model_weights.exe
-.\build_test\algorithms\model_zoo\Release\test_model_card.exe
-.\build_test\algorithms\model_zoo\Release\test_model_factory.exe
-.\build_test\algorithms\model_zoo\Release\test_integration.exe
+.\build\algorithms\model_zoo\test_model_config.exe
+.\build\algorithms\model_zoo\test_model_registry.exe
+.\build\algorithms\model_zoo\test_model_weights.exe
+.\build\algorithms\model_zoo\test_model_card.exe
+.\build\algorithms\model_zoo\test_model_factory.exe
+.\build\algorithms\model_zoo\test_integration.exe
 ```
 
 #### C/C++ Tests
@@ -559,14 +559,14 @@ apt-get update && apt-get install g++
 
 ```bash
 # Error: No CUDA device
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=OFF
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=OFF
 ```
 
 ### Getting Help
 
 If you run into issues:
 
-1. **Check the docs**: https://github.com/ammar49-cyber/sneppx-alg
+1. **Check the docs**: https://github.com/SneppX/sneppx-alg
 2. **Search issues**: Look for similar problems
 3. **Create a new issue**: Include:
    - Reproduction steps
@@ -615,7 +615,7 @@ MIT License
 
 ## Copyright
 
-© 2024-2026 Ammar [SNEPPX] - algoSNEPPX@gmail.com
+© 2024-2026 Ammar [SNEPPX] - algosneppx@gmail.com
 
 ---
 

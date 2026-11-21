@@ -1,4 +1,5 @@
 #include "system_architecture_definitions.h"
+#include "test_gtest.h"
 #include "differentiable_training_pipeline.h"
 #include "hierarchical_state_space.h"
 #include "automatic_differentiation_framework.h"
@@ -25,24 +26,8 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_attn_training_step(void) {
     SNEPPXArchConfig arch_cfg = SNEPPX_arch_config_default();
@@ -56,32 +41,32 @@ static void test_attn_training_step(void) {
     arch_cfg.vocab_size = 16;
 
     SNEPPXModel* model = SNEPPX_model_create(&arch_cfg);
-    ASSERT(model != NULL, "attn model");
+    SX_ASSERT(model != NULL, "attn model");
 
     SNEPPXTrainConfig train_cfg = SNEPPX_train_config_default();
     train_cfg.learning_rate = 0.001f;
     SNEPPXTrainer* trainer = SNEPPX_trainer_create(model, &train_cfg);
-    ASSERT(trainer != NULL, "trainer");
+    SX_ASSERT(trainer != NULL, "trainer");
 
     size_t B = 1, S = 1;
     size_t in_shape[] = {B, S};
     SNEPPXTensor* input = SNEPPX_tensor_zeros(in_shape, 2, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input");
+    SX_ASSERT(input != NULL, "input");
     ((float*)input->data)[0] = 0.0f;
 
     size_t tgt_shape[] = {B * S, arch_cfg.vocab_size};
     SNEPPXTensor* target = SNEPPX_tensor_zeros(tgt_shape, 2, SNEPPX_FLOAT32);
-    ASSERT(target != NULL, "target");
+    SX_ASSERT(target != NULL, "target");
     ((float*)target->data)[0] = 1.0f;
 
     float val0 = SNEPPX_trainer_evaluate(trainer, input, target);
-    ASSERT(isfinite(val0) && val0 >= 0.0f, "evaluate returns valid loss");
+    SX_ASSERT(isfinite(val0) && val0 >= 0.0f, "evaluate returns valid loss");
 
     float loss1 = SNEPPX_trainer_train_step(trainer, input, target);
-    ASSERT(isfinite(loss1) && loss1 >= 0.0f, "first train step valid");
+    SX_ASSERT(isfinite(loss1) && loss1 >= 0.0f, "first train step valid");
 
     float loss2 = SNEPPX_trainer_train_step(trainer, input, target);
-    ASSERT(isfinite(loss2) && loss2 >= 0.0f, "second train step valid");
+    SX_ASSERT(isfinite(loss2) && loss2 >= 0.0f, "second train step valid");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(target);
@@ -102,17 +87,17 @@ static void test_model_forward_hss(void) {
     cfg.hss_config.use_hierarchical = 0;
 
     SNEPPXModel* model = SNEPPX_model_create(&cfg);
-    ASSERT(model != NULL, "hss model");
+    SX_ASSERT(model != NULL, "hss model");
 
     size_t sh_in[] = {1, 4, 8};
     SNEPPXTensor* input = SNEPPX_tensor_randn(sh_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input");
+    SX_ASSERT(input != NULL, "input");
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_model_forward(model, input, &output);
-    ASSERT(ret == 0, "forward");
-    ASSERT(output != NULL, "output");
-    ASSERT(output->size > 0, "output non-empty");
+    SX_ASSERT(ret == 0, "forward");
+    SX_ASSERT(output != NULL, "output");
+    SX_ASSERT(output->size > 0, "output non-empty");
 
     SNEPPX_tensor_destroy(output);
     SNEPPX_tensor_destroy(input);
@@ -131,25 +116,22 @@ static void test_model_get_params(void) {
     cfg.hss_config.seq_len = 1;
 
     SNEPPXModel* model = SNEPPX_model_create(&cfg);
-    ASSERT(model != NULL, "model");
+    SX_ASSERT(model != NULL, "model");
 
     size_t nw = SNEPPX_model_get_params(model, NULL, 0);
-    ASSERT(nw > 0, "model has params");
+    SX_ASSERT(nw > 0, "model has params");
 
     SNEPPXTensor** params = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_model_get_params(model, params, nw);
     for (size_t i = 0; i < nw; i++) {
-        ASSERT(params[i] != NULL, "param non-null");
-        ASSERT(params[i]->size > 0, "param non-empty");
+        SX_ASSERT(params[i] != NULL, "param non-null");
+        SX_ASSERT(params[i]->size > 0, "param non-empty");
     }
     free(params);
     SNEPPX_model_destroy(model);
 }
 
-int main(void) {
-    run_test("attn_training_step", test_attn_training_step);
-    run_test("model_forward_hss", test_model_forward_hss);
-    run_test("model_get_params", test_model_get_params);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_e2e_training_loop, attn_training_step) { test_attn_training_step(); }
+TEST(test_e2e_training_loop, model_forward_hss) { test_model_forward_hss(); }
+TEST(test_e2e_training_loop, model_get_params) { test_model_get_params(); }

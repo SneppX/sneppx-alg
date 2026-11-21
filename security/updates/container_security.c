@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define CONTAINER_MAX_IMAGES 128
-#define SBOM_MAX_COMPONENTS 4096
+#define SBOM_MAX_COMPONENTS 64
 #define VULN_MAX_ENTRIES 65536
 
 /*

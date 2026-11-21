@@ -40,7 +40,7 @@ check_cmd() {
 
 echo ">> Checking dependencies..."
 check_cmd cmake
-check_cmd make
+check_cmd ninja
 
 case "${OS}" in
     linux)
@@ -49,8 +49,8 @@ case "${OS}" in
         if [ -n "$(echo "${MISSING}" | grep "g++")" ]; then
             echo ""
             echo "  Install with:"
-            echo "    sudo apt-get install build-essential cmake python3-dev"
-            echo "    sudo dnf install gcc-c++ cmake python3-devel"
+            echo "    sudo apt-get install build-essential ninja-build cmake python3-dev"
+            echo "    sudo dnf install gcc-c++ ninja-build cmake python3-devel"
         fi
         ;;
     macos)
@@ -59,7 +59,7 @@ case "${OS}" in
             echo ""
             echo "  Install with:"
             echo "    xcode-select --install"
-            echo "    brew install cmake"
+            echo "    brew install cmake ninja"
         fi
         ;;
     windows)
@@ -79,10 +79,10 @@ echo ">> Building..."
 mkdir -p build && cd build
 
 if [ "${OS}" = "windows" ]; then
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
+    cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
     cmake --build . --config Release -j$(nproc 2>/dev/null || echo 4)
 else
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
+    cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
     cmake --build . -j$(nproc 2>/dev/null || echo 4)
 fi
 

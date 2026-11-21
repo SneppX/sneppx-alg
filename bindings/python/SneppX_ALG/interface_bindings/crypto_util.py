@@ -111,7 +111,7 @@ class Random:
         mask = (1 << nbytes * 8) - 1
         while True:
             r = int.from_bytes(os.urandom(nbytes), "big") & mask
-            if r <= span:
+            if r < span:
                 return low + r
 
 

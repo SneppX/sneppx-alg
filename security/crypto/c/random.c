@@ -1,4 +1,5 @@
 #include "cryptographic_random_generator.h"
+#include "sha512_hashing_implementation.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -35,8 +36,53 @@
  *
  * @return 0 on success, -1 on error.
  */
+#ifdef SNEPPX_ENABLE_TEST_RNG
+/* Deterministic SHA-512 hash-chain RNG exists only in explicit test builds. */
+static int g_test_rng = 0;
+static uint8_t g_test_state[64];
+static size_t g_test_state_used = 64;
+
+void SNEPPX_random_bytes_set_seed(const uint8_t seed[32]) {
+    if (!seed) return;
+    SNEPPXSHA512Context ctx;
+    SNEPPX_sha512_init(&ctx);
+    SNEPPX_sha512_update(&ctx, seed, 32);
+    SNEPPX_sha512_finish(&ctx, g_test_state);
+    g_test_state_used = 64;
+    g_test_rng = 1;
+}
+
+void SNEPPX_random_bytes_clear_seed(void) {
+    g_test_rng = 0;
+    g_test_state_used = 64;
+    memset(g_test_state, 0, sizeof(g_test_state));
+}
+
+static int test_rng_generate(uint8_t* out, size_t len) {
+    size_t produced = 0;
+    while (produced < len) {
+        if (g_test_state_used >= 64) {
+            SNEPPXSHA512Context ctx;
+            SNEPPX_sha512_init(&ctx);
+            SNEPPX_sha512_update(&ctx, g_test_state, 64);
+            SNEPPX_sha512_finish(&ctx, g_test_state);
+            g_test_state_used = 0;
+        }
+        size_t avail = 64 - g_test_state_used;
+        size_t take = (len - produced < avail) ? (len - produced) : avail;
+        memcpy(out + produced, g_test_state + g_test_state_used, take);
+        g_test_state_used += take;
+        produced += take;
+    }
+    return 0;
+}
+#endif
+
 int SNEPPX_random_bytes(uint8_t* buffer, size_t len) {
     if (!buffer || !len) return -1;
+#ifdef SNEPPX_ENABLE_TEST_RNG
+    if (g_test_rng) return test_rng_generate(buffer, len);
+#endif
 #ifdef _WIN32
     NTSTATUS status = BCryptGenRandom(NULL, buffer, (ULONG)len, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
     if (status < 0) return -1;
@@ -85,22 +131,46 @@ int SNEPPX_random_bytes(uint8_t* buffer, size_t len) {
  *
  * @return 0 on success, -1 on error.
  */
+int SNEPPX_random_uint32_checked(uint32_t* value) {
+    if (!value) return -1;
+    return SNEPPX_random_bytes((uint8_t*)value, sizeof(*value));
+}
+
 uint32_t SNEPPX_random_uint32(void) {
-    uint32_t val;
-    if (SNEPPX_random_bytes((uint8_t*)&val, 4) != 0) return 0;
-    return val;
+    uint32_t value = 0;
+    (void)SNEPPX_random_uint32_checked(&value);
+    return value;
 }
 
 /**
- * @brief Perform Random Uniform.
+ * @brief Generate a uniformly distributed integer below upper_bound.
  *
- * @return 0 on success, -1 on error.
+ * @param upper_bound Exclusive upper bound; must be non-zero.
+ * @param value [out] Receives the generated value on success.
+ *
+ * @return 0 on success, -1 on invalid arguments or entropy failure.
+ */
+int SNEPPX_random_uniform_checked(uint32_t upper_bound, uint32_t* value) {
+    if (upper_bound == 0 || !value) return -1;
+    const uint32_t threshold = (uint32_t)(-upper_bound % upper_bound);
+    for (;;) {
+        uint32_t random_value = 0;
+        if (SNEPPX_random_uint32_checked(&random_value) != 0) return -1;
+        if (random_value >= threshold) {
+            *value = random_value % upper_bound;
+            return 0;
+        }
+    }
+}
+
+/**
+ * @brief Compatibility wrapper for bounded random values.
+ *
+ * Returns 0 if the bound is invalid or the system entropy source fails.
+ * Call SNEPPX_random_uniform_checked when the caller must distinguish errors.
  */
 uint32_t SNEPPX_random_uniform(uint32_t upper_bound) {
-    if (upper_bound == 0) return 0;
-    uint32_t threshold = -upper_bound % upper_bound;
-    while (1) {
-        uint32_t r = SNEPPX_random_uint32();
-        if (r >= threshold) return r % upper_bound;
-    }
+    uint32_t value = 0;
+    (void)SNEPPX_random_uniform_checked(upper_bound, &value);
+    return value;
 }

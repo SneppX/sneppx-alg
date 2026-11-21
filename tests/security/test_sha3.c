@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include <stdlib.h>
 #include "keccak_sha3_hashing.h"
@@ -19,13 +20,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_vectors_256(void) {
     printf("\n--- test_vectors_256 ---\n");
@@ -43,7 +38,7 @@ void test_vectors_256(void) {
     SNEPPX_sha3_finish(&state, hash);
     int match256 = memcmp(hash, expected, 32) == 0;
     if (!match256) { printf("  Got: "); for (int i = 0; i < 32; i++) printf("%02x", hash[i]); printf("\n  Exp: "); for (int i = 0; i < 32; i++) printf("%02x", expected[i]); printf("\n"); }
-    TEST("SHA3-256('abc')", match256);
+    SX_TEST("SHA3-256('abc')", match256);
 }
 
 void test_vectors_512(void) {
@@ -66,7 +61,7 @@ void test_vectors_512(void) {
     SNEPPX_sha3_finish(&state, hash);
     int match512 = memcmp(hash, expected, 64) == 0;
     if (!match512) { printf("  Got: "); for (int i = 0; i < 64; i++) printf("%02x", hash[i]); printf("\n  Exp: "); for (int i = 0; i < 64; i++) printf("%02x", expected[i]); printf("\n"); }
-    TEST("SHA3-512('abc')", match512);
+    SX_TEST("SHA3-512('abc')", match512);
 }
 
 void test_empty_message(void) {
@@ -77,7 +72,7 @@ void test_empty_message(void) {
     SNEPPX_sha3_finish(&state, hash);
     uint8_t non_zero = 0;
     for (int i = 0; i < 32; i++) non_zero |= hash[i];
-    TEST("empty hash non-zero", non_zero != 0);
+    SX_TEST("empty hash non-zero", non_zero != 0);
 }
 
 void test_large_message(void) {
@@ -93,17 +88,12 @@ void test_large_message(void) {
     SNEPPX_sha3_finish(&state, hash);
     uint8_t non_zero = 0;
     for (int i = 0; i < 32; i++) non_zero |= hash[i];
-    TEST("1MB hash non-zero", non_zero != 0);
+    SX_TEST("1MB hash non-zero", non_zero != 0);
     free(data);
 }
 
-int main(void) {
-    printf("=== SNEPPX-SHA3 Test Suite ===\n");
-    test_vectors_256();
-    test_vectors_512();
-    test_empty_message();
-    test_large_message();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_sha3, test_vectors_256) { test_vectors_256(); }
+TEST(test_sha3, test_vectors_512) { test_vectors_512(); }
+TEST(test_sha3, test_empty_message) { test_empty_message(); }
+TEST(test_sha3, test_large_message) { test_large_message(); }

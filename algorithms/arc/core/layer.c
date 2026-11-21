@@ -37,7 +37,7 @@ SNEPPXARCLayer* SNEPPX_arc_layer_create(const SNEPPXARCConfig* config, size_t in
     layer->input_dim = input_dim;
     layer->output_dim = output_dim;
 
-    layer->input_guard = SNEPPX_input_guard_create(input_dim, seed);
+    layer->input_guard = SNEPPX_input_guard_create(input_dim, output_dim, seed);
     layer->gradient_obfuscator = SNEPPX_gradient_obfuscator_create(input_dim * output_dim, seed + 100);
     layer->output_verifier = SNEPPX_arc_output_verifier_create(output_dim, config->output_verify_layers, seed + 200);
 

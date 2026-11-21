@@ -494,7 +494,7 @@ static SNEPPXTensor* make_test_tensor_1d(size_t n) {
 ### 5.1 Build
 ```bash
 mkdir -p build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
 cmake --build . -j8
 ```
 

@@ -3,7 +3,8 @@
 import os
 import json
 import struct
-from typing import Dict, List, Optional, Any, Tuple, Union
+import numbers
+from typing import Dict, List, Optional, Any, Tuple, Union, Iterator
 import numpy as np
 
 from .tensor import Tensor
@@ -27,6 +28,162 @@ DTYPE_TO_ONNX = {
 }
 
 ONNX_TO_DTYPE = {v: k for k, v in DTYPE_TO_ONNX.items()}
+
+# ---- protobuf wire-format helpers (canonical ONNX IR field numbers) ----
+# Canonical field numbers (onnx/onnx.in.proto), matching the C exporter in
+# fs/format/onnx_format.c (SneppX_onnx_save_graph / SneppX_onnx_validate):
+#   ModelProto:   ir_version=1, producer_name=2, producer_version=3,
+#                 model_version=5, graph=7, opset_import=8
+#   GraphProto:   node=1, name=2, initializer=5, input=11, output=12
+#   NodeProto:    input=1, output=2, name=3, op_type=4, attribute=5
+#   AttrProto:    name=1, f=2, i=3, ints=8, floats=7, type=20 (AttributeType)
+#   ValueInfo:    name=1, type=2
+#   TypeProto:    tensor_type=1
+#   Tensor:       elem_type=1, shape=2
+#   ShapeProto:   dim=1
+#   Dimension:    dim_value=1, dim_param=2
+#   TensorProto:  dims=1 (packed int64), data_type=2, name=8, raw_data=9
+#   OpsetId:      domain=1, version=2
+
+
+def _pb_varint(value: int) -> bytes:
+    value &= 0xFFFFFFFFFFFFFFFF
+    out = bytearray()
+    while True:
+        b = value & 0x7F
+        value >>= 7
+        if value:
+            out.append(b | 0x80)
+        else:
+            out.append(b)
+            return bytes(out)
+
+
+def _pb_tag(field: int, wire: int) -> bytes:
+    return _pb_varint((field << 3) | wire)
+
+
+def _pb_varint_field(field: int, value: int) -> bytes:
+    return _pb_tag(field, 0) + _pb_varint(value)
+
+
+def _pb_bytes_field(field: int, payload: bytes) -> bytes:
+    return _pb_tag(field, 2) + _pb_varint(len(payload)) + payload
+
+
+def _pb_string_field(field: int, value: str) -> bytes:
+    return _pb_bytes_field(field, value.encode("utf-8"))
+
+
+def _pb_float_field(field: int, value: float) -> bytes:
+    return _pb_tag(field, 5) + struct.pack("<f", float(value))
+
+
+def _pb_sub(field: int, payload: bytes) -> bytes:
+    return _pb_bytes_field(field, payload)
+
+
+def _pb_read_varint(data: bytes, pos: int) -> Tuple[int, int]:
+    result = 0
+    shift = 0
+    while True:
+        b = data[pos]
+        pos += 1
+        result |= (b & 0x7F) << shift
+        if not (b & 0x80):
+            break
+        shift += 7
+    return result, pos
+
+
+def _pb_signed(value: int) -> int:
+    if value > 0x7FFFFFFFFFFFFFFF:
+        value -= 1 << 64
+    return value
+
+
+def _iter_fields(
+    data: bytes, start: int = 0, end: Optional[int] = None
+) -> Iterator[Tuple[int, int, Any]]:
+    """Iterate protobuf fields yielding (field, wire_type, value).
+
+    Wire 0 (varint) and wire 2 (length-delimited) values are decoded; wire 1
+    (fixed64) and wire 5 (fixed32) yield the raw bytes.
+    """
+    pos = start
+    limit = len(data) if end is None else end
+    while pos < limit:
+        key, pos = _pb_read_varint(data, pos)
+        field, wire = key >> 3, key & 7
+        if wire == 0:
+            val, pos = _pb_read_varint(data, pos)
+            yield field, wire, val
+        elif wire == 1:
+            yield field, wire, data[pos : pos + 8]
+            pos += 8
+        elif wire == 2:
+            ln, pos = _pb_read_varint(data, pos)
+            yield field, wire, data[pos : pos + ln]
+            pos += ln
+        elif wire == 5:
+            yield field, wire, data[pos : pos + 4]
+            pos += 4
+        else:
+            raise ValueError(f"Unsupported protobuf wire type {wire}")
+
+
+# AttributeType enum (AttributeProto.type)
+_ATTR_FLOAT = 1
+_ATTR_INT = 2
+_ATTR_STRING = 3
+_ATTR_TENSOR = 4
+_ATTR_FLOATS = 6
+_ATTR_INTS = 7
+_ATTR_STRINGS = 8
+
+
+def _encode_attr(name: str, value: Any) -> bytes:
+    """Encode one AttributeProto and wrap it as a NodeProto.attribute field."""
+    if isinstance(value, bool):
+        body = (
+            _pb_string_field(1, name)
+            + _pb_varint_field(20, _ATTR_INT)
+            + _pb_varint_field(3, 1 if value else 0)
+        )
+        return _pb_sub(5, body)
+    if isinstance(value, numbers.Integral):
+        body = (
+            _pb_string_field(1, name)
+            + _pb_varint_field(20, _ATTR_INT)
+            + _pb_varint_field(3, int(value))
+        )
+        return _pb_sub(5, body)
+    if isinstance(value, numbers.Real):
+        body = (
+            _pb_string_field(1, name)
+            + _pb_varint_field(20, _ATTR_FLOAT)
+            + _pb_float_field(2, float(value))
+        )
+        return _pb_sub(5, body)
+    if isinstance(value, (list, tuple)):
+        items = list(value)
+        if items and all(isinstance(v, (bool, numbers.Integral)) for v in items):
+            ints = b"".join(_pb_varint(int(v)) for v in items)
+            body = (
+                _pb_string_field(1, name)
+                + _pb_varint_field(20, _ATTR_INTS)
+                + _pb_bytes_field(8, ints)
+            )
+            return _pb_sub(5, body)
+        if items and all(isinstance(v, numbers.Real) for v in items):
+            floats = b"".join(struct.pack("<f", float(v)) for v in items)
+            body = (
+                _pb_string_field(1, name)
+                + _pb_varint_field(20, _ATTR_FLOATS)
+                + _pb_bytes_field(7, floats)
+            )
+            return _pb_sub(5, body)
+    raise ValueError(f"Unsupported ONNX attribute value for '{name}': {value!r}")
 
 
 class OnnxNode:
@@ -58,6 +215,20 @@ class OnnxNode:
             "domain": self.domain,
         }
 
+    def to_proto(self) -> bytes:
+        """Encode as a canonical NodeProto (field numbers per ONNX IR)."""
+        parts: List[bytes] = []
+        for inp in self.inputs:
+            parts.append(_pb_string_field(1, inp))
+        for out in self.outputs:
+            parts.append(_pb_string_field(2, out))
+        if self.name:
+            parts.append(_pb_string_field(3, self.name))
+        parts.append(_pb_string_field(4, self.op_type))
+        for attr_name, attr_value in self.attributes.items():
+            parts.append(_encode_attr(attr_name, attr_value))
+        return b"".join(parts)
+
 
 class OnnxTensor:
     """Represents an ONNX tensor/value info."""
@@ -75,6 +246,20 @@ class OnnxTensor:
             "shape": self.shape,
             "doc_string": self.doc_string,
         }
+
+    def to_proto(self) -> bytes:
+        """Encode as a canonical ValueInfoProto (name=1, type=2)."""
+        shape_dims: List[bytes] = []
+        for d in self.shape:
+            if int(d) >= 0:
+                shape_dims.append(_pb_sub(1, _pb_varint_field(1, int(d))))
+            else:
+                shape_dims.append(_pb_sub(1, _pb_string_field(2, "None")))
+        tensor = _pb_varint_field(
+            1, DTYPE_TO_ONNX.get(self.dtype, 1)
+        ) + _pb_sub(2, b"".join(shape_dims))
+        type_proto = _pb_sub(1, tensor)
+        return _pb_string_field(1, self.name) + _pb_sub(2, type_proto)
 
 
 class OnnxInitializer:
@@ -96,6 +281,20 @@ class OnnxInitializer:
                 else self.data.tobytes()
             ),
         }
+
+    def to_proto(self) -> bytes:
+        """Encode as a canonical TensorProto (dims=1, data_type=2, name=8, raw_data=9)."""
+        dims_packed = b"".join(_pb_varint(int(d)) for d in self.data.shape)
+        raw = np.ascontiguousarray(self.data)
+        if raw.dtype.byteorder == ">":
+            raw = raw.astype(raw.dtype.newbyteorder("<"))
+        raw_bytes = raw.tobytes()
+        return (
+            _pb_bytes_field(1, dims_packed)
+            + _pb_varint_field(2, DTYPE_TO_ONNX.get(self.dtype, 1))
+            + _pb_string_field(8, self.name)
+            + _pb_bytes_field(9, raw_bytes)
+        )
 
 
 class OnnxGraph:
@@ -151,6 +350,23 @@ class OnnxGraph:
             "metadata_props": self.metadata_props,
         }
 
+    def to_proto(self) -> bytes:
+        """Encode as a canonical GraphProto (node=1, name=2, initializer=5,
+        input=11, output=12, value_info=13)."""
+        parts: List[bytes] = []
+        for node in self.nodes:
+            parts.append(_pb_sub(1, node.to_proto()))
+        parts.append(_pb_string_field(2, self.name))
+        for init in self.initializers:
+            parts.append(_pb_sub(5, init.to_proto()))
+        for inp in self.inputs:
+            parts.append(_pb_sub(11, inp.to_proto()))
+        for out in self.outputs:
+            parts.append(_pb_sub(12, out.to_proto()))
+        for info in self.value_info:
+            parts.append(_pb_sub(13, info.to_proto()))
+        return b"".join(parts)
+
 
 class OnnxModel:
     """ONNX model container."""
@@ -193,6 +409,28 @@ class OnnxModel:
                 {"key": k, "value": v} for k, v in self.metadata_props.items()
             ],
         }
+
+    def to_bytes(self) -> bytes:
+        """Serialize to canonical binary .onnx (raw protobuf ModelProto).
+
+        Field numbers follow the ONNX IR and are loadable by standard
+        runtimes; the bytes can be cross-validated with the C
+        SneppX_onnx_validate / parsed back via protobuf_to_onnx.
+        """
+        parts: List[bytes] = [
+            _pb_varint_field(1, self.ir_version),
+            _pb_string_field(2, self.producer_name),
+            _pb_string_field(3, self.producer_version),
+            _pb_varint_field(5, self.model_version),
+            _pb_sub(7, self.graph.to_proto()),
+        ]
+        opsets = self.opset_imports or [{"version": ONNX_OPSET_VERSION, "domain": ""}]
+        for opset in opsets:
+            opset_proto = _pb_string_field(
+                1, opset.get("domain", "")
+            ) + _pb_varint_field(2, int(opset.get("version", ONNX_OPSET_VERSION)))
+            parts.append(_pb_sub(8, opset_proto))
+        return b"".join(parts)
 
 
 class OnnxExporter:
@@ -244,10 +482,11 @@ class OnnxExporter:
         attributes: Optional[Dict[str, Any]] = None,
     ) -> List[str]:
         if outputs is None:
-            if len(inputs) == 1:
-                outputs = [self._new_tensor_name("out")]
-            else:
-                outputs = [self._new_tensor_name("out") for _ in range(len(inputs))]
+            spec = ONNX_OP_REGISTRY.get(op_type, {})
+            n_out = spec.get("outputs", 1)
+            if not isinstance(n_out, int) or n_out <= 0:
+                n_out = 1
+            outputs = [self._new_tensor_name("out") for _ in range(n_out)]
 
         node = OnnxNode(
             op_type=op_type,
@@ -512,10 +751,22 @@ class OnnxExporter:
         )
         return model
 
-    def export(self, path: str):
+    def export_binary(self, path: str) -> str:
+        """Export the model as canonical binary .onnx (raw protobuf ModelProto)."""
         model = self.build_model()
+        with open(path, "wb") as f:
+            f.write(model.to_bytes())
+        return path
+
+    def export(self, path: str) -> str:
+        model = self.build_model()
+        if path.endswith(".onnx"):
+            with open(path, "wb") as f:
+                f.write(model.to_bytes())
+            return path
         with open(path, "w") as f:
             json.dump(model.to_dict(), f, indent=2)
+        return path
 
 
 class OnnxImporter:
@@ -527,8 +778,14 @@ class OnnxImporter:
         self.value_info: Dict[str, Dict[str, Any]] = {}
 
     def load(self, path: str) -> Dict[str, Any]:
-        with open(path, "r") as f:
-            data = json.load(f)
+        with open(path, "rb") as f:
+            head = f.read(4)
+            f.seek(0)
+            if head.startswith(b"{") or head.startswith(b"["):
+                data = json.load(f)
+            else:
+                model = protobuf_to_onnx(f.read())
+                data = model.to_dict()
 
         # Parse graph
         graph_data = data.get("graph", {})
@@ -765,38 +1022,241 @@ def import_torch(path: str) -> Any:
 
 # Format conversion utilities
 def onnx_to_protobuf(onnx_model: OnnxModel) -> bytes:
-    """Convert ONNX model to protobuf (requires onnx protobuf)."""
-    # Would use onnx protobuf
-    pass
+    """Serialize an OnnxModel to canonical binary .onnx (raw protobuf)."""
+    return onnx_model.to_bytes()
+
+
+def _parse_attr(data: bytes) -> Tuple[str, Any]:
+    name = ""
+    atype = 0
+    ival = 0
+    fval = 0.0
+    ints: List[int] = []
+    floats: List[float] = []
+    for field, wire, val in _iter_fields(data):
+        if field == 1 and wire == 2:
+            name = val.decode("utf-8", "replace")
+        elif field == 20 and wire == 0:
+            atype = int(val)
+        elif field == 2 and wire == 5:
+            fval = struct.unpack("<f", val)[0]
+        elif field == 3 and wire == 0:
+            ival = _pb_signed(int(val))
+        elif field == 7 and wire == 2:
+            for i in range(0, len(val) - 3, 4):
+                floats.append(struct.unpack("<f", val[i : i + 4])[0])
+        elif field == 8 and wire == 2:
+            pos = 0
+            while pos < len(val):
+                v, pos = _pb_read_varint(val, pos)
+                ints.append(_pb_signed(int(v)))
+    if atype == _ATTR_INT:
+        return name, ival
+    if atype == _ATTR_FLOAT:
+        return name, fval
+    if atype == _ATTR_INTS:
+        return name, ints
+    if atype == _ATTR_FLOATS:
+        return name, floats
+    return name, None
+
+
+def _parse_node(data: bytes) -> OnnxNode:
+    op_type = ""
+    name = ""
+    ins: List[str] = []
+    outs: List[str] = []
+    attrs: Dict[str, Any] = {}
+    for field, wire, val in _iter_fields(data):
+        if field == 1 and wire == 2:
+            ins.append(val.decode("utf-8", "replace"))
+        elif field == 2 and wire == 2:
+            outs.append(val.decode("utf-8", "replace"))
+        elif field == 3 and wire == 2:
+            name = val.decode("utf-8", "replace")
+        elif field == 4 and wire == 2:
+            op_type = val.decode("utf-8", "replace")
+        elif field == 5 and wire == 2:
+            attr_name, attr_val = _parse_attr(val)
+            if attr_val is not None:
+                attrs[attr_name] = attr_val
+    return OnnxNode(op_type, ins, outs, name=name or None, attributes=attrs)
+
+
+def _parse_value_info(data: bytes) -> OnnxTensor:
+    name = ""
+    dtype = "float32"
+    shape: List[int] = []
+    for field, wire, val in _iter_fields(data):
+        if field == 1 and wire == 2:
+            name = val.decode("utf-8", "replace")
+        elif field == 2 and wire == 2:
+            for f2, w2, v2 in _iter_fields(val):
+                if f2 == 1 and w2 == 2:  # tensor_type
+                    for f3, w3, v3 in _iter_fields(v2):
+                        if f3 == 1 and w3 == 0:  # elem_type
+                            dtype = ONNX_TO_DTYPE.get(int(v3), "float32")
+                        elif f3 == 2 and w3 == 2:  # shape
+                            for f4, w4, v4 in _iter_fields(v3):
+                                if f4 == 1 and w4 == 2:  # dim
+                                    for f5, w5, v5 in _iter_fields(v4):
+                                        if f5 == 1 and w5 == 0:  # dim_value
+                                            shape.append(int(v5))
+                                        elif f5 == 2 and w5 == 2:  # dim_param
+                                            shape.append(-1)
+    return OnnxTensor(name, dtype, shape)
+
+
+def _parse_initializer(data: bytes) -> OnnxInitializer:
+    name = ""
+    dtype = "float32"
+    dims: List[int] = []
+    raw = b""
+    for field, wire, val in _iter_fields(data):
+        if field == 1 and wire == 2:
+            pos = 0
+            while pos < len(val):
+                v, pos = _pb_read_varint(val, pos)
+                dims.append(_pb_signed(int(v)))
+        elif field == 2 and wire == 0:
+            dtype = ONNX_TO_DTYPE.get(int(val), "float32")
+        elif field == 8 and wire == 2:
+            name = val.decode("utf-8", "replace")
+        elif field == 9 and wire == 2:
+            raw = val
+    if dims and raw:
+        arr = np.frombuffer(raw, dtype=np.dtype(dtype)).reshape(dims)
+    elif dims:
+        arr = np.zeros(dims, dtype=np.dtype(dtype))
+    else:
+        arr = np.array([], dtype=np.dtype(dtype))
+    return OnnxInitializer(name, arr, dtype)
+
+
+def _parse_graph(data: bytes) -> OnnxGraph:
+    name = ""
+    nodes: List[OnnxNode] = []
+    inputs: List[OnnxTensor] = []
+    outputs: List[OnnxTensor] = []
+    initializers: List[OnnxInitializer] = []
+    for field, wire, val in _iter_fields(data):
+        if field == 1 and wire == 2:
+            nodes.append(_parse_node(val))
+        elif field == 2 and wire == 2:
+            name = val.decode("utf-8", "replace")
+        elif field == 5 and wire == 2:
+            initializers.append(_parse_initializer(val))
+        elif field == 11 and wire == 2:
+            inputs.append(_parse_value_info(val))
+        elif field == 12 and wire == 2:
+            outputs.append(_parse_value_info(val))
+    return OnnxGraph(
+        name=name,
+        inputs=inputs,
+        outputs=outputs,
+        nodes=nodes,
+        initializers=initializers,
+    )
 
 
 def protobuf_to_onnx(proto_bytes: bytes) -> OnnxModel:
-    """Parse protobuf to ONNX model."""
-    pass
+    """Parse canonical binary .onnx (raw protobuf ModelProto) back into an
+    OnnxModel. Accepts both raw protobuf and the 8-byte "ONNX"+len-prefixed
+    SNEPPX-internal form (mirroring the C SneppX_onnx_validate)."""
+    start = 0
+    if proto_bytes[:4] == b"ONNX":
+        start = 8
+    graph = None
+    ir_version = ONNX_IR_VERSION
+    producer_name = "SNEPPX"
+    producer_version = "1.0"
+    model_version = 0
+    opsets: List[Dict[str, Any]] = []
+    for field, wire, val in _iter_fields(proto_bytes, start):
+        if field == 1 and wire == 0:
+            ir_version = int(val)
+        elif field == 2 and wire == 2:
+            producer_name = val.decode("utf-8", "replace")
+        elif field == 3 and wire == 2:
+            producer_version = val.decode("utf-8", "replace")
+        elif field == 5 and wire == 0:
+            model_version = int(val)
+        elif field == 7 and wire == 2:
+            graph = _parse_graph(val)
+        elif field == 8 and wire == 2:
+            domain = ""
+            version = ONNX_OPSET_VERSION
+            for f2, w2, v2 in _iter_fields(val):
+                if f2 == 1 and w2 == 2:
+                    domain = v2.decode("utf-8", "replace")
+                elif f2 == 2 and w2 == 0:
+                    version = int(v2)
+            opsets.append({"version": version, "domain": domain})
+    if graph is None:
+        raise ValueError("ModelProto contains no graph")
+    return OnnxModel(
+        graph,
+        opset_imports=opsets or None,
+        ir_version=ir_version,
+        producer_name=producer_name,
+        producer_version=producer_version,
+        model_version=model_version,
+    )
 
 
 def onnx_validate(onnx_model: OnnxModel) -> Tuple[bool, List[str]]:
-    """Validate ONNX model."""
+    """Validate an OnnxModel, mirroring the C SneppX_onnx_validate checks.
+
+    Structural + connectivity checks: ir_version/opset present, graph name,
+    node op_types non-empty, node inputs declared (graph input, initializer,
+    or an earlier node output), graph outputs produced by a node, and unique
+    node output names.
+    """
     errors = []
-    # Check graph consistency
-    if not onnx_model.graph.inputs:
+
+    # Model-level structure
+    if onnx_model.ir_version <= 0:
+        errors.append("Model has no valid ir_version")
+    if not onnx_model.opset_imports:
+        errors.append("Model has no opset import")
+
+    graph = onnx_model.graph
+    if not graph.name:
+        errors.append("Graph has no name")
+    if not graph.inputs:
         errors.append("Model has no inputs")
-    if not onnx_model.graph.outputs:
+    if not graph.outputs:
         errors.append("Model has no outputs")
-    if not onnx_model.graph.nodes:
+    if not graph.nodes:
         errors.append("Model has no nodes")
 
-    # Check node connectivity
+    # Declared names: graph inputs + initializers
+    declared = {t.name for t in graph.inputs}
+    declared |= {i.name for i in graph.initializers}
+    produced = set()
+    op_types = set()
     all_outputs = set()
-    for node in onnx_model.graph.nodes:
+
+    for node in graph.nodes:
+        if not node.op_type:
+            errors.append("Node has empty op_type")
+        else:
+            op_types.add(node.op_type)
+
         for out in node.outputs:
             if out in all_outputs:
                 errors.append(f"Duplicate output name: {out}")
             all_outputs.add(out)
+            produced.add(out)
 
         for inp in node.inputs:
-            # Check if input exists
-            pass
+            if inp not in declared and inp not in produced:
+                errors.append(f"Node input '{inp}' is not declared or produced")
+
+    # Every graph output must be produced by some node
+    for out in graph.outputs:
+        if out.name not in produced:
+            errors.append(f"Graph output '{out.name}' is not produced by any node")
 
     return len(errors) == 0, errors
 

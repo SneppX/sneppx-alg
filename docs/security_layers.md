@@ -2,22 +2,32 @@
 
 ## S0 — Cryptographic Core
 
-**Purpose:** Production-grade cryptographic primitives for signing, encryption, hashing, and key exchange.
+**Purpose:** Experimental cryptographic primitives for signing, encryption, hashing, and key exchange. Presence of an implementation does not establish production readiness, constant-time behavior, certification, or independent review.
 
 **Components:**
-- Ed25519 (RFC 8032) signatures: 304/306 vectors pass
+- Ed25519 (RFC 8032) signatures: historical documentation reports 304/306 vectors passing; current vector coverage must be reconciled before claiming full conformance
 - X25519 (RFC 7748) key exchange: Full DH exchange
 - ChaCha20-Poly1305 (RFC 8439) AEAD: encrypt/decrypt
 - SHA-3 (FIPS 202): 224/256/384/512
 - SHA-256 (FIPS 180-4): General-purpose hashing
 - BLAKE3: Fast hashing
-- Argon2id (RFC 9106): Secure KDF with timing defense
+- Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation
 - Secure Random: OS CPRNG (Windows CNG / Linux getrandom)
 - Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation
 - Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures
 - SPHINCS+-128/192/256 (FIPS 205 SLH-DSA): Stateless PQ signatures
 
 **Files:** `security/crypto/c/`
+
+**PQC ACVP status:** Official NIST ACVP sample vectors are vendored under
+`tests/data/acvp/` and exercised through
+`SneppX_ALG.interface_bindings.acvp_kat`. Coverage is partial, not a claim of
+FIPS validation or certification: SHA3-256 vectors match; ML-KEM key-generation
+and encapsulation/decapsulation checks are present; ML-DSA and SLH-DSA currently
+reject invalid signature vectors but do not yet verify all valid finalized
+FIPS signatures because their C wire formats remain pre-finalization. See
+`docs/pqc_kat.md` for the interop report and limitations. Treat PQC support as
+experimental until those gaps are closed and independently reviewed.
 
 ---
 
@@ -39,6 +49,8 @@
 ---
 
 ## S2 — Obfuscation Engine
+
+> **Security warning:** The S2 audit records unresolved RNG, timing-side-channel, code-transformation, and memory-safety findings. Do not rely on obfuscation as a security boundary or as protection for secrets. See [the detailed audit](security/obf_audit.md).
 
 **Purpose:** Protect against reverse engineering and static analysis.
 
@@ -125,9 +137,11 @@
 
 **Components:**
 - Container security: OCI layer verification, manifest integrity, image signing
-- Signed update bundles: Ed25519-signed payloads with version rolling
-- Rollback protection: monotonic version counter preventing downgrade attacks
+- Signed update bundles: Ed25519-signed payloads (signature over BLAKE3 update hash) with version rolling
+- Rollback protection: monotonic version/min-version checks preventing downgrade attacks
 - Staged rollout: gradual distribution with health-check gating
+
+**Status notes:** `SNEPPX_update_verifier_check` is fail-closed when no trusted public key is configured and verifies Ed25519 signatures against the configured trusted key. Production key provisioning, trust distribution, and rollout policy remain review items (see maturity notes in README).
 
 **Files:** `security/updates/`
 
@@ -135,13 +149,15 @@
 
 ## S8 — Formal Verification
 
-**Purpose:** Mathematical guarantees of critical algorithm properties.
+**Purpose:** Mathematical guarantees of critical algorithm properties (bounded/pragmatic).
 
 **Components:**
 - Model checking: bounded state-space exploration for critical paths
 - Invariant verification: pre/post-condition checking on memory safety
-- Symbolic execution: path constraint generation for NPE bytecode
-- Container breakout detection: state-machine-based rule engine
+- LTL/safety checks: bounded safety-oriented handling (e.g., deadlock-oriented properties); unsupported/full LTL formulas are not claimed as verified
+- State reduction: `SNEPPX_model_minimize` performs reachable-state reduction (not full bisimulation minimization)
+
+**Status notes:** S8 provides bounded, fail-closed-oriented checks for supported properties; it is not a complete formal proof system for all LTL/properties.
 
 **Files:** `security/formal/`
 
@@ -187,4 +203,4 @@
 
 **Reporting:** algoSNEPPX@gmail.com
 
-See [security.md](security.md) for the security overview and [security/](security/) for threat modeling docs.
+See [security.md](security.md) for the security overview and [security/](https://github.com/SneppX/sneppx-alg/blob/main/security/) for threat modeling docs.

@@ -49,17 +49,21 @@ def load_library(
 
     if search_dirs is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        repo_root = os.path.normpath(os.path.join(script_dir, "..", "..", "..", "..", ".."))
+        # Path: .../sneppx-alg/bindings/python/SneppX_ALG/interface_bindings/
+        # Need to go up 4 levels to reach the sneppx-alg project root
+        project_root = os.path.normpath(os.path.join(script_dir, "..", "..", "..", ".."))
+        # Also check the SneppX root (one level up from project_root)
+        sneppx_root = os.path.dirname(project_root)
         env_var_name = f"SNEPPX_{lib_name.upper()}_LIB"
         search_dirs = [
             os.environ.get(env_var_name, ""),
             os.environ.get(extra_env_var, ""),
-            os.path.join(repo_root, "build"),
-            os.path.join(repo_root, "build", "Release"),
-            os.path.join(repo_root, "build", "Debug"),
-            os.path.join(script_dir, "..", "..", "build"),
-            os.path.join(script_dir, "..", "..", "build", "Release"),
-            os.path.join(script_dir, "..", "..", "build", "Debug"),
+            os.path.join(project_root, "build"),
+            os.path.join(project_root, "build", "Release"),
+            os.path.join(project_root, "build", "Debug"),
+            os.path.join(sneppx_root, "build"),
+            os.path.join(sneppx_root, "build", "Release"),
+            os.path.join(sneppx_root, "build", "Debug"),
             ".",
         ]
 

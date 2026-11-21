@@ -5,225 +5,275 @@
 #include <string.h>
 #include <stdint.h>
 
+/*
+ * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures
+ *
+ * WHAT
+ *   Deterministic stateless hash-based signature scheme in the SPHINCS+
+ *   family (FIPS 205 style). Hypertree of Merkle trees over WOTS+ one-time
+ *   signatures, message digest committed via a FORS forest.
+ *
+ * CONCEPT
+ *   All private randomness is derived deterministically via a PRF
+ *   H(seed || domain-tag || counters) keyed by the secret seed, so
+ *   signatures are reproducible and verifiable within the scheme.
+ *
+ * ROLE
+ *   Layer S0 post-quantum crypto for long-lived signatures (firmware
+ *   manifests, release signing).
+ *
+ * REFERENCES
+ *   FIPS 205 (SLH-DSA / SPHINCS+), NIST PQC Round 3 finalist.
+ *
+ * STRUCTURE
+ *   Keys:   pk = pub_seed(16) || top-root(16);  sk = sk_seed(16) || sk_prf(16) || pub_seed(16)
+ *   Hash:   H = first 16 bytes of SHA-256
+ *   PRF:    sk_x = H(seed || tag || a(8 LE) || b(8 LE))
+ *   WOTS:   w=16, len=67 (64 message nibbles + 3 checksum), chain x_{j+1} = H(x_j || j)
+ *   FORS:   30 trees x 32 leaves (5-bit indices), roots -> H -> commit
+ *   Trees:  D=10 layers x height-6 Merkle trees over H(WOTS pk) leaves
+ *   Sig:    R(16) | FORS sig(2880) | FORS pk(16) | HT(11680) = 14592 bytes
+ */
+
 #define SPX_N 16
 #define SPX_WOTS_W 16
 #define SPX_WOTS_LOGW 4
 #define SPX_WOTS_LEN1 (256 / SPX_WOTS_LOGW)
 #define SPX_WOTS_LEN2 3
 #define SPX_WOTS_LEN (SPX_WOTS_LEN1 + SPX_WOTS_LEN2)
+#define SPX_WOTS_CHAINS (SPX_WOTS_W - 1)
 #define SPX_FORS_TREES 30
 #define SPX_FORS_HEIGHT 5
 #define SPX_FORS_INDICES (1 << SPX_FORS_HEIGHT)
 #define SPX_FORS_BITS (SPX_FORS_HEIGHT * SPX_FORS_TREES)
-#define SPX_FORS_BYTES ((SPX_FORS_BITS + 7) / 8)
 #define SPX_D 10
 #define SPX_FULL_HEIGHT 60
 #define SPX_TREE_HEIGHT (SPX_FULL_HEIGHT / SPX_D)
-/*
- * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures
- *
- * WHAT
- *   SPHINCS+ Stateless Hash-Based Signatures.
- *
- * CONCEPT
- *   SPHINCS+ hash-based signature scheme for FIPS 205 quantum-safe signatures.
- *
- * ROLE
- *   Layer S0 post-quantum crypto for long-lived signatures (firmware manifests, release signing).
- *
- * REFERENCES
- *   FIPS 205 (SPHINCS+), NIST PQC Round 3 finalist.
- */
+#define SPX_LEAVES (1 << SPX_TREE_HEIGHT)
+#define SPX_WOTS_SIG_BYTES (SPX_WOTS_LEN * SPX_N)
+#define SPX_AUTH_BYTES (SPX_TREE_HEIGHT * SPX_N)
+#define SPX_FORS_SIG_BYTES (SPX_FORS_TREES * ((SPX_FORS_HEIGHT + 1) * SPX_N))
+#define SPX_HT_SIG_BYTES (SPX_D * (SPX_WOTS_SIG_BYTES + SPX_AUTH_BYTES))
+#define SPX_SIG_BYTES (SPX_N + SPX_FORS_SIG_BYTES + SPX_N + SPX_HT_SIG_BYTES)
 
+#define SPX_TAG_WOTS 0x01
+#define SPX_TAG_FORS 0x02
 
-
-static void spx_hash(uint8_t *out, const uint8_t *in, size_t inlen) {
-    SNEPPX_sha256(out, in, inlen);
+static void spx_hash16(uint8_t *out, const uint8_t *in, size_t inlen) {
+    uint8_t full[32];
+    SNEPPX_sha256(full, in, inlen);
+    memcpy(out, full, SPX_N);
 }
 
-static void spx_thash(uint8_t *out, const uint8_t *in, size_t inlen, const uint8_t *pub_seed, uint32_t addr[8]) {
-    uint8_t buf[64];
-    spx_hash(out, in, inlen);
-    (void)pub_seed; (void)addr; (void)buf;
-}
-
-static void spx_wots_genpk(uint8_t *pk, const uint8_t *sk_seed, const uint8_t *pub_seed, uint32_t addr[8]) {
-    uint8_t sk[SPX_WOTS_LEN * SPX_N];
-    for (int i = 0; i < SPX_WOTS_LEN; i++) {
-        SNEPPX_random_bytes(sk + i * SPX_N, SPX_N);
-        uint8_t tmp[SPX_N];
-        memcpy(tmp, sk + i * SPX_N, SPX_N);
-        for (int j = 0; j < (1 << SPX_WOTS_LOGW) - 1; j++) {
-            uint8_t input[SPX_N + 1];
-            memcpy(input, tmp, SPX_N);
-            input[SPX_N] = j;
-            spx_hash(tmp, input, SPX_N + 1);
-        }
-        memcpy(pk + i * SPX_N, tmp, SPX_N);
+static void spx_prf(uint8_t *out, const uint8_t *seed, uint8_t tag, uint64_t a, uint64_t b) {
+    uint8_t in[SPX_N + 1 + 16];
+    memcpy(in, seed, SPX_N);
+    in[SPX_N] = tag;
+    for (int i = 0; i < 8; i++) {
+        in[SPX_N + 1 + i] = (uint8_t)(a >> (8 * i));
+        in[SPX_N + 9 + i] = (uint8_t)(b >> (8 * i));
     }
+    spx_hash16(out, in, sizeof(in));
 }
 
-static void spx_wots_sign(uint8_t *sig, const uint8_t *msg, const uint8_t *sk_seed, const uint8_t *pub_seed, uint32_t addr[8]) {
-    uint8_t basew[SPX_WOTS_LEN];
+static void spx_wots_message(uint8_t wm[32], const uint8_t *ctx) {
+    SNEPPX_sha256(wm, ctx, SPX_N);
+}
+
+static void spx_wots_basew(uint8_t *basew, const uint8_t *ctx) {
+    uint8_t wm[32];
+    spx_wots_message(wm, ctx);
     for (int i = 0; i < SPX_WOTS_LEN1; i++)
-        basew[i] = (msg[i / 2] >> (4 * (1 - (i % 2)))) & 0xf;
-    int csum = 0;
-    for (int i = 0; i < SPX_WOTS_LEN1; i++) csum += SPX_WOTS_W - 1 - basew[i];
-    basew[SPX_WOTS_LEN1] = csum & 0xf;
-    basew[SPX_WOTS_LEN1 + 1] = (csum >> 4) & 0xf;
-    basew[SPX_WOTS_LEN1 + 2] = (csum >> 8) & 0xf;
+        basew[i] = (uint8_t)((wm[i >> 1] >> (4 * (1 - (i & 1)))) & 0x0f);
+    uint32_t csum = 0;
+    for (int i = 0; i < SPX_WOTS_LEN1; i++) csum += (uint32_t)(SPX_WOTS_W - 1 - basew[i]);
+    basew[SPX_WOTS_LEN1] = (uint8_t)(csum & 0x0f);
+    basew[SPX_WOTS_LEN1 + 1] = (uint8_t)((csum >> 4) & 0x0f);
+    basew[SPX_WOTS_LEN1 + 2] = (uint8_t)((csum >> 8) & 0x0f);
+}
+
+static void spx_wots_chain(uint8_t *chain, const uint8_t *sk_seed, int layer, uint64_t leaf, int chain_idx, int steps) {
+    spx_prf(chain, sk_seed, SPX_TAG_WOTS, (uint64_t)layer, (leaf << 8) | (uint64_t)chain_idx);
+    for (int j = 0; j < steps; j++) {
+        uint8_t in[SPX_N + 1];
+        memcpy(in, chain, SPX_N);
+        in[SPX_N] = (uint8_t)j;
+        spx_hash16(chain, in, SPX_N + 1);
+    }
+}
+
+static void spx_wots_pkgen(uint8_t *pk, const uint8_t *sk_seed, int layer, uint64_t leaf) {
+    for (int i = 0; i < SPX_WOTS_LEN; i++)
+        spx_wots_chain(pk + (size_t)i * SPX_N, sk_seed, layer, leaf, i, SPX_WOTS_CHAINS);
+}
+
+static void spx_wots_sign(uint8_t *sig, const uint8_t *ctx, const uint8_t *sk_seed, int layer, uint64_t leaf) {
+    uint8_t basew[SPX_WOTS_LEN];
+    spx_wots_basew(basew, ctx);
+    for (int i = 0; i < SPX_WOTS_LEN; i++)
+        spx_wots_chain(sig + (size_t)i * SPX_N, sk_seed, layer, leaf, i, basew[i]);
+}
+
+static void spx_wots_verify(uint8_t *pk, const uint8_t *sig, const uint8_t *ctx) {
+    uint8_t basew[SPX_WOTS_LEN];
+    spx_wots_basew(basew, ctx);
     for (int i = 0; i < SPX_WOTS_LEN; i++) {
-        uint8_t sk[SPX_N];
-        SNEPPX_random_bytes(sk, SPX_N);
-        uint8_t tmp[SPX_N];
-        memcpy(tmp, sk, SPX_N);
-        for (int j = 0; j < basew[i]; j++) {
-            uint8_t input[SPX_N + 1];
-            memcpy(input, tmp, SPX_N);
-            input[SPX_N] = j;
-            spx_hash(tmp, input, SPX_N + 1);
+        uint8_t chain[SPX_N];
+        memcpy(chain, sig + (size_t)i * SPX_N, SPX_N);
+        for (int j = basew[i]; j < SPX_WOTS_CHAINS; j++) {
+            uint8_t in[SPX_N + 1];
+            memcpy(in, chain, SPX_N);
+            in[SPX_N] = (uint8_t)j;
+            spx_hash16(chain, in, SPX_N + 1);
         }
-        memcpy(sig + i * SPX_N, tmp, SPX_N);
+        memcpy(pk + (size_t)i * SPX_N, chain, SPX_N);
     }
 }
 
-static void spx_fors_genpk(uint8_t *pk, const uint8_t *sk_seed, const uint8_t *pub_seed, uint32_t addr[8]) {
-    uint8_t leaves[SPX_FORS_TREES * SPX_FORS_INDICES * SPX_N];
-    for (int t = 0; t < SPX_FORS_TREES; t++) {
-        for (int i = 0; i < SPX_FORS_INDICES; i++) {
-            SNEPPX_random_bytes(leaves + (t * SPX_FORS_INDICES + i) * SPX_N, SPX_N);
-        }
-        uint8_t level[SPX_FORS_INDICES * SPX_N];
-        memcpy(level, leaves + t * SPX_FORS_INDICES * SPX_N, SPX_FORS_INDICES * SPX_N);
-        for (int h = 0; h < SPX_FORS_HEIGHT; h++) {
-            int pairs = SPX_FORS_INDICES >> (h + 1);
-            for (int j = 0; j < pairs; j++) {
-                uint8_t input[2 * SPX_N];
-                memcpy(input, level + 2 * j * SPX_N, 2 * SPX_N);
-                spx_hash(level + j * SPX_N, input, 2 * SPX_N);
-            }
-        }
-        memcpy(pk + t * SPX_N, level, SPX_N);
-    }
+static void spx_compress(uint8_t *dst, const uint8_t *a, const uint8_t *b) {
+    uint8_t in[2 * SPX_N];
+    memcpy(in, a, SPX_N);
+    memcpy(in + SPX_N, b, SPX_N);
+    spx_hash16(dst, in, 2 * SPX_N);
 }
 
-static void spx_fors_sign(uint8_t *sig, uint8_t *pk, const uint8_t *md, const uint8_t *sk_seed, const uint8_t *pub_seed, uint32_t addr[8]) {
-    uint32_t indices[SPX_FORS_TREES];
-    for (int t = 0; t < SPX_FORS_TREES; t++) {
-        int idx = 0;
-        for (int b = 0; b < SPX_FORS_HEIGHT; b++)
-            idx |= ((md[(t * SPX_FORS_HEIGHT + b) / 8] >> ((t * SPX_FORS_HEIGHT + b) % 8)) & 1) << b;
-        indices[t] = idx;
+static void spx_wots_leaf(uint8_t *leaf, const uint8_t *sk_seed, int layer, uint64_t index) {
+    uint8_t wots_pk[SPX_WOTS_SIG_BYTES];
+    spx_wots_pkgen(wots_pk, sk_seed, layer, index);
+    spx_hash16(leaf, wots_pk, SPX_WOTS_SIG_BYTES);
+}
+
+static void spx_treehash(uint8_t *root, const uint8_t *sk_seed, int layer) {
+    uint8_t tree[SPX_LEAVES * SPX_N];
+    for (int i = 0; i < SPX_LEAVES; i++)
+        spx_wots_leaf(tree + (size_t)i * SPX_N, sk_seed, layer, (uint64_t)i);
+    for (int h = 0; h < SPX_TREE_HEIGHT; h++) {
+        int pairs = SPX_LEAVES >> (h + 1);
+        for (int j = 0; j < pairs; j++)
+            spx_compress(tree + (size_t)j * SPX_N, tree + (size_t)(2 * j) * SPX_N, tree + (size_t)(2 * j + 1) * SPX_N);
     }
-    spx_fors_genpk(pk, sk_seed, pub_seed, addr);
+    memcpy(root, tree, SPX_N);
+}
+
+static void spx_subtree_root(uint8_t *root, const uint8_t *sk_seed, int layer, int level, int offset) {
+    int n = 1 << level;
+    uint8_t tree[SPX_LEAVES * SPX_N];
+    for (int i = 0; i < n; i++)
+        spx_wots_leaf(tree + (size_t)i * SPX_N, sk_seed, layer, (uint64_t)(offset + i));
+    for (int h = 0; h < level; h++) {
+        int pairs = n >> (h + 1);
+        for (int j = 0; j < pairs; j++)
+            spx_compress(tree + (size_t)j * SPX_N, tree + (size_t)(2 * j) * SPX_N, tree + (size_t)(2 * j + 1) * SPX_N);
+    }
+    memcpy(root, tree, SPX_N);
+}
+
+static uint32_t spx_fors_index(const uint8_t *md, int t) {
+    uint32_t idx = 0;
+    for (int b = 0; b < SPX_FORS_HEIGHT; b++) {
+        int p = t * SPX_FORS_HEIGHT + b;
+        if (md[p >> 3] & (1u << (p & 7))) idx |= (1u << b);
+    }
+    return idx;
+}
+
+static void spx_fors_sign(uint8_t *sig, uint8_t *pk, const uint8_t *md, const uint8_t *sk_seed) {
+    uint8_t roots[SPX_FORS_TREES * SPX_N];
     for (int t = 0; t < SPX_FORS_TREES; t++) {
-        int idx = indices[t];
-        uint8_t leaf[SPX_FORS_INDICES * SPX_N];
+        uint32_t idx = spx_fors_index(md, t);
+        uint8_t tree[SPX_FORS_INDICES * SPX_N];
         for (int i = 0; i < SPX_FORS_INDICES; i++)
-            SNEPPX_random_bytes(leaf + i * SPX_N, SPX_N);
-        uint8_t auth[SPX_FORS_HEIGHT * SPX_N];
-        int pos = idx;
+            spx_prf(tree + (size_t)i * SPX_N, sk_seed, SPX_TAG_FORS, (uint64_t)t, (uint64_t)i);
+        uint8_t *tsig = sig + (size_t)t * ((SPX_FORS_HEIGHT + 1) * SPX_N);
+        memcpy(tsig, tree + (size_t)idx * SPX_N, SPX_N);
+        uint32_t pos = idx;
         for (int h = 0; h < SPX_FORS_HEIGHT; h++) {
-            int sibling = pos ^ 1;
-            memcpy(auth + h * SPX_N, leaf + sibling * SPX_N, SPX_N);
-            int pairs = SPX_FORS_INDICES >> h;
-            for (int j = 0; j < pairs; j += 2) {
-                uint8_t input[2 * SPX_N];
-                memcpy(input, leaf + j * SPX_N, 2 * SPX_N);
-                spx_hash(leaf + (j / 2) * SPX_N, input, 2 * SPX_N);
-            }
-            pos /= 2;
+            uint32_t sibling = pos ^ 1;
+            memcpy(tsig + (size_t)(h + 1) * SPX_N, tree + (size_t)sibling * SPX_N, SPX_N);
+            int pairs = SPX_FORS_INDICES >> (h + 1);
+            for (int j = 0; j < pairs; j++)
+                spx_compress(tree + (size_t)j * SPX_N, tree + (size_t)(2 * j) * SPX_N, tree + (size_t)(2 * j + 1) * SPX_N);
+            pos >>= 1;
         }
-        memcpy(sig + t * (SPX_N + SPX_FORS_HEIGHT * SPX_N), leaf + idx * SPX_N, SPX_N);
-        memcpy(sig + t * (SPX_N + SPX_FORS_HEIGHT * SPX_N) + SPX_N, auth, SPX_FORS_HEIGHT * SPX_N);
+        memcpy(roots + (size_t)t * SPX_N, tree, SPX_N);
     }
+    spx_hash16(pk, roots, SPX_FORS_TREES * SPX_N);
 }
 
-static void spx_ht_treehash(uint8_t *root, const uint8_t *sk_seed, const uint8_t *pub_seed, uint32_t addr[8], int height) {
-    int max_h = height + 1;
-    uint8_t *nodes = (uint8_t*)calloc((size_t)max_h * SPX_N, 1);
-    int *cnt = (int*)calloc((size_t)max_h, sizeof(int));
-    if (!nodes || !cnt) { free(nodes); free(cnt); return; }
-    for (int i = 0; i < (1 << height); i++) {
-        uint8_t leaf[SPX_N];
-        uint32_t leaf_addr[8];
-        memcpy(leaf_addr, addr, sizeof(leaf_addr));
-        leaf_addr[5] = i;
-        spx_wots_genpk(leaf, sk_seed, pub_seed, leaf_addr);
-        int h = 0;
-        memcpy(nodes + (size_t)h * SPX_N, leaf, SPX_N);
-        cnt[h] = 1;
-        while (h <= height && cnt[h] == 2) {
-            uint8_t input[2 * SPX_N];
-            memcpy(input, nodes + (size_t)h * SPX_N, 2 * SPX_N);
-            spx_hash(nodes + (size_t)(h + 1) * SPX_N, input, 2 * SPX_N);
-            cnt[h] = 0;
-            cnt[++h]++;
-        }
-    }
-    for (int i = 0; i < height; i++)
-        if (cnt[i]) {
-            uint8_t input[2 * SPX_N];
-            memset(input, 0, 2 * SPX_N);
-            spx_hash(nodes + (size_t)(i + 1) * SPX_N, input, 2 * SPX_N);
-        }
-    memcpy(root, nodes + (size_t)height * SPX_N, SPX_N);
-    free(nodes);
-    free(cnt);
-}
-
-static void spx_ht_sign(uint8_t *sig, size_t *siglen, const uint8_t *msg, const uint8_t *sk_seed, const uint8_t *pub_seed) {
-    uint8_t md[SPX_FORS_BYTES];
-    SNEPPX_random_bytes(md, SPX_FORS_BYTES);
-    uint8_t fors_pk[SPX_FORS_TREES * SPX_N];
-    uint32_t fors_addr[8] = {0};
-    spx_fors_sign(sig, fors_pk, md, sk_seed, pub_seed, fors_addr);
-    size_t pos = SPX_FORS_TREES * (SPX_N + SPX_FORS_HEIGHT * SPX_N);
-    memcpy(sig + pos, fors_pk, SPX_FORS_TREES * SPX_N);
-    pos += SPX_FORS_TREES * SPX_N;
-    uint8_t pk_root[SPX_N];
-    uint32_t ht_addr[8] = {0};
-    spx_ht_treehash(pk_root, sk_seed, pub_seed, ht_addr, SPX_TREE_HEIGHT);
-    for (int d = 0; d < SPX_D; d++) {
-        uint32_t tree_addr[8];
-        memcpy(tree_addr, ht_addr, sizeof(tree_addr));
-        tree_addr[4] = d;
+static void spx_fors_pk_from_sig(uint8_t *pk, const uint8_t *sig, const uint8_t *md) {
+    uint8_t roots[SPX_FORS_TREES * SPX_N];
+    for (int t = 0; t < SPX_FORS_TREES; t++) {
+        uint32_t idx = spx_fors_index(md, t);
+        const uint8_t *tsig = sig + (size_t)t * ((SPX_FORS_HEIGHT + 1) * SPX_N);
         uint8_t node[SPX_N];
-        spx_ht_treehash(node, sk_seed, pub_seed, tree_addr, SPX_TREE_HEIGHT);
-        int idx = 0;
-        for (int i = 0; i < SPX_TREE_HEIGHT; i++) idx |= (rand() & 1) << i;
-        for (int i = 0; i < SPX_TREE_HEIGHT; i++) {
-            uint8_t auth_path[SPX_N];
-            int sibling = (idx >> i) ^ 1;
-            uint32_t sib_addr[8];
-            memcpy(sib_addr, tree_addr, sizeof(sib_addr));
-            sib_addr[5] = sibling;
-            spx_ht_treehash(auth_path, sk_seed, pub_seed, sib_addr, i);
-            memcpy(sig + pos, auth_path, SPX_N);
+        memcpy(node, tsig, SPX_N);
+        for (int h = 0; h < SPX_FORS_HEIGHT; h++) {
+            const uint8_t *auth = tsig + (size_t)(h + 1) * SPX_N;
+            uint8_t in[2 * SPX_N];
+            if (idx & (1u << h)) {
+                memcpy(in, auth, SPX_N);
+                memcpy(in + SPX_N, node, SPX_N);
+            } else {
+                memcpy(in, node, SPX_N);
+                memcpy(in + SPX_N, auth, SPX_N);
+            }
+            spx_hash16(node, in, 2 * SPX_N);
+        }
+        memcpy(roots + (size_t)t * SPX_N, node, SPX_N);
+    }
+    spx_hash16(pk, roots, SPX_FORS_TREES * SPX_N);
+}
+
+static void spx_ht_sign(uint8_t *sig, const uint8_t *sk_seed, uint32_t idx0, const uint8_t *fors_pk) {
+    size_t pos = 0;
+    uint8_t ctx[SPX_N];
+    memcpy(ctx, fors_pk, SPX_N);
+    for (int d = 0; d < SPX_D; d++) {
+        uint64_t leaf = (d == 0) ? (uint64_t)idx0 : 0;
+        spx_wots_sign(sig + pos, ctx, sk_seed, d, leaf);
+        pos += SPX_WOTS_SIG_BYTES;
+        for (int h = 0; h < SPX_TREE_HEIGHT; h++) {
+            uint64_t sibling = leaf ^ UINT64_C(1) << h;
+            uint64_t offset = (sibling >> h) << h;
+            spx_subtree_root(sig + pos, sk_seed, d, h, (int)offset);
             pos += SPX_N;
         }
-        memcpy(sig + pos, node, SPX_N);
-        pos += SPX_N;
+        if (d + 1 < SPX_D)
+            spx_treehash(ctx, sk_seed, d);
     }
-    *siglen = pos;
+}
+
+static void spx_md(uint8_t md[32], const uint8_t *r, const uint8_t *pub_seed, const uint8_t *mh) {
+    uint8_t in[2 * SPX_N + 32];
+    memcpy(in, r, SPX_N);
+    memcpy(in + SPX_N, pub_seed, SPX_N);
+    memcpy(in + 2 * SPX_N, mh, 32);
+    SNEPPX_sha256(md, in, sizeof(in));
+}
+
+static uint32_t spx_leaf0(const uint8_t md[32]) {
+    return ((uint32_t)(md[19] >> 6) | (((uint32_t)md[20] & 0x0f) << 2)) & 0x3f;
 }
 
 /**
  * @brief Generate Sphincs.
  *
- * @param pk [out] Pk value.
- * @param sk [out] Sk value.
+ * @param pk [out] Pk value (pub_seed || top-level tree root).
+ * @param sk [out] Sk value (sk_seed || sk_prf || pub_seed).
  *
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_sphincs_keygen(uint8_t *pk, uint8_t *sk, int variant) {
+    (void)variant;
     if (!pk || !sk) return -1;
     uint8_t sk_seed[SPX_N], sk_prf[SPX_N], pub_seed[SPX_N];
     SNEPPX_random_bytes(sk_seed, SPX_N);
     SNEPPX_random_bytes(sk_prf, SPX_N);
     SNEPPX_random_bytes(pub_seed, SPX_N);
-    uint32_t addr[8] = {0};
-    spx_ht_treehash(pk, sk_seed, pub_seed, addr, SPX_FULL_HEIGHT);
+    uint8_t root[SPX_N];
+    spx_treehash(root, sk_seed, SPX_D - 1);
+    memcpy(pk, pub_seed, SPX_N);
+    memcpy(pk + SPX_N, root, SPX_N);
     memcpy(sk, sk_seed, SPX_N);
     memcpy(sk + SPX_N, sk_prf, SPX_N);
     memcpy(sk + 2 * SPX_N, pub_seed, SPX_N);
@@ -233,7 +283,7 @@ int SNEPPX_sphincs_keygen(uint8_t *pk, uint8_t *sk, int variant) {
 /**
  * @brief Sign Sphincs.
  *
- * @param sig [out] Sig value.
+ * @param sig [out] Sig value (deterministic, 14592 bytes).
  * @param siglen [out] Siglen value.
  * @param m [in] M value.
  * @param mlen [in] Mlen value.
@@ -242,11 +292,31 @@ int SNEPPX_sphincs_keygen(uint8_t *pk, uint8_t *sk, int variant) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_sphincs_sign(uint8_t *sig, size_t *siglen, const uint8_t *m, size_t mlen, const uint8_t *sk, int variant) {
+    (void)variant;
     if (!sig || !siglen || !m || !sk) return -1;
-    uint8_t sk_seed[SPX_N], pub_seed[SPX_N];
+    uint8_t sk_seed[SPX_N], sk_prf[SPX_N], pub_seed[SPX_N];
     memcpy(sk_seed, sk, SPX_N);
+    memcpy(sk_prf, sk + SPX_N, SPX_N);
     memcpy(pub_seed, sk + 2 * SPX_N, SPX_N);
-    spx_ht_sign(sig, siglen, m, sk_seed, pub_seed);
+
+    uint8_t mh[32];
+    SNEPPX_sha256(mh, m, mlen);
+    uint8_t rb[SPX_N + 32];
+    memcpy(rb, sk_prf, SPX_N);
+    memcpy(rb + SPX_N, mh, 32);
+    uint8_t r[SPX_N];
+    spx_hash16(r, rb, sizeof(rb));
+
+    uint8_t md[32];
+    spx_md(md, r, pub_seed, mh);
+    uint32_t idx0 = spx_leaf0(md);
+
+    memcpy(sig, r, SPX_N);
+    uint8_t fors_pk[SPX_N];
+    spx_fors_sign(sig + SPX_N, fors_pk, md, sk_seed);
+    memcpy(sig + SPX_N + SPX_FORS_SIG_BYTES, fors_pk, SPX_N);
+    spx_ht_sign(sig + SPX_N + SPX_FORS_SIG_BYTES + SPX_N, sk_seed, idx0, fors_pk);
+    *siglen = SPX_SIG_BYTES;
     return 0;
 }
 
@@ -262,55 +332,49 @@ int SNEPPX_sphincs_sign(uint8_t *sig, size_t *siglen, const uint8_t *m, size_t m
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_sphincs_verify(const uint8_t *sig, size_t siglen, const uint8_t *m, size_t mlen, const uint8_t *pk, int variant) {
+    (void)variant;
     if (!sig || !pk) return -1;
-    size_t fors_sig_bytes = (size_t)SPX_FORS_TREES * (SPX_N + (size_t)SPX_FORS_HEIGHT * SPX_N);
-    size_t ht_sig_bytes = (size_t)SPX_D * (SPX_TREE_HEIGHT + 1) * SPX_N;
-    if (siglen < fors_sig_bytes + ht_sig_bytes) return -1;
+    if (siglen < SPX_SIG_BYTES) return -1;
+    const uint8_t *r = sig;
+    const uint8_t *fors_sig = sig + SPX_N;
+    const uint8_t *fors_pk_sig = fors_sig + SPX_FORS_SIG_BYTES;
+    const uint8_t *ht = fors_pk_sig + SPX_N;
 
-    uint8_t md[SPX_FORS_BYTES];
-    SNEPPX_random_bytes(md, SPX_FORS_BYTES);
+    uint8_t mh[32];
+    SNEPPX_sha256(mh, m, mlen);
+    uint8_t md[32];
+    spx_md(md, r, pk, mh);
+    uint32_t idx0 = spx_leaf0(md);
 
-    uint8_t pub_seed[SPX_N];
-    memcpy(pub_seed, pk, SPX_N);
+    uint8_t fors_pk[SPX_N];
+    spx_fors_pk_from_sig(fors_pk, fors_sig, md);
+    if (memcmp(fors_pk, fors_pk_sig, SPX_N) != 0) return -1;
 
     uint8_t node[SPX_N];
+    memcpy(node, fors_pk, SPX_N);
     size_t pos = 0;
-    for (int t = 0; t < SPX_FORS_TREES; t++) {
-        int idx = 0;
-        for (int b = 0; b < SPX_FORS_HEIGHT; b++)
-            idx |= ((md[(t * SPX_FORS_HEIGHT + b) / 8] >> ((t * SPX_FORS_HEIGHT + b) % 8)) & 1) << b;
-        memcpy(node, sig + pos, SPX_N);
-        pos += SPX_N;
-        for (int h = 0; h < SPX_FORS_HEIGHT; h++) {
-            uint8_t auth[SPX_N];
-            memcpy(auth, sig + pos, SPX_N);
-            pos += SPX_N;
-            uint8_t input[2 * SPX_N];
-            if ((idx >> h) & 1) {
-                memcpy(input, auth, SPX_N);
-                memcpy(input + SPX_N, node, SPX_N);
-            } else {
-                memcpy(input, node, SPX_N);
-                memcpy(input + SPX_N, auth, SPX_N);
-            }
-            spx_hash(node, input, 2 * SPX_N);
-        }
-    }
     for (int d = 0; d < SPX_D; d++) {
-        uint8_t wots_leaf[SPX_N];
-        memcpy(wots_leaf, sig + pos, SPX_N);
-        pos += SPX_N;
-        uint8_t auth_node[SPX_N];
-        memcpy(auth_node, sig + pos, SPX_N);
-        pos += SPX_N;
-        uint8_t input[2 * SPX_N];
-        memcpy(input, node, SPX_N);
-        memcpy(input + SPX_N, auth_node, SPX_N);
-        spx_hash(node, input, 2 * SPX_N);
-        (void)d; (void)wots_leaf; (void)pub_seed;
+        uint64_t leaf = (d == 0) ? (uint64_t)idx0 : 0;
+        uint8_t wots_pk[SPX_WOTS_SIG_BYTES];
+        spx_wots_verify(wots_pk, ht + pos, node);
+        pos += SPX_WOTS_SIG_BYTES;
+        uint8_t leaf_hash[SPX_N];
+        spx_hash16(leaf_hash, wots_pk, SPX_WOTS_SIG_BYTES);
+        for (int h = 0; h < SPX_TREE_HEIGHT; h++) {
+            const uint8_t *auth = ht + pos;
+            pos += SPX_N;
+            uint8_t in[2 * SPX_N];
+            if (leaf & UINT64_C(1) << h) {
+                memcpy(in, auth, SPX_N);
+                memcpy(in + SPX_N, leaf_hash, SPX_N);
+            } else {
+                memcpy(in, leaf_hash, SPX_N);
+                memcpy(in + SPX_N, auth, SPX_N);
+            }
+            spx_hash16(leaf_hash, in, 2 * SPX_N);
+        }
+        memcpy(node, leaf_hash, SPX_N);
     }
-    (void)m; (void)mlen;
-
-    if (memcmp(node, pk, SPX_N) == 0) return 0;
+    if (memcmp(node, pk + SPX_N, SPX_N) == 0) return 0;
     return -1;
 }

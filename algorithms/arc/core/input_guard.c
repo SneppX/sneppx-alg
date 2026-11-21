@@ -44,15 +44,16 @@ SNEPPXARCConfig SNEPPX_arc_config_default(void) {
  * @brief Create Input Guard.
  *
  * @param input_dim [in] Input Dim value.
+ * @param output_dim [in] Output Dim value.
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXInputGuard* SNEPPX_input_guard_create(size_t input_dim, unsigned int seed) {
+SNEPPXInputGuard* SNEPPX_input_guard_create(size_t input_dim, size_t output_dim, unsigned int seed) {
     SNEPPXInputGuard* guard = (SNEPPXInputGuard*)SNEPPX_malloc(sizeof(SNEPPXInputGuard), 64);
     if (!guard) return NULL;
     memset(guard, 0, sizeof(SNEPPXInputGuard));
 
-    size_t shape_pp[] = {input_dim, input_dim};
+    size_t shape_pp[] = {output_dim, input_dim};
     size_t shape_n1[] = {input_dim};
     guard->projection_matrix = SNEPPX_tensor_create(shape_pp, 2, SNEPPX_FLOAT32);
     guard->norm_stats_mean = SNEPPX_tensor_zeros(shape_n1, 1, SNEPPX_FLOAT32);

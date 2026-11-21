@@ -14,7 +14,7 @@ echo "=== SNEPPX-Algo Coverage Report ==="
 
 # Configure with coverage flags
 echo "Configuring..."
-cmake -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON \
+cmake -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_BUILD_TESTS=ON \
     -DCMAKE_C_FLAGS="--coverage -g -O0" \
     -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 

@@ -1,4 +1,5 @@
 #include "hierarchical_state_space.h"
+#include "test_gtest.h"
 #include "polymorphic_memory_allocator.h"
 #include <stdio.h>
 #include <string.h>
@@ -21,32 +22,9 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-#define ASSERT_NEAR(a, b, eps, msg) do { \
-    if (fabsf((a) - (b)) > (eps)) { \
-        printf("FAIL: %s (got %f, expected %f)\n", msg, (float)(a), (float)(b)); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_parallel_vs_sequential(void) {
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
@@ -59,20 +37,20 @@ static void test_parallel_vs_sequential(void) {
     cfg.use_parallel_scan = 1;
 
     SNEPPXHSSModel* model = SNEPPX_hss_model_create(&cfg, 42);
-    ASSERT(model != NULL, "model created");
+    SX_ASSERT(model != NULL, "model created");
 
     size_t shape_in[] = {1, cfg.seq_len, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input tensor created");
+    SX_ASSERT(input != NULL, "input tensor created");
 
     float* data = (float*)input->data;
     for (size_t i = 0; i < input->size; i++) data[i] = ((float)(i % 7) - 3.0f) * 0.5f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_hss_forward(model, input, &output);
-    ASSERT(ret == 0, "forward pass with parallel scan succeeded");
-    ASSERT(output != NULL, "output tensor created");
-    ASSERT(output->size == cfg.seq_len * cfg.output_dim, "output size correct");
+    SX_ASSERT(ret == 0, "forward pass with parallel scan succeeded");
+    SX_ASSERT(output != NULL, "output tensor created");
+    SX_ASSERT(output->size == cfg.seq_len * cfg.output_dim, "output size correct");
 
     SNEPPX_tensor_destroy(output);
     SNEPPX_tensor_destroy(input);
@@ -90,19 +68,19 @@ static void test_parallel_scan_disabled_fallback(void) {
     cfg.use_parallel_scan = 0;
 
     SNEPPXHSSModel* model = SNEPPX_hss_model_create(&cfg, 42);
-    ASSERT(model != NULL, "model created");
+    SX_ASSERT(model != NULL, "model created");
 
     size_t shape_in[] = {1, cfg.seq_len, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input tensor created");
+    SX_ASSERT(input != NULL, "input tensor created");
 
     float* data = (float*)input->data;
     for (size_t i = 0; i < input->size; i++) data[i] = ((float)(i % 7) - 3.0f) * 0.5f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_hss_forward(model, input, &output);
-    ASSERT(ret == 0, "forward pass with sequential scan succeeded");
-    ASSERT(output != NULL, "output tensor created");
+    SX_ASSERT(ret == 0, "forward pass with sequential scan succeeded");
+    SX_ASSERT(output != NULL, "output tensor created");
 
     SNEPPX_tensor_destroy(output);
     SNEPPX_tensor_destroy(input);
@@ -119,31 +97,31 @@ static void test_parallel_scan_matches_sequential(void) {
     cfg.use_hierarchical = 0;
 
     SNEPPXHSSModel* model_seq = SNEPPX_hss_model_create(&cfg, 100);
-    ASSERT(model_seq != NULL, "seq model created");
+    SX_ASSERT(model_seq != NULL, "seq model created");
     SNEPPXHSSModel* model_par = SNEPPX_hss_model_create(&cfg, 100);
-    ASSERT(model_par != NULL, "par model created");
+    SX_ASSERT(model_par != NULL, "par model created");
 
     model_par->config.use_parallel_scan = 1;
 
     size_t shape_in[] = {1, cfg.seq_len, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input tensor created");
+    SX_ASSERT(input != NULL, "input tensor created");
 
     float* data = (float*)input->data;
     for (size_t i = 0; i < input->size; i++) data[i] = sinf((float)i * 0.1f);
 
     SNEPPXTensor* out_seq = NULL;
     SNEPPX_hss_forward(model_seq, input, &out_seq);
-    ASSERT(out_seq != NULL, "seq output");
+    SX_ASSERT(out_seq != NULL, "seq output");
 
     SNEPPXTensor* out_par = NULL;
     SNEPPX_hss_forward(model_par, input, &out_par);
-    ASSERT(out_par != NULL, "par output");
+    SX_ASSERT(out_par != NULL, "par output");
 
     float* seq_data = (float*)out_seq->data;
     float* par_data = (float*)out_par->data;
     for (size_t i = 0; i < out_seq->size; i++) {
-        ASSERT_NEAR(seq_data[i], par_data[i], 1e-3f, "parallel scan matches sequential");
+        SX_ASSERT_NEAR(seq_data[i], par_data[i], 1e-3f, "parallel scan matches sequential");
     }
 
     SNEPPX_tensor_destroy(out_seq);
@@ -153,10 +131,7 @@ static void test_parallel_scan_matches_sequential(void) {
     SNEPPX_hss_model_destroy(model_par);
 }
 
-int main(void) {
-    run_test("parallel_vs_sequential", test_parallel_vs_sequential);
-    run_test("parallel_scan_disabled_fallback", test_parallel_scan_disabled_fallback);
-    run_test("parallel_scan_matches_sequential", test_parallel_scan_matches_sequential);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_hss_parallel_scan, parallel_vs_sequential) { test_parallel_vs_sequential(); }
+TEST(test_hss_parallel_scan, parallel_scan_disabled_fallback) { test_parallel_scan_disabled_fallback(); }
+TEST(test_hss_parallel_scan, parallel_scan_matches_sequential) { test_parallel_scan_matches_sequential(); }

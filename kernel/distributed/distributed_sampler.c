@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdint.h>
 
 /*
  * SNEPPX - Distributed Sampler
@@ -76,9 +77,14 @@ void sneppx_distributed_sampler_set_epoch(SNEPPX_DistributedSampler* sampler,
     sampler->epoch = epoch;
     if (sampler->shuffle) {
         // Fisher-Yates shuffle with epoch-based seed
-        srand((unsigned int)(sampler->seed + epoch));
+        uint64_t sm_state = (uint64_t)(sampler->seed + epoch) * 0x9E3779B97F4A7C15ULL + 1;
         for (int64_t i = sampler->num_samples_per_rank - 1; i > 0; i--) {
-            int64_t j = rand() % (i + 1);
+            sm_state += 0x9E3779B97F4A7C15ULL;
+            uint64_t z = sm_state;
+            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ULL;
+            z = (z ^ (z >> 27)) * 0x94D049BB133111EBULL;
+            z = z ^ (z >> 31);
+            int64_t j = (int64_t)(z % (uint64_t)(i + 1));
             int64_t tmp = sampler->indices[i];
             sampler->indices[i] = sampler->indices[j];
             sampler->indices[j] = tmp;

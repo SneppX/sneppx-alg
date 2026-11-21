@@ -1,117 +1,76 @@
-# SNEPPX-Alg: Secure Neural Architecture (ARIX_Algo)
+# SneppX-ALG
 
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![C/C++](https://img.shields.io/badge/language-C%2FC%2B%2B-00599C.svg)]()
-[![Python](https://img.shields.io/badge/language-Python-3776AB.svg)]()
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
-[![PRs](https://img.shields.io/badge/PRs-email%20only-yellow.svg)](mailto:algoarix@gmail.com)
+[![PyPI version](https://img.shields.io/pypi/v/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
+[![Python versions](https://img.shields.io/pypi/pyversions/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
+[![CI](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](LICENSE)
 
-> **ARIX_Algo** — Secure, composable, production-grade AI algorithm pipeline with 10 security layers (S0–S9), model zoo, distributed training, quantization, and advanced architectures.
+SneppX-ALG is an open-source AI and machine-learning framework with a native C/C++ codebase and Python bindings. It brings together tensor operations, automatic differentiation, neural-network components, model utilities, and security-related tooling.
 
-This directory contains the **SNEPPX-Alg** cognitive processing system — a
-next-generation AI framework with security built into the foundation.
+**Project maturity: Alpha.** Implementation and test coverage vary across components and optional backends. Check the relevant documentation and tests before depending on a specific feature. SneppX-ALG is not a drop-in replacement for TensorFlow or PyTorch.
 
-See the [top-level README](https://github.com/ammar49-cyber/sneppx-alg) for the full overview.
-For complete documentation, start at [`docs/index.md`](docs/index.md).
+## Install
+
+Install the Python package from PyPI:
+
+```bash
+python -m pip install sneppx-alg
+```
+
+For a source checkout, install the bindings from the repository:
+
+```bash
+python -m pip install ./bindings/python
+```
 
 ## Features
 
-- **5-component algorithm pipeline**: HSS (SSM), SER (MoE), ARC (Adversarial Guard), NPE (Neural VM), FM (Federated Memory)
-- **10 security layers (S0–S9)**: Crypto, Secure Memory, Obfuscation, Monitoring, Network, AI Sanitizer, Key Vault, Updates, Formal Verification, Penetration Testing
-- **Model Zoo**: `from_pretrained()` API with ModelHub, weight management, model cards, converter presets for LLaMA 2/3, Mistral, Qwen 2, DeepSeek V2
-- **Distributed Training**: ZeRO-1/2/3, pipeline/tensor/expert parallelism, elastic training, fault tolerance
-- **Quantization**: INT8/INT4/FP8, AWQ, GPTQ
-- **Advanced Architectures**: Differential Attention, Mamba-2 SSM, FlexAttention, Mixture of Depth
-- **Built-in Profiling & Debugging**: Profiler, logger, NVTX stubs, sanitizer scripts
+- Tensor operations and automatic differentiation.
+- Neural-network layers, losses, and optimizers.
+- Transformer and model components.
+- Quantization and distributed-computing components, with varying maturity.
+- Python bindings and developer utilities.
+- Security, monitoring, cryptography, and network-security components.
+
+See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md) for current gaps and compatibility goals.
+
+## Build from source
+
+Requirements include CMake 3.16 or newer, a C11 and C++17-compatible toolchain, and Python with NumPy for Python support.
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+```
+
+CUDA and other optional backends are not required for a basic CPU build. See the [build guide](docs/build.md) for configuration options.
 
 ## Documentation
 
-| Area | Where to start |
-|------|----------------|
-| Quick start & build | [`docs/index.md`](docs/index.md) |
-| Contribution framework | [`docs/CONTRIBUTOR_TIERS.md`](docs/CONTRIBUTOR_TIERS.md) |
-| Branching strategy | [`docs/BRANCHING_STRATEGY.md`](docs/BRANCHING_STRATEGY.md) |
-| Code review guide | [`docs/CODE_REVIEW_GUIDE.md`](docs/CODE_REVIEW_GUIDE.md) |
-| API reference | [`docs/API.md`](docs/API.md) |
-| Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| Security layers | [`docs/security_layers.md`](docs/security_layers.md) |
-| Development workflow | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
-| Commenting standard | [`docs/COMMENTING.md`](docs/COMMENTING.md) |
-| All docs | [`docs/README.md`](docs/README.md) |
+- [Live documentation](https://sneppx.github.io/sneppx-alg/)
+- [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
+- [Python API reference](https://sneppx.github.io/sneppx-alg/latest/api/python/)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Security implementation notes](docs/security_layers.md)
+- [Development guide](docs/DEVELOPMENT.md)
 
-## What's new in v1.1.1
+The [SneppX-OV project website](https://sneppx.github.io/sneppxov/) provides source-linked catalogues and a project overview.
 
-- **C HTTP REST API**: Real serving endpoints — `GET /v1/health`, `GET /v1/models`, `GET /v1/models/{id}`, `POST /v1/generate` (see `net/http/http_api.c`, demo at `examples/http_server_demo.c`)
-- **Security fixes**: Unsafe C functions replaced with safe alternatives across 8 files (model factory, VIT, numpy/onnx/pth/safetensors formats, HTTP auth, S9 extensions)
-- **Python packaging**: `pyproject.toml` wheel metadata + `cp311-cp311-win_amd64` wheel tag, optional serve deps
-- **Dev tools chain**: `scripts/dev-tools.ps1/.sh`, `.sneppx-tools.json` manifest, extended pre-commit
-- **Quickstart**: `QUICKSTART.md` for build/test/install/serve
+## Security
 
-## v1.1.0
+Security-related components have different implementation and validation levels. They have not all received independent security audits or certification. Review the [security documentation](docs/security_layers.md) and the relevant tests before deployment.
 
-- **Contribution framework**: Five-tier merit system, branching strategy, code review guide, learning paths
-- **CI/CD removed**: All automated pipelines deleted. Manual builds & tests only
-- **Docs reorganized**: 4 reference docs converted from `.txt` to `.md`, Doxygen config added
+To report a suspected vulnerability, follow the [security policy](SECURITY.md) and use private disclosure.
 
-## v1.0.0 — Initial Stable Release
+## Contributing
 
-- **Model Zoo**: `from_pretrained()` API, ModelHub, C/C++/Python model configs, model cards, weight management
-- **Distributed Training**: ZeRO-1/2/3, pipeline/tensor/expert parallelism, elastic training, fault tolerance
-- **Advanced Architectures**: Differential Attention, Mamba-2 SSM, FlexAttention, Mixture of Depth
-- **Security Audit**: S0-S9 hardened (symbol-collision fixes, mapping-leak fixes, behavioral monitoring)
-- **Quantization**: INT8/INT4/FP8, AWQ, GPTQ
-- **Async Checkpointing**: Double-buffered save, heartbeat, elastic node join/leave
-- **Profiling & Debugging**: Profiler, logger, NVTX stubs, sanitizer scripts
+Bug reports, feature requests, and contributions are welcome. Read the [development guide](docs/DEVELOPMENT.md) before making changes.
 
-## Quick build
-
-```powershell
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-cd build && ctest -C Release --output-on-failure
-```
-
-Opt-in backends — real reference implementations, **OFF by default**. Each performs
-genuine computation via the shared reference-compute path and reports
-`DRIVER_UNSUPPORTED` when its flag is off:
-
-```powershell
-cmake -B build -DSNEPPX_BUILD_VULKAN=ON   # Vulkan — real GEMM / elementwise reference compute
-cmake -B build -DSNEPPX_BUILD_TPU=ON      # TPU — real GEMM reference + device emulation
-cmake -B build -DSNEPPX_BUILD_HTTP=ON     # HTTP — real BSD-socket transport (GET/POST)
-cmake -B build -DSNEPPX_BUILD_ZK=ON       # ZK — real Schnorr proof over Curve25519 (p = 2^255 - 19)
-cmake -B build -DSNEPPX_BUILD_METAL=ON    # Apple Metal reference backend
-cmake -B build -DSNEPPX_BUILD_ONEAPI=ON   # Intel oneAPI/SYCL reference backend
-```
-
-Build everything (all opt-in backends + tests) and run the full suite:
-
-```powershell
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON `
-  -DSNEPPX_BUILD_VULKAN=ON -DSNEPPX_BUILD_TPU=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_ZK=ON
-cmake --build build --config Release
-cd build && ctest -C Release --output-on-failure
-```
-
-## Layout
-
-| Path | Purpose |
-|------|---------|
-| `kernel/` | Core tensor/autodiff/optimizer/trainer substrate |
-| `algorithms/` | HSS, SER, ARC, NPE, FM, Transformer, ViT, GCN, RNN, GAN, Diffusion, RL |
-| `drivers/` | Accelerator backends (CUDA, ROCm, Vulkan, TPU, HTTP, ZK, Metal*, oneAPI*) |
-| `security/` | S0–S9 security layer |
-| `net/` | Distributed + gRPC coordination |
-| `bindings/python/` | Python API |
-| `releases/` | Release signing tooling |
-
-`*` Metal and oneAPI are reference-compute backends enabled via
-`SNEPPX_BUILD_METAL` / `SNEPPX_BUILD_ONEAPI`. Vulkan/TPU/HTTP/ZK do real
-reference computation and are enabled via `SNEPPX_BUILD_VULKAN` /
-`SNEPPX_BUILD_TPU` / `SNEPPX_BUILD_HTTP` / `SNEPPX_BUILD_ZK`.
+- [Issues](https://github.com/SneppX/sneppx-alg/issues)
+- [Discussions](https://github.com/SneppX/sneppx-alg/discussions)
+- [Contribution guide](CONTRIBUTING.md)
 
 ## License
 
-MIT — see [`LICENSE`](./LICENSE). Maintained by **Ammar [SNEPPX]**.
+Released under the [MIT License](LICENSE).

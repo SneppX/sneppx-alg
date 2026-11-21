@@ -6,7 +6,7 @@ services:
       context: .
       target: builder
     command: >
-      sh -c "cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+      sh -c "cd build && cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
       && cmake --build . -j\"\$(nproc)\" && ctest --output-on-failure"
     profiles:
       - build
@@ -34,7 +34,7 @@ services:
           cpus: "2"
           memory: 4G
     command: >
-      sh -c "cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+      sh -c "cd build && cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
       && cmake --build . -j\"\$(nproc)\" && ctest --repeat until-fail:100 --output-on-failure"
     profiles:
       - fuzz

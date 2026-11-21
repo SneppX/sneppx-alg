@@ -1,4 +1,5 @@
 #include "sparse_expert_routing.h"
+#include "test_gtest.h"
 #include "polymorphic_memory_allocator.h"
 #include <stdio.h>
 #include <math.h>
@@ -19,38 +20,15 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-#define ASSERT_NEAR(a, b, eps, msg) do { \
-    if (fabsf((a) - (b)) > (eps)) { \
-        printf("FAIL: %s (got %f, expected %f)\n", msg, (float)(a), (float)(b)); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name);
-    fflush(stdout);
-    test_fn();
-    printf("PASS\n");
-    tests_passed++;
-}
 
 static void test_ser_config_default(void) {
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    ASSERT(cfg.num_experts == 8, "default has 8 experts");
-    ASSERT(cfg.num_active == 2, "default 2 active experts");
-    ASSERT(cfg.top_k_method == SNEPPX_TOPK_GREEDY, "default greedy top-k");
+    SX_ASSERT(cfg.num_experts == 8, "default has 8 experts");
+    SX_ASSERT(cfg.num_active == 2, "default 2 active experts");
+    SX_ASSERT(cfg.top_k_method == SNEPPX_TOPK_GREEDY, "default greedy top-k");
 }
 
 static void test_ser_load_balance_loss(void) {
@@ -61,7 +39,7 @@ static void test_ser_load_balance_loss(void) {
     cfg.expert_dim = 16;
     cfg.output_dim = 8;
     SNEPPXSERLayer* layer = SNEPPX_ser_layer_create(&cfg, 42);
-    ASSERT(layer != NULL, "layer created");
+    SX_ASSERT(layer != NULL, "layer created");
 
     size_t shape_in[] = {4, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
@@ -71,14 +49,14 @@ static void test_ser_load_balance_loss(void) {
     SNEPPXTensor* gate_weights = NULL;
     int* expert_indices = NULL;
     SNEPPX_ser_route(layer, input, &gate_weights, &expert_indices);
-    ASSERT(gate_weights != NULL, "gate weights computed");
-    ASSERT(expert_indices != NULL, "expert indices computed");
+    SX_ASSERT(gate_weights != NULL, "gate weights computed");
+    SX_ASSERT(expert_indices != NULL, "expert indices computed");
 
     float lb_loss = SNEPPX_ser_load_balance_loss(gate_weights, expert_indices, 4);
-    ASSERT(lb_loss >= 0.0f, "load balance loss >= 0");
+    SX_ASSERT(lb_loss >= 0.0f, "load balance loss >= 0");
 
     SNEPPX_tensor_destroy(gate_weights);
-    free(expert_indices);
+    SNEPPX_free(expert_indices, 4 * 2 * sizeof(int));
     SNEPPX_tensor_destroy(input);
     SNEPPX_ser_layer_destroy(layer);
 }
@@ -99,18 +77,15 @@ static void test_ser_z_loss(void) {
     SNEPPX_ser_route(layer, input, &gate_weights, &expert_indices);
 
     float zl = SNEPPX_ser_z_loss(gate_weights);
-    ASSERT(zl >= 0.0f, "z-loss >= 0");
+    SX_ASSERT(zl >= 0.0f, "z-loss >= 0");
 
     SNEPPX_tensor_destroy(gate_weights);
-    free(expert_indices);
+    SNEPPX_free(expert_indices, 2 * 2 * sizeof(int));
     SNEPPX_tensor_destroy(input);
     SNEPPX_ser_layer_destroy(layer);
 }
 
-int main(void) {
-    run_test("ser_config_default", test_ser_config_default);
-    run_test("ser_load_balance_loss", test_ser_load_balance_loss);
-    run_test("ser_z_loss", test_ser_z_loss);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_ser_gating, ser_config_default) { test_ser_config_default(); }
+TEST(test_ser_gating, ser_load_balance_loss) { test_ser_load_balance_loss(); }
+TEST(test_ser_gating, ser_z_loss) { test_ser_z_loss(); }

@@ -1,4 +1,5 @@
 #include "adversarial_robustness_certification.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -19,12 +20,6 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_fgsm(void) {
     size_t shape_in[] = {8, 16};
     SNEPPXTensor* clean = SNEPPX_tensor_zeros(shape_in, 2, SNEPPX_FLOAT32);
@@ -33,9 +28,9 @@ static void test_fgsm(void) {
 
     SNEPPXTensor* adv = NULL;
     SNEPPX_arc_simulate_attack(clean, SNEPPX_ATTACK_FGSM, 0.1f, &adv);
-    ASSERT(adv != NULL, "adv not null");
-    ASSERT(adv->shape[0] == 8, "batch ok");
-    ASSERT(adv->shape[1] == 16, "dim ok");
+    SX_ASSERT(adv != NULL, "adv not null");
+    SX_ASSERT(adv->shape[0] == 8, "batch ok");
+    SX_ASSERT(adv->shape[1] == 16, "dim ok");
 
     float* cd = (float*)clean->data;
     float* ad = (float*)adv->data;
@@ -46,8 +41,8 @@ static void test_fgsm(void) {
         if (diff > max_diff) max_diff = diff;
         if (diff > 1e-6f) different = 1;
     }
-    ASSERT(different, "adversarial != clean");
-    ASSERT(max_diff <= 0.1f + 1e-4f, "L_inf <= epsilon");
+    SX_ASSERT(different, "adversarial != clean");
+    SX_ASSERT(max_diff <= 0.1f + 1e-4f, "L_inf <= epsilon");
 
     SNEPPX_tensor_destroy(clean);
     SNEPPX_tensor_destroy(adv);
@@ -61,7 +56,7 @@ static void test_pgd(void) {
 
     SNEPPXTensor* adv = NULL;
     SNEPPX_arc_simulate_attack(clean, SNEPPX_ATTACK_PGD, 0.1f, &adv);
-    ASSERT(adv != NULL, "adv not null");
+    SX_ASSERT(adv != NULL, "adv not null");
 
     float* cd = (float*)clean->data;
     float* ad = (float*)adv->data;
@@ -70,7 +65,7 @@ static void test_pgd(void) {
         float diff = fabsf(ad[i] - cd[i]);
         if (diff > max_diff) max_diff = diff;
     }
-    ASSERT(max_diff <= 0.1f + 1e-4f, "L_inf <= epsilon");
+    SX_ASSERT(max_diff <= 0.1f + 1e-4f, "L_inf <= epsilon");
 
     SNEPPX_tensor_destroy(clean);
     SNEPPX_tensor_destroy(adv);
@@ -84,7 +79,7 @@ static void test_cw(void) {
 
     SNEPPXTensor* adv = NULL;
     SNEPPX_arc_simulate_attack(clean, SNEPPX_ATTACK_CW, 0.1f, &adv);
-    ASSERT(adv != NULL, "adv not null");
+    SX_ASSERT(adv != NULL, "adv not null");
 
     float* cd = (float*)clean->data;
     float* ad = (float*)adv->data;
@@ -95,16 +90,13 @@ static void test_cw(void) {
         l2 += diff * diff;
         if (fabsf(diff) > 1e-6f) different = 1;
     }
-    ASSERT(different, "adversarial != clean");
+    SX_ASSERT(different, "adversarial != clean");
 
     SNEPPX_tensor_destroy(clean);
     SNEPPX_tensor_destroy(adv);
 }
 
-int main(void) {
-    run_test("test_fgsm", test_fgsm);
-    run_test("test_pgd", test_pgd);
-    run_test("test_cw", test_cw);
-    printf("\nAttack tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_arc_attack, test_fgsm) { test_fgsm(); }
+TEST(test_arc_attack, test_pgd) { test_pgd(); }
+TEST(test_arc_attack, test_cw) { test_cw(); }

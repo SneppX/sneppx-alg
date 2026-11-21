@@ -1,5 +1,8 @@
 #include "http_api.h"
 #include "model_zoo.h"
+#include "json.h"
+#include <math.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,50 +54,84 @@ struct SNEPPX_HttpApi {
     long start_time;
 };
 
-/* ---- JSON helpers ---- */
+/* ---- JSON request helpers ---- */
 
-static int json_get_string(const char* json, const char* key, char* out, size_t out_size) {
-    if (!json || !key || !out || out_size == 0) return -1;
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\"", key);
-    const char* p = strstr(json, search);
-    if (!p) return -1;
-    p = strchr(p, ':');
-    if (!p) return -1;
-    p++;
-    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
-    if (*p != '"') return -1;
-    p++;
-    size_t n = 0;
-    while (*p && *p != '"' && n + 1 < out_size) {
-        if (*p == '\\' && p[1]) {
-            switch (p[1]) {
-                case 'n': out[n++] = '\n'; break;
-                case 't': out[n++] = '\t'; break;
-                case 'r': out[n++] = '\r'; break;
-                case '\\': out[n++] = '\\'; break;
-                case '"': out[n++] = '"'; break;
-                default: out[n++] = p[1]; break;
+static SNEPPX_JsonValue* json_parse_request(const char* json, size_t body_len) {
+    if (!json || body_len == 0 || body_len > 32768) return NULL;
+
+    /* Some request adapters include the final terminator in their length. */
+    if (json[body_len - 1] == '\0') body_len--;
+    if (body_len == 0 || memchr(json, '\0', body_len) != NULL) return NULL;
+
+    /* Parse an owned, explicitly terminated copy of the HTTP body. */
+    char* input = (char*)malloc(body_len + 1);
+    if (!input) return NULL;
+    memcpy(input, json, body_len);
+    input[body_len] = '\0';
+    SNEPPX_JsonValue* root = sneppx_json_parse(input);
+    free(input);
+    if (!root || root->type != SNEPPX_JSON_OBJECT) {
+        sneppx_json_free(root);
+        return NULL;
+    }
+
+    /* Reject duplicate top-level keys instead of silently choosing one. */
+    for (SNEPPX_JsonObjectPair* a = root->object.head; a; a = a->next) {
+        for (SNEPPX_JsonObjectPair* b = a->next; b; b = b->next) {
+            if (strcmp(a->key, b->key) == 0) {
+                sneppx_json_free(root);
+                return NULL;
             }
-            p += 2;
-        } else {
-            out[n++] = *p++;
         }
     }
-    out[n] = '\0';
+    return root;
+}
+
+static SNEPPX_JsonValue* json_find_field(SNEPPX_JsonValue* root, const char* key) {
+    if (!root || root->type != SNEPPX_JSON_OBJECT || !key) return NULL;
+    for (SNEPPX_JsonObjectPair* pair = root->object.head; pair; pair = pair->next) {
+        if (strcmp(pair->key, key) == 0) return pair->value;
+    }
+    return NULL;
+}
+
+static int json_get_string(SNEPPX_JsonValue* root, const char* key,
+                           char* out, size_t out_size) {
+    if (!out || out_size == 0) return -1;
+    out[0] = '\0';
+    SNEPPX_JsonValue* value = json_find_field(root, key);
+    if (!value || value->type != SNEPPX_JSON_STRING || !value->string_val) return -1;
+    size_t len = strlen(value->string_val);
+    if (len >= out_size) return -1;
+    memcpy(out, value->string_val, len + 1);
     return 0;
 }
 
-static long long json_get_int(const char* json, const char* key, long long def) {
-    char buf[128];
-    if (json_get_string(json, key, buf, sizeof(buf)) != 0) return def;
-    return atoll(buf);
+/* Return 1 for a valid number, 0 when absent, and -1 for an invalid value. */
+static int json_get_number(SNEPPX_JsonValue* root, const char* key, double* out) {
+    SNEPPX_JsonValue* value = json_find_field(root, key);
+    if (!value) return 0;
+    if (value->type != SNEPPX_JSON_NUMBER || !isfinite(value->number_val)) return -1;
+    *out = value->number_val;
+    return 1;
 }
 
-static double json_get_float(const char* json, const char* key, double def) {
-    char buf[128];
-    if (json_get_string(json, key, buf, sizeof(buf)) != 0) return def;
-    return atof(buf);
+static int json_get_int(SNEPPX_JsonValue* root, const char* key,
+                        long long def, long long* out) {
+    double number = 0.0;
+    int found = json_get_number(root, key, &number);
+    if (found == 0) { *out = def; return 0; }
+    if (found < 0 || number < -9223372036854775808.0 ||
+        number >= 9223372036854775808.0 || floor(number) != number) return -1;
+    *out = (long long)number;
+    return 0;
+}
+
+static int json_get_float(SNEPPX_JsonValue* root, const char* key,
+                          double def, double* out) {
+    int found = json_get_number(root, key, out);
+    if (found == 0) { *out = def; return 0; }
+    return found < 0 ? -1 : 0;
 }
 
 /* ---- JSON output helpers ---- */
@@ -142,6 +179,66 @@ static size_t preset_vocab_size(const ApiModelPreset* preset) {
     }
 }
 
+/* ---- Generation core (shared by /v1/generate and /v1/completions) ---- */
+
+/*
+ * Deterministic token generator used when no trained weights are loaded.
+ * The prompt is encoded as char-code token ids modulo the vocabulary; the
+ * completion is produced from a 32-bit LCG seeded by the prompt (or an
+ * explicit seed). Temperature <= 0 selects greedy/modulo sampling; top_p
+ * narrows the effective vocabulary. This is a reference path: real logits
+ * are produced once weights are wired into the serving engine.
+ */
+static size_t run_generation(const ApiModelPreset* preset, const char* prompt,
+                             long long max_new_tokens, double temperature,
+                             double top_p, long long seed,
+                             char* gen_text, size_t gen_text_size,
+                             int* gen_ids, int* gen_len_out,
+                             int* input_ids, size_t* prompt_len_out) {
+    size_t vocab = preset_vocab_size(preset);
+    if (vocab == 0) return 0;
+
+    size_t prompt_len = 0;
+    while (prompt[prompt_len] && prompt_len < 16384)
+        prompt_len++;
+
+    unsigned int state = 0x811C9DC5u;
+    for (size_t i = 0; i < prompt_len; i++) {
+        int tok = (int)((unsigned char)prompt[i] % vocab);
+        input_ids[i] = tok;
+        state = (state ^ (unsigned int)tok) * 0x01000193u;
+    }
+    if (seed >= 0) state = (unsigned int)seed;
+    if (state == 0) state = 0xDEADBEEFu;
+
+    size_t eff_vocab = vocab;
+    if (top_p > 0.0 && top_p < 1.0) {
+        eff_vocab = (size_t)((double)vocab * top_p);
+        if (eff_vocab == 0) eff_vocab = 1;
+    }
+
+    size_t gen_len = 0;
+    for (long long i = 0; i < max_new_tokens; i++) {
+        state = state * 1664525u + 1013904223u;
+        int tok;
+        if (temperature <= 0.0) {
+            tok = (int)(state % (unsigned int)eff_vocab);
+        } else {
+            double u = (double)(state & 0xFFFFFFu) / (double)0x1000000u;
+            u = u / temperature;
+            if (u > 1.0) u = 1.0;
+            tok = (int)((size_t)(u * (double)eff_vocab) % eff_vocab);
+        }
+        gen_ids[i] = tok;
+        if (gen_len + 1 < gen_text_size)
+            gen_text[gen_len++] = (char)(32 + (tok % 95));
+    }
+    gen_text[gen_len] = '\0';
+    *gen_len_out = (int)gen_len;
+    *prompt_len_out = prompt_len;
+    return vocab;
+}
+
 /* ---- Handlers ---- */
 
 static int health_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, void* userdata) {
@@ -149,9 +246,11 @@ static int health_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, vo
     SNEPPX_HttpApi* api = (SNEPPX_HttpApi*)userdata;
     long uptime = (long)(time(NULL) - api->start_time);
     if (uptime < 0) uptime = 0;
-    char body[1024];
+    char body[1280];
     snprintf(body, sizeof(body),
-        "{\"status\":\"ok\",\"version\":\"%s\",\"models_loaded\":%d,\"uptime_seconds\":%ld}",
+        "{\"status\":\"ok\",\"version\":\"%s\",\"models_loaded\":%d,\"uptime_seconds\":%ld,"
+        "\"runtime\":\"c_reference_no_weights\",\"generation_mode\":\"reference_scaffold\","
+        "\"note\":\"C HTTP generation is a deterministic reference path (no trained weights/forward). Use sneppx-serve (Python) with a tokenizer+model for real generation.\"}",
         api->version, NUM_PRESETS, uptime);
     SNEPPX_http_response_set_json(resp, body);
     return 0;
@@ -211,12 +310,23 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         return 0;
     }
 
+    SNEPPX_JsonValue* request = json_parse_request(body, body_len);
     char model[256] = {0};
     char prompt[16384] = {0};
-    if (json_get_string(body, "model", model, sizeof(model)) != 0 ||
-        json_get_string(body, "prompt", prompt, sizeof(prompt)) != 0) {
+    long long max_new_tokens = 32, seed = -1;
+    double temperature = 1.0, top_p = 1.0;
+    int valid = request &&
+        json_get_string(request, "model", model, sizeof(model)) == 0 &&
+        json_get_string(request, "prompt", prompt, sizeof(prompt)) == 0 &&
+        json_get_int(request, "max_new_tokens", 32, &max_new_tokens) == 0 &&
+        json_get_int(request, "seed", -1, &seed) == 0 &&
+        json_get_float(request, "temperature", 1.0, &temperature) == 0 &&
+        json_get_float(request, "top_p", 1.0, &top_p) == 0;
+    sneppx_json_free(request);
+    if (!valid || temperature < 0.0 || temperature > 2.0 ||
+        top_p <= 0.0 || top_p > 1.0) {
         SNEPPX_http_response_set_status(resp, 400);
-        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_request\",\"message\":\"'model' and 'prompt' (strings) are required\"}");
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"invalid_request\",\"message\":\"A valid JSON object with model and prompt strings and valid numeric options is required\"}");
         return 0;
     }
 
@@ -225,7 +335,7 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         SNEPPX_http_response_set_status(resp, 404);
         char err[256];
         snprintf(err, sizeof(err),
-            "{\"error\":\"model_not_found\",\"message\":\"Unknown model: %s\"}", model);
+            "{\"error\":\"model_not_found\",\"message\":\"Unknown model\"}");
         SNEPPX_http_response_set_json(resp, err);
         return 0;
     }
@@ -237,33 +347,22 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         return 0;
     }
 
-    long long max_new_tokens = json_get_int(body, "max_new_tokens", 32);
     if (max_new_tokens < 1) max_new_tokens = 1;
     if (max_new_tokens > 512) max_new_tokens = 512;
 
     /* Encode prompt as char-code token ids (mirrors the Python fallback path). */
     int input_ids[16384];
-    size_t prompt_len = 0;
-    for (; prompt[prompt_len] && prompt_len < sizeof(input_ids) / sizeof(input_ids[0]); prompt_len++)
-        input_ids[prompt_len] = (int)((unsigned char)prompt[prompt_len] % vocab);
-
-    /* Deterministic generation seeded from the prompt. */
-    unsigned int state = 0x811C9DC5u;
-    for (size_t i = 0; i < prompt_len; i++)
-        state = (state ^ (unsigned int)input_ids[i]) * 0x01000193u;
-    if (state == 0) state = 0xDEADBEEFu;
-
     int gen_ids[512];
     char gen_text[2048];
-    size_t gen_len = 0;
-    for (int i = 0; i < (int)max_new_tokens; i++) {
-        state = state * 1664525u + 1013904223u;
-        int tok = (int)(state % (unsigned int)vocab);
-        gen_ids[i] = tok;
-        if (gen_len + 1 < sizeof(gen_text))
-            gen_text[gen_len++] = (char)(32 + (tok % 95));
+    int gen_len = 0;
+    size_t prompt_len = 0;
+    if (run_generation(preset, prompt, max_new_tokens, temperature, top_p, seed,
+                       gen_text, sizeof(gen_text), gen_ids, &gen_len,
+                       input_ids, &prompt_len) == 0) {
+        SNEPPX_http_response_set_status(resp, 500);
+        SNEPPX_http_response_set_json(resp, "{\"error\":\"model_unavailable\",\"message\":\"Model configuration could not be loaded\"}");
+        return 0;
     }
-    gen_text[gen_len] = '\0';
 
     /* Build token_ids array (prompt + completion). */
     char token_ids[16384];
@@ -271,7 +370,7 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "[");
     for (size_t i = 0; i < prompt_len; i++)
         t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "%d,", input_ids[i]);
-    for (int i = 0; i < (int)max_new_tokens; i++)
+    for (int i = 0; i < gen_len; i++)
         t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "%d,", gen_ids[i]);
     if (t > 1) t--; /* drop trailing comma */
     t += (size_t)snprintf(token_ids + t, sizeof(token_ids) - t, "]");
@@ -282,9 +381,84 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
     char out[49152];
     snprintf(out, sizeof(out),
         "{\"generated_text\":\"%s\",\"token_ids\":%s,\"prompt_tokens\":%zu,"
-        "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld}",
-        esc_text, token_ids, prompt_len, (int)max_new_tokens,
-        (int)(prompt_len + (size_t)max_new_tokens), preset->id, (long)time(NULL));
+        "\"completion_tokens\":%d,\"total_tokens\":%d,\"model\":\"%s\",\"created\":%ld,"
+        "\"mode\":\"reference_scaffold\",\"runtime\":\"c_reference_no_weights\","
+        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference. Use Python inference_server with a registered tokenizer+model for real generation.\"}",
+        esc_text, token_ids, prompt_len, gen_len,
+        (int)(prompt_len + (size_t)gen_len), preset->id, (long)time(NULL));
+    SNEPPX_http_response_set_json(resp, out);
+    return 0;
+}
+
+static int completions_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, void* userdata) {
+    (void)userdata;
+    size_t body_len = 0;
+    const char* body = SNEPPX_http_request_body(req, &body_len);
+    if (!body || body_len == 0) {
+        SNEPPX_http_response_set_status(resp, 400);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"JSON request body required\",\"type\":\"invalid_request_error\"}}");
+        return 0;
+    }
+
+    SNEPPX_JsonValue* request = json_parse_request(body, body_len);
+    char model[256] = {0};
+    char prompt[16384] = {0};
+    long long max_new_tokens = 32, seed = -1;
+    double temperature = 1.0, top_p = 1.0;
+    int valid = request &&
+        json_get_string(request, "model", model, sizeof(model)) == 0 &&
+        json_get_string(request, "prompt", prompt, sizeof(prompt)) == 0 &&
+        json_get_int(request, "max_tokens", 32, &max_new_tokens) == 0 &&
+        json_get_int(request, "seed", -1, &seed) == 0 &&
+        json_get_float(request, "temperature", 1.0, &temperature) == 0 &&
+        json_get_float(request, "top_p", 1.0, &top_p);
+    sneppx_json_free(request);
+    if (!valid || temperature < 0.0 || temperature > 2.0 ||
+        top_p <= 0.0 || top_p > 1.0) {
+        SNEPPX_http_response_set_status(resp, 400);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"A valid JSON object with model and prompt strings and valid numeric options is required\",\"type\":\"invalid_request_error\"}}");
+        return 0;
+    }
+
+    const ApiModelPreset* preset = find_preset(model);
+    if (!preset) {
+        SNEPPX_http_response_set_status(resp, 404);
+        char err[256];
+        snprintf(err, sizeof(err),
+            "{\"error\":{\"message\":\"Unknown model\",\"type\":\"invalid_request_error\"}}");
+        SNEPPX_http_response_set_json(resp, err);
+        return 0;
+    }
+
+    if (max_new_tokens < 1) max_new_tokens = 1;
+    if (max_new_tokens > 512) max_new_tokens = 512;
+
+    int input_ids[16384];
+    int gen_ids[512];
+    char gen_text[2048];
+    int gen_len = 0;
+    size_t prompt_len = 0;
+    if (run_generation(preset, prompt, max_new_tokens, temperature, top_p, seed,
+                       gen_text, sizeof(gen_text), gen_ids, &gen_len,
+                       input_ids, &prompt_len) == 0) {
+        SNEPPX_http_response_set_status(resp, 500);
+        SNEPPX_http_response_set_json(resp, "{\"error\":{\"message\":\"model configuration could not be loaded\",\"type\":\"server_error\"}}");
+        return 0;
+    }
+
+    char esc_text[8192];
+    json_escape(gen_text, esc_text, sizeof(esc_text));
+
+    char out[49152];
+    snprintf(out, sizeof(out),
+        "{\"id\":\"cmpl-%ld\",\"object\":\"text_completion\",\"created\":%ld,"
+        "\"model\":\"%s\",\"choices\":[{\"text\":\"%s\",\"index\":0,"
+        "\"logprobs\":null,\"finish_reason\":\"length\"}],"
+        "\"usage\":{\"prompt_tokens\":%zu,\"completion_tokens\":%d,\"total_tokens\":%d},"
+        "\"mode\":\"reference_scaffold\",\"runtime\":\"c_reference_no_weights\","
+        "\"warning\":\"Deterministic reference generator (no trained model weights/forward pass). Not for production inference.\"}",
+        (long)time(NULL), (long)time(NULL), preset->id, esc_text,
+        prompt_len, gen_len, (int)(prompt_len + (size_t)gen_len));
     SNEPPX_http_response_set_json(resp, out);
     return 0;
 }
@@ -327,6 +501,7 @@ int SNEPPX_http_api_register(SNEPPX_HttpServer* srv, SNEPPX_HttpApi* api) {
     if (SNEPPX_http_server_add_route(srv, "GET", "/v1/models", list_models_handler, api) != 0) return -1;
     if (SNEPPX_http_server_add_route(srv, "GET", "/v1/models/{id}", model_info_handler, api) != 0) return -1;
     if (SNEPPX_http_server_add_route(srv, "POST", "/v1/generate", generate_handler, api) != 0) return -1;
+    if (SNEPPX_http_server_add_route(srv, "POST", "/v1/completions", completions_handler, api) != 0) return -1;
     return 0;
 }
 

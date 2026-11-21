@@ -69,5 +69,17 @@ int SNEPPX_fv_get_reachable_count(void);
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_fv_get_deadlock_count(void);
+/**
+ * @brief Add state to formal model.
+ */
+int SNEPPX_fv_add_state(uint32_t state_id, int is_error, int is_accepting);
+/**
+ * @brief Add transition between states.
+ */
+int SNEPPX_fv_add_transition(uint32_t from_state, uint32_t to_state);
+/**
+ * @brief Set initial state.
+ */
+int SNEPPX_fv_set_initial_state(uint32_t state_id);
 
 #endif

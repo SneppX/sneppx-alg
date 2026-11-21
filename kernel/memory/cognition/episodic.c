@@ -42,6 +42,9 @@ struct SNEPPXEpisodicBuffer {
     unsigned int* seed_ptr;
 };
 
+/* Internal helper used by record() before its definition below. */
+int sneppx_episodic_consolidate(SNEPPXEpisodicBuffer* buf);
+
 static int compare_priority_desc(const void* a, const void* b) {
     const SNEPPXEpisodicExperience* ea = (const SNEPPXEpisodicExperience*)a;
     const SNEPPXEpisodicExperience* eb = (const SNEPPXEpisodicExperience*)b;

@@ -11,6 +11,7 @@ else:
     sys.path.insert(0, os.path.join(os.getcwd(), "tests/python/../../bindings/python"))
 
 from SneppX_ALG.interface_bindings.model_zoo import (
+    ModelConfig,
     ModelFamily,
     LlamaConfig,
     MistralConfig,
@@ -38,6 +39,7 @@ def check(name, cond):
     if not cond:
         print(f"  FAIL {name}")
         failed.append(name)
+        assert cond, name
     else:
         print(f"  PASS {name}")
 
@@ -120,6 +122,15 @@ def test_remap_deepseek():
         "model.layers.0.self_attn.kv_b_proj.weight", "deepseek_v2"
     )
     check("deepseek kv_b_proj", result == "layers.0.attn.kv_b_proj.weight")
+
+
+def test_remap_qwen2_bias():
+    result = _remap_hf_weight_name("model.layers.3.self_attn.q_proj.bias", "qwen2")
+    check("qwen2 q_proj bias", result == "layers.3.attn.q_proj.bias")
+    result = _remap_hf_weight_name("model.layers.3.self_attn.k_proj.bias", "qwen2")
+    check("qwen2 k_proj bias", result == "layers.3.attn.k_proj.bias")
+    result = _remap_hf_weight_name("model.layers.3.self_attn.v_proj.bias", "qwen2")
+    check("qwen2 v_proj bias", result == "layers.3.attn.v_proj.bias")
 
 
 def test_generate_weight_names():
@@ -212,11 +223,17 @@ def test_safetensors_reader_invalid():
 def test_extend_context():
     """Test 128K context extension via NTK-aware RoPE scaling."""
     config = get_model_config("llama2", "7B")
-    assert config["max_position_embeddings"] == 4096, f"Expected 4096, got {config['max_position_embeddings']}"
+    assert config["max_position_embeddings"] == 4096, (
+        f"Expected 4096, got {config['max_position_embeddings']}"
+    )
 
     extended = extend_context(config, target_len=131072)
-    assert extended["max_position_embeddings"] == 131072, f"Expected 131072, got {extended['max_position_embeddings']}"
-    assert extended["rope_theta"] > config["rope_theta"], "NTK scaling should increase rope_theta"
+    assert extended["max_position_embeddings"] == 131072, (
+        f"Expected 131072, got {extended['max_position_embeddings']}"
+    )
+    assert extended["rope_theta"] > config["rope_theta"], (
+        "NTK scaling should increase rope_theta"
+    )
     assert extended["rope_scaling"] == 2
     assert abs(extended["rope_scaling_factor"] - 32.0) < 0.1
 
@@ -229,15 +246,22 @@ def test_extend_context():
 def test_context_extension_all_models():
     """Verify 128K context extension works for all supported architectures."""
     models = [
-        ("llama2", "7B"), ("llama3", "8B"), ("mistral", "7B"),
-        ("qwen2", "7B"), ("deepseek_v2", "lite"),
+        ("llama2", "7B"),
+        ("llama3", "8B"),
+        ("mistral", "7B"),
+        ("qwen2", "7B"),
+        ("deepseek_v2", "lite"),
     ]
     for family, size in models:
         config = get_model_config(family, size)
         orig = config["max_position_embeddings"]
         extended = extend_context(config, target_len=131072)
-        assert extended["max_position_embeddings"] == 131072, f"{family} {size} failed 128K"
-        assert extended["rope_theta"] >= config["rope_theta"], f"{family} {size}: rope_theta should not decrease"
+        assert extended["max_position_embeddings"] == 131072, (
+            f"{family} {size} failed 128K"
+        )
+        assert extended["rope_theta"] >= config["rope_theta"], (
+            f"{family} {size}: rope_theta should not decrease"
+        )
         print(f"  [PASS] extend_context({family}, {size}): {orig} -> 131072")
     print("  [PASS] context_extension_all_models")
 
@@ -258,11 +282,96 @@ def test_mha_forward_not_null():
     print("  [PASS] mha_forward_not_null")
 
 
+
+def test_model_config_c_round_trip():
+    """C config conversion must round-trip context length without unknown fields."""
+    original = ModelConfig(
+        name="round-trip",
+        hidden_size=128,
+        num_layers=4,
+        num_attention_heads=4,
+        vocab_size=256,
+        max_seq_len=8192,
+    )
+    c_config = original.to_c_config()
+    assert c_config["max_position_embeddings"] == 8192
+
+    restored = ModelConfig.from_c_config(c_config)
+    assert restored.max_seq_len == 8192
+    assert restored.name == original.name
+    assert restored.hidden_size == original.hidden_size
+
+    legacy_config = ModelConfig.from_c_config({"max_seq_len": 4096})
+    assert legacy_config.max_position_embeddings == 4096
+    assert legacy_config.max_seq_len == 4096
+
+    layer_alias = ModelConfig(num_hidden_layers=6).to_c_config()
+    assert layer_alias["num_layers"] == 6
+
+    restored_layers = ModelConfig.from_c_config({"num_layers": 6})
+    assert restored_layers.num_layers == 6
+    assert restored_layers.num_hidden_layers == 6
+
+    restored_hidden_alias = ModelConfig.from_c_config({"num_hidden_layers": 8})
+    assert restored_hidden_alias.num_layers == 8
+    assert restored_hidden_alias.num_hidden_layers == 8
+
+    # The C schema exposes a base positional limit and a runtime sequence
+    # limit. They must remain independent when both are supplied.
+    distinct = ModelConfig(
+        name="distinct-context",
+        max_position_embeddings=4096,
+        max_seq_len=16384,
+    )
+    distinct_c = distinct.to_c_config()
+    assert distinct_c["max_position_embeddings"] == 4096
+    assert distinct_c["max_seq_len"] == 16384
+
+    restored_distinct = ModelConfig.from_c_config(distinct_c)
+    assert restored_distinct.max_position_embeddings == 4096
+    assert restored_distinct.max_seq_len == 16384
+
+
+
+def test_model_config_json_round_trip_preserves_false_and_zero():
+    """Serialization must preserve explicit false and zero configuration values."""
+    original = ModelConfig(
+        name="lossless-round-trip",
+        hidden_size=128,
+        num_layers=2,
+        num_attention_heads=4,
+        vocab_size=256,
+        use_rms_norm=False,
+        gated_ffn=False,
+        use_flash_attention=False,
+        tie_word_embeddings=False,
+        mixed_precision=False,
+        layer_norm_eps=0.0,
+        rope_theta=0.0,
+        attention_dropout=0.0,
+        custom={"enabled": False, "threshold": 0},
+    )
+
+    restored = ModelConfig.from_json(original.to_json())
+    assert restored == original
+    assert restored.use_flash_attention is False
+    assert restored.mixed_precision is False
+    assert restored.layer_norm_eps == 0.0
+    assert restored.rope_theta == 0.0
+
+    with tempfile.TemporaryDirectory() as directory:
+        path = os.path.join(directory, "model-config.json")
+        original.save(path)
+        assert ModelConfig.load(path) == original
+
+
 def test_dataclass_defaults():
     lc = LlamaConfig()
     check("LlamaConfig default hidden", lc.hidden_size == 4096)
     mc = MistralConfig()
     check("MistralConfig default sliding", mc.sliding_window == 4096)
+    check("MistralConfig default RMS epsilon", abs(mc.rms_norm_eps - 1e-5) < 1e-12)
+    check("MistralConfig default attention dropout", mc.attention_dropout == 0.0)
     qc = Qwen2Config()
     check("Qwen2Config default rope_theta", abs(qc.rope_theta - 1000000.0) < 0.1)
     dc = DeepSeekV2Config()
@@ -278,6 +387,7 @@ if __name__ == "__main__":
     test_remap_unknown_family()
     test_remap_unmappable()
     test_remap_deepseek()
+    test_remap_qwen2_bias()
     test_generate_weight_names()
     test_build_model_from_config()
     test_build_model_deepseek()
@@ -285,6 +395,7 @@ if __name__ == "__main__":
     test_from_pretrained_all()
     test_build_transformer()
     test_safetensors_reader_invalid()
+    test_model_config_c_round_trip()
     test_dataclass_defaults()
     test_extend_context()
     test_context_extension_all_models()

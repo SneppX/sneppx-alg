@@ -22,11 +22,13 @@ target_include_directories(neural_model_weights PUBLIC ${CMAKE_SOURCE_DIR}/inclu
 target_include_directories(neural_model_card PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(neural_model_factory PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-# C standard
-target_compile_options(neural_model_config PRIVATE /std:c11)
-target_compile_options(neural_model_registry PRIVATE /std:c11)
-target_compile_options(neural_model_weights PRIVATE /std:c11)
-target_compile_options(neural_model_card PRIVATE /std:c11)
+# C standard (MSVC uses /std:c11; GCC/Clang already get C11 via CMAKE_C_STANDARD)
+if(MSVC)
+    target_compile_options(neural_model_config PRIVATE /std:c11)
+    target_compile_options(neural_model_registry PRIVATE /std:c11)
+    target_compile_options(neural_model_weights PRIVATE /std:c11)
+    target_compile_options(neural_model_card PRIVATE /std:c11)
+endif()
 
 # Link dependencies
 target_link_libraries(neural_model_config PUBLIC neural_core_kernel)

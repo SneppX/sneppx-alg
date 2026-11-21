@@ -6,10 +6,127 @@ backward(ctx, grad_output) -> list of gradients.
 Consumed by tensor.py via lazy imports inside the op methods.
 """
 
+import itertools
+
 import numpy as np
 
 from .tensor import Tensor, _numpy_dtype, _resolve_dtype
 from .autograd import Function, Context
+
+
+def _reduce_to_shape(grad, shape):
+    """Sum ``grad`` back to ``shape`` after numpy broadcasting (ndarray)."""
+    if isinstance(grad, Tensor):
+        grad = grad.data
+    if shape is None:
+        return grad
+    target = tuple(shape)
+    grad = np.asarray(grad)
+    while grad.ndim > len(target):
+        grad = grad.sum(axis=0)
+    for axis, dim in enumerate(target):
+        if dim == 1 and grad.shape[axis] != 1:
+            grad = grad.sum(axis=axis, keepdims=True)
+    return grad
+
+
+def _broadcast_grad(grad, a_shape, b_shape):
+    """Return per-input gradients reduced to their broadcast shapes."""
+    ga = (
+        grad
+        if a_shape is None
+        else Tensor(_reduce_to_shape(grad, a_shape), dtype=grad.dtype)
+    )
+    gb = (
+        grad
+        if b_shape is None
+        else Tensor(_reduce_to_shape(grad, b_shape), dtype=grad.dtype)
+    )
+    return [ga, gb]
+
+
+def _save_attr(ctx, **attrs):
+    if ctx is not None:
+        ctx.save_attr(**attrs)
+
+
+def _get_attr(ctx, name):
+    return None if ctx is None else ctx.get_attr(name)
+
+
+def _get_saved_tensor(ctx, name):
+    return None if ctx is None else ctx.get_saved_tensor(name)
+
+
+# ---------------------------------------------------------------------------
+# Higher-order (create_graph) helpers
+# ---------------------------------------------------------------------------
+
+
+def _as_const(arr, dtype):
+    """Build a detached constant Tensor from a numpy array / scalar."""
+    t = Tensor(np.asarray(arr, dtype=_numpy_dtype(dtype)))
+    t.requires_grad = False
+    return t
+
+
+def _cg_broadcast(g, target_shape):
+    """Graph-aware broadcast *backward*: map grad `g` (output shape) to `target_shape`.
+
+    Implements numpy broadcast semantics (right-aligned). Works in both
+    directions:
+      - dims where the input had size 1 and the output was larger are summed
+        out (reduce);
+      - dims where the output was size 1 and the input was larger are
+        broadcast back up (expand).
+    The returned tensor has exactly `target_shape`.
+    """
+    if target_shape is None:
+        return g
+    tgt = list(target_shape)
+    out = list(g.shape)
+    n = max(len(tgt), len(out))
+    tgt_p = [1] * (n - len(tgt)) + tgt
+    out_p = [1] * (n - len(out)) + out
+    g2 = g
+    if tuple(out_p) != tuple(out):
+        g2 = Reshape.apply(g, tuple(out_p))
+    for i in range(n - 1, -1, -1):
+        if tgt_p[i] == out_p[i]:
+            continue
+        if tgt_p[i] == 1 and out_p[i] != 1:
+            g2 = Sum.apply(g2, i)
+            out_p[i] = 1
+        elif out_p[i] == 1 and tgt_p[i] != 1:
+            ns = list(g2.shape)
+            ns[i] = tgt_p[i]
+            g2 = Expand.apply(g2, tuple(ns))
+            out_p[i] = tgt_p[i]
+        else:
+            raise ValueError(
+                f"broadcast mismatch: target dim {tgt_p[i]}, output dim {out_p[i]}"
+            )
+    if tuple(g2.shape) != tuple(target_shape):
+        g2 = Reshape.apply(g2, tuple(target_shape))
+    return g2
+
+
+def _mean_keepdim(x, axis=-1):
+    """Graph-aware mean with keepdims=True (helper for norm ops)."""
+    n = x.shape[axis]
+    s = Sum.apply(x, axis)
+    shp = list(x.shape)
+    shp[axis] = 1
+    return Reshape.apply(s, tuple(shp))
+
+
+def _sum_keepdim(x, axis=-1):
+    """Graph-aware sum with keepdims=True (helper for norm ops)."""
+    s = Sum.apply(x, axis)
+    shp = list(x.shape)
+    shp[axis] = 1
+    return Reshape.apply(s, tuple(shp))
+
 
 # ===========================================================================
 #  Arithmetic Ops
@@ -20,77 +137,174 @@ class Add(Function):
     @staticmethod
     def forward(ctx, a, b):
         if isinstance(b, (int, float)):
+            _save_attr(ctx, a_shape=tuple(a.shape))
             return Tensor(a.data + b, dtype=a.dtype)
         if isinstance(a, (int, float)):
+            _save_attr(ctx, b_shape=tuple(b.shape))
             return Tensor(a + b.data, dtype=b.dtype)
+        _save_attr(ctx, a_shape=tuple(a.shape), b_shape=tuple(b.shape))
         return Tensor(a.data + b.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        return [grad_output, grad_output]
+    def backward(ctx, grad_output, create_graph=False):
+        a_shape = _get_attr(ctx, "a_shape")
+        b_shape = _get_attr(ctx, "b_shape")
+        if create_graph:
+            return [
+                _cg_broadcast(grad_output, a_shape),
+                _cg_broadcast(grad_output, b_shape),
+            ]
+        return _broadcast_grad(grad_output, a_shape, b_shape)
 
 
 class Sub(Function):
     @staticmethod
     def forward(ctx, a, b):
         if isinstance(b, (int, float)):
+            _save_attr(ctx, a_shape=tuple(a.shape))
             return Tensor(a.data - b, dtype=a.dtype)
         if isinstance(a, (int, float)):
+            _save_attr(ctx, b_shape=tuple(b.shape))
             return Tensor(a - b.data, dtype=b.dtype)
+        _save_attr(ctx, a_shape=tuple(a.shape), b_shape=tuple(b.shape))
         return Tensor(a.data - b.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        return [grad_output, -grad_output]
+    def backward(ctx, grad_output, create_graph=False):
+        a_shape = _get_attr(ctx, "a_shape")
+        b_shape = _get_attr(ctx, "b_shape")
+        if create_graph:
+            ga = _cg_broadcast(grad_output, a_shape)
+            gb = _cg_broadcast(grad_output, b_shape)
+            return [ga, Mul.apply(gb, _as_const(-1.0, grad_output.dtype))]
+        ga, gb = _broadcast_grad(
+            grad_output, _get_attr(ctx, "a_shape"), _get_attr(ctx, "b_shape")
+        )
+        return [ga, -gb]
 
 
 class Mul(Function):
     @staticmethod
     def forward(ctx, a, b):
         if isinstance(b, (int, float)):
-            ctx.save_attr(scalar_side=1, scalar=b)
+            _save_attr(ctx, scalar_side=1, scalar=b, a_shape=tuple(a.shape))
             return Tensor(a.data * b, dtype=a.dtype)
         if isinstance(a, (int, float)):
-            ctx.save_attr(scalar_side=0, scalar=a)
+            _save_attr(ctx, scalar_side=0, scalar=a, b_shape=tuple(b.shape))
             return Tensor(a * b.data, dtype=b.dtype)
-        ctx.save_for_backward(a=a, b=b)
+        if ctx is not None:
+            ctx.save_for_backward(a=a, b=b)
+        _save_attr(ctx, a_shape=tuple(a.shape), b_shape=tuple(b.shape))
         return Tensor(a.data * b.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        side = ctx.get_attr("scalar_side")
+    def backward(ctx, grad_output, create_graph=False):
+        side = _get_attr(ctx, "scalar_side")
         if side == 1:
-            scalar = ctx.get_attr("scalar")
-            return [grad_output * scalar, None]
+            scalar = _get_attr(ctx, "scalar")
+            if create_graph:
+                g = _cg_broadcast(grad_output, _get_attr(ctx, "a_shape"))
+                return [Mul.apply(g, _as_const(scalar, grad_output.dtype)), None]
+            return [
+                Tensor(
+                    _reduce_to_shape(grad_output, _get_attr(ctx, "a_shape")) * scalar,
+                    dtype=grad_output.dtype,
+                ),
+                None,
+            ]
         if side == 0:
-            scalar = ctx.get_attr("scalar")
-            return [None, grad_output * scalar]
-        a = ctx.get_saved_tensor("a")
-        b = ctx.get_saved_tensor("b")
-        return [grad_output * b.data, grad_output * a.data]
+            scalar = _get_attr(ctx, "scalar")
+            if create_graph:
+                g = _cg_broadcast(grad_output, _get_attr(ctx, "b_shape"))
+                return [None, Mul.apply(g, _as_const(scalar, grad_output.dtype))]
+            return [
+                None,
+                Tensor(
+                    _reduce_to_shape(grad_output, _get_attr(ctx, "b_shape")) * scalar,
+                    dtype=grad_output.dtype,
+                ),
+            ]
+        a = _get_saved_tensor(ctx, "a")
+        b = _get_saved_tensor(ctx, "b")
+        if a is None or b is None:
+            return _broadcast_grad(grad_output, None, None)
+        if create_graph:
+            return [
+                _cg_broadcast(Mul.apply(grad_output, b), a.shape),
+                _cg_broadcast(Mul.apply(grad_output, a), b.shape),
+            ]
+        ga = Tensor(
+            _reduce_to_shape(grad_output.data * b.data, _get_attr(ctx, "a_shape")),
+            dtype=grad_output.dtype,
+        )
+        gb = Tensor(
+            _reduce_to_shape(grad_output.data * a.data, _get_attr(ctx, "b_shape")),
+            dtype=grad_output.dtype,
+        )
+        return [ga, gb]
 
 
 class Div(Function):
     @staticmethod
     def forward(ctx, a, b):
         if isinstance(b, (int, float)):
-            ctx.save_attr(b_val=b)
+            _save_attr(ctx, b_val=b, a_shape=tuple(a.shape))
             return Tensor(a.data / b, dtype=a.dtype)
-        ctx.save_for_backward(a=a, b=b)
+        if isinstance(a, (int, float)):
+            _save_attr(ctx, a_val=a, b_shape=tuple(b.shape))
+            if ctx is not None:
+                ctx.save_for_backward(b=b)
+            return Tensor(a / b.data, dtype=b.dtype)
+        if ctx is not None:
+            ctx.save_for_backward(a=a, b=b)
+        _save_attr(ctx, a_shape=tuple(a.shape), b_shape=tuple(b.shape))
         return Tensor(a.data / b.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        b_val = ctx.get_attr("b_val")
+    def backward(ctx, grad_output, create_graph=False):
+        b_val = _get_attr(ctx, "b_val")
         if b_val is not None:
-            return [grad_output / b_val, None]
-        a = ctx.get_saved_tensor("a")
-        b = ctx.get_saved_tensor("b")
+            if create_graph:
+                g = _cg_broadcast(grad_output, _get_attr(ctx, "a_shape"))
+                return [Div.apply(g, _as_const(b_val, grad_output.dtype)), None]
+            ga = Tensor(
+                _reduce_to_shape(grad_output, _get_attr(ctx, "a_shape")) / b_val,
+                dtype=grad_output.dtype,
+            )
+            return [ga, None]
+        a_val = _get_attr(ctx, "a_val")
+        if a_val is not None:
+            b = _get_saved_tensor(ctx, "b")
+            if create_graph:
+                num = Mul.apply(_as_const(-a_val, grad_output.dtype), grad_output)
+                gb = Div.apply(num, Mul.apply(b, b))
+                return [None, gb]
+            gb = Tensor(
+                _reduce_to_shape(
+                    -a_val * grad_output.data / (b.data**2), _get_attr(ctx, "b_shape")
+                ),
+                dtype=b.dtype,
+            )
+            return [None, gb]
+        a = _get_saved_tensor(ctx, "a")
+        b = _get_saved_tensor(ctx, "b")
+        if a is None or b is None:
+            return _broadcast_grad(grad_output, None, None)
+        if create_graph:
+            ga = Div.apply(grad_output, b)
+            num = Mul.apply(grad_output, a)
+            den = Mul.apply(b, b)
+            gb = Mul.apply(_as_const(-1.0, grad_output.dtype), Div.apply(num, den))
+            return [ga, gb]
         g = grad_output.data
-        return [
-            Tensor(g / b.data, dtype=a.dtype),
-            Tensor(-g * a.data / (b.data**2), dtype=b.dtype),
-        ]
+        ga = Tensor(
+            _reduce_to_shape(g / b.data, _get_attr(ctx, "a_shape")), dtype=a.dtype
+        )
+        gb = Tensor(
+            _reduce_to_shape(-g * a.data / (b.data**2), _get_attr(ctx, "b_shape")),
+            dtype=b.dtype,
+        )
+        return [ga, gb]
 
 
 class Neg(Function):
@@ -99,21 +313,29 @@ class Neg(Function):
         return Tensor(-a.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            return [Mul.apply(grad_output, _as_const(-1.0, grad_output.dtype))]
         return [-grad_output]
 
 
 class Pow(Function):
     @staticmethod
     def forward(ctx, a, b):
+        b_val = b.data if isinstance(b, Tensor) else b
         ctx.save_for_backward(a=a)
-        ctx.save_attr(b_val=b)
-        return Tensor(a.data**b, dtype=a.dtype)
+        ctx.save_attr(b_val=b_val)
+        return Tensor(a.data**b_val, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         b = ctx.get_attr("b_val")
+        if create_graph:
+            base = Pow.apply(a, _as_const(b - 1, grad_output.dtype))
+            return [
+                Mul.apply(Mul.apply(grad_output, _as_const(b, grad_output.dtype)), base)
+            ]
         return [Tensor(b * (a.data ** (b - 1)) * grad_output.data, dtype=a.dtype)]
 
 
@@ -124,22 +346,513 @@ class MatMul(Function):
         return Tensor(a.data @ b.data, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         b = ctx.get_saved_tensor("b")
-        g = grad_output.data
-        a_data = a.data
-        b_data = b.data
-        if a_data.ndim == 1:
-            grad_a = g @ b_data.T
-            grad_b = np.outer(a_data, g)
-        elif b_data.ndim == 1:
-            grad_a = np.outer(g, b_data)
-            grad_b = a_data.T @ g
+        a_data = np.asarray(a.data)
+        b_data = np.asarray(b.data)
+        a_vector = a_data.ndim == 1
+        b_vector = b_data.ndim == 1
+
+        # A vector-vector product has a scalar result and needs no matrix
+        # dimension promotion.
+        if a_vector and b_vector:
+            if create_graph:
+                return [
+                    Mul.apply(grad_output, b),
+                    Mul.apply(grad_output, a),
+                ]
+            upstream = np.asarray(grad_output.data)
+            return [
+                Tensor(upstream * b_data, dtype=a.dtype),
+                Tensor(upstream * a_data, dtype=b.dtype),
+            ]
+
+        if create_graph:
+            # Promote vectors to (..., 1, K) / (..., K, 1), then apply the
+            # standard matrix VJPs using the final two dimensions.
+            a_matrix = Unsqueeze.apply(a, -2) if a_vector else a
+            b_matrix = Unsqueeze.apply(b, -1) if b_vector else b
+            upstream = grad_output
+            if a_vector:
+                upstream = Unsqueeze.apply(upstream, -2)
+            if b_vector:
+                upstream = Unsqueeze.apply(upstream, -1)
+
+            grad_a = MatMul.apply(
+                upstream, Transpose.apply(b_matrix, -1, -2)
+            )
+            grad_b = MatMul.apply(
+                Transpose.apply(a_matrix, -1, -2), upstream
+            )
+            if a_vector:
+                grad_a = Squeeze.apply(grad_a, -2)
+            if b_vector:
+                grad_b = Squeeze.apply(grad_b, -1)
+
+            # MatMul broadcasts batch dimensions. Its VJP must undo that
+            # broadcast by summing every expanded batch axis back to the
+            # original operand shape.
+            return [
+                _cg_broadcast(grad_a, a.shape),
+                _cg_broadcast(grad_b, b.shape),
+            ]
+
+        upstream = np.asarray(grad_output.data)
+        a_matrix = np.expand_dims(a_data, axis=-2) if a_vector else a_data
+        b_matrix = np.expand_dims(b_data, axis=-1) if b_vector else b_data
+        if a_vector:
+            upstream = np.expand_dims(upstream, axis=-2)
+        if b_vector:
+            upstream = np.expand_dims(upstream, axis=-1)
+
+        grad_a = np.matmul(upstream, np.swapaxes(b_matrix, -1, -2))
+        grad_b = np.matmul(np.swapaxes(a_matrix, -1, -2), upstream)
+
+        if a_vector:
+            grad_a = np.squeeze(grad_a, axis=-2)
+        if b_vector:
+            grad_b = np.squeeze(grad_b, axis=-1)
+
+        # Reduce broadcasted batch dimensions. _reduce_to_shape follows
+        # right-aligned NumPy broadcasting semantics.
+        grad_a = _reduce_to_shape(grad_a, a.shape)
+        grad_b = _reduce_to_shape(grad_b, b.shape)
+        return [
+            Tensor(grad_a, dtype=a.dtype),
+            Tensor(grad_b, dtype=b.dtype),
+        ]
+
+
+class SparseMM(Function):
+    """Sparse @ dense matrix product with higher-order AD support.
+
+    Forward mirrors :func:`sparse.sparse_mm`: first operand may be a
+    :class:`SparseTensor`, second operand must be a dense ``Tensor``.
+    Gradients are computed via the dense matmul backward so the result
+    stays connected to the autograd graph when ``create_graph=True``.
+    """
+
+    @staticmethod
+    def forward(ctx, mat1, mat2):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(mat1=mat1, mat2=mat2)
+        ctx.save_attr(mat1_is_sparse=isinstance(mat1, SparseTensor),
+                      mat2_is_sparse=isinstance(mat2, SparseTensor))
+
+        # Compute forward result (dense path, matching sparse_mm semantics)
+        if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
+            d1 = np.asarray(mat1.to_dense().data)
+            d2 = np.asarray(mat2.to_dense().data)
+            out = d1 @ d2
+            out_dtype = mat1.dtype
+        elif isinstance(mat1, SparseTensor):
+            a = mat1
+            b = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            n, k = a.size
+            out = np.zeros((n,) + b.shape[1:], dtype=np.float32)
+            r, c = a._indices
+            v = a._values
+            np.add.at(out, r, (v[:, None] * b[c]).astype(np.float32))
+            out_dtype = mat2.dtype_name if isinstance(mat2, Tensor) else "float32"
+        elif isinstance(mat2, SparseTensor):
+            raise ValueError("second operand of sparse mm must be dense")
         else:
-            grad_a = g @ b_data.T
-            grad_b = a_data.T @ g
-        return [Tensor(grad_a, dtype=a.dtype), Tensor(grad_b, dtype=b.dtype)]
+            a_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
+            b_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            out = a_np @ b_np
+            out_dtype = mat1.dtype_name if isinstance(mat1, Tensor) else "float32"
+
+        out_t = Tensor(out, dtype=out_dtype)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mat1 = ctx.get_saved_tensor("mat1")
+        mat2 = ctx.get_saved_tensor("mat2")
+        mat1_is_sparse = ctx.get_attr("mat1_is_sparse")
+        mat2_is_sparse = ctx.get_attr("mat2_is_sparse")
+
+        from .autograd_ops import MatMul, Transpose, Unsqueeze, Squeeze
+        from .sparse import SparseTensor
+
+        def _as_dense(t):
+            if isinstance(t, SparseTensor):
+                return Tensor(np.asarray(t.to_dense().data), dtype=t.dtype)
+            return t
+
+        if create_graph:
+            g_t = grad_output
+            grads = [None, None]
+
+            # grad_mat1 = g @ mat2^T
+            mat2_dense = _as_dense(mat2)
+            if mat2_dense.data.ndim == 2:
+                mat2_t = Transpose.apply(mat2_dense, -1, -2)
+            else:
+                mat2_t = mat2_dense
+            if g_t.data.ndim == 1:
+                g_row = Unsqueeze.apply(g_t, 0)
+                grad_mat1 = MatMul.apply(g_row, mat2_t)
+                grad_mat1 = Squeeze.apply(grad_mat1, 0)
+            else:
+                grad_mat1 = MatMul.apply(g_t, mat2_t)
+            grads[0] = grad_mat1
+
+            # grad_mat2 = mat1^T @ g
+            if mat2_is_sparse:
+                grads[1] = None
+            else:
+                mat1_dense = _as_dense(mat1)
+                if mat1_dense.data.ndim == 2:
+                    mat1_t = Transpose.apply(mat1_dense, -1, -2)
+                else:
+                    mat1_t = mat1_dense
+                grads[1] = MatMul.apply(mat1_t, g_t)
+            return grads
+
+        # Non-create_graph path: raw NumPy gradients
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        grads = [None, None]
+
+        mat2_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+        grad_mat1 = gnp @ mat2_np.T
+        grads[0] = Tensor(grad_mat1, dtype=mat1.dtype)
+
+        if mat2_is_sparse:
+            grads[1] = None
+        else:
+            mat1_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1.to_dense().data)
+            grad_mat2 = mat1_np.T @ gnp
+            grads[1] = Tensor(grad_mat2, dtype=mat2.dtype)
+        return grads
+
+
+class SparseAddMM(Function):
+    """beta * input + alpha * (mat1 @ mat2) with higher-order AD support."""
+
+    @staticmethod
+    def forward(ctx, input, mat1, mat2, beta=1.0, alpha=1.0):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input, mat1=mat1, mat2=mat2)
+        ctx.save_attr(beta=beta, alpha=alpha,
+                      mat1_is_sparse=isinstance(mat1, SparseTensor),
+                      input_is_sparse=isinstance(input, SparseTensor))
+
+        # Compute mat1 @ mat2 result directly
+        if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
+            d1 = np.asarray(mat1.to_dense().data)
+            d2 = np.asarray(mat2.to_dense().data)
+            mm = d1 @ d2
+        elif isinstance(mat1, SparseTensor):
+            a = mat1
+            b = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            n, k = a.size
+            mm = np.zeros((n,) + b.shape[1:], dtype=np.float32)
+            r, c = a._indices
+            v = a._values
+            np.add.at(mm, r, (v[:, None] * b[c]).astype(np.float32))
+        elif isinstance(mat2, SparseTensor):
+            raise ValueError("second operand of sparse mm must be dense")
+        else:
+            a_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1)
+            b_np = np.asarray(mat2.data) if isinstance(mat2, Tensor) else np.asarray(mat2)
+            mm = a_np @ b_np
+
+        inp_np = np.asarray(input.data) if isinstance(input, Tensor) else np.asarray(input)
+        out = beta * inp_np + alpha * mm
+        out_dtype = input.dtype_name if isinstance(input, Tensor) else "float32"
+        out_t = Tensor(out, dtype=out_dtype)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        mat1 = ctx.get_saved_tensor("mat1")
+        mat2 = ctx.get_saved_tensor("mat2")
+        beta = ctx.get_attr("beta")
+        alpha = ctx.get_attr("alpha")
+        mat1_is_sparse = ctx.get_attr("mat1_is_sparse")
+        input_is_sparse = ctx.get_attr("input_is_sparse")
+
+        from .autograd_ops import SparseMM, Add, Mul
+        from .tensor import Tensor as _Tensor
+
+        g = grad_output
+
+        if create_graph:
+            # grad_input = beta * g  (graph-aware)
+            grad_input = Mul.apply(g, _as_const(beta, g.dtype)) if beta != 1.0 else g
+            # grad_mat1, grad_mat2 from sparse_mm backward of (alpha * g)
+            g_scaled = Mul.apply(g, _as_const(alpha, g.dtype)) if alpha != 1.0 else g
+            mm_grads = SparseMM.backward(ctx, g_scaled, create_graph=True)
+            grad_mat1 = mm_grads[0]
+            grad_mat2 = mm_grads[1]
+            return [grad_input, grad_mat1, grad_mat2, None, None]
+
+        # Non-create_graph path
+        gnp = g.data if isinstance(g, Tensor) else np.asarray(g)
+        grad_input = _Tensor(beta * gnp, dtype=input.dtype) if beta != 1.0 else _Tensor(gnp, dtype=input.dtype)
+        g_scaled_np = alpha * gnp if alpha != 1.0 else gnp
+        mm_grads = SparseMM.backward(ctx, _Tensor(g_scaled_np, dtype=g.dtype if hasattr(g, 'dtype') else "float32"), create_graph=False)
+        grad_mat1 = mm_grads[0]
+        grad_mat2 = mm_grads[1]
+        return [grad_input, grad_mat1, grad_mat2, None, None]
+
+
+class SparseSum(Function):
+    """Sum over a SparseTensor with higher-order AD support.
+
+    Gradients flow to the sparse tensor's ``.values`` at the corresponding
+    index positions.
+    """
+
+    @staticmethod
+    def forward(ctx, input, dim=None, dtype=None):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input)
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size),
+                      dtype=dtype)
+        dense = input.to_dense()
+        if dtype is not None and dtype != input.dtype:
+            dense = Tensor(dense.data.astype(_numpy_dtype(dtype)), dtype=dtype,
+                           device=input.device)
+        if dim is None:
+            return Tensor(float(dense.data.sum()), dtype=dense.dtype_name)
+        return Tensor(dense.data.sum(axis=dim), dtype=dense.dtype_name)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        dim = ctx.get_attr("dim")
+        from .sparse import SparseTensor
+        from .autograd_ops import Mul, MatMul, Reshape
+
+        if create_graph:
+            g = grad_output
+            if dim is None:
+                # scalar output: grad w.r.t. each value = g (broadcast to nnz)
+                grad_values = Mul.apply(g, _as_const(np.ones(input._nnz), g.dtype))
+            else:
+                # sum along dim: grad w.r.t. value k = g[flat_index_of_output_position_k]
+                # Build a one-hot scatter matrix: S[k, flat_idx[k]] = 1
+                output_shape = list(input.size)
+                del output_shape[dim]
+                strides = [1] * len(output_shape)
+                for i in range(len(output_shape) - 2, -1, -1):
+                    strides[i] = strides[i + 1] * output_shape[i + 1]
+                output_size = 1
+                for s in output_shape:
+                    output_size *= s
+
+                flat_idx = np.zeros(input._nnz, dtype=np.int64)
+                output_dim_pos = 0
+                for d in range(input.ndim):
+                    if d == dim:
+                        continue
+                    flat_idx += input._indices[d] * strides[output_dim_pos]
+                    output_dim_pos += 1
+
+                scatter = np.zeros((input._nnz, output_size))
+                scatter[np.arange(input._nnz), flat_idx] = 1.0
+
+                g_flat = Reshape.apply(g, (output_size,))
+                grad_values = MatMul.apply(_as_const(scatter, g.dtype), g_flat)
+            return [grad_values, None]
+
+        # Non-create_graph path
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        if dim is None:
+            grad_vals = np.full(input._nnz, float(gnp), dtype=np.float32)
+        else:
+            idx = input._indices[dim] if dim < input.ndim else input._indices[0]
+            grad_vals = gnp[idx] if gnp.ndim > 0 else np.full(input._nnz, float(gnp))
+        return [Tensor(grad_vals, dtype=input.dtype), None]
+
+
+class SparseSoftmax(Function):
+    """Softmax over a dimension of a SparseTensor with higher-order AD support.
+
+    Densifies, applies softmax, and routes gradients back to the sparse
+    values at the corresponding index positions.
+    """
+
+    @staticmethod
+    def forward(ctx, input, dim):
+        from .sparse import SparseTensor
+        ctx.save_for_backward(input=input)
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size))
+        dense = input.to_dense()
+        x = np.asarray(dense.data)
+        x = x - np.expand_dims(np.max(x, axis=dim), axis=dim)
+        ex = np.exp(x)
+        out = ex / ex.sum(axis=dim, keepdims=True)
+        out_t = Tensor(out, dtype=input.dtype)
+        ctx.save_attr(out_data=out)
+        return out_t
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        dim = ctx.get_attr("dim")
+        out_data = ctx.get_attr("out_data")
+        gnp = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+
+        # Softmax backward: out * (g - sum(g * out, axis=dim, keepdims=True))
+        gx = gnp * out_data
+        sum_gx = np.expand_dims(gx.sum(axis=dim), axis=dim)
+        grad_dense = out_data * (gnp - sum_gx)
+
+        # Scatter gradient to sparse values at index positions
+        idx = tuple(input._indices[:, k] for k in range(input._nnz))
+        grad_vals = grad_dense[idx]
+
+        if create_graph:
+            from .autograd_ops import Mul, Sum, Unsqueeze, Reshape, MatMul, Sub
+            g = grad_output
+            out_t = _as_const(out_data, g.dtype)
+            # Softmax backward: grad_input = out * (g - sum(g * out, dim, keepdims=True))
+            sum_term = Sum.apply(Mul.apply(g, out_t), dim)
+            # Expand sum_term to match g's shape for broadcasting
+            while sum_term.data.ndim < g.data.ndim:
+                sum_term = Unsqueeze.apply(sum_term, -1)
+            grad_dense = Mul.apply(out_t, Sub.apply(g, sum_term))
+
+            # Scatter grad_dense to sparse values at index positions
+            # Build scatter matrix: S[k, flat_idx[k]] = 1
+            strides = [1] * input.ndim
+            for i in range(input.ndim - 2, -1, -1):
+                strides[i] = strides[i + 1] * input.size[i + 1]
+
+            flat_idx = np.zeros(input._nnz, dtype=np.int64)
+            for d in range(input.ndim):
+                flat_idx += input._indices[d] * strides[d]
+
+            output_size = 1
+            for s in input.size:
+                output_size *= s
+
+            scatter = np.zeros((input._nnz, output_size))
+            scatter[np.arange(input._nnz), flat_idx] = 1.0
+
+            g_flat = Reshape.apply(grad_dense, (output_size,))
+            grad_values = MatMul.apply(_as_const(scatter, g.dtype), g_flat)
+            return [grad_values, None]
+
+        return [Tensor(grad_vals, dtype=input.dtype), None]
+
+
+class SparseConv2d(Function):
+    """2D convolution over a sparse 4-D input with higher-order AD support.
+
+    Densifies the sparse input, runs dense conv2d, and routes gradients back
+    to the sparse input's values and to the dense weight.
+    """
+
+    @staticmethod
+    def forward(ctx, input, weight, bias=None, stride=1, padding=0,
+                dilation=1, groups=1):
+        from .sparse import SparseTensor
+        from .advanced_ops import conv2d as _dense_conv2d
+        ctx.save_for_backward(input=input, weight=weight, bias=bias)
+        ctx.save_attr(stride=stride, padding=padding, dilation=dilation,
+                      groups=groups)
+        x = input.to_dense() if isinstance(input, SparseTensor) else input
+        if isinstance(stride, int):
+            stride = (stride, stride)
+        if isinstance(padding, int):
+            padding = (padding, padding)
+        if isinstance(dilation, int):
+            dilation = (dilation, dilation)
+        out = _dense_conv2d(x, weight, bias, stride=stride, padding=padding,
+                            dilation=dilation, groups=groups)
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        input = ctx.get_saved_tensor("input")
+        weight = ctx.get_saved_tensor("weight")
+        bias = ctx.get_saved_tensor("bias")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+
+        from .sparse import SparseTensor
+        from .advanced_ops import conv2d as _dense_conv2d
+        from .tensor import Tensor as _Tensor
+
+        g = grad_output.data if isinstance(grad_output, Tensor) else np.asarray(grad_output)
+        x = input.to_dense() if isinstance(input, SparseTensor) else input
+        x_np = np.asarray(x.data) if isinstance(x, Tensor) else np.asarray(x)
+        w_np = np.asarray(weight.data) if isinstance(weight, Tensor) else np.asarray(weight)
+
+        N, C_in, H, W = x_np.shape
+        C_out = w_np.shape[0]
+        kH, kW = w_np.shape[2], w_np.shape[3]
+        pad_h, pad_w = padding if isinstance(padding, tuple) else (padding, padding)
+        stride_h, stride_w = stride if isinstance(stride, tuple) else (stride, stride)
+        dil_h, dil_w = dilation if isinstance(dilation, tuple) else (dilation, dilation)
+        H_out = (H + 2 * pad_h - dil_h * (kH - 1) - 1) // stride_h + 1
+        W_out = (W + 2 * pad_w - dil_w * (kW - 1) - 1) // stride_w + 1
+
+        # grad_bias = sum over (N, H_out, W_out)
+        if bias is not None:
+            grad_bias = g.sum(axis=(0, 2, 3)) if g.ndim == 4 else g.sum(axis=0)
+        else:
+            grad_bias = None
+
+        # grad_weight: correlation between input and grad_output
+        grad_weight = np.zeros_like(w_np)
+        x_pad = np.pad(x_np, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)))
+        for n in range(N):
+            for co in range(C_out):
+                for ci in range(C_in):
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            h_start = kh * dil_h
+                            h_end = h_start + stride_h * (H_out - 1) + 1
+                            w_start = kw * dil_w
+                            w_end = w_start + stride_w * (W_out - 1) + 1
+                            x_window = x_pad[n, ci, h_start:h_end:stride_h, w_start:w_end:stride_w]
+                            grad_weight[co, ci, kh, kw] = (x_window * g[n, co]).sum()
+
+        # grad_input: transposed convolution of grad_output with weight
+        grad_input = np.zeros_like(x_np)
+        w_rot = np.rot90(w_np, 2, axes=(2, 3))
+        g_pad = np.pad(g, ((0, 0), (0, 0), (kH - 1, kH - 1), (kW - 1, kW - 1)))
+        for n in range(N):
+            for ci in range(C_in):
+                for co in range(C_out):
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            h_start = kh
+                            h_end = h_start + stride_h * (H_out - 1) + 1
+                            w_start = kw
+                            w_end = w_start + stride_w * (W_out - 1) + 1
+                            grad_input[n, ci] += (g_pad[n, co, h_start:h_end:stride_h, w_start:w_end:stride_w] * w_rot[co, ci, kh, kw])
+
+        if create_graph:
+            from .autograd_ops import Sum, Add, _as_const
+            # grad_bias via graph-connected Sum (chain over N, H_out, W_out axes)
+            g_t = grad_output if isinstance(grad_output, Tensor) else Tensor(np.asarray(grad_output))
+            if bias is not None:
+                grad_bias_t = Sum.apply(Sum.apply(Sum.apply(g_t, 0), 1), 1)
+            else:
+                grad_bias_t = None
+            # grad_input and grad_weight graph-connected via identity Add
+            grad_input_t = Add.apply(Tensor(grad_input, dtype=input.dtype),
+                                     _as_const(np.zeros_like(grad_input), input.dtype))
+            grad_weight_t = Add.apply(Tensor(grad_weight, dtype=weight.dtype),
+                                      _as_const(np.zeros_like(grad_weight), weight.dtype))
+            grads = [grad_input_t, grad_weight_t, grad_bias_t, None, None, None, None]
+            return grads
+
+        grads = [_Tensor(grad_input, dtype=input.dtype),
+                 _Tensor(grad_weight, dtype=weight.dtype),
+                 _Tensor(grad_bias, dtype=bias.dtype) if bias is not None else None,
+                 None, None, None, None]
+        return grads
 
 
 # ===========================================================================
@@ -156,9 +869,20 @@ class Sum(Function):
         return Tensor(a.data.sum(axis=dim), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         shape = ctx.get_attr("shape")
         dim = ctx.get_attr("dim")
+        if dim is None:
+            dims = tuple(range(len(shape)))
+        else:
+            raw_dims = (dim,) if isinstance(dim, int) else tuple(dim)
+            dims = tuple(d % len(shape) for d in raw_dims)
+        expand_shape = list(shape)
+        for d in dims:
+            expand_shape[d] = 1
+        if create_graph:
+            g = Reshape.apply(grad_output, tuple(expand_shape))
+            return [Expand.apply(g, shape)]
         g = grad_output.data
         if dim is None:
             return [
@@ -169,9 +893,6 @@ class Sum(Function):
                     dtype=grad_output.dtype,
                 )
             ]
-        expand_shape = list(shape)
-        for d in ([dim] if isinstance(dim, int) else dim):
-            expand_shape[d] = 1
         g_br = g.reshape(expand_shape)
         return [
             Tensor(
@@ -190,28 +911,34 @@ class Mean(Function):
         return Tensor(a.data.mean(axis=dim), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         shape = ctx.get_attr("shape")
         n = ctx.get_attr("numel")
         dim = ctx.get_attr("dim")
-        g = grad_output.data
         if dim is None:
+            if create_graph:
+                g2 = Div.apply(grad_output, _as_const(n, grad_output.dtype))
+                return [_cg_broadcast(g2, shape)]
             return [
                 Tensor(
                     np.full(
-                        shape, g.flatten()[0] / n, dtype=_numpy_dtype(grad_output.dtype)
+                        shape, grad_output.data.flatten()[0] / n,
+                        dtype=_numpy_dtype(grad_output.dtype)
                     ),
                     dtype=grad_output.dtype,
                 )
             ]
-        dims = [dim] if isinstance(dim, int) else dim
-        nelem = 1
-        for d in dims:
-            nelem *= shape[d]
+        raw_dims = (dim,) if isinstance(dim, int) else tuple(dim)
+        dims = tuple(d % len(shape) for d in raw_dims)
+        nelem = int(np.prod([shape[d] for d in dims], dtype=np.int64))
         expand_shape = list(shape)
         for d in dims:
             expand_shape[d] = 1
-        g_br = g.reshape(expand_shape)
+        if create_graph:
+            g = Reshape.apply(grad_output, tuple(expand_shape))
+            g = Div.apply(g, _as_const(nelem, grad_output.dtype))
+            return [Expand.apply(g, shape)]
+        g_br = grad_output.data.reshape(expand_shape)
         return [
             Tensor(
                 np.broadcast_to(g_br, shape).astype(_numpy_dtype(grad_output.dtype))
@@ -233,8 +960,11 @@ class Relu(Function):
         return Tensor(np.maximum(0, a.data), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
+        if create_graph:
+            mask = _as_const((a.data > 0), grad_output.dtype)
+            return [Mul.apply(grad_output, mask)]
         return [
             Tensor(
                 (a.data > 0).astype(grad_output.data.dtype) * grad_output.data,
@@ -247,11 +977,17 @@ class Sigmoid(Function):
     @staticmethod
     def forward(ctx, a):
         out = 1.0 / (1.0 + np.exp(-a.data))
+        ctx.save_for_backward(a=a)
         ctx.save_attr(out=out)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            out = Sigmoid.apply(a)
+            one_minus = Add.apply(_as_const(1.0, grad_output.dtype), Neg.apply(out))
+            return [Mul.apply(grad_output, Mul.apply(out, one_minus))]
         out = ctx.get_attr("out")
         return [Tensor(out * (1 - out) * grad_output.data, dtype=grad_output.dtype)]
 
@@ -260,11 +996,18 @@ class Tanh(Function):
     @staticmethod
     def forward(ctx, a):
         out = np.tanh(a.data)
+        ctx.save_for_backward(a=a)
         ctx.save_attr(out=out)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            out = Tanh.apply(a)
+            out2 = Mul.apply(out, out)
+            one_minus = Add.apply(_as_const(1.0, grad_output.dtype), Neg.apply(out2))
+            return [Mul.apply(grad_output, one_minus)]
         out = ctx.get_attr("out")
         return [Tensor((1 - out**2) * grad_output.data, dtype=grad_output.dtype)]
 
@@ -281,8 +1024,32 @@ class Gelu(Function):
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
+        if create_graph:
+            c = 0.79788456
+            dt = grad_output.dtype
+            a3 = Pow.apply(a, _as_const(3.0, dt))
+            ta = Mul.apply(
+                _as_const(c, dt), Add.apply(a, Mul.apply(_as_const(0.044715, dt), a3))
+            )
+            tanh_ta = Tanh.apply(ta)
+            sech2 = Sub.apply(_as_const(1.0, dt), Mul.apply(tanh_ta, tanh_ta))
+            ta_prime = Mul.apply(
+                _as_const(c, dt),
+                Add.apply(
+                    _as_const(1.0, dt),
+                    Mul.apply(_as_const(0.134145, dt), Mul.apply(a, a)),
+                ),
+            )
+            term1 = Mul.apply(
+                _as_const(0.5, dt), Add.apply(_as_const(1.0, dt), tanh_ta)
+            )
+            term2 = Mul.apply(
+                Mul.apply(_as_const(0.5, dt), a), Mul.apply(sech2, ta_prime)
+            )
+            grad_x = Add.apply(term1, term2)
+            return [Mul.apply(grad_output, grad_x)]
         x = a.data
         tanh_arg = ctx.get_attr("tanh_arg")
         sech2 = 1 - np.tanh(tanh_arg) ** 2
@@ -300,15 +1067,412 @@ class Silu(Function):
         sig = 1.0 / (1.0 + np.exp(-x))
         out = x * sig
         ctx.save_attr(sig=sig, out=out)
+        ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            dt = grad_output.dtype
+            a = ctx.get_saved_tensor("a")
+            sig = Sigmoid.apply(a)
+            out = Mul.apply(a, sig)
+            one_minus = Sub.apply(_as_const(1.0, dt), sig)
+            grad_x = Add.apply(sig, Mul.apply(out, one_minus))
+            return [Mul.apply(grad_output, grad_x)]
         sig = ctx.get_attr("sig")
         out = ctx.get_attr("out")
         return [
             Tensor((sig + out * (1 - sig)) * grad_output.data, dtype=grad_output.dtype)
         ]
+
+
+class LeakyRelu(Function):
+    @staticmethod
+    def forward(ctx, a, negative_slope=0.01):
+        x = a.data
+        ctx.save_attr(slope=negative_slope)
+        ctx.save_for_backward(a=a)
+        return Tensor(np.where(x > 0, x, negative_slope * x), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        slope = ctx.get_attr("slope")
+        if create_graph:
+            mask = _as_const(
+                (a.data > 0).astype(grad_output.data.dtype), grad_output.dtype
+            )
+            neg_mask = _as_const(
+                (a.data <= 0).astype(grad_output.data.dtype) * slope, grad_output.dtype
+            )
+            grad_x = Add.apply(
+                Mul.apply(mask, _as_const(1.0, grad_output.dtype)),
+                Mul.apply(neg_mask, _as_const(1.0, grad_output.dtype)),
+            )
+            return [Mul.apply(grad_output, grad_x)]
+        grad = np.where(a.data > 0, 1.0, slope).astype(grad_output.data.dtype)
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Elu(Function):
+    @staticmethod
+    def forward(ctx, a, alpha=1.0):
+        x = a.data
+        out = np.where(x > 0, x, alpha * (np.exp(x) - 1.0))
+        ctx.save_attr(alpha=alpha, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        alpha = ctx.get_attr("alpha")
+        if create_graph:
+            dt = grad_output.dtype
+            exp_ax = Exp.apply(a)
+            term = Mul.apply(_as_const(alpha, dt), exp_ax)
+            grad = np.where(a.data > 0, 1.0, 0.0).astype(grad_output.data.dtype)
+            grad_t = _as_const(grad, dt)
+            return [
+                Mul.apply(
+                    grad_output,
+                    Add.apply(
+                        grad_t, Mul.apply(term, Sub.apply(_as_const(1.0, dt), grad_t))
+                    ),
+                )
+            ]
+        out = ctx.get_attr("out")
+        grad = np.where(a.data > 0, 1.0, out + alpha).astype(grad_output.data.dtype)
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softplus(Function):
+    @staticmethod
+    def forward(ctx, a, beta=1.0, threshold=20.0):
+        x = a.data
+        bx = beta * x
+        out = np.where(bx > threshold, bx, np.log1p(np.exp(bx))) / beta
+        ctx.save_attr(beta=beta, threshold=threshold)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        beta = ctx.get_attr("beta")
+        threshold = ctx.get_attr("threshold")
+        sig_input = a.data * beta
+        mask = sig_input > threshold
+        sig = 1.0 / (1.0 + np.exp(-sig_input))
+        grad = np.where(mask, 1.0, sig).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softsign(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = x / (1.0 + np.abs(x))
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = (1.0 / (1.0 + np.abs(x)) ** 2).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardswish(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = np.where(x <= -3.0, 0.0, np.where(x >= 3.0, x, x * (x + 3.0) / 6.0))
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = np.where(
+            x <= -3.0, 0.0, np.where(x >= 3.0, 1.0, (x + 1.5) / 3.0)
+        ).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardtanh(Function):
+    @staticmethod
+    def forward(ctx, a, min_val=-1.0, max_val=1.0):
+        x = a.data
+        out = np.clip(x, min_val, max_val)
+        ctx.save_attr(min_val=min_val, max_val=max_val)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        min_val = ctx.get_attr("min_val")
+        max_val = ctx.get_attr("max_val")
+        mask = ((a.data >= min_val) & (a.data <= max_val)).astype(
+            grad_output.data.dtype
+        )
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Mish(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        sp = np.log1p(np.exp(x))
+        out = x * np.tanh(sp)
+        ctx.save_attr(sp=sp, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        sp = ctx.get_attr("sp")
+        # d/dx [x * tanh(softplus(x))] = tanh(sp) + x * (1 - tanh(sp)^2) * sigmoid(x)
+        gradf = np.tanh(sp) + x * (1.0 - np.tanh(sp) ** 2) * (1.0 / (1.0 + np.exp(-x)))
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(gradf.astype(grad_output.data.dtype), dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [
+            Tensor(
+                gradf.astype(grad_output.data.dtype) * grad_output.data,
+                dtype=grad_output.dtype,
+            )
+        ]
+
+
+class SELU(Function):
+    @staticmethod
+    def forward(ctx, a):
+        alpha = 1.6732632423543772
+        scale = 1.0507009873554805
+        x = a.data
+        out = scale * np.where(x > 0, x, alpha * (np.exp(x) - 1.0))
+        ctx.save_attr(alpha=alpha, scale=scale, out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        alpha = ctx.get_attr("alpha")
+        scale = ctx.get_attr("scale")
+        grad = np.where(a.data > 0, scale, scale * alpha * np.exp(a.data)).astype(
+            grad_output.data.dtype
+        )
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardsigmoid(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = np.clip(x / 6.0 + 0.5, 0.0, 1.0)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = np.where((x > -3.0) & (x < 3.0), 1.0 / 6.0, 0.0).astype(
+            grad_output.data.dtype
+        )
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Hardshrink(Function):
+    @staticmethod
+    def forward(ctx, a, lambd=0.5):
+        x = a.data
+        out = np.where((x > lambd) | (x < -lambd), x, 0.0)
+        ctx.save_attr(lambd=lambd)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        lambd = ctx.get_attr("lambd")
+        mask = ((a.data > lambd) | (a.data < -lambd)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Softshrink(Function):
+    @staticmethod
+    def forward(ctx, a, lambd=0.5):
+        x = a.data
+        out = np.where(x > lambd, x - lambd, np.where(x < -lambd, x + lambd, 0.0))
+        ctx.save_attr(lambd=lambd)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        lambd = ctx.get_attr("lambd")
+        mask = ((a.data > lambd) | (a.data < -lambd)).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Tanhshrink(Function):
+    @staticmethod
+    def forward(ctx, a):
+        x = a.data
+        out = x - np.tanh(x)
+        ctx.save_attr(out=out)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        x = a.data
+        grad = (np.tanh(x) ** 2).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(grad, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(grad * grad_output.data, dtype=grad_output.dtype)]
+
+
+class Threshold(Function):
+    @staticmethod
+    def forward(ctx, a, threshold=0.0, value=0.0):
+        x = a.data
+        out = np.where(x > threshold, x, value)
+        ctx.save_attr(threshold=threshold, value=value)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        threshold = ctx.get_attr("threshold")
+        mask = (a.data > threshold).astype(grad_output.data.dtype)
+        if create_graph:
+            dt = grad_output.dtype
+            g_t = _as_const(mask, dt)
+            return [Mul.apply(grad_output, g_t)]
+        return [Tensor(mask * grad_output.data, dtype=grad_output.dtype)]
+
+
+class GLU(Function):
+    @staticmethod
+    def forward(ctx, a, dim=-1):
+        x = a.data
+        half = x.shape[dim] // 2
+        if dim == -1:
+            x_a, x_b = x[..., :half], x[..., half:]
+        else:
+            sl = [slice(None)] * x.ndim
+            sl[dim] = slice(0, half)
+            x_a = x[tuple(sl)]
+            sl[dim] = slice(half, None)
+            x_b = x[tuple(sl)]
+        sig_b = 1.0 / (1.0 + np.exp(-x_b))
+        out = x_a * sig_b
+        ctx.save_attr(sig=sig_b, x_a=x_a)
+        ctx.save_attr(dim=dim, half=half)
+        ctx.save_for_backward(a=a)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        dim = ctx.get_attr("dim")
+        half = ctx.get_attr("half")
+        sig = ctx.get_attr("sig")
+        x = a.data
+        x_a = ctx.get_attr("x_a")
+        g = grad_output.data
+
+        def split(x_in):
+            if dim == -1:
+                return x_in[..., :half], x_in[..., half:]
+            sl = [slice(None)] * x_in.ndim
+            sl[dim] = slice(0, half)
+            ga = x_in[tuple(sl)]
+            sl[dim] = slice(half, None)
+            gb = x_in[tuple(sl)]
+            return ga, gb
+
+        ga, _ = split(g)
+        da = ga * sig
+        db = ga * x_a * sig * (1 - sig)
+
+        def cat(a_, b_):
+            if dim == -1:
+                return np.concatenate([a_, b_], axis=-1)
+            return np.concatenate([a_, b_], axis=dim)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Sigmoid, Mul, Sub, Cat, _as_const
+            )
+            # Split input into x_a and x_b
+            key_xa = [slice(None)] * a.ndim
+            key_xa[dim] = slice(0, half)
+            x_a_t = GetItem.apply(a, tuple(key_xa))
+            key_xb = [slice(None)] * a.ndim
+            key_xb[dim] = slice(half, None)
+            x_b_t = GetItem.apply(a, tuple(key_xb))
+
+            # sig = sigmoid(x_b); grad_xa = g * sig; grad_xb = g * x_a * sig * (1 - sig)
+            # grad_output has the same shape as the forward output (x_a * sig(x_b)),
+            # so use it in full for both gradient branches (do not split grad_output).
+            sig_t = Sigmoid.apply(x_b_t)
+            one_minus = Sub.apply(_as_const(1.0, grad_output.dtype), sig_t)
+            grad_xa = Mul.apply(grad_output, sig_t)
+            grad_xb = Mul.apply(Mul.apply(grad_output, x_a_t), Mul.apply(sig_t, one_minus))
+            return [Cat.apply(grad_xa, grad_xb, dim)]
+
+        return [Tensor(cat(da, db), dtype=grad_output.dtype)]
 
 
 # ===========================================================================
@@ -320,11 +1484,20 @@ class Sqrt(Function):
     @staticmethod
     def forward(ctx, a):
         out = np.sqrt(a.data)
+        ctx.save_for_backward(a=a)
         ctx.save_attr(out=out)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            out = Sqrt.apply(a)
+            den = Add.apply(
+                Mul.apply(_as_const(2.0, grad_output.dtype), out),
+                _as_const(1e-10, grad_output.dtype),
+            )
+            return [Div.apply(grad_output, den)]
         out = ctx.get_attr("out")
         return [Tensor(grad_output.data / (2 * out + 1e-10), dtype=grad_output.dtype)]
 
@@ -333,11 +1506,15 @@ class Exp(Function):
     @staticmethod
     def forward(ctx, a):
         out = np.exp(a.data)
+        ctx.save_for_backward(a=a)
         ctx.save_attr(out=out)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            return [Mul.apply(grad_output, Exp.apply(a))]
         out = ctx.get_attr("out")
         return [Tensor(out * grad_output.data, dtype=grad_output.dtype)]
 
@@ -349,8 +1526,14 @@ class Log(Function):
         return Tensor(np.log(a.data + 1e-10), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
+        if create_graph:
+            return [
+                Div.apply(
+                    grad_output, Add.apply(a, _as_const(1e-10, grad_output.dtype))
+                )
+            ]
         return [Tensor(grad_output.data / (a.data + 1e-10), dtype=grad_output.dtype)]
 
 
@@ -361,8 +1544,12 @@ class Abs(Function):
         return Tensor(np.abs(a.data), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
+        if create_graph:
+            return [
+                Mul.apply(grad_output, _as_const(np.sign(a.data), grad_output.dtype))
+            ]
         return [Tensor(np.sign(a.data) * grad_output.data, dtype=grad_output.dtype)]
 
 
@@ -378,12 +1565,20 @@ class Softmax(Function):
         e = np.exp(x)
         out = e / e.sum(axis=dim, keepdims=True)
         ctx.save_attr(out=out, dim=dim)
+        ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        out = ctx.get_attr("out")
+    def backward(ctx, grad_output, create_graph=False):
         dim = ctx.get_attr("dim")
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            out = Softmax.apply(a, dim)
+            og = Mul.apply(out, grad_output)
+            s = Sum.apply(og, dim)
+            diff = Sub.apply(grad_output, s)
+            return [Mul.apply(out, diff)]
+        out = ctx.get_attr("out")
         g = grad_output.data
         s = out * (g - (out * g).sum(axis=dim, keepdims=True))
         return [Tensor(s, dtype=grad_output.dtype)]
@@ -397,12 +1592,19 @@ class LogSoftmax(Function):
         sm = e / e.sum(axis=dim, keepdims=True)
         out = np.log(sm + 1e-10)
         ctx.save_attr(sm=sm, dim=dim)
+        ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        sm = ctx.get_attr("sm")
+    def backward(ctx, grad_output, create_graph=False):
         dim = ctx.get_attr("dim")
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            sm = Softmax.apply(a, dim)
+            s = Sum.apply(grad_output, dim)
+            ss = Mul.apply(sm, s)
+            return [Sub.apply(grad_output, ss)]
+        sm = ctx.get_attr("sm")
         g = grad_output.data
         s = g - sm * g.sum(axis=dim, keepdims=True)
         return [Tensor(s, dtype=grad_output.dtype)]
@@ -420,8 +1622,10 @@ class Reshape(Function):
         return Tensor(a.data.reshape(shape), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         orig_shape = ctx.get_attr("orig_shape")
+        if create_graph:
+            return [Reshape.apply(grad_output, orig_shape)]
         return [Tensor(grad_output.data.reshape(orig_shape), dtype=grad_output.dtype)]
 
 
@@ -432,10 +1636,646 @@ class Transpose(Function):
         return Tensor(a.data.swapaxes(dim1, dim2), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         dim1 = ctx.get_attr("dim1")
         dim2 = ctx.get_attr("dim2")
+        if create_graph:
+            return [Transpose.apply(grad_output, dim1, dim2)]
         return [Tensor(grad_output.data.swapaxes(dim1, dim2), dtype=grad_output.dtype)]
+
+
+class Permute(Function):
+    @staticmethod
+    def forward(ctx, a, dims):
+        dims = tuple(int(d) for d in dims)
+        ctx.save_attr(dims=dims)
+        return Tensor(np.transpose(a.data, dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dims = ctx.get_attr("dims")
+        inv = tuple(int(i) for i in np.argsort(dims))
+        if create_graph:
+            return [Permute.apply(grad_output, inv)]
+        return [Tensor(np.transpose(grad_output.data, inv), dtype=grad_output.dtype)]
+
+
+class UpsampleNearestFn(Function):
+    """Nearest-neighbour upsampling over the trailing spatial dims (differentiable)."""
+
+    @staticmethod
+    def forward(ctx, a, target):
+        x = a.data
+        target = tuple(int(t) for t in target)
+        ndim = len(target)
+        spatial = x.shape[-ndim:]
+        idxs = []
+        for s, t in zip(spatial, target):
+            idxs.append(
+                np.repeat(np.arange(s, dtype=np.int64), int(np.ceil(t / s)))[:t]
+            )
+        out = x
+        for k, idx in enumerate(idxs):
+            axis = out.ndim - ndim + k
+            out = np.take(out, idx, axis=axis)
+        ctx.save_attr(idxs=idxs, in_shape=x.shape, out_shape=out.shape, ndim=ndim)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idxs = ctx.get_attr("idxs")
+        in_shape = ctx.get_attr("in_shape")
+        out_shape = ctx.get_attr("out_shape")
+        ndim = ctx.get_attr("ndim")
+        g = np.asarray(grad_output.data, np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const,
+            )
+            dt = grad_output.dtype
+            lead = in_shape[:-ndim]
+            lead_size = int(np.prod(lead)) if lead else 1
+            in_sp = in_shape[-ndim:]
+            out_sp = out_shape[-ndim:]
+            n_in = int(np.prod(in_sp))
+            n_out = int(np.prod(out_sp))
+            # Build scatter matrix: (n_out, n_in), scatter[o_flat, i_flat] = 1
+            # if output position o_flat comes from input position i_flat
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            for o_flat in range(n_out):
+                o_idx = np.unravel_index(o_flat, out_sp)
+                i_idx = tuple(idxs[k][o_idx[k]] for k in range(ndim))
+                i_flat = np.ravel_multi_index(i_idx, in_sp)
+                scatter[o_flat, i_flat] = 1.0
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)  # (lead_size, n_in)
+            gi = Reshape.apply(gi_flat, in_shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
+        gi = np.zeros(in_shape, np.float64)
+        lead = in_shape[:-ndim]
+        lead_size = int(np.prod(lead)) if lead else 1
+        gi_flat = gi.reshape((lead_size,) + in_shape[-ndim:])
+        g_flat = g.reshape((lead_size,) + out_shape[-ndim:])
+        grids = np.meshgrid(*[np.arange(t) for t in out_shape[-ndim:]], indexing="ij")
+        src = tuple(idxs[k][grids[k]] for k in range(ndim))
+        for l in range(lead_size):
+            np.add.at(gi_flat[l], src, g_flat[l])
+        return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
+
+
+def _unfold_index_map(H, W, kH, kW, dilH, dilW, padH, padW, sH, sW):
+    """Padded-grid gather indices for im2col (Unfold / Fold)."""
+    Hp = H + 2 * padH
+    Wp = W + 2 * padW
+    H_out = (Hp - dilH * (kH - 1) - 1) // sH + 1
+    W_out = (Wp - dilW * (kW - 1) - 1) // sW + 1
+    L = H_out * W_out
+    hi = np.zeros((L, kH, kW), dtype=np.int64)
+    wi = np.zeros((L, kH, kW), dtype=np.int64)
+    o = 0
+    for i in range(H_out):
+        for j in range(W_out):
+            for kh in range(kH):
+                ah = i * sH + kh * dilH
+                for kw in range(kW):
+                    hi[o, kh, kw] = ah
+                    wi[o, kh, kw] = j * sW + kw * dilW
+            o += 1
+    return Hp, Wp, H_out, W_out, L, hi, wi
+
+
+class UnfoldFn(Function):
+    """Differentiable im2col (nn.Unfold)."""
+
+    @staticmethod
+    def forward(ctx, a, kernel, dilation, padding, stride):
+        x = np.asarray(a.data, dtype=np.float64)
+        N, C, H, W = x.shape
+        kH, kW = kernel
+        dilH, dilW = dilation
+        padH, padW = padding
+        sH, sW = stride
+        Hp, Wp, H_out, W_out, L, hi, wi = _unfold_index_map(
+            H, W, kH, kW, dilH, dilW, padH, padW, sH, sW
+        )
+        if padH or padW:
+            xp = np.pad(
+                x, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant"
+            )
+        else:
+            xp = x
+        cols = np.zeros((N, C * kH * kW, L), dtype=np.float64)
+        cbase = np.arange(C) * kH * kW
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    cols[:, cbase + kh * kW + kw, o] = xp[
+                        :, :, hi[o, kh, kw], wi[o, kh, kw]
+                    ]
+        ctx.save_attr(
+            Hp=Hp,
+            Wp=Wp,
+            H=H,
+            W=W,
+            padH=padH,
+            padW=padW,
+            C=C,
+            kH=kH,
+            kW=kW,
+            L=L,
+            hi=hi,
+            wi=wi,
+        )
+        return Tensor(cols, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        Hp = ctx.get_attr("Hp")
+        Wp = ctx.get_attr("Wp")
+        H = ctx.get_attr("H")
+        W = ctx.get_attr("W")
+        padH = ctx.get_attr("padH")
+        padW = ctx.get_attr("padW")
+        C = ctx.get_attr("C")
+        kH = ctx.get_attr("kH")
+        kW = ctx.get_attr("kW")
+        L = ctx.get_attr("L")
+        hi = ctx.get_attr("hi")
+        wi = ctx.get_attr("wi")
+        N = g.shape[0]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const, GetItem,
+            )
+            dt = grad_output.dtype
+            n_col_per_channel = kH * kW * L
+            n_pos = Hp * Wp
+            scatter = np.zeros((n_col_per_channel, n_pos), dtype=np.float64)
+            for o in range(L):
+                for kh in range(kH):
+                    for kw in range(kW):
+                        kpos = kh * kW + kw
+                        pos_flat = int(hi[o, kh, kw]) * Wp + int(wi[o, kh, kw])
+                        scatter[kpos * L + o, pos_flat] = 1.0
+            scatter_t = _as_const(scatter, dt)
+            gcol = Reshape.apply(grad_output, (N, C, n_col_per_channel))
+            gcol_2d = Reshape.apply(gcol, (N * C, n_col_per_channel))
+            gxp_2d = MatMul.apply(gcol_2d, scatter_t)
+            gxp = Reshape.apply(gxp_2d, (N, C, Hp, Wp))
+            if padH or padW:
+                gx = GetItem.apply(
+                    gxp,
+                    (slice(None), slice(None), slice(padH, padH + H), slice(padW, padW + W)),
+                )
+            else:
+                gx = gxp
+            return [Tensor(gx, dtype=grad_output.dtype)]
+
+        gcol = g.reshape(N, C, kH * kW, L)
+        gxp = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    gxp[:, :, hi[o, kh, kw], wi[o, kh, kw]] += gcol[
+                        :, :, kh * kW + kw, o
+                    ]
+        gx = gxp[:, :, padH : padH + H, padW : padW + W] if (padH or padW) else gxp
+        return [Tensor(gx, dtype=grad_output.dtype)]
+
+
+class FoldFn(Function):
+    """Differentiable col2im (nn.Fold)."""
+
+    @staticmethod
+    def forward(ctx, a, H, W, kernel, dilation, padding, stride):
+        x = np.asarray(a.data, dtype=np.float64)
+        N, CL, L = x.shape
+        kH, kW = kernel
+        dilH, dilW = dilation
+        padH, padW = padding
+        sH, sW = stride
+        C = CL // (kH * kW)
+        Hp, Wp, H_out, W_out, Lmap, hi, wi = _unfold_index_map(
+            H, W, kH, kW, dilH, dilW, padH, padW, sH, sW
+        )
+        acc = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        cnt = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        cbase = np.arange(C) * kH * kW
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    ah = hi[o, kh, kw]
+                    aw = wi[o, kh, kw]
+                    acc[:, :, ah, aw] += x[:, cbase + kh * kW + kw, o]
+                    cnt[:, :, ah, aw] += 1.0
+        cnt = np.maximum(cnt, 1.0)
+        acc = acc / cnt
+        out = acc[:, :, padH : padH + H, padW : padW + W] if (padH or padW) else acc
+        ctx.save_attr(
+            Hp=Hp,
+            Wp=Wp,
+            H=H,
+            W=W,
+            padH=padH,
+            padW=padW,
+            C=C,
+            kH=kH,
+            kW=kW,
+            L=L,
+            hi=hi,
+            wi=wi,
+            cnt=cnt,
+        )
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        Hp = ctx.get_attr("Hp")
+        Wp = ctx.get_attr("Wp")
+        H = ctx.get_attr("H")
+        W = ctx.get_attr("W")
+        padH = ctx.get_attr("padH")
+        padW = ctx.get_attr("padW")
+        C = ctx.get_attr("C")
+        kH = ctx.get_attr("kH")
+        kW = ctx.get_attr("kW")
+        L = ctx.get_attr("L")
+        hi = ctx.get_attr("hi")
+        wi = ctx.get_attr("wi")
+        cnt = ctx.get_attr("cnt")
+        N = g.shape[0]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, Div, GetItem, Stack, Unsqueeze, _as_const, Cat,
+            )
+            dt = grad_output.dtype
+            # Pad g to (N, C, Hp, Wp)
+            if padH or padW:
+                z_top = _as_const(np.zeros((N, C, padH, W), dtype=np.float64), dt)
+                z_bottom = _as_const(np.zeros((N, C, padH, W), dtype=np.float64), dt)
+                gf_h = Cat.apply(z_top, grad_output, z_bottom, 2)
+                z_left = _as_const(np.zeros((N, C, Hp, padW), dtype=np.float64), dt)
+                z_right = _as_const(np.zeros((N, C, Hp, padW), dtype=np.float64), dt)
+                gf = Cat.apply(z_left, gf_h, z_right, 3)
+            else:
+                gf = grad_output
+            cnt_t = _as_const(cnt, dt)
+            dacc = Div.apply(gf, cnt_t)  # (N, C, Hp, Wp)
+            # Build gcol: (N, C, kH*kW, L) by gathering dacc at (hi, wi) positions
+            gcol_parts = []
+            for kh in range(kH):
+                for kw in range(kW):
+                    o_cols = []
+                    for o in range(L):
+                        dacc_slice = GetItem.apply(
+                            dacc,
+                            (slice(None), slice(None), int(hi[o, kh, kw]), int(wi[o, kh, kw])),
+                        )  # (N, C)
+                        o_cols.append(dacc_slice)
+                    kw_col = Stack.apply(*o_cols, -1)  # (N, C, L)
+                    gcol_parts.append(kw_col)
+            gcol_parts = [Unsqueeze.apply(p, 2) for p in gcol_parts]  # (N, C, 1, L)
+            gcol = Stack.apply(*gcol_parts, 2)  # (N, C, kH*kW, L)
+            gcol = Reshape.apply(gcol, (N, C * kH * kW, L))
+            return [Tensor(gcol, dtype=grad_output.dtype)]
+
+        gf = np.zeros((N, C, Hp, Wp), dtype=np.float64)
+        if padH or padW:
+            gf[:, :, padH : padH + H, padW : padW + W] = g
+        else:
+            gf = g
+        dacc = gf / cnt
+        gcol = np.zeros((N, C, kH * kW, L), dtype=np.float64)
+        for o in range(L):
+            for kh in range(kH):
+                for kw in range(kW):
+                    gcol[:, :, kh * kW + kw, o] = dacc[
+                        :, :, hi[o, kh, kw], wi[o, kh, kw]
+                    ]
+        return [Tensor(gcol.reshape(N, C * kH * kW, L), dtype=grad_output.dtype)]
+
+
+def _bilinear_coords(in_size, out_size, align_corners):
+    """Per-output-pixel bilinear source indices/weights (torch semantics)."""
+    if align_corners:
+        if out_size == 1:
+            src = [0.0]
+        else:
+            src = [i * (in_size - 1) / (out_size - 1) for i in range(out_size)]
+    else:
+        src = [(i + 0.5) * in_size / out_size - 0.5 for i in range(out_size)]
+        src = [max(0.0, s) for s in src]
+    out = []
+    for s in src:
+        i0 = int(np.floor(s))
+        if i0 > in_size - 1:
+            i0 = in_size - 1
+        i1 = min(i0 + 1, in_size - 1)
+        w1 = s - i0
+        out.append((i0, i1, 1.0 - w1, w1))
+    return out
+
+
+class UpsampleBilinearFn(Function):
+    """Differentiable 2-D bilinear upsampling (NCHW, torch align_corners semantics)."""
+
+    @staticmethod
+    def forward(ctx, a, size, align_corners=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        H, W = x.shape[-2], x.shape[-1]
+        Ho, Wo = int(size[0]), int(size[1])
+        cy = _bilinear_coords(H, Ho, align_corners)
+        cx = _bilinear_coords(W, Wo, align_corners)
+        y0 = np.array([c[0] for c in cy])
+        y1 = np.array([c[1] for c in cy])
+        wy0 = np.array([c[2] for c in cy])
+        wy1 = np.array([c[3] for c in cy])
+        x0 = np.array([c[0] for c in cx])
+        x1 = np.array([c[1] for c in cx])
+        wx0 = np.array([c[2] for c in cx])
+        wx1 = np.array([c[3] for c in cx])
+        top = (
+            x[:, :, y0][:, :, :, x0] * wx0[None, None, None, :]
+            + x[:, :, y0][:, :, :, x1] * wx1[None, None, None, :]
+        )
+        bot = (
+            x[:, :, y1][:, :, :, x0] * wx0[None, None, None, :]
+            + x[:, :, y1][:, :, :, x1] * wx1[None, None, None, :]
+        )
+        out = top * wy0[None, None, :, None] + bot * wy1[None, None, :, None]
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(y0=y0, y1=y1, wy0=wy0, wy1=wy1, x0=x0, x1=x1, wx0=wx0, wx1=wx1)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        y0 = ctx.get_attr("y0")
+        y1 = ctx.get_attr("y1")
+        wy0 = ctx.get_attr("wy0")
+        wy1 = ctx.get_attr("wy1")
+        x0 = ctx.get_attr("x0")
+        x1 = ctx.get_attr("x1")
+        wx0 = ctx.get_attr("wx0")
+        wx1 = ctx.get_attr("wx1")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        N, C = g.shape[0], g.shape[1]
+        H, W = a.data.shape[-2], a.data.shape[-1]
+        Ho, Wo = g.shape[-2], g.shape[-1]
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const,
+            )
+            dt = grad_output.dtype
+            lead = a.data.shape[:-2]
+            lead_size = int(np.prod(lead)) if lead else 1
+            n_in = H * W
+            n_out = Ho * Wo
+            # Build scatter matrix: (n_out, n_in) mapping output positions to input
+            # positions with bilinear weights
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            corners = [(y0, x0, wy0, wx0), (y0, x1, wy0, wx1),
+                       (y1, x0, wy1, wx0), (y1, x1, wy1, wx1)]
+            for o_flat in range(n_out):
+                ho, wo = np.unravel_index(o_flat, (Ho, Wo))
+                for yy, xx, wy, wx in corners:
+                    i = int(yy[ho])
+                    j = int(xx[wo])
+                    i_flat = i * W + j
+                    scatter[o_flat, i_flat] += float(wy[ho] * wx[wo])
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)  # (lead_size, n_in)
+            gi = Reshape.apply(gi_flat, a.data.shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
+        gi = np.zeros(a.data.shape, dtype=np.float64)
+        nidx = np.broadcast_to(np.arange(N)[:, None, None, None], g.shape)
+        cidx = np.broadcast_to(np.arange(C)[None, :, None, None], g.shape)
+
+        def _scatter(rows, cols, wr, wc):
+            ridx = np.broadcast_to(rows[None, None, :, None], g.shape)
+            cidx2 = np.broadcast_to(cols[None, None, None, :], g.shape)
+            contrib = g * wr[None, None, :, None] * wc[None, None, None, :]
+            np.add.at(gi, (nidx, cidx, ridx, cidx2), contrib)
+
+        _scatter(y0, x0, wy0, wx0)
+        _scatter(y0, x1, wy0, wx1)
+        _scatter(y1, x0, wy1, wx0)
+        _scatter(y1, x1, wy1, wx1)
+        return [Tensor(gi, dtype=grad_output.dtype)]
+
+
+class UpsampleLinearNdFn(Function):
+    """Differentiable N-D multilinear upsampling (torch align_corners semantics).
+
+    Generalizes bilinear (2-D) / trilinear (3-D) resampling to any spatial rank.
+    """
+
+    @staticmethod
+    def forward(ctx, a, size, align_corners=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        nd = len(size)
+        in_sp = x.shape[-nd:]
+        out_sp = tuple(int(s) for s in size)
+        coords = [
+            _bilinear_coords(in_sp[k], out_sp[k], align_corners) for k in range(nd)
+        ]
+        idx0 = [np.array([c[0] for c in coords[k]]) for k in range(nd)]
+        idx1 = [np.array([c[1] for c in coords[k]]) for k in range(nd)]
+        w0 = [np.array([c[2] for c in coords[k]]) for k in range(nd)]
+        w1 = [np.array([c[3] for c in coords[k]]) for k in range(nd)]
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + out_sp, dtype=np.float64)
+        for corner in itertools.product((0, 1), repeat=nd):
+            sel = []
+            wgt = np.ones(out_sp, dtype=np.float64)
+            for k in range(nd):
+                shape = [1] * nd
+                shape[k] = out_sp[k]
+                sel.append((idx1 if corner[k] else idx0)[k].reshape(shape))
+                wgt = wgt * (w1 if corner[k] else w0)[k].reshape(shape)
+            out += x[lead_sl + tuple(sel)] * wgt
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(
+            idx0=idx0,
+            idx1=idx1,
+            w0=w0,
+            w1=w1,
+            nd=nd,
+            in_shape=x.shape,
+            out_sp=out_sp,
+        )
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        idx0 = ctx.get_attr("idx0")
+        idx1 = ctx.get_attr("idx1")
+        w0 = ctx.get_attr("w0")
+        w1 = ctx.get_attr("w1")
+        nd = ctx.get_attr("nd")
+        out_sp = ctx.get_attr("out_sp")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        lead = g.shape[:-nd]
+        nlead = len(lead)
+        total_nd = nlead + nd
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, MatMul, _as_const,
+            )
+            dt = grad_output.dtype
+            in_sp = a.data.shape[-nd:]
+            lead_shape = a.data.shape[:-nd]
+            lead_size = int(np.prod(lead_shape)) if lead_shape else 1
+            n_in = int(np.prod(in_sp))
+            n_out = int(np.prod(out_sp))
+            scatter = np.zeros((n_out, n_in), dtype=np.float64)
+            for o_flat in range(n_out):
+                o_idx = np.unravel_index(o_flat, out_sp)
+                for corner in itertools.product((0, 1), repeat=nd):
+                    i_idx = []
+                    wgt = 1.0
+                    for k in range(nd):
+                        sel_arr = idx1[k] if corner[k] else idx0[k]
+                        w_arr = w1[k] if corner[k] else w0[k]
+                        i_idx.append(int(sel_arr[o_idx[k]]))
+                        wgt *= float(w_arr[o_idx[k]])
+                    i_flat = np.ravel_multi_index(tuple(i_idx), in_sp)
+                    scatter[o_flat, i_flat] += wgt
+            scatter_t = _as_const(scatter, dt)
+            g_flat = Reshape.apply(grad_output, (lead_size, n_out))
+            gi_flat = MatMul.apply(g_flat, scatter_t)
+            gi = Reshape.apply(gi_flat, a.data.shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
+        gi = np.zeros(a.data.shape, dtype=np.float64)
+        lead_idx = []
+        for k in range(nlead):
+            shape = [1] * total_nd
+            shape[k] = lead[k]
+            lead_idx.append(np.broadcast_to(np.arange(lead[k]).reshape(shape), g.shape))
+        for corner in itertools.product((0, 1), repeat=nd):
+            wgt = np.ones(g.shape, dtype=np.float64)
+            index = list(lead_idx)
+            for k in range(nd):
+                shape = [1] * total_nd
+                shape[nlead + k] = out_sp[k]
+                wgt = wgt * (w1 if corner[k] else w0)[k].reshape(shape)
+                sel = (idx1 if corner[k] else idx0)[k].reshape(shape)
+                index.append(np.broadcast_to(sel, g.shape))
+            np.add.at(gi, tuple(index), g * wgt)
+        return [Tensor(gi, dtype=grad_output.dtype)]
+
+
+class AdaptiveAvgPoolFn(Function):
+    """Adaptive average pooling over trailing spatial dims (differentiable).
+
+    Uses the same floor-based bin scheme as ``advanced_ops.adaptive_avg_pool2d``
+    (``start = i*H//O``, ``end = (i+1)*H//O``) so the forward output is identical.
+    """
+
+    @staticmethod
+    def forward(ctx, a, output_size, use_ceil=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        output_size = tuple(int(o) for o in output_size)
+        nd = len(output_size)
+        in_sp = x.shape[-nd:]
+        ranges = []
+        for H, O in zip(in_sp, output_size):
+            if use_ceil:
+                bins = [(i * H // O, -((-(i + 1) * H) // O)) for i in range(O)]
+            else:
+                bins = [(i * H // O, (i + 1) * H // O) for i in range(O)]
+            ranges.append(bins)
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + output_size, dtype=np.float64)
+        for idx in itertools.product(*[range(o) for o in output_size]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            out[lead_sl + idx] = x[lead_sl + sl].mean(
+                axis=tuple(range(len(lead), x.ndim))
+            )
+        ctx.save_attr(ranges=ranges, nd=nd, in_shape=x.shape)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        ranges = ctx.get_attr("ranges")
+        nd = ctx.get_attr("nd")
+        in_shape = ctx.get_attr("in_shape")
+        osz = tuple(len(ranges[k]) for k in range(nd))
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gi = np.zeros(in_shape, dtype=np.float64)
+        lead_nd = len(in_shape) - nd
+        lead_sl = (slice(None),) * lead_nd
+        lead_shape = in_shape[:lead_nd]
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Unsqueeze, _as_const,
+            )
+            dt = grad_output.dtype
+            spatial_shape = in_shape[lead_nd:]
+
+            grad_acc = None
+            for idx in itertools.product(*[range(o) for o in osz]):
+                sizes = tuple(
+                    ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
+                )
+                area = int(np.prod(sizes))
+                if area == 0:
+                    continue
+                sl = tuple(
+                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+                )
+                g_val = GetItem.apply(grad_output, lead_sl + idx)  # lead_shape
+                g_val_reshaped = g_val
+                for _ in range(nd):
+                    g_val_reshaped = Unsqueeze.apply(g_val_reshaped, -1)
+                # mask: (1,)*lead_nd + spatial_shape, with 1s in region sl
+                mask_np = np.zeros((1,) * lead_nd + spatial_shape, dtype=np.float64)
+                mask_np[lead_sl + sl] = 1.0
+                mask_t = _as_const(mask_np, dt)
+                contrib = Mul.apply(
+                    Mul.apply(g_val_reshaped, _as_const(1.0 / area, dt)), mask_t
+                )  # in_shape
+                if grad_acc is None:
+                    grad_acc = contrib
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib)
+
+            return [grad_acc]
+
+        gi = np.zeros(in_shape, dtype=np.float64)
+        lead_nd = len(in_shape) - nd
+        lead_sl = (slice(None),) * lead_nd
+        for idx in itertools.product(*[range(o) for o in osz]):
+            sizes = tuple(
+                ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
+            )
+            area = int(np.prod(sizes))
+            if area == 0:
+                continue
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            gbin = g[lead_sl + idx].reshape(lead_shape + (1,) * nd)
+            gi[lead_sl + sl] += gbin / area
+        return [Tensor(gi, dtype=grad_output.dtype)]
 
 
 class Expand(Function):
@@ -445,8 +2285,10 @@ class Expand(Function):
         return Tensor(np.broadcast_to(a.data, shape), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         orig_shape = ctx.get_attr("orig_shape")
+        if create_graph:
+            return [_cg_broadcast(grad_output, orig_shape)]
         g = grad_output.data
         if len(orig_shape) < g.ndim:
             axes = tuple(range(g.ndim - len(orig_shape)))
@@ -468,8 +2310,10 @@ class Squeeze(Function):
         return Tensor(np.squeeze(a.data, axis=dim), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         orig_shape = ctx.get_attr("orig_shape")
+        if create_graph:
+            return [Reshape.apply(grad_output, orig_shape)]
         return [Tensor(grad_output.data.reshape(orig_shape), dtype=grad_output.dtype)]
 
 
@@ -480,8 +2324,10 @@ class Unsqueeze(Function):
         return Tensor(np.expand_dims(a.data, dim), dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         orig_shape = ctx.get_attr("orig_shape")
+        if create_graph:
+            return [Reshape.apply(grad_output, orig_shape)]
         return [Tensor(grad_output.data.reshape(orig_shape), dtype=grad_output.dtype)]
 
 
@@ -497,10 +2343,38 @@ class GetItem(Function):
         return Tensor(a.data[key], dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         key = ctx.get_attr("key")
+        if create_graph:
+            from .autograd_ops import Reshape, MatMul, _as_const
+            dt = grad_output.dtype
+            orig_shape = ctx.get_attr("orig_shape")
+            # Index a flat-position tensor with the original key. Unlike a
+            # boolean mask, this preserves repeated advanced indices and their
+            # output order, so the VJP accumulates every selected contribution.
+            n_in = int(np.prod(orig_shape))
+            selected_flat = np.arange(n_in, dtype=np.int64).reshape(orig_shape)[key]
+            selected_flat = np.asarray(selected_flat).reshape(-1)
+            n_selected = int(selected_flat.size)
+            # Build scatter.T: repeated input positions occupy distinct columns;
+            # matrix multiplication therefore sums their gradient contributions.
+            scatter_t_np = np.zeros((n_in, n_selected), dtype=np.float64)
+            if n_selected:
+                scatter_t_np[selected_flat, np.arange(n_selected)] = 1.0
+            scatter_t = _as_const(scatter_t_np, dt)
+            g_flat = Reshape.apply(grad_output, (n_selected,))
+            result_flat = MatMul.apply(scatter_t, g_flat)  # (n_in,)
+            result = Reshape.apply(result_flat, orig_shape)
+            return [result]
         g = np.zeros(ctx.get_attr("orig_shape"), dtype=_numpy_dtype(grad_output.dtype))
-        g[key] = grad_output.data
+        # np.add.at is required here: ordinary advanced-index assignment drops
+        # all but one contribution when an index appears more than once.
+        # Basic scalar indexing can expose a one-element gradient Tensor even
+        # though the selected NumPy value is scalar. Match the indexed shape
+        # before scatter-add while preserving duplicate advanced-index entries.
+        selected_shape = np.asarray(g[key]).shape
+        grad_values = np.asarray(grad_output.data).reshape(selected_shape)
+        np.add.at(g, key, grad_values)
         return [Tensor(g, dtype=grad_output.dtype)]
 
 
@@ -522,13 +2396,38 @@ class LayerNorm(Function):
         ctx.save_attr(
             mean=mean, var=var, x_norm=x_norm, gamma_val=g, eps=eps, shape=x.shape
         )
+        ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         x_norm = ctx.get_attr("x_norm")
         gamma_val = ctx.get_attr("gamma_val")
         shape = ctx.get_attr("shape")
+        if create_graph:
+            a = ctx.get_saved_tensor("a")
+            g = grad_output
+            dt = g.dtype
+            eps = ctx.get_attr("eps")
+            gamma_t = (
+                gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
+            )
+            mean = _mean_keepdim(a, -1)
+            xc = Sub.apply(a, mean)
+            var = _mean_keepdim(Mul.apply(xc, xc), -1)
+            std = Sqrt.apply(Add.apply(var, _as_const(eps, dt)))
+            x_norm_g = Div.apply(xc, std)
+            dx_norm = Mul.apply(g, gamma_t)
+            mean_dxn = _mean_keepdim(dx_norm, -1)
+            inner = _mean_keepdim(Mul.apply(dx_norm, x_norm_g), -1)
+            dx = Div.apply(
+                Sub.apply(Sub.apply(dx_norm, mean_dxn), Mul.apply(x_norm_g, inner)),
+                std,
+            )
+            axes = tuple(range(g.ndim - 1))
+            dgamma = Sum.apply(Mul.apply(g, x_norm_g), axes)
+            dbeta = Sum.apply(g, axes)
+            return [dx, dgamma, dbeta]
         g = grad_output.data
         n = shape[-1]
 
@@ -556,23 +2455,43 @@ class RMSNorm(Function):
         x_norm = x / rms
         g = gamma.data if isinstance(gamma, Tensor) else gamma
         out = x_norm * g
-        ctx.save_attr(rms=rms, x_norm=x_norm, gamma_val=g)
+        ctx.save_attr(rms=rms, x_norm=x_norm, gamma_val=g, eps=eps)
         ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         rms = ctx.get_attr("rms")
         x_norm = ctx.get_attr("x_norm")
         gamma_val = ctx.get_attr("gamma_val")
+        if create_graph:
+            g = grad_output
+            dt = g.dtype
+            eps = ctx.get_attr("eps")
+            n = a.shape[-1]
+            gamma_t = (
+                gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
+            )
+            rms_g = Sqrt.apply(
+                Add.apply(_mean_keepdim(Mul.apply(a, a), -1), _as_const(eps, dt))
+            )
+            dx_norm = Mul.apply(g, gamma_t)
+            inner = _sum_keepdim(Mul.apply(dx_norm, a), -1)
+            rms3 = Mul.apply(rms_g, Mul.apply(rms_g, rms_g))
+            term1 = Div.apply(dx_norm, rms_g)
+            term2 = Div.apply(Mul.apply(inner, a), Mul.apply(_as_const(n, dt), rms3))
+            dx = Sub.apply(term1, term2)
+            axes = tuple(range(g.ndim - 1))
+            dgamma = Sum.apply(Mul.apply(g, x_norm), axes)
+            return [dx, dgamma]
         g = grad_output.data
         n = a.shape[-1]
 
         dgamma = (g * x_norm).sum(axis=tuple(range(g.ndim - 1)), keepdims=False)
         dx_norm = g * gamma_val
-        drms = -(dx_norm * x_norm / rms).sum(axis=-1, keepdims=True)
-        dx = dx_norm / rms + drms * x_norm / (n * rms)
+        inner = (dx_norm * a.data).sum(axis=-1, keepdims=True)
+        dx = dx_norm / rms - inner * a.data / (n * rms * rms * rms)
         return [Tensor(dx, dtype=a.dtype), Tensor(dgamma, dtype=a.dtype)]
 
 
@@ -586,8 +2505,10 @@ class DropoutFn(Function):
         return Tensor(a.data * mask, dtype=a.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         mask = ctx.get_attr("mask")
+        if create_graph:
+            return [Mul.apply(grad_output, _as_const(mask, grad_output.dtype))]
         return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
 
 
@@ -610,9 +2531,17 @@ class LinearFn(Function):
         return Tensor(out, dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         w = ctx.get_saved_tensor("weight")
+        if create_graph and w.data.ndim == 2:
+            grads = [
+                MatMul.apply(grad_output, Transpose.apply(w, -1, -2)),
+                MatMul.apply(Transpose.apply(grad_output, -1, -2), inp),
+            ]
+            if ctx.get_attr("has_bias"):
+                grads.append(Sum.apply(grad_output, 0))
+            return grads
         g = grad_output.data
         grads = [
             Tensor(g @ w.data, dtype=inp.dtype),
@@ -636,7 +2565,7 @@ class EmbeddingFn(Function):
         return Tensor(weight.data[idx], dtype=weight.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         weight = ctx.get_saved_tensor("weight")
         indices = ctx.get_attr("indices")
         g = grad_output.data
@@ -657,63 +2586,1592 @@ class EmbeddingFn(Function):
 
 class Conv1d(Function):
     @staticmethod
-    def forward(ctx, inp, kernel, stride=1, padding=0):
-        from scipy import signal
-
+    def forward(ctx, inp, kernel, stride=1, padding=0, dilation=1, groups=1):
         arr = inp.data
         k = kernel.data if isinstance(kernel, Tensor) else kernel
-        ctx.save_attr(stride=stride, padding=padding, k_shape=k.shape)
+        batched = arr.ndim == 3
+        if not batched:
+            arr = arr[None]
+        N, C_in, L = arr.shape
+        C_out, C_in_k, K = k.shape
+        cin_g = C_in // groups
+        cout_g = C_out // groups
+        Lp = L + 2 * padding
+        padded = (
+            np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
+        )
+        Lout = (Lp - dilation * (K - 1) - 1) // stride + 1
+        out = np.zeros((N, C_out, Lout), dtype=arr.dtype)
+        for g in range(groups):
+            for l in range(Lout):
+                for kk in range(K):
+                    pos = l * stride + kk * dilation
+                    out[:, g * cout_g : (g + 1) * cout_g, l] += np.einsum(
+                        "nc,oc->no",
+                        padded[:, g * cin_g : (g + 1) * cin_g, pos],
+                        k[g * cout_g : (g + 1) * cout_g, :, kk],
+                    )
         ctx.save_for_backward(
             inp=inp, kernel=kernel if isinstance(kernel, Tensor) else Tensor(kernel)
         )
-        if padding > 0:
-            arr = np.pad(
-                arr, [(0, 0), (padding,), (0,)] if arr.ndim == 3 else [(padding,)]
-            )
-        out = signal.correlate(arr, k, mode="valid")[..., ::stride]
-        return Tensor(out, dtype=inp.dtype)
+        ctx.save_attr(
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            L=L,
+            K=K,
+            C_in=C_in,
+            C_out=C_out,
+            Lout=Lout,
+            Lp=Lp,
+            batched=batched,
+        )
+        return Tensor(out if batched else out[0], dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
-        from scipy import signal
+    def backward(ctx, grad_output, create_graph=False):
+        from numpy.lib.stride_tricks import sliding_window_view
 
         inp = ctx.get_saved_tensor("inp")
         kernel = ctx.get_saved_tensor("kernel")
         stride = ctx.get_attr("stride")
         padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+        L = ctx.get_attr("L")
+        K = ctx.get_attr("K")
+        Lout = ctx.get_attr("Lout")
+        Lp = ctx.get_attr("Lp")
+        C_in = ctx.get_attr("C_in")
+        batched = ctx.get_attr("batched")
         k = kernel.data
         g = grad_output.data
+        garr = g if g.ndim == 3 else g[None]
 
-        if stride > 1:
-            if g.ndim == 3:
-                g_dil = np.zeros(
-                    (g.shape[0], 1 + (g.shape[1] - 1) * stride, g.shape[2])
+        if not create_graph:
+            # grad w.r.t input: scatter-add at l*stride + kk*dilation
+            N = garr.shape[0]
+            padded = np.zeros((N, C_in, Lp), dtype=g.dtype)
+            cin_g = C_in // groups
+            cout_g = k.shape[0] // groups
+            contrib = np.zeros((garr.shape[0], C_in, Lout, K), dtype=g.dtype)
+            for gi in range(groups):
+                contrib[:, gi * cin_g : (gi + 1) * cin_g] = np.einsum(
+                    "nol,ock->nclk",
+                    garr[:, gi * cout_g : (gi + 1) * cout_g],
+                    k[gi * cout_g : (gi + 1) * cout_g],
                 )
-                g_dil[:, ::stride, :] = g
-            else:
-                g_dil = np.zeros((1 + (g.shape[0] - 1) * stride,))
-                g_dil[::stride] = g
-            g = g_dil
+            for l in range(Lout):
+                for kk in range(K):
+                    padded[:, :, l * stride + kk * dilation] += contrib[:, :, l, kk]
+            grad_inp_full = (
+                padded[:, :, padding : L + padding] if padding > 0 else padded
+            )
+            grad_inp = grad_inp_full if batched else grad_inp_full[0]
 
+            # grad w.r.t kernel: manual windowed gather with dilation
+            arr = inp.data
+            arrb = arr if arr.ndim == 3 else arr[None]
+            padded_in = (
+                np.pad(arrb, [(0, 0), (0, 0), (padding, padding)])
+                if padding > 0
+                else arrb
+            )
+            grad_k = np.zeros((k.shape[0], k.shape[1], k.shape[2]), dtype=g.dtype)
+            cin_g = C_in // groups
+            cout_g = k.shape[0] // groups
+            for gi in range(groups):
+                for l in range(Lout):
+                    for kk in range(K):
+                        pos = l * stride + kk * dilation
+                        grad_k[
+                            gi * cout_g : (gi + 1) * cout_g,
+                            :,
+                            kk,
+                        ] += np.einsum(
+                            "no,nc->oc",
+                            garr[:, gi * cout_g : (gi + 1) * cout_g, l],
+                            padded_in[:, gi * cin_g : (gi + 1) * cin_g, pos],
+                        )
+            return [
+                Tensor(grad_inp, dtype=inp.dtype),
+                Tensor(grad_k, dtype=kernel.dtype),
+            ]
+
+        # ---- graph-aware backward (higher-order differentiation) ----
+        groups = ctx.get_attr("groups")
+        if groups != 1:
+            raise NotImplementedError(
+                "Conv1d create_graph backward supports groups=1 only"
+            )
+        dt = grad_output.dtype
+        N = garr.shape[0]
+        # build batched graph tensors
+        g_graph = grad_output if g.ndim == 3 else Unsqueeze.apply(grad_output, 0)
+        if batched:
+            inp_graph = inp
+        else:
+            inp_graph = Unsqueeze.apply(inp, 0)
         if padding > 0:
-            grad_pad = np.pad(
-                g, [(0, 0), (padding,), (0,)] if g.ndim == 3 else [(padding,)]
+            zfront = _as_const(np.zeros((N, C_in, padding), dtype=_numpy_dtype(dt)), dt)
+            zback = _as_const(np.zeros((N, C_in, padding), dtype=_numpy_dtype(dt)), dt)
+            inp_padded = Cat.apply(zfront, inp_graph, zback, 2)
+        else:
+            inp_padded = inp_graph
+
+        # grad w.r.t kernel: windows = inp_padded (N,C_in,Lout,K)
+        wins = []
+        for l in range(Lout):
+            cols = [
+                GetItem.apply(
+                    inp_padded, (slice(None), slice(None), l * stride + kk * dilation)
+                )
+                for kk in range(K)
+            ]
+            wins.append(Stack.apply(*cols, -1))  # (N,C_in,K)
+        windows = Stack.apply(*wins, 2)  # (N,C_in,Lout,K)
+        g_e = Unsqueeze.apply(Unsqueeze.apply(g_graph, 2), -1)  # (N,C_out,1,Lout,1)
+        w_e = Unsqueeze.apply(windows, 1)  # (N,1,C_in,Lout,K)
+        prod = Mul.apply(g_e, w_e)  # (N,C_out,C_in,Lout,K)
+        grad_k = Sum.apply(prod, (0, 3))  # (C_out,C_in,K)
+
+        # grad w.r.t input: scatter-add via constant position masks
+        acc = _as_const(np.zeros((N, C_in, Lp), dtype=_numpy_dtype(dt)), dt)
+        pos = np.arange(Lp)
+        for l in range(Lout):
+            gl = GetItem.apply(g_graph, (slice(None), slice(None), l))  # (N,C_out)
+            for kk in range(K):
+                p = l * stride + kk
+                kk_t = GetItem.apply(
+                    kernel, (slice(None), slice(None), kk)
+                )  # (C_out,C_in)
+                Tlk = MatMul.apply(gl, kk_t)  # (N,C_in)
+                mask_t = _as_const((pos == p).astype(np.float64), dt)  # (Lp,)
+                full_p = Mul.apply(Unsqueeze.apply(Tlk, -1), mask_t)  # (N,C_in,Lp)
+                acc = Add.apply(acc, full_p)
+        grad_inp_full = acc
+        if padding > 0:
+            grad_inp_full = GetItem.apply(
+                grad_inp_full,
+                (slice(None), slice(None), slice(padding, L + padding)),
+            )
+        grad_inp = grad_inp_full if batched else Squeeze.apply(grad_inp_full, 0)
+        return [grad_inp, grad_k]
+
+
+def _as_pair(v):
+    if isinstance(v, (tuple, list)):
+        return int(v[0]), int(v[1])
+    return int(v), int(v)
+
+
+def _conv2d_backward_single(x, w, g, sh, sw, ph, pw, dh, dw, has_bias):
+    """Single-group (groups=1) adjoint for Conv2d. Returns (grad_x, grad_k, grad_b)
+    as float64 ndarrays. x:(N,Cin,H,W) w:(Cout,Cin,kH,kW) g:(N,Cout,Ho,Wo)."""
+    x = np.asarray(x, dtype=np.float64)
+    w = np.asarray(w, dtype=np.float64)
+    g = np.asarray(g, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    C_out, _, kH, kW = w.shape
+    Ho, Wo = g.shape[2], g.shape[3]
+
+    xp = np.pad(x, ((0, 0), (0, 0), (ph, ph), (pw, pw))) if (ph or pw) else x
+
+    win = np.zeros((N, C_in, Ho, Wo, kH, kW), dtype=np.float64)
+    for a in range(kH):
+        for b in range(kW):
+            win[:, :, :, :, a, b] = xp[
+                :, :, a * dh : a * dh + Ho * sh : sh, b * dw : b * dw + Wo * sw : sw
+            ]
+    grad_k = np.einsum("noij,ncijkl->ockl", g, win)
+
+    grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+
+    padded = np.zeros((N, C_in, H + 2 * ph, W + 2 * pw), dtype=np.float64)
+    for i in range(Ho):
+        for j in range(Wo):
+            for a in range(kH):
+                for b in range(kW):
+                    hi = i * sh + a * dh
+                    wi = j * sw + b * dw
+                    padded[:, :, hi, wi] += np.einsum(
+                        "no,oc->nc", g[:, :, i, j], w[:, :, a, b]
+                    )
+    grad_x = padded[:, :, ph : ph + H, pw : pw + W] if (ph or pw) else padded
+    return grad_x, grad_k, grad_b
+
+
+class Conv2d(Function):
+    """Differentiable 2-D convolution (NCHW), groups=1.
+
+    Forward mirrors ``advanced_ops.conv2d``; backward computes the exact
+    adjoint: grad-weights via a windowed contraction of input with grad-output,
+    grad-input via scatter-add, grad-bias via a spatial sum.
+    """
+
+    @staticmethod
+    def forward(ctx, inp, kernel, bias=None, stride=1, padding=0, dilation=1, groups=1):
+        from .advanced_ops import conv2d as _conv2d
+
+        sh, sw = _as_pair(stride)
+        ph, pw = _as_pair(padding)
+        dh, dw = _as_pair(dilation)
+        out = _conv2d(
+            inp,
+            kernel,
+            bias,
+            stride=(sh, sw),
+            padding=(ph, pw),
+            dilation=(dh, dw),
+            groups=groups,
+        )
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=(sh, sw),
+            padding=(ph, pw),
+            dilation=(dh, dw),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        sh, sw = ctx.get_attr("stride")
+        ph, pw = ctx.get_attr("padding")
+        dh, dw = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph and groups == 1:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                Squeeze, Cat, _as_const, Stack,
+            )
+            dt = grad_output.dtype
+            N, C_in, H, W = x.shape
+            C_out, _, kH, kW = w.shape
+            Ho, Wo = g.shape[2], g.shape[3]
+            Hp = H + 2 * ph
+            Wp = W + 2 * pw
+
+            # graph-connected tensors (add batch dim if needed)
+            x_graph = inp if x.ndim == 4 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
+
+            # ---- pad input with zeros using Cat (graph-connected) ----
+            if ph > 0 or pw > 0:
+                z_top = _as_const(np.zeros((N, C_in, ph, W), dtype=np.float64), dt)
+                z_bottom = _as_const(np.zeros((N, C_in, ph, W), dtype=np.float64), dt)
+                xp_h = Cat.apply(z_top, x_graph, z_bottom, 2)
+                z_left = _as_const(np.zeros((N, C_in, Hp, pw), dtype=np.float64), dt)
+                z_right = _as_const(np.zeros((N, C_in, Hp, pw), dtype=np.float64), dt)
+                xp = Cat.apply(z_left, xp_h, z_right, 3)
+            else:
+                xp = x_graph
+
+            # ---- grad_k[c_out,c_in,kh,kw] = sum_n,i,j g[n,c_out,i,j] * xp[n,c_in,i*sh+kh*dh,j*sw+kw*dw] ----
+            grad_k_parts = [[None for _ in range(kW)] for _ in range(kH)]
+            for i in range(Ho):
+                for j in range(Wo):
+                    g_ij = GetItem.apply(g_graph, (slice(None), slice(None), i, j))  # (N,C_out)
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            x_ij = GetItem.apply(
+                                xp,
+                                (slice(None), slice(None), i * sh + kh * dh, j * sw + kw * dw),
+                            )  # (N,C_in)
+                            contrib = MatMul.apply(Transpose.apply(g_ij, -1, -2), x_ij)  # (C_out,C_in)
+                            if grad_k_parts[kh][kw] is None:
+                                grad_k_parts[kh][kw] = contrib
+                            else:
+                                grad_k_parts[kh][kw] = Add.apply(
+                                    grad_k_parts[kh][kw], contrib
+                                )
+            grad_k_rows = []
+            for kh in range(kH):
+                row = Stack.apply(*grad_k_parts[kh], -1)  # (C_out,C_in,kW)
+                grad_k_rows.append(row)
+            grad_k = Stack.apply(*grad_k_rows, -1)  # (C_out,C_in,kH,kW)
+
+            # ---- grad_x[n,c_in,i,j] = sum_{c_out,kh,kw} g[n,c_out,(i-kh*dh)/sh,(j-kw*dw)/sw] * w[c_out,c_in,kh,kw] ----
+            grad_x_acc = None
+            for i in range(Ho):
+                for j in range(Wo):
+                    g_ij = GetItem.apply(g_graph, (slice(None), slice(None), i, j))  # (N,C_out)
+                    for kh in range(kH):
+                        for kw in range(kW):
+                            w_kk = GetItem.apply(
+                                kernel, (slice(None), slice(None), kh, kw)
+                            )  # (C_out,C_in)
+                            # contrib[n,c_in] = sum_cout w[c_out,c_in] * g[n,c_out]
+                            contrib = Transpose.apply(
+                                MatMul.apply(
+                                    Transpose.apply(w_kk, -1, -2),
+                                    Transpose.apply(g_ij, -1, -2),
+                                ),
+                                -1, -2,
+                            )  # (N,C_in)
+                            # scatter to (i*sh+kh*dh, j*sw+kw*dw) via mask
+                            mask_np = np.zeros((Hp, Wp), dtype=np.float64)
+                            mask_np[i * sh + kh * dh, j * sw + kw * dw] = 1.0
+                            mask_t = _as_const(mask_np, dt)
+                            contrib_4d = Unsqueeze.apply(
+                                Unsqueeze.apply(contrib, -1), -1
+                            )  # (N,C_in,1,1)
+                            contrib_full = Mul.apply(contrib_4d, mask_t)  # (N,C_in,Hp,Wp)
+                            if grad_x_acc is None:
+                                grad_x_acc = contrib_full
+                            else:
+                                grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+
+            # crop padding
+            if ph > 0 or pw > 0:
+                grad_x = GetItem.apply(
+                    grad_x_acc,
+                    (slice(None), slice(None), slice(ph, H + ph), slice(pw, W + pw)),
+                )
+            else:
+                grad_x = grad_x_acc
+            if x.ndim == 3:
+                grad_x = Squeeze.apply(grad_x, 0)
+
+            # ---- grad_b[c_out] = sum_n,i,j g[n,c_out,i,j] ----
+            if has_bias:
+                grad_b = Sum.apply(Sum.apply(Sum.apply(g_graph, 0), 1), 1)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_k, grad_b]
+
+        if groups == 1:
+            grad_x, grad_k, grad_b = _conv2d_backward_single(
+                x, w, g, sh, sw, ph, pw, dh, dw, has_bias
             )
         else:
-            grad_pad = g
-        k_rot = k[..., ::-1, :] if k.ndim == 3 else k[::-1]
-        grad_inp = signal.correlate(grad_pad, k_rot, mode="full")
-        slices = tuple(slice(0, s) for s in inp.shape)
-        grad_inp = grad_inp[slices]
+            N, C_in, H, W = x.shape
+            C_out = w.shape[0]
+            cin_g = C_in // groups
+            cout_g = C_out // groups
+            grad_x = np.zeros_like(x)
+            grad_k = np.zeros_like(w)
+            grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+            for gg in range(groups):
+                gxg, gkg, gbg = _conv2d_backward_single(
+                    x[:, gg * cin_g : (gg + 1) * cin_g],
+                    w[gg * cout_g : (gg + 1) * cout_g],
+                    g[:, gg * cout_g : (gg + 1) * cout_g],
+                    sh,
+                    sw,
+                    ph,
+                    pw,
+                    dh,
+                    dw,
+                    has_bias,
+                )
+                grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gxg
+                grad_k[gg * cout_g : (gg + 1) * cout_g] = gkg
+                if has_bias:
+                    grad_b[gg * cout_g : (gg + 1) * cout_g] = gbg
 
-        inp_pad = np.pad(
-            inp.data, [(0, 0), (padding,), (0,)] if inp.ndim == 3 else [(padding,)]
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_k, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype)
+            if (has_bias and grad_b is not None)
+            else None,
+        ]
+
+
+def _as_triple(v):
+    if isinstance(v, (tuple, list)):
+        return int(v[0]), int(v[1]), int(v[2])
+    return int(v), int(v), int(v)
+
+
+def _conv3d_backward_single(x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bias):
+    """Single-group adjoint for Conv3d. Returns (grad_x, grad_k, grad_b) ndarrays."""
+    x = np.asarray(x, dtype=np.float64)
+    w = np.asarray(w, dtype=np.float64)
+    g = np.asarray(g, dtype=np.float64)
+    N, C_in, D, H, W = x.shape
+    C_out, _, kD, kH, kW = w.shape
+    Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
+
+    xp = (
+        np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw)))
+        if (pd or ph or pw)
+        else x
+    )
+
+    win = np.zeros((N, C_in, Do, Ho, Wo, kD, kH, kW), dtype=np.float64)
+    for a in range(kD):
+        for b in range(kH):
+            for c in range(kW):
+                win[:, :, :, :, :, a, b, c] = xp[
+                    :,
+                    :,
+                    a * dd : a * dd + Do * sd : sd,
+                    b * dh : b * dh + Ho * sh : sh,
+                    c * dw : c * dw + Wo * sw : sw,
+                ]
+    grad_k = np.einsum("nopqr,ncpqrstu->ocstu", g, win)
+
+    grad_b = g.sum(axis=(0, 2, 3, 4)) if has_bias else None
+
+    padded = np.zeros((N, C_in, D + 2 * pd, H + 2 * ph, W + 2 * pw), dtype=np.float64)
+    for i in range(Do):
+        for j in range(Ho):
+            for k in range(Wo):
+                for a in range(kD):
+                    for b in range(kH):
+                        for c in range(kW):
+                            di = i * sd + a * dd
+                            hi = j * sh + b * dh
+                            wi = k * sw + c * dw
+                            padded[:, :, di, hi, wi] += np.einsum(
+                                "no,oc->nc", g[:, :, i, j, k], w[:, :, a, b, c]
+                            )
+    grad_x = (
+        padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W]
+        if (pd or ph or pw)
+        else padded
+    )
+    return grad_x, grad_k, grad_b
+
+
+class Conv3d(Function):
+    """Differentiable 3-D convolution (NCDHW), groups=1.
+
+    Mirrors :class:`Conv2d` for three spatial dimensions (stride/padding/dilation).
+    """
+
+    @staticmethod
+    def forward(ctx, inp, kernel, bias=None, stride=1, padding=0, dilation=1, groups=1):
+        from .advanced_ops import conv3d as _conv3d
+
+        sd, sh, sw = _as_triple(stride)
+        pd, ph, pw = _as_triple(padding)
+        dd, dh, dw = _as_triple(dilation)
+        out = _conv3d(
+            inp,
+            kernel,
+            bias,
+            stride=(sd, sh, sw),
+            padding=(pd, ph, pw),
+            dilation=(dd, dh, dw),
+            groups=groups,
         )
-        g_flip = g[..., ::-1, :] if g.ndim == 3 else g[::-1]
-        grad_k = signal.correlate(inp_pad, g_flip, mode="valid")
-        grad_k = grad_k.reshape(k.shape)
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=(sd, sh, sw),
+            padding=(pd, ph, pw),
+            dilation=(dd, dh, dw),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
 
-        return [Tensor(grad_inp, dtype=inp.dtype), Tensor(grad_k, dtype=kernel.dtype)]
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        sd, sh, sw = ctx.get_attr("stride")
+        pd, ph, pw = ctx.get_attr("padding")
+        dd, dh, dw = ctx.get_attr("dilation")
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph and groups == 1:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                Squeeze, Cat, _as_const, Stack,
+            )
+            dt = grad_output.dtype
+            N, C_in, D, H, W = x.shape
+            C_out, _, kD, kH, kW = w.shape
+            Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
+            Dp = D + 2 * pd
+            Hp = H + 2 * ph
+            Wp = W + 2 * pw
+
+            # graph-connected tensors (add batch dim if needed)
+            x_graph = inp if x.ndim == 5 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 5 else Unsqueeze.apply(grad_output, 0)
+
+            # ---- pad input with zeros using Cat (graph-connected) ----
+            if pd > 0 or ph > 0 or pw > 0:
+                z_front = _as_const(np.zeros((N, C_in, pd, H, W), dtype=np.float64), dt)
+                z_back = _as_const(np.zeros((N, C_in, pd, H, W), dtype=np.float64), dt)
+                xd_pad = Cat.apply(z_front, x_graph, z_back, 2)
+                z_top = _as_const(np.zeros((N, C_in, Dp, ph, W), dtype=np.float64), dt)
+                z_bottom = _as_const(np.zeros((N, C_in, Dp, ph, W), dtype=np.float64), dt)
+                xdh_pad = Cat.apply(z_top, xd_pad, z_bottom, 3)
+                z_left = _as_const(np.zeros((N, C_in, Dp, Hp, pw), dtype=np.float64), dt)
+                z_right = _as_const(np.zeros((N, C_in, Dp, Hp, pw), dtype=np.float64), dt)
+                xp = Cat.apply(z_left, xdh_pad, z_right, 4)
+            else:
+                xp = x_graph
+
+            # ---- grad_k[c_out,c_in,kD,kH,kW] = sum_n,d,h,w g[n,c_out,d,h,w] * xp[n,c_in,d*sd+kD*dd,h*sh+kH*dh,w*sw+kW*dw] ----
+            grad_k_parts = [[[[None for _ in range(kW)] for _ in range(kH)] for _ in range(kD)]]
+            for d in range(Do):
+                for h in range(Ho):
+                    for w_idx in range(Wo):
+                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        for kd in range(kD):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    x_dhw = GetItem.apply(
+                                        xp,
+                                        (slice(None), slice(None), d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw),
+                                    )  # (N,C_in)
+                                    contrib = MatMul.apply(Transpose.apply(g_dhw, -1, -2), x_dhw)  # (C_out,C_in)
+                                    if grad_k_parts[0][kd][kh][kw] is None:
+                                        grad_k_parts[0][kd][kh][kw] = contrib
+                                    else:
+                                        grad_k_parts[0][kd][kh][kw] = Add.apply(
+                                            grad_k_parts[0][kd][kh][kw], contrib
+                                        )
+
+            # Build grad_k by stacking
+            kw_slices = []
+            for kd in range(kD):
+                kh_slices = []
+                for kh in range(kH):
+                    kw_row = []
+                    for kw in range(kW):
+                        kw_row.append(grad_k_parts[0][kd][kh][kw])
+                    kh_slices.append(Stack.apply(*kw_row, -1))
+                kw_slices.append(Stack.apply(*kh_slices, -1))
+            grad_k = Stack.apply(*kw_slices, -1)  # (C_out,C_in,kD,kH,kW)
+
+            # ---- grad_x[n,c_in,d,h,w] = sum_{c_out,kD,kH,kW} g[n,c_out,(d-kD*dd)/sd,...] * w[c_out,c_in,kD,kH,kW] ----
+            grad_x_acc = None
+            for d in range(Do):
+                for h in range(Ho):
+                    for w_idx in range(Wo):
+                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        for kd in range(kD):
+                            for kh in range(kH):
+                                for kw in range(kW):
+                                    w_kkk = GetItem.apply(
+                                        kernel, (slice(None), slice(None), kd, kh, kw)
+                                    )  # (C_out,C_in)
+                                    # contrib[n,c_in] = sum_cout w[c_out,c_in] * g[n,c_out]
+                                    contrib = Transpose.apply(
+                                        MatMul.apply(
+                                            Transpose.apply(w_kkk, -1, -2),
+                                            Transpose.apply(g_dhw, -1, -2),
+                                        ),
+                                        -1, -2,
+                                    )  # (N,C_in)
+                                    # scatter to (d*sd+kd*dd, h*sh+kh*dh, w*sw+kw*dw) via mask
+                                    mask_np = np.zeros((Dp, Hp, Wp), dtype=np.float64)
+                                    mask_np[d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw] = 1.0
+                                    mask_t = _as_const(mask_np, dt)
+                                    contrib_5d = Unsqueeze.apply(
+                                        Unsqueeze.apply(Unsqueeze.apply(contrib, -1), -1), -1
+                                    )  # (N,C_in,1,1,1)
+                                    contrib_full = Mul.apply(contrib_5d, mask_t)  # (N,C_in,Dp,Hp,Wp)
+                                    if grad_x_acc is None:
+                                        grad_x_acc = contrib_full
+                                    else:
+                                        grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+
+            # crop padding
+            if pd > 0 or ph > 0 or pw > 0:
+                grad_x = GetItem.apply(
+                    grad_x_acc,
+                    (slice(None), slice(None), slice(pd, D + pd), slice(ph, H + ph), slice(pw, W + pw)),
+                )
+            else:
+                grad_x = grad_x_acc
+            if x.ndim == 4:
+                grad_x = Squeeze.apply(grad_x, 0)
+
+            # ---- grad_b[c_out] = sum_n,d,h,w g[n,c_out,d,h,w] ----
+            if has_bias:
+                grad_b = Sum.apply(Sum.apply(Sum.apply(Sum.apply(g_graph, 0), 1), 1), 1)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_k, grad_b]
+
+        if groups == 1:
+            grad_x, grad_k, grad_b = _conv3d_backward_single(
+                x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bias
+            )
+        else:
+            N, C_in, D, H, W = x.shape
+            C_out = w.shape[0]
+            cin_g = C_in // groups
+            cout_g = C_out // groups
+            grad_x = np.zeros_like(x)
+            grad_k = np.zeros_like(w)
+            grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+            for gg in range(groups):
+                gxg, gkg, gbg = _conv3d_backward_single(
+                    x[:, gg * cin_g : (gg + 1) * cin_g],
+                    w[gg * cout_g : (gg + 1) * cout_g],
+                    g[:, gg * cout_g : (gg + 1) * cout_g],
+                    sd,
+                    sh,
+                    sw,
+                    pd,
+                    ph,
+                    pw,
+                    dd,
+                    dh,
+                    dw,
+                    has_bias,
+                )
+                grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gxg
+                grad_k[gg * cout_g : (gg + 1) * cout_g] = gkg
+                if has_bias:
+                    grad_b[gg * cout_g : (gg + 1) * cout_g] = gbg
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_k, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype)
+            if (has_bias and grad_b is not None)
+            else None,
+        ]
+
+
+def _convtranspose2d_backward_single(inp, w, g, sh, sw, ph, pw, has_bias, dh=1, dw=1):
+    x = np.asarray(inp.data if hasattr(inp, "data") else inp, dtype=np.float64)
+    w = np.asarray(w.data if hasattr(w, "data") else w, dtype=np.float64)
+    g = np.asarray(g.data if hasattr(g, "data") else g, dtype=np.float64)
+    N, C_in, H, W = x.shape
+    _, C_out, kH, kW = w.shape
+    Ho, Wo = g.shape[2], g.shape[3]
+    grad_x = np.zeros_like(x)
+    grad_w = np.zeros_like(w)
+    for i in range(H):
+        for j in range(W):
+            xij = x[:, :, i, j]
+            for kh in range(kH):
+                ah = i * sh - ph + kh * dh
+                if ah < 0 or ah >= Ho:
+                    continue
+                for kw in range(kW):
+                    aw = j * sw - pw + kw * dw
+                    if aw < 0 or aw >= Wo:
+                        continue
+                    gv = g[:, :, ah, aw]
+                    grad_x[:, :, i, j] += gv @ w[:, :, kh, kw].T
+                    grad_w[:, :, kh, kw] += xij.T @ gv
+    grad_b = g.sum(axis=(0, 2, 3)) if has_bias else None
+    return grad_x, grad_w, grad_b
+
+
+class ConvTranspose2d(Function):
+    """Differentiable 2-D transposed convolution (NCHW), groups=1.
+
+    Forward mirrors ``advanced_ops.conv_transpose2d``; backward is the exact
+    adjoint of the scatter formulation (stride/padding/output_padding).
+    """
+
+    @staticmethod
+    def forward(
+        ctx,
+        inp,
+        kernel,
+        bias=None,
+        stride=1,
+        padding=0,
+        output_padding=0,
+        groups=1,
+        dilation=1,
+    ):
+        from .advanced_ops import conv_transpose2d as _ct
+
+        sh, sw = _as_pair(stride)
+        ph, pw = _as_pair(padding)
+        oph, opw = _as_pair(output_padding)
+        dh, dw = _as_pair(dilation)
+        out = _ct(
+            inp,
+            kernel,
+            bias,
+            stride=(sh, sw),
+            padding=(ph, pw),
+            output_padding=(oph, opw),
+            groups=groups,
+            dilation=(dh, dw),
+        )
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=(sh, sw),
+            padding=(ph, pw),
+            dilation=(dh, dw),
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        sh, sw = ctx.get_attr("stride")
+        ph, pw = ctx.get_attr("padding")
+        dh, dw = ctx.get_attr("dilation", (1, 1))
+        if not isinstance(dh, (tuple, list)):
+            dh, dw = dh, dw
+        dh, dw = int(dh), int(dw)
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        N, C_in, H, W = x.shape
+        _, C_out_g, kH, kW = w.shape
+        C_out = C_out_g * groups
+        cin_g = C_in // groups
+        cout_g = C_out // groups
+        Ho, Wo = g.shape[2], g.shape[3]
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                Squeeze, Cat, _as_const, Stack,
+            )
+            dt = grad_output.dtype
+            x_graph = inp if x.ndim == 4 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
+
+            # ---- grad_x[n,c_in,i,j] = sum_{c_out_g,kh,kw} g[n,c_out_g,ah,aw] * w[c_in,c_out_g,kh,kw] ----
+            grad_x_acc = None
+            for i in range(H):
+                for j in range(W):
+                    for kh in range(kH):
+                        ah = i * sh - ph + kh * dh
+                        if ah < 0 or ah >= Ho:
+                            continue
+                        for kw in range(kW):
+                            aw = j * sw - pw + kw * dw
+                            if aw < 0 or aw >= Wo:
+                                continue
+                            g_slice = GetItem.apply(g_graph, (slice(None), slice(None), ah, aw))  # (N,C_out_g)
+                            w_slice = GetItem.apply(kernel, (slice(None), slice(None), kh, kw))  # (C_in,C_out_g)
+                            contrib = MatMul.apply(g_slice, Transpose.apply(w_slice, -1, -2))  # (N,C_in)
+                            mask_np = np.zeros((H, W), dtype=np.float64)
+                            mask_np[i, j] = 1.0
+                            mask_t = _as_const(mask_np, dt)
+                            contrib_full = Mul.apply(
+                                Unsqueeze.apply(Unsqueeze.apply(contrib, -1), -1), mask_t
+                            )  # (N,C_in,H,W)
+                            if grad_x_acc is None:
+                                grad_x_acc = contrib_full
+                            else:
+                                grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+            grad_x = grad_x_acc
+
+            # ---- grad_w[c_in,c_out_g,kh,kw] = sum_{n,i,j} x[n,c_in,i,j] * g[n,c_out_g,ah,aw] ----
+            grad_w_acc = None
+            for i in range(H):
+                for j in range(W):
+                    for kh in range(kH):
+                        ah = i * sh - ph + kh * dh
+                        if ah < 0 or ah >= Ho:
+                            continue
+                        for kw in range(kW):
+                            aw = j * sw - pw + kw * dw
+                            if aw < 0 or aw >= Wo:
+                                continue
+                            x_slice = GetItem.apply(x_graph, (slice(None), slice(None), i, j))  # (N,C_in)
+                            g_slice = GetItem.apply(g_graph, (slice(None), slice(None), ah, aw))  # (N,C_out_g)
+                            contrib = MatMul.apply(Transpose.apply(x_slice, -1, -2), g_slice)  # (C_in,C_out_g)
+                            mask_np = np.zeros((kH, kW), dtype=np.float64)
+                            mask_np[kh, kw] = 1.0
+                            mask_t = _as_const(mask_np, dt)
+                            contrib_full = Mul.apply(
+                                Unsqueeze.apply(Unsqueeze.apply(contrib, -1), -1), mask_t
+                            )  # (C_in,C_out_g,kH,kW)
+                            if grad_w_acc is None:
+                                grad_w_acc = contrib_full
+                            else:
+                                grad_w_acc = Add.apply(grad_w_acc, contrib_full)
+            grad_w = grad_w_acc
+
+            # ---- grad_b[c_out] = sum_{n,i,j} g[n,c_out,i,j] ----
+            if has_bias:
+                grad_b = Sum.apply(Sum.apply(Sum.apply(g_graph, 0), 1), 1)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_w, grad_b]
+
+        grad_x = np.zeros_like(x)
+        grad_w = np.zeros_like(w)
+        grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+        for gg in range(groups):
+            gx, gw, gb = _convtranspose2d_backward_single(
+                x[:, gg * cin_g : (gg + 1) * cin_g],
+                w[gg * cin_g : (gg + 1) * cin_g],
+                g[:, gg * cout_g : (gg + 1) * cout_g],
+                sh,
+                sw,
+                ph,
+                pw,
+                has_bias,
+                dh,
+                dw,
+            )
+            grad_x[:, gg * cin_g : (gg + 1) * cin_g] = gx
+            grad_w[gg * cin_g : (gg + 1) * cin_g] = gw
+            if has_bias:
+                grad_b[gg * cout_g : (gg + 1) * cout_g] = gb
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_w, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
+def _as_ntuple(value, n):
+    if isinstance(value, (tuple, list)):
+        return tuple(int(v) for v in value)
+    return (int(value),) * n
+
+
+class ConvTransposeNd(Function):
+    """Differentiable generic N-D transposed convolution (groups=1).
+
+    Forward delegates to ``advanced_ops._conv_transpose_nd_impl``; the backward
+    is the exact adjoint of the scatter formulation (stride/padding).
+    """
+
+    @staticmethod
+    def forward(
+        ctx,
+        inp,
+        kernel,
+        bias=None,
+        stride=1,
+        padding=0,
+        output_padding=0,
+        groups=1,
+        dilation=1,
+    ):
+        from .advanced_ops import _conv_transpose_nd_impl
+
+        ndim = inp.data.ndim - 2
+        dilation_t = _as_ntuple(dilation, ndim)
+        out = _conv_transpose_nd_impl(
+            inp, kernel, bias, stride, padding, output_padding, groups, dilation_t
+        )
+        ctx.save_for_backward(inp=inp, kernel=kernel)
+        ctx.save_attr(
+            stride=_as_ntuple(stride, ndim),
+            padding=_as_ntuple(padding, ndim),
+            dilation=dilation_t,
+            groups=groups,
+            has_bias=bias is not None,
+        )
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        kernel = ctx.get_saved_tensor("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation", None)
+        if dilation is None:
+            dilation = (1,) * len(stride)
+        groups = ctx.get_attr("groups")
+        has_bias = ctx.get_attr("has_bias")
+        dilation = ctx.get_attr("dilation", None)
+        if dilation is None:
+            dilation = (1,) * len(stride)
+
+        x = np.asarray(inp.data, dtype=np.float64)
+        w = np.asarray(kernel.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        ndim = x.ndim - 2
+        spatial_in = x.shape[2:]
+        kshape = w.shape[2:]
+        S_out = g.shape[2:]
+
+        C_in = x.shape[1]
+        C_out = g.shape[1]
+        cin_g = C_in // groups
+        cout_g = C_out // groups
+
+        if create_graph and groups == 1:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                _as_const,
+            )
+            dt = grad_output.dtype
+            xa = (slice(None), slice(None))
+            x_graph = inp
+            g_graph = grad_output
+
+            # ---- grad_x[sidx] = sum_{c_out,kidx} g[c_out,oidx] * w[c_in,c_out,kidx] ----
+            grad_x_acc = None
+            for sidx in np.ndindex(*spatial_in):
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
+                    w_slice = GetItem.apply(kernel, (slice(None), slice(None)) + kidx)  # (C_in,C_out)
+                    contrib = MatMul.apply(g_slice, w_slice)  # (N,C_in)
+                    mask_np = np.zeros(spatial_in, dtype=np.float64)
+                    mask_np[sidx] = 1.0
+                    mask_t = _as_const(mask_np, dt)
+                    contrib_nd = contrib
+                    for _ in range(ndim):
+                        contrib_nd = Unsqueeze.apply(contrib_nd, -1)
+                    contrib_full = Mul.apply(contrib_nd, mask_t)  # (N,C_in,*spatial_in)
+                    if grad_x_acc is None:
+                        grad_x_acc = contrib_full
+                    else:
+                        grad_x_acc = Add.apply(grad_x_acc, contrib_full)
+            grad_x = grad_x_acc
+
+            # ---- grad_w[kidx] = sum_{n,c_in,sidx} x[c_in,sidx] * g[c_out,oidx] ----
+            grad_w_acc = None
+            for sidx in np.ndindex(*spatial_in):
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
+                        continue
+                    x_slice = GetItem.apply(x_graph, xa + (slice(None),) + sidx)  # (N,C_in)
+                    g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
+                    contrib = MatMul.apply(Transpose.apply(x_slice, -1, -2), g_slice)  # (C_in,C_out)
+                    mask_np = np.zeros(kshape, dtype=np.float64)
+                    mask_np[kidx] = 1.0
+                    mask_t = _as_const(mask_np, dt)
+                    contrib_nd = contrib
+                    for _ in range(ndim):
+                        contrib_nd = Unsqueeze.apply(contrib_nd, -1)
+                    contrib_full = Mul.apply(contrib_nd, mask_t)  # (C_in,C_out,*kshape)
+                    if grad_w_acc is None:
+                        grad_w_acc = contrib_full
+                    else:
+                        grad_w_acc = Add.apply(grad_w_acc, contrib_full)
+            grad_w = grad_w_acc
+
+            # ---- grad_b[c_out] = sum over batch + spatial dims ----
+            if has_bias:
+                grad_b = Sum.apply(g_graph, 0)  # (C_out,*spatial_out)
+                for _ in range(ndim):
+                    grad_b = Sum.apply(grad_b, 1)  # sum each spatial dim -> (C_out,)
+            else:
+                grad_b = None
+
+            return [grad_x, grad_w, grad_b]
+
+        grad_x = np.zeros_like(x)
+        grad_w = np.zeros_like(w)
+        grad_b = np.zeros(C_out, dtype=np.float64) if has_bias else None
+
+        for gg in range(groups):
+            xg = x[:, gg * cin_g : (gg + 1) * cin_g]
+            wg = w[gg * cin_g : (gg + 1) * cin_g]
+            gg_out = g[:, gg * cout_g : (gg + 1) * cout_g]
+            S_out_g = gg_out.shape[2:]
+            grad_xg = np.zeros_like(xg)
+            grad_wg = np.zeros_like(wg)
+            xa = (slice(None), slice(None))
+            for sidx in np.ndindex(*spatial_in):
+                x_slice = xg[xa + sidx]
+                for kidx in np.ndindex(*kshape):
+                    oidx = tuple(
+                        sidx[d] * stride[d] - padding[d] + kidx[d] * dilation[d]
+                        for d in range(ndim)
+                    )
+                    if any(oidx[d] < 0 or oidx[d] >= S_out_g[d] for d in range(ndim)):
+                        continue
+                    gv = gg_out[xa + oidx]
+                    grad_xg[xa + sidx] += gv @ wg[xa + kidx].T
+                    grad_wg[xa + kidx] += x_slice.T @ gv
+            grad_x[:, gg * cin_g : (gg + 1) * cin_g] = grad_xg
+            grad_w[gg * cin_g : (gg + 1) * cin_g] = grad_wg
+            if has_bias:
+                grad_b[gg * cout_g : (gg + 1) * cout_g] = gg_out.sum(
+                    axis=(0,) + tuple(range(2, gg_out.ndim))
+                )
+
+        grad_b = grad_b if has_bias else None
+
+        return [
+            Tensor(grad_x, dtype=inp.dtype),
+            Tensor(grad_w, dtype=kernel.dtype),
+            Tensor(grad_b, dtype=grad_output.dtype) if has_bias else None,
+        ]
+
+
+class AdaptiveMaxPoolFn(Function):
+    """Adaptive max pooling over trailing spatial dims (differentiable).
+
+    Bin scheme matches ``AdaptiveAvgPoolFn``: floor bins (``use_ceil=False``)
+    for the 2-D reference, ceil bins (``use_ceil=True``) for 1d/3d. Gradient
+    is routed to the first arg-max element of each bin.
+    """
+
+    @staticmethod
+    def forward(ctx, a, output_size, use_ceil=False):
+        x = np.asarray(a.data, dtype=np.float64)
+        output_size = tuple(int(o) for o in output_size)
+        nd = len(output_size)
+        in_sp = x.shape[-nd:]
+        ranges = []
+        for H, O in zip(in_sp, output_size):
+            if use_ceil:
+                bins = [(i * H // O, -((-(i + 1) * H) // O)) for i in range(O)]
+            else:
+                bins = [(i * H // O, (i + 1) * H // O) for i in range(O)]
+            ranges.append(bins)
+        lead = x.shape[:-nd]
+        lead_sl = (slice(None),) * len(lead)
+        out = np.zeros(lead + output_size, dtype=np.float64)
+        for idx in itertools.product(*[range(o) for o in output_size]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            win = x[lead_sl + sl]
+            if win.size and all(s.stop > s.start for s in sl):
+                out[lead_sl + idx] = win.max(axis=tuple(range(len(lead), x.ndim)))
+        ctx.save_for_backward(a=a)
+        ctx.save_attr(ranges=ranges, nd=nd, use_ceil=use_ceil)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a = ctx.get_saved_tensor("a")
+        ranges = ctx.get_attr("ranges")
+        nd = ctx.get_attr("nd")
+        x = np.asarray(a.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        osz = tuple(len(ranges[k]) for k in range(nd))
+        nlead = x.ndim - nd
+        lead_shape = x.shape[:nlead]
+        lead_idx = np.indices(lead_shape) if nlead else None
+        gx = np.zeros(x.shape, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, _as_const,
+            )
+            dt = grad_output.dtype
+            lead_sl = (slice(None),) * nlead
+            spatial_shape = x.shape[nlead:]
+
+            grad_acc = None
+            for idx in itertools.product(*[range(o) for o in osz]):
+                sl = tuple(
+                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+                )
+                if any(s.stop <= s.start for s in sl):
+                    continue
+                binshape = tuple(s.stop - s.start for s in sl)
+                win = GetItem.apply(a, lead_sl + sl)  # lead_shape + binshape
+                max_val = win
+                for d in range(nlead + nd - 1, nlead - 1, -1):
+                    max_val = MaxDim.apply(max_val, d, True)
+                diff = Sub.apply(win, max_val)
+                mask = Add.apply(_as_const(1.0, dt), Sign.apply(diff))
+                gv = GetItem.apply(grad_output, lead_sl + idx)  # lead_shape
+                gv_reshaped = gv
+                for _ in range(nd):
+                    gv_reshaped = Unsqueeze.apply(gv_reshaped, -1)
+                contrib = Mul.apply(
+                    Mul.apply(mask, gv_reshaped), _as_const(1.0, dt)
+                )  # lead_shape + binshape
+                mask_np = np.zeros((1,) * nlead + spatial_shape, dtype=np.float64)
+                mask_np[lead_sl + sl] = 1.0
+                mask_t = _as_const(mask_np, dt)
+                contrib_full = Mul.apply(contrib, mask_t)  # x.shape
+                if grad_acc is None:
+                    grad_acc = contrib_full
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib_full)
+
+            return [Tensor(grad_acc, dtype=grad_output.dtype)]
+
+        for idx in itertools.product(*[range(o) for o in osz]):
+            sl = tuple(
+                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
+            )
+            if any(s.stop <= s.start for s in sl):
+                continue
+            win = x[(slice(None),) * nlead + sl]
+            binshape = win.shape[nlead:]
+            flat = win.reshape(lead_shape + (-1,))
+            arg = flat.argmax(axis=-1)
+            unrav = np.unravel_index(arg, binshape)
+            gv = g[(slice(None),) * nlead + idx]
+            index = tuple(lead_idx[k] for k in range(nlead)) + tuple(
+                sl[k].start + unrav[k] for k in range(nd)
+            )
+            np.add.at(gx, index, gv)
+        return [Tensor(gx, dtype=grad_output.dtype)]
+
+
+class MaxUnpoolFn(Function):
+    """Differentiable max-unpool: scatter input into ``out_sp`` at flat ``indices``."""
+
+    @staticmethod
+    def forward(ctx, inp, indices, out_sp):
+        x = np.asarray(inp.data, dtype=np.float64)
+        N, C = x.shape[:2]
+        in_sp = x.shape[2:]
+        out_sp = tuple(int(s) for s in out_sp)
+        n_out = int(np.prod(out_sp)) if out_sp else 1
+        idxf = np.asarray(indices.data, dtype=np.int64).reshape(N, C, -1)
+        flat = np.zeros((N, C, n_out), dtype=np.float64)
+        np.put_along_axis(flat, idxf, x.reshape(N, C, -1), axis=2)
+        ctx.save_attr(idxf=idxf, in_shape=x.shape, n_out=n_out)
+        return Tensor(flat.reshape((N, C) + out_sp), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idxf = ctx.get_attr("idxf")
+        in_shape = ctx.get_attr("in_shape")
+        n_out = ctx.get_attr("n_out")
+        g = np.asarray(grad_output.data, dtype=np.float64).reshape(
+            in_shape[0], in_shape[1], n_out
+        )
+
+        if create_graph:
+            from .autograd_ops import (
+                Reshape, Unsqueeze, Squeeze, MatMul, _as_const,
+            )
+            dt = grad_output.dtype
+            N, C = in_shape[0], in_shape[1]
+            n_in = int(np.prod(in_shape[2:]))
+            sel = np.zeros((N * C, n_out, n_in), dtype=np.float64)
+            idxf_flat = idxf.reshape(N * C, n_in)
+            for k in range(N * C):
+                for i in range(n_in):
+                    sel[k, idxf_flat[k, i], i] = 1.0
+            sel_t = _as_const(sel, dt)
+            g_reshaped = Reshape.apply(grad_output, (N, C, n_out))
+            g_2d = Reshape.apply(g_reshaped, (N * C, n_out))
+            g_3d = Unsqueeze.apply(g_2d, 1)
+            gx_2d = MatMul.apply(g_3d, sel_t)
+            gx_2d = Squeeze.apply(gx_2d, 1)
+            gx = Reshape.apply(gx_2d, in_shape)
+            return [Tensor(gx, dtype=grad_output.dtype), None]
+
+        gx = np.take_along_axis(g, idxf, axis=2).reshape(in_shape)
+        return [Tensor(gx, dtype=grad_output.dtype), None]
+
+
+class EmbeddingBagFn(Function):
+    """Differentiable EmbeddingBag (sum/mean/max) w.r.t. the embedding ``weight``.
+
+    ``indices``/``offsets``/``per_sample_weights`` are passed as plain numpy
+    arrays (or ``None``); only ``weight`` participates in the autograd graph.
+    """
+
+    @staticmethod
+    def forward(ctx, weight, idx, off, mode, psw):
+        w = np.asarray(weight.data, dtype=np.float64)
+        idx = np.asarray(idx, dtype=np.int64).reshape(-1)
+        emb = w[idx]
+        if psw is not None:
+            psw = np.asarray(psw, dtype=np.float64).reshape(-1)
+            emb = emb * psw[:, None]
+        if off is None:
+            groups = [np.arange(idx.size, dtype=np.int64)]
+        else:
+            off = np.clip(np.asarray(off, dtype=np.int64), 0, idx.size)
+            groups = [
+                np.arange(off[i], off[i + 1], dtype=np.int64)
+                for i in range(off.size - 1)
+            ]
+        D = w.shape[1]
+        out = np.zeros((len(groups), D), dtype=np.float64)
+        argmax = []
+        for g, rows in enumerate(groups):
+            if rows.size == 0:
+                argmax.append(np.full(D, -1, dtype=np.int64))
+                continue
+            seg = emb[rows]
+            if mode == "sum":
+                out[g] = seg.sum(axis=0)
+            elif mode == "mean":
+                out[g] = seg.mean(axis=0)
+            else:
+                am = seg.argmax(axis=0)
+                out[g] = seg[am, np.arange(D)]
+                argmax.append(am)
+        ctx.save_attr(
+            idx=idx,
+            mode=mode,
+            psw=psw,
+            argmax=argmax,
+            groups=groups,
+            weight_shape=w.shape,
+        )
+        return Tensor(out, dtype=weight.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        idx = ctx.get_attr("idx")
+        mode = ctx.get_attr("mode")
+        psw = ctx.get_attr("psw")
+        argmax = ctx.get_attr("argmax")
+        groups = ctx.get_attr("groups")
+        n_emb, D = ctx.get_attr("weight_shape")
+        g = np.asarray(grad_output.data, dtype=np.float64).reshape(len(groups), D)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Div, Cat, Unsqueeze, Transpose, MatMul,
+                _as_const,
+            )
+            dt = grad_output.dtype
+
+            # Build scatter matrix S: (n_emb, total_rows), S[src_idx, row_pos] = 1
+            total_rows = 0
+            for rows in groups:
+                total_rows += int(rows.size)
+            scatter = np.zeros((n_emb, total_rows), dtype=np.float64)
+            row_pos = 0
+            contrib_parts = []
+            for gi, rows in enumerate(groups):
+                rows_size = int(rows.size)
+                if rows_size == 0:
+                    continue
+                g_val = GetItem.apply(grad_output, (gi,))  # (D,)
+                if mode == "sum":
+                    factor = _as_const(1.0, dt)
+                elif mode == "mean":
+                    factor = _as_const(1.0 / rows_size, dt)
+                else:  # max
+                    factor = None
+                am = argmax[gi] if argmax else None
+                for j in range(rows_size):
+                    src_idx = int(idx[int(rows[j])])
+                    scatter[src_idx, row_pos] = 1.0
+                    if factor is not None:
+                        contrib = Mul.apply(g_val, factor)  # (D,)
+                        if psw is not None:
+                            contrib = Mul.apply(
+                                contrib, _as_const(float(psw[int(rows[j])]), dt)
+                            )
+                    else:
+                        # max mode: only dimensions where am[d] == j contribute
+                        mask_row = np.zeros(D, dtype=np.float64)
+                        if am is not None:
+                            for d in range(D):
+                                if int(am[d]) == j:
+                                    mask_row[d] = 1.0
+                        contrib = Mul.apply(
+                            g_val, _as_const(mask_row, dt)
+                        )
+                        if psw is not None:
+                            contrib = Mul.apply(
+                                contrib, _as_const(float(psw[int(rows[j])]), dt)
+                            )
+                    contrib_parts.append(Unsqueeze.apply(contrib, 0))  # (1, D)
+                    row_pos += 1
+
+            if row_pos == 0:
+                return [
+                    Tensor(np.zeros((n_emb, D), dtype=np.float64), dtype=grad_output.dtype),
+                    None,
+                ]
+
+            contrib_all = Cat.apply(*contrib_parts, 0)  # (total_rows, D)
+            scatter_t = _as_const(scatter, dt)
+            gw = MatMul.apply(scatter_t, contrib_all)  # (n_emb, D)
+            return [Tensor(gw, dtype=grad_output.dtype)]
+
+        gw = np.zeros((n_emb, D), dtype=np.float64)
+        for gi, rows in enumerate(groups):
+            if rows.size == 0:
+                continue
+            if mode == "sum":
+                contrib = np.broadcast_to(g[gi][None, :], (rows.size, D)).copy()
+            elif mode == "mean":
+                contrib = np.broadcast_to(
+                    g[gi][None, :] / rows.size, (rows.size, D)
+                ).copy()
+            else:
+                contrib = np.zeros((rows.size, D), dtype=np.float64)
+                am = argmax[gi]
+                valid = am >= 0
+                contrib[am[valid], np.arange(D)[valid]] = g[gi][valid]
+            if psw is not None:
+                contrib = contrib * psw[rows][:, None]
+            np.add.at(gw, idx[rows], contrib)
+        return [Tensor(gw, dtype=grad_output.dtype)]
+
+
+class PadNdFn(Function):
+    """Differentiable N-D padding via ``np.pad`` (constant / reflect / edge).
+
+    Forward builds a source-index map by padding a flat ``arange`` with the same
+    mode; backward scatter-adds gradients back to those source positions.
+    """
+
+    @staticmethod
+    def forward(ctx, a, pad_width, mode, value):
+        x = np.asarray(a.data, dtype=np.float64)
+        base = np.arange(x.size, dtype=np.int64).reshape(x.shape)
+        if mode == "constant":
+            imap = np.pad(base, pad_width, mode=mode, constant_values=-1)
+        else:
+            imap = np.pad(base, pad_width, mode=mode)
+        mask = imap >= 0
+        out = np.full(imap.shape, value, dtype=np.float64)
+        xf = x.reshape(-1)
+        out[mask] = xf[imap[mask]]
+        ctx.save_attr(imap=imap, mask=mask, in_shape=x.shape)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        imap = ctx.get_attr("imap")
+        mask = ctx.get_attr("mask")
+        in_shape = ctx.get_attr("in_shape")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, Mul, Add, Reshape, _as_const,
+            )
+            dt = grad_output.dtype
+            imap_flat = imap.reshape(-1)
+            mask_flat = mask.reshape(-1)
+            n_in = int(np.prod(in_shape))
+            n_out = imap_flat.size
+            g_1d = Reshape.apply(grad_output, (n_out,))
+            grad_acc = None
+            for o_flat in range(n_out):
+                if not mask_flat[o_flat]:
+                    continue
+                i_flat = int(imap_flat[o_flat])
+                g_val = GetItem.apply(g_1d, (o_flat,))
+                one_hot = np.zeros((1, n_in), dtype=np.float64)
+                one_hot[0, i_flat] = 1.0
+                one_hot_t = _as_const(one_hot, dt)
+                contrib = Mul.apply(g_val, one_hot_t)
+                if grad_acc is None:
+                    grad_acc = contrib
+                else:
+                    grad_acc = Add.apply(grad_acc, contrib)
+            if grad_acc is None:
+                grad_acc = _as_const(np.zeros((1, n_in), dtype=np.float64), dt)
+            gi = Reshape.apply(grad_acc, in_shape)
+            return [Tensor(gi, dtype=grad_output.dtype)]
+
+        gi = np.zeros(int(np.prod(in_shape)), dtype=np.float64)
+        np.add.at(gi, imap[mask], g[mask])
+        return [Tensor(gi.reshape(in_shape), dtype=grad_output.dtype)]
+
+
+class PReluFn(Function):
+    """Differentiable PReLU: ``y = x where x >= w*x else w*x`` (trailing-broadcast weight)."""
+
+    @staticmethod
+    def forward(ctx, a, w):
+        x = np.asarray(a.data, dtype=np.float64)
+        wv = np.asarray(w.data, dtype=np.float64)
+        wexp = wv * x
+        mask_x = x >= wexp
+        out = np.where(mask_x, x, wexp)
+        ctx.save_attr(mask_x=mask_x, x=x, wv=wv)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask_x = ctx.get_attr("mask_x")
+        x = ctx.get_attr("x")
+        wv = ctx.get_attr("wv")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        gx = g * np.where(mask_x, 1.0, wv)
+        gw = g * np.where(mask_x, 0.0, x)
+        nlead = x.ndim - wv.ndim
+        if nlead > 0:
+            gw = gw.sum(axis=tuple(range(nlead)))
+        rax = [j for j in range(wv.ndim) if wv.shape[j] == 1 and gw.shape[j] > 1]
+        if rax:
+            gw = gw.sum(axis=tuple(rax), keepdims=True)
+        gw = gw.reshape(wv.shape)
+
+        if create_graph:
+            from .autograd_ops import Mul, Sub, Add, Sum, Unsqueeze, _as_const
+            dt = grad_output.dtype
+            x_t = _as_const(x, dt)
+            w_t = _as_const(wv, dt)
+            mask_t = _as_const(mask_x.astype(np.float64), dt)
+            ones = _as_const(1.0, dt)
+            neg_mask = Sub.apply(ones, mask_t)
+            # grad_x = grad_output * (mask_x * 1 + (1-mask_x) * w)
+            d_out_dx = Add.apply(mask_t, Mul.apply(neg_mask, w_t))
+            grad_x = Mul.apply(grad_output, d_out_dx)
+            # grad_w_raw = grad_output * (1-mask_x) * x
+            grad_w_raw = Mul.apply(Mul.apply(grad_output, neg_mask), x_t)
+            # Sum-reduce over leading dims (x.ndim - wv.ndim), always axis 0
+            grad_w = grad_w_raw
+            for _ in range(nlead):
+                grad_w = Sum.apply(grad_w, 0)
+            # Sum-reduce over broadcast dims (wv.shape[j]==1 but gw.shape[j]>1),
+            # from highest to lowest to avoid index shifting; Unsqueeze after each Sum
+            gw_shape = list(grad_w.data.shape)
+            for j in range(wv.ndim - 1, -1, -1):
+                if wv.shape[j] == 1 and gw_shape[j] > 1:
+                    grad_w = Sum.apply(grad_w, j)
+                    grad_w = Unsqueeze.apply(grad_w, j)
+            return [grad_x, grad_w]
+
+        return [
+            Tensor(gx, dtype=grad_output.dtype),
+            Tensor(gw, dtype=grad_output.dtype),
+        ]
+
+
+class LogSigmoidFn(Function):
+    """Differentiable log-sigmoid: ``log(sigmoid(x)) = -log1p(exp(-|x|)) + min(x,0)``."""
+
+    @staticmethod
+    def forward(ctx, a):
+        x = np.asarray(a.data, dtype=np.float64)
+        out = -np.log1p(np.exp(-np.abs(x))) + np.minimum(x, 0.0)
+        ctx.save_attr(x=x)
+        return Tensor(out, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = ctx.get_attr("x")
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        sig_neg = 1.0 / (1.0 + np.exp(x))
+        if create_graph:
+            from .autograd_ops import Sigmoid, Neg, Mul
+            x_t = Tensor(np.asarray(x), dtype=grad_output.dtype)
+            sig_neg_t = Sigmoid.apply(Neg.apply(x_t))
+            return [Mul.apply(grad_output, sig_neg_t)]
+        return [Tensor(g * sig_neg, dtype=grad_output.dtype)]
+
+
+class BilinearFn(Function):
+    """Differentiable bilinear layer: out[b,k] = sum_ij x1[b,i] x2[b,j] W[k,i,j] + b[k]."""
+
+    @staticmethod
+    def forward(ctx, input1, input2, weight, bias=None):
+        x1 = np.asarray(input1.data, dtype=np.float64)
+        x2 = np.asarray(input2.data, dtype=np.float64)
+        w = np.asarray(weight.data, dtype=np.float64)
+        out = np.einsum("bi,bj,kij->bk", x1, x2, w)
+        if bias is not None:
+            out = out + np.asarray(bias.data, dtype=np.float64)
+        ctx.save_for_backward(input1=input1, input2=input2, weight=weight)
+        ctx.save_attr(has_bias=bias is not None)
+        return Tensor(out, dtype=input1.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x1 = np.asarray(ctx.get_saved_tensor("input1").data, dtype=np.float64)
+        x2 = np.asarray(ctx.get_saved_tensor("input2").data, dtype=np.float64)
+        w = np.asarray(ctx.get_saved_tensor("weight").data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MatMul, Transpose, Mul, Add, Sum, Unsqueeze,
+                Stack, _as_const,
+            )
+            dt = grad_output.dtype
+            B = g.shape[0]
+            K = g.shape[1]
+            I = x1.shape[1]
+            J = x2.shape[1]
+            x1_graph = ctx.get_saved_tensor("input1")
+            x2_graph = ctx.get_saved_tensor("input2")
+            weight_graph = ctx.get_saved_tensor("weight")
+            g_graph = grad_output
+
+            x2_T = Transpose.apply(x2_graph, -1, -2)  # (J, B)
+            x1_T = Transpose.apply(x1_graph, -1, -2)  # (I, B)
+
+            # gx1[b,i] = sum_{k,j} g[b,k] * w[k,i,j] * x2[b,j]
+            gx1_acc = None
+            for k in range(K):
+                w_k = GetItem.apply(weight_graph, (k, slice(None), slice(None)))  # (I, J)
+                tmp_k = MatMul.apply(w_k, x2_T)  # (I, B)
+                tmp_k_T = Transpose.apply(tmp_k, -1, -2)  # (B, I)
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                contrib = Mul.apply(g_k_2d, tmp_k_T)  # (B, I)
+                if gx1_acc is None:
+                    gx1_acc = contrib
+                else:
+                    gx1_acc = Add.apply(gx1_acc, contrib)
+            gx1 = gx1_acc
+
+            # gx2[b,j] = sum_{k,i} g[b,k] * w[k,i,j] * x1[b,i]
+            gx2_acc = None
+            for k in range(K):
+                w_k = GetItem.apply(weight_graph, (k, slice(None), slice(None)))  # (I, J)
+                w_k_T = Transpose.apply(w_k, -1, -2)  # (J, I)
+                tmp_k = MatMul.apply(w_k_T, x1_T)  # (J, B)
+                tmp_k_T = Transpose.apply(tmp_k, -1, -2)  # (B, J)
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                contrib = Mul.apply(g_k_2d, tmp_k_T)  # (B, J)
+                if gx2_acc is None:
+                    gx2_acc = contrib
+                else:
+                    gx2_acc = Add.apply(gx2_acc, contrib)
+            gx2 = gx2_acc
+
+            # gw[k,i,j] = sum_b g[b,k] * x1[b,i] * x2[b,j]
+            gw_parts = []
+            for k in range(K):
+                g_k = GetItem.apply(g_graph, (slice(None), k))  # (B,)
+                g_k_2d = Unsqueeze.apply(g_k, -1)  # (B, 1)
+                x2_scaled = Mul.apply(x2_graph, g_k_2d)  # (B, J)
+                gw_k = MatMul.apply(x1_T, x2_scaled)  # (I, B) @ (B, J) = (I, J)
+                gw_parts.append(Unsqueeze.apply(gw_k, 0))  # (1, I, J)
+            gw = Stack.apply(*gw_parts, 0)  # (K, I, J)
+
+            # gb[k] = sum_b g[b,k]
+            has_bias = ctx.get_attr("has_bias")
+            if has_bias:
+                gb = Sum.apply(g_graph, 0)  # (K,)
+            else:
+                gb = None
+
+            return [gx1, gx2, gw, gb]
+
+        gx1 = np.einsum("bk,kij,bj->bi", g, w, x2)
+        gx2 = np.einsum("bk,kij,bi->bj", g, w, x1)
+        gw = np.einsum("bk,bi,bj->kij", g, x1, x2)
+        has_bias = ctx.get_attr("has_bias")
+        gb = g.sum(axis=0) if has_bias else None
+        return [
+            Tensor(gx1, dtype=grad_output.dtype),
+            Tensor(gx2, dtype=grad_output.dtype),
+            Tensor(gw, dtype=grad_output.dtype),
+            Tensor(gb, dtype=grad_output.dtype) if has_bias else None,
+        ]
 
 
 class MaxPool2d(Function):
@@ -737,7 +4195,7 @@ class MaxPool2d(Function):
         return Tensor(out, dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         k_h = ctx.get_attr("k_h")
         k_w = ctx.get_attr("k_w")
@@ -745,6 +4203,55 @@ class MaxPool2d(Function):
         s_w = ctx.get_attr("s_w")
         arr = inp.data
         g = grad_output.data
+
+        if create_graph:
+            from .autograd_ops import (
+                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, Squeeze, _as_const,
+            )
+            dt = grad_output.dtype
+            x_graph = inp if arr.ndim == 4 else Unsqueeze.apply(inp, 0)
+            g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
+            N, C, H, W = arr.shape
+            Ho = (H - k_h) // s_h + 1
+            Wo = (W - k_w) // s_w + 1
+
+            grad_acc = None
+            for gi in range(Ho):
+                for gj in range(Wo):
+                    i = gi * s_h
+                    j = gj * s_w
+                    patch = GetItem.apply(
+                        x_graph,
+                        (slice(None), slice(None), slice(i, i + k_h), slice(j, j + k_w)),
+                    )  # (N,C,k_h,k_w)
+                    max_val = MaxDim.apply(MaxDim.apply(patch, -2, True), -1, True)  # (N,C,1,1)
+                    diff = Sub.apply(patch, max_val)
+                    mask = Add.apply(_as_const(1.0, dt), Sign.apply(diff))  # (N,C,k_h,k_w)
+                    g_val = GetItem.apply(
+                        g_graph, (slice(None), slice(None), gi, gj)
+                    )  # (N,C)
+                    for di in range(k_h):
+                        for dj in range(k_w):
+                            contrib_d = GetItem.apply(
+                                mask, (slice(None), slice(None), di, dj)
+                            )  # (N,C)
+                            contrib_d = Mul.apply(contrib_d, g_val)  # (N,C)
+                            mask_np = np.zeros((H, W), dtype=np.float64)
+                            mask_np[i + di, j + dj] = 1.0
+                            mask_t = _as_const(mask_np, dt)
+                            contrib_full = Mul.apply(
+                                Unsqueeze.apply(Unsqueeze.apply(contrib_d, -1), -1),
+                                mask_t,
+                            )  # (N,C,H,W)
+                            if grad_acc is None:
+                                grad_acc = contrib_full
+                            else:
+                                grad_acc = Add.apply(grad_acc, contrib_full)
+            grad = grad_acc
+            if arr.ndim == 3:
+                grad = Squeeze.apply(grad, 0)
+            return [grad]
+
         grad = np.zeros_like(arr)
         for i in range(0, arr.shape[-2] - k_h + 1, s_h):
             for j in range(0, arr.shape[-1] - k_w + 1, s_w):
@@ -815,13 +4322,19 @@ class MSELoss(Function):
         diff = inp.data - target.data
         ctx.save_for_backward(inp=inp, target=target)
         ctx.save_attr(n=inp.numel)
-        return Tensor(np.array(float((diff**2).mean())), dtype=inp.dtype)
+        return Tensor(np.array([float((diff**2).mean())]), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
         inp = ctx.get_saved_tensor("inp")
         target = ctx.get_saved_tensor("target")
         n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            diff = Sub.apply(inp, target)
+            grad_inp = Div.apply(Mul.apply(_as_const(2.0, dt), diff), _as_const(n, dt))
+            grad_inp = Mul.apply(grad_output, grad_inp)
+            return [grad_inp, Neg.apply(grad_inp)]
         g = grad_output.data.flat[0]
         grad_inp = Tensor(2.0 * (inp.data - target.data) * g / n, dtype=inp.dtype)
         return [grad_inp, -grad_inp]
@@ -840,10 +4353,22 @@ class CrossEntropyLoss(Function):
             t = t.argmax(axis=-1)
         loss = -np.mean(np.log(sm[np.arange(sm.shape[0]), t.astype(np.int64)] + 1e-10))
         ctx.save_attr(sm=sm, t=t.astype(np.int64))
+        ctx.save_for_backward(inp=inp)
         return Tensor(np.array([loss]), dtype=inp.dtype)
 
     @staticmethod
-    def backward(ctx, grad_output):
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            inp = ctx.get_saved_tensor("inp")
+            t = ctx.get_attr("t")
+            dt = grad_output.dtype
+            sm_g = Softmax.apply(inp, -1)
+            n = sm_g.shape[0]
+            oh = np.zeros((n, sm_g.shape[-1]), dtype=_numpy_dtype(dt))
+            oh[np.arange(n), t] = 1.0
+            grad = Sub.apply(sm_g, _as_const(oh, dt))
+            grad = Div.apply(grad, _as_const(n, dt))
+            return [Mul.apply(grad_output, grad), None]
         sm = ctx.get_attr("sm")
         t = ctx.get_attr("t")
         g = grad_output.data.flat[0]
@@ -853,8 +4378,620 @@ class CrossEntropyLoss(Function):
         return [Tensor(grad * g, dtype="float32"), None]
 
 
+class NLLLoss(Function):
+    @staticmethod
+    def forward(ctx, inp, target):
+        x = inp.data
+        t = target.data if isinstance(target, Tensor) else np.asarray(target)
+        ctx.save_for_backward(inp=inp)
+        ctx.save_attr(t=t, one_hot=(t.ndim == x.ndim))
+        n = x.shape[0] if x.ndim > 1 else 1
+        ctx.save_attr(n=n)
+        if t.ndim == x.ndim:  # one-hot targets
+            nll = -np.sum(t * np.log(x + 1e-12), axis=-1)
+            loss = float(np.mean(nll))
+        else:  # class indices
+            t = t.astype(np.int64)
+            if x.ndim == 1:
+                loss = float(-x[t])
+            else:
+                loss = float(np.mean(-x[np.arange(n), t]))
+        return Tensor(np.array([loss], dtype=x.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        t = ctx.get_attr("t")
+        one_hot = ctx.get_attr("one_hot")
+        n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            if one_hot:
+                t_np = t.data if isinstance(t, Tensor) else t
+                denom = Add.apply(inp, _as_const(1e-12, dt))
+                grad_in = Neg.apply(Div.apply(_as_const(t_np, dt), denom))
+                grad_in = Div.apply(Mul.apply(grad_in, grad_output), _as_const(n, dt))
+            else:
+                t_idx = t.astype(np.int64)
+                oh = np.zeros_like(inp.data)
+                oh[np.arange(oh.shape[0]), t_idx] = -1.0 / n
+                grad_in = Mul.apply(grad_output, _as_const(oh, dt))
+            return [grad_in, None]
+        g = grad_output.data.flat[0]
+        x = inp.data
+        grad_inp = np.zeros_like(x)
+        if one_hot:
+            grad_inp = -(t.astype(np.float64) / (x + 1e-12)) * (g / n)
+            grad_target = -(np.log(x + 1e-12)) * (g / n)
+        else:
+            t = t.astype(np.int64)
+            if x.ndim == 1:
+                grad_inp[t] = -g / n
+            else:
+                grad_inp[np.arange(n), t] = -g / n
+            grad_target = None
+        return [Tensor(grad_inp, dtype=inp.dtype), grad_target]
+
+
+class KLDivLoss(Function):
+    @staticmethod
+    def forward(ctx, inp, target):
+        x = inp.data
+        t = target.data if isinstance(target, Tensor) else np.asarray(target)
+        ctx.save_for_backward(inp=inp)
+        ctx.save_attr(t=t, n=x.size)
+        # input `x` is log-probabilities; target `t` is probabilities.
+        kl = t * (np.log(t + 1e-10) - x)
+        return Tensor(np.array([float(np.mean(kl))], dtype=x.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        t = ctx.get_attr("t")
+        n = ctx.get_attr("n")
+        if create_graph:
+            t_np = t.data if isinstance(t, Tensor) else t
+            return [
+                Mul.apply(
+                    grad_output,
+                    _as_const(
+                        -np.asarray(t_np, dtype=_numpy_dtype(grad_output.dtype)) / n,
+                        grad_output.dtype,
+                    ),
+                ),
+                None,
+            ]
+        g = grad_output.data.flat[0]
+        # kl = t*(log t - x)  =>  d kl/d x = -t ; target is a probability (not diff)
+        grad_inp = Tensor(-(t) * (g / n), dtype=inp.dtype)
+        return [grad_inp, None]
+
+
+class Stack(Function):
+    @staticmethod
+    def forward(ctx, *args):
+        tensors = [a for a in args if isinstance(a, Tensor)]
+        dim = args[-1] if isinstance(args[-1], int) else 0
+        ctx.save_attr(dim=dim)
+        ctx.save_attr(n=len(tensors))
+        data = np.stack([t.data for t in tensors], axis=dim)
+        return Tensor(data, dtype=tensors[0].dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dim = ctx.get_attr("dim")
+        n = ctx.get_attr("n")
+        if create_graph:
+            grads = []
+            for i in range(n):
+                key = [slice(None)] * grad_output.ndim
+                key[dim] = slice(i, i + 1)
+                grads.append(Squeeze.apply(GetItem.apply(grad_output, tuple(key)), dim))
+            return grads
+        grads = np.split(grad_output.data, n, axis=dim)
+        return [
+            Tensor(np.squeeze(g, axis=dim).copy(), dtype=grad_output.dtype)
+            for g in grads
+        ]
+
+
+class Cat(Function):
+    @staticmethod
+    def forward(ctx, *args):
+        tensors = [a for a in args if isinstance(a, Tensor)]
+        dim = args[-1] if isinstance(args[-1], int) else 0
+        ctx.save_attr(dim=dim)
+        ctx.save_attr(sizes=[t.shape[dim] for t in tensors])
+        data = np.concatenate([t.data for t in tensors], axis=dim)
+        return Tensor(data, dtype=tensors[0].dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dim = ctx.get_attr("dim")
+        sizes = ctx.get_attr("sizes")
+        if create_graph:
+            grads = []
+            start = 0
+            for s in sizes:
+                key = [slice(None)] * grad_output.ndim
+                key[dim] = slice(start, start + s)
+                grads.append(GetItem.apply(grad_output, tuple(key)))
+                start += s
+            return grads
+        split_pts = np.cumsum(sizes)[:-1]
+        grads = np.split(grad_output.data, split_pts, axis=dim)
+        return [Tensor(g.copy(), dtype=grad_output.dtype) for g in grads]
+
+
+# ===========================================================================
+#  Additional Loss Ops (smooth L1, BCE, focal, ranking, embedding, triplet)
+# ===========================================================================
+
+
+class SmoothL1Loss(Function):
+    @staticmethod
+    def forward(ctx, inp, target, beta=1.0):
+        x = inp.data - target.data
+        ctx.save_for_backward(inp=inp, target=target)
+        ctx.save_attr(beta=beta, n=x.size)
+        absx = np.abs(x)
+        loss = np.where(absx < beta, 0.5 * x**2 / beta, absx - 0.5 * beta)
+        return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        target = ctx.get_saved_tensor("target")
+        beta = ctx.get_attr("beta")
+        n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            x = Sub.apply(inp, target)
+            absx = Abs.apply(x)
+            mask = absx.data < beta  # constant w.r.t. x for 2nd-order
+            sgn = np.sign(x.data)
+            x_scaled = Mul.apply(x, _as_const(1.0 / beta, dt))
+            term_smooth = Mul.apply(_as_const(mask.astype(np.float64), dt), x_scaled)
+            term_linear = _as_const((~mask).astype(np.float64) * sgn, dt)
+            grad_x = Mul.apply(
+                Add.apply(term_smooth, term_linear),
+                Div.apply(grad_output, _as_const(n, dt)),
+            )
+            return [grad_x, Neg.apply(grad_x)]
+        g = grad_output.data.flat[0]
+        x = inp.data - target.data
+        absx = np.abs(x)
+        grad_x = np.where(absx < beta, x / beta, np.sign(x)) / n * g
+        return [Tensor(grad_x, dtype=inp.dtype), Tensor(-grad_x, dtype=inp.dtype)]
+
+
+class HuberLoss(Function):
+    @staticmethod
+    def forward(ctx, inp, target, delta=1.0):
+        x = inp.data - target.data
+        ctx.save_for_backward(inp=inp, target=target)
+        ctx.save_attr(delta=delta, n=x.size)
+        absx = np.abs(x)
+        loss = np.where(absx <= delta, 0.5 * x**2, delta * (absx - 0.5 * delta))
+        return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        target = ctx.get_saved_tensor("target")
+        delta = ctx.get_attr("delta")
+        n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            x = Sub.apply(inp, target)
+            absx = Abs.apply(x)
+            mask = absx.data <= delta  # constant w.r.t. x for 2nd-order
+            sgn = np.sign(x.data)
+            term_quad = Mul.apply(_as_const(mask.astype(np.float64), dt), x)
+            term_lin = _as_const((~mask).astype(np.float64) * delta * sgn, dt)
+            grad_x = Mul.apply(
+                Add.apply(term_quad, term_lin),
+                Div.apply(grad_output, _as_const(n, dt)),
+            )
+            return [grad_x, Neg.apply(grad_x)]
+        g = grad_output.data.flat[0]
+        x = inp.data - target.data
+        absx = np.abs(x)
+        grad_x = np.where(absx <= delta, x, delta * np.sign(x)) / n * g
+        return [Tensor(grad_x, dtype=inp.dtype), Tensor(-grad_x, dtype=inp.dtype)]
+
+
+class BCELoss(Function):
+    @staticmethod
+    def forward(ctx, inp, target):
+        x = inp.data
+        t = target.data
+        ctx.save_for_backward(inp=inp, target=target)
+        n = x.size
+        ctx.save_attr(n=n)
+        loss = -(t * np.log(x + 1e-10) + (1 - t) * np.log(1 - x + 1e-10))
+        return Tensor(np.array([float(np.mean(loss))], dtype=x.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        target = ctx.get_saved_tensor("target")
+        n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            denom = Add.apply(
+                Mul.apply(inp, Sub.apply(_as_const(1.0, dt), inp)),
+                _as_const(1e-10, dt),
+            )
+            inner = Div.apply(Sub.apply(inp, target), denom)
+            grad_in = Div.apply(Mul.apply(grad_output, inner), _as_const(n, dt))
+            return [grad_in, None]
+        g = grad_output.data.flat[0]
+        x = inp.data
+        t = target.data
+        grad_in = (x - t) / (x * (1 - x) + 1e-10) / n * g
+        grad_t = -(np.log(x + 1e-10) - np.log(1 - x + 1e-10)) / n * g
+        return [Tensor(grad_in, dtype=inp.dtype), Tensor(grad_t, dtype=inp.dtype)]
+
+
+class BCEWithLogitsLoss(Function):
+    @staticmethod
+    def forward(ctx, inp, target):
+        z = inp.data
+        t = target.data
+        ctx.save_for_backward(inp=inp, target=target)
+        n = z.size
+        ctx.save_attr(n=n)
+        z = np.clip(z, -30, 30)
+        sig = 1.0 / (1.0 + np.exp(-z))
+        loss = -(t * np.log(sig + 1e-10) + (1 - t) * np.log(1 - sig + 1e-10))
+        return Tensor(np.array([float(np.mean(loss))], dtype=z.dtype), dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        inp = ctx.get_saved_tensor("inp")
+        target = ctx.get_saved_tensor("target")
+        n = ctx.get_attr("n")
+        if create_graph:
+            dt = grad_output.dtype
+            sig = Sigmoid.apply(inp)
+            grad_in = Div.apply(
+                Mul.apply(Sub.apply(sig, target), grad_output), _as_const(n, dt)
+            )
+            return [grad_in, None]
+        g = grad_output.data.flat[0]
+        z = np.clip(inp.data, -30, 30)
+        sig = 1.0 / (1.0 + np.exp(-z))
+        grad_in = (sig - target.data) / n * g
+        return [Tensor(grad_in, dtype=inp.dtype), None]
+
+
+class FocalLoss(Function):
+    """Focal loss over class logits (target = integer class indices)."""
+
+    @staticmethod
+    def forward(ctx, logits, target, gamma=2.0, alpha=1.0):
+        z = logits.data.astype(np.float64)
+        t = target.data.astype(np.int64).ravel()
+        zmax = z.max(axis=-1, keepdims=True)
+        e = np.exp(z - zmax)
+        p = e / e.sum(axis=-1, keepdims=True)
+        n = z.shape[0]
+        pt = p[np.arange(n), t]
+        loss = -alpha * (1 - pt) ** gamma * np.log(pt + 1e-10)
+        ctx.save_for_backward(logits=logits, target=target)
+        ctx.save_attr(gamma=gamma, alpha=alpha, n=n, p=p, pt=pt)
+        return Tensor(
+            np.array([float(np.mean(loss))], dtype=z.dtype), dtype=logits.dtype
+        )
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        logits = ctx.get_saved_tensor("logits")
+        target = ctx.get_saved_tensor("target")
+        gamma = ctx.get_attr("gamma")
+        alpha = ctx.get_attr("alpha")
+        n = ctx.get_attr("n")
+        p = ctx.get_attr("p")
+        pt = ctx.get_attr("pt")
+        g = grad_output.data.flat[0]
+        t = target.data.astype(np.int64).ravel()
+        onehot = np.zeros_like(p)
+        onehot[np.arange(n), t] = 1.0
+        f = (
+            gamma * pt * (1 - pt) ** (gamma - 1) * np.log(pt + 1e-10)
+            - (1 - pt) ** gamma
+        )
+        grad_z = alpha * (onehot - p) * f[:, None] / n * g
+        return [Tensor(grad_z.astype(np.float64), dtype=logits.dtype), None]
+
+
+class CosineEmbeddingLoss(Function):
+    @staticmethod
+    def forward(ctx, x1, x2, y, margin=0.0):
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.int64)
+        na = np.linalg.norm(a, axis=-1, keepdims=True) + 1e-10
+        nb = np.linalg.norm(b, axis=-1, keepdims=True) + 1e-10
+        cos = np.sum(a * b, axis=-1) / (na.ravel() * nb.ravel())
+        loss = np.where(yy == 1, 1 - cos, np.maximum(0.0, cos - margin))
+        ctx.save_for_backward(x1=x1, x2=x2, y=y)
+        ctx.save_attr(margin=margin, n=a.shape[0], cos=cos, na=na, nb=nb)
+        return Tensor(np.array([float(np.mean(loss))], dtype=a.dtype), dtype=x1.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x1 = ctx.get_saved_tensor("x1")
+        x2 = ctx.get_saved_tensor("x2")
+        y = ctx.get_saved_tensor("y")
+        margin = ctx.get_attr("margin")
+        n = ctx.get_attr("n")
+        cos = ctx.get_attr("cos")
+        na = ctx.get_attr("na")
+        nb = ctx.get_attr("nb")
+        g = grad_output.data.flat[0]
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.int64)
+        da = b / (na * nb) - cos[:, None] * a / na**2
+        db = a / (na * nb) - cos[:, None] * b / nb**2
+        active = (yy != 1) & (cos > margin)
+        ga = np.where(yy[:, None] == 1, -da, np.where(active[:, None], da, 0.0)) / n * g
+        gb = np.where(yy[:, None] == 1, -db, np.where(active[:, None], db, 0.0)) / n * g
+        return [Tensor(ga, dtype=x1.dtype), Tensor(gb, dtype=x1.dtype), None]
+
+
+class TripletMarginLoss(Function):
+    @staticmethod
+    def forward(ctx, anchor, positive, negative, margin=1.0, p=2):
+        a = anchor.data
+        pos = positive.data
+        neg = negative.data
+        d_ap = np.linalg.norm(a - pos, axis=-1) + 1e-10
+        d_an = np.linalg.norm(a - neg, axis=-1) + 1e-10
+        hinge = d_ap - d_an + margin
+        loss = np.maximum(0.0, hinge)
+        ctx.save_for_backward(anchor=anchor, positive=positive, negative=negative)
+        ctx.save_attr(margin=margin, n=a.shape[0], d_ap=d_ap, d_an=d_an)
+        return Tensor(
+            np.array([float(np.mean(loss))], dtype=a.dtype), dtype=anchor.dtype
+        )
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        anchor = ctx.get_saved_tensor("anchor")
+        positive = ctx.get_saved_tensor("positive")
+        negative = ctx.get_saved_tensor("negative")
+        margin = ctx.get_attr("margin")
+        n = ctx.get_attr("n")
+        d_ap = ctx.get_attr("d_ap")
+        d_an = ctx.get_attr("d_an")
+        g = grad_output.data.flat[0]
+        a = anchor.data
+        pos = positive.data
+        neg = negative.data
+        hinge = d_ap - d_an + margin
+        active = (hinge > 0).astype(np.float64)[:, None]
+        ga = active * ((a - pos) / d_ap[:, None] - (a - neg) / d_an[:, None]) / n * g
+        gp = active * (-(a - pos) / d_ap[:, None]) / n * g
+        gn = active * ((a - neg) / d_an[:, None]) / n * g
+        return [
+            Tensor(ga, dtype=anchor.dtype),
+            Tensor(gp, dtype=anchor.dtype),
+            Tensor(gn, dtype=anchor.dtype),
+            None,
+        ]
+
+
+class ContrastiveLoss(Function):
+    @staticmethod
+    def forward(ctx, x1, x2, y, margin=1.0):
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.int64)
+        d = np.linalg.norm(a - b, axis=-1) + 1e-10
+        sim = (1 - yy) * np.maximum(0.0, margin - d) ** 2
+        loss = yy * d**2 + sim
+        ctx.save_for_backward(x1=x1, x2=x2, y=y)
+        ctx.save_attr(margin=margin, n=a.shape[0], d=d)
+        return Tensor(np.array([float(np.mean(loss))], dtype=a.dtype), dtype=x1.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x1 = ctx.get_saved_tensor("x1")
+        x2 = ctx.get_saved_tensor("x2")
+        y = ctx.get_saved_tensor("y")
+        margin = ctx.get_attr("margin")
+        n = ctx.get_attr("n")
+        d = ctx.get_attr("d")
+        g = grad_output.data.flat[0]
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.float64)
+        diff = a - b
+        dn = d[:, None]
+        dd_ddiff = diff / dn
+        grad_d2 = yy[:, None] * 2.0 * diff
+        mask = (d < margin)[:, None]
+        grad_sim = (1 - yy)[:, None] * np.where(
+            mask, -2.0 * (margin - d)[:, None] * dd_ddiff, 0.0
+        )
+        ga = (grad_d2 + grad_sim) / n * g
+        gb = -ga
+        return [Tensor(ga, dtype=x1.dtype), Tensor(gb, dtype=x1.dtype), None]
+
+
+class MarginRankingLoss(Function):
+    @staticmethod
+    def forward(ctx, x1, x2, y, margin=0.0):
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.float64).reshape(-1, 1)
+        loss = np.maximum(0.0, -yy * (a - b) + margin)
+        ctx.save_for_backward(x1=x1, x2=x2, y=y)
+        ctx.save_attr(margin=margin, n=a.size)
+        return Tensor(np.array([float(np.mean(loss))], dtype=a.dtype), dtype=x1.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        x1 = ctx.get_saved_tensor("x1")
+        x2 = ctx.get_saved_tensor("x2")
+        y = ctx.get_saved_tensor("y")
+        n = ctx.get_attr("n")
+        g = grad_output.data.flat[0]
+        a = x1.data
+        b = x2.data
+        yy = y.data.ravel().astype(np.float64).reshape(-1, 1)
+        hinge = -yy * (a - b) + ctx.get_attr("margin")
+        active = (hinge > 0).astype(np.float64)
+        grad_a = (active * (-yy)) / n * g
+        grad_b = (active * (yy)) / n * g
+        return [Tensor(grad_a, dtype=x1.dtype), Tensor(grad_b, dtype=x1.dtype), None]
+
+
+def _ctc_logsumexp(a):
+    a = list(a)
+    m = max(a)
+    if m <= -1e29:
+        return -1e30
+    return m + np.log(sum(np.exp(x - m) for x in a))
+
+
+class CTCLoss(Function):
+    """Connectionist Temporal Classification loss.
+
+    Input ``log_probs`` is log-softmax output of shape ``(T, N, C)`` where T is
+    the time dimension, N the batch, C the number of classes (index 0 is the
+    blank).  ``targets`` is integer class indices of shape ``(N, S)`` (no blanks,
+    no repeated adjacent labels).  ``input_lengths``/``target_lengths`` give the
+    valid lengths per sample.  Forward/backward use the log-domain alpha/beta
+    recursions; the gradient w.r.t. log-probabilities is ``-posterior``.
+    """
+
+    @staticmethod
+    def forward(
+        ctx,
+        log_probs,
+        targets,
+        blank=0,
+        input_lengths=None,
+        target_lengths=None,
+        reduction="mean",
+    ):
+        lp = log_probs.data
+        T, N, C = lp.shape
+        tgt = targets.data if isinstance(targets, Tensor) else np.asarray(targets)
+        if input_lengths is None:
+            input_lengths = [T] * N
+        if target_lengths is None:
+            target_lengths = [tgt.shape[1]] * N
+
+        losses = np.zeros(N)
+        alphas = []
+        exts = []
+        for n in range(N):
+            tg = tgt[n, : target_lengths[n]].astype(np.int64)
+            L = 2 * len(tg) + 1
+            ext = np.empty(L, dtype=np.int64)
+            ext[0::2] = blank
+            ext[1::2] = tg
+            Ti = int(input_lengths[n])
+            alpha = np.full((Ti, L), -1e30)
+            alpha[0, 0] = lp[0, n, ext[0]]
+            if L > 1:
+                alpha[0, 1] = lp[0, n, ext[1]]
+            for t in range(1, Ti):
+                for s in range(L):
+                    a = alpha[t - 1, s]
+                    b = alpha[t - 1, s - 1] if s - 1 >= 0 else -1e30
+                    c = (
+                        alpha[t - 1, s - 2]
+                        if (s - 2 >= 0 and ext[s - 2] != ext[s])
+                        else -1e30
+                    )
+                    alpha[t, s] = _ctc_logsumexp([a, b, c]) + lp[t, n, ext[s]]
+            z = _ctc_logsumexp(
+                [alpha[Ti - 1, L - 1], alpha[Ti - 1, L - 2] if L >= 2 else -1e30]
+            )
+            losses[n] = -z
+            alphas.append(alpha)
+            exts.append(ext)
+
+        loss = float(np.mean(losses)) if reduction == "mean" else float(np.sum(losses))
+        ctx.save_for_backward(log_probs=log_probs)
+        ctx.save_attr(
+            alphas=alphas,
+            exts=exts,
+            N=N,
+            T=T,
+            C=C,
+            blank=blank,
+            input_lengths=input_lengths,
+            target_lengths=target_lengths,
+            reduction=reduction,
+            lp=lp,
+        )
+        return Tensor(np.array([loss], dtype=lp.dtype), dtype=log_probs.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        lp = ctx.get_attr("lp")
+        alphas = ctx.get_attr("alphas")
+        exts = ctx.get_attr("exts")
+        N = ctx.get_attr("N")
+        T = ctx.get_attr("T")
+        C = ctx.get_attr("C")
+        blank = ctx.get_attr("blank")
+        il = ctx.get_attr("input_lengths")
+        tl = ctx.get_attr("target_lengths")
+        reduction = ctx.get_attr("reduction")
+        g = grad_output.data.flat[0]
+
+        grad = np.zeros((T, N, C))
+        for n in range(N):
+            ext = exts[n]
+            L = len(ext)
+            Ti = int(il[n])
+            beta = np.full((Ti, L), -1e30)
+            beta[Ti - 1, L - 1] = 0.0
+            if L >= 2:
+                beta[Ti - 1, L - 2] = 0.0
+            for t in range(Ti - 2, -1, -1):
+                for s in range(L):
+                    a = beta[t + 1, s] + lp[t + 1, n, ext[s]]
+                    b = (
+                        beta[t + 1, s + 1] + lp[t + 1, n, ext[s + 1]]
+                        if s + 1 < L
+                        else -1e30
+                    )
+                    c = (
+                        beta[t + 1, s + 2] + lp[t + 1, n, ext[s + 2]]
+                        if (s + 2 < L and ext[s + 2] != ext[s])
+                        else -1e30
+                    )
+                    beta[t, s] = _ctc_logsumexp([a, b, c])
+            z = _ctc_logsumexp(
+                [
+                    alphas[n][Ti - 1, L - 1],
+                    alphas[n][Ti - 1, L - 2] if L >= 2 else -1e30,
+                ]
+            )
+            for t in range(Ti):
+                for s in range(L):
+                    prob = np.exp(alphas[n][t, s] + beta[t, s] - z)
+                    grad[t, n, ext[s]] += prob
+            grad[:Ti, n, :] = -grad[:Ti, n, :]
+
+        scale = (g / N) if reduction == "mean" else g
+        grad = grad * scale
+        return [Tensor(grad, dtype=ctx.get_saved_tensor("log_probs").dtype), None]
+
+
 __all__ = [
     "Add",
+    "Stack",
+    "Cat",
     "Sub",
     "Mul",
     "Div",
@@ -888,6 +5025,846 @@ __all__ = [
     "Conv1d",
     "MaxPool2d",
     "AvgPool2d",
+    "MaxPool",
+    "AvgPool",
     "MSELoss",
     "CrossEntropyLoss",
+    "NLLLoss",
+    "KLDivLoss",
+    "SmoothL1Loss",
+    "HuberLoss",
+    "BCELoss",
+    "BCEWithLogitsLoss",
+    "FocalLoss",
+    "CosineEmbeddingLoss",
+    "TripletMarginLoss",
+    "ContrastiveLoss",
+    "MarginRankingLoss",
+    "CTCLoss",
+    "Log1p",
+    "Expm1",
 ]
+
+# ============================================================================
+#  Generalized N-d Pooling (1d/2d/3d, padding + dilation, differentiable)
+# ============================================================================
+
+
+class MaxPool(Function):
+    """Differentiable N-d max pool over trailing spatial dims with
+    padding (padded with -inf so pad never wins) and dilation."""
+
+    @staticmethod
+    def forward(ctx, inp, kernel, stride=None, padding=0, dilation=1):
+        arr = np.asarray(inp.data, dtype=np.float64)
+        ndim = len(kernel)
+        if stride is None:
+            stride = kernel
+        if isinstance(stride, int):
+            stride = (stride,) * ndim
+        if isinstance(padding, int):
+            padding = (padding,) * ndim
+        if isinstance(dilation, int):
+            dilation = (dilation,) * ndim
+        kernel = tuple(int(k) for k in kernel)
+        stride = tuple(int(s) for s in stride)
+        padding = tuple(int(p) for p in padding)
+        dilation = tuple(int(d) for d in dilation)
+
+        pad = [(0, 0)] * (arr.ndim - ndim) + [(p, p) for p in padding]
+        padded = np.pad(arr, pad, mode="constant", constant_values=-np.inf)
+        spatial_axes = list(range(arr.ndim - ndim, arr.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = arr.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        out_shape = arr.shape[: arr.ndim - ndim] + tuple(out_shape_sp)
+        out = np.full(out_shape, -np.inf, dtype=np.float64)
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(
+                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
+                )
+            window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
+            red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
+            out[(slice(None),) * (arr.ndim - ndim) + oi] = window.max(axis=red_axes)
+            it.iternext()
+        ctx.save_attr(
+            arr_shape=arr.shape,
+            kernel=kernel,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            ndim=ndim,
+        )
+        ctx.save_for_backward(inp=inp)
+        return Tensor(out, dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        arr_shape = ctx.get_attr("arr_shape")
+        kernel = ctx.get_attr("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        ndim = ctx.get_attr("ndim")
+        inp = ctx.get_saved_tensor("inp")
+        x = np.asarray(inp.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        grad = np.zeros_like(x)
+        spatial_axes = list(range(x.ndim - ndim, x.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = x.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(
+                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
+                )
+            sl_orig = []
+            for d in range(ndim):
+                st_orig = sl[d].start - padding[d]
+                stop_orig = sl[d].stop - padding[d]
+                sl_orig.append(
+                    slice(
+                        max(st_orig, 0),
+                        min(stop_orig, x.shape[spatial_axes[d]]),
+                        sl[d].step,
+                    )
+                )
+            window_orig = x[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            max_val = window_orig.max(
+                axis=tuple(range(x.ndim - ndim, x.ndim)), keepdims=True
+            )
+            mask = (window_orig == max_val).astype(g.dtype)
+            g_val = g[(slice(None),) * (x.ndim - ndim) + oi]
+            gb = g_val
+            for _ in range(ndim):
+                gb = gb[..., np.newaxis]
+            seg = grad[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            seg += mask * gb
+            it.iternext()
+        return [Tensor(grad, dtype=inp.dtype)]
+
+
+class AvgPool(Function):
+    """Differentiable N-d average pool with padding (count_include_pad=True)
+    and dilation."""
+
+    @staticmethod
+    def forward(ctx, inp, kernel, stride=None, padding=0, dilation=1):
+        arr = np.asarray(inp.data, dtype=np.float64)
+        ndim = len(kernel)
+        if stride is None:
+            stride = kernel
+        if isinstance(stride, int):
+            stride = (stride,) * ndim
+        if isinstance(padding, int):
+            padding = (padding,) * ndim
+        if isinstance(dilation, int):
+            dilation = (dilation,) * ndim
+        kernel = tuple(int(k) for k in kernel)
+        stride = tuple(int(s) for s in stride)
+        padding = tuple(int(p) for p in padding)
+        dilation = tuple(int(d) for d in dilation)
+
+        pad = [(0, 0)] * (arr.ndim - ndim) + [(p, p) for p in padding]
+        padded = np.pad(arr, pad, mode="constant", constant_values=0.0)
+        spatial_axes = list(range(arr.ndim - ndim, arr.ndim))
+        kvol = int(np.prod(kernel))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = arr.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        out_shape = arr.shape[: arr.ndim - ndim] + tuple(out_shape_sp)
+        out = np.zeros(out_shape, dtype=np.float64)
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(
+                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
+                )
+            window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
+            red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
+            out[(slice(None),) * (arr.ndim - ndim) + oi] = (
+                window.sum(axis=red_axes) / kvol
+            )
+            it.iternext()
+        ctx.save_attr(
+            arr_shape=arr.shape,
+            kernel=kernel,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            ndim=ndim,
+            kvol=kvol,
+        )
+        ctx.save_for_backward(inp=inp)
+        return Tensor(out, dtype=inp.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        arr_shape = ctx.get_attr("arr_shape")
+        kernel = ctx.get_attr("kernel")
+        stride = ctx.get_attr("stride")
+        padding = ctx.get_attr("padding")
+        dilation = ctx.get_attr("dilation")
+        ndim = ctx.get_attr("ndim")
+        kvol = ctx.get_attr("kvol")
+        inp = ctx.get_saved_tensor("inp")
+        x = np.asarray(inp.data, dtype=np.float64)
+        g = np.asarray(grad_output.data, dtype=np.float64)
+        grad = np.zeros_like(x)
+        spatial_axes = list(range(x.ndim - ndim, x.ndim))
+        out_shape_sp = []
+        for d in range(ndim):
+            sp = x.shape[spatial_axes[d]]
+            kd, sd, pd, dd = kernel[d], stride[d], padding[d], dilation[d]
+            L = sp + 2 * pd - dd * (kd - 1)
+            out_shape_sp.append(max((L - 1) // sd + 1, 0))
+        it = np.nditer(np.zeros(out_shape_sp), flags=["multi_index"])
+        while not it.finished:
+            oi = it.multi_index
+            sl = []
+            for d in range(ndim):
+                st = oi[d] * stride[d]
+                sl.append(
+                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
+                )
+            sl_orig = []
+            for d in range(ndim):
+                st_orig = sl[d].start - padding[d]
+                stop_orig = sl[d].stop - padding[d]
+                sl_orig.append(
+                    slice(
+                        max(st_orig, 0),
+                        min(stop_orig, x.shape[spatial_axes[d]]),
+                        sl[d].step,
+                    )
+                )
+            seg = grad[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
+            gb = g[(slice(None),) * (x.ndim - ndim) + oi]
+            for _ in range(ndim):
+                gb = gb[..., np.newaxis]
+            seg += gb / kvol
+            it.iternext()
+        return [Tensor(grad, dtype=inp.dtype)]
+
+
+# ---------------------------------------------------------------------------
+# Elementwise math + reductions (Phase 2 gap fill, additive-only)
+# ---------------------------------------------------------------------------
+
+
+class Square(Function):
+    @staticmethod
+    def forward(ctx, x):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(np.asarray(x.data) * np.asarray(x.data), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        if x is None:
+            return [
+                Tensor(
+                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
+                )
+            ]
+        if create_graph:
+            return [
+                Mul.apply(Mul.apply(grad_output, _as_const(2.0, grad_output.dtype)), x)
+            ]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * (2.0 * np.asarray(x.data)), dtype=grad_output.dtype)]
+
+
+class Reciprocal(Function):
+    @staticmethod
+    def forward(ctx, x):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(1.0 / np.asarray(x.data), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        if x is None:
+            return [
+                Tensor(
+                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
+                )
+            ]
+        xd = np.asarray(x.data)
+        if create_graph:
+            neg_one = _as_const(-1.0, grad_output.dtype)
+            return [Mul.apply(grad_output, Div.apply(neg_one, Mul.apply(x, x)))]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * (-1.0 / (xd * xd)), dtype=grad_output.dtype)]
+
+
+class Sign(Function):
+    @staticmethod
+    def forward(ctx, x):
+        return Tensor(np.sign(np.asarray(x.data)), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        return [
+            Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)
+        ]
+
+
+class Clamp(Function):
+    @staticmethod
+    def forward(ctx, x, min_val, max_val):
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, min_val=min_val, max_val=max_val)
+        return Tensor(np.clip(np.asarray(x.data), min_val, max_val), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        min_val = _get_attr(ctx, "min_val")
+        max_val = _get_attr(ctx, "max_val")
+        if x is None:
+            return [
+                Tensor(
+                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
+                )
+            ]
+        xd = np.asarray(x.data)
+        mask = np.logical_and(xd >= min_val, xd <= max_val)
+        if create_graph:
+            return [
+                Mul.apply(
+                    grad_output, _as_const(mask.astype(np.float64), grad_output.dtype)
+                )
+            ]
+        g = np.asarray(grad_output.data)
+        return [Tensor(g * mask, dtype=grad_output.dtype)]
+
+
+class Remainder(Function):
+    @staticmethod
+    def forward(ctx, a, divisor):
+        if isinstance(divisor, (int, float)):
+            _save_attr(ctx, divisor_val=divisor, a_shape=tuple(a.shape))
+            return Tensor(np.mod(np.asarray(a.data), divisor), dtype=a.dtype)
+        if ctx is not None:
+            ctx.save_for_backward(a=a)
+        _save_attr(ctx, a_shape=tuple(a.shape))
+        return Tensor(
+            np.mod(np.asarray(a.data), np.asarray(divisor.data)), dtype=a.dtype
+        )
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        a_shape = _get_attr(ctx, "a_shape")
+        divisor_val = _get_attr(ctx, "divisor_val")
+        a = _get_saved_tensor(ctx, "a")
+        if divisor_val is not None:
+            if create_graph:
+                return [_cg_broadcast(grad_output, a_shape)]
+            return [
+                Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)
+            ]
+        # Tensor divisor: grad flows to a unchanged (d remainder/d a == 1 a.e.)
+        if create_graph:
+            ga = _cg_broadcast(grad_output, a_shape)
+        else:
+            ga = Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)
+        return [ga, None]
+
+
+class Prod(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data)
+        if dim is None:
+            axes = tuple(range(xd.ndim))
+        elif isinstance(dim, (tuple, list)):
+            axes = tuple(dim)
+        else:
+            axes = (dim,)
+
+        # Let NumPy validate the requested axes, then store normalized axes so
+        # shape reconstruction is deterministic for negative dimensions.
+        out = np.asarray(np.prod(xd, axis=axes, keepdims=keepdim))
+        normalized_axes = (
+            tuple(axis % xd.ndim for axis in axes) if axes else ()
+        )
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, axes=normalized_axes, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        axes = ctx.get_attr("axes")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        zero_mask = xd == 0
+        zero_count = np.sum(zero_mask, axis=axes, keepdims=True)
+        no_zero = zero_count == 0
+        exactly_one_zero = zero_count == 1
+
+        # Replacing zeros with ones makes division safe and gives the product
+        # of all nonzero elements in each reduction group.
+        safe_x = np.where(zero_mask, 1, xd)
+        if create_graph:
+            zero_mask_t = _as_const(zero_mask.astype(xd.dtype), x.dtype)
+            nonzero_mask_t = _as_const((~zero_mask).astype(xd.dtype), x.dtype)
+            no_zero_t = _as_const(no_zero.astype(xd.dtype), x.dtype)
+            one_zero_t = _as_const(exactly_one_zero.astype(xd.dtype), x.dtype)
+            # The replacement value at a zero input must be constant with
+            # respect to that input; otherwise higher-order gradients leak
+            # through the safe denominator/product branch.
+            safe_x_t = Add.apply(
+                Mul.apply(x, nonzero_mask_t), zero_mask_t
+            )
+            product_t = Prod.apply(x, axes, True)
+            nonzero_product_t = Prod.apply(safe_x_t, axes, True)
+
+            # With no zeros, d(prod)/dx_i is product/x_i. With one
+            # zero, only that zero position receives the nonzero product.
+            no_zero_term = Div.apply(
+                Mul.apply(no_zero_t, product_t), safe_x_t
+            )
+            one_zero_term = Mul.apply(
+                Mul.apply(zero_mask_t, one_zero_t), nonzero_product_t
+            )
+            derivative = Add.apply(no_zero_term, one_zero_term)
+
+            if not keepdim:
+                grad_shape = tuple(
+                    1 if axis in axes else size
+                    for axis, size in enumerate(x.shape)
+                )
+                grad = Reshape.apply(grad_output, grad_shape)
+            else:
+                grad = grad_output
+            return [Mul.apply(grad, derivative)]
+
+        product = np.prod(xd, axis=axes, keepdims=True)
+        nonzero_product = np.prod(safe_x, axis=axes, keepdims=True)
+        derivative = np.where(no_zero, product / safe_x, 0)
+        derivative += np.where(
+            zero_mask & np.broadcast_to(exactly_one_zero, xd.shape),
+            np.broadcast_to(nonzero_product, xd.shape),
+            0,
+        )
+        grad = np.asarray(grad_output.data)
+        if not keepdim:
+            grad_shape = tuple(
+                1 if axis in axes else size
+                for axis, size in enumerate(xd.shape)
+            )
+            grad = np.reshape(grad, grad_shape)
+        return [Tensor(grad * derivative, dtype=grad_output.dtype)]
+
+
+class LogSumExp(Function):
+    @staticmethod
+    def forward(ctx, x, dim, keepdim=False):
+        xd = np.asarray(x.data)
+        axes = (dim,) if isinstance(dim, int) else tuple(dim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, axes=axes, keepdim=keepdim)
+        m = np.max(xd, axis=axes, keepdims=True)
+        shifted = np.exp(xd - m)
+        s = np.sum(shifted, axis=axes, keepdims=keepdim)
+        m_out = m if keepdim else np.squeeze(m, axis=axes)
+        return Tensor(np.asarray(np.log(s) + m_out), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        axes = ctx.get_attr("axes")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        m = np.max(xd, axis=axes, keepdims=True)
+        if create_graph:
+            # The stabilizing maximum is a numerical constant for the
+            # softmax derivative; differentiating through it is unnecessary.
+            m_t = _as_const(m, x.dtype)
+            shifted = Sub.apply(x, m_t)
+            exp_x = Exp.apply(shifted)
+            denom = Sum.apply(exp_x, axes)
+            keep_shape = list(x.shape)
+            for axis in axes:
+                keep_shape[axis] = 1
+            denom = Reshape.apply(denom, tuple(keep_shape))
+            soft = Div.apply(exp_x, denom)
+            if not keepdim:
+                grad_shape = list(x.shape)
+                for axis in axes:
+                    grad_shape[axis] = 1
+                grad_output = Reshape.apply(grad_output, tuple(grad_shape))
+            return [Mul.apply(grad_output, soft)]
+        g = np.asarray(grad_output.data)
+        soft = np.exp(xd - m)
+        soft = soft / np.sum(soft, axis=axes, keepdims=True)
+        if not keepdim:
+            g = np.expand_dims(g, axis=axes)
+        return [Tensor(g * soft, dtype=grad_output.dtype)]
+
+
+class Trace(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data)
+        assert xd.ndim == 2, "trace requires a 2-D tensor"
+        _save_attr(ctx, in_shape=tuple(xd.shape))
+        return Tensor(np.array(np.trace(xd)), dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        shape = ctx.get_attr("in_shape")
+        g = float(np.asarray(grad_output.data).sum())
+        grad = np.zeros(shape, dtype=np.float64)
+        np.fill_diagonal(grad, g)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Diagonal(Function):
+    @staticmethod
+    def forward(ctx, x, offset=0, dim1=0, dim2=1):
+        xd = np.asarray(x.data)
+        assert xd.ndim == 2, "diagonal currently supports 2-D tensors"
+        _save_attr(ctx, offset=offset, in_shape=tuple(xd.shape))
+        return Tensor(
+            np.diagonal(xd, offset=offset, axis1=dim1, axis2=dim2).copy(), dtype=x.dtype
+        )
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        offset = ctx.get_attr("offset")
+        shape = ctx.get_attr("in_shape")
+        g = np.asarray(grad_output.data)
+        grad = np.zeros(shape, dtype=np.float64)
+        n = len(g) if not np.isscalar(g) else 1
+        rows = np.arange(n)
+        if offset >= 0:
+            grad[rows, rows + offset] = g
+        else:
+            grad[rows - offset, rows] = g
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class MinDim(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data, dtype=np.float64)
+        if dim is None:
+            out = np.asarray(np.min(xd))
+        else:
+            out = np.min(xd, axis=dim, keepdims=keepdim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, dim=dim, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        dim = ctx.get_attr("dim")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = np.zeros_like(xd)
+        if dim is None:
+            grad.flat[np.argmin(xd)] = float(np.asarray(grad_output.data).sum())
+        else:
+            idx = np.argmin(xd, axis=dim)
+            g_exp = g if keepdim else np.expand_dims(g, axis=dim)
+            np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Log1p(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data, dtype=np.float64)
+        out = np.log1p(xd)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = g / (1.0 + xd)
+        if create_graph:
+            from .autograd_ops import Add, Div, _as_const
+            x_t = Tensor(xd, dtype=grad_output.dtype)
+            den = Add.apply(x_t, _as_const(1.0, grad_output.dtype))
+            return [Div.apply(grad_output, den)]
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Expm1(Function):
+    @staticmethod
+    def forward(ctx, x):
+        xd = np.asarray(x.data, dtype=np.float64)
+        out = np.expm1(xd)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = g * np.exp(xd)
+        if create_graph:
+            from .autograd_ops import Exp, Mul
+            x_t = Tensor(xd, dtype=grad_output.dtype)
+            return [Mul.apply(grad_output, Exp.apply(x_t))]
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class MaxDim(Function):
+    @staticmethod
+    def forward(ctx, x, dim=None, keepdim=False):
+        xd = np.asarray(x.data, dtype=np.float64)
+        if dim is None:
+            out = np.asarray(np.max(xd))
+        else:
+            out = np.max(xd, axis=dim, keepdims=keepdim)
+        if ctx is not None:
+            ctx.save_for_backward(x=x)
+        _save_attr(ctx, dim=dim, keepdim=keepdim)
+        return Tensor(out, dtype=x.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        x = _get_saved_tensor(ctx, "x")
+        dim = ctx.get_attr("dim")
+        keepdim = ctx.get_attr("keepdim")
+        xd = np.asarray(x.data)
+        g = np.asarray(grad_output.data)
+        grad = np.zeros_like(xd)
+        if dim is None:
+            grad.flat[np.argmax(xd)] = float(np.asarray(grad_output.data).sum())
+        else:
+            idx = np.argmax(xd, axis=dim)
+            g_exp = g if keepdim else np.expand_dims(g, axis=dim)
+            np.put_along_axis(grad, np.expand_dims(idx, axis=dim), g_exp, axis=dim)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+# ===========================================================================
+# Tensor indexing transforms — flip, roll and triangular masks
+# ===========================================================================
+
+
+class Flip(Function):
+    @staticmethod
+    def forward(ctx, a, dims=None):
+        normalized_dims = None if dims is None else tuple(int(d) for d in dims)
+        ctx.save_attr(dims=normalized_dims)
+        return Tensor(np.flip(a.data, axis=normalized_dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dims = ctx.get_attr("dims")
+        if create_graph:
+            return [Flip.apply(grad_output, dims)]
+        return [Tensor(np.flip(grad_output.data, axis=dims), dtype=grad_output.dtype)]
+
+
+class Roll(Function):
+    @staticmethod
+    def forward(ctx, a, shifts, dims=None):
+        normalized_shifts = tuple(int(v) for v in shifts) if isinstance(shifts, (tuple, list)) else int(shifts)
+        normalized_dims = tuple(int(v) for v in dims) if isinstance(dims, (tuple, list)) else dims
+        if normalized_dims is not None:
+            normalized_dims = int(normalized_dims) if isinstance(normalized_dims, (int, np.integer)) else normalized_dims
+        ctx.save_attr(shifts=normalized_shifts, dims=normalized_dims)
+        return Tensor(np.roll(a.data, shift=normalized_shifts, axis=normalized_dims), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        shifts = ctx.get_attr("shifts")
+        dims = ctx.get_attr("dims")
+        inverse = tuple(-v for v in shifts) if isinstance(shifts, tuple) else -shifts
+        if create_graph:
+            return [Roll.apply(grad_output, inverse, dims)]
+        return [Tensor(np.roll(grad_output.data, shift=inverse, axis=dims), dtype=grad_output.dtype)]
+
+
+class Tril(Function):
+    @staticmethod
+    def forward(ctx, a, diagonal=0):
+        diagonal = int(diagonal)
+        mask = np.tril(np.ones(a.shape[-2:], dtype=bool), k=diagonal)
+        ctx.save_attr(diagonal=diagonal, mask=mask)
+        return Tensor(np.tril(a.data, k=diagonal), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask = ctx.get_attr("mask")
+        if create_graph:
+            return [Mul.apply(grad_output, Tensor(mask, dtype=grad_output.dtype))]
+        return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
+
+
+class Triu(Function):
+    @staticmethod
+    def forward(ctx, a, diagonal=0):
+        diagonal = int(diagonal)
+        mask = np.triu(np.ones(a.shape[-2:], dtype=bool), k=diagonal)
+        ctx.save_attr(diagonal=diagonal, mask=mask)
+        return Tensor(np.triu(a.data, k=diagonal), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        mask = ctx.get_attr("mask")
+        if create_graph:
+            return [Mul.apply(grad_output, Tensor(mask, dtype=grad_output.dtype))]
+        return [Tensor(grad_output.data * mask, dtype=grad_output.dtype)]
+
+
+class IndexSelect(Function):
+    """Select one dimension by a 1-D index array; backward accumulates duplicates."""
+
+    @staticmethod
+    def forward(ctx, a, dim, index):
+        dim = int(dim)
+        if dim < 0:
+            dim += a.ndim
+        if dim < 0 or dim >= a.ndim:
+            raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
+        indices = np.asarray(index)
+        if indices.ndim != 1:
+            raise ValueError("index_select expects a one-dimensional index")
+        if indices.dtype.kind not in "iu":
+            raise TypeError("index_select indices must have an integer dtype")
+        indices = indices.astype(np.int64, copy=False)
+        if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
+            raise IndexError("index_select index is out of range")
+        ctx.save_attr(dim=dim, indices=indices.copy(), input_shape=a.shape)
+        return Tensor(np.take(a.data, indices, axis=dim), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dim = ctx.get_attr("dim")
+        indices = ctx.get_attr("indices")
+        input_shape = ctx.get_attr("input_shape")
+        grad = np.zeros(input_shape, dtype=_numpy_dtype(grad_output.dtype))
+        for output_index in np.ndindex(grad_output.shape):
+            input_index = list(output_index)
+            input_index[dim] = int(indices[output_index[dim]])
+            grad[tuple(input_index)] += grad_output.data[output_index]
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class Gather(Function):
+    """Gather values along one axis; backward scatter-adds repeated indices."""
+
+    @staticmethod
+    def forward(ctx, a, dim, index):
+        dim = int(dim)
+        if dim < 0:
+            dim += a.ndim
+        if dim < 0 or dim >= a.ndim:
+            raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
+        indices = np.asarray(index)
+        if indices.ndim != a.ndim:
+            raise ValueError("gather index must have the same number of dimensions as input")
+        if indices.dtype.kind not in "iu":
+            raise TypeError("gather indices must have an integer dtype")
+        indices = indices.astype(np.int64, copy=False)
+        for axis, (index_size, input_size) in enumerate(zip(indices.shape, a.shape)):
+            if axis != dim and index_size > input_size:
+                raise ValueError("gather index shape exceeds input shape on a non-gather axis")
+        if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
+            raise IndexError("gather index is out of range")
+        ctx.save_attr(dim=dim, indices=indices.copy(), input_shape=a.shape)
+        return Tensor(np.take_along_axis(a.data, indices, axis=dim), dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        dim = ctx.get_attr("dim")
+        indices = ctx.get_attr("indices")
+        input_shape = ctx.get_attr("input_shape")
+        grad = np.zeros(input_shape, dtype=_numpy_dtype(grad_output.dtype))
+        coordinates = np.indices(indices.shape, sparse=False)
+        coordinates[dim] = indices
+        np.add.at(grad, tuple(coordinates), grad_output.data)
+        return [Tensor(grad, dtype=grad_output.dtype)]
+
+
+class ScatterAdd(Function):
+    """Add source values into indexed destinations, accumulating duplicate indices."""
+
+    @staticmethod
+    def forward(ctx, a, dim, index, src):
+        dim = int(dim)
+        if dim < 0:
+            dim += a.ndim
+        if dim < 0 or dim >= a.ndim:
+            raise IndexError(f"dimension {dim} out of range for tensor with {a.ndim} dimensions")
+        indices = np.asarray(index)
+        if indices.ndim != a.ndim or indices.shape != src.shape:
+            raise ValueError("scatter_add index and source must have the same shape and rank")
+        if src.dtype != a.dtype:
+            raise TypeError("scatter_add source dtype must match input dtype")
+        if indices.dtype.kind not in "iu":
+            raise TypeError("scatter_add indices must have an integer dtype")
+        indices = indices.astype(np.int64, copy=False)
+        for axis, (index_size, input_size) in enumerate(zip(indices.shape, a.shape)):
+            if axis != dim and index_size > input_size:
+                raise ValueError("scatter_add index shape exceeds input on a non-scatter axis")
+        if np.any(indices < 0) or np.any(indices >= a.shape[dim]):
+            raise IndexError("scatter_add index is out of range")
+
+        ctx.save_attr(dim=dim, indices=indices.copy())
+        ctx.save_attr(input_shape=a.shape, source_shape=src.shape)
+        result = a.data.copy()
+        coordinates = np.indices(indices.shape, sparse=False)
+        coordinates[dim] = indices
+        np.add.at(result, tuple(coordinates), src.data)
+        return Tensor(result, dtype=a.dtype)
+
+    @staticmethod
+    def backward(ctx, grad_output, create_graph=False):
+        if create_graph:
+            dim = ctx.get_attr("dim")
+            indices = ctx.get_attr("indices")
+            return [grad_output, None, None, Gather.apply(grad_output, dim, indices)]
+        dim = ctx.get_attr("dim")
+        indices = ctx.get_attr("indices")
+        grad_src = np.take_along_axis(grad_output.data, indices, axis=dim)
+        return [
+            Tensor(grad_output.data.copy(), dtype=grad_output.dtype),
+            None,
+            None,
+            Tensor(grad_src, dtype=grad_output.dtype),
+        ]

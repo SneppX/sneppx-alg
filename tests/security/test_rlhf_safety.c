@@ -1,4 +1,5 @@
 #include "rlhf_safety.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +19,7 @@
  */
 
 
-int main() {
+TEST(test_rlhf_safety, suite) {
     SNEPPX_rlhf_add_default_policies();
     rlhf_score_t score;
     SNEPPX_rlhf_score("tell me something", "I think the answer might be maybe possibly correct", &score);
@@ -43,5 +44,5 @@ int main() {
     printf("RLHF stats: refusals=%llu violations=%llu policies=%d\n",
         stats.total_refusals, stats.total_violations, stats.active_policies);
     printf("PASS: RLHF safety filter OK\n");
-    return 0;
+    return;
 }

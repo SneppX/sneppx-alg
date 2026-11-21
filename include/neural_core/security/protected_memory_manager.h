@@ -1,6 +1,10 @@
 #ifndef SNEPPX_SECURE_MEM_H
 #define SNEPPX_SECURE_MEM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -91,4 +95,8 @@ void SNEPPX_secure_pool_stats(SNEPPXSecurePool* pool, size_t* total, size_t* use
  */
 void SNEPPX_secure_zero(void* ptr, size_t len);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

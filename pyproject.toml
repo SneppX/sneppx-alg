@@ -1,34 +1,29 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sneppx-alg"
-version = "1.1.1"
-description = "Next-generation AI architecture with security built into the foundation"
+version = "1.5.3"
+description = "Open-source AI and machine-learning framework with a native C/C++ core and Python bindings for tensor operations, autograd, and neural-network components"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Ammar [SNEPPX]", email = "algoSNEPPX@gmail.com"},
 ]
 keywords = [
-    "ai", "machine-learning", "deep-learning", "neural-networks",
-    "security", "post-quantum", "cryptography",
-    "distributed-training", "cuda", "tensor",
-    "state-space", "mixture-of-experts", "adversarial",
-    "model-zoo", "quantization", "zero",
-    "llama", "mistral", "qwen", "deepseek",
-    "attention", "mamba", "transformer",
-    "formal-verification", "differential-privacy",
-    "npu", "nccl"
+    "ai", "machine-learning", "deep-learning", "tensor", "autograd",
+    "neural-network", "c", "cpp", "python", "numpy",
+    "scientific-computing", "quantization", "cryptography",
+    "ai-security", "distributed-training", "transformer",
+    "mixture-of-experts", "state-space", "cuda", "open-source"
 ]
 
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -41,14 +36,15 @@ classifiers = [
 dependencies = [
     "numpy>=1.21.0",
     "pyyaml>=5.1",
+    "cryptography>=40.0.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/ammar49-cyber/sneppx-alg"
-Repository = "https://github.com/ammar49-cyber/sneppx-alg"
-Documentation = "https://github.com/ammar49-cyber/sneppx-alg#readme"
-"Bug Tracker" = "https://github.com/ammar49-cyber/sneppx-alg/issues"
-"Release Notes" = "https://github.com/ammar49-cyber/sneppx-alg/releases"
+Homepage = "https://sneppx.github.io/sneppxov/"
+Repository = "https://github.com/SneppX/sneppx-alg"
+Documentation = "https://sneppx.github.io/sneppx-alg/"
+"Bug Tracker" = "https://github.com/SneppX/sneppx-alg/issues"
+"Release Notes" = "https://github.com/SneppX/sneppx-alg/releases"
 
 [project.scripts]
 sneppx-train = "SneppX_ALG.interface_bindings.train_cli:main"
@@ -57,11 +53,24 @@ sneppx-experiment = "SneppX_ALG.interface_bindings.experiment_cli:main"
 sneppx-eval = "SneppX_ALG.interface_bindings.eval_cli:main"
 sneppx-quantize = "SneppX_ALG.interface_bindings.quantize_cli:main"
 sneppx-rlhf = "SneppX_ALG.interface_bindings.rlhf_cli:main"
+sneppx-onnx = "SneppX_ALG.interface_bindings.onnx_cli:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "scipy>=1.7"]
 hf = ["huggingface_hub>=0.16.0"]
 serve = ["uvicorn>=0.22.0"]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material[imaging]==9.7.7",
+    "mkdocstrings[python]==0.25.1",
+    "mkdocs-autorefs==0.5.0",
+    "mkdocs-gen-files",
+    "mkdocs-section-index",
+    "mkdocs-literate-nav",
+    "mike>=2.0",
+    "mkdocs-rss-plugin>=1.3",
+    "properdocs-theme-mkdocs>=1.6.7",
+]
 
 [tool.setuptools.packages.find]
 where = ["bindings/python"]

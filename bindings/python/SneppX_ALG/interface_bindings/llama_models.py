@@ -11,11 +11,57 @@ from .advanced_ops import (
     gelu,
     silu,
     softmax,
+    dropout,
     rope,
     multi_head_attention,
-    rmsnorm,
 )
 from .nn import Module, Linear, LayerNorm, Dropout, Embedding, Sequential
+
+
+def _norm_config(config: Dict[str, Any]) -> Dict[str, Any]:
+    """Accept both the legacy test key names and the HF-style key names.
+
+    Legacy: hidden_dim, num_layers, num_heads, intermediate_dim, max_seq_len.
+    HF:     hidden_size, num_hidden_layers, num_attention_heads,
+            intermediate_size, max_position_embeddings.
+    """
+    cfg = dict(config) if config else {}
+    if "hidden_size" not in cfg and "hidden_dim" in cfg:
+        cfg["hidden_size"] = cfg["hidden_dim"]
+    if "num_hidden_layers" not in cfg and "num_layers" in cfg:
+        cfg["num_hidden_layers"] = cfg["num_layers"]
+    if "num_attention_heads" not in cfg and "num_heads" in cfg:
+        cfg["num_attention_heads"] = cfg["num_heads"]
+    if "intermediate_size" not in cfg and "intermediate_dim" in cfg:
+        cfg["intermediate_size"] = cfg["intermediate_dim"]
+    if "max_position_embeddings" not in cfg and "max_seq_len" in cfg:
+        cfg["max_position_embeddings"] = cfg["max_seq_len"]
+    return cfg
+
+
+# Legacy keyword aliases accepted by the constructors (e.g. the test suite
+# passes hidden_dim/num_layers/num_heads/... as keyword arguments).
+_CONFIG_ALIASES = {
+    "hidden_dim": "hidden_size",
+    "num_layers": "num_hidden_layers",
+    "num_heads": "num_attention_heads",
+    "intermediate_dim": "intermediate_size",
+    "max_seq_len": "max_position_embeddings",
+    "num_kv_heads": "num_key_value_heads",
+    "dim": "hidden_size",
+}
+
+
+def _as_config(config: Optional[Dict[str, Any]] = None, **kwargs) -> Dict[str, Any]:
+    """Build a normalized config from either a dict and/or keyword overrides."""
+    if isinstance(config, dict):
+        cfg = dict(config)
+    else:
+        cfg = {}
+    for key, value in kwargs.items():
+        cfg[_CONFIG_ALIASES.get(key, key)] = value
+    return _norm_config(cfg)
+
 
 # =========================================================================
 # LLaMA Architecture
@@ -37,18 +83,25 @@ class LlamaRotaryEmbedding:
     """Rotary Position Embedding (RoPE)."""
 
     def __init__(
-        self, dim: int, max_position_embeddings: int = 4096, base: float = 10000.0
+        self, dim: int = None, max_position_embeddings: int = None, base: float = 10000.0, **kwargs
     ):
+        if dim is None:
+            dim = kwargs.get("dim", 64)
+        if max_position_embeddings is None:
+            max_position_embeddings = kwargs.get("max_seq_len", 4096)
         self.dim = dim
         self.max_position_embeddings = max_position_embeddings
         self.base = base
         self.inv_freq = 1.0 / (base ** (np.arange(0, dim, 2, dtype=np.float32) / dim))
 
     def forward(
-        self, x: Tensor, position_ids: Optional[np.ndarray] = None
+        self, x: Tensor = None, position_ids: Optional[np.ndarray] = None, seq_len: int = None
     ) -> Tuple[Tensor, Tensor]:
-        # x: [B, seq_len, num_heads, head_dim]
-        seq_len = x.shape[1]
+        # x: [B, num_heads, seq_len, head_dim]
+        if x is not None and getattr(x, "shape", None) is not None:
+            seq_len = x.shape[1]
+        if seq_len is None:
+            seq_len = self.max_position_embeddings
         if position_ids is None:
             position_ids = np.arange(seq_len, dtype=np.float32)
 
@@ -63,38 +116,38 @@ class LlamaRotaryEmbedding:
 
 
 def apply_rotary_pos_emb(
-    q: Tensor,
-    k: Tensor,
-    cos: Tensor,
-    sin: Tensor,
+    q: np.ndarray,
+    k: np.ndarray,
+    cos: np.ndarray,
+    sin: np.ndarray,
     position_ids: Optional[np.ndarray] = None,
-) -> Tuple[Tensor, Tensor]:
-    """Apply rotary position embedding to q and k."""
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Apply rotary position embedding to q and k (numpy arrays)."""
     # q, k: [B, num_heads, seq_len, head_dim]
-    # cos, sin: [seq_len, head_dim] or [1, seq_len, 1, head_dim]
+    # cos, sin: [seq_len, head_dim] (broadcastable to q/k)
 
     q_embed = (q * cos) + (rotate_half(q) * sin)
     k_embed = (k * cos) + (rotate_half(k) * sin)
     return q_embed, k_embed
 
 
-def rotate_half(x: Tensor) -> Tensor:
+def rotate_half(x: np.ndarray) -> np.ndarray:
     """Rotate half the hidden dims of the input."""
-    x_np = np.asarray(x.data)
-    x1 = x_np[..., : x_np.shape[-1] // 2]
-    x2 = x_np[..., x_np.shape[-1] // 2 :]
-    return Tensor.from_numpy(np.concatenate([-x2, x1], axis=-1).astype(np.float32))
+    x1 = x[..., : x.shape[-1] // 2]
+    x2 = x[..., x.shape[-1] // 2 :]
+    return np.concatenate([-x2, x1], axis=-1).astype(np.float32)
 
 
 class LlamaAttention:
     """LLaMA multi-head attention with RoPE."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.hidden_size = config.get("hidden_size", 4096)
         self.num_heads = config.get("num_attention_heads", 32)
         self.num_kv_heads = config.get("num_key_value_heads", self.num_heads)
-        self.head_dim = self.hidden_size // self.num_heads
+        self.head_dim = config.get("head_dim", self.hidden_size // self.num_heads)
         self.max_position_embeddings = config.get("max_position_embeddings", 4096)
         self.rope_theta = config.get("rope_theta", 10000.0)
 
@@ -128,26 +181,36 @@ class LlamaAttention:
     ) -> Tuple[Tensor, Optional[Tuple[Tensor, Tensor]]]:
         B, L, _ = hidden_states.shape
 
-        # Project Q, K, V
-        q = self.q_proj(hidden_states)
-        k = self.k_proj(hidden_states)
-        v = self.v_proj(hidden_states)
+        # Project Q, K, V -> numpy
+        q = np.asarray(self.q_proj(hidden_states).data, dtype=np.float32)
+        k = np.asarray(self.k_proj(hidden_states).data, dtype=np.float32)
+        v = np.asarray(self.v_proj(hidden_states).data, dtype=np.float32)
 
-        # Reshape for multi-head
-        q = q.reshape(B, -1, self.num_heads, self.head_dim).transpose(0, 2, 1, 3)
-        k = k.reshape(B, -1, self.num_kv_heads, self.head_dim).transpose(0, 2, 1, 3)
-        v = v.reshape(B, -1, self.num_kv_heads, self.head_dim).transpose(0, 2, 1, 3)
+        # Reshape for multi-head: [B, L, H, hd] -> [B, H, L, hd]
+        q = q.reshape(B, L, self.num_heads, self.head_dim).transpose(0, 2, 1, 3)
+        k = k.reshape(B, L, self.num_kv_heads, self.head_dim).transpose(0, 2, 1, 3)
+        v = v.reshape(B, L, self.num_kv_heads, self.head_dim).transpose(0, 2, 1, 3)
 
         # Apply RoPE
         cos, sin = self.rotary_emb.forward(q, position_ids)
+        cos = np.asarray(cos.data, dtype=np.float32)
+        sin = np.asarray(sin.data, dtype=np.float32)
         q, k = apply_rotary_pos_emb(q, k, cos, sin, position_ids)
 
         # Handle KV cache
         if past_key_value is not None:
-            k = np.concatenate([past_key_value[0], k], axis=2)
-            v = np.concatenate([past_key_value[1], v], axis=2)
+            k = np.concatenate(
+                [np.asarray(past_key_value[0].data, dtype=np.float32), k], axis=2
+            )
+            v = np.concatenate(
+                [np.asarray(past_key_value[1].data, dtype=np.float32), v], axis=2
+            )
 
-        present = (k, v) if use_cache else None
+        present = (
+            (Tensor.from_numpy(k.copy()), Tensor.from_numpy(v.copy()))
+            if use_cache
+            else None
+        )
 
         # Repeat K/V for GQA
         if self.num_kv_heads != self.num_heads:
@@ -158,7 +221,9 @@ class LlamaAttention:
         attn_weights = np.matmul(q, k.transpose(0, 1, 3, 2)) / np.sqrt(self.head_dim)
 
         if attention_mask is not None:
-            attn_weights = attn_weights + attention_mask
+            attn_weights = attn_weights + np.asarray(
+                getattr(attention_mask, "data", attention_mask), dtype=np.float32
+            )
 
         attn_weights = softmax(attn_weights, axis=-1)
 
@@ -167,7 +232,7 @@ class LlamaAttention:
             B, -1, self.num_heads * self.head_dim
         )
 
-        output = self.o_proj(attn_output)
+        output = self.o_proj(Tensor.from_numpy(attn_output.astype(np.float32)))
         output = dropout(output, self.hidden_dropout, training=True)
 
         return output, present
@@ -176,7 +241,8 @@ class LlamaAttention:
 class LlamaMLP:
     """LLaMA MLP with SwiGLU activation."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.hidden_size = config.get("hidden_size", 4096)
         self.intermediate_size = config.get("intermediate_size", 11008)
 
@@ -193,7 +259,8 @@ class LlamaMLP:
 class LlamaDecoderLayer:
     """LLaMA decoder layer."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.hidden_size = config.get("hidden_size", 4096)
 
         self.self_attn = LlamaAttention(config)
@@ -230,7 +297,8 @@ class LlamaDecoderLayer:
 class LlamaModel:
     """LLaMA model."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.vocab_size = config.get("vocab_size", 32000)
         self.hidden_size = config.get("hidden_size", 4096)
@@ -257,7 +325,10 @@ class LlamaModel:
 
         # Prepare attention mask
         if attention_mask is not None:
-            attention_mask = attention_mask[:, None, None, :] * -1e9
+            attention_mask = (
+                np.asarray(attention_mask.data, dtype=np.float32)[:, None, None, :]
+                * -1e9
+            )
 
         # Transformer layers
         past_key_values = past_key_values or [None] * len(self.layers)
@@ -285,7 +356,8 @@ class LlamaModel:
 class LlamaForCausalLM:
     """LLaMA for causal language modeling."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.model = LlamaModel(config)
         self.lm_head = Linear(config["hidden_size"], config["vocab_size"], bias=False)
@@ -311,7 +383,7 @@ class LlamaForCausalLM:
             # Shift for causal LM
             shift_logits = logits[:, :-1, :].reshape(-1, logits.shape[-1])
             shift_labels = labels[:, 1:].reshape(-1)
-            loss = cross_entropy(shift_logits, shift_labels)
+            loss = shift_logits.cross_entropy(shift_labels)
 
         return {
             "logits": logits,
@@ -352,7 +424,8 @@ class MistralDecoderLayer(LlamaDecoderLayer):
 class MistralModel(LlamaModel):
     """Mistral model."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         config["sliding_window"] = config.get("sliding_window", 4096)
         super().__init__(config)
 
@@ -371,7 +444,8 @@ class MistralForCausalLM(LlamaForCausalLM):
 class Qwen2Attention(LlamaAttention):
     """Qwen2 attention with QKV bias and RMSNorm."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         super().__init__(config)
         # Qwen2 uses bias in QKV projections
         self.q_proj = Linear(
@@ -383,14 +457,14 @@ class Qwen2Attention(LlamaAttention):
         )
         self.k_proj = Linear(
             config["hidden_size"],
-            config["num_key_value_heads"]
+            config.get("num_key_value_heads", config["num_attention_heads"])
             * config["hidden_size"]
             // config["num_attention_heads"],
             bias=True,
         )
         self.v_proj = Linear(
             config["hidden_size"],
-            config["num_key_value_heads"]
+            config.get("num_key_value_heads", config["num_attention_heads"])
             * config["hidden_size"]
             // config["num_attention_heads"],
             bias=True,
@@ -406,18 +480,20 @@ class Qwen2MLP(LlamaMLP):
 class Qwen2DecoderLayer:
     """Qwen2 decoder layer."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.hidden_size = config["hidden_size"]
         self.self_attn = Qwen2Attention(config)
         self.mlp = Qwen2MLP(config)
-        self.input_layernorm = rmsnorm(config["hidden_size"])
-        self.post_attention_layernorm = rmsnorm(config["hidden_size"])
+        self.input_layernorm = LlamaRMSNorm(config["hidden_size"])
+        self.post_attention_layernorm = LlamaRMSNorm(config["hidden_size"])
 
 
 class Qwen2Model:
     """Qwen2 model."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.vocab_size = config["vocab_size"]
         self.hidden_size = config["hidden_size"]
@@ -427,13 +503,14 @@ class Qwen2Model:
         self.layers = [
             Qwen2DecoderLayer(config) for _ in range(config["num_hidden_layers"])
         ]
-        self.norm = rmsnorm(config["hidden_size"])
+        self.norm = LlamaRMSNorm(config["hidden_size"])
 
 
 class Qwen2ForCausalLM:
     """Qwen2 for causal LM."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.model = Qwen2Model(config)
         self.lm_head = Linear(config["hidden_size"], config["vocab_size"], bias=False)
@@ -447,7 +524,8 @@ class Qwen2ForCausalLM:
 class DeepSeekV2Attention:
     """DeepSeek V2 Multi-head Latent Attention (MLA)."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.hidden_size = config["hidden_size"]
         self.num_heads = config["num_attention_heads"]
@@ -539,7 +617,8 @@ class DeepSeekV2Attention:
 class DeepSeekV2MLP:
     """DeepSeek V2 MLP with SiLU."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.gate_proj = Linear(
             config["hidden_size"], config["intermediate_size"], bias=False
         )
@@ -557,12 +636,13 @@ class DeepSeekV2MLP:
 class DeepSeekV2DecoderLayer:
     """DeepSeek V2 decoder layer."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.hidden_size = config["hidden_size"]
         self.self_attn = DeepSeekV2Attention(config)
         self.mlp = DeepSeekV2MLP(config)
-        self.input_layernorm = rmsnorm(config["hidden_size"])
-        self.post_attention_layernorm = rmsnorm(config["hidden_size"])
+        self.input_layernorm = LlamaRMSNorm(config["hidden_size"])
+        self.post_attention_layernorm = LlamaRMSNorm(config["hidden_size"])
 
     def forward(self, hidden_states: Tensor, **kwargs) -> Tuple[Tensor, Any]:
         residual = hidden_states
@@ -581,7 +661,8 @@ class DeepSeekV2DecoderLayer:
 class DeepSeekV2Model:
     """DeepSeek V2 model."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.vocab_size = config["vocab_size"]
         self.hidden_size = config["hidden_size"]
@@ -591,7 +672,7 @@ class DeepSeekV2Model:
         self.layers = [
             DeepSeekV2DecoderLayer(config) for _ in range(config["num_hidden_layers"])
         ]
-        self.norm = rmsnorm(config["hidden_size"])
+        self.norm = LlamaRMSNorm(config["hidden_size"])
 
     def forward(self, input_ids: Tensor, **kwargs) -> Dict[str, Any]:
         hidden_states = self.embed_tokens(input_ids)
@@ -606,7 +687,8 @@ class DeepSeekV2Model:
 class DeepSeekV2ForCausalLM:
     """DeepSeek V2 for causal LM."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any] = None, **kwargs):
+        config = _as_config(config, **kwargs)
         self.config = config
         self.model = DeepSeekV2Model(config)
         self.lm_head = Linear(config["hidden_size"], config["vocab_size"], bias=False)
@@ -615,6 +697,30 @@ class DeepSeekV2ForCausalLM:
         outputs = self.model.forward(input_ids, **kwargs)
         logits = self.lm_head(outputs["last_hidden_state"])
         return {"logits": logits}
+
+
+# Make every model/block callable so it can be invoked as `module(x)`
+# (the test suite calls instances directly rather than `.forward(...)`).
+for _cls in (
+    LlamaRotaryEmbedding,
+    LlamaAttention,
+    LlamaMLP,
+    LlamaDecoderLayer,
+    LlamaModel,
+    LlamaForCausalLM,
+    MistralForCausalLM,
+    Qwen2ForCausalLM,
+    DeepSeekV2ForCausalLM,
+):
+    if hasattr(_cls, "forward"):
+        _cls.__call__ = _cls.forward
+
+
+# The attention and decoder-layer `forward` methods return a
+# ``(output, present)`` tuple for KV-cache plumbing, but the test suite calls
+# these modules directly and expects the output tensor back.
+LlamaAttention.__call__ = lambda self, *a, **k: self.forward(*a, **k)[0]
+LlamaDecoderLayer.__call__ = lambda self, *a, **k: self.forward(*a, **k)[0]
 
 
 # =========================================================================
@@ -731,7 +837,10 @@ def get_model_config(model_name: str) -> Dict[str, Any]:
         raise ValueError(
             f"Unknown model: {model_name}. Available: {list(all_configs.keys())}"
         )
-    return all_configs[model_name]
+    cfg = dict(all_configs[model_name])
+    if "hidden_dim" not in cfg and "hidden_size" in cfg:
+        cfg["hidden_dim"] = cfg["hidden_size"]
+    return cfg
 
 
 def create_llama_model(model_name: str) -> LlamaForCausalLM:

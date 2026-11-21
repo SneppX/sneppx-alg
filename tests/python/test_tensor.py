@@ -1,13 +1,202 @@
 """Comprehensive tests for Tensor operations (pure NumPy or C backend)."""
 
 import numpy as np
-from SneppX_ALG.interface_bindings import Tensor, _HAS_C_BACKEND
+from SneppX_ALG.interface_bindings import Tensor, Dtype, Device, Layout, _HAS_C_BACKEND
+from SneppX_ALG.interface_bindings.tensor import DTYPE_MAP
+
+
+def test_dtype_and_device_enum_contract():
+    expected_dtype_names = (
+        "FLOAT32", "FLOAT64", "FLOAT16", "BFLOAT16", "FLOAT8",
+        "INT32", "INT64", "INT16", "INT8", "UINT8", "BOOL",
+        "COMPLEX64", "COMPLEX128",
+    )
+    assert all(hasattr(Dtype, name) for name in expected_dtype_names)
+    assert all(hasattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU"))
+    assert all(hasattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED"))
+    if not _HAS_C_BACKEND:
+        assert Layout.DENSE == Layout.ROW_MAJOR
+        assert [getattr(Dtype, name) for name in expected_dtype_names] == list(range(13))
+        assert [getattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")] == list(range(6))
+        assert [getattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")] == list(range(4))
+
+
+def test_item_requires_exactly_one_element():
+    scalar = Tensor([4.5])
+    assert scalar.item() == 4.5
+
+    multi = Tensor([1.0, 2.0])
+    try:
+        multi.item()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Tensor.item() must reject multi-element tensors")
+
+    try:
+        float(multi.data)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("float() must reject multi-element tensor data")
+
+
+def test_complex_scalar_construction():
+    value = 2.5 - 3.0j
+    tensor = Tensor(value, dtype="complex64")
+    assert tensor.shape == (1,)
+    assert tensor.data.dtype == np.complex64
+    assert np.allclose(tensor.data, np.array([value], dtype=np.complex64))
+    assert tensor.item() == np.complex64(value)
+
+
+def test_float8_storage_roundtrip():
+    assert DTYPE_MAP["float8"][1] == 1
+    values = np.array([0, 1, 127, 255], dtype=np.uint8)
+    tensor = Tensor(values, dtype="float8")
+    assert tensor.dtype_name == "float8"
+    assert tensor.data.dtype == np.uint8
+    assert np.array_equal(tensor.data, values)
 
 
 def test_create():
     t = Tensor([2, 3])
     assert t.shape == (2,), f"Expected (2,), got {t.shape}"
     print("  test_create PASS")
+
+
+def test_scatter_add_forward_and_gradients():
+    base_values = np.ones((2, 3), dtype=np.float32)
+    source_values = np.array([[2, 3], [4, 5]], dtype=np.float32)
+    indices = np.array([[2, 0], [1, 1]], dtype=np.int64)
+
+    base = Tensor(base_values)
+    source = Tensor(source_values)
+    result = base.scatter_add(1, indices, source)
+    expected = np.array([[4, 1, 3], [1, 10, 1]], dtype=np.float32)
+    assert np.array_equal(result.data, expected)
+
+    tracked_base = Tensor(base_values, requires_grad=True)
+    tracked_source = Tensor(source_values, requires_grad=True)
+    tracked_base.scatter_add(1, indices, tracked_source).sum().backward()
+    assert np.array_equal(tracked_base.grad.data, np.ones_like(base_values))
+    assert np.array_equal(tracked_source.grad.data, np.ones_like(source_values))
+
+
+def test_scatter_add_rejects_invalid_inputs():
+    base = Tensor(np.zeros((2, 3), dtype=np.float32))
+    source = Tensor(np.ones((2, 2), dtype=np.float32))
+    invalid = (
+        (2, np.zeros((2, 2), dtype=np.int64), source),
+        (1, np.zeros((2, 2), dtype=np.float32), source),
+        (1, np.full((2, 2), 3, dtype=np.int64), source),
+        (1, np.zeros((2, 2), dtype=np.int64), Tensor(np.ones((2, 2), dtype=np.float64), dtype="float64")),
+    )
+    for dim, index, values in invalid:
+        try:
+            base.scatter_add(dim, index, values)
+        except (IndexError, ValueError, TypeError):
+            pass
+        else:
+            raise AssertionError("invalid scatter_add input accepted")
+
+
+def test_gather_forward_and_duplicate_index_gradients():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    indices = np.array([[2, 0], [1, 1]], dtype=np.int64)
+    tensor = Tensor(values)
+    gathered = tensor.gather(1, indices)
+    assert np.array_equal(gathered.data, np.array([[3, 1], [5, 5]], dtype=np.float32))
+
+    tracked = Tensor(values, requires_grad=True)
+    tracked.gather(1, indices).sum().backward()
+    expected_grad = np.array([[1, 0, 1], [0, 2, 0]], dtype=np.float32)
+    assert np.array_equal(tracked.grad.data, expected_grad)
+
+
+def test_gather_rejects_invalid_indices():
+    tensor = Tensor(np.arange(6, dtype=np.float32).reshape(2, 3))
+    invalid_inputs = (
+        (2, np.array([[0], [0]])),
+        (1, np.array([[0.5], [1.0]])),
+        (1, np.array([[3], [0]], dtype=np.int64)),
+        (1, np.array([[0], [0], [0]], dtype=np.int64)),
+    )
+    for dim, index in invalid_inputs:
+        try:
+            tensor.gather(dim, index)
+        except (IndexError, ValueError, TypeError):
+            pass
+        else:
+            raise AssertionError(f"invalid gather input accepted: {(dim, index)!r}")
+
+
+def test_index_select_forward_and_duplicate_index_gradients():
+    values = np.arange(6, dtype=np.float32).reshape(2, 3)
+    tensor = Tensor(values)
+    selected = tensor.index_select(1, [2, 0, 2])
+    assert np.array_equal(selected.data, values[:, [2, 0, 2]])
+
+    tracked = Tensor(values, requires_grad=True)
+    tracked.index_select(1, [2, 0, 2]).sum().backward()
+    expected_grad = np.array([[1, 0, 2], [1, 0, 2]], dtype=np.float32)
+    assert np.array_equal(tracked.grad.data, expected_grad)
+
+
+def test_index_select_rejects_invalid_indices():
+    tensor = Tensor(np.arange(6, dtype=np.float32).reshape(2, 3))
+    for dim, index in ((2, [0]), (1, [[0, 1]]), (1, [3]), (1, [-1]), (1, [1.5])):
+        try:
+            tensor.index_select(dim, index)
+        except (IndexError, ValueError, TypeError):
+            pass
+        else:
+            raise AssertionError(f"invalid index_select input accepted: {(dim, index)!r}")
+
+
+def test_flip_roll_and_triangular_tensor_ops():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    tensor = Tensor(values)
+
+    assert np.array_equal(tensor.flip((1,)).data, np.flip(values, axis=1))
+    assert np.array_equal(tensor.roll(1, dims=1).data, np.roll(values, 1, axis=1))
+    assert np.array_equal(tensor.roll(2).data, np.roll(values, 2))
+    assert np.array_equal(tensor.tril().data, np.tril(values))
+    assert np.array_equal(tensor.triu().data, np.triu(values))
+    assert np.array_equal(tensor.tril(diagonal=-1).data, np.tril(values, k=-1))
+    assert np.array_equal(tensor.triu(diagonal=1).data, np.triu(values, k=1))
+
+
+def test_flip_roll_and_triangular_ops_autograd():
+    values = np.arange(1, 7, dtype=np.float32).reshape(2, 3)
+    weights = Tensor(np.arange(1, 7, dtype=np.float32).reshape(2, 3))
+
+    x = Tensor(values, requires_grad=True)
+    (x.flip((1,)) * weights).sum().backward()
+    assert np.array_equal(x.grad.data, np.flip(weights.data, axis=1))
+
+    x = Tensor(values, requires_grad=True)
+    (x.roll(1, dims=1) * weights).sum().backward()
+    assert np.array_equal(x.grad.data, np.roll(weights.data, -1, axis=1))
+
+    x = Tensor(values, requires_grad=True)
+    (x.tril() * weights).sum().backward()
+    assert np.array_equal(x.grad.data, weights.data * np.tril(np.ones_like(values)))
+
+
+def test_numpy_array_protocol_shares_storage_and_converts_dtype():
+    tensor = Tensor([1.0, 2.0, 3.0])
+    view = np.asarray(tensor)
+    view[0] = 9.0
+    assert tensor.data[0] == 9.0
+
+    converted = np.asarray(tensor, dtype=np.float64)
+    assert converted.dtype == np.float64
+    assert np.allclose(converted, [9.0, 2.0, 3.0])
+
+    independent = np.array(tensor, copy=True)
+    independent[1] = 77.0
+    assert tensor.data[1] == 2.0
 
 
 def test_numpy_roundtrip():

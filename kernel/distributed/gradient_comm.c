@@ -1,5 +1,6 @@
 #ifdef SNEPPX_HAS_CUDA
 #include "../../include/neural_core/architecture/distributed.h"
+#include "../../net/distributed/nccl.h"
 #include <cuda_runtime.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,6 +46,7 @@ typedef struct {
     float* intra_buffer;
     float* inter_buffer;
     size_t buffer_size;
+    SNEPPX_ProcessGroup* pg;
 } SNEPPX_HierarchicalAR;
 
 int sneppx_hierarchical_ar_init(SNEPPX_HierarchicalAR** har,
@@ -65,12 +67,15 @@ int sneppx_hierarchical_ar_init(SNEPPX_HierarchicalAR** har,
     cudaStreamCreate(&h->inter_stream);
     cudaMalloc(&h->intra_buffer, h->buffer_size);
     cudaMalloc(&h->inter_buffer, h->buffer_size);
+    sneppx_nccl_initialize();
+    sneppx_pg_create(&h->pg, h->global_size, h->global_rank);
     *har = h;
     return 0;
 }
 
 void sneppx_hierarchical_ar_destroy(SNEPPX_HierarchicalAR* har) {
     if (!har) return;
+    if (har->pg) sneppx_pg_destroy(har->pg);
     if (har->intra_buffer) cudaFree(har->intra_buffer);
     if (har->inter_buffer) cudaFree(har->inter_buffer);
     cudaStreamDestroy(har->intra_stream);
@@ -83,39 +88,16 @@ void sneppx_hierarchical_ar_destroy(SNEPPX_HierarchicalAR* har) {
 // Step 2: All-reduce across nodes (RDMA)
 // Step 3: All-gather within node (NVLink)
 int sneppx_hierarchical_ar_all_reduce(SNEPPX_HierarchicalAR* har,
-                                       float* data, size_t numel,
-                                       cudaStream_t stream) {
+                                        float* data, size_t numel,
+                                        cudaStream_t stream) {
     if (!har || !data) return -1;
-    size_t chunk = numel / har->local_size;
-    
-    // Step 1: Intra-node reduce-scatter
-    for (int i = 0; i < har->local_size; i++) {
-        float* src = data + i * chunk;
-        float* dst = har->intra_buffer + har->local_rank * chunk;
-        cudaMemcpyAsync(dst, src, chunk * sizeof(float),
-                        cudaMemcpyDeviceToDevice, har->intra_stream);
-    }
-    cudaStreamSynchronize(har->intra_stream);
-    
-    // Step 2: Inter-node all-reduce on reduced chunks
-    for (int n = 0; n < har->num_nodes; n++) {
-        float* src = har->intra_buffer + har->local_rank * chunk;
-        float* dst = har->inter_buffer;
-        cudaMemcpyAsync(dst, src, chunk * sizeof(float),
-                        cudaMemcpyDeviceToDevice, har->inter_stream);
-    }
-    cudaStreamSynchronize(har->inter_stream);
-    
-    // Step 3: Intra-node all-gather
-    for (int i = 0; i < har->local_size; i++) {
-        float* src = har->inter_buffer;
-        float* dst = data + i * chunk;
-        cudaMemcpyAsync(dst, src, chunk * sizeof(float),
-                        cudaMemcpyDeviceToDevice, har->intra_stream);
-    }
-    cudaStreamSynchronize(har->intra_stream);
-    
-    return 0;
+
+    // Real all-reduce across all ranks via NCCL (CPU fallback if NCCL absent).
+    // The previous implementation only copied buffers device-to-device within a
+    // single process, which is a no-op for distributed training.
+    if (!har->pg) return -1;
+    return sneppx_pg_all_reduce(har->pg, data, numel,
+                                SNEPPX_NCCL_FLOAT, SNEPPX_NCCL_SUM, stream);
 }
 
 // ============================================================================

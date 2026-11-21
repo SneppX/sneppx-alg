@@ -1,4 +1,5 @@
 #include "sparse_expert_routing.h"
+#include "neural_core/kernel/polymorphic_memory_allocator.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -55,7 +56,7 @@ int main(void) {
         printf("Load balance loss: %f\n", loss);
 
         SNEPPX_tensor_destroy(gw);
-        free(ei);
+        SNEPPX_free(ei, 8 * 2 * sizeof(int));
     }
 
     float* od = (float*)output->data;

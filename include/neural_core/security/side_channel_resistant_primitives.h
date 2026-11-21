@@ -1,6 +1,10 @@
 #ifndef SNEPPX_SC_H
 #define SNEPPX_SC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -76,4 +80,8 @@ uint32_t SNEPPX_sc_is_zero_u32(uint32_t a);
  */
 void SNEPPX_sc_cond_copy(void* dst, const void* src, size_t len, uint32_t condition);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

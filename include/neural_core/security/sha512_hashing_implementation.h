@@ -1,6 +1,10 @@
 #ifndef SNEPPX_SHA512_H
 #define SNEPPX_SHA512_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -61,5 +65,21 @@ void SNEPPX_sha512_finish(SNEPPXSHA512Context* ctx, uint8_t digest[SNEPPX_SHA512
  * @return 0 on success, -1 on error.
  */
 void SNEPPX_sha512(const uint8_t* data, size_t len, uint8_t digest[SNEPPX_SHA512_DIGEST_SIZE]);
+/**
+ * @brief Legacy SHA-512 finish (pre-RFC-8032 length encoding, 8x too large).
+ *
+ * Maintained for backward-compatible verification of manifests signed
+ * before the length-encoding fix.  Use SNEPPX_sha512_legacy() or
+ * SNEPPX_sha512_init/update + SNEPPX_sha512_legacy_finish().
+ */
+void SNEPPX_sha512_legacy_finish(SNEPPXSHA512Context* ctx, uint8_t digest[SNEPPX_SHA512_DIGEST_SIZE]);
+/**
+ * @brief Legacy SHA-512 (pre-RFC-8032 length encoding).
+ */
+void SNEPPX_sha512_legacy(const uint8_t* data, size_t len, uint8_t digest[SNEPPX_SHA512_DIGEST_SIZE]);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

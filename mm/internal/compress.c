@@ -71,10 +71,34 @@ int SNEPPX_compress_unregister_codec(SNEPPXCompressionCodec codec) {
 static int bfp4_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst);
 static int bfp8_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst);
 static int sparse_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst);
+static int none_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst);
+static int none_decompress(const SNEPPXCompressedBuffer* src, void* dst, size_t dst_bytes);
 
 static int bfp_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst, int mantissa_bits);
 static int bfp_decompress(const SNEPPXCompressedBuffer* src, void* dst, size_t dst_bytes);
 static int sparse_decompress(const SNEPPXCompressedBuffer* src, void* dst, size_t dst_bytes);
+
+static int none_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst) {
+    if (!src || !dst || src_bytes == 0) return -1;
+    unsigned char* copy = (unsigned char*)malloc(src_bytes);
+    if (!copy) return -1;
+    memcpy(copy, src, src_bytes);
+    dst->codec = SNEPPX_COMPRESS_NONE;
+    dst->compressed_data = copy;
+    dst->compressed_bytes = src_bytes;
+    dst->original_bytes = src_bytes;
+    dst->original_elements = src_bytes / sizeof(float);
+    dst->original_dtype = dtype;
+    dst->block_size = src_bytes;
+    dst->metadata = NULL;
+    return 0;
+}
+
+static int none_decompress(const SNEPPXCompressedBuffer* src, void* dst, size_t dst_bytes) {
+    if (!src || !dst || dst_bytes < src->original_bytes) return -1;
+    memcpy(dst, src->compressed_data, src->original_bytes);
+    return 0;
+}
 
 static int bfp4_compress(const void* src, size_t src_bytes, int dtype, SNEPPXCompressedBuffer* dst) {
     return bfp_compress(src, src_bytes, dtype, dst, 4);
@@ -228,6 +252,7 @@ int SNEPPX_compress_apply(const void* src, size_t src_bytes, int dtype,
         case SNEPPX_COMPRESS_BFP4: return bfp4_compress(src, src_bytes, dtype, dst);
         case SNEPPX_COMPRESS_BFP8: return bfp8_compress(src, src_bytes, dtype, dst);
         case SNEPPX_COMPRESS_SPARSE: return sparse_compress(src, src_bytes, dtype, dst);
+        case SNEPPX_COMPRESS_NONE: return none_compress(src, src_bytes, dtype, dst);
         default: return -1;
     }
 }
@@ -250,6 +275,7 @@ int SNEPPX_compress_decompress(const SNEPPXCompressedBuffer* src, void* dst, siz
         case SNEPPX_COMPRESS_BFP4: return bfp_decompress(src, dst, dst_bytes);
         case SNEPPX_COMPRESS_BFP8: return bfp_decompress(src, dst, dst_bytes);
         case SNEPPX_COMPRESS_SPARSE: return sparse_decompress(src, dst, dst_bytes);
+        case SNEPPX_COMPRESS_NONE: return none_decompress(src, dst, dst_bytes);
         default: return -1;
     }
 }

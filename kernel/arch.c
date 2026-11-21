@@ -128,8 +128,8 @@ SNEPPXArchConfig SNEPPX_arch_config_default(void) {
     cfg.npe_config = SNEPPX_npe_config_default();
     cfg.fm_config = SNEPPX_fm_config_default();
     cfg.attention_config = SNEPPX_attn_config_default();
-    cfg.input_dim = 16;
-    cfg.output_dim = 16;
+    cfg.input_dim = 512;
+    cfg.output_dim = 512;
     cfg.vocab_size = 256;
     cfg.seed = 42;
     cfg.enable_attention = 1;

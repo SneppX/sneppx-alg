@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include "timing_attack_countermeasure.h"
 
@@ -18,19 +19,13 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_timer_resolution(void) {
     printf("\n--- test_timer_resolution ---\n");
     uint64_t t0 = SNEPPX_timing_start();
     uint64_t t1 = SNEPPX_timing_end();
-    TEST("timer produces value", t1 != t0 || t1 != 0);
-    TEST("timer monotonic", t1 >= t0);
+    SX_TEST("timer produces value", t1 != t0 || t1 != 0);
+    SX_TEST("timer monotonic", t1 >= t0);
 }
 
 void test_random_delay(void) {
@@ -38,7 +33,7 @@ void test_random_delay(void) {
     uint64_t t0 = SNEPPX_timing_start();
     SNEPPX_timing_random_delay(100, 5000);
     uint64_t t1 = SNEPPX_timing_end();
-    TEST("delay completed", t1 >= t0);
+    SX_TEST("delay completed", t1 >= t0);
 }
 
 void test_safe_equal(void) {
@@ -50,17 +45,12 @@ void test_safe_equal(void) {
     memset(c, 0xFF, 32);
     uint64_t timing;
     int r1 = SNEPPX_timing_safe_equal(a, b, 32, &timing);
-    TEST("safe equal same", r1);
+    SX_TEST("safe equal same", r1);
     int r2 = SNEPPX_timing_safe_equal(a, c, 32, &timing);
-    TEST("safe equal diff", !r2);
+    SX_TEST("safe equal diff", !r2);
 }
 
-int main(void) {
-    printf("=== SNEPPX-Timing Attack Prevention Test Suite ===\n");
-    test_timer_resolution();
-    test_random_delay();
-    test_safe_equal();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_timing, test_timer_resolution) { test_timer_resolution(); }
+TEST(test_timing, test_random_delay) { test_random_delay(); }
+TEST(test_timing, test_safe_equal) { test_safe_equal(); }

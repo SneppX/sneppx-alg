@@ -23,8 +23,16 @@ public:
     bool owner;
 
     PyVariable() : ptr(nullptr), owner(false) {}
-    explicit PyVariable(SNEPPXVariable* v, bool own = true) : ptr(v), owner(own) {}
+    explicit PyVariable(SNEPPXVariable* v, bool own = true) : ptr(v), owner(own) {
+        if (own && !v)
+            throw std::runtime_error(
+                "SNEPPX op returned NULL (invalid variable creation)");
+    }
     ~PyVariable() { if (owner && ptr) SNEPPX_variable_destroy(ptr); }
+
+    /* Relinquish python-side ownership (the tape owns the variable once it
+     * is recorded; issue #14 teardown double-free). */
+    void release() { owner = false; }
 
     PyVariable(const PyVariable&) = delete;
     PyVariable& operator=(const PyVariable&) = delete;
@@ -38,7 +46,14 @@ public:
     }
 
     static PyVariable create(PyTensor& data, int requires_grad) {
-        return PyVariable(SNEPPX_variable_create(data.ptr, requires_grad));
+        // SNEPPX_variable_create TAKES OWNERSHIP of the tensor (its destroy
+        // path frees var->data). Relinquish the python-side PyTensor's
+        // ownership on success so the tensor is destroyed exactly once
+        // (issue #14 — double-free at teardown otherwise).
+        PyVariable v(SNEPPX_variable_create(data.ptr, requires_grad));
+        if (v.ptr)
+            data.release();
+        return v;
     }
 
     void zero_grad() { SNEPPX_variable_zero_grad(ptr); }
@@ -74,42 +89,56 @@ public:
 
     static PyTape create() { return PyTape(SNEPPX_tape_create()); }
 
-    void record(PyVariable& var) { SNEPPX_tape_record(ptr, var.ptr); }
+    /* Ops record their result on this tape when grad tracking is active —
+     * recorded variables are owned (and destroyed) by the tape, so the
+     * python wrapper must not also destroy them. When no_grad is active the
+     * result is NOT recorded and python keeps ownership. */
+    PyVariable wrap_result(SNEPPXVariable* v) {
+        PyVariable r(v);
+        if (r.ptr && !SNEPPX_no_grad_is_active())
+            r.release();
+        return r;
+    }
+
+    void record(PyVariable& var) {
+        SNEPPX_tape_record(ptr, var.ptr);
+        var.release();
+    }
     void backward(PyVariable& loss) { SNEPPX_tape_backward(ptr, loss.ptr); }
     void zero_grad() { SNEPPX_tape_zero_grad(ptr); }
     float global_norm() { return SNEPPX_tape_global_norm(ptr); }
     void clip_grad_norm(float max_norm) { SNEPPX_tape_clip_grad_norm(ptr, max_norm); }
 
-    PyVariable add(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_add(ptr, a.ptr, b.ptr)); }
-    PyVariable sub(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_sub(ptr, a.ptr, b.ptr)); }
-    PyVariable mul(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_mul(ptr, a.ptr, b.ptr)); }
-    PyVariable div(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_div(ptr, a.ptr, b.ptr)); }
-    PyVariable pow_(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_pow(ptr, a.ptr, b.ptr)); }
-    PyVariable neg(PyVariable& a) { return PyVariable(SNEPPX_neg(ptr, a.ptr)); }
-    PyVariable matmul(PyVariable& a, PyVariable& b) { return PyVariable(SNEPPX_matmul(ptr, a.ptr, b.ptr)); }
-    PyVariable relu(PyVariable& a) { return PyVariable(SNEPPX_relu(ptr, a.ptr)); }
-    PyVariable gelu(PyVariable& a) { return PyVariable(SNEPPX_gelu(ptr, a.ptr)); }
-    PyVariable silu(PyVariable& a) { return PyVariable(SNEPPX_silu(ptr, a.ptr)); }
-    PyVariable sigmoid(PyVariable& a) { return PyVariable(SNEPPX_sigmoid(ptr, a.ptr)); }
-    PyVariable tanh(PyVariable& a) { return PyVariable(SNEPPX_tanh(ptr, a.ptr)); }
-    PyVariable softmax(PyVariable& a, size_t dim) { return PyVariable(SNEPPX_softmax(ptr, a.ptr, dim)); }
-    PyVariable exp(PyVariable& a) { return PyVariable(SNEPPX_exp(ptr, a.ptr)); }
-    PyVariable log(PyVariable& a) { return PyVariable(SNEPPX_log(ptr, a.ptr)); }
-    PyVariable sum(PyVariable& a, size_t dim) { return PyVariable(SNEPPX_sum(ptr, a.ptr, dim)); }
-    PyVariable mean(PyVariable& a, size_t dim) { return PyVariable(SNEPPX_mean(ptr, a.ptr, dim)); }
-    PyVariable transpose(PyVariable& a, size_t dim1, size_t dim2) { return PyVariable(SNEPPX_transpose(ptr, a.ptr, dim1, dim2)); }
-    PyVariable dropout(PyVariable& a, float rate, unsigned int seed) { return PyVariable(SNEPPX_dropout(ptr, a.ptr, rate, seed)); }
-    PyVariable layer_norm(PyVariable& a, PyVariable& gamma, PyVariable& beta, float eps) { return PyVariable(SNEPPX_layer_norm(ptr, a.ptr, gamma.ptr, beta.ptr, eps)); }
-    PyVariable conv2d(PyVariable& input, PyVariable& kernel, size_t stride_h, size_t stride_w, size_t pad_h, size_t pad_w) { return PyVariable(SNEPPX_conv2d(ptr, input.ptr, kernel.ptr, stride_h, stride_w, pad_h, pad_w)); }
+    PyVariable add(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_add(ptr, a.ptr, b.ptr)); }
+    PyVariable sub(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_sub(ptr, a.ptr, b.ptr)); }
+    PyVariable mul(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_mul(ptr, a.ptr, b.ptr)); }
+    PyVariable div(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_div(ptr, a.ptr, b.ptr)); }
+    PyVariable pow_(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_pow(ptr, a.ptr, b.ptr)); }
+    PyVariable neg(PyVariable& a) { return wrap_result(SNEPPX_neg(ptr, a.ptr)); }
+    PyVariable matmul(PyVariable& a, PyVariable& b) { return wrap_result(SNEPPX_matmul(ptr, a.ptr, b.ptr)); }
+    PyVariable relu(PyVariable& a) { return wrap_result(SNEPPX_relu(ptr, a.ptr)); }
+    PyVariable gelu(PyVariable& a) { return wrap_result(SNEPPX_gelu(ptr, a.ptr)); }
+    PyVariable silu(PyVariable& a) { return wrap_result(SNEPPX_silu(ptr, a.ptr)); }
+    PyVariable sigmoid(PyVariable& a) { return wrap_result(SNEPPX_sigmoid(ptr, a.ptr)); }
+    PyVariable tanh(PyVariable& a) { return wrap_result(SNEPPX_tanh(ptr, a.ptr)); }
+    PyVariable softmax(PyVariable& a, size_t dim) { return wrap_result(SNEPPX_softmax(ptr, a.ptr, dim)); }
+    PyVariable exp(PyVariable& a) { return wrap_result(SNEPPX_exp(ptr, a.ptr)); }
+    PyVariable log(PyVariable& a) { return wrap_result(SNEPPX_log(ptr, a.ptr)); }
+    PyVariable sum(PyVariable& a, size_t dim) { return wrap_result(SNEPPX_sum(ptr, a.ptr, dim)); }
+    PyVariable mean(PyVariable& a, size_t dim) { return wrap_result(SNEPPX_mean(ptr, a.ptr, dim)); }
+    PyVariable transpose(PyVariable& a, size_t dim1, size_t dim2) { return wrap_result(SNEPPX_transpose(ptr, a.ptr, dim1, dim2)); }
+    PyVariable dropout(PyVariable& a, float rate, unsigned int seed) { return wrap_result(SNEPPX_dropout(ptr, a.ptr, rate, seed)); }
+    PyVariable layer_norm(PyVariable& a, PyVariable& gamma, PyVariable& beta, float eps) { return wrap_result(SNEPPX_layer_norm(ptr, a.ptr, gamma.ptr, beta.ptr, eps)); }
+    PyVariable conv2d(PyVariable& input, PyVariable& kernel, size_t stride_h, size_t stride_w, size_t pad_h, size_t pad_w) { return wrap_result(SNEPPX_conv2d(ptr, input.ptr, kernel.ptr, stride_h, stride_w, pad_h, pad_w)); }
     PyVariable concat(py::args args) {
         size_t dim = args[args.size() - 1].cast<size_t>();
         size_t n = args.size() - 1;
         std::vector<SNEPPXVariable*> raw(n);
         for (size_t i = 0; i < n; ++i)
             raw[i] = args[i].cast<PyVariable*>()->ptr;
-        return PyVariable(SNEPPX_concat(ptr, raw.data(), raw.size(), dim));
+        return wrap_result(SNEPPX_concat(ptr, raw.data(), raw.size(), dim));
     }
-    PyVariable mse_loss(PyVariable& pred, PyVariable& target) { return PyVariable(SNEPPX_mse_loss(ptr, pred.ptr, target.ptr)); }
+    PyVariable mse_loss(PyVariable& pred, PyVariable& target) { return wrap_result(SNEPPX_mse_loss(ptr, pred.ptr, target.ptr)); }
 };
 
 static void init_autograd(py::module& m) {

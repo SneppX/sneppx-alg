@@ -233,6 +233,7 @@ static int SNEPPX_is_conditional_op(uint8_t b) {
 int SNEPPX_symex_explore(SNEPPXSymExEngine* se, const uint8_t* bytecode, size_t bc_len) {
     if (!se || !bytecode) return -1;
     if (bc_len == 0) return 0;
+    se->explored_paths = 1; /* the linear path through the program is always explored */
     size_t pc = 0;
     uint64_t branches = 0;
     while (pc < bc_len) {

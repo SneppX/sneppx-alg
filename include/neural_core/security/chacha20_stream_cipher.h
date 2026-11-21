@@ -1,6 +1,10 @@
 #ifndef SNEPPX_CHACHA20_H
 #define SNEPPX_CHACHA20_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 /*
@@ -49,4 +53,8 @@ void SNEPPX_chacha20_block(SNEPPXChaCha20State* state, uint8_t output[64]);
  */
 void SNEPPX_chacha20_encrypt(SNEPPXChaCha20State* state, uint8_t* data, size_t len);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

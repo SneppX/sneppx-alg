@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include "memory_hard_key_derivation.h"
 #include "constant_time_operations.h"
@@ -19,13 +20,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_hash_verify(void) {
     printf("\n--- test_hash_verify ---\n");
@@ -40,14 +35,14 @@ void test_hash_verify(void) {
     cfg.hash_len = 32;
 
     int ret = SNEPPX_argon2id(password, sizeof(password) - 1, salt, sizeof(salt) - 1, &cfg, hash);
-    TEST("hash success", ret == 0);
+    SX_TEST("hash success", ret == 0);
 
     ret = SNEPPX_argon2id_verify(password, sizeof(password) - 1, salt, sizeof(salt) - 1, &cfg, hash);
-    TEST("verify correct password", ret == 1);
+    SX_TEST("verify correct password", ret == 1);
 
     uint8_t wrong[] = "wrong password";
     ret = SNEPPX_argon2id_verify(wrong, sizeof(wrong) - 1, salt, sizeof(salt) - 1, &cfg, hash);
-    TEST("verify wrong password fails", ret == 0);
+    SX_TEST("verify wrong password fails", ret == 0);
 }
 
 void test_timing(void) {
@@ -68,14 +63,9 @@ void test_timing(void) {
     int ret_correct = SNEPPX_argon2id_verify(password, sizeof(password) - 1, salt, sizeof(salt) - 1, &cfg, hash);
     int ret_wrong = SNEPPX_argon2id_verify(close, sizeof(close) - 1, salt, sizeof(salt) - 1, &cfg, hash);
 
-    TEST("timing-safe verify works", ret_correct == 1 && ret_wrong == 0);
+    SX_TEST("timing-safe verify works", ret_correct == 1 && ret_wrong == 0);
 }
 
-int main(void) {
-    printf("=== SNEPPX-Argon2 Test Suite ===\n");
-    test_hash_verify();
-    test_timing();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_argon2, test_hash_verify) { test_hash_verify(); }
+TEST(test_argon2, test_timing) { test_timing(); }

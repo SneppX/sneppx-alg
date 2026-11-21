@@ -1,4 +1,5 @@
 #include "elastic.h"
+#include "../security/obfuscator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -89,7 +90,7 @@ int SNEPPX_elastic_join(SNEPPXElasticTraining* et, int new_rank,
     (void)addr;
     if (new_rank >= SNEPPX_ELASTIC_MAX_NODES) return -1;
     et->state = SNEPPX_ELASTIC_JOINING;
-    printf("[SNEPPX Elastic] Rank %d: new node rank %d joining\n", et->rank, new_rank);
+    log_obfuscated("[SNEPPX Elastic] Rank %d: new node rank %d joining", et->rank, new_rank);
     if (new_rank >= et->world_size) {
         int* new_ranks = (int*)realloc(et->global_ranks, (size_t)(new_rank + 1) * sizeof(int));
         if (!new_ranks) return -1;
@@ -114,7 +115,7 @@ int SNEPPX_elastic_join(SNEPPXElasticTraining* et, int new_rank,
 int SNEPPX_elastic_leave(SNEPPXElasticTraining* et, int leaving_rank) {
     if (!et || leaving_rank < 0 || leaving_rank >= et->world_size) return -1;
     et->state = SNEPPX_ELASTIC_LEAVING;
-    printf("[SNEPPX Elastic] Rank %d: node rank %d leaving\n", et->rank, leaving_rank);
+    log_obfuscated("[SNEPPX Elastic] Rank %d: node rank %d leaving", et->rank, leaving_rank);
     et->global_ranks[leaving_rank] = 0;
     et->version++;
     int alive = 0;
@@ -122,12 +123,12 @@ int SNEPPX_elastic_leave(SNEPPXElasticTraining* et, int leaving_rank) {
         if (et->global_ranks[i]) alive++;
     }
     if (alive < et->world_size / 2) {
-        printf("[SNEPPX Elastic] FATAL: Less than half ranks alive (%d/%d)\n", alive, et->world_size);
+        log_obfuscated("[SNEPPX Elastic] FATAL: Less than half ranks alive (%d/%d)", alive, et->world_size);
         return -1;
     }
     if (leaving_rank == et->rank) {
         et->state = SNEPPX_ELASTIC_FAILED;
-        printf("[SNEPPX Elastic] This rank (%d) is leaving - marking failed\n", et->rank);
+        log_obfuscated("[SNEPPX Elastic] This rank (%d) is leaving - marking failed", et->rank);
         return -1;
     }
     et->state = SNEPPX_ELASTIC_RECONFIG;
@@ -143,12 +144,12 @@ int SNEPPX_elastic_leave(SNEPPXElasticTraining* et, int leaving_rank) {
  */
 int SNEPPX_elastic_handle_failure(SNEPPXElasticTraining* et, int failed_rank) {
     if (!et || failed_rank < 0 || failed_rank >= et->world_size) return -1;
-    printf("[SNEPPX Elastic] Rank %d: handling failure of rank %d\n",
+    log_obfuscated("[SNEPPX Elastic] Rank %d: handling failure of rank %d",
            et->rank, failed_rank);
     et->global_ranks[failed_rank] = 0;
     et->restart_count++;
     if (et->restart_count > et->max_restarts) {
-        printf("[SNEPPX Elastic] FATAL: Max restarts (%d) exceeded\n", et->max_restarts);
+        log_obfuscated("[SNEPPX Elastic] FATAL: Max restarts (%d) exceeded", et->max_restarts);
         return -1;
     }
     if (et->checkpoint_restore_fn) {
@@ -157,7 +158,7 @@ int SNEPPX_elastic_handle_failure(SNEPPXElasticTraining* et, int failed_rank) {
         et->checkpoint_restore_fn(restore_ver);
     }
     et->version++;
-    printf("[SNEPPX Elastic] Rank %d: recovery attempt %d/%d, topology v%d\n",
+    log_obfuscated("[SNEPPX Elastic] Rank %d: recovery attempt %d/%d, topology v%d",
            et->rank, et->restart_count, et->max_restarts, et->version);
     et->state = SNEPPX_ELASTIC_RECONFIG;
     return 0;
@@ -170,7 +171,7 @@ int SNEPPX_elastic_handle_failure(SNEPPXElasticTraining* et, int failed_rank) {
  */
 int SNEPPX_elastic_reconfigure(SNEPPXElasticTraining* et) {
     if (!et) return -1;
-    printf("[SNEPPX Elastic] Reconfiguring topology (v%d)...\n", et->version);
+    log_obfuscated("[SNEPPX Elastic] Reconfiguring topology (v%d)...", et->version);
     int alive_count = 0;
     for (int i = 0; i < et->world_size; i++) {
         if (et->global_ranks[i]) alive_count++;
@@ -182,7 +183,7 @@ int SNEPPX_elastic_reconfigure(SNEPPXElasticTraining* et) {
     }
     et->last_reconfig_ns = snepx_ns_now_elastic();
     et->state = SNEPPX_ELASTIC_OK;
-    printf("[SNEPPX Elastic] Reconfig complete: %d/%d ranks alive (v%d)\n",
+    log_obfuscated("[SNEPPX Elastic] Reconfig complete: %d/%d ranks alive (v%d)",
            alive_count, et->world_size, et->version);
     return alive_count;
 }
@@ -246,3 +247,8 @@ void SNEPPX_elastic_destroy(SNEPPXElasticTraining* et) {
     free(et->node_ranks);
     free(et);
 }
+
+
+
+
+

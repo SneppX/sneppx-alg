@@ -1,4 +1,5 @@
 #include "model_zoo.h"
+#include "../../fs/format/json.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -349,149 +350,135 @@ char* SNEPPX_llm_config_to_json(const SNEPPXLLMConfig* cfg) {
         default:
             return NULL;
     }
+#ifdef _WIN32
+    return _strdup(buf);
+#else
     return strdup(buf);
+#endif
 }
 
 /* =========================================================================
- * API: parse from JSON (simplified — uses sscanf)
+ * API: parse from JSON (recursive descent parser)
  * ========================================================================= */
 
-static int parse_field_size_t(const char* json, const char* key, size_t* out) {
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\":%zu", key, (size_t)0);
-    const char* p = strstr(json, search);
-    if (!p) {
-        /* Try with more flexible pattern */
-        char fmt[128];
-        snprintf(fmt, sizeof(fmt), "\"%s\"", key);
-        p = strstr(json, fmt);
-        if (!p) return -1;
-        p = strchr(p, ':');
-        if (!p) return -1;
-        p++;
-        *out = (size_t)atoll(p);
-        return 0;
-    }
+static int json_get_size_t(SNEPPX_JsonValue* root, const char* key, size_t* out) {
+    SNEPPX_JsonValue* val = sneppx_json_find(root, key);
+    if (!val || val->type != SNEPPX_JSON_NUMBER) return -1;
+    *out = (size_t)val->number_val;
     return 0;
 }
 
-static int parse_field_float(const char* json, const char* key, float* out) {
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\"", key);
-    const char* p = strstr(json, search);
-    if (!p) return -1;
-    p = strchr(p, ':');
-    if (!p) return -1;
-    p++;
-    *out = (float)atof(p);
+static int json_get_float(SNEPPX_JsonValue* root, const char* key, float* out) {
+    SNEPPX_JsonValue* val = sneppx_json_find(root, key);
+    if (!val || val->type != SNEPPX_JSON_NUMBER) return -1;
+    *out = (float)val->number_val;
     return 0;
 }
 
-static int parse_field_int(const char* json, const char* key, int* out) {
-    char search[128];
-    snprintf(search, sizeof(search), "\"%s\"", key);
-    const char* p = strstr(json, search);
-    if (!p) return -1;
-    p = strchr(p, ':');
-    if (!p) return -1;
-    p++;
-    *out = atoi(p);
+static int json_get_int(SNEPPX_JsonValue* root, const char* key, int* out) {
+    SNEPPX_JsonValue* val = sneppx_json_find(root, key);
+    if (!val || val->type != SNEPPX_JSON_NUMBER) return -1;
+    *out = (int)val->number_val;
     return 0;
 }
 
 /**
  * @brief Perform Llm Config From Json.
  *
- * @param json [in] Json value.
+ * @param json_str [in] JSON string.
+ * @param out [out] Config output.
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_llm_config_from_json(const char* json, SNEPPXLLMConfig* out) {
-    if (!json || !out) return -1;
+int SNEPPX_llm_config_from_json(const char* json_str, SNEPPXLLMConfig* out) {
+    if (!json_str || !out) return -1;
     memset(out, 0, sizeof(SNEPPXLLMConfig));
 
-    char family[64] = {0};
-    const char* f = strstr(json, "\"family\"");
-    if (!f) return -1;
-    f = strchr(f, ':');
-    if (!f) return -1;
-    f++;
-    while (*f == ' ' || *f == '\"') f++;
-    int fi = 0;
-    while (*f && *f != '\"' && *f != ',' && *f != '}' && fi < 63)
-        family[fi++] = *f++;
-    family[fi] = '\0';
+    SNEPPX_JsonValue* root = sneppx_json_parse(json_str);
+    if (!root) return -1;
+
+    SNEPPX_JsonValue* family_val = sneppx_json_find(root, "family");
+    if (!family_val || family_val->type != SNEPPX_JSON_STRING) {
+        sneppx_json_free(root);
+        return -1;
+    }
+    const char* family = family_val->string_val;
 
     if (strcmp(family, "llama2") == 0 || strcmp(family, "llama3") == 0) {
         out->family = (strcmp(family, "llama3") == 0) ? SNEPPX_MODEL_LLAMA_3 : SNEPPX_MODEL_LLAMA_2;
         SNEPPXLlamaConfig* l = &out->config.llama;
         l->family = out->family;
-        parse_field_size_t(json, "hidden_size", &l->hidden_size);
-        parse_field_size_t(json, "intermediate_size", &l->intermediate_size);
-        parse_field_size_t(json, "num_hidden_layers", &l->num_hidden_layers);
-        parse_field_size_t(json, "num_attention_heads", &l->num_attention_heads);
-        parse_field_size_t(json, "num_key_value_heads", &l->num_key_value_heads);
-        parse_field_size_t(json, "vocab_size", &l->vocab_size);
-        parse_field_size_t(json, "max_position_embeddings", &l->max_position_embeddings);
-        parse_field_float(json, "rms_norm_eps", &l->rms_norm_eps);
-        parse_field_float(json, "rope_theta", &l->rope_theta);
-        parse_field_int(json, "use_scaled_rope", &l->use_scaled_rope);
-        parse_field_int(json, "head_dim", &l->head_dim);
+        json_get_size_t(root, "hidden_size", &l->hidden_size);
+        json_get_size_t(root, "intermediate_size", &l->intermediate_size);
+        json_get_size_t(root, "num_hidden_layers", &l->num_hidden_layers);
+        json_get_size_t(root, "num_attention_heads", &l->num_attention_heads);
+        json_get_size_t(root, "num_key_value_heads", &l->num_key_value_heads);
+        json_get_size_t(root, "vocab_size", &l->vocab_size);
+        json_get_size_t(root, "max_position_embeddings", &l->max_position_embeddings);
+        json_get_float(root, "rms_norm_eps", &l->rms_norm_eps);
+        json_get_float(root, "rope_theta", &l->rope_theta);
+        json_get_int(root, "use_scaled_rope", &l->use_scaled_rope);
+        json_get_int(root, "head_dim", &l->head_dim);
+        sneppx_json_free(root);
         return 0;
     }
     if (strcmp(family, "mistral") == 0) {
         out->family = SNEPPX_MODEL_MISTRAL;
         SNEPPXMistralConfig* m = &out->config.mistral;
         m->family = out->family;
-        parse_field_size_t(json, "hidden_size", &m->hidden_size);
-        parse_field_size_t(json, "intermediate_size", &m->intermediate_size);
-        parse_field_size_t(json, "num_hidden_layers", &m->num_hidden_layers);
-        parse_field_size_t(json, "num_attention_heads", &m->num_attention_heads);
-        parse_field_size_t(json, "num_key_value_heads", &m->num_key_value_heads);
-        parse_field_size_t(json, "vocab_size", &m->vocab_size);
-        parse_field_size_t(json, "max_position_embeddings", &m->max_position_embeddings);
-        parse_field_float(json, "rms_norm_eps", &m->rms_norm_eps);
-        parse_field_float(json, "rope_theta", &m->rope_theta);
-        parse_field_int(json, "sliding_window", &m->sliding_window);
-        parse_field_int(json, "head_dim", &m->head_dim);
+        json_get_size_t(root, "hidden_size", &m->hidden_size);
+        json_get_size_t(root, "intermediate_size", &m->intermediate_size);
+        json_get_size_t(root, "num_hidden_layers", &m->num_hidden_layers);
+        json_get_size_t(root, "num_attention_heads", &m->num_attention_heads);
+        json_get_size_t(root, "num_key_value_heads", &m->num_key_value_heads);
+        json_get_size_t(root, "vocab_size", &m->vocab_size);
+        json_get_size_t(root, "max_position_embeddings", &m->max_position_embeddings);
+        json_get_float(root, "rms_norm_eps", &m->rms_norm_eps);
+        json_get_float(root, "rope_theta", &m->rope_theta);
+        json_get_int(root, "sliding_window", &m->sliding_window);
+        json_get_int(root, "head_dim", &m->head_dim);
+        sneppx_json_free(root);
         return 0;
     }
     if (strcmp(family, "qwen2") == 0) {
         out->family = SNEPPX_MODEL_QWEN_2;
         SNEPPXQwen2Config* q = &out->config.qwen2;
         q->family = out->family;
-        parse_field_size_t(json, "hidden_size", &q->hidden_size);
-        parse_field_size_t(json, "intermediate_size", &q->intermediate_size);
-        parse_field_size_t(json, "num_hidden_layers", &q->num_hidden_layers);
-        parse_field_size_t(json, "num_attention_heads", &q->num_attention_heads);
-        parse_field_size_t(json, "num_key_value_heads", &q->num_key_value_heads);
-        parse_field_size_t(json, "vocab_size", &q->vocab_size);
-        parse_field_size_t(json, "max_position_embeddings", &q->max_position_embeddings);
-        parse_field_float(json, "rms_norm_eps", &q->rms_norm_eps);
-        parse_field_float(json, "rope_theta", &q->rope_theta);
-        parse_field_float(json, "rope_scaling_factor", &q->rope_scaling_factor);
-        parse_field_int(json, "use_rope_scaling", &q->use_rope_scaling);
-        parse_field_int(json, "head_dim", &q->head_dim);
+        json_get_size_t(root, "hidden_size", &q->hidden_size);
+        json_get_size_t(root, "intermediate_size", &q->intermediate_size);
+        json_get_size_t(root, "num_hidden_layers", &q->num_hidden_layers);
+        json_get_size_t(root, "num_attention_heads", &q->num_attention_heads);
+        json_get_size_t(root, "num_key_value_heads", &q->num_key_value_heads);
+        json_get_size_t(root, "vocab_size", &q->vocab_size);
+        json_get_size_t(root, "max_position_embeddings", &q->max_position_embeddings);
+        json_get_float(root, "rms_norm_eps", &q->rms_norm_eps);
+        json_get_float(root, "rope_theta", &q->rope_theta);
+        json_get_float(root, "rope_scaling_factor", &q->rope_scaling_factor);
+        json_get_int(root, "use_rope_scaling", &q->use_rope_scaling);
+        json_get_int(root, "head_dim", &q->head_dim);
+        sneppx_json_free(root);
         return 0;
     }
     if (strcmp(family, "deepseek_v2") == 0) {
         out->family = SNEPPX_MODEL_DEEPSEEK_V2;
         SNEPPXDeepSeekV2Config* d = &out->config.deepseek_v2;
         d->family = out->family;
-        parse_field_size_t(json, "hidden_size", &d->hidden_size);
-        parse_field_size_t(json, "intermediate_size", &d->intermediate_size);
-        parse_field_size_t(json, "num_hidden_layers", &d->num_hidden_layers);
-        parse_field_size_t(json, "num_attention_heads", &d->num_attention_heads);
-        parse_field_size_t(json, "num_key_value_heads", &d->num_key_value_heads);
-        parse_field_size_t(json, "vocab_size", &d->vocab_size);
-        parse_field_size_t(json, "max_position_embeddings", &d->max_position_embeddings);
-        parse_field_float(json, "rms_norm_eps", &d->rms_norm_eps);
-        parse_field_float(json, "rope_theta", &d->rope_theta);
-        parse_field_int(json, "kv_lora_rank", &d->kv_lora_rank);
-        parse_field_int(json, "q_lora_rank", &d->q_lora_rank);
-        parse_field_int(json, "head_dim", &d->head_dim);
+        json_get_size_t(root, "hidden_size", &d->hidden_size);
+        json_get_size_t(root, "intermediate_size", &d->intermediate_size);
+        json_get_size_t(root, "num_hidden_layers", &d->num_hidden_layers);
+        json_get_size_t(root, "num_attention_heads", &d->num_attention_heads);
+        json_get_size_t(root, "num_key_value_heads", &d->num_key_value_heads);
+        json_get_size_t(root, "vocab_size", &d->vocab_size);
+        json_get_size_t(root, "max_position_embeddings", &d->max_position_embeddings);
+        json_get_float(root, "rms_norm_eps", &d->rms_norm_eps);
+        json_get_float(root, "rope_theta", &d->rope_theta);
+        json_get_int(root, "kv_lora_rank", &d->kv_lora_rank);
+        json_get_int(root, "q_lora_rank", &d->q_lora_rank);
+        json_get_int(root, "head_dim", &d->head_dim);
+        sneppx_json_free(root);
         return 0;
     }
+    sneppx_json_free(root);
     return -1;
 }
 

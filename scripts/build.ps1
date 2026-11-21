@@ -20,8 +20,7 @@ if (-not (Test-Path $BuildDir)) {
 # Configure
 $cmakeArgs = @(
     "-B", $BuildDir,
-    "-G", "Visual Studio 17 2022",
-    "-A", "x64"
+    "-G", "Ninja"
 )
 
 if ($Python) {

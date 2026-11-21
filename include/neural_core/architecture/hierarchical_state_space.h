@@ -1,6 +1,10 @@
 #ifndef SNEPPX_HSS_H
 #define SNEPPX_HSS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 #include <stddef.h>
@@ -198,4 +202,8 @@ int SNEPPX_hss_build_train_graph(SNEPPXHSSModel* model, SNEPPXTape* tape,
                                SNEPPXVariable** weight_vars, size_t num_weights,
                                SNEPPXVariable** output_var);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_HSS_H */

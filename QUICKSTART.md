@@ -23,39 +23,97 @@ No other dependencies. The C core is dependency-free; Python bindings use
 ## 2. Clone & Build
 
 ```powershell
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 
-# Configure (Release)
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+# Configure (Release) — uses the Ninja generator
+cmake --preset release
 
 # Build everything (library + examples + tests)
-cmake --build build --config Release
-
-# Run the full test suite
-cd build
-ctest -C Release --output-on-failure
+cmake --build --preset release
 ```
+
+> Windows tip: prefer the stable repo-root `ninja.exe` (Ninja ≥ 1.12). The
+> Kitware *dev* Ninja in the venv can crash — see `AGENTS.md`.
 
 ### Opt-in backends (OFF by default)
 
 ```powershell
-cmake -B build -DSNEPPX_BUILD_VULKAN=ON   # Vulkan reference compute
-cmake -B build -DSNEPPX_BUILD_TPU=ON      # TPU reference compute
-cmake -B build -DSNEPPX_BUILD_HTTP=ON     # HTTP transport (BSD sockets)
-cmake -B build -DSNEPPX_BUILD_ZK=ON       # Zero-knowledge proofs
-cmake -B build -DSNEPPX_BUILD_METAL=ON    # Apple Metal (macOS)
-cmake -B build -DSNEPPX_BUILD_ONEAPI=ON   # Intel oneAPI/SYCL
+cmake -B build -G Ninja -DSNEPPX_BUILD_VULKAN=ON   # Vulkan reference compute
+cmake -B build -G Ninja -DSNEPPX_BUILD_TPU=ON      # TPU reference compute
+cmake -B build -G Ninja -DSNEPPX_BUILD_HTTP=ON     # HTTP transport (BSD sockets)
+cmake -B build -G Ninja -DSNEPPX_BUILD_ZK=ON       # Zero-knowledge proofs
+cmake -B build -G Ninja -DSNEPPX_BUILD_METAL=ON    # Apple Metal (macOS)
+cmake -B build -G Ninja -DSNEPPX_BUILD_ONEAPI=ON   # Intel oneAPI/SYCL
 ```
 
 ### Everything at once
 
 ```powershell
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON `
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON `
   -DSNEPPX_BUILD_VULKAN=ON -DSNEPPX_BUILD_TPU=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_ZK=ON
 cmake --build build --config Release
 cd build && ctest -C Release --output-on-failure
 ```
+
+### Linux (Ubuntu / Debian / Fedora)
+
+```bash
+# Prerequisites (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install -y build-essential cmake ninja-build git python3 python3-pip
+
+# Clone + configure + build
+git clone https://github.com/SneppX/sneppx-alg.git
+cd sneppx-alg
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+
+# Python bindings
+cd ../bindings/python
+pip install -e .
+cd ../..
+export PYTHONPATH="$PWD/bindings/python"
+python -c "from SneppX_ALG import Tensor; print('ok')"
+```
+
+Notes:
+- Use `gcc` (≥ 11) or `clang` (≥ 14). C11 is required.
+- For the HTTP backend, `SNEPPX_BUILD_HTTP=ON` needs no extra deps (BSD sockets are in libc).
+- For Vulkan/TPU/ZK backends, install the corresponding SDKs (`libvulkan-dev`, etc.) — see `docs/build.md`.
+
+### macOS (Apple Silicon & Intel)
+
+```bash
+# Prerequisites (Homebrew)
+brew install cmake ninja git python@3.11
+
+# Clone + configure + build
+git clone https://github.com/SneppX/sneppx-alg.git
+cd sneppx-alg
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
+cmake --build build --config Release
+cd build && ctest -C Release --output-on-failure
+
+# Optional: Apple Metal backend (Apple Silicon / Intel Macs)
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_METAL=ON
+cmake --build build --config Release
+
+# Python bindings
+cd bindings/python
+pip install -e .
+cd ../..
+export PYTHONPATH="$PWD/bindings/python"
+python -c "from SneppX_ALG import Tensor; print('ok')"
+```
+
+Notes:
+- Use the system Clang (`/usr/bin/clang`, ≥ 14). C11 + C++20 (obfuscation layer only).
+- On Apple Silicon, Metal is the recommended accelerator backend (`SNEPPX_BUILD_METAL=ON`).
+- The HTTP backend (`SNEPPX_BUILD_HTTP=ON`) uses BSD sockets and works on macOS without extra deps.
+- If `ninja` is not found, install via `brew install ninja` or use the CMake default generator (`cmake -B build`).
+
 
 ---
 
@@ -94,21 +152,22 @@ python -c "from SneppX_ALG import *; print('ok')"
 ## 4. Run a Demo
 
 ```powershell
-# C demos
-build\examples\Release\hss_demo.exe
-build\examples\Release\ser_demo.exe
-build\examples\Release\arc_demo.exe
-build\examples\Release\npe_demo.exe
-build\examples\Release\fm_demo.exe
+# C demos (built into build/release)
+build\release\examples\hss_demo.exe
+build\release\examples\ser_demo.exe
+build\release\examples\arc_demo.exe
+build\release\examples\npe_demo.exe
+build\release\examples\fm_demo.exe
 
-# Python — run a regression test (safe, no GPU/LLM)
+# Python - run a regression test
 python tests/python/test_tensor.py
 ```
 
-> ⚠️ This machine has **no GPU / limited RAM**. Never run LLM-inference or
-> CUDA tests (`test_llama_models.py`, `test_cuda.py`, `test_inference_server.py`).
-> Always run the safe suite: `test_tensor`, `test_nn`, `test_optim`, `test_data`,
-> `test_quantization`, `test_checkpoint`, `test_profiler`, `test_model_zoo`.
+> **Note:** LLM-inference and CUDA tests (`test_llama_models.py`,
+> `test_cuda.py`, `test_inference_server.py`) require a GPU and are
+> skipped on CPU-only machines. The safe suite (`test_tensor`, `test_nn`,
+> `test_optim`, `test_data`, `test_quantization`, `test_checkpoint`,
+> `test_profiler`, `test_model_zoo`) runs on any machine without a GPU.
 
 ---
 
@@ -143,7 +202,7 @@ Full REST API docs (24 endpoints): [`docs/API_REFERENCE.md`](docs/API_REFERENCE.
 
 ## 6. Developer CLI Tools
 
-The 7 standalone tools live in `C:\Users\PC\sneppx-ultra\sneppx-{analyze,bench,test,format,deps,stats,serve}`
+The 7 standalone tools live under `C:\Users\PC\SneppX\` as `sneppx-{analyze,bench,test,format,deps,stats,serve}`
 or as a meta-package:
 
 ```powershell
@@ -206,8 +265,23 @@ ctest -C Release -R test_kyber --output-on-failure
 
 ```powershell
 $env:PYTHONPATH = "bindings/python"
-python tests/python/test_tensor.py
+python -m pytest tests/python/test_tensor.py -q -p no:cacheprovider
 ```
+
+#### Safe Python Regression Test Suite
+
+Always execute tests **per-file** using `pytest` without cache provider. Recommended safe test suite for CPU:
+
+| Test File | Focus Area |
+|---|---|
+| `test_tensor.py` | Autograd tape, tensor creations, arithmetic, gradients |
+| `test_nn.py` | Module layers (Linear, Conv, Normalization, Sequential) |
+| `test_optim.py` | Optimizers (SGD, Adam, AdamW, convergence checks) |
+| `test_sparse.py` | Sparse COO/CSR tensors and sparse matrix operations |
+| `test_higher_order_ad.py` | Second-order differentiation and Hessian-vector products |
+
+> **Critical:** Do NOT execute LLM inference or GPU tests (`test_llama_models.py`, `test_cuda.py`, `test_inference_server.py`) on machines lacking dedicated CUDA hardware.
+
 
 ### Load a model from Hugging Face
 

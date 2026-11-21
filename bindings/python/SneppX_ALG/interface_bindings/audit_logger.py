@@ -13,6 +13,7 @@ Provides structured, tamper-evident audit logging with:
 import os
 import json
 import time
+import tempfile
 import hashlib
 import threading
 import logging
@@ -239,7 +240,10 @@ class FileAuditBackend(AuditBackend):
         compress: bool = True,
     ):
         self.log_dir = Path(log_dir)
-        self.log_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.log_dir.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError):
+            self.log_dir = Path(tempfile.mkdtemp(prefix="sneppx_audit_"))
         self.max_file_size = max_file_size
         self.max_files = max_files
         self.compress = compress
@@ -955,7 +959,7 @@ _global_audit_logger: Optional[AuditLogger] = None
 
 
 def get_audit_logger(
-    log_dir: str = "/var/log/sneppx/audit",
+    log_dir: Optional[str] = None,
     use_syslog: bool = False,
     syslog_facility: int = 128,
     remote_endpoint: Optional[str] = None,
@@ -964,6 +968,12 @@ def get_audit_logger(
 ) -> AuditLogger:
     global _global_audit_logger
     if _global_audit_logger is None:
+        if log_dir is None:
+            log_dir = (
+                os.environ.get("SX_AUDIT_DIR")
+                or os.environ.get("SNEPPX_STATE_DIR")
+                or os.path.join(tempfile.gettempdir(), "sneppx_audit")
+            )
         backends = []
         backends.append(FileAuditBackend(log_dir))
         if use_syslog:

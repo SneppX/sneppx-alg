@@ -23,6 +23,8 @@ from SneppX_ALG.interface_bindings.onnx_export import (
     SNEPPX_TO_ONNX_OP,
     ONNX_OP_REGISTRY,
     TensorRTExporter,
+    onnx_to_protobuf,
+    protobuf_to_onnx,
 )
 
 
@@ -240,6 +242,39 @@ def test_onnx_validation():
     assert len(errors) == 0
 
 
+def test_onnx_validation_connectivity():
+    """Test that onnx_validate catches undeclared inputs / dangling outputs."""
+    # Node input not declared or produced.
+    graph = OnnxGraph("test")
+    inp = OnnxTensor("x", "float32", [1, 3])
+    out = OnnxTensor("y", "float32", [1, 2])
+    graph.add_input(inp)
+    graph.add_output(out)
+    graph.add_node(OnnxNode("Gemm", ["x", "W"], ["y"]))  # W not declared
+    valid, errors = onnx_validate(OnnxModel(graph))
+    assert not valid
+    assert any("'W'" in e for e in errors)
+
+    # Graph output not produced by any node.
+    graph2 = OnnxGraph("test2")
+    graph2.add_input(inp)
+    graph2.add_output(out)
+    graph2.add_node(OnnxNode("Relu", ["x"], ["mid"]))  # mid != y
+    valid, errors = onnx_validate(OnnxModel(graph2))
+    assert not valid
+    assert any("'y' is not produced" in e for e in errors)
+
+    # Duplicate output names across nodes.
+    graph3 = OnnxGraph("test3")
+    graph3.add_input(inp)
+    graph3.add_output(out)
+    graph3.add_node(OnnxNode("Relu", ["x"], ["y"]))
+    graph3.add_node(OnnxNode("Sigmoid", ["y"], ["y"]))
+    valid, errors = onnx_validate(OnnxModel(graph3))
+    assert not valid
+    assert any("Duplicate output" in e for e in errors)
+
+
 def test_onnx_version_compatible():
     """Test ONNX opset version compatibility."""
     graph = OnnxGraph("test")
@@ -310,6 +345,142 @@ def test_import_onnx_function():
         assert "nodes" in data
     finally:
         os.unlink(path)
+
+
+def _build_sample_exporter():
+    """Build a representative model: Conv -> Relu with weights."""
+    exporter = OnnxExporter()
+    exporter.add_input("input", [1, 3, 224, 224], "float32")
+    exporter.add_constant("weight", np.random.randn(64, 3, 3, 3).astype(np.float32))
+    exporter.add_constant("bias", np.random.randn(64).astype(np.float32))
+    conv_out = exporter.add_conv(
+        "input", "weight", "bias", strides=(2, 2), pads=(1, 1, 1, 1)
+    )
+    exporter.add_relu(conv_out)
+    exporter.add_output("output", [1, 64, 112, 112])
+    return exporter
+
+
+def test_onnx_model_to_bytes():
+    """Test canonical binary serialization of OnnxModel."""
+    exporter = _build_sample_exporter()
+    model = exporter.build_model()
+    data = model.to_bytes()
+
+    assert isinstance(data, bytes)
+    assert len(data) > 0
+    # First field must be ir_version (field 1, wire 0 -> key byte 0x08).
+    assert data[0] == 0x08
+
+    # onnx_to_protobuf is an alias for to_bytes
+    assert onnx_to_protobuf(model) == data
+
+
+def test_onnx_binary_roundtrip():
+    """Test that binary .onnx round-trips through protobuf_to_onnx."""
+    exporter = _build_sample_exporter()
+    model = exporter.build_model()
+    data = model.to_bytes()
+
+    parsed = protobuf_to_onnx(data)
+    assert parsed.ir_version == model.ir_version
+    assert parsed.producer_name == "SNEPPX"
+    assert parsed.graph.name == model.graph.name
+
+    # Graph I/O
+    assert [t.name for t in parsed.graph.inputs] == ["input"]
+    assert [t.name for t in parsed.graph.outputs] == ["output"]
+    assert parsed.graph.inputs[0].shape == [1, 3, 224, 224]
+
+    # Nodes survive with op types and connectivity
+    op_types = [n.op_type for n in parsed.graph.nodes]
+    assert op_types == ["Conv", "Relu"]
+    conv = parsed.graph.nodes[0]
+    assert conv.inputs == ["input", "weight", "bias"]
+    relu = parsed.graph.nodes[1]
+    assert relu.inputs[0] == conv.outputs[0]
+
+    # Attributes round-trip (strides INTs, pads INTs, group INT)
+    assert conv.attributes["strides"] == [2, 2]
+    assert conv.attributes["pads"] == [1, 1, 1, 1]
+    assert conv.attributes["group"] == 1
+
+    # Initializers round-trip with raw data
+    assert len(parsed.graph.initializers) == 2
+    init_names = {i.name for i in parsed.graph.initializers}
+    assert init_names == {"weight", "bias"}
+    weight = next(i for i in parsed.graph.initializers if i.name == "weight")
+    assert weight.data.shape == (64, 3, 3, 3)
+    assert np.allclose(weight.data, exporter.graph.initializers[0].data)
+
+
+def test_onnx_export_binary():
+    """Test OnnxExporter.export writes canonical binary for .onnx paths."""
+    exporter = _build_sample_exporter()
+    with tempfile.NamedTemporaryFile(suffix=".onnx", delete=False) as f:
+        path = f.name
+    try:
+        exporter.export(path)
+        with open(path, "rb") as f:
+            data = f.read()
+        assert data[0] == 0x08  # ir_version key
+
+        parsed = protobuf_to_onnx(data)
+        assert [n.op_type for n in parsed.graph.nodes] == ["Conv", "Relu"]
+    finally:
+        os.unlink(path)
+
+
+def test_onnx_export_binary_helper():
+    """Test explicit export_binary helper."""
+    exporter = _build_sample_exporter()
+    with tempfile.NamedTemporaryFile(suffix=".onnx", delete=False) as f:
+        path = f.name
+    try:
+        exporter.export_binary(path)
+        with open(path, "rb") as f:
+            data = f.read()
+        parsed = protobuf_to_onnx(data)
+        assert parsed.graph.outputs[0].name == "output"
+    finally:
+        os.unlink(path)
+
+
+def test_onnx_importer_binary():
+    """Test OnnxImporter.load accepts canonical binary .onnx files."""
+    exporter = _build_sample_exporter()
+    with tempfile.NamedTemporaryFile(suffix=".onnx", delete=False) as f:
+        path = f.name
+    try:
+        exporter.export_binary(path)
+        importer = OnnxImporter()
+        data = importer.load(path)
+        assert "initializers" in data
+        assert "weight" in data["initializers"]
+        assert "nodes" in data
+        assert len(data["nodes"]) == 2
+        assert data["inputs"] == ["input"]
+        assert data["outputs"] == ["output"]
+    finally:
+        os.unlink(path)
+
+
+def test_onnx_float_attributes():
+    """Test float and float-list attributes round-trip through binary."""
+    exporter = OnnxExporter()
+    exporter.add_input("x", [1, 64])
+    gemm_out = exporter.add_gemm("x", "w", "b", alpha=1.5, beta=0.25, trans_b=1)
+    exporter.add_layer_norm(gemm_out, "ln_w", "ln_b", epsilon=1e-5)
+    model = exporter.build_model()
+
+    parsed = protobuf_to_onnx(model.to_bytes())
+    gemm = parsed.graph.nodes[0]
+    assert gemm.attributes["alpha"] == pytest.approx(1.5)
+    assert gemm.attributes["beta"] == pytest.approx(0.25)
+    assert gemm.attributes["transB"] == 1
+
+    ln = parsed.graph.nodes[1]
+    assert ln.attributes["epsilon"] == pytest.approx(1e-5)
 
 
 if __name__ == "__main__":

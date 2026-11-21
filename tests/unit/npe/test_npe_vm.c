@@ -1,4 +1,5 @@
 #include "neural_programming_engine.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -20,17 +21,11 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_vm_create(void) {
     SNEPPXNPEConfig cfg = SNEPPX_npe_config_default();
     SNEPPXNPEVM* vm = SNEPPX_npe_vm_create(&cfg);
-    ASSERT(vm != NULL, "vm not null");
-    ASSERT(vm->program == NULL, "no program loaded");
+    SX_ASSERT(vm != NULL, "vm not null");
+    SX_ASSERT(vm->program == NULL, "no program loaded");
     SNEPPX_npe_vm_destroy(vm);
 }
 
@@ -47,7 +42,7 @@ static void test_vm_nop(void) {
     SNEPPXTensor* input = SNEPPX_tensor_zeros(sh, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* output = NULL;
     int r = SNEPPX_npe_vm_run(vm, input, &output);
-    ASSERT(r == 0, "run success");
+    SX_ASSERT(r == 0, "run success");
     SNEPPX_tensor_destroy(input);
     if (output) SNEPPX_tensor_destroy(output);
     SNEPPX_npe_program_destroy(p);
@@ -84,13 +79,13 @@ static void test_vm_add(void) {
     SNEPPXTensor* input = SNEPPX_tensor_zeros(sh, 1, SNEPPX_FLOAT32);
     SNEPPXTensor* output = NULL;
     int r = SNEPPX_npe_vm_run(vm, input, &output);
-    ASSERT(r == 0, "run success");
-    ASSERT(output != NULL, "output not null");
+    SX_ASSERT(r == 0, "run success");
+    SX_ASSERT(output != NULL, "output not null");
     float* od = (float*)output->data;
-    ASSERT(fabsf(od[0] - 11.0f) < 1e-5f, "1+10=11");
-    ASSERT(fabsf(od[1] - 22.0f) < 1e-5f, "2+20=22");
-    ASSERT(fabsf(od[2] - 33.0f) < 1e-5f, "3+30=33");
-    ASSERT(fabsf(od[3] - 44.0f) < 1e-5f, "4+40=44");
+    SX_ASSERT(fabsf(od[0] - 11.0f) < 1e-5f, "1+10=11");
+    SX_ASSERT(fabsf(od[1] - 22.0f) < 1e-5f, "2+20=22");
+    SX_ASSERT(fabsf(od[2] - 33.0f) < 1e-5f, "3+30=33");
+    SX_ASSERT(fabsf(od[3] - 44.0f) < 1e-5f, "4+40=44");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(output);
@@ -128,9 +123,9 @@ static void test_vm_matmul(void) {
     SNEPPXTensor* input = SNEPPX_tensor_zeros(sh, 1, SNEPPX_FLOAT32);
     SNEPPXTensor* output = NULL;
     int r = SNEPPX_npe_vm_run(vm, input, &output);
-    ASSERT(r == 0, "run success");
-    ASSERT(output != NULL, "output not null");
-    ASSERT(output->shape[0] == 2 && output->shape[1] == 4, "output [2x4]");
+    SX_ASSERT(r == 0, "run success");
+    SX_ASSERT(output != NULL, "output not null");
+    SX_ASSERT(output->shape[0] == 2 && output->shape[1] == 4, "output [2x4]");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(output);
@@ -138,11 +133,8 @@ static void test_vm_matmul(void) {
     SNEPPX_npe_vm_destroy(vm);
 }
 
-int main(void) {
-    run_test("test_vm_create", test_vm_create);
-    run_test("test_vm_nop", test_vm_nop);
-    run_test("test_vm_add", test_vm_add);
-    run_test("test_vm_matmul", test_vm_matmul);
-    printf("\nVM tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_npe_vm, test_vm_create) { test_vm_create(); }
+TEST(test_npe_vm, test_vm_nop) { test_vm_nop(); }
+TEST(test_npe_vm, test_vm_add) { test_vm_add(); }
+TEST(test_npe_vm, test_vm_matmul) { test_vm_matmul(); }

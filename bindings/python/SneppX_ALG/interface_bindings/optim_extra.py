@@ -498,7 +498,141 @@ def get_optimizer(name: str, params: List[Tensor], **kwargs):
         "sophia": Sophia,
         "adan": Adan,
         "schedule_free_adamw": ScheduleFreeAdamW,
+        "adam8bit": Adam8bit,
+        "adamw8bit": lambda ps, **kw: Adam8bit(ps, adamw=True, **kw),
+        "sgd8bit": SGD8bit,
     }
     if name not in registry:
         raise ValueError(f"Unknown optimizer '{name}'. Available: {list(registry)}")
+    return registry[name](params, **kwargs)
+
+
+# ---------------------------------------------------------------------------
+#  8-bit optimizers — per-parameter state stored as int8 with dynamic scaling
+# ---------------------------------------------------------------------------
+
+
+def _quantize_int8(arr):
+    """Quantize ``arr`` to int8 with a per-tensor dynamic scale (max abs / 127)."""
+    arr = np.asarray(arr, dtype=np.float64)
+    amax = float(np.max(np.abs(arr)))
+    if amax == 0.0:
+        return np.zeros(arr.shape, dtype=np.int8), np.float64(0.0)
+    scale = amax / 127.0
+    q = np.clip(np.round(arr / scale), -127, 127).astype(np.int8)
+    return q, np.float64(scale)
+
+
+def _dequantize_int8(q, scale):
+    return q.astype(np.float64) * scale
+
+
+class Adam8bit:
+    """Adam / AdamW with int8-quantized first- and second-moment states.
+
+    The momentum (m) and velocity (v) buffers are quantized to int8 with a
+    per-parameter dynamic scale on every step, then dequantized for the
+    parameter update. This mirrors the bitsandbytes 8-bit Adam scheme and
+    keeps the optimizer state at ~1/4 the memory of float32 while tracking
+    full-precision Adam closely (within quantization error).
+    """
+
+    def __init__(
+        self,
+        params: List[Tensor],
+        lr: float = 1e-3,
+        betas: tuple = (0.9, 0.999),
+        eps: float = 1e-8,
+        weight_decay: float = 0.0,
+        adamw: bool = True,
+    ):
+        self.params = list(params)
+        self.lr = lr
+        self.beta1, self.beta2 = betas
+        self.eps = eps
+        self.weight_decay = weight_decay
+        self.adamw = adamw
+        self.t = 0
+        self.m: Dict[int, tuple] = {}
+        self.v: Dict[int, tuple] = {}
+        for i, p in enumerate(self.params):
+            a = _as_array(p)
+            self.m[i] = _quantize_int8(np.zeros_like(a))
+            self.v[i] = _quantize_int8(np.zeros_like(a))
+
+    def step(self):
+        self.t += 1
+        for i, p in enumerate(self.params):
+            g = _as_array(p.grad) if p.grad is not None else np.zeros_like(_as_array(p))
+            m = _dequantize_int8(*self.m[i])
+            v = _dequantize_int8(*self.v[i])
+            m = self.beta1 * m + (1 - self.beta1) * g
+            v = self.beta2 * v + (1 - self.beta2) * (g * g)
+            mhat = m / (1 - self.beta1 ** self.t)
+            vhat = v / (1 - self.beta2 ** self.t)
+            denom = np.sqrt(vhat) + self.eps
+            upd = mhat / denom
+            pdata = _as_array(p)
+            if self.adamw:
+                upd = upd + self.weight_decay * pdata
+            p.data = (pdata - self.lr * upd).astype(p.data.dtype)
+            self.m[i] = _quantize_int8(m)
+            self.v[i] = _quantize_int8(v)
+
+    def zero_grad(self):
+        for p in self.params:
+            if p.grad is not None:
+                p.grad = None
+
+
+class SGD8bit:
+    """SGD with int8-quantized momentum buffer (optional Nesterov)."""
+
+    def __init__(
+        self,
+        params: List[Tensor],
+        lr: float = 1e-2,
+        momentum: float = 0.0,
+        weight_decay: float = 0.0,
+        nesterov: bool = False,
+    ):
+        self.params = list(params)
+        self.lr = lr
+        self.momentum = momentum
+        self.weight_decay = weight_decay
+        self.nesterov = nesterov
+        self.m: Dict[int, tuple] = {}
+        for i, p in enumerate(self.params):
+            a = _as_array(p)
+            self.m[i] = _quantize_int8(np.zeros_like(a))
+
+    def step(self):
+        for i, p in enumerate(self.params):
+            g = _as_array(p.grad) if p.grad is not None else np.zeros_like(_as_array(p))
+            buf = _dequantize_int8(*self.m[i])
+            if self.momentum != 0:
+                buf = self.momentum * buf + g
+                self.m[i] = _quantize_int8(buf)
+                if self.nesterov:
+                    g = g + self.momentum * buf
+                else:
+                    g = buf
+            pdata = _as_array(p)
+            upd = g + self.weight_decay * pdata
+            p.data = (pdata - self.lr * upd).astype(p.data.dtype)
+
+    def zero_grad(self):
+        for p in self.params:
+            if p.grad is not None:
+                p.grad = None
+
+
+def _build_8bit_optimizer(name, params, **kwargs):
+    registry = {
+        "adam8bit": Adam8bit,
+        "adamw8bit": lambda ps, **kw: Adam8bit(ps, adamw=True, **kw),
+        "sgd8bit": SGD8bit,
+    }
+    if name not in registry:
+        raise ValueError(f"Unknown 8-bit optimizer '{name}'. Available: {list(registry)}")
     return registry[name](params, **kwargs)

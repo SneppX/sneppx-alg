@@ -1,6 +1,10 @@
 #ifndef SNEPPX_CONTAINER_BREAKOUT_H
 #define SNEPPX_CONTAINER_BREAKOUT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -98,4 +102,8 @@ int SNEPPX_breakout_get_stats(breakout_stats_t *stats);
  */
 int SNEPPX_breakout_reset(void);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

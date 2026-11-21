@@ -5,6 +5,55 @@ import sys
 import json
 import argparse
 import logging
+import ipaddress
+
+
+
+def _is_loopback_host(host):
+    """Return whether a bind host is explicitly loopback-only."""
+    normalized = host.strip().strip("[]").lower().split("%", 1)[0]
+    if normalized == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(normalized).is_loopback
+    except ValueError:
+        # Hostnames other than localhost may resolve to public interfaces.
+        return False
+
+
+def _parse_api_keys(api_keys):
+    """Parse comma-separated API keys, discarding empty entries."""
+    return [key.strip() for key in (api_keys or "").split(",") if key.strip()]
+
+
+def _resolve_rate_limit(rpm):
+    """Return (enabled, requests_per_minute), preserving an explicit zero."""
+    if rpm is None:
+        return True, 60
+    if rpm < 0:
+        raise ValueError("--rate-limit-rpm must be zero or a positive integer.")
+    return rpm > 0, rpm
+
+
+def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
+    """Reject unauthenticated remote binds and empty enabled auth modes."""
+    if auth_mode == "none" and not _is_loopback_host(host):
+        raise ValueError(
+            "Authentication cannot be disabled on a non-loopback bind address. "
+            "Use --auth-mode bearer or api_key with --api-keys or --key-store-path, "
+            "or bind to 127.0.0.1/::1 for local-only access."
+        )
+    configured_keys = _parse_api_keys(api_keys)
+    has_environment_keys = (
+        auth_mode == "api_key" and bool(os.environ.get("SNEPPX_API_KEYS", "").strip())
+    )
+    if auth_mode in {"bearer", "api_key"} and not (
+        configured_keys or key_store_path or has_environment_keys
+    ):
+        raise ValueError(
+            f"--auth-mode {auth_mode} requires --api-keys, --key-store-path"
+            + (" or SNEPPX_API_KEYS." if auth_mode == "api_key" else ".")
+        )
 
 
 def main():
@@ -39,7 +88,7 @@ def main():
         "--checkpoint",
         type=str,
         default=None,
-        help="Path to .sneppx checkpoint to load weights from",
+        help="Reserved: checkpoint loading is not implemented; use a model-specific loader",
     )
     parser.add_argument(
         "--tokenizer",
@@ -134,6 +183,20 @@ def main():
     )
     args = parser.parse_args()
 
+    if args.checkpoint:
+        parser.error(
+            "--checkpoint is not implemented by serve_cli; the option is rejected "
+            "to prevent serving config-initialized weights by mistake."
+        )
+
+    auth_mode = args.auth_mode or "none"
+    try:
+        _validate_auth_settings(
+            args.host, auth_mode, args.api_keys, args.key_store_path
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
+
     logging.basicConfig(
         level=getattr(logging, args.log_level.upper()),
         format="%(asctime)s %(levelname)s %(message)s",
@@ -171,16 +234,20 @@ def main():
         firewall_overrides["knock_ports"] = [int(p.strip()) for p in args.firewall_knock_ports.split(",")]
 
     auth = AuthConfig(
-        mode=args.auth_mode or "none",
+        mode=auth_mode,
         api_keys=(
-            [k.strip() for k in args.api_keys.split(",")]
-            if args.api_keys
-            else []
+            _parse_api_keys(args.api_keys)
         ),
     )
+    try:
+        rate_limit_enabled, requests_per_minute = _resolve_rate_limit(
+            args.rate_limit_rpm
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
     rate_limit = RateLimitConfig(
-        enabled=(args.rate_limit_rpm or 60) > 0,
-        requests_per_minute=args.rate_limit_rpm or 60,
+        enabled=rate_limit_enabled,
+        requests_per_minute=requests_per_minute,
     )
     prompt_filter = PromptFilterConfig(enabled=not args.no_prompt_filter)
     output_verifier = OutputVerifierConfig(enabled=not args.no_output_verifier)
@@ -217,11 +284,18 @@ def _load_model(args):
     from .tokenizer import Tokenizer
     from .generation import GenerationConfig
 
-    logging.info(f"Loading model config from {args.model_config}")
-    with open(args.model_config) as f:
-        if args.model_config.endswith((".yaml", ".yml")):
-            import yaml
+    if not os.path.isfile(args.model_config):
+        raise FileNotFoundError(f"--model-config not found: {args.model_config}")
 
+    logging.info(f"Loading model config from {args.model_config}")
+    with open(args.model_config, encoding="utf-8") as f:
+        if args.model_config.endswith((".yaml", ".yml")):
+            try:
+                import yaml
+            except ImportError as e:
+                raise ImportError(
+                    "YAML model config requires PyYAML (`pip install pyyaml`)."
+                ) from e
             config = yaml.safe_load(f)
         else:
             config = json.load(f)
@@ -232,18 +306,28 @@ def _load_model(args):
     elif isinstance(config, dict):
         model = build_transformer_from_config(config)
     else:
-        logging.error("Invalid model config format")
-        return
+        raise ValueError(f"Invalid model config format in {args.model_config}: expected object/dict")
+
+    if args.checkpoint:
+        if not os.path.exists(args.checkpoint):
+            raise FileNotFoundError(f"--checkpoint not found: {args.checkpoint}")
+        raise NotImplementedError(
+            "--checkpoint is not supported by serve_cli yet. The model would otherwise "
+            "serve config-initialized weights only; load weights with a model-specific "
+            "loader before registering the model."
+        )
 
     tokenizer = None
     if args.tokenizer:
+        if not os.path.exists(args.tokenizer):
+            raise FileNotFoundError(f"--tokenizer not found: {args.tokenizer}")
         tokenizer = Tokenizer(args.tokenizer)
 
     gen_config = GenerationConfig(
-        max_new_tokens=config.get("max_new_tokens", 256),
-        temperature=config.get("temperature", 1.0),
-        top_k=config.get("top_k", 0),
-        top_p=config.get("top_p", 1.0),
+        max_new_tokens=config.get("max_new_tokens", 256) if isinstance(config, dict) else 256,
+        temperature=config.get("temperature", 1.0) if isinstance(config, dict) else 1.0,
+        top_k=config.get("top_k", 0) if isinstance(config, dict) else 0,
+        top_p=config.get("top_p", 1.0) if isinstance(config, dict) else 1.0,
     )
 
     register_model(
@@ -253,7 +337,7 @@ def _load_model(args):
         default_config=gen_config,
         meta={"config": config, "checkpoint": args.checkpoint},
     )
-    logging.info(f"Model '{args.model_id}' loaded")
+    logging.info(f"Model '{args.model_id}' loaded (config-initialized; tokenizer={'yes' if tokenizer else 'no'})")
 
 
 def _run_server(args):

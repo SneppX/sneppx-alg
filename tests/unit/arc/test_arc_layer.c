@@ -1,4 +1,5 @@
 #include "adversarial_robustness_certification.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -19,16 +20,10 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_arc_forward(void) {
     SNEPPXARCConfig cfg = SNEPPX_arc_config_default();
     SNEPPXARCLayer* layer = SNEPPX_arc_layer_create(&cfg, 32, 32, 42);
-    ASSERT(layer != NULL, "layer not null");
+    SX_ASSERT(layer != NULL, "layer not null");
 
     size_t shape_in[] = {4, 32};
     SNEPPXTensor* input = SNEPPX_tensor_zeros(shape_in, 2, SNEPPX_FLOAT32);
@@ -39,19 +34,19 @@ static void test_arc_forward(void) {
     float metrics[4];
     SNEPPX_arc_forward(layer, input, &output, metrics);
 
-    ASSERT(output != NULL, "output not null");
-    ASSERT(output->shape[0] == 4, "batch == 4");
-    ASSERT(output->shape[1] == 32, "dim == 32");
+    SX_ASSERT(output != NULL, "output not null");
+    SX_ASSERT(output->shape[0] == 4, "batch == 4");
+    SX_ASSERT(output->shape[1] == 32, "dim == 32");
 
     int all_finite = 1;
     float* od = (float*)output->data;
     for (size_t i = 0; i < output->size; i++) {
         if (!isfinite(od[i])) { all_finite = 0; break; }
     }
-    ASSERT(all_finite, "all finite in output");
+    SX_ASSERT(all_finite, "all finite in output");
 
     for (int i = 0; i < 4; i++) {
-        ASSERT(isfinite(metrics[i]), "all metrics finite");
+        SX_ASSERT(isfinite(metrics[i]), "all metrics finite");
     }
 
     SNEPPX_tensor_destroy(input);
@@ -59,8 +54,5 @@ static void test_arc_forward(void) {
     SNEPPX_arc_layer_destroy(layer);
 }
 
-int main(void) {
-    run_test("test_arc_forward", test_arc_forward);
-    printf("\nARC layer tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_arc_layer, test_arc_forward) { test_arc_forward(); }

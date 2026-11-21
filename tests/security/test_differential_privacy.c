@@ -1,4 +1,5 @@
 #include "differential_privacy.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -18,7 +19,7 @@
  */
 
 
-int main() {
+TEST(test_differential_privacy, suite) {
     dp_stats_t stats;
     double val = SNEPPX_dp_laplace_mech(10.0, 1.0, 1.0);
     printf("Laplace(10.0, 1.0, 1.0) = %.4f\n", val);
@@ -33,5 +34,5 @@ int main() {
         printf("Budget remaining: eps=%.4f del=%.4e\n", stats.budget_remaining_epsilon, stats.budget_remaining_delta);
     }
     printf("PASS: Differential privacy OK\n");
-    return 0;
+    return;
 }

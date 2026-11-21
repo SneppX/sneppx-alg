@@ -31,7 +31,7 @@ static int tests_failed = 0;
 
 #define TEST(name) do { printf("  TEST: %s ... ", name); } while(0)
 #define PASS() do { printf("PASS\n"); tests_passed++; } while(0)
-#define FAIL(msg) do { printf("FAIL: %s\n", msg); tests_failed++; } while(0)
+#define FAIL(msg) do { const std::string fail_message = (msg); printf("FAIL: %s\n", fail_message.c_str()); tests_failed++; } while(0)
 #define ASSERT(cond, msg) do { if (!(cond)) { FAIL(msg); return; } } while(0)
 
 void test_encrypt_decrypt() {

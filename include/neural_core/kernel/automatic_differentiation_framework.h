@@ -1,6 +1,10 @@
 #ifndef SNEPPX_AUTODIFF_H
 #define SNEPPX_AUTODIFF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include <stddef.h>
 
@@ -274,6 +278,20 @@ SNEPPXVariable* SNEPPX_mse_loss(SNEPPXTape* tape, SNEPPXVariable* pred, SNEPPXVa
  * @return Pointer on success, NULL on error.
  */
 SNEPPXVariable* SNEPPX_relu(SNEPPXTape* tape, SNEPPXVariable* a);
+/**
+ * @brief Perform Fake Quant (QAT).
+ *
+ * Forward quantizes the input to `bits` with `scale` and de-quantizes; the
+ * backward is the straight-through estimator (unit gradient w.r.t. input).
+ *
+ * @param tape [out] Tape value.
+ * @param a [in] Input value.
+ * @param scale [in] Scale value (> 0).
+ * @param bits [in] Bit width (2..16).
+ *
+ * @return Pointer on success, NULL on error.
+ */
+SNEPPXVariable* SNEPPX_fake_quant(SNEPPXTape* tape, SNEPPXVariable* a, float scale, int bits);
 /**
  * @brief Perform Gelu.
  *
@@ -778,4 +796,8 @@ SNEPPXVariable* SNEPPX_cumsum(SNEPPXTape* tape, SNEPPXVariable* a, size_t dim);
  */
 SNEPPXVariable* SNEPPX_cumprod(SNEPPXTape* tape, SNEPPXVariable* a, size_t dim);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

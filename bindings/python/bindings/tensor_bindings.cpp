@@ -23,8 +23,20 @@ public:
     bool owner;
 
     PyTensor() : ptr(nullptr), owner(false) {}
-    explicit PyTensor(SNEPPXTensor* t, bool own = true) : ptr(t), owner(own) {}
+    explicit PyTensor(SNEPPXTensor* t, bool own = true) : ptr(t), owner(own) {
+        // Ops return NULL for invalid inputs (shape/dtype mismatch,
+        // unsupported cases) — fail fast with a python-visible error
+        // instead of letting a NULL ptr segfault later lifetimes (issue #14).
+        if (own && !t)
+            throw std::runtime_error(
+                "SNEPPX op returned NULL (invalid shape/dtype combination for "
+                "this op)");
+    }
     ~PyTensor() { if (owner && ptr) SNEPPX_tensor_destroy(ptr); }
+
+    /* Relinquish python-side ownership: used by PyVariable::create because
+     * SNEPPX_variable_create takes ownership of the tensor pointer. */
+    void release() { owner = false; }
 
     PyTensor(const PyTensor&) = delete;
     PyTensor& operator=(const PyTensor&) = delete;
@@ -125,34 +137,59 @@ public:
 
     // ---- Data access (read/write via numpy) ----
     py::array data() const {
-        size_t itemsize = SNEPPX_dtype_itemsize(ptr->dtype);
-        std::vector<py::ssize_t> np_shape(ptr->shape, ptr->shape + ptr->ndim);
-        std::vector<py::ssize_t> np_strides(ptr->ndim);
-        if (ptr->strides) {
-            for (size_t i = 0; i < ptr->ndim; ++i)
-                np_strides[i] = static_cast<py::ssize_t>(ptr->strides[i]);
-        } else {
-            np_strides[ptr->ndim - 1] = itemsize;
-            for (size_t i = ptr->ndim; i > 1; --i)
-                np_strides[i - 2] = np_strides[i - 1] * static_cast<py::ssize_t>(ptr->shape[i - 1]);
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        const size_t itemsize = SNEPPX_dtype_itemsize(ptr->dtype);
+        if (itemsize == 0 || (ptr->ndim > 0 && (!ptr->shape || !ptr->strides)))
+            throw std::runtime_error("tensor metadata is invalid");
+
+        std::vector<py::ssize_t> np_shape;
+        std::vector<py::ssize_t> np_strides;
+        np_shape.reserve(ptr->ndim);
+        np_strides.reserve(ptr->ndim);
+        for (size_t i = 0; i < ptr->ndim; ++i) {
+            if (ptr->shape[i] > static_cast<size_t>(std::numeric_limits<py::ssize_t>::max()) ||
+                ptr->strides[i] > static_cast<size_t>(std::numeric_limits<py::ssize_t>::max()) / itemsize)
+                throw std::overflow_error("tensor shape or stride exceeds NumPy limits");
+            np_shape.push_back(static_cast<py::ssize_t>(ptr->shape[i]));
+            np_strides.push_back(static_cast<py::ssize_t>(ptr->strides[i] * itemsize));
         }
         std::string np_dt = SNEPPX_dtype_to_numpy(ptr->dtype);
         return py::array(py::dtype(np_dt), np_shape, np_strides, ptr->data, py::cast(*this));
     }
 
     void set_data(py::array arr) {
-        py::buffer_info buf = arr.request();
-        size_t nbytes = ptr->size * SNEPPX_dtype_itemsize(ptr->dtype);
-        if (buf.size * buf.itemsize != nbytes)
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        if (!arr) throw std::invalid_argument("source array is required");
+        py::array contiguous = py::array::ensure(arr, py::array::c_style);
+        if (!contiguous) throw std::invalid_argument("source array cannot be made contiguous");
+        py::buffer_info buf = contiguous.request();
+        const size_t itemsize = SNEPPX_dtype_itemsize(ptr->dtype);
+        if (itemsize == 0 || ptr->size > std::numeric_limits<size_t>::max() / itemsize)
+            throw std::overflow_error("tensor byte size is invalid");
+        const size_t nbytes = ptr->size * itemsize;
+        if (buf.size < 0 || buf.itemsize <= 0 ||
+            static_cast<size_t>(buf.size) > std::numeric_limits<size_t>::max() /
+                static_cast<size_t>(buf.itemsize) ||
+            static_cast<size_t>(buf.size) * static_cast<size_t>(buf.itemsize) != nbytes)
             throw std::runtime_error("data size mismatch");
-        std::memcpy(ptr->data, buf.ptr, nbytes);
+        if (nbytes != 0) {
+            if (!ptr->data || !buf.ptr) throw std::runtime_error("tensor data buffer is unavailable");
+            std::memcpy(ptr->data, buf.ptr, nbytes);
+        }
     }
 
     // ---- Element access ----
     py::object get_item(py::args indices) const {
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        if (indices.size() != ptr->ndim)
+            throw py::index_error("the number of indices must match tensor dimensions");
         std::vector<size_t> idx(ptr->ndim, 0);
-        for (size_t i = 0; i < indices.size() && i < ptr->ndim; ++i)
-            idx[i] = indices[i].cast<size_t>();
+        for (size_t i = 0; i < ptr->ndim; ++i) {
+            const py::ssize_t value = indices[i].cast<py::ssize_t>();
+            if (value < 0 || static_cast<size_t>(value) >= ptr->shape[i])
+                throw py::index_error("tensor index is out of bounds");
+            idx[i] = static_cast<size_t>(value);
+        }
         switch (ptr->dtype) {
             case SNEPPX_FLOAT32: return py::float_(SNEPPX_tensor_get_f32(ptr, idx.data()));
             case SNEPPX_FLOAT64: return py::float_(SNEPPX_tensor_get_f64(ptr, idx.data()));
@@ -164,11 +201,17 @@ public:
     }
 
     void set_item(py::args args) {
-        if (args.size() < 2) throw std::runtime_error("set_item needs indices + value");
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        if (args.size() != ptr->ndim + 1)
+            throw py::index_error("setitem requires one index per dimension and a value");
         auto val = args[args.size() - 1];
-        std::vector<size_t> idx(args.size() - 1, 0);
-        for (size_t i = 0; i < args.size() - 1; ++i)
-            idx[i] = args[i].cast<size_t>();
+        std::vector<size_t> idx(ptr->ndim, 0);
+        for (size_t i = 0; i < ptr->ndim; ++i) {
+            const py::ssize_t value = args[i].cast<py::ssize_t>();
+            if (value < 0 || static_cast<size_t>(value) >= ptr->shape[i])
+                throw py::index_error("tensor index is out of bounds");
+            idx[i] = static_cast<size_t>(value);
+        }
         switch (ptr->dtype) {
             case SNEPPX_FLOAT32: SNEPPX_tensor_set_f32(ptr, idx.data(), val.cast<float>()); break;
             case SNEPPX_FLOAT64: SNEPPX_tensor_set_f64(ptr, idx.data(), val.cast<double>()); break;
@@ -275,16 +318,33 @@ public:
     }
 
     std::vector<PyTensor> split(size_t num_splits, size_t dim) const {
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
         SNEPPXTensor** results = SNEPPX_tensor_split(ptr, num_splits, dim);
+        if (!results) throw std::runtime_error("tensor split failed: invalid dimension or split count");
+
         std::vector<PyTensor> out;
-        for (size_t i = 0; i < num_splits; ++i)
-            out.emplace_back(results[i]);
-        delete[] results;
+        try {
+            out.reserve(num_splits);
+            for (size_t i = 0; i < num_splits; ++i) {
+                if (!results[i]) throw std::runtime_error("tensor split returned an empty result");
+                out.emplace_back(results[i]);
+                results[i] = nullptr; // Ownership transferred to PyTensor.
+            }
+        } catch (...) {
+            for (size_t i = 0; i < num_splits; ++i)
+                if (results[i]) SNEPPX_tensor_destroy(results[i]);
+            SNEPPX_free(results, num_splits * sizeof(SNEPPXTensor*));
+            throw;
+        }
+        SNEPPX_free(results, num_splits * sizeof(SNEPPXTensor*));
         return out;
     }
 
     PyTensor tile(py::array reps) const {
-        auto sv = pyarray_to_sizevec(reps);
+        if (!ptr) throw std::runtime_error("tensor is not initialized");
+        if (ptr->ndim > 16)
+            throw std::runtime_error("tile supports tensors with at most 16 dimensions");
+        auto sv = pyarray_to_sizevec(reps, 16);
         return PyTensor(SNEPPX_tensor_tile(ptr, sv.data(), sv.size()));
     }
 
@@ -432,7 +492,6 @@ public:
 
 static void init_tensor(py::module& m) {
     py::class_<PyTensor>(m, "_Tensor")
-        .def(py::init<>())
         .def_static("create", &PyTensor::create)
         .def_static("empty", &PyTensor::empty)
         .def_static("zeros", &PyTensor::zeros)

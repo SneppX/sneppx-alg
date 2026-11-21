@@ -75,6 +75,71 @@ def test_state_graph_labels_default():
     assert g.labels("s") == set()
 
 
+def test_model_checker_always_violated_with_trace():
+    mc = ModelChecker()
+    mc.add_state("s0", is_error=False)
+    mc.add_state("s1", is_error=True)
+    mc.add_transition("s0", "s1")
+    mc.add_property(LTLProperty("safe", "always ok"))
+    res = mc.check()
+    assert res["safe"] is False
+    ce = mc.counterexample("safe")
+    assert ce is not None
+    assert ce == ["s0", "s1"]
+
+
+def test_model_checker_always_satisfied_no_trace():
+    mc = ModelChecker()
+    mc.add_state("s0", is_error=False)
+    mc.add_state("s1", is_error=False)
+    mc.add_transition("s0", "s1")
+    mc.add_property(LTLProperty("safe", "always ok"))
+    res = mc.check()
+    assert res["safe"] is True
+    assert mc.counterexample("safe") is None
+
+
+def test_model_checker_eventually_violated():
+    mc = ModelChecker()
+    mc.add_state("s0")
+    mc.add_state("s1")
+    mc.add_transition("s0", "s1")
+    mc.add_property(LTLProperty("live", "eventually goal"))
+    res = mc.check()
+    assert res["live"] is False
+
+
+def test_model_checker_eventually_satisfied():
+    mc = ModelChecker()
+    mc.add_state("s0")
+    mc.add_state("goal")
+    mc.add_transition("s0", "goal")
+    mc.add_property(LTLProperty("live", "eventually goal"))
+    res = mc.check()
+    assert res["live"] is True
+
+
+def test_model_checker_counterexample_none_before_check():
+    mc = ModelChecker()
+    assert mc.counterexample("any") is None
+
+
+def test_model_checker_branch_counterexample():
+    mc = ModelChecker()
+    mc.add_state("s0", is_error=False)
+    mc.add_state("s1", is_error=False)
+    mc.add_state("s2", is_error=True)
+    mc.add_transition("s0", "s1")
+    mc.add_transition("s0", "s2")
+    mc.add_property(LTLProperty("safe", "always ok"))
+    res = mc.check()
+    assert res["safe"] is False
+    ce = mc.counterexample("safe")
+    assert ce is not None
+    assert ce[0] == "s0"
+    assert ce[-1] == "s2"
+
+
 if __name__ == "__main__":
     test_ltl_create()
     test_model_checker_add_states()
@@ -82,6 +147,12 @@ if __name__ == "__main__":
     test_model_checker_single_prop()
     test_model_checker_no_props()
     test_model_checker_counterexample()
+    test_model_checker_always_violated_with_trace()
+    test_model_checker_always_satisfied_no_trace()
+    test_model_checker_eventually_violated()
+    test_model_checker_eventually_satisfied()
+    test_model_checker_counterexample_none_before_check()
+    test_model_checker_branch_counterexample()
     test_state_graph()
     test_state_graph_empty()
     test_state_graph_labels_default()

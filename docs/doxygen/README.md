@@ -28,4 +28,4 @@ The configuration extracts docs from `include/neural_core/` (public headers). Pr
 
 ## Commenting Standard
 
-All public `SNEPPX_*` functions must have Doxygen `@brief/@param/@return` blocks following the [COMMENTING.md](../../COMMENTING.md) standard (Layer 4). File headers (Layer 1) are required on all source files. Run `sneppx-format --docs` to verify compliance.
+All public `SNEPPX_*` functions must have Doxygen `@brief/@param/@return` blocks following the [COMMENTING.md](../COMMENTING.md) standard (Layer 4). File headers (Layer 1) are required on all source files. Run `sneppx-format --docs` to verify compliance.

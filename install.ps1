@@ -46,7 +46,7 @@ New-Item -ItemType Directory -Path "build" -Force | Out-Null
 Set-Location "build"
 
 if ($hasMSVC) {
-    cmake .. -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
+    cmake .. -G Ninja -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_PYTHON=OFF
     cmake --build . --config Release
 } else {
     Write-Host "  ERROR: No C++ compiler found. Install Visual Studio Build Tools and re-run." -ForegroundColor Red

@@ -1,141 +1,113 @@
 """Gradient checkpointing (activation recomputation).
 
-Wraps a sequence of forward sub-functions so that only the inputs to
-each checkpointed segment are stored; activations inside the segment are
-recomputed during backward. This trades compute for memory, enabling
-training of very deep models that would otherwise OOM. The API mirrors
-``torch.utils.checkpoint.checkpoint``.
+Mirrors ``torch.utils.checkpoint``: during the forward pass the wrapped
+function is executed under :class:`no_grad` so intermediate activations are
+not retained. On the backward pass the function is recomputed under
+:class:`enable_grad` and the recomputed graph is differentiated, producing
+gradients identical to a non-checkpointed run while trading compute for
+memory.
 """
 
-from typing import Callable, List, Tuple, Any, Optional
-import numpy as np
-
+from .autograd import (
+    Function,
+    _backward,
+    no_grad,
+    enable_grad,
+    _GradFn,
+    _tensor_inputs,
+    Context,
+)
 from .tensor import Tensor
 
-
-class CheckpointSegment:
-    """A single recomputable segment of the forward graph."""
-
-    def __init__(self, fn: Callable, inputs: Tuple[Tensor, ...]):
-        self.fn = fn
-        self.inputs = inputs
-        self.saved_inputs = inputs
-        self.output: Optional[Tensor] = None
-
-    def forward(self) -> Tensor:
-        self.output = self.fn(*self.inputs)
-        return self.output
-
-    def recompute(self) -> Tensor:
-        # Re-run the wrapped function on the (detached) saved inputs
-        saved = tuple(
-            Tensor.from_numpy(i.data.copy(), dtype=i.dtype_name) for i in self.inputs
-        )
-        self.output = self.fn(*saved)
-        return self.output
+__all__ = [
+    "checkpoint",
+    "checkpoint_sequential",
+    "CheckpointFunction",
+    "CheckpointSegment",
+    "GradientCheckpointer",
+]
 
 
-def checkpoint(fn: Callable, *inputs: Tensor, use_reentrant: bool = True) -> Tensor:
-    """Run ``fn(*inputs)`` but discard intermediate activations.
+class CheckpointFunction(Function):
+    @staticmethod
+    def backward(ctx, grad_output):
+        fn = ctx._fn
+        args = ctx._args
+        # Recompute the forward graph with gradients enabled, then
+        # differentiate it. Gradients accumulate directly into the original
+        # argument tensors (which are the leaves of both graphs).
+        with enable_grad():
+            output = fn(*args)
+        if isinstance(output, Tensor) and output.grad_fn is not None:
+            _backward(output, grad_output)
+        # The real gradients were written into args' .grad by the recompute;
+        # report None so the outer engine does not double-count them.
+        return (None,) + tuple(None for _ in ctx._args)
 
-    During the backward pass the segment is recomputed. ``use_reentrant``
-    is accepted for API compatibility (the pure-NumPy engine is single-stream).
+
+def checkpoint(fn, *args):
+    """Run ``fn(*args)`` with gradient checkpointing.
+
+    ``fn`` must return a single Tensor. The returned tensor carries a
+    backward graph that, on backward, recomputes ``fn`` and backpropagates
+    through it. This trades extra compute for reduced activation memory.
     """
-    seg = CheckpointSegment(fn, inputs)
-    out = seg.forward()
-    # Stash the segment on the output tensor for the backward engine
-    if not hasattr(out, "_checkpoint_segments"):
-        out._checkpoint_segments = []
-    out._checkpoint_segments.append(seg)
+    with no_grad():
+        output = fn(*args)
+
+    if isinstance(output, Tensor):
+        # The inner forward ran under no_grad (so activations are not stored),
+        # but we still need a backward edge that triggers recomputation.
+        ctx = Context()
+        ctx._fn = fn
+        ctx._args = args
+        output.requires_grad = True
+        output._attach_grad_fn(_GradFn(CheckpointFunction, ctx, _tensor_inputs(args)))
+    return output
+
+
+def checkpoint_sequential(functions, input, segments=1):
+    """Checkpoint a sequential list of callables ``functions`` applied to
+    ``input``. ``segments`` controls how many checkpointed chunks the sequence
+    is split into (1 = checkpoint the whole sequence as one unit)."""
+    if segments < 1:
+        segments = 1
+    chunks = [functions[i::segments] for i in range(segments)] if segments > 1 else [functions]
+
+    def run_chunk(fns, x):
+        for f in fns:
+            x = f(x)
+        return x
+
+    out = input
+    for i in range(segments):
+        fns = chunks[i] if segments > 1 else functions
+        out = checkpoint(lambda xs, fns=fns: run_chunk(fns, xs), out)
     return out
 
 
+class CheckpointSegment:
+    """A reusable checkpointed segment: wraps a list of callables and runs them
+    under :func:`checkpoint_sequential`."""
+
+    def __init__(self, functions):
+        self.functions = list(functions)
+
+    def __call__(self, x):
+        return checkpoint_sequential(self.functions, x, segments=1)
+
+
 class GradientCheckpointer:
-    """Manages a stack of checkpointed segments across a forward pass.
+    """Checkpointer that wraps a single callable under gradient checkpointing.
 
-    Usage:
-        with checkpointer.context():
-            h = checkpointer.checkpoint(block1, x)
-            h = checkpointer.checkpoint(block2, h)
-        # ... compute loss, backward ...
-        checkpointer.recompute_all()  # rebuild activations before 2nd pass
+    Example::
+
+        cp = GradientCheckpointer(model)
+        out = cp(x)            # equivalent to checkpoint(model, x)
     """
 
-    def __init__(self):
-        self.segments: List[CheckpointSegment] = []
-        self._active = False
+    def __init__(self, fn):
+        self.fn = fn
 
-    def context(self):
-        return _CheckpointContext(self)
-
-    def checkpoint(self, fn: Callable, *inputs: Tensor) -> Tensor:
-        seg = CheckpointSegment(fn, inputs)
-        out = seg.forward()
-        self.segments.append(seg)
-        if not hasattr(out, "_checkpoint_segments"):
-            out._checkpoint_segments = []
-        out._checkpoint_segments.append(seg)
-        return out
-
-    def recompute_all(self):
-        for seg in self.segments:
-            seg.recompute()
-
-    def num_segments(self) -> int:
-        return len(self.segments)
-
-    def memory_saved_bytes(self, per_elem_bytes: int = 4) -> int:
-        """Estimate memory saved by not storing intermediate activations.
-
-        This is a heuristic: sum of input sizes (the only thing kept).
-        """
-        total = 0
-        for seg in self.segments:
-            for t in seg.inputs:
-                total += int(np.prod(t.shape)) * per_elem_bytes
-        return total
-
-
-class _CheckpointContext:
-    def __init__(self, owner: GradientCheckpointer):
-        self.owner = owner
-
-    def __enter__(self):
-        self.owner._active = True
-        self.owner.segments = []
-        return self.owner
-
-    def __exit__(self, *exc):
-        self.owner._active = False
-        return False
-
-
-def checkpoint_sequential(
-    layers: List[Callable], inputs: Tensor, segments: int = 1
-) -> Tensor:
-    """Checkpoint a sequential stack of ``layers`` in ``segments`` chunks.
-
-    ``layers`` is a list of callables each taking one Tensor and returning
-    one Tensor. With ``segments=1`` the whole stack is one checkpoint.
-    """
-    if segments < 1:
-        segments = 1
-    bounds = np.linspace(0, len(layers), segments + 1).astype(int)
-    x = inputs
-    for s in range(segments):
-        lo, hi = bounds[s], bounds[s + 1]
-        if hi <= lo:
-            continue
-        chunk = layers[lo:hi]
-
-        def make_fn(chunk):
-            def fn(t):
-                h = t
-                for layer in chunk:
-                    h = layer(h)
-                return h
-
-            return fn
-
-        x = checkpoint(make_fn(chunk), x)
-    return x
+    def __call__(self, *args):
+        return checkpoint(self.fn, *args)

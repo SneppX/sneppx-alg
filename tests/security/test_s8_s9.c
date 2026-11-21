@@ -1,4 +1,5 @@
 #include "model_checking.h"
+#include "test_gtest.h"
 #include "self_audit.h"
 #include "s8_extensions.h"
 #include "s9_extensions.h"
@@ -21,17 +22,8 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } \
-} while(0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout);
-    test_fn(); printf("PASS\n"); tests_passed++;
-}
 
 static int sample_invariant(uint32_t state_id) {
     return state_id < 10;
@@ -39,7 +31,7 @@ static int sample_invariant(uint32_t state_id) {
 
 static void test_model_init(void) {
     SNEPPXFormalModel model;
-    ASSERT(SNEPPX_model_init(&model) == 0, "model init");
+    SX_ASSERT(SNEPPX_model_init(&model) == 0, "model init");
 }
 
 static void test_model_simple_graph(void) {
@@ -51,8 +43,8 @@ static void test_model_simple_graph(void) {
     SNEPPX_model_add_transition(&model, 0, 1);
     SNEPPX_model_add_transition(&model, 0, 2);
     SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
-    ASSERT(result.total_states == 3, "3 states");
-    ASSERT(result.reachable_states > 0, "reachable states");
+    SX_ASSERT(result.total_states == 3, "3 states");
+    SX_ASSERT(result.reachable_states > 0, "reachable states");
 }
 
 static void test_model_invariant(void) {
@@ -60,75 +52,132 @@ static void test_model_invariant(void) {
     SNEPPX_model_init(&model);
     SNEPPX_model_add_state(&model, 0, 0, 0);
     SNEPPX_model_add_state(&model, 1, 0, 0);
-    ASSERT(SNEPPX_model_verify_invariant(&model, sample_invariant) == 1, "invariant holds");
+    SX_ASSERT(SNEPPX_model_verify_invariant(&model, sample_invariant) == 1, "invariant holds");
     SNEPPX_model_add_state(&model, 99, 0, 0);
-    ASSERT(SNEPPX_model_verify_invariant(&model, sample_invariant) == 0, "invariant fails");
+    SX_ASSERT(SNEPPX_model_verify_invariant(&model, sample_invariant) == 0, "invariant fails");
 }
 
 static void test_self_audit_init(void) {
     SNEPPXSelfAudit audit;
-    ASSERT(SNEPPX_self_audit_init(&audit) == 0, "audit init");
+    SX_ASSERT(SNEPPX_self_audit_init(&audit) == 0, "audit init");
     SNEPPX_self_audit_destroy(&audit);
 }
 
 static void test_self_audit_run(void) {
     SNEPPXSelfAudit audit;
     SNEPPX_self_audit_init(&audit);
-    ASSERT(SNEPPX_self_audit_run_all(&audit) == 0, "run all");
-    ASSERT(audit.total_passed > 0, "checks passed");
-    ASSERT(audit.total_failed >= 0, "checks run");
-    double score = SNEPPX_self_audit_score(&audit);
-    ASSERT(score > 0.0, "positive score");
+    SX_ASSERT(SNEPPX_self_audit_run_all(&audit) == 0, "run all");
+    SX_ASSERT(audit.total_passed == 0, "unverified capabilities are never marked passed");
+    SX_ASSERT(audit.total_warnings == audit.check_count, "all declared-only checks are warnings");
+    SX_ASSERT(audit.total_failed == 0, "no false failures");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "crypto") == 12, "crypto category count");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "memory") == 8, "memory category count");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "unknown") == -1, "unknown category rejected");
+    SX_ASSERT(SNEPPX_self_audit_get_category_score(&audit, "crypto") == 0, "unverified crypto score is zero");
+    SX_ASSERT(SNEPPX_self_audit_score(&audit) == 0.0, "unverified checks do not inflate score");
+    SNEPPX_self_audit_destroy(&audit);
+}
+
+static void test_self_audit_export_validation(void) {
+    SNEPPXSelfAudit audit;
+    char report_path[] = "self_audit_export_test.txt";
+    char report[2048];
+    FILE* file;
+    size_t bytes;
+
+    SX_ASSERT(SNEPPX_self_audit_init(&audit) == 0, "audit export init");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "crypto_export", SNEPPX_AUDIT_WARN,
+                                         "runtime verification pending") == 0,
+              "audit export check setup");
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == 0,
+              "valid audit export succeeds");
+    file = fopen(report_path, "r");
+    SX_ASSERT(file != NULL, "audit report can be opened");
+    if (file) {
+        bytes = fread(report, 1, sizeof(report) - 1, file);
+        report[bytes] = '\0';
+        fclose(file);
+        SX_ASSERT(strstr(report, "[WARN] crypto_export: runtime verification pending") != NULL,
+                  "audit report includes check details");
+        SX_ASSERT(strstr(report, "Summary: 0 passed, 0 failed, 1 warnings") != NULL,
+                  "audit report includes summary");
+    }
+    remove(report_path);
+
+    audit.check_count = -1;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "negative check count is rejected");
+    audit.check_count = SNEPPX_AUDIT_MAX_CHECKS + 1;
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "oversized check count is rejected");
+    audit.check_count = 1;
+    memset(audit.checks[0].check_name, 'A', sizeof(audit.checks[0].check_name));
+    SX_ASSERT(SNEPPX_self_audit_export_report(&audit, report_path) == -1,
+              "unterminated check name is rejected");
+    SNEPPX_self_audit_destroy(&audit);
+}
+
+static void test_self_audit_add_check_validation(void) {
+    SNEPPXSelfAudit audit;
+    SNEPPX_self_audit_init(&audit);
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "sample", SNEPPX_AUDIT_INFO, NULL) == 0, "info check accepted");
+    SX_ASSERT(audit.check_count == 1, "one check recorded");
+    SX_ASSERT(audit.checks[0].details[0] == '\0', "null details are initialized");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "", SNEPPX_AUDIT_PASS, "invalid") == -1, "empty name rejected");
+    SX_ASSERT(SNEPPX_self_audit_add_check(&audit, "bad-status", (SNEPPXAuditStatus)99, "invalid") == -1, "invalid status rejected");
+    SX_ASSERT(SNEPPX_self_audit_add_check_ex(&audit, "key rotation", SNEPPX_AUDIT_WARN, "not tested", "updates") == 0, "category-aware add");
+    SX_ASSERT(SNEPPX_self_audit_get_category_count(&audit, "updates") == 1, "explicit category is retained in name");
+    SX_ASSERT(SNEPPX_self_audit_add_check_ex(&audit, "x", SNEPPX_AUDIT_WARN, "bad", "invalid") == -1, "invalid category rejected");
     SNEPPX_self_audit_destroy(&audit);
 }
 
 static void test_tla_parse(void) {
     SNEPPXTLAParser parser;
-    ASSERT(SNEPPX_tla_parse(&parser, "Init == x = 0") == 0, "tla parse");
-    ASSERT(parser.parsed == 1, "parsed flag");
+    SX_ASSERT(SNEPPX_tla_parse(&parser, "Init == x = 0") == 0, "tla parse");
+    SX_ASSERT(parser.parsed == 1, "parsed flag");
 }
 
 static void test_ltl_init_check(void) {
     SNEPPXLTLVerifier ltl;
-    ASSERT(SNEPPX_ltl_init(&ltl, "G(x > 0)") == 0, "ltl init");
+    SX_ASSERT(SNEPPX_ltl_init(&ltl, "G(x > 0)") == 0, "ltl init");
     int trace[] = {1, 2, 3};
-    ASSERT(SNEPPX_ltl_check(&ltl, trace, 3) == 0, "ltl check");
-    ASSERT(ltl.holds == 1, "ltl holds");
+    SX_ASSERT(SNEPPX_ltl_check(&ltl, trace, 3) == 0, "ltl check");
+    SX_ASSERT(ltl.holds == 1, "ltl holds");
 }
 
 static void test_symex_init_explore(void) {
     SNEPPXSymExEngine se;
-    ASSERT(SNEPPX_symex_init(&se, 10) == 0, "symex init");
-    ASSERT(se.depth_limit == 10, "depth limit");
+    SX_ASSERT(SNEPPX_symex_init(&se, 10) == 0, "symex init");
+    SX_ASSERT(se.depth_limit == 10, "depth limit");
     uint8_t bc[] = {0x01, 0x02, 0x03};
-    ASSERT(SNEPPX_symex_explore(&se, bc, 3) == 0, "symex explore");
-    ASSERT(se.explored_paths >= 1, "paths explored");
+    SX_ASSERT(SNEPPX_symex_explore(&se, bc, 3) == 0, "symex explore");
+    SX_ASSERT(se.explored_paths >= 1, "paths explored");
 }
 
 static void test_loop_invariant(void) {
     char inv[256];
-    ASSERT(SNEPPX_loop_invariant_infer("for i in 0..n", inv, sizeof(inv)) == 0, "loop invariant");
+    SX_ASSERT(SNEPPX_loop_invariant_infer("for i in 0..n", inv, sizeof(inv)) == 0, "loop invariant");
 }
 
 static void test_data_flow(void) {
     SNEPPXDataFlow df;
-    ASSERT(SNEPPX_data_flow_init(&df) == 0, "dataflow init");
-    ASSERT(SNEPPX_data_flow_taint(&df, 42) == 0, "taint var");
-    ASSERT(df.taint_count == 1, "one taint mark");
-    ASSERT(SNEPPX_data_flow_propagate(&df) == 0, "propagate");
+    SX_ASSERT(SNEPPX_data_flow_init(&df) == 0, "dataflow init");
+    SX_ASSERT(SNEPPX_data_flow_taint(&df, 42) == 0, "taint var");
+    SX_ASSERT(df.taint_count == 1, "one taint mark");
+    SX_ASSERT(SNEPPX_data_flow_propagate(&df) == 0, "propagate");
 }
 
 static void test_lean_export(void) {
-    ASSERT(SNEPPX_lean_export_proof("my_theorem", "trivial", "proof.lean") == 0, "lean export");
+    SX_ASSERT(SNEPPX_lean_export_proof("my_theorem", "trivial", "proof.lean") == 0, "lean export");
 }
 
 static void test_vuln_scanner(void) {
     SNEPPXVulnScanner vs;
-    ASSERT(SNEPPX_vuln_scanner_init(&vs) == 0, "vuln init");
-    ASSERT(SNEPPX_vuln_scanner_add_cve(&vs, "CVE-2024-1234") == 0, "add CVE");
-    ASSERT(vs.cve_count == 1, "one CVE");
-    ASSERT(SNEPPX_vuln_scanner_run(&vs) == 0, "vuln scan");
-    ASSERT(vs.scan_complete == 1, "scan complete");
+    SX_ASSERT(SNEPPX_vuln_scanner_init(&vs) == 0, "vuln init");
+    SX_ASSERT(SNEPPX_vuln_scanner_add_cve(&vs, "CVE-2024-1234") == 0, "add CVE");
+    SX_ASSERT(vs.cve_count == 1, "one CVE");
+    SX_ASSERT(SNEPPX_vuln_scanner_run(&vs) == 0, "vuln scan");
+    SX_ASSERT(vs.scan_complete == 1, "scan complete");
 }
 
 static int dummy_fuzz_target(const uint8_t* data, size_t len) {
@@ -138,49 +187,106 @@ static int dummy_fuzz_target(const uint8_t* data, size_t len) {
 
 static void test_fuzz_harness(void) {
     SNEPPXFuzzHarness fh;
-    ASSERT(SNEPPX_fuzz_harness_init(&fh) == 0, "fuzz init");
+    SX_ASSERT(SNEPPX_fuzz_harness_init(&fh) == 0, "fuzz init");
     fh.input_len = 64;
     int crashes = SNEPPX_fuzz_harness_run(&fh, dummy_fuzz_target);
-    ASSERT(crashes >= 0, "fuzz run");
+    SX_ASSERT(crashes >= 0, "fuzz run");
 }
 
 static void test_redteam(void) {
     SNEPPXRedTeamSim rt;
-    ASSERT(SNEPPX_redteam_init(&rt) == 0, "redteam init");
-    ASSERT(SNEPPX_redteam_add_step(&rt, "recon") == 0, "add step");
-    ASSERT(SNEPPX_redteam_add_step(&rt, "exploit") == 0, "add step 2");
-    ASSERT(SNEPPX_redteam_execute(&rt) == 0, "execute");
-    ASSERT(rt.completed == 1, "completed");
+    SX_ASSERT(SNEPPX_redteam_init(&rt) == 0, "redteam init");
+    SX_ASSERT(SNEPPX_redteam_add_step(&rt, "recon") == 0, "add step");
+    SX_ASSERT(SNEPPX_redteam_add_step(&rt, "exploit") == 0, "add step 2");
+    SX_ASSERT(SNEPPX_redteam_execute(&rt) == 0, "execute");
+    SX_ASSERT(rt.completed == 1, "completed");
 }
 
 static void test_compliance(void) {
-    ASSERT(SNEPPX_compliance_check_nist("AC-1") == 1, "nist check");
+    SX_ASSERT(SNEPPX_compliance_check_nist("AC-1") == 1, "nist check");
 }
 
 static void test_bugbounty(void) {
     SNEPPXBugBountyTriage bt;
-    ASSERT(SNEPPX_bugbounty_triage_init(&bt) == 0, "bb triage init");
-    ASSERT(SNEPPX_bugbounty_triage_analyze(&bt, "XSS in login") == 0, "analyze report");
-    ASSERT(bt.severity >= 0, "severity assigned");
+    SX_ASSERT(SNEPPX_bugbounty_triage_init(&bt) == 0, "bb triage init");
+    SX_ASSERT(SNEPPX_bugbounty_triage_analyze(&bt, "XSS in login") == 0, "analyze report");
+    SX_ASSERT(bt.severity >= 0, "severity assigned");
 }
 
-int main(void) {
-    run_test("model_init", test_model_init);
-    run_test("model_simple_graph", test_model_simple_graph);
-    run_test("model_invariant", test_model_invariant);
-    run_test("self_audit_init", test_self_audit_init);
-    run_test("self_audit_run", test_self_audit_run);
-    run_test("tla_parse", test_tla_parse);
-    run_test("ltl_init_check", test_ltl_init_check);
-    run_test("symex_init_explore", test_symex_init_explore);
-    run_test("loop_invariant", test_loop_invariant);
-    run_test("data_flow", test_data_flow);
-    run_test("lean_export", test_lean_export);
-    run_test("vuln_scanner", test_vuln_scanner);
-    run_test("fuzz_harness", test_fuzz_harness);
-    run_test("redteam", test_redteam);
-    run_test("compliance", test_compliance);
-    run_test("bugbounty", test_bugbounty);
-    printf("\n%d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
+static void test_model_get_counterexample(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_state(&model, 2, 0, 1);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPX_model_add_transition(&model, 1, 2);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(result.property_satisfied == 0, "error state reachable, property violated");
+    SX_ASSERT(result.error_states == 1, "one error state");
+
+    uint32_t trace[16];
+    int len = SNEPPX_model_get_counterexample(&model, trace, 16);
+    SX_ASSERT(len == 3, "counterexample trace length");
+    SX_ASSERT(trace[0] == 0, "trace starts at initial");
+    SX_ASSERT(trace[1] == 1, "trace middle state");
+    SX_ASSERT(trace[2] == 2, "trace ends at error state");
 }
+
+static void test_model_get_counterexample_no_error(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(result.property_satisfied == 1, "no error state, property satisfied");
+
+    uint32_t trace[16];
+    int len = SNEPPX_model_get_counterexample(&model, trace, 16);
+    SX_ASSERT(len == 0, "no counterexample when no error state");
+}
+
+static void test_model_counterexample_string(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 1);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    SNEPPXModelCheckResult result = SNEPPX_model_check(&model);
+    SX_ASSERT(strstr(result.counterexample, "0") != NULL, "counterexample contains state 0");
+    SX_ASSERT(strstr(result.counterexample, "1") != NULL, "counterexample contains state 1");
+}
+
+static void test_model_check_deadlock(void) {
+    SNEPPXFormalModel model;
+    SNEPPX_model_init(&model);
+    SNEPPX_model_add_state(&model, 0, 0, 0);
+    SNEPPX_model_add_state(&model, 1, 0, 0);
+    SNEPPX_model_add_transition(&model, 0, 1);
+    int deadlocks = SNEPPX_model_check_deadlock(&model);
+    SX_ASSERT(deadlocks == 1, "state 1 is a deadlock");
+}
+
+TEST(test_s8_s9, model_init) { test_model_init(); }
+TEST(test_s8_s9, model_simple_graph) { test_model_simple_graph(); }
+TEST(test_s8_s9, model_invariant) { test_model_invariant(); }
+TEST(test_s8_s9, self_audit_init) { test_self_audit_init(); }
+TEST(test_s8_s9, self_audit_run) { test_self_audit_run(); }
+TEST(test_s8_s9, self_audit_add_check_validation) { test_self_audit_add_check_validation(); }
+TEST(test_s8_s9, self_audit_export_validation) { test_self_audit_export_validation(); }
+TEST(test_s8_s9, tla_parse) { test_tla_parse(); }
+TEST(test_s8_s9, ltl_init_check) { test_ltl_init_check(); }
+TEST(test_s8_s9, symex_init_explore) { test_symex_init_explore(); }
+TEST(test_s8_s9, loop_invariant) { test_loop_invariant(); }
+TEST(test_s8_s9, data_flow) { test_data_flow(); }
+TEST(test_s8_s9, lean_export) { test_lean_export(); }
+TEST(test_s8_s9, vuln_scanner) { test_vuln_scanner(); }
+TEST(test_s8_s9, fuzz_harness) { test_fuzz_harness(); }
+TEST(test_s8_s9, redteam) { test_redteam(); }
+TEST(test_s8_s9, compliance) { test_compliance(); }
+TEST(test_s8_s9, bugbounty) { test_bugbounty(); }
+TEST(test_s8_s9, model_get_counterexample) { test_model_get_counterexample(); }
+TEST(test_s8_s9, model_get_counterexample_no_error) { test_model_get_counterexample_no_error(); }
+TEST(test_s8_s9, model_counterexample_string) { test_model_counterexample_string(); }
+TEST(test_s8_s9, model_check_deadlock) { test_model_check_deadlock(); }

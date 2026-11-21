@@ -1,6 +1,10 @@
 #ifndef SNEPPX_COGNITIVE_MEMORY_H
 #define SNEPPX_COGNITIVE_MEMORY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 #include <stddef.h>
@@ -345,4 +349,8 @@ int SNEPPX_cognitive_memory_build_train_graph(
     size_t num_weights,
     SNEPPXVariable** output_var);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

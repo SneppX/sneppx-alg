@@ -77,8 +77,8 @@ static const field D2 = {{
     0x0006738CC7407977ULL, 0x0002406D9DC56DFFULL
 }};
 static const field SQRTM1 = {{
-    0x1d5dc8c5feba2c79ULL, 0x499183e80ec73e91ULL, 0x5b596a684f25bcf9ULL,
-    0x36f5067f552c7f08ULL, 0x0d113c3c86578acaULL
+    0x61b274a0ea0b0ULL, 0xd5a5fc8f189dULL, 0x7ef5e9cbd0c60ULL,
+    0x78595a6804c9eULL, 0x2b8324804fc1dULL
 }};
 
 static uint64_t mask51(uint64_t x) { return x & 0x7ffffffffffffULL; }
@@ -138,17 +138,6 @@ static void fe_mul(field* r, const field* a, const field* b) {
 }
 
 static void fe_sq(field* r, const field* a) { fe_mul(r, a, a); }
-
-static void fe_inv(field* r, const field* a) {
-    field t1, t2, t3;
-    fe_sq(&t1, a); fe_mul(&t2, &t1, a); fe_sq(&t1, &t2); fe_sq(&t1, &t1); fe_mul(&t2, &t1, a);
-    for (int i = 0; i < 5; i++) { fe_sq(&t1, &t2); fe_mul(&t2, &t1, a); }
-    fe_sq(&t1, &t2); fe_mul(&t3, &t1, a);
-    for (int i = 0; i < 9; i++) fe_sq(&t1, &t3);
-    fe_mul(&t2, &t1, &t3); fe_sq(&t1, &t2);
-    for (int i = 0; i < 6; i++) { fe_sq(&t1, &t1); fe_mul(&t1, &t1, a); }
-    fe_sq(&t1, &t1); fe_mul(r, &t1, &t2);
-}
 
 static void fe_from_bytes(field* r, const uint8_t b[32]) {
     r->v[0] = (uint64_t)b[0] | (uint64_t)b[1]<<8 | (uint64_t)b[2]<<16 | (uint64_t)b[3]<<24 |
@@ -217,13 +206,20 @@ static void fe_to_bytes(uint8_t b[32], const field* r) {
 /* Point in extended coordinates (X, Y, Z, T) where x=X/Z, y=Y/Z, x*y=T/Z */
 typedef struct { field X, Y, Z, T; } point;
 
+static void fe_neg(field* r, const field* a) {
+    field zero; memset(&zero, 0, sizeof(field)); fe_sub(r, &zero, a);
+}
+
+static void point_negate(point* r, const point* p) {
+    fe_neg(&r->X, &p->X);
+    fe_neg(&r->Y, &p->Y);
+    memcpy(&r->Z, &p->Z, sizeof(field));
+    memcpy(&r->T, &p->T, sizeof(field));
+}
+
 static void point_set_neutral(point* p) {
     memset(p, 0, sizeof(point));
     p->Y.v[0] = 1; p->Z.v[0] = 1;
-}
-
-static void fe_neg(field* r, const field* a) {
-    field zero; memset(&zero, 0, sizeof(field)); fe_sub(r, &zero, a);
 }
 
 /* Compute a^((p-5)/8) = a^(2^252 - 3) via square-and-multiply */
@@ -237,9 +233,31 @@ static void fe_pow22523(field* r, const field* a) {
     }
 }
 
+/* Compute a^(p-2) = a^(2^255 - 21) = (a^(2^252-3))^8 * a^3.
+ * Self-aliasing safe: r may be the same object as a. */
+static void fe_invert(field* r, const field* a) {
+    field base; memcpy(&base, a, sizeof(field));
+    fe_pow22523(r, a);
+    fe_sq(r, r);
+    fe_sq(r, r);
+    fe_sq(r, r);
+    fe_mul(r, r, &base);
+    fe_mul(r, r, &base);
+    fe_mul(r, r, &base);
+}
+
 /* Decode Edwards point from 32 bytes: Y in bytes, X parity in top bit of byte[31] */
 static int point_from_bytes(point* p, const uint8_t b[32]) {
+    /* Reject non-canonical y encodings instead of silently reducing mod p. */
+    uint8_t encoded_y[32], canonical_y[32];
+    memcpy(encoded_y, b, sizeof(encoded_y));
+    encoded_y[31] &= 0x7f;
+    field decoded_y;
+    fe_from_bytes(&decoded_y, encoded_y);
+    fe_to_bytes(canonical_y, &decoded_y);
+    if (!SNEPPX_ct_equal(encoded_y, canonical_y, sizeof(encoded_y))) return -1;
     fe_from_bytes(&p->Y, b);
+    memset(&p->Z, 0, sizeof(field));
     p->Z.v[0] = 1;
     field u, v, v3, vxx, check;
     fe_sq(&u, &p->Y);
@@ -255,20 +273,13 @@ static int point_from_bytes(point* p, const uint8_t b[32]) {
     uint8_t ck[32]; fe_to_bytes(ck, &check);
     if (!SNEPPX_ct_is_zero(ck, 32)) {
         fe_add(&check, &vxx, &u); fe_to_bytes(ck, &check);
-        if (!SNEPPX_ct_is_zero(ck, 32)) {
-            fprintf(stderr, "DBG: sqrt fail — vxx==u? no, vxx==-u? no\n");
-            { uint8_t ub[32], vxxb[32]; fe_to_bytes(ub, &u); fe_to_bytes(vxxb, &vxx);
-              fprintf(stderr, "  u="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",ub[i]); fprintf(stderr,"\n");
-              fprintf(stderr, "vxx="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",vxxb[i]); fprintf(stderr,"\n");
-              fe_add(&check, &vxx, &u); fe_to_bytes(ck, &check);
-              fprintf(stderr, "vxx+u="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",ck[i]); fprintf(stderr,"\n");
-              fe_sub(&check, &vxx, &u); fe_to_bytes(ck, &check);
-              fprintf(stderr, "vxx-u="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",ck[i]); fprintf(stderr,"\n");
-            }
-            return -1;
-        }
+        if (!SNEPPX_ct_is_zero(ck, 32)) { return -1; }
         fe_mul(&p->X, &p->X, &SQRTM1);
     }
+    /* RFC 8032 forbids the negative-zero encoding (x = 0, sign bit = 1). */
+    uint8_t x_encoding[32];
+    fe_to_bytes(x_encoding, &p->X);
+    if (SNEPPX_ct_is_zero(x_encoding, sizeof(x_encoding)) && (b[31] & 0x80)) return -1;
     if ((p->X.v[0] & 1) != (b[31] >> 7)) fe_neg(&p->X, &p->X);
     fe_mul(&p->T, &p->X, &p->Y);
     return 0;
@@ -298,16 +309,12 @@ static void init_base_point(void) {
       uint8_t ck[32]; fe_to_bytes(ck, &check);
       if (!SNEPPX_ct_is_zero(ck, 32)) {
           fe_add(&check, &vxx, &u); fe_to_bytes(ck, &check);
-          if (!SNEPPX_ct_is_zero(ck, 32)) { fprintf(stderr, "DBG: B sqrt fail\n"); return; }
+          if (!SNEPPX_ct_is_zero(ck, 32)) { return; }
           fe_mul(&B.X, &B.X, &SQRTM1);
       }
     }
+    if (B.X.v[0] & 1) fe_neg(&B.X, &B.X);
     fe_mul(&B.T, &B.X, &B.Y);
-    { uint8_t dbg[32]; fe_to_bytes(dbg, &B.X);
-      fprintf(stderr, "DBG: B.X="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fe_to_bytes(dbg, &B.Y);
-      fprintf(stderr, "DBG: B.Y="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fprintf(stderr, "DBG: B on curve=%d\n", point_is_on_curve(&B)); }
     initialized = 1;
 }
 
@@ -374,6 +381,16 @@ static void point_scalar_mult(point* r, const uint8_t* scalar, size_t sc_len, co
     }
 }
 
+static void point_normalize(point* p) {
+    field zinv;
+    fe_invert(&zinv, &p->Z);
+    fe_mul(&p->X, &p->X, &zinv);
+    fe_mul(&p->Y, &p->Y, &zinv);
+    memset(&p->Z, 0, sizeof(field));
+    p->Z.v[0] = 1;
+    fe_mul(&p->T, &p->X, &p->Y);
+}
+
 static void clamp_scalar(uint8_t* s) {
     s[0] &= 248; s[31] &= 127; s[31] |= 64;
 }
@@ -384,6 +401,36 @@ static const uint8_t L_BYTES[32] = {
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10
 };
+
+/* RFC 8032 requires S to be the canonical little-endian scalar in [0, L). */
+static int scalar_is_canonical(const uint8_t scalar[32]) {
+    for (int i = 31; i >= 0; i--) {
+        if (scalar[i] < L_BYTES[i]) return 1;
+        if (scalar[i] > L_BYTES[i]) return 0;
+    }
+    return 0;
+}
+
+/* Strict verification requires A and R to be non-identity points in the
+ * prime-order subgroup. Checking [L]P = identity rejects torsion components;
+ * checking [8]P != identity also rejects the identity/small-order points. */
+static int point_is_identity(point* p) {
+    point_normalize(p);
+    uint8_t x[32], y[32], zero[32] = {0}, one[32] = {1};
+    fe_to_bytes(x, &p->X);
+    fe_to_bytes(y, &p->Y);
+    return SNEPPX_ct_equal(x, zero, sizeof(x)) &&
+           SNEPPX_ct_equal(y, one, sizeof(y));
+}
+
+static int point_is_valid_verification_point(const point* p) {
+    static const uint8_t eight[32] = {8};
+    point order_check, cofactor_check;
+    point_scalar_mult(&order_check, L_BYTES, sizeof(L_BYTES), p);
+    if (!point_is_identity(&order_check)) return 0;
+    point_scalar_mult(&cofactor_check, eight, sizeof(eight), p);
+    return !point_is_identity(&cofactor_check);
+}
 
 /* Subtract L << (8*shift) from t[64]; return 0 if result >= 0, 1 if borrow */
 static int sub_sc_shifted(uint8_t t[64], int shift) {
@@ -477,34 +524,27 @@ int SNEPPX_ed25519_keypair_generate(SNEPPXEd25519Keypair* kp) {
     uint8_t seed[32];
     if (SNEPPX_random_bytes(seed, 32) != 0) return -1;
     if (SNEPPX_ed25519_secret_key_expand(kp->private_key, seed) != 0) return -1;
-    /* DEBUG: test identity + B */
-    { point id; point_set_neutral(&id);
-      point z; point_add(&z, &id, &B);
-      uint8_t d2[32]; fe_to_bytes(d2, &z.X);
-      fprintf(stderr, "DBG: id+B.X="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fe_to_bytes(d2, &z.Y);
-      fprintf(stderr, "DBG: id+B.Y="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fprintf(stderr, "DBG: id+B on curve=%d\n", point_is_on_curve(&z));
-      point d; point_double(&d, &B);
-      fe_to_bytes(d2, &d.X);
-      fprintf(stderr, "DBG: 2B.X="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fe_to_bytes(d2, &d.Y);
-      fprintf(stderr, "DBG: 2B.Y="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fprintf(stderr, "DBG: 2B on curve=%d\n", point_is_on_curve(&d));
-    }
     point pub; point_scalar_mult(&pub, kp->private_key, 32, &B);
-    { uint8_t dbg[32]; fe_to_bytes(dbg, &pub.X);
-      fprintf(stderr, "DBG: pub.X="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fe_to_bytes(dbg, &pub.Y);
-      fprintf(stderr, "DBG: pub.Y="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fe_to_bytes(dbg, &pub.Z);
-      fprintf(stderr, "DBG: pub.Z="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fe_to_bytes(dbg, &pub.T);
-      fprintf(stderr, "DBG: pub.T="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",dbg[i]); fprintf(stderr,"\n");
-      fprintf(stderr, "DBG: pub on curve=%d\n", point_is_on_curve(&pub)); }
+    point_normalize(&pub);
     fe_to_bytes(kp->public_key, &pub.Y);
     kp->public_key[31] |= (uint8_t)((pub.X.v[0] & 1) << 7);
-    /* Skip decode check for now to avoid stderr flood */
+    return 0;
+}
+
+/**
+ * @brief Derive the Ed25519 public key from a 32-byte seed.
+ *
+ * @return 0 on success, -1 on error.
+ */
+int SNEPPX_ed25519_publickey_from_seed(const uint8_t* seed, uint8_t* public_key) {
+    if (!seed || !public_key) return -1;
+    init_base_point();
+    uint8_t expanded[64];
+    if (SNEPPX_ed25519_secret_key_expand(expanded, seed) != 0) return -1;
+    point pub; point_scalar_mult(&pub, expanded, 32, &B);
+    point_normalize(&pub);
+    fe_to_bytes(public_key, &pub.Y);
+    public_key[31] |= (uint8_t)((pub.X.v[0] & 1) << 7);
     return 0;
 }
 
@@ -529,12 +569,8 @@ int SNEPPX_ed25519_sign(const SNEPPXEd25519Keypair* kp, const uint8_t* message, 
     SNEPPX_sha512_finish(&ctx, r_seed);
     sc_reduce64(r_scalar, r_seed);
     /* R = r_scalar * B */
-    { uint8_t d2[32]; fe_to_bytes(d2, &B.X);
-      fprintf(stderr, "DBG: B.X bytes="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fe_to_bytes(d2, &B.Y);
-      fprintf(stderr, "DBG: B.Y bytes="); for(int i=0;i<32;i++) fprintf(stderr,"%02x",d2[i]); fprintf(stderr,"\n");
-      fprintf(stderr, "DBG: B.T limbs="); for(int i=0;i<5;i++) fprintf(stderr,"%llx ", B.T.v[i]); fprintf(stderr,"\n"); }
     point R; point_scalar_mult(&R, r_scalar, 32, &B);
+    point_normalize(&R);
     fe_to_bytes(sig->data, &R.Y);
     sig->data[31] |= (uint8_t)((R.X.v[0] & 1) << 7);
     /* h = SHA-512(R || A || message) */
@@ -543,10 +579,8 @@ int SNEPPX_ed25519_sign(const SNEPPXEd25519Keypair* kp, const uint8_t* message, 
     SNEPPX_sha512_update(&ctx, kp->public_key, 32);
     SNEPPX_sha512_update(&ctx, message, msg_len);
     SNEPPX_sha512_finish(&ctx, hram);
-    memcpy(h_scalar, hram, 32);
-    /* Reduce h_scalar mod L (copy 32 bytes into 64-byte buffer) */
-    { uint8_t h64[64]; memset(h64, 0, 64); memcpy(h64, h_scalar, 32);
-      sc_reduce64(h_scalar, h64); }
+    /* Reduce full 64-byte challenge hash mod L */
+    sc_reduce64(h_scalar, hram);
     /* S = (r + h*a) mod L */
     /* a is the clamped private key (kp->private_key[0:32]) */
     sc_mul256(product, h_scalar, kp->private_key);
@@ -564,16 +598,21 @@ int SNEPPX_ed25519_sign(const SNEPPXEd25519Keypair* kp, const uint8_t* message, 
 }
 
 /**
- * @brief Verify Ed25519.
+ * @brief Core Ed25519 verify with selectable hash path.
  *
- * @param public_key [in] Public Key value.
- * @param message [in] Message value.
- * @param msg_len [in] Msg Len value.
+ * @param public_key [in] 32-byte public key.
+ * @param message [in]    Message bytes.
+ * @param msg_len [in]    Message length.
+ * @param sig [in]        64-byte signature struct.
+ * @param legacy [in]     If non-zero, use the pre-fix (legacy) SHA-512 digest.
  *
- * @return 0 on success, -1 on error.
+ * @return 1 on valid signature, 0 on invalid, -1 on error.
  */
-int SNEPPX_ed25519_verify(const uint8_t* public_key, const uint8_t* message, size_t msg_len, const SNEPPXEd25519Signature* sig) {
+static int ed25519_verify_core(const uint8_t* public_key, const uint8_t* message, size_t msg_len,
+                               const SNEPPXEd25519Signature* sig, int legacy) {
     if (!public_key || !message || !sig) return -1;
+    /* Non-canonical S values make Ed25519 signatures malleable. */
+    if (!scalar_is_canonical(sig->data + 32)) return 0;
     init_base_point();
     uint8_t hram[64];
     SNEPPXSHA512Context ctx;
@@ -606,25 +645,101 @@ int SNEPPX_ed25519_verify(const uint8_t* public_key, const uint8_t* message, siz
     fe_mul(&rhs_x, &sB8.X, &R8_plus_hA8.Z);
     fe_mul(&lhs_y, &R8_plus_hA8.Y, &sB8.Z);
     fe_mul(&rhs_y, &sB8.Y, &R8_plus_hA8.Z);
+    if (legacy)
+        SNEPPX_sha512_legacy_finish(&ctx, hram);
+    else
+        SNEPPX_sha512_finish(&ctx, hram);
+    point A; int ret_A = point_from_bytes(&A, public_key);
+    if (ret_A != 0) return -1;
+    point R;
+    int ret_R = point_from_bytes(&R, sig->data);
+    if (ret_R != 0) return -1;
+    if (!point_is_valid_verification_point(&A) ||
+        !point_is_valid_verification_point(&R)) return 0;
+
+    /* Verify: [S]B = R + [h]A */
+    uint8_t h_scalar[32];
+    sc_reduce64(h_scalar, hram);
+    point S_point;
+    point_scalar_mult(&S_point, sig->data + 32, 32, &B);
+    
+    point hA;
+    point_scalar_mult(&hA, h_scalar, 32, &A);
+    
+    point_add(&hA, &R, &hA);
+    
+    point_normalize(&S_point);
+    point_normalize(&hA);
+    
+    /* Compare in affine coordinates (canonical bytes) */
     uint8_t bx[32], cx[32], by[32], cy[32];
-    fe_to_bytes(bx, &lhs_x); fe_to_bytes(cx, &rhs_x);
-    fe_to_bytes(by, &lhs_y); fe_to_bytes(cy, &rhs_y);
+    fe_to_bytes(bx, &S_point.X); fe_to_bytes(cx, &hA.X);
+    fe_to_bytes(by, &S_point.Y); fe_to_bytes(cy, &hA.Y);
     return SNEPPX_ct_equal(bx, cx, 32) && SNEPPX_ct_equal(by, cy, 32);
+}
+
+/**
+ * @brief Verify Ed25519.
+ *
+ * @param public_key [in] Public Key value.
+ * @param message [in] Message value.
+ * @param msg_len [in] Msg Len value.
+ *
+ * @return 1 on valid, 0 on invalid, -1 on error.
+ */
+int SNEPPX_ed25519_verify(const uint8_t* public_key, const uint8_t* message, size_t msg_len, const SNEPPXEd25519Signature* sig) {
+    return ed25519_verify_core(public_key, message, msg_len, sig, 0);
+}
+
+/**
+ * @brief Verify Ed25519 with optional legacy-hash fallback.
+ *
+ * First attempts verification with the RFC-8032 compliant SHA-512.  If
+ * that fails with an invalid-signature result (0) and *allow_legacy* is
+ * non-zero, recomputes the challenge hash using the legacy (pre-fix)
+ * SHA-512 digest and retries.  This allows manifests signed before the
+ * SHA-512 length-encoding fix to still be verified.
+ *
+ * @param sig [in]          64-byte raw signature (R || S).
+ * @param m [in]            Message bytes.
+ * @param mlen [in]         Message length.
+ * @param pk [in]           32-byte public key.
+ * @param allow_legacy [in] If non-zero, fall back to legacy SHA-512 on failure.
+ *
+ * @return 1 on valid, 0 on invalid, -1 on error.
+ */
+int SNEPPX_ed25519_verify_compat(const uint8_t* sig, const uint8_t* m, size_t mlen, const uint8_t* pk, int allow_legacy) {
+    if (!sig || !m || !pk) return -1;
+    SNEPPXEd25519Signature sig_struct;
+    memcpy(sig_struct.data, sig, SNEPPX_ED25519_SIGNATURE_LEN);
+
+    /* RFC-correct verify first */
+    int ret = ed25519_verify_core(pk, m, mlen, &sig_struct, 0);
+    if (ret == 1) return 1;
+    /* On hard error (-1), do not retry with legacy */
+    if (ret == -1 || !allow_legacy) return ret;
+    /* Legacy fallback: re-derive challenge with old H1 digest */
+    return ed25519_verify_core(pk, m, mlen, &sig_struct, 1);
 }
 
 /**
  * @brief Perform Ed25519 Scalar Multiply.
  *
- * @param result [out] Result value.
- * @param scalar [in] Scalar value.
+ * @param result [out] 32-byte compressed result point.
+ * @param scalar [in] 32-byte scalar value.
+ * @param point [in] 32-byte compressed input point.
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_ed25519_scalar_multiply(uint8_t* result, const uint8_t* scalar, const uint8_t* point_bytes) {
-    if (!result || !scalar || !point_bytes) return -1;
-    point p; if (point_from_bytes(&p, point_bytes) != 0) return -1;
-    point r; point_scalar_mult(&r, scalar, 32, &p);
-    fe_to_bytes(result, &r.Y);
-    result[31] |= (uint8_t)((r.X.v[0] & 1) << 7);
+int SNEPPX_ed25519_scalar_multiply(uint8_t* result, const uint8_t* scalar, const uint8_t* pt) {
+    if (!result || !scalar || !pt) return -1;
+    init_base_point();
+    point P;
+    if (point_from_bytes(&P, pt) != 0) return -1;
+    point R;
+    point_scalar_mult(&R, scalar, 32, &P);
+    point_normalize(&R);
+    fe_to_bytes(result, &R.Y);
+    result[31] |= (uint8_t)((R.X.v[0] & 1) << 7);
     return 0;
 }

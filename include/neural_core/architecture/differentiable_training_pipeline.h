@@ -1,6 +1,10 @@
 #ifndef SNEPPX_TRAIN_H
 #define SNEPPX_TRAIN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "system_architecture_definitions.h"
 #include "automatic_differentiation_framework.h"
 #include "gradient_optimization_suite.h"
@@ -102,4 +106,8 @@ int SNEPPX_trainer_save_checkpoint(SNEPPXTrainer* trainer, const char* path);
  */
 int SNEPPX_trainer_load_checkpoint(SNEPPXTrainer* trainer, const char* path);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_TRAIN_H */

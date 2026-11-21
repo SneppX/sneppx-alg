@@ -37,7 +37,7 @@ static std::mt19937_64 vm_rng(std::random_device{}());
 
 SNEPPXObfVM::SNEPPXObfVM() : table_encrypted(false), per_opcode_key_encrypted_(false), entry_offset_(0) {
     for (auto& k : handler_xor_key) k = 0xAB;
-    for (auto& k : opcode_xor_key_) k = 0xCD;
+    for (auto& k : opcode_xor_key_) k = 0;
     for (auto& m : handler_indirection) m = 0;
 
     for (int i = 0; i < 48; i++) handler_indirection[i] = (uint8_t)((i * 7 + 3) % 48);
@@ -137,6 +137,7 @@ bool SNEPPXObfVM::validate_bytecode(const uint8_t* bytecode, size_t len) {
 }
 
 uint8_t SNEPPXObfVM::resolve_opcode(uint8_t raw_opcode, size_t ip) {
+    if (!per_opcode_key_encrypted_) return raw_opcode;
     size_t key_idx = (ip / 4) % opcode_xor_key_.size();
     return raw_opcode ^ opcode_xor_key_[key_idx];
 }
@@ -211,12 +212,12 @@ bool SNEPPXObfVM::vm_execute(const uint8_t* bytecode, size_t len) {
         uint8_t op2 = bytecode[vm_state.ip + 2];
 
         if (raw_opcode == 0xFF) {
-            vm_exit_cleanup();
+            vm_state.running = false;
             break;
         }
 
         uint8_t opcode = resolve_opcode(raw_opcode, vm_state.ip);
-        uint8_t dispatch_idx = handler_indirection[opcode % 48];
+        uint8_t dispatch_idx = table_encrypted ? handler_indirection[opcode % handlers.size()] : opcode;
         dispatch(dispatch_idx, op1, op2);
         vm_state.ip += 4;
     }

@@ -23,8 +23,9 @@
  */
 
 #include <stdio.h>
+#include "test_gtest.h"
 
-int main(void) {
+TEST(test_lib_common, suite) {
     printf("test_lib: skeleton — no library unit tests implemented\n");
-    return 0;
+    return;
 }

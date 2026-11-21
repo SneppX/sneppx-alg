@@ -65,7 +65,7 @@ void SNEPPX_ser_route(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPXTe
     float* bias_data = (float*)layer->router_bias->data;
     float* in_data = (float*)input->data;
 
-    float* logits = (float*)malloc(n_exp * num_tokens * sizeof(float));
+    float* logits = (float*)SNEPPX_malloc(n_exp * num_tokens * sizeof(float), 16);
     if (!logits) return;
 
     for (size_t e = 0; e < n_exp; e++) {
@@ -105,9 +105,9 @@ void SNEPPX_ser_route(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPXTe
 
     size_t shape_gw[] = {num_tokens, n_act};
     *gate_weights = SNEPPX_tensor_create(shape_gw, 2, SNEPPX_FLOAT32);
-    *expert_indices = (int*)malloc(num_tokens * n_act * sizeof(int));
+    *expert_indices = (int*)SNEPPX_malloc(num_tokens * n_act * sizeof(int), 16);
     if (!*gate_weights || !*expert_indices) {
-        free(logits);
+        SNEPPX_free(logits, n_exp * num_tokens * sizeof(float));
         return;
     }
 
@@ -146,7 +146,7 @@ void SNEPPX_ser_route(SNEPPXSERLayer* layer, const SNEPPXTensor* input, SNEPPXTe
         }
     }
 
-    free(logits);
+    SNEPPX_free(logits, n_exp * num_tokens * sizeof(float));
 }
 
 // Gating forward with learned temperature scaling
@@ -189,16 +189,16 @@ void SNEPPX_ser_gate_forward(const SNEPPXSERLayer* layer, const SNEPPXTensor* in
         }
     }
 
-    float* sm_data = (float*)malloc(num_tokens * n_exp * sizeof(float));
+    float* sm_data = (float*)SNEPPX_malloc(num_tokens * n_exp * sizeof(float), 16);
     if (!sm_data) { SNEPPX_tensor_destroy(*gate_logits); *gate_logits = NULL; return; }
     memcpy(sm_data, logits_data, num_tokens * n_exp * sizeof(float));
     softmax(sm_data, num_tokens, n_exp);
 
     size_t shape_gw[] = {num_tokens, n_act};
     *gate_weights = SNEPPX_tensor_create(shape_gw, 2, SNEPPX_FLOAT32);
-    *expert_indices = (int*)malloc(num_tokens * n_act * sizeof(int));
+    *expert_indices = (int*)SNEPPX_malloc(num_tokens * n_act * sizeof(int), 16);
     if (!*gate_weights || !*expert_indices) {
-        free(sm_data);
+        SNEPPX_free(sm_data, num_tokens * n_exp * sizeof(float));
         SNEPPX_tensor_destroy(*gate_logits);
         *gate_logits = NULL;
         return;
@@ -238,7 +238,7 @@ void SNEPPX_ser_gate_forward(const SNEPPXSERLayer* layer, const SNEPPXTensor* in
         }
     }
 
-    free(sm_data);
+    SNEPPX_free(sm_data, num_tokens * n_exp * sizeof(float));
 }
 
 // Z-loss: auxiliary loss that keeps gate logits near zero

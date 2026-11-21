@@ -7,6 +7,12 @@
 
 #define KYBER_N 256
 #define KYBER_Q 3329
+#define KYBER_QINV -3327
+#define KYBER_K 3
+#define KYBER_ETA1 2
+#define KYBER_ETA2 2
+#define KYBER_DU 10
+#define KYBER_DV 4
 
 /*
  * SNEPPX - Kyber
@@ -25,74 +31,82 @@
 
 
 static int16_t zetas[128];
-static int16_t zetas_inv[128];
 static int init_ntt = 0;
 
-static const int16_t zetas_rom[] = {
-    -1044, -758, -359, -1517, 1493, 1422, 287, 202, -171, 622, 1577, 182, 962,
-    -1202, -1474, 1468, 573, -1325, 264, 383, -829, 1458, -1602, -130, -681,
-    1017, 732, 608, -1542, 411, -205, -1571, 1223, 652, -552, 1015, -1293, 1491,
-    -282, -1544, 516, -8, -320, -666, -1618, -1162, 126, 1469, -853, -90, -271,
-    830, 107, -1421, -247, -951, -398, 961, -1508, -725, 448, -1065, 677, -1275,
-    -1103, 430, 555, 843, -1251, 871, 1550, 105, 422, -587, -833, 258, 1331,
-    1265, 1544, 184, -1607, -144, 214, -29, 1006, -1383, -5, 1647, -718, -720,
-    1446, -1217, 713, -1345, -1151, 1511, -786, 1384, 320, -413, 1156, -403,
-    1031, 233, -1550, 56, 1457, -1676, -959, 136, 1179, -1410, -807, 766, 1387,
-    -1288, -1584, 1641, -1009, -55, -73, 887, 1343, 760, -765, -1546, -1582,
-    1447, 1617, -1554, 1644, 1605, 374, -1060, 1413, -565, -437, 1404, -1038,
-    386, -242, -560, 297, 1145, 290, 184, 718, -1020, 248, 1078, 211, 1016, -450,
-    -381, -372, -1080, 1012, 1308, 1497, -799, -1055, 764, -621, -475, -1056,
-    -512, -1614, 1247, 1472, -788, -1207, -671, 614, 543, 428, -1520, -355, 908,
-    -1406, 1455, 810, -926, 908, 1420, -640, -1332, -1395, 506, -499, -384, 526,
-    -833, -170, 860, 410, -1375, 1025, -1386, -1589, 559, 1629, 810, 730, -527,
-    1220, 629, 1629, 1158, -160, 1650, 1435, -124, -247, 895, -469, 1611, 1096,
-    -1183, -247, 550, -1626, 143, -1586, -32, 1011, -706, -234, 943, 378, 364,
-    -558, -1602, 1637, 1335, -1437, -1390, -948, -505, 1106, 766, -648, 262,
-    1509, -870, 1428, -325, -746, 1494, 1130, -1210, -326, -744, -877, 1577,
-    -997, 85, -1306, 1456, 1593, 1621, 431, 832, -691, -1376, 1509, -135, 1040,
-    -1443, -1319, 1267, 1314, -176, -1605, 895, 1379, 1377, 472, -1356, -1050,
-    728, 112, -1437, -1593, -843, -888, 1568, 1295, -1096, -119, -399, 230, 1420,
-    1427, -583, 649, 869, -422, 1117, 787, 869, 1507, -675, 745, 1079, -1269,
-    706, 1122, -426, -829, -1373, -621, -981, 1558, 1601, 216, -1542, 380, 1489,
-    -317, -992, 966, -1358, 52, 320, -128, 471, -254, -196, 250, -1261, 850,
-    -353, 1481, -1394, 119, 1334
+/* Kyber NTT twiddles: zetas[i] = 2^16 * 17^brv7(i) mod q, i = 0..127
+ * (the canonical FIPS 203 / pqcrystals reference table). The original
+ * table here was 336 entries and corrupted after index 63, which
+ * silently broke poly_mul and made decapsulation fail. */
+static const int16_t zetas_rom[128] = {
+    -1044,  -758,  -359, -1517,  1493,  1422,   287,   202,
+     -171,   622,  1577,   182,   962, -1202, -1474,  1468,
+      573, -1325,   264,   383,  -829,  1458, -1602,  -130,
+     -681,  1017,   732,   608, -1542,   411,  -205, -1571,
+     1223,   652,  -552,  1015, -1293,  1491,  -282, -1544,
+      516,    -8,  -320,  -666, -1618, -1162,   126,  1469,
+     -853,   -90,  -271,   830,   107, -1421,  -247,  -951,
+     -398,   961, -1508,  -725,   448, -1065,   677, -1275,
+    -1103,   430,   555,   843, -1251,   871,  1550,   105,
+      422,   587,   177,  -235,  -291,  -460,  1574,  1653,
+     -246,   778,  1159,  -147,  -777,  1483,  -602,  1119,
+    -1590,   644,  -872,   349,   418,   329,  -156,   -75,
+      817,  1097,   603,   610,  1322, -1285, -1465,   384,
+    -1215,  -136,  1218, -1335,  -874,   220, -1187, -1659,
+    -1185, -1530, -1278,   794, -1510,  -854,  -870,   478,
+     -108,  -308,   996,   991,   958, -1460,  1522,  1628
 };
 
 static int kyber_init_ntt(void) {
     if (!init_ntt) {
         for (int i = 0; i < 128; i++) zetas[i] = zetas_rom[i];
-        for (int i = 0; i < 128; i++) zetas_inv[i] = zetas_rom[127 - i];
         init_ntt = 1;
     }
     return 1;
 }
 
 static int16_t fq_reduce(int32_t a) {
-    int16_t t = (int16_t)((a + 3329 * 128) % 3329);
-    return t >= 3329 ? (int16_t)(t - 3329) : t;
+    int16_t t = (int16_t)((a + KYBER_Q * 128) % KYBER_Q);
+    return t >= KYBER_Q ? (int16_t)(t - KYBER_Q) : t;
 }
 
+/* Reference Montgomery reduction: a * 2^-16 mod q in centered form,
+ * using QINV = -3327 (the minus-formula). The previous code used the
+ * plus-formula with an incorrect QINV (20159), which broke every
+ * NTT-domain multiply. */
 static int16_t mont_reduce(int32_t a) {
-    int16_t u = (int16_t)(a * 20159);
-    int32_t t = (u * 3329) + a;
-    return (int16_t)(t >> 16);
+    int16_t t = (int16_t)((int16_t)a * KYBER_QINV);
+    return (int16_t)((a - (int32_t)t * KYBER_Q) >> 16);
 }
 
+static int16_t barrett_reduce(int16_t a) {
+    int16_t t;
+    const int16_t v = (int16_t)(((1L << 26) + KYBER_Q / 2) / KYBER_Q);
+    t = (int16_t)(((int32_t)v * a + (1L << 25)) >> 26);
+    t = (int16_t)(t * KYBER_Q);
+    return (int16_t)(a - t);
+}
+
+static int16_t fqmul(int16_t a, int16_t b) { return mont_reduce((int32_t)a * b); }
+
+/* Forward NTT (FIPS 203 / pqcrystals reference layout). Consumes
+ * zetas[1..127], one twiddle per 256/len block, then Barrett-reduces
+ * every coefficient. */
 static void ntt(int16_t r[256]) {
-    int len = 128, k = 0;
+    int len = 128, k = 1;
     while (len >= 2) {
         int start = 0;
         while (start < 256) {
-            int16_t zeta = zetas[++k];
+            int16_t zeta = zetas[k++];
             for (int j = start; j < start + len; j++) {
-                int16_t t = mont_reduce(zeta * r[j + len]);
-                r[j + len] = r[j] - t;
-                r[j] = r[j] + t;
+                int16_t t = fqmul(zeta, r[j + len]);
+                r[j + len] = (int16_t)(r[j] - t);
+                r[j] = (int16_t)(r[j] + t);
             }
             start += len * 2;
         }
         len >>= 1;
     }
+    for (int j = 0; j < 256; j++) r[j] = barrett_reduce(r[j]);
 }
 
 static void inv_ntt(int16_t r[256]) {
@@ -100,18 +114,19 @@ static void inv_ntt(int16_t r[256]) {
     while (len <= 128) {
         int start = 0;
         while (start < 256) {
-            int16_t zeta = zetas_inv[--k];
+            int16_t zeta = zetas[k--];
             for (int j = start; j < start + len; j++) {
-                int16_t t = r[j + len];
-                r[j + len] = fq_reduce(r[j] - t);
-                r[j] = fq_reduce(r[j] + t);
-                r[j + len] = mont_reduce(zeta * r[j + len]);
+                int16_t t = r[j];
+                r[j] = barrett_reduce((int16_t)(t + r[j + len]));
+                r[j + len] = (int16_t)(r[j + len] - t);
+                r[j + len] = fqmul(zeta, r[j + len]);
             }
             start += len * 2;
         }
         len <<= 1;
     }
-    for (int j = 0; j < 256; j++) r[j] = fq_reduce(r[j] * 3303);
+    /* mont^2/128 -- the reference "tomont" scaling factor (1441). */
+    for (int j = 0; j < 256; j++) r[j] = fqmul(r[j], 1441);
 }
 
 static void poly_add(int16_t r[256], const int16_t a[256], const int16_t b[256]) {
@@ -122,52 +137,70 @@ static void poly_sub(int16_t r[256], const int16_t a[256], const int16_t b[256])
     for (int i = 0; i < 256; i++) r[i] = fq_reduce(a[i] - b[i]);
 }
 
+/* Reference NTT-domain multiply: 2x2 basemul over Z[X]/(X^2 - zeta),
+ * with zetas[64+i] / -zetas[64+i]. A plain pointwise multiply is wrong
+ * for the Montgomery/cyclic layout. */
+static void basemul(int16_t r[2], const int16_t a[2], const int16_t b[2], int16_t zeta) {
+    int16_t r0 = fqmul(a[1], b[1]);
+    r0 = fqmul(r0, zeta);
+    r0 = (int16_t)(r0 + fqmul(a[0], b[0]));
+    int16_t r1 = fqmul(a[0], b[1]);
+    r1 = (int16_t)(r1 + fqmul(a[1], b[0]));
+    r[0] = r0;
+    r[1] = r1;
+}
+
 static void poly_mul(int16_t r[256], const int16_t a[256], const int16_t b[256]) {
-    int16_t tmp[256];
+    int16_t tmp[256], tmp2[256];
     memcpy(tmp, a, sizeof(tmp));
     ntt(tmp);
-    int16_t tmp2[256];
     memcpy(tmp2, b, sizeof(tmp2));
     ntt(tmp2);
-    for (int i = 0; i < 256; i++) tmp[i] = mont_reduce(tmp[i] * tmp2[i]);
-    inv_ntt(tmp);
-    memcpy(r, tmp, sizeof(tmp));
+    for (int i = 0; i < 64; i++) {
+        basemul(r + 4 * i, tmp + 4 * i, tmp2 + 4 * i, zetas[64 + i]);
+        basemul(r + 4 * i + 2, tmp + 4 * i + 2, tmp2 + 4 * i + 2, (int16_t)(-zetas[64 + i]));
+    }
+    inv_ntt(r);
 }
 
 static void poly_tobytes(uint8_t *out, const int16_t a[256]) {
     for (int i = 0; i < 128; i++) {
         int16_t t0 = a[2 * i], t1 = a[2 * i + 1];
-        out[3 * i] = t0 & 0xff;
-        out[3 * i + 1] = (t0 >> 8) | ((t1 & 0xf) << 4);
-        out[3 * i + 2] = t1 >> 4;
+        t0 = (int16_t)(t0 + ((t0 >> 15) & KYBER_Q));
+        t1 = (int16_t)(t1 + ((t1 >> 15) & KYBER_Q));
+        out[3 * i] = (uint8_t)t0;
+        out[3 * i + 1] = (uint8_t)((t0 >> 8) | ((t1 & 0xf) << 4));
+        out[3 * i + 2] = (uint8_t)(t1 >> 4);
     }
 }
 
 static void poly_frombytes(int16_t r[256], const uint8_t *in) {
     for (int i = 0; i < 128; i++) {
-        r[2 * i] = ((in[3 * i + 1] & 0x0f) << 8) | in[3 * i];
-        r[2 * i + 1] = (in[3 * i + 2] << 4) | ((in[3 * i + 1] >> 4) & 0x0f);
-        if (r[2 * i] >= KYBER_Q) r[2 * i] -= KYBER_Q;
-        if (r[2 * i + 1] >= KYBER_Q) r[2 * i + 1] -= KYBER_Q;
+        r[2 * i] = (int16_t)(((in[3 * i + 1] & 0x0f) << 8) | in[3 * i]);
+        r[2 * i + 1] = (int16_t)((in[3 * i + 2] << 4) | ((in[3 * i + 1] >> 4) & 0x0f));
     }
 }
 
+/* LSB-first bit-accumulator packer: round(2^d/q * a) mod 2^d on the
+ * positive representative. The old code used (1<<12)/q == 1 (collapsing
+ * every coefficient to 0/1) and a broken cross-byte shifter that lost
+ * bits whenever shift landed on a byte boundary. */
 static void poly_compress(uint8_t *out, const int16_t a[256], int d) {
-    int32_t f = (1 << 12) / KYBER_Q;
-    int out_idx = 0, shift = 0;
-    memset(out, 0, (256 * d + 7) / 8);
+    size_t out_idx = 0;
+    uint64_t buf = 0;
+    int bits = 0;
+    memset(out, 0, (size_t)((256 * d + 7) / 8));
     for (int i = 0; i < 256; i++) {
-        int32_t t = (a[i] * f + (1 << 11)) >> 12;
+        int32_t t = a[i];
+        t += (t >> 15) & KYBER_Q;
+        t = (((t << d) + KYBER_Q / 2) / KYBER_Q);
         t &= (1 << d) - 1;
-        out[out_idx] |= (uint8_t)(t << shift);
-        int remaining = 8 - shift;
-        if (d > remaining) {
-            out[out_idx + 1] |= (uint8_t)(t >> remaining);
-            out_idx++;
-            shift = d - remaining;
-        } else {
-            shift += d;
-            if (shift == 8) { out_idx++; shift = 0; }
+        buf |= ((uint64_t)t) << bits;
+        bits += d;
+        while (bits >= 8) {
+            out[out_idx++] = (uint8_t)(buf & 0xff);
+            buf >>= 8;
+            bits -= 8;
         }
     }
 }
@@ -187,10 +220,8 @@ static void poly_decompress(int16_t r[256], const uint8_t *in, int d) {
 
 static void poly_frommsg(int16_t r[256], const uint8_t msg[32]) {
     for (int i = 0; i < 32; i++)
-        for (int j = 0; j < 8; j++) {
-            int bit = (msg[i] >> j) & 1;
-            r[8 * i + j] = bit * (KYBER_Q / 2);
-        }
+        for (int j = 0; j < 8; j++)
+            r[8 * i + j] = (int16_t)((msg[i] >> j & 1) * ((KYBER_Q + 1) / 2));
 }
 
 static void poly_tomsg(uint8_t msg[32], const int16_t a[256]) {
@@ -198,26 +229,38 @@ static void poly_tomsg(uint8_t msg[32], const int16_t a[256]) {
         msg[i] = 0;
         for (int j = 0; j < 8; j++) {
             int16_t t = a[8 * i + j];
-            int bit = 1;
-            if (t < KYBER_Q / 4 || t > 3 * KYBER_Q / 4) bit = 0;
-            msg[i] |= bit << j;
+            t = (int16_t)(t + ((t >> 15) & KYBER_Q));
+            t = (int16_t)((((int32_t)t << 1) + KYBER_Q / 2) / KYBER_Q);
+            msg[i] |= (uint8_t)(t & 1) << j;
         }
     }
 }
 
+/* Centered-binomial-distribution noise sampling (FIPS 203 §4.1), eta=2.
+ * Draws 2*eta bits per coefficient (popcount(a) - popcount(b)) so the
+ * error stays small ([-2, 2]) and decapsulation noise stays well below
+ * the compress/decompress rounding threshold. */
 static void poly_getnoise(int16_t r[256], const uint8_t *seed, uint8_t nonce) {
-    uint8_t buf[512];
+    uint8_t buf[128];
     SNEPPXDRBG drbg;
     SNEPPX_drbg_init(&drbg, seed, 32, &nonce, 1);
     SNEPPX_drbg_generate(&drbg, buf, sizeof(buf));
     SNEPPX_drbg_destroy(&drbg);
-    for (int i = 0; i < 256; i++) r[i] = (buf[2 * i] | ((uint16_t)buf[2 * i + 1] << 8)) & 0x1fff;
-    for (int i = 0; i < 256; i++) if (r[i] >= KYBER_Q) r[i] = 0;
+    int pos = 0;
+    for (int i = 0; i < 256; i++) {
+        int a = 0, b = 0;
+        for (int j = 0; j < KYBER_ETA1; j++) { a += (buf[pos >> 3] >> (pos & 7)) & 1; pos++; }
+        for (int j = 0; j < KYBER_ETA1; j++) { b += (buf[pos >> 3] >> (pos & 7)) & 1; pos++; }
+        r[i] = (int16_t)(a - b);
+    }
 }
 
 static void kyber_expand_a(int16_t *a, const uint8_t rho[32], int k) {
     SNEPPXDRBG drbg;
-    SNEPPX_drbg_init(&drbg, rho, 32, NULL, 0);
+    uint8_t ent[48];
+    memcpy(ent, rho, 32);
+    memset(ent + 32, 0, 16);
+    SNEPPX_drbg_init(&drbg, ent, 48, NULL, 0);
     int total = k * k * 256;
     int bytes_needed = total * 2;
     uint8_t *buf = (uint8_t*)malloc(bytes_needed);
@@ -225,8 +268,8 @@ static void kyber_expand_a(int16_t *a, const uint8_t rho[32], int k) {
     SNEPPX_drbg_generate(&drbg, buf, bytes_needed);
     SNEPPX_drbg_destroy(&drbg);
     for (int i = 0; i < total; i++) {
-        int16_t val = (int16_t)(buf[2 * i] | ((uint16_t)buf[2 * i + 1] << 8));
-        a[i] = val % KYBER_Q;
+        uint16_t val = (uint16_t)(buf[2 * i] | ((uint16_t)buf[2 * i + 1] << 8));
+        a[i] = (int16_t)(val % KYBER_Q);
     }
     free(buf);
 }
@@ -241,13 +284,16 @@ static void cpa_pke_keygen(uint8_t pk[KYBER_PUBLICKEYBYTES], uint8_t sk[KYBER_SE
     if (!a) return;
     kyber_expand_a(a, rho, KYBER_K);
     for (int i = 0; i < KYBER_K; i++) {
-        poly_getnoise(s + i * 256, seed, i);
-        poly_getnoise(e + i * 256, seed, KYBER_K + i);
+        poly_getnoise(s + i * 256, seed, (uint8_t)i);
+        poly_getnoise(e + i * 256, seed, (uint8_t)(KYBER_K + i));
     }
     for (int i = 0; i < KYBER_K; i++) {
         int16_t t[256] = {0};
-        for (int j = 0; j < KYBER_K; j++)
-            poly_mul(t, a + (i * KYBER_K + j) * 256, s + j * 256);
+        for (int j = 0; j < KYBER_K; j++) {
+            int16_t prod[256];
+            poly_mul(prod, a + (i * KYBER_K + j) * 256, s + j * 256);
+            poly_add(t, t, prod);
+        }
         int16_t tmp[256];
         poly_sub(tmp, t, e + i * 256);
         poly_tobytes(pk + i * 384 + 32, tmp);
@@ -284,10 +330,9 @@ int SNEPPX_kyber_keygen(uint8_t *pk, uint8_t *sk, int variant) {
  */
 int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant) {
     if (!ct || !ss || !pk) return -1;
-    int du = (variant == 2) ? 10 : (variant == 3) ? 10 : 11;
-    int dv = (variant == 2) ? 3 : (variant == 3) ? 4 : 5;
-    int k = (variant == 2) ? 2 : (variant == 3) ? 3 : 4;
-    int u_compressed_bytes = k * 256 * du / 8;
+    (void)variant;
+    int k = KYBER_K;
+    int u_compressed_bytes = k * KYBER_N * KYBER_DU / 8;
     uint8_t coin[32], m[32];
     SNEPPX_random_bytes(coin, 32);
     SNEPPX_random_bytes(m, 32);
@@ -298,10 +343,10 @@ int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant
     int16_t epp[256];
     if (!sp || !ep) { free(sp); free(ep); return -1; }
     for (int i = 0; i < k; i++) {
-        poly_getnoise(sp + i * 256, coin, i);
-        poly_getnoise(ep + i * 256, coin, k + i);
+        poly_getnoise(sp + i * 256, coin, (uint8_t)i);
+        poly_getnoise(ep + i * 256, coin, (uint8_t)(k + i));
     }
-    poly_getnoise(epp, coin, 2 * k);
+    poly_getnoise(epp, coin, (uint8_t)(2 * k));
     int16_t *a = (int16_t*)malloc(k * k * 256 * sizeof(int16_t));
     if (!a) { free(sp); free(ep); return -1; }
     uint8_t rho[32];
@@ -313,8 +358,11 @@ int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant
     if (!u) { free(sp); free(ep); free(a); return -1; }
     for (int i = 0; i < k; i++) {
         int16_t t[256] = {0};
-        for (int j = 0; j < k; j++)
-            poly_mul(t, a + (j * k + i) * 256, sp + j * 256);
+        for (int j = 0; j < k; j++) {
+            int16_t prod[256];
+            poly_mul(prod, a + (j * k + i) * 256, sp + j * 256);
+            poly_add(t, t, prod);
+        }
         poly_add(u + i * 256, t, ep + i * 256);
     }
     int16_t *pkpoly = (int16_t*)calloc(k * 256, sizeof(int16_t));
@@ -329,8 +377,8 @@ int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant
     poly_add(v, v, epp);
     poly_add(v, v, mp);
     for (int i = 0; i < k; i++)
-        poly_compress(ct + i * (256 * du / 8), u + i * 256, du);
-    poly_compress(ct + u_compressed_bytes, v, dv);
+        poly_compress(ct + i * (KYBER_N * KYBER_DU / 8), u + i * 256, KYBER_DU);
+    poly_compress(ct + u_compressed_bytes, v, KYBER_DV);
     memcpy(ss, m, 32);
     free(sp); free(ep); free(a); free(u); free(pkpoly);
     return 0;
@@ -347,11 +395,9 @@ int SNEPPX_kyber_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk, int variant
  */
 int SNEPPX_kyber_decaps(uint8_t *ss, const uint8_t *ct, const uint8_t *sk, int variant) {
     if (!ss || !ct || !sk) return -1;
-    int du = (variant == 2) ? 10 : (variant == 3) ? 10 : 11;
-    int dv = (variant == 2) ? 3 : (variant == 3) ? 4 : 5;
-    int k = (variant == 2) ? 2 : (variant == 3) ? 3 : 4;
-    int u_compressed_bytes = k * 256 * du / 8;
-    (void)dv;
+    (void)variant;
+    int k = KYBER_K;
+    int u_compressed_bytes = k * KYBER_N * KYBER_DU / 8;
     uint8_t pk[KYBER_PUBLICKEYBYTES];
     memcpy(pk, sk + 32, KYBER_PUBLICKEYBYTES);
     int16_t *u = (int16_t*)calloc(k * 256, sizeof(int16_t));
@@ -359,14 +405,14 @@ int SNEPPX_kyber_decaps(uint8_t *ss, const uint8_t *ct, const uint8_t *sk, int v
     memset(v, 0, sizeof(v));
     if (!u) return -1;
     for (int i = 0; i < k; i++)
-        poly_decompress(u + i * 256, ct + i * (256 * du / 8), du);
-    poly_decompress(v, ct + u_compressed_bytes, dv);
+        poly_decompress(u + i * 256, ct + i * (KYBER_N * KYBER_DU / 8), KYBER_DU);
+    poly_decompress(v, ct + u_compressed_bytes, KYBER_DV);
     int16_t s[4 * 256];
     memset(s, 0, sizeof(s));
     uint8_t seed[32];
     memcpy(seed, sk, 32);
     for (int i = 0; i < k; i++)
-        poly_getnoise(s + i * 256, seed, i);
+        poly_getnoise(s + i * 256, seed, (uint8_t)i);
     int16_t m[256] = {0};
     for (int i = 0; i < k; i++) {
         int16_t t[256] = {0};
@@ -375,5 +421,6 @@ int SNEPPX_kyber_decaps(uint8_t *ss, const uint8_t *ct, const uint8_t *sk, int v
     }
     poly_add(m, m, v);
     poly_tomsg(ss, m);
+    free(u);
     return 0;
 }

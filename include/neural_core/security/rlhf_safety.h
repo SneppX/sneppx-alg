@@ -1,6 +1,10 @@
 #ifndef SNEPPX_RLHF_SAFETY_H
 #define SNEPPX_RLHF_SAFETY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -177,4 +181,8 @@ int SNEPPX_rlhf_reset(void);
  */
 int SNEPPX_rlhf_add_default_policies(void);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

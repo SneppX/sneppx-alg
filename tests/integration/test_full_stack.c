@@ -1,4 +1,5 @@
 #include "hierarchical_state_space.h"
+#include "test_gtest.h"
 #include "sparse_expert_routing.h"
 #include "adversarial_robustness_certification.h"
 #include "neural_programming_engine.h"
@@ -23,12 +24,6 @@
  */
 
 
-static int tests_passed = 0, tests_failed = 0;
-#define ASSERT(cond, msg) do { if (!(cond)) { printf("FAIL: %s (%s)\n", msg, #cond); tests_failed++; return; } } while(0)
-static void run_test(const char* name, void (*fn)(void)) {
-    printf("Running %s... ", name); fflush(stdout); fn(); printf("PASS\n"); tests_passed++;
-}
-
 static void test_full_stack(void) {
     SNEPPXHSSConfig hss_cfg = SNEPPX_hss_config_default();
     hss_cfg.state_dim = 4; hss_cfg.input_dim = 8; hss_cfg.output_dim = 8;
@@ -39,14 +34,14 @@ static void test_full_stack(void) {
     ser_cfg.num_experts = 2; ser_cfg.num_active = 1; ser_cfg.input_dim = 8;
     ser_cfg.expert_dim = 16; ser_cfg.output_dim = 8;
     SNEPPXSERModel* ser = SNEPPX_ser_model_create(&ser_cfg, 99, 1);
-    ASSERT(ser != NULL, "ser model");
+    SX_ASSERT(ser != NULL, "ser model");
 
     SNEPPXARCConfig arc_cfg = SNEPPX_arc_config_default();
     SNEPPXARCLayer* arc = SNEPPX_arc_layer_create(&arc_cfg, 8, 8, 200);
-    ASSERT(arc != NULL, "arc layer");
+    SX_ASSERT(arc != NULL, "arc layer");
 
     SNEPPXNPEProgram* npe_prog = SNEPPX_npe_compile_mlp(8, 16);
-    ASSERT(npe_prog != NULL, "npe program");
+    SX_ASSERT(npe_prog != NULL, "npe program");
     unsigned long s = 42;
     for (size_t i = 0; i < 16 * 8 + 16 + 8 * 16 + 8; i++) {
         s = s * 1103515245UL + 12345UL;
@@ -59,11 +54,11 @@ static void test_full_stack(void) {
 
     size_t shape_in[] = {1, 4, 8};
     SNEPPXTensor* input = SNEPPX_tensor_randn(shape_in, 3, SNEPPX_FLOAT32);
-    ASSERT(input != NULL, "input");
+    SX_ASSERT(input != NULL, "input");
 
     SNEPPXTensor* hss_out = NULL;
     int ret = SNEPPX_hss_forward(hss, input, &hss_out);
-    ASSERT(ret == 0 && hss_out != NULL && hss_out->shape[0] == 1 && hss_out->shape[1] == 4 && hss_out->shape[2] == 8, "hss ok");
+    SX_ASSERT(ret == 0 && hss_out != NULL && hss_out->shape[0] == 1 && hss_out->shape[1] == 4 && hss_out->shape[2] == 8, "hss ok");
 
     size_t merged = 4;
     SNEPPXTensor flat;
@@ -74,24 +69,24 @@ static void test_full_stack(void) {
 
     SNEPPXTensor* ser_out = NULL;
     SNEPPX_ser_forward(ser->layers[0], &flat, &ser_out);
-    ASSERT(ser_out != NULL && ser_out->shape[0] == merged && ser_out->shape[1] == 8, "ser ok");
+    SX_ASSERT(ser_out != NULL && ser_out->shape[0] == merged && ser_out->shape[1] == 8, "ser ok");
 
     SNEPPXTensor* arc_out = NULL;
     float metrics[4];
     SNEPPX_arc_forward(arc, ser_out, &arc_out, metrics);
-    ASSERT(arc_out != NULL && arc_out->shape[0] == merged && arc_out->shape[1] == 8, "arc ok");
+    SX_ASSERT(arc_out != NULL && arc_out->shape[0] == merged && arc_out->shape[1] == 8, "arc ok");
 
     SNEPPXTensor* npe_out = NULL;
     int r = SNEPPX_npe_vm_run(vm, arc_out, &npe_out);
-    ASSERT(npe_out != NULL && (r == 0 || r == 2), "npe ok");
+    SX_ASSERT(npe_out != NULL && (r == 0 || r == 2), "npe ok");
 
     float* od = (float*)npe_out->data;
     int ok = 1;
     for (size_t i = 0; i < npe_out->size; i++) {
         if (!isfinite(od[i])) { ok = 0; break; }
     }
-    ASSERT(ok, "all finite");
-    ASSERT(vm->trace_length > 0, "execution trace non-empty");
+    SX_ASSERT(ok, "all finite");
+    SX_ASSERT(vm->trace_length > 0, "execution trace non-empty");
 
     printf("  Trace length: %zu\n", vm->trace_length);
 
@@ -107,8 +102,5 @@ static void test_full_stack(void) {
     SNEPPX_npe_program_destroy(npe_prog);
 }
 
-int main(void) {
-    run_test("test_full_stack", test_full_stack);
-    printf("\nIntegration tests: %d passed, %d failed\n", tests_passed, tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_full_stack, test_full_stack) { test_full_stack(); }

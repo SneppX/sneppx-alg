@@ -1,6 +1,10 @@
 #ifndef SNEPPX_ARC_H
 #define SNEPPX_ARC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "multidimensional_tensor_engine.h"
 #include "automatic_differentiation_framework.h"
 #include <stddef.h>
@@ -88,11 +92,12 @@ SNEPPXARCConfig SNEPPX_arc_config_default(void);
  * @brief Create Input Guard.
  *
  * @param input_dim [in] Input Dim value.
+ * @param output_dim [in] Output Dim value.
  * @param seed [in] Seed value.
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXInputGuard* SNEPPX_input_guard_create(size_t input_dim, unsigned int seed);
+SNEPPXInputGuard* SNEPPX_input_guard_create(size_t input_dim, size_t output_dim, unsigned int seed);
 /**
  * @brief Destroy Input Guard.
  *
@@ -236,4 +241,8 @@ int SNEPPX_arc_build_adversarial_train_graph(SNEPPXARCLayer* layer, SNEPPXTape* 
                                             SNEPPXVariable** clean_output,
                                             SNEPPXVariable** adv_output);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_ARC_H */

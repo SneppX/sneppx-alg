@@ -16,13 +16,13 @@ echo "=== SNEPPX Sanitizer CI ==="
 # 1. Build with ASan
 echo ""
 echo "--- Building with AddressSanitizer ---"
-cmake -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_ASAN=ON
+cmake -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_ASAN=ON
 cmake --build "$BUILD_DIR" --config Debug -j$(nproc)
 
 # 2. Build with UBSan
 echo ""
 echo "--- Building with UndefinedBehaviorSanitizer ---"
-cmake -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_UBSAN=ON
+cmake -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_UBSAN=ON
 cmake --build "$BUILD_DIR" --config Debug -j$(nproc)
 
 # 3. Run CUDA compute-sanitizer (memcheck) on tests

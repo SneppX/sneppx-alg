@@ -27,7 +27,7 @@ T5      Core              Leadership        Yes      Full commit, governance
 
 - Read `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `GOVERNANCE.md`
 - Read `docs/ARCHITECTURE.md` (full system understanding)
-- Build the project from source (`cmake -B build && cmake --build build`)
+- Build the project from source (`cmake -B build -G Ninja && cmake --build build`)
 - Run the test suite (`ctest -C Release --output-on-failure`)
 
 ### Gates

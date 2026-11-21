@@ -20,7 +20,7 @@ sudo apt-get update
 sudo apt-get install -y build-essential cmake git
 
 # Build
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release -j$(nproc)
@@ -42,7 +42,7 @@ sudo dnf install -y gcc gcc-c++ cmake git
 
 ```bash
 brew install cmake gcc
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build -j$(sysctl -n hw.ncpu)
@@ -53,7 +53,7 @@ cd build && ctest --output-on-failure
 
 ```bash
 brew install cmake
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build -j$(sysctl -n hw.ncpu)
@@ -62,11 +62,11 @@ cd build && ctest --output-on-failure
 
 ## Windows
 
-### Native (Visual Studio)
+### Native (Ninja + MSVC)
 
 ```powershell
 # Open "Developer Command Prompt for VS 2022"
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset release
 cmake --build build --config Release
@@ -127,12 +127,11 @@ cmake --build build --config Release
 ## CUDA Setup
 
 ```powershell
-cmake -B build -G "Visual Studio 17 2022" -A x64 `
-    -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_CUDA=ON
+cmake -B build -G Ninja -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_CUDA=ON
 cmake --build build --config Release
 ```
 
-Requires CUDA Toolkit 12.x with Visual Studio integration.
+Requires CUDA Toolkit 12.x with MSVC integration.
 
 ## Verify Installation
 

@@ -1,4 +1,5 @@
 #include "container_breakout.h"
+#include "test_gtest.h"
 #include <stdio.h>
 
 /*
@@ -17,7 +18,7 @@
  */
 
 
-int main() {
+TEST(test_container_breakout, suite) {
     breakout_stats_t stats;
     int r = SNEPPX_breakout_detect_ns_change(1234, "malicious");
     printf("NS change detect: %d\n", r);
@@ -34,5 +35,5 @@ int main() {
     printf("Breakout stats: attempts=%llu blocks=%llu suspicious=%d\n",
         stats.total_breakout_attempts, stats.total_blocks, stats.suspicious_processes);
     printf("PASS: Container breakout detection OK\n");
-    return 0;
+    return;
 }

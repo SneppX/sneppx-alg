@@ -63,19 +63,33 @@
                 "SNEPPX_BUILD_TESTS": "ON"
             }
         },
-        {
-            "name": "minimal",
-            "displayName": "Minimal",
-            "description": "Minimal build (no tests, no tools)",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/min",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "SNEPPX_BUILD_TESTS": "OFF",
-                "SNEPPX_BUILD_BENCHMARKS": "OFF",
-                "SNEPPX_BUILD_TOOLS": "OFF"
-            }
+    {
+        "name": "minimal",
+        "displayName": "Minimal",
+        "description": "Minimal build (no tests, no tools)",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/min",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "SNEPPX_BUILD_TESTS": "OFF",
+            "SNEPPX_BUILD_BENCHMARKS": "OFF",
+            "SNEPPX_BUILD_TOOLS": "OFF"
         }
+    },
+    {
+        "name": "vs",
+        "displayName": "Visual Studio 17 2022",
+        "description": "Native C build via Visual Studio generator (fallback when Ninja is absent)",
+        "generator": "Visual Studio 17 2022",
+        "binaryDir": "${sourceDir}/build/vs",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release",
+            "SNEPPX_BUILD_TESTS": "ON",
+            "SNEPPX_BUILD_TOOLS": "ON",
+            "SNEPPX_BUILD_HTTP": "ON",
+            "SNEPPX_BUILD_CUDA": "OFF"
+        }
+    }
     ],
     "buildPresets": [
         { "name": "debug", "configurePreset": "debug" },
@@ -83,7 +97,8 @@
         { "name": "asan", "configurePreset": "asan" },
         { "name": "cuda", "configurePreset": "cuda" },
         { "name": "python", "configurePreset": "python" },
-        { "name": "minimal", "configurePreset": "minimal" }
+        { "name": "minimal", "configurePreset": "minimal" },
+        { "name": "vs", "configurePreset": "vs" }
     ],
     "testPresets": [
         {

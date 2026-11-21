@@ -1,6 +1,10 @@
 #ifndef SNEPPX_DIFFERENTIAL_PRIVACY_H
 #define SNEPPX_DIFFERENTIAL_PRIVACY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -171,4 +175,8 @@ int SNEPPX_dp_noise_layer(double *data, int n, double sensitivity, double epsilo
  */
 int SNEPPX_dp_get_stats(dp_stats_t *stats);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -83,7 +83,7 @@ The bindings were developed in 8 phases:
 The bindings are built by the top-level CMake with `-DSNEPPX_BUILD_PYTHON=ON`:
 
 ```powershell
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_PYTHON=ON
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_PYTHON=ON
 cmake --build build --config Release --target _SNEPPX_c
 ```
 

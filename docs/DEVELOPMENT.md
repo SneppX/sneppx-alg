@@ -11,7 +11,7 @@
 ## Quick Start
 
 ```bash
-git clone https://github.com/ammar49-cyber/sneppx-alg.git
+git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
 cmake --preset debug
 cmake --build build --config Debug -j$(nproc)

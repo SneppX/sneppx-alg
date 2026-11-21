@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include <stdlib.h>
 #include "authenticated_encryption_module.h"
@@ -19,13 +20,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_encrypt_decrypt(void) {
     printf("\n--- test_encrypt_decrypt ---\n");
@@ -37,11 +32,11 @@ void test_encrypt_decrypt(void) {
     uint8_t tag[16];
 
     int ret = SNEPPX_aead_encrypt(ciphertext, tag, plaintext, len, NULL, 0, key, nonce);
-    TEST("encrypt success", ret == 0);
+    SX_TEST("encrypt success", ret == 0);
 
     ret = SNEPPX_aead_decrypt(decrypted, ciphertext, len, tag, NULL, 0, key, nonce);
-    TEST("decrypt success", ret == 0);
-    TEST("plaintext matches", memcmp(plaintext, decrypted, len) == 0);
+    SX_TEST("decrypt success", ret == 0);
+    SX_TEST("plaintext matches", memcmp(plaintext, decrypted, len) == 0);
 }
 
 void test_aad_integrity(void) {
@@ -56,7 +51,7 @@ void test_aad_integrity(void) {
 
     uint8_t wrong_aad[] = "tampered AAD";
     int ret = SNEPPX_aead_decrypt(dt, ct, sizeof(pt), tag, wrong_aad, sizeof(wrong_aad), key, nonce);
-    TEST("modified AAD fails", ret != 0);
+    SX_TEST("modified AAD fails", ret != 0);
 }
 
 void test_ciphertext_integrity(void) {
@@ -69,7 +64,7 @@ void test_ciphertext_integrity(void) {
     SNEPPX_aead_encrypt(ct, tag, pt, sizeof(pt), NULL, 0, key, nonce);
     ct[5] ^= 0x42;
     int ret = SNEPPX_aead_decrypt(dt, ct, sizeof(pt), tag, NULL, 0, key, nonce);
-    TEST("modified ciphertext fails", ret != 0);
+    SX_TEST("modified ciphertext fails", ret != 0);
 }
 
 void test_tag_integrity(void) {
@@ -82,16 +77,11 @@ void test_tag_integrity(void) {
     SNEPPX_aead_encrypt(ct, tag, pt, sizeof(pt), NULL, 0, key, nonce);
     tag[0] ^= 0xFF;
     int ret = SNEPPX_aead_decrypt(dt, ct, sizeof(pt), tag, NULL, 0, key, nonce);
-    TEST("modified tag fails", ret != 0);
+    SX_TEST("modified tag fails", ret != 0);
 }
 
-int main(void) {
-    printf("=== SNEPPX-AEAD Test Suite ===\n");
-    test_encrypt_decrypt();
-    test_aad_integrity();
-    test_ciphertext_integrity();
-    test_tag_integrity();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_aead, test_encrypt_decrypt) { test_encrypt_decrypt(); }
+TEST(test_aead, test_aad_integrity) { test_aad_integrity(); }
+TEST(test_aead, test_ciphertext_integrity) { test_ciphertext_integrity(); }
+TEST(test_aead, test_tag_integrity) { test_tag_integrity(); }

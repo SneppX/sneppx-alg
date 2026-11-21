@@ -8,7 +8,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/ammar49-cyber/sneppx-alg/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/SneppX/sneppx-alg/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
@@ -59,7 +59,7 @@ test:
     - python -c "from sneppx_alg.interface_bindings.optim import AdamW; print('Optim OK')"
 
 about:
-  home: https://github.com/ammar49-cyber/sneppx-alg
+  home: https://github.com/SneppX/sneppx-alg
   license: MIT
   license_file: LICENSE
   summary: "Next-generation AI architecture with security built into the foundation"
@@ -72,8 +72,8 @@ about:
     - Quantization (INT8, FP8, AWQ, GPTQ)
     - Distributed training (ZeRO, Pipeline, Tensor Parallel)
     - Security features (S0-S9 layers)
-  doc_url: https://github.com/ammar49-cyber/sneppx-alg
-  dev_url: https://github.com/ammar49-cyber/sneppx-alg
+  doc_url: https://github.com/SneppX/sneppx-alg
+  dev_url: https://github.com/SneppX/sneppx-alg
 
 extra:
   recipe-maintainers:

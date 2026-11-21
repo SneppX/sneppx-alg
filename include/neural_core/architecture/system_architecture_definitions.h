@@ -1,6 +1,10 @@
 #ifndef SNEPPX_ARCH_H
 #define SNEPPX_ARCH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hierarchical_state_space.h"
 #include "sparse_expert_routing.h"
 #include "adversarial_robustness_certification.h"
@@ -144,4 +148,8 @@ int SNEPPX_model_build_train_graph(SNEPPXModel* model, SNEPPXTape* tape,
                                   SNEPPXVariable** weight_vars, size_t num_weights,
                                   SNEPPXVariable** output_var);
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* SNEPPX_ARCH_H */

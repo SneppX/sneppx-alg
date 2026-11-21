@@ -2,6 +2,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 /*
  * SNEPPX - HSS Forward Pass
  *
@@ -139,6 +140,8 @@ static int process_sequence(SNEPPXHSSModel* model, const float* input_seq,
 int SNEPPX_hss_forward(SNEPPXHSSModel* model, const SNEPPXTensor* input, SNEPPXTensor** output) {
     if (!model || !input || !output) return -1;
 
+    fprintf(stderr, "[BENCH] HSS forward start\n");
+
     size_t batch, seq_len, input_dim;
     if (input->ndim == 3) {
         batch = input->shape[0];
@@ -168,5 +171,6 @@ int SNEPPX_hss_forward(SNEPPXHSSModel* model, const SNEPPXTensor* input, SNEPPXT
         if (ret != 0) return ret;
     }
 
+    fprintf(stderr, "[BENCH] HSS forward done\n");
     return 0;
 }

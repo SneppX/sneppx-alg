@@ -37,7 +37,8 @@ typedef int (*SNEPPX_http_handler_fn)(SNEPPX_HttpRequest* req, SNEPPX_HttpRespon
 /* Middleware function: called before handlers. Return 0 to continue, non-zero to short-circuit. */
 typedef int (*SNEPPX_http_middleware_fn)(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, void* userdata);
 
-/* Server lifecycle */
+/* Server lifecycle. The built-in listener binds to loopback only and does not provide TLS.
+ * Use a separately configured TLS reverse proxy for remote access. */
 /**
  * @brief Create Http Server.
  *
@@ -105,6 +106,7 @@ int SNEPPX_http_server_add_static_dir(SNEPPX_HttpServer* srv, const char* url_pr
  */
 int SNEPPX_http_server_add_middleware(SNEPPX_HttpServer* srv, SNEPPX_http_middleware_fn mw, void* userdata);
 
+/* Request framing: one request per connection, Content-Length only, 16 KiB headers and 32 KiB body. */
 /* Request accessors */
 /**
  * @brief Perform Http Request Method.

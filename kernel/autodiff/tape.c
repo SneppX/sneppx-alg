@@ -58,6 +58,12 @@ void SNEPPX_tape_destroy(SNEPPXTape* tape) {
  */
 void SNEPPX_tape_record(SNEPPXTape* tape, SNEPPXVariable* var) {
     if (!tape || !var) return;
+    /* The tape OWNS every recorded variable (destroyed in tape_destroy).
+     * Recording the same variable twice would register two destroy entries
+     * for one pointer -> double free at teardown. Skip duplicates. */
+    for (size_t i = 0; i < tape->num_vars; i++) {
+        if (tape->vars[i] == var) return;
+    }
     if (tape->num_vars >= tape->capacity) {
         tape->capacity *= 2;
         SNEPPXVariable** new_vars = (SNEPPXVariable**)SNEPPX_malloc(tape->capacity * sizeof(SNEPPXVariable*), 64);

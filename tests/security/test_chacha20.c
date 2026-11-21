@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "test_gtest.h"
 #include <string.h>
 #include <stdint.h>
 #include "chacha20_stream_cipher.h"
@@ -19,13 +20,7 @@
  */
 
 
-static int tests_passed = 0;
-static int tests_failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("FAIL: %s\n", name); tests_failed++; } \
-    else { printf("PASS: %s\n", name); tests_passed++; } \
-} while(0)
 
 void test_vectors(void) {
     printf("\n--- test_vectors (RFC 8439 section 2.3.2) ---\n");
@@ -55,7 +50,7 @@ void test_vectors(void) {
         printf("  Got:      "); for (int i = 0; i < 32; i++) printf("%02x", output[i]); printf("\n");
         printf("  Expected: "); for (int i = 0; i < 32; i++) printf("%02x", expected[i]); printf("\n");
     }
-    TEST("RFC 8439 test vector block 0", match);
+    SX_TEST("RFC 8439 test vector block 0", match);
 }
 
 void test_counter_overflow(void) {
@@ -72,8 +67,8 @@ void test_counter_overflow(void) {
     SNEPPX_chacha20_block(&s2, b2);
     SNEPPX_chacha20_block(&s2, b2);
 
-    TEST("counter wraps from 0xFFFFFFFF", s1.state[12] == 0);
-    TEST("two counter increments differ", memcmp(b1, b2, 64) != 0);
+    SX_TEST("counter wraps from 0xFFFFFFFF", s1.state[12] == 0);
+    SX_TEST("two counter increments differ", memcmp(b1, b2, 64) != 0);
 }
 
 void test_keystream_distinct(void) {
@@ -88,15 +83,10 @@ void test_keystream_distinct(void) {
     uint8_t b1[64], b2[64];
     SNEPPX_chacha20_block(&s1, b1);
     SNEPPX_chacha20_block(&s2, b2);
-    TEST("different counter = different keystream", memcmp(b1, b2, 64) != 0);
+    SX_TEST("different counter = different keystream", memcmp(b1, b2, 64) != 0);
 }
 
-int main(void) {
-    printf("=== SNEPPX-ChaCha20 Test Suite ===\n");
-    test_vectors();
-    test_counter_overflow();
-    test_keystream_distinct();
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
-    return tests_failed > 0 ? 1 : 0;
-}
+
+TEST(test_chacha20, test_vectors) { test_vectors(); }
+TEST(test_chacha20, test_counter_overflow) { test_counter_overflow(); }
+TEST(test_chacha20, test_keystream_distinct) { test_keystream_distinct(); }

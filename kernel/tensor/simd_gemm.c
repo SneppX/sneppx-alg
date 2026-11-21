@@ -29,6 +29,19 @@
 #endif
 #endif
 
+/* _mm256_exp_ps is an Intel SVML intrinsic not provided by GCC/Clang.
+ * Provide a portable per-lane scalar fallback so the AVX2 SiLU path builds
+ * and runs correctly on non-Intel compilers. */
+#if (defined(__GNUC__) || defined(__clang__)) && defined(__AVX2__)
+static inline __m256 sneppx_mm256_exp_ps(__m256 x) {
+    float v[8];
+    _mm256_storeu_ps(v, x);
+    for (int i = 0; i < 8; i++) v[i] = expf(v[i]);
+    return _mm256_loadu_ps(v);
+}
+#define _mm256_exp_ps(x) sneppx_mm256_exp_ps(x)
+#endif
+
 /* =========================================================================
  * Runtime SIMD detection
  * ========================================================================= */
