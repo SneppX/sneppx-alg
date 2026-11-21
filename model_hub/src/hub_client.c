@@ -68,9 +68,9 @@ static int custom_header_contains_credentials(const SNEPPXHubContext *ctx) {
         const char *colon = strchr(header, ':');
         if (!colon) continue;
         const char *name = header;
-        while (name < colon && (*name == ' ' || *name == '\\t')) name++;
+        while (name < colon && (*name == ' ' || *name == '\t')) name++;
         size_t name_len = (size_t)(colon - name);
-        while (name_len && (name[name_len - 1] == ' ' || name[name_len - 1] == '\\t')) name_len--;
+        while (name_len && (name[name_len - 1] == ' ' || name[name_len - 1] == '\t')) name_len--;
         for (size_t j = 0; j < sizeof(sensitive_names) / sizeof(sensitive_names[0]); j++) {
             size_t expected_len = strlen(sensitive_names[j]);
             if (name_len == expected_len && _strnicmp(name, sensitive_names[j], name_len) == 0)
