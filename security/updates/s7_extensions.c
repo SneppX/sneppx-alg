@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 
 /*
  * SNEPPX - S7 Extensions
@@ -550,26 +551,13 @@ int SNEPPX_tuf_get_key(SNEPPXTUFMetadata* tuf, int key_type, uint8_t* key_out, s
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_bsdiff_total_size(const uint8_t* patch, size_t patch_len) {
-    if (!patch || patch_len < 4) return 0;
-    size_t total = 0;
-    size_t pos = 0;
-    while (pos + 4 <= patch_len) {
-        uint32_t tag = ((uint32_t)patch[pos] << 24) | ((uint32_t)patch[pos + 1] << 16) | ((uint32_t)patch[pos + 2] << 8) | patch[pos + 3];
-        pos += 4;
-        if (tag > 0x00FFFFFF) {
-            if (pos + 2 > patch_len) break;
-            size_t len = ((size_t)patch[pos] << 8) | patch[pos + 1];
-            pos += 2;
-            if (pos + len > patch_len) break;
-            total += len;
-            pos += len;
-        } else {
-            if (pos + tag > patch_len) break;
-            total += tag;
-            pos += tag;
-        }
+    size_t output_len = 0;
+    /* SXP1 is the only supported patch format; reject legacy/malformed streams. */
+    if (patch_parse(NULL, SIZE_MAX, patch, patch_len, NULL, SIZE_MAX,
+                    &output_len, 0) != 0 || output_len > (size_t)INT_MAX) {
+        return -1;
     }
-    return (int)total;
+    return (int)output_len;
 }
 
 /**
@@ -1063,8 +1051,16 @@ int SNEPPX_offline_bundle_get_hash(SNEPPXOfflineBundle* bundle, uint8_t* hash_ou
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_dep_resolver_remove_dep(SNEPPXDepResolver* dr, const char* name) {
-    if (!dr || !name) return -1;
-    (void)name;
+    if (!dr || !name || name[0] == '\0') return -1;
+
+    /* This compatibility structure stores exactly one dependency. */
+    const char* stored_end = (const char*)memchr(dr->name, '\0', sizeof(dr->name));
+    if (!stored_end) return -1;
+    size_t stored_len = (size_t)(stored_end - dr->name);
+    size_t requested_len = strlen(name);
+    if (stored_len == 0 || requested_len != stored_len ||
+        memcmp(dr->name, name, stored_len) != 0) return -1;
+
     memset(dr, 0, sizeof(*dr));
     return 0;
 }

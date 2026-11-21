@@ -261,6 +261,30 @@ static void test_bsdiff_rejects_oversized_insert_and_capacity(void) {
               "insufficient output capacity rejected");
     SX_ASSERT(output[0]==0xA5,"capacity failure leaves output untouched");
 }
+static void test_bsdiff_total_size_validates_sxp1(void) {
+    static const uint8_t old_data[] = "prefix-old-suffix";
+    static const uint8_t new_data[] = "prefix-new-suffix";
+    uint8_t patch[128], malformed[128];
+    size_t patch_len = sizeof(patch);
+    SX_ASSERT(SNEPPX_bsdiff(old_data, sizeof(old_data) - 1,
+                            new_data, sizeof(new_data) - 1,
+                            patch, &patch_len) == 0,
+              "generate SXP1 patch for size validation");
+    SX_ASSERT(SNEPPX_bsdiff_total_size(patch, patch_len) ==
+              (int)(sizeof(new_data) - 1),
+              "return declared SXP1 output size");
+
+    memcpy(malformed, patch, patch_len);
+    malformed[0] ^= 0x01;
+    SX_ASSERT(SNEPPX_bsdiff_total_size(malformed, patch_len) == -1,
+              "reject invalid SXP1 magic");
+
+    SX_ASSERT(SNEPPX_bsdiff_total_size(patch, 4) == -1,
+              "reject truncated SXP1 header");
+    SX_ASSERT(SNEPPX_bsdiff_total_size(NULL, patch_len) == -1,
+              "reject null patch");
+}
+
 static void test_bsdiff_handles_empty_inputs(void) {
     static const uint8_t text[]="abc";
     uint8_t patch[64],output[8]; size_t patch_len=sizeof(patch);
@@ -571,6 +595,20 @@ static void test_dep_resolver(void) {
               "reject empty dependency names");
     SX_ASSERT(SNEPPX_dep_resolver_resolve(&dr) == -1 && dr.resolved == 0,
               "resolver remains fail-closed after invalid input");
+
+    SX_ASSERT(SNEPPX_dep_resolver_remove_dep(&dr, "libbar") == -1,
+              "removing a different dependency is rejected");
+    SX_ASSERT(strcmp(dr.name, "libfoo") == 0,
+              "failed removal preserves the stored dependency");
+    SX_ASSERT(SNEPPX_dep_resolver_remove_dep(&dr, "") == -1,
+              "empty dependency removal is rejected");
+    SX_ASSERT(SNEPPX_dep_resolver_remove_dep(&dr, "libfoo") == 0,
+              "remove the exact stored dependency");
+    SX_ASSERT(dr.name[0] == '\\0' && dr.version_major == 0 &&
+              dr.version_minor == 0 && dr.version_patch == 0 && dr.resolved == 0,
+              "successful removal clears only the matching dependency");
+    SX_ASSERT(SNEPPX_dep_resolver_remove_dep(&dr, "libfoo") == -1,
+              "removing an absent dependency is rejected");
 }
 
 
@@ -589,6 +627,7 @@ TEST(test_s7_updates, bsdiff_roundtrip) { test_bsdiff_roundtrip(); }
 TEST(test_s7_updates, bsdiff_rejects_truncated_patch) { test_bsdiff_rejects_truncated_patch(); }
 TEST(test_s7_updates, bsdiff_rejects_malformed_records) { test_bsdiff_rejects_malformed_records(); }
 TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdiff_rejects_oversized_insert_and_capacity(); }
+TEST(test_s7_updates, bsdiff_total_size_validates_sxp1) { test_bsdiff_total_size_validates_sxp1(); }
 TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
 TEST(test_s7_updates, legacy_tuf_apis_fail_closed_without_mutating_outputs) { test_legacy_tuf_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_tpm_apis_fail_closed_without_mutating_outputs) { test_legacy_tpm_apis_fail_closed_without_mutating_outputs(); }
