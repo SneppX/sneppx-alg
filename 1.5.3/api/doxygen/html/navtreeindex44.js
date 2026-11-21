@@ -1,5 +1,10 @@
 var NAVTREEINDEX44 =
 {
+"structSNEPPX__OptimizerConfig.html#a4c044b38cf989813663209aef6480992":[1,0,123,11],
+"structSNEPPX__OptimizerConfig.html#a5ef7672c93cddf9f0c6e9f5badd3adda":[1,0,123,10],
+"structSNEPPX__OptimizerConfig.html#a6214bb430f51f8da53da5de9d9554dd0":[1,0,123,12],
+"structSNEPPX__OptimizerConfig.html#a6d3fed4458ac16002e15c3d5aa4d69e0":[1,0,123,9],
+"structSNEPPX__OptimizerConfig.html#a7216e52756b211de0261e3554130d6e8":[1,0,123,1],
 "structSNEPPX__OptimizerConfig.html#a85a07d89783f0112d98159dfe854f3f8":[1,0,123,7],
 "structSNEPPX__OptimizerConfig.html#a8a8719a217b48f5448c68ab46b8821e0":[1,0,123,13],
 "structSNEPPX__OptimizerConfig.html#ae3a475098b7df692f527a8f8272056a7":[1,0,123,3],
@@ -244,10 +249,5 @@ var NAVTREEINDEX44 =
 "structdp__composition__t.html#af6ffe687b5e02985c62c0b345a4a94f8":[1,0,33,4],
 "structdp__mechanism__t.html":[1,0,34],
 "structdp__mechanism__t.html#a737ca8143868cbebd1aeb8e4ef2ae795":[1,0,34,3],
-"structdp__mechanism__t.html#a90ffe39f735aab30e0b33697703a1653":[1,0,34,1],
-"structdp__mechanism__t.html#ac68284d3643dff65eca7eedd4a07c4ca":[1,0,34,2],
-"structdp__mechanism__t.html#add792bdd6d0e9f5698a21f8f81fd4b20":[1,0,34,0],
-"structdp__mechanism__t.html#af5f51a3aaadd4ce4f27cbd8f2e702497":[1,0,34,4],
-"structdp__stats__t.html":[1,0,35],
-"structdp__stats__t.html#a23c200d90390be7b1f85307fe2ab6ed1":[1,0,35,0]
+"structdp__mechanism__t.html#a90ffe39f735aab30e0b33697703a1653":[1,0,34,1]
 };

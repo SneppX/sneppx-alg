@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-21T11:13:21.912201+00:00",
+  "generated_at": "2026-11-21T11:18:30.765033+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -105,18 +105,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "d17b98675258024bfb509deb926da1b3a148d9df",
-      "file_count": 42578,
-      "commit_count": 112,
+      "commit": "70ceb2351985e506757300ba0f45b025bae34f26",
+      "file_count": 42572,
+      "commit_count": 114,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "d02917d1fe10b10fdb7f3f9bbbeafa75e8930223",
+      "commit": "80c50a40eee15ede08d7f01cb652b72b0bf61014",
       "file_count": 1613,
-      "commit_count": 2628,
+      "commit_count": 2629,
       "search_count": 0,
       "search_truncated": false
     },
@@ -180,6 +180,15 @@
       "commit": "d2d999b289452b7bb48797ba6a78fa379d9c1a5f",
       "file_count": 1613,
       "commit_count": 2625,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/disable-offline-bundle-state-claims",
+      "id": "c2VjdXJpdHkvZGlzYWJsZS1vZmZsaW5lLWJ1bmRsZS1zdGF0ZS1jbGFpbXM",
+      "commit": "80c50a40eee15ede08d7f01cb652b72b0bf61014",
+      "file_count": 1613,
+      "commit_count": 2629,
       "search_count": 0,
       "search_truncated": false
     },

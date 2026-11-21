@@ -1,5 +1,10 @@
 var NAVTREEINDEX35 =
 {
+"structSNEPPXHashDRBG.html#ae9456f8fde4e195f372dc445fbce6bce":[1,0,246,4],
+"structSNEPPXHashDRBG.html#aeee092b63ba6757881eb263c6aa79388":[1,0,246,3],
+"structSNEPPXHeapCorruptionDetector.html":[1,0,247],
+"structSNEPPXHeapCorruptionDetector.html#a45122c75ece01300f0b792ce05fa10c2":[1,0,247,0],
+"structSNEPPXHeapCorruptionDetector.html#a66e2ed3c5f3c65fb4a82011f6babdf1f":[1,0,247,1],
 "structSNEPPXHeapMetadataEncrypt.html":[1,0,248],
 "structSNEPPXHeapMetadataEncrypt.html#a61d63b4b4aa36ff98d7abd16cffeae60":[1,0,248,1],
 "structSNEPPXHeapMetadataEncrypt.html#af0b535ea28f1e5de1ca40459f5e670ce":[1,0,248,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX35 =
 "structSNEPPXKeyCeremony.html#a0be004bcdbe4717c116d1ed78029f182":[1,0,281,0],
 "structSNEPPXKeyCeremony.html#a1b9c9e394f3c764088ba44a42fe1e94d":[1,0,281,2],
 "structSNEPPXKeyCeremony.html#a2e444e7c3bc387a08b0489235dc8080e":[1,0,281,1],
-"structSNEPPXKeyRotationScheduler.html":[1,0,282],
-"structSNEPPXKeyRotationScheduler.html#a0398dc836a2b3dbbfd08fc20ea746375":[1,0,282,2],
-"structSNEPPXKeyRotationScheduler.html#a0d2481fb8da9429cdfa28aa65769441e":[1,0,282,1],
-"structSNEPPXKeyRotationScheduler.html#a1bff9653122e95f9f11f232c93f827b6":[1,0,282,0],
-"structSNEPPXKeyVault.html":[1,0,283],
-"structSNEPPXKeyVault.html#a01e5bee39b3a74b9098a45d699401679":[1,0,283,0]
+"structSNEPPXKeyRotationScheduler.html":[1,0,282]
 };

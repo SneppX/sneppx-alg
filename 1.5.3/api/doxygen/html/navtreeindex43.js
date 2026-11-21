@@ -1,5 +1,10 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__DeviceProps.html#a327c741728f12d2f52848b68b03eb391":[1,0,98,5],
+"structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11],
+"structSNEPPX__DeviceProps.html#a801b9a8e6cda5b1a468e450d39d1dd62":[1,0,98,14],
+"structSNEPPX__DeviceProps.html#a98871bb09c7b0f590e27651bb3b72cba":[1,0,98,9],
+"structSNEPPX__DeviceProps.html#aa75024b3534ba3db15fdea4715b18364":[1,0,98,10],
 "structSNEPPX__DeviceProps.html#ab44bb7a9b0a0b9ab5ca554d33cf040d2":[1,0,98,16],
 "structSNEPPX__DeviceProps.html#ab78c561183aaa9a7d1f06ad6b18d7564":[1,0,98,13],
 "structSNEPPX__DeviceProps.html#ac26a9bda899003228bc4f8158fe3794d":[1,0,98,1],
@@ -244,10 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__OptimizerConfig.html#a141a45d7a4b92177aede64bfcc1caddf":[1,0,123,8],
 "structSNEPPX__OptimizerConfig.html#a233544dc4a859d227ec9cfbafc55de11":[1,0,123,5],
 "structSNEPPX__OptimizerConfig.html#a3c5a14804b01cd04f48047d3e0d7ccf9":[1,0,123,6],
-"structSNEPPX__OptimizerConfig.html#a422291b9f4081f36a360c0be3d5fc998":[1,0,123,4],
-"structSNEPPX__OptimizerConfig.html#a4c044b38cf989813663209aef6480992":[1,0,123,11],
-"structSNEPPX__OptimizerConfig.html#a5ef7672c93cddf9f0c6e9f5badd3adda":[1,0,123,10],
-"structSNEPPX__OptimizerConfig.html#a6214bb430f51f8da53da5de9d9554dd0":[1,0,123,12],
-"structSNEPPX__OptimizerConfig.html#a6d3fed4458ac16002e15c3d5aa4d69e0":[1,0,123,9],
-"structSNEPPX__OptimizerConfig.html#a7216e52756b211de0261e3554130d6e8":[1,0,123,1]
+"structSNEPPX__OptimizerConfig.html#a422291b9f4081f36a360c0be3d5fc998":[1,0,123,4]
 };

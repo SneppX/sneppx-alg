@@ -1,5 +1,10 @@
 var NAVTREEINDEX29 =
 {
+"soc2__framework_8h.html#a2f108d87a4716ed3156df711f4f6d9ca":[2,0,2,5,4,12],
+"soc2__framework_8h.html#a313a3e1ffb3d74db951a0589ae28b66d":[2,0,2,5,4,3],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975":[2,0,2,5,4,6],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a2cbbd49b9c3e80bb0ee8b1a62a4613da":[2,0,2,5,4,6,2],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a2cbe4db056ee0a63e325c07ebf61151b":[2,0,2,5,4,6,0],
 "soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a5d3df984b634f6e0c21ddd3db5b8e403":[2,0,2,5,4,6,3],
 "soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a7447e7e537c261bda35b272268392fbe":[2,0,2,5,4,6,4],
 "soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975aa2e6bf71ad533d7c0373b8236da492fb":[2,0,2,5,4,6,1],
@@ -244,10 +249,5 @@ var NAVTREEINDEX29 =
 "structEventLogEntry.html#aa51c5532180b81e84ed16824f664ab7a":[1,0,38,4],
 "structEventLogEntry.html#ac1c46873eee38c0d2b237f4203bc54b7":[1,0,38,2],
 "structEventLogEntry.html#afd6d802c0630ff3cb2a103a30627e0e4":[1,0,38,3],
-"structExpCtx.html":[1,0,39],
-"structExpCtx.html#a02e50a9e2019f71164475c44354020ef":[1,0,39,0],
-"structFakeQuantCtx.html":[1,0,40],
-"structFakeQuantCtx.html#a14548299ae7bb1b6a3bbec7808d67b60":[1,0,40,2],
-"structFakeQuantCtx.html#a19d12fd2e7a1eae39da20ab379d66222":[1,0,40,1],
-"structFakeQuantCtx.html#ac138a0ffb618e281379251d8be59306f":[1,0,40,0]
+"structExpCtx.html":[1,0,39]
 };

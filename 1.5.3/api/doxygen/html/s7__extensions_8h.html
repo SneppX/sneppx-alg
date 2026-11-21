@@ -230,6 +230,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:abfa66fb047f498d629587a214efd0419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Canary Rollout Promote.  <br /></td></tr>
 <tr class="memitem:a5cc5a0d0c0f8f8d7d417dd2b0577bd6b" id="r_a5cc5a0d0c0f8f8d7d417dd2b0577bd6b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cc5a0d0c0f8f8d7d417dd2b0577bd6b">SNEPPX_offline_bundle_create</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *ob, const uint8_t *data, size_t data_len, const uint8_t *signing_key, size_t key_len)</td></tr>
 <tr class="memdesc:a5cc5a0d0c0f8f8d7d417dd2b0577bd6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Offline Bundle.  <br /></td></tr>
+<tr class="memitem:a3db66e6e66cb9123e7e21aba5d0423d9" id="r_a3db66e6e66cb9123e7e21aba5d0423d9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3db66e6e66cb9123e7e21aba5d0423d9">SNEPPX_offline_bundle_sign</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle, const uint8_t *signing_key, size_t key_len)</td></tr>
+<tr class="memdesc:a3db66e6e66cb9123e7e21aba5d0423d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sign Offline Bundle.  <br /></td></tr>
+<tr class="memitem:af00a0df289b554d9046cf5969cb98838" id="r_af00a0df289b554d9046cf5969cb98838"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af00a0df289b554d9046cf5969cb98838">SNEPPX_offline_bundle_verify</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle, const uint8_t *public_key, size_t key_len)</td></tr>
+<tr class="memdesc:af00a0df289b554d9046cf5969cb98838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify Offline Bundle.  <br /></td></tr>
+<tr class="memitem:a5a6c887968981bc739477b6f060bad5a" id="r_a5a6c887968981bc739477b6f060bad5a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a6c887968981bc739477b6f060bad5a">SNEPPX_offline_bundle_is_signed</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle)</td></tr>
+<tr class="memdesc:a5a6c887968981bc739477b6f060bad5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Offline Bundle Is Signed.  <br /></td></tr>
+<tr class="memitem:ad1f1cf860e88b0439161a655d761f35a" id="r_ad1f1cf860e88b0439161a655d761f35a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1f1cf860e88b0439161a655d761f35a">SNEPPX_offline_bundle_get_size</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle)</td></tr>
+<tr class="memdesc:ad1f1cf860e88b0439161a655d761f35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Offline Bundle Get Size.  <br /></td></tr>
+<tr class="memitem:ae79adfd81974aeac839f402c72cbd205" id="r_ae79adfd81974aeac839f402c72cbd205"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae79adfd81974aeac839f402c72cbd205">SNEPPX_offline_bundle_get_hash</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle, uint8_t *hash_out)</td></tr>
+<tr class="memdesc:ae79adfd81974aeac839f402c72cbd205"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash Offline Bundle Get.  <br /></td></tr>
 <tr class="memitem:aac9025261324330744567b28e50c3f7b" id="r_aac9025261324330744567b28e50c3f7b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac9025261324330744567b28e50c3f7b">SNEPPX_dep_resolver_init</a> (<a class="el" href="structSNEPPXDepResolver.html">SNEPPXDepResolver</a> *dr)</td></tr>
 <tr class="memdesc:aac9025261324330744567b28e50c3f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Dep Resolver.  <br /></td></tr>
 <tr class="memitem:aecebb735bcc1ba9043810bce7c0192c5" id="r_aecebb735bcc1ba9043810bce7c0192c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecebb735bcc1ba9043810bce7c0192c5">SNEPPX_dep_resolver_add_dep</a> (<a class="el" href="structSNEPPXDepResolver.html">SNEPPXDepResolver</a> *dr, const char *name, uint32_t maj, uint32_t min, uint32_t pat)</td></tr>
@@ -289,7 +299,7 @@ Functions</h2></td></tr>
 <p>Perform Ab Force Swap. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00758">758</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00762">762</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -321,7 +331,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00714">714</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00718">718</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -343,7 +353,7 @@ Functions</h2></td></tr>
 <p>Perform Ab Partition Get Active. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00926">926</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00930">930</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -387,7 +397,7 @@ Functions</h2></td></tr>
 <p>Perform Ab Partition Get Inactive. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00937">937</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00941">941</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -575,7 +585,7 @@ Functions</h2></td></tr>
 <p>Perform Ab Set Bootloader Slot. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00948">948</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00952">952</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -607,7 +617,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00727">727</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00731">731</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -733,7 +743,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00879">879</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00883">883</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -953,7 +963,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00891">891</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00895">895</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1241,7 +1251,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00964">964</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00968">968</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1279,7 +1289,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00772">772</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00776">776</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1364,7 +1374,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00978">978</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00982">982</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1473,6 +1483,158 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="ae79adfd81974aeac839f402c72cbd205" name="ae79adfd81974aeac839f402c72cbd205"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae79adfd81974aeac839f402c72cbd205">&#9670;&#160;</a></span>SNEPPX_offline_bundle_get_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_offline_bundle_get_hash </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *</td>          <td class="paramname"><span class="paramname"><em>bundle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>hash_out</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hash Offline Bundle Get. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bundle</td><td>[out] Bundle value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01045">1045</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="ad1f1cf860e88b0439161a655d761f35a" name="ad1f1cf860e88b0439161a655d761f35a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f1cf860e88b0439161a655d761f35a">&#9670;&#160;</a></span>SNEPPX_offline_bundle_get_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_offline_bundle_get_size </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *</td>          <td class="paramname"><span class="paramname"><em>ob</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Offline Bundle Get Size. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00675">675</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a5a6c887968981bc739477b6f060bad5a" name="a5a6c887968981bc739477b6f060bad5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a6c887968981bc739477b6f060bad5a">&#9670;&#160;</a></span>SNEPPX_offline_bundle_is_signed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_offline_bundle_is_signed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *</td>          <td class="paramname"><span class="paramname"><em>ob</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Offline Bundle Is Signed. </p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00664">664</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="a3db66e6e66cb9123e7e21aba5d0423d9" name="a3db66e6e66cb9123e7e21aba5d0423d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3db66e6e66cb9123e7e21aba5d0423d9">&#9670;&#160;</a></span>SNEPPX_offline_bundle_sign()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_offline_bundle_sign </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *</td>          <td class="paramname"><span class="paramname"><em>bundle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>signing_key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>key_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sign Offline Bundle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bundle</td><td>[out] Bundle value. </td></tr>
+    <tr><td class="paramname">signing_key</td><td>[in] Signing Key value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01032">1032</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
+<a id="af00a0df289b554d9046cf5969cb98838" name="af00a0df289b554d9046cf5969cb98838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af00a0df289b554d9046cf5969cb98838">&#9670;&#160;</a></span>SNEPPX_offline_bundle_verify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_offline_bundle_verify </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *</td>          <td class="paramname"><span class="paramname"><em>bundle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>public_key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>key_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify Offline Bundle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bundle</td><td>[out] Bundle value. </td></tr>
+    <tr><td class="paramname">public_key</td><td>[in] Public Key value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00507">507</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
+</div>
+</div>
 <a id="a9a7d6ad87bff884f05e56bf2a0dbd0e8" name="a9a7d6ad87bff884f05e56bf2a0dbd0e8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a7d6ad87bff884f05e56bf2a0dbd0e8">&#9670;&#160;</a></span>SNEPPX_tpm_extend()</h2>
 
@@ -1539,7 +1701,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00991">991</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00995">995</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1561,7 +1723,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tpm Get Variable. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00748">748</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00752">752</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1743,7 +1905,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00738">738</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00742">742</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1881,7 +2043,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tuf Get Keys Loaded. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00839">839</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00843">843</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1999,7 +2161,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00701">701</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00705">705</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2092,7 +2254,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00787">787</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00791">791</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2124,7 +2286,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00800">800</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00804">804</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2162,7 +2324,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00814">814</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00818">818</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2247,7 +2409,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00828">828</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00832">832</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>

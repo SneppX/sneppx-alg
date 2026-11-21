@@ -1,5 +1,10 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXBugBountyTriage.html#af208d3eab3c25829c9a93655049c635a":[1,0,167,2],
+"structSNEPPXCFG.html":[1,0,172],
+"structSNEPPXCFG.html#aa0df861ea11076869bc274e87cd757a1":[1,0,172,1],
+"structSNEPPXCFG.html#af97912575ec9cf65f246cd16dfa0a48f":[1,0,172,0],
+"structSNEPPXCFICheck.html":[1,0,173],
 "structSNEPPXCFICheck.html#a08fd8866ba494130a6e210e419255d54":[1,0,173,5],
 "structSNEPPXCFICheck.html#a2a7c29537b776476dfaef7c893fcb5c5":[1,0,173,4],
 "structSNEPPXCFICheck.html#a92a0377628f98fa60aebc37b839363ad":[1,0,173,1],
@@ -244,10 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXDriverInfo.html#a0eacb468064e35693455ab96368f98ce":[1,0,194,1],
 "structSNEPPXDriverInfo.html#ae811bc24537b112110bdcc3b0f5bc3c9":[1,0,194,0],
 "structSNEPPXEd25519Keypair.html":[1,0,195],
-"structSNEPPXEd25519Keypair.html#a3302e6d76e3d12010dd2b0791a720b9b":[1,0,195,0],
-"structSNEPPXEd25519Keypair.html#aa74fce81aa544291f3cf972247e874ca":[1,0,195,1],
-"structSNEPPXEd25519Signature.html":[1,0,196],
-"structSNEPPXEd25519Signature.html#a7fa7866628ad1d46ef131f64634e98dc":[1,0,196,0],
-"structSNEPPXElasticTraining.html":[1,0,197],
-"structSNEPPXElasticTraining.html#a4fd3eba1a9bae2a8d1d58885fc3e7211":[1,0,197,12]
+"structSNEPPXEd25519Keypair.html#a3302e6d76e3d12010dd2b0791a720b9b":[1,0,195,0]
 };
