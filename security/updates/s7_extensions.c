@@ -456,12 +456,10 @@ int SNEPPX_tuf_revoke_key(int key_type) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_bsdiff_with_signature(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len, const uint8_t* signing_key, size_t key_len) {
-    if (!old_data || !new_data || !patch || !patch_len || !signing_key) return -1;
-    int ret = SNEPPX_bsdiff(old_data, old_len, new_data, new_len, patch, patch_len);
-    if (ret != 0) return ret;
-    for (size_t i = 0; i < *patch_len && i < key_len; i++)
-        patch[i] ^= signing_key[i % key_len];
-    return 0;
+    /* XOR obfuscation is not a digital signature; fail closed without touching outputs. */
+    (void)old_data; (void)old_len; (void)new_data; (void)new_len;
+    (void)patch; (void)patch_len; (void)signing_key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -650,11 +648,9 @@ int SNEPPX_ab_partition_is_swap_ready(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_verify_from_buffer(const uint8_t* manifest_data, size_t data_len, const uint8_t* signature, size_t sig_len) {
-    if (!manifest_data || !signature) return -1;
-    uint32_t h = hash_djb2(manifest_data, data_len);
-    uint32_t sig_val = 0;
-    for (size_t i = 0; i < sig_len && i < 4; i++) sig_val |= (uint32_t)signature[i] << (i * 8);
-    return (h == sig_val) ? 0 : 1;
+    /* A 32-bit non-cryptographic hash cannot authenticate a manifest. */
+    (void)manifest_data; (void)data_len; (void)signature; (void)sig_len;
+    return -1;
 }
 
 /**

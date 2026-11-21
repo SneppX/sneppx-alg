@@ -279,6 +279,32 @@ static void test_legacy_offline_bundle_creation_fails_closed(void) {
               "disabled bundle creation does not mark bundle as signed");
 }
 
+
+static void test_legacy_signed_diff_fails_closed_without_mutating_outputs(void) {
+    static const uint8_t old_data[] = "old";
+    static const uint8_t new_data[] = "new";
+    uint8_t patch[32];
+    memset(patch, 0xA5, sizeof(patch));
+    size_t patch_len = sizeof(patch);
+    const uint8_t signing_key[32] = {1};
+    SX_ASSERT(SNEPPX_bsdiff_with_signature(old_data, sizeof(old_data) - 1,
+              new_data, sizeof(new_data) - 1, patch, &patch_len,
+              signing_key, sizeof(signing_key)) == -1,
+              "XOR-based signed diff is disabled");
+    SX_ASSERT(patch_len == sizeof(patch), "disabled signed diff preserves output length");
+    for (size_t i = 0; i < sizeof(patch); ++i)
+        SX_ASSERT(patch[i] == 0xA5, "disabled signed diff preserves output buffer");
+}
+
+static void test_legacy_manifest_buffer_verification_fails_closed(void) {
+    const uint8_t manifest[] = "manifest";
+    uint8_t signature[64];
+    memset(signature, 0x5A, sizeof(signature));
+    SX_ASSERT(SNEPPX_manifest_verify_from_buffer(manifest, sizeof(manifest) - 1,
+              signature, sizeof(signature)) == -1,
+              "32-bit hash manifest verifier is disabled");
+}
+
 static void test_tuf_init(void) {
     SNEPPXTUFMetadata tuf;
     SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "tuf init");
@@ -328,6 +354,8 @@ TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_i
 TEST(test_s7_updates, legacy_tuf_crypto_apis_fail_closed) { test_legacy_tuf_crypto_apis_fail_closed(); }
 TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
+TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
+TEST(test_s7_updates, legacy_manifest_buffer_verification_fails_closed) { test_legacy_manifest_buffer_verification_fails_closed(); }
 TEST(test_s7_updates, tuf_init) { test_tuf_init(); }
 TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }

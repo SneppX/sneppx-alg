@@ -69,6 +69,10 @@ int  SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t le
  */
 int  SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len);
 
+/* Legacy compatibility APIs below are retained but fail closed until backed by real signatures. */
+int SNEPPX_bsdiff_with_signature(const uint8_t* old_data, size_t old_len, const uint8_t* new_data, size_t new_len, uint8_t* patch, size_t* patch_len, const uint8_t* signing_key, size_t key_len);
+int SNEPPX_manifest_verify_from_buffer(const uint8_t* manifest_data, size_t data_len, const uint8_t* signature, size_t sig_len);
+
 /* SXP1 is a project-specific format, not BSDIFF40: 4-byte magic, 64-bit
  * output size, bounded COPY/INSERT records, and a final END marker.
  * The generator emits common-prefix COPY, middle INSERT, and common-suffix COPY. */
