@@ -321,7 +321,7 @@ static int generate_handler(SNEPPX_HttpRequest* req, SNEPPX_HttpResponse* resp, 
         json_get_int(request, "max_new_tokens", 32, &max_new_tokens) == 0 &&
         json_get_int(request, "seed", -1, &seed) == 0 &&
         json_get_float(request, "temperature", 1.0, &temperature) == 0 &&
-        json_get_float(request, "top_p", 1.0, &top_p);
+        json_get_float(request, "top_p", 1.0, &top_p) == 0;
     sneppx_json_free(request);
     if (!valid || temperature < 0.0 || temperature > 2.0 ||
         top_p <= 0.0 || top_p > 1.0) {
