@@ -35,6 +35,7 @@ jobs:
             tests/python/test_ctm_tools.py \
             tests/python/test_serve_cli.py \
             tests/python/test_auth_header.py \
+            tests/python/test_hub_client_transport_source.py \
             tests/python/test_route_auth_contract.py \
             tests/python/test_autograd_regressions.py \
             tests/python/test_autograd_grad_api.py \
