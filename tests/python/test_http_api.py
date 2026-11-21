@@ -176,6 +176,14 @@ def test_malformed_request_line_is_rejected(server):
     response = _raw_http_request(port, b"GET /v1/health\r\nHost: localhost\r\n\r\n")
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
+def test_header_name_rejects_non_token_backslash(server):
+    port, _ = server
+    response = _raw_http_request(
+        port,
+        b"GET /v1/health HTTP/1.1\r\nHost\\Name: localhost\r\n\r\n",
+    )
+    assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
 
 def test_incomplete_declared_body_is_rejected(server):
     port, _ = server

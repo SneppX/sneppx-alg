@@ -328,7 +328,7 @@ static void add_header(SNEPPX_HttpResponse* resp, const char* name, const char* 
 static int is_http_token_char(unsigned char ch) {
     if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
         (ch >= 'a' && ch <= 'z')) return 1;
-    return strchr("!#$%&'*+-.^_\\x60|~", ch) != NULL;
+    return strchr("!#$%&'*+-.^_`|~", ch) != NULL;
 }
 static const char* find_crlf(const char* start, const char* end) {
     for (const char* p = start; p + 1 < end; p++) {
