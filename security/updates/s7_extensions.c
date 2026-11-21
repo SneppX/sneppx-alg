@@ -144,10 +144,9 @@ int SNEPPX_tuf_init(SNEPPXTUFMetadata* tuf) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len, uint8_t* sig, size_t* sig_len) {
-    if (!tuf || !data || !sig || !sig_len || *sig_len < 32) return -1;
-    for (size_t i = 0; i < len && i < 32; i++) sig[i] = data[i] ^ tuf->root_key[i];
-    for (size_t i = len; i < 32; i++) sig[i] = tuf->root_key[i];
-    *sig_len = 32; return 0;
+    /* The legacy 32-byte XOR output is not a cryptographic signature. */
+    (void)tuf; (void)data; (void)len; (void)sig; (void)sig_len;
+    return -1;
 }
 
 /**
@@ -159,10 +158,9 @@ int SNEPPX_tuf_sign_root(SNEPPXTUFMetadata* tuf, const uint8_t* data, size_t len
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tuf_verify_targets(SNEPPXTUFMetadata* tuf, const uint8_t* targets_json, size_t len) {
-    if (!tuf || !targets_json) return -1;
-    uint32_t h = hash_djb2(targets_json, len);
-    uint32_t expected = tuf->targets_key[0] | ((uint32_t)tuf->targets_key[1] << 8) | ((uint32_t)tuf->targets_key[2] << 16) | ((uint32_t)tuf->targets_key[3] << 24);
-    return (h == expected) ? 0 : -1;
+    /* A short keyed hash is not an authenticated TUF targets signature. */
+    (void)tuf; (void)targets_json; (void)len;
+    return -1;
 }
 
 /**
@@ -290,14 +288,9 @@ int SNEPPX_ab_partition_swap(SNEPPXABPartition* ab) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_verify(const char* manifest_path, const uint8_t* signature, size_t sig_len) {
-    if (!manifest_path || !signature) return -1;
-    FILE* f = fopen(manifest_path, "rb"); if (!f) return -1;
-    fseek(f, 0, SEEK_END); long sz = ftell(f); fseek(f, 0, SEEK_SET);
-    uint8_t* buf = (uint8_t*)malloc(sz); if (!buf) { fclose(f); return -1; }
-    fread(buf, 1, sz, f); fclose(f);
-    uint32_t h = hash_djb2(buf, (size_t)sz); free(buf);
-    uint32_t sig_val = 0; for (size_t i = 0; i < sig_len && i < 4; i++) sig_val |= (uint32_t)signature[i] << (i * 8);
-    return (h == sig_val) ? 0 : 1;
+    /* This API has no trusted public-key parameter; never treat a 32-bit hash as a signature. */
+    (void)manifest_path; (void)signature; (void)sig_len;
+    return -1;
 }
 
 /**
@@ -368,14 +361,9 @@ int SNEPPX_canary_rollout_promote(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_create(SNEPPXOfflineBundle* ob, const uint8_t* data, size_t data_len, const uint8_t* signing_key, size_t key_len) {
-    if (!ob || !data || !signing_key) return -1;
-    memset(ob, 0, sizeof(*ob));
-    ob->bundle_size = data_len;
-    uint32_t h = 0xDEADBEEF;
-    for (size_t i = 0; i < data_len; i++) h = ((h << 5) + h) ^ data[i];
-    for (size_t i = 0; i < key_len && i < 32; i++) h ^= (uint32_t)signing_key[i] << (i % 4 * 8);
-    for (int i = 0; i < 32; i++) ob->bundle_hash[i] = (uint8_t)(h >> (i % 4 * 8));
-    ob->signed_offline = 1; return 0;
+    /* The legacy keyed 32-bit hash is forgeable and must not mark a bundle as signed. */
+    (void)ob; (void)data; (void)data_len; (void)signing_key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -550,12 +538,9 @@ int SNEPPX_canary_rollout_get_percentage(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_verify(SNEPPXOfflineBundle* bundle, const uint8_t* public_key, size_t key_len) {
-    if (!bundle || !public_key) return -1;
-    (void)key_len;
-    if (!bundle->signed_offline) return -1;
-    uint32_t h = 0;
-    for (int i = 0; i < 32 && i < 4; i++) h |= (uint32_t)bundle->bundle_hash[i] << (i * 8);
-    return (h != 0) ? 0 : -1;
+    /* The legacy verifier checked only a nonzero prefix and ignored the public key. */
+    (void)bundle; (void)public_key; (void)key_len;
+    return -1;
 }
 static int key_type_valid(int key_type) {
     return (key_type >= 0 && key_type < SNEPPX_TUF_MAX_KEYS);
@@ -1081,12 +1066,9 @@ int SNEPPX_manifest_create(const char* path, const char** files, int file_count,
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size_t key_len) {
-    if (!path || !public_key) return -1;
-    (void)path;
-    (void)key_len;
-    uint32_t check = 0;
-    for (size_t i = 0; i < key_len && i < 4; i++) check |= (uint32_t)public_key[i] << (i * 8);
-    return (check != 0) ? 0 : -1;
+    /* The previous implementation accepted any nonzero key without reading the manifest. */
+    (void)path; (void)public_key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -1134,12 +1116,9 @@ int SNEPPX_canary_rollout_is_promoted(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_sign(SNEPPXOfflineBundle* bundle, const uint8_t* signing_key, size_t key_len) {
-    if (!bundle || !signing_key) return -1;
-    bundle->signed_offline = 1;
-    uint32_t h = 0;
-    for (size_t i = 0; i < key_len && i < 32; i++) h ^= (uint32_t)signing_key[i] << ((i % 4) * 8);
-    for (int i = 0; i < 4; i++) bundle->bundle_hash[i] = (uint8_t)(h >> (i * 8));
-    return 0;
+    /* XOR-derived tags are not signatures; fail closed until Ed25519 is wired in. */
+    (void)bundle; (void)signing_key; (void)key_len;
+    return -1;
 }
 
 /**
