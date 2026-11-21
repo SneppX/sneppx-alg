@@ -325,10 +325,17 @@ int SNEPPX_canary_rollout_init(SNEPPXCanaryRollout* cr, int total, int canary) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_canary_rollout_promote(SNEPPXCanaryRollout* cr) {
-    if (!cr) return -1;
-    int new_canary = cr->canary_nodes * 2;
-    cr->canary_nodes = new_canary > cr->total_nodes ? cr->total_nodes : new_canary;
-    cr->promoted = 1; return 0;
+    if (!cr || cr->total_nodes <= 0 || cr->canary_nodes < 0 ||
+        cr->canary_nodes > cr->total_nodes) return -1;
+
+    /* Compare against remaining capacity before doubling to avoid signed overflow. */
+    if (cr->canary_nodes >= cr->total_nodes - cr->canary_nodes) {
+        cr->canary_nodes = cr->total_nodes;
+    } else {
+        cr->canary_nodes *= 2;
+    }
+    cr->promoted = 1;
+    return 0;
 }
 
 /**
@@ -368,37 +375,34 @@ int SNEPPX_dep_resolver_init(SNEPPXDepResolver* dr) {
  */
 int SNEPPX_dep_resolver_add_dep(SNEPPXDepResolver* dr, const char* name, uint32_t maj, uint32_t min, uint32_t pat) {
     if (!dr || !name) return -1;
-    strncpy(dr->name, name, 63); dr->version_major = maj; dr->version_minor = min; dr->version_patch = pat; return 0;
-}
 
-static int deps_visited[64];
-static int dep_cycle_detected = 0;
+    /* Validate the complete name before changing resolver state. */
+    size_t name_len = 0;
+    while (name_len < sizeof(dr->name) && name[name_len] != '\0') name_len++;
+    if (name_len == 0 || name_len >= sizeof(dr->name)) return -1;
 
-static void dep_dfs(SNEPPXDepResolver* dr, int idx, int* dep_graph, int n) {
-    if (dep_cycle_detected) return;
-    if (deps_visited[idx] == 1) { dep_cycle_detected = 1; return; }
-    if (deps_visited[idx] == 2) return;
-    deps_visited[idx] = 1;
-    for (int j = 0; j < n; j++) {
-        if (dep_graph[idx * n + j]) dep_dfs(dr, j, dep_graph, n);
-    }
-    deps_visited[idx] = 2;
+    memcpy(dr->name, name, name_len + 1);
+    dr->version_major = maj;
+    dr->version_minor = min;
+    dr->version_patch = pat;
+    dr->resolved = 0;
+    return 0;
 }
 
 /**
- * @brief Perform Dep Resolver Resolve.
+ * @brief Resolve dependencies.
  *
- * @return 0 on success, -1 on error.
+ * The legacy structure stores only one dependency and has no registry,
+ * constraint solver, or dependency graph. Reporting success would therefore
+ * claim a resolution that has not happened. Keep this compatibility API
+ * fail-closed until a real resolver is implemented.
+ *
+ * @return -1 because resolution is not implemented.
  */
 int SNEPPX_dep_resolver_resolve(SNEPPXDepResolver* dr) {
     if (!dr) return -1;
-    int dep_graph[64 * 64] = {0};
-    int n = 1;
-    memset(deps_visited, 0, sizeof(deps_visited));
-    dep_cycle_detected = 0;
-    dep_dfs(dr, 0, dep_graph, n);
-    if (dep_cycle_detected) return -1;
-    dr->resolved = 1; return 0;
+    dr->resolved = 0;
+    return -1;
 }
 
 /**
@@ -492,8 +496,9 @@ int SNEPPX_tpm_unseal(const uint8_t* sealed, size_t sealed_len, uint8_t* data, s
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_canary_rollout_get_percentage(SNEPPXCanaryRollout* cr) {
-    if (!cr || cr->total_nodes <= 0) return 0;
-    return (cr->canary_nodes * 100) / cr->total_nodes;
+    if (!cr || cr->total_nodes <= 0 || cr->canary_nodes < 0 ||
+        cr->canary_nodes > cr->total_nodes) return -1;
+    return (int)(((int64_t)cr->canary_nodes * 100) / cr->total_nodes);
 }
 
 /**
@@ -1006,9 +1011,11 @@ int SNEPPX_tpm_get_random(uint8_t* bytes, int count) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_canary_rollout_set_percentage(SNEPPXCanaryRollout* cr, int percent) {
-    if (!cr || percent < 0 || percent > 100) return -1;
-    cr->canary_nodes = (cr->total_nodes * percent) / 100;
-    if (cr->canary_nodes == 0 && percent > 0) cr->canary_nodes = 1;
+    if (!cr || cr->total_nodes <= 0 || percent < 0 || percent > 100) return -1;
+    int64_t scaled = ((int64_t)cr->total_nodes * percent) / 100;
+    if (scaled == 0 && percent > 0) scaled = 1;
+    cr->canary_nodes = (int)scaled;
+    cr->promoted = 0;
     return 0;
 }
 

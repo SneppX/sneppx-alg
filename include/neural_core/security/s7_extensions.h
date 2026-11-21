@@ -242,6 +242,9 @@ int  SNEPPX_canary_rollout_init(SNEPPXCanaryRollout* cr, int total, int canary);
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_canary_rollout_promote(SNEPPXCanaryRollout* cr);
+/* Returns -1 for invalid state; otherwise an integer percentage in [0, 100]. */
+int  SNEPPX_canary_rollout_get_percentage(SNEPPXCanaryRollout* cr);
+int  SNEPPX_canary_rollout_set_percentage(SNEPPXCanaryRollout* cr, int percent);
 
 /* Offline update bundle */
 typedef struct {
@@ -270,7 +273,7 @@ int SNEPPX_offline_bundle_is_signed(SNEPPXOfflineBundle* bundle);
 int SNEPPX_offline_bundle_get_size(SNEPPXOfflineBundle* bundle);
 int SNEPPX_offline_bundle_get_hash(SNEPPXOfflineBundle* bundle, uint8_t* hash_out);
 
-/* Dependency resolver */
+/* Legacy dependency resolver compatibility API. Resolution fails closed until a real graph and constraint solver exist. */
 typedef struct {
     char name[64];
     uint32_t version_major, version_minor, version_patch;

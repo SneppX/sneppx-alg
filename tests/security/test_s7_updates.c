@@ -1,6 +1,8 @@
 #include "signed_update.h"
 #include "test_gtest.h"
 #include "s7_extensions.h"
+#include <stdint.h>
+#include <limits.h>
 #include "cryptographic_hashing_blake3.h"
 #include <stdio.h>
 #include <string.h>
@@ -521,15 +523,54 @@ static void test_canary_rollout(void) {
     SX_ASSERT(cr.total_nodes == 100, "total nodes");
     SX_ASSERT(cr.canary_nodes == 5, "canary nodes");
     SX_ASSERT(SNEPPX_canary_rollout_promote(&cr) == 0, "promote");
+    SX_ASSERT(cr.canary_nodes == 10, "promotion doubles canary count");
     SX_ASSERT(cr.promoted == 1, "promoted");
+    SX_ASSERT(SNEPPX_canary_rollout_get_percentage(&cr) == 10, "percentage uses bounded arithmetic");
+    SX_ASSERT(SNEPPX_canary_rollout_set_percentage(&cr, 50) == 0, "set percentage");
+    SX_ASSERT(cr.canary_nodes == 50 && cr.promoted == 0, "setting percentage resets promotion state");
+}
+
+static void test_canary_rollout_integer_boundaries(void) {
+    SNEPPXCanaryRollout cr;
+    SX_ASSERT(SNEPPX_canary_rollout_init(&cr, INT_MAX, (INT_MAX / 2) + 1) == 0,
+              "initialize near signed integer limit");
+    SX_ASSERT(SNEPPX_canary_rollout_promote(&cr) == 0, "promotion near signed integer limit");
+    SX_ASSERT(cr.canary_nodes == INT_MAX, "promotion clamps without overflowing");
+    SX_ASSERT(SNEPPX_canary_rollout_get_percentage(&cr) == 100,
+              "percentage calculation does not overflow");
+    SX_ASSERT(SNEPPX_canary_rollout_set_percentage(&cr, 99) == 0,
+              "set percentage near signed integer limit");
+    SX_ASSERT(cr.canary_nodes == (int)(((int64_t)INT_MAX * 99) / 100),
+              "percentage scaling does not overflow");
+
+    cr.canary_nodes = INT_MAX;
+    cr.total_nodes = 0;
+    SX_ASSERT(SNEPPX_canary_rollout_promote(&cr) == -1, "reject invalid rollout before promotion");
+    SX_ASSERT(SNEPPX_canary_rollout_get_percentage(&cr) == -1, "reject invalid percentage state");
+    SX_ASSERT(SNEPPX_canary_rollout_set_percentage(&cr, 50) == -1, "reject invalid total");
 }
 
 static void test_dep_resolver(void) {
     SNEPPXDepResolver dr;
     SX_ASSERT(SNEPPX_dep_resolver_init(&dr) == 0, "dep init");
-    SX_ASSERT(SNEPPX_dep_resolver_add_dep(&dr, "libfoo", 1, 2, 3) == 0, "add dep");
-    SX_ASSERT(SNEPPX_dep_resolver_resolve(&dr) == 0, "resolve");
-    SX_ASSERT(dr.resolved == 1, "resolved");
+    SX_ASSERT(SNEPPX_dep_resolver_add_dep(&dr, "libfoo", 1, 2, 3) == 0, "add dependency metadata");
+    SX_ASSERT(strcmp(dr.name, "libfoo") == 0, "dependency name stored");
+    SX_ASSERT(dr.version_major == 1 && dr.version_minor == 2 && dr.version_patch == 3,
+              "dependency version stored");
+    SX_ASSERT(SNEPPX_dep_resolver_resolve(&dr) == -1,
+              "unimplemented dependency graph resolution fails closed");
+    SX_ASSERT(dr.resolved == 0, "failed resolution never reports success");
+
+    char overlong_name[65];
+    memset(overlong_name, 'x', sizeof(overlong_name));
+    overlong_name[64] = '\0';
+    SX_ASSERT(SNEPPX_dep_resolver_add_dep(&dr, overlong_name, 1, 0, 0) == -1,
+              "reject dependency names that do not fit");
+    SX_ASSERT(strcmp(dr.name, "libfoo") == 0, "invalid dependency leaves previous state intact");
+    SX_ASSERT(SNEPPX_dep_resolver_add_dep(&dr, "", 1, 0, 0) == -1,
+              "reject empty dependency names");
+    SX_ASSERT(SNEPPX_dep_resolver_resolve(&dr) == -1 && dr.resolved == 0,
+              "resolver remains fail-closed after invalid input");
 }
 
 
@@ -562,4 +603,5 @@ TEST(test_s7_updates, update_integrity_verification_checks_exact_lengths) { test
 TEST(test_s7_updates, legacy_signing_key_accessors_fail_closed) { test_legacy_signing_key_accessors_fail_closed(); }
 TEST(test_s7_updates, history_count_rejects_out_of_range_values) { test_history_count_rejects_out_of_range_values(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }
+TEST(test_s7_updates, canary_rollout_integer_boundaries) { test_canary_rollout_integer_boundaries(); }
 TEST(test_s7_updates, dep_resolver) { test_dep_resolver(); }
