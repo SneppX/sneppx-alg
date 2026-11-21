@@ -248,6 +248,37 @@ static void test_bsdiff_handles_empty_inputs(void) {
     SX_ASSERT(SNEPPX_bspatch(text,sizeof(text)-1,patch,patch_len,NULL,&output_len)==0 && output_len==0,
               "empty output roundtrip");
 }
+
+static void test_legacy_tuf_crypto_apis_fail_closed(void) {
+    SNEPPXTUFMetadata tuf;
+    uint8_t data[] = "metadata";
+    uint8_t signature[64] = {0};
+    size_t signature_len = sizeof(signature);
+    SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "initialize TUF metadata");
+    SX_ASSERT(SNEPPX_tuf_sign_root(&tuf, data, sizeof(data) - 1, signature, &signature_len) == -1,
+              "legacy XOR root signing is disabled");
+    SX_ASSERT(signature_len == sizeof(signature), "disabled signer leaves output length unchanged");
+    SX_ASSERT(SNEPPX_tuf_verify_targets(&tuf, data, sizeof(data) - 1) == -1,
+              "legacy keyed-hash targets verification is disabled");
+}
+
+static void test_legacy_manifest_verification_fails_closed(void) {
+    uint8_t signature[64] = {0};
+    SX_ASSERT(SNEPPX_manifest_verify("CMakeLists.txt", signature, sizeof(signature)) == -1,
+              "manifest hash comparison is not signature verification");
+}
+
+static void test_legacy_offline_bundle_creation_fails_closed(void) {
+    SNEPPXOfflineBundle bundle;
+    uint8_t payload[] = "offline payload";
+    uint8_t key[32] = {1};
+    memset(&bundle, 0xA5, sizeof(bundle));
+    SX_ASSERT(SNEPPX_offline_bundle_create(&bundle, payload, sizeof(payload) - 1, key, sizeof(key)) == -1,
+              "legacy non-cryptographic bundle creation is disabled");
+    SX_ASSERT(bundle.signed_offline == (int)0xA5A5A5A5,
+              "disabled bundle creation does not mark bundle as signed");
+}
+
 static void test_tuf_init(void) {
     SNEPPXTUFMetadata tuf;
     SX_ASSERT(SNEPPX_tuf_init(&tuf) == 0, "tuf init");
@@ -294,6 +325,9 @@ TEST(test_s7_updates, bsdiff_rejects_truncated_patch) { test_bsdiff_rejects_trun
 TEST(test_s7_updates, bsdiff_rejects_malformed_records) { test_bsdiff_rejects_malformed_records(); }
 TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdiff_rejects_oversized_insert_and_capacity(); }
 TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
+TEST(test_s7_updates, legacy_tuf_crypto_apis_fail_closed) { test_legacy_tuf_crypto_apis_fail_closed(); }
+TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
+TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, tuf_init) { test_tuf_init(); }
 TEST(test_s7_updates, ab_partition) { test_ab_partition(); }
 TEST(test_s7_updates, canary_rollout) { test_canary_rollout(); }
