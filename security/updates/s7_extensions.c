@@ -297,9 +297,9 @@ int SNEPPX_manifest_verify(const char* manifest_path, const uint8_t* signature, 
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_pcr_read(int pcr_index, uint8_t* out, size_t* out_len) {
-    if (!out || !out_len || *out_len < 32) return -1;
-    for (int i = 0; i < 32; i++) out[i] = (uint8_t)((pcr_index * 7 + i * 13) & 0xFF);
-    *out_len = 32; return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)pcr_index; (void)out; (void)out_len;
+    return -1;
 }
 
 /**
@@ -312,12 +312,9 @@ int SNEPPX_tpm_pcr_read(int pcr_index, uint8_t* out, size_t* out_len) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_quote(const uint8_t* nonce, size_t nonce_len, uint8_t* quote, size_t* quote_len) {
-    if (!nonce || !quote || !quote_len || *quote_len < 64) return -1;
-    memset(quote, 0, 64);
-    for (size_t i = 0; i < nonce_len && i < 32; i++) quote[i] = nonce[i] ^ 0xA5;
-    uint8_t pcr[32]; size_t pcr_len = 32; SNEPPX_tpm_pcr_read(0, pcr, &pcr_len);
-    memcpy(quote + 32, pcr, 32);
-    *quote_len = 64; return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)nonce; (void)nonce_len; (void)quote; (void)quote_len;
+    return -1;
 }
 
 /**
@@ -478,16 +475,9 @@ int SNEPPX_ab_rollback(int slot) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_seal(const uint8_t* data, size_t data_len, uint8_t* sealed, size_t* sealed_len, uint32_t pcr_mask) {
-    if (!data || !sealed || !sealed_len || *sealed_len < data_len + 8) return -1;
-    (void)pcr_mask;
-    memcpy(sealed, data, data_len);
-    for (size_t i = 0; i < 4; i++) sealed[data_len + i] = (uint8_t)(pcr_mask >> (i * 8));
-    sealed[data_len + 4] = 0x5E;
-    sealed[data_len + 5] = 0xA1;
-    sealed[data_len + 6] = 0x1E;
-    sealed[data_len + 7] = 0xD;
-    *sealed_len = data_len + 8;
-    return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)data; (void)data_len; (void)sealed; (void)sealed_len; (void)pcr_mask;
+    return -1;
 }
 
 /**
@@ -501,15 +491,9 @@ int SNEPPX_tpm_seal(const uint8_t* data, size_t data_len, uint8_t* sealed, size_
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_unseal(const uint8_t* sealed, size_t sealed_len, uint8_t* data, size_t* data_len, uint32_t pcr_mask) {
-    if (!sealed || !data || !data_len || sealed_len < 8) return -1;
-    (void)pcr_mask;
-    if (!(sealed[sealed_len - 4] == 0x5E && sealed[sealed_len - 3] == 0xA1 && sealed[sealed_len - 2] == 0x1E && sealed[sealed_len - 1] == 0xD))
-        return -1;
-    size_t payload_len = sealed_len - 8;
-    if (*data_len < payload_len) return -1;
-    memcpy(data, sealed, payload_len);
-    *data_len = payload_len;
-    return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)sealed; (void)sealed_len; (void)data; (void)data_len; (void)pcr_mask;
+    return -1;
 }
 
 /**
@@ -652,8 +636,9 @@ int SNEPPX_manifest_verify_from_buffer(const uint8_t* manifest_data, size_t data
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_extend(int pcr_index, const uint8_t* digest, size_t digest_len) {
-    if (pcr_index < 0 || pcr_index >= TPM_PCR_COUNT || !digest || digest_len == 0) return -1;
-    return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)pcr_index; (void)digest; (void)digest_len;
+    return -1;
 }
 
 /**
@@ -765,6 +750,7 @@ int SNEPPX_ab_slot_is_good(SNEPPXABPartition* ab, int slot) {
  * @param index [in] Index value.
  */
 void SNEPPX_tpm_set_variable(int index, uint32_t value) {
+    /* No TPM NV storage is configured; intentionally perform no write. */
     (void)index; (void)value;
 }
 
@@ -774,8 +760,9 @@ void SNEPPX_tpm_set_variable(int index, uint32_t value) {
  * @return 0 on success, -1 on error.
  */
 uint32_t SNEPPX_tpm_get_variable(int index) {
+    /* UINT32_MAX is the legacy API's unavailable-value sentinel. */
     (void)index;
-    return 0;
+    return UINT32_MAX;
 }
 /**
  * @brief Perform Ab Force Swap.
@@ -1035,9 +1022,9 @@ int SNEPPX_manifest_verify_all(const char* path, const uint8_t* public_key, size
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_tpm_get_random(uint8_t* bytes, int count) {
-    if (!bytes || count <= 0) return -1;
-    SNEPPX_random_bytes(bytes, (size_t)count);
-    return 0;
+    /* This legacy API has no hardware-backed TPM implementation. */
+    (void)bytes; (void)count;
+    return -1;
 }
 
 /**

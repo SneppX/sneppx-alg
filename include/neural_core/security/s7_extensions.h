@@ -190,6 +190,16 @@ int  SNEPPX_tpm_pcr_read(int pcr_index, uint8_t* out, size_t* out_len);
  */
 int  SNEPPX_tpm_quote(const uint8_t* nonce, size_t nonce_len, uint8_t* quote, size_t* quote_len);
 
+/* TPM compatibility APIs: hardware-backed operations are unavailable and fail closed.
+ * SNEPPX_tpm_get_variable() returns UINT32_MAX when no TPM provider is configured.
+ * The void setter is a no-op until a real TPM NV implementation is supplied. */
+int SNEPPX_tpm_extend(int pcr_index, const uint8_t* digest, size_t digest_len);
+int SNEPPX_tpm_seal(const uint8_t* data, size_t data_len, uint8_t* sealed, size_t* sealed_len, uint32_t pcr_mask);
+int SNEPPX_tpm_unseal(const uint8_t* sealed, size_t sealed_len, uint8_t* data, size_t* data_len, uint32_t pcr_mask);
+void SNEPPX_tpm_set_variable(int index, uint32_t value);
+uint32_t SNEPPX_tpm_get_variable(int index);
+int SNEPPX_tpm_get_random(uint8_t* bytes, int count);
+
 /* Canary rollout */
 typedef struct {
     int total_nodes;

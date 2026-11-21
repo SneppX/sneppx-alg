@@ -282,6 +282,28 @@ static void test_legacy_tuf_apis_fail_closed_without_mutating_outputs(void) {
     SX_ASSERT(SNEPPX_tuf_verify_timestamp(&tuf, timestamp, sizeof(timestamp)) == -1, "weak timestamp verification disabled");
     SX_ASSERT(SNEPPX_tuf_get_keys_loaded(&tuf) == -1, "fake TUF key state unavailable");
 }
+static void test_legacy_tpm_apis_fail_closed_without_mutating_outputs(void) {
+    uint8_t out[96], quote[96], sealed[96], data[96], random_bytes[32];
+    uint8_t nonce[8] = {1,2,3,4,5,6,7,8}, digest[32] = {9};
+    memset(out, 0xA1, sizeof(out)); memset(quote, 0xB2, sizeof(quote));
+    memset(sealed, 0xC3, sizeof(sealed)); memset(data, 0xD4, sizeof(data));
+    memset(random_bytes, 0xE5, sizeof(random_bytes));
+    size_t out_len=sizeof(out), quote_len=sizeof(quote), sealed_len=sizeof(sealed), data_len=sizeof(data);
+    SX_ASSERT(SNEPPX_tpm_pcr_read(0, out, &out_len) == -1, "simulated PCR read disabled");
+    SX_ASSERT(out_len==sizeof(out) && out[0]==0xA1, "PCR failure preserves outputs");
+    SX_ASSERT(SNEPPX_tpm_quote(nonce,sizeof(nonce),quote,&quote_len)==-1, "simulated TPM quote disabled");
+    SX_ASSERT(quote_len==sizeof(quote) && quote[0]==0xB2, "quote failure preserves outputs");
+    SX_ASSERT(SNEPPX_tpm_extend(0,digest,sizeof(digest))==-1, "simulated PCR extend disabled");
+    SX_ASSERT(SNEPPX_tpm_seal(digest,sizeof(digest),sealed,&sealed_len,1)==-1, "fake TPM seal disabled");
+    SX_ASSERT(sealed_len==sizeof(sealed) && sealed[0]==0xC3, "seal failure preserves outputs");
+    SX_ASSERT(SNEPPX_tpm_unseal(sealed,sizeof(sealed),data,&data_len,1)==-1, "fake TPM unseal disabled");
+    SX_ASSERT(data_len==sizeof(data) && data[0]==0xD4, "unseal failure preserves outputs");
+    SX_ASSERT(SNEPPX_tpm_get_random(random_bytes,sizeof(random_bytes))==-1, "TPM random API disabled without TPM");
+    SX_ASSERT(random_bytes[0]==0xE5, "TPM random failure preserves output");
+    SNEPPX_tpm_set_variable(1, 42);
+    SX_ASSERT(SNEPPX_tpm_get_variable(1)==UINT32_MAX, "TPM NV read reports unavailable sentinel");
+}
+
 static void test_legacy_manifest_verification_fails_closed(void) {
     uint8_t signature[64] = {0};
     SX_ASSERT(SNEPPX_manifest_verify("CMakeLists.txt", signature, sizeof(signature)) == -1,
@@ -366,6 +388,7 @@ TEST(test_s7_updates, bsdiff_rejects_malformed_records) { test_bsdiff_rejects_ma
 TEST(test_s7_updates, bsdiff_rejects_oversized_insert_and_capacity) { test_bsdiff_rejects_oversized_insert_and_capacity(); }
 TEST(test_s7_updates, bsdiff_handles_empty_inputs) { test_bsdiff_handles_empty_inputs(); }
 TEST(test_s7_updates, legacy_tuf_apis_fail_closed_without_mutating_outputs) { test_legacy_tuf_apis_fail_closed_without_mutating_outputs(); }
+TEST(test_s7_updates, legacy_tpm_apis_fail_closed_without_mutating_outputs) { test_legacy_tpm_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
