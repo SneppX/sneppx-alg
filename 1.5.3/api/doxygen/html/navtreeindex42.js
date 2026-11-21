@@ -1,5 +1,15 @@
 var NAVTREEINDEX42 =
 {
+"structSNEPPXZTCondition.html#a49410664bbd27d8179c398029cf2223c":[1,0,458,2],
+"structSNEPPXZTCondition.html#a49a69ed2981de764795ea87f9f44281a":[1,0,458,8],
+"structSNEPPXZTCondition.html#a60008fc0c7888ca9fcd1f57e10259cf7":[1,0,458,7],
+"structSNEPPXZTCondition.html#a89120e6c028b77bd13352ae4b10a8673":[1,0,458,4],
+"structSNEPPXZTCondition.html#ab36fd77c30acc779ef82e759e6273989":[1,0,458,1],
+"structSNEPPXZTCondition.html#ac3bfb39bf1241dba5f970ce547a608df":[1,0,458,5],
+"structSNEPPXZTCondition.html#aca171e4df987b7b15b72a49d65b0f4c8":[1,0,458,6],
+"structSNEPPXZTPolicy.html":[1,0,459],
+"structSNEPPXZTPolicy.html#a2dfabd3208171817d82d28e7eceb38a5":[1,0,459,6],
+"structSNEPPXZTPolicy.html#a40cf52ae1cb0cf65ed9eb45d4aa52185":[1,0,459,3],
 "structSNEPPXZTPolicy.html#a481406edf489f1cd88795b39bf0767ae":[1,0,459,8],
 "structSNEPPXZTPolicy.html#a4a07ae2a374acb025b288718b9ff525c":[1,0,459,1],
 "structSNEPPXZTPolicy.html#a53d6acf27266cf924603d53fa30eca4f":[1,0,459,4],
@@ -239,15 +249,5 @@ var NAVTREEINDEX42 =
 "structSNEPPX__DeviceProps.html#a2c57fe65e4ef67317f16171fe30d9125":[1,0,98,3],
 "structSNEPPX__DeviceProps.html#a2d6e7d5cf2524972981bfa89c7d1f3d6":[1,0,98,7],
 "structSNEPPX__DeviceProps.html#a327c741728f12d2f52848b68b03eb391":[1,0,98,5],
-"structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11],
-"structSNEPPX__DeviceProps.html#a801b9a8e6cda5b1a468e450d39d1dd62":[1,0,98,14],
-"structSNEPPX__DeviceProps.html#a98871bb09c7b0f590e27651bb3b72cba":[1,0,98,9],
-"structSNEPPX__DeviceProps.html#aa75024b3534ba3db15fdea4715b18364":[1,0,98,10],
-"structSNEPPX__DeviceProps.html#ab44bb7a9b0a0b9ab5ca554d33cf040d2":[1,0,98,16],
-"structSNEPPX__DeviceProps.html#ab78c561183aaa9a7d1f06ad6b18d7564":[1,0,98,13],
-"structSNEPPX__DeviceProps.html#ac26a9bda899003228bc4f8158fe3794d":[1,0,98,1],
-"structSNEPPX__DeviceProps.html#ae483660feb4f4a748d1d2fee8d3de589":[1,0,98,8],
-"structSNEPPX__DeviceProps.html#aea7989238452cf71def72f7abc2fd3e9":[1,0,98,12],
-"structSNEPPX__DifferentialAttn.html":[1,0,99],
-"structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53":[1,0,99,7]
+"structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11]
 };

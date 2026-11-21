@@ -1,5 +1,15 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__DeviceProps.html#a801b9a8e6cda5b1a468e450d39d1dd62":[1,0,98,14],
+"structSNEPPX__DeviceProps.html#a98871bb09c7b0f590e27651bb3b72cba":[1,0,98,9],
+"structSNEPPX__DeviceProps.html#aa75024b3534ba3db15fdea4715b18364":[1,0,98,10],
+"structSNEPPX__DeviceProps.html#ab44bb7a9b0a0b9ab5ca554d33cf040d2":[1,0,98,16],
+"structSNEPPX__DeviceProps.html#ab78c561183aaa9a7d1f06ad6b18d7564":[1,0,98,13],
+"structSNEPPX__DeviceProps.html#ac26a9bda899003228bc4f8158fe3794d":[1,0,98,1],
+"structSNEPPX__DeviceProps.html#ae483660feb4f4a748d1d2fee8d3de589":[1,0,98,8],
+"structSNEPPX__DeviceProps.html#aea7989238452cf71def72f7abc2fd3e9":[1,0,98,12],
+"structSNEPPX__DifferentialAttn.html":[1,0,99],
+"structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53":[1,0,99,7],
 "structSNEPPX__DifferentialAttn.html#a43851f17a561786b65bec20dab9cd330":[1,0,99,8],
 "structSNEPPX__DifferentialAttn.html#a706ab58118b62e8cd2a50b7b84666313":[1,0,99,6],
 "structSNEPPX__DifferentialAttn.html#a985106abe2c20d0f6055ff3610d049a1":[1,0,99,2],
@@ -239,15 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__OptimizerConfig.html#a3c5a14804b01cd04f48047d3e0d7ccf9":[1,0,123,6],
 "structSNEPPX__OptimizerConfig.html#a422291b9f4081f36a360c0be3d5fc998":[1,0,123,4],
 "structSNEPPX__OptimizerConfig.html#a4c044b38cf989813663209aef6480992":[1,0,123,11],
-"structSNEPPX__OptimizerConfig.html#a5ef7672c93cddf9f0c6e9f5badd3adda":[1,0,123,10],
-"structSNEPPX__OptimizerConfig.html#a6214bb430f51f8da53da5de9d9554dd0":[1,0,123,12],
-"structSNEPPX__OptimizerConfig.html#a6d3fed4458ac16002e15c3d5aa4d69e0":[1,0,123,9],
-"structSNEPPX__OptimizerConfig.html#a7216e52756b211de0261e3554130d6e8":[1,0,123,1],
-"structSNEPPX__OptimizerConfig.html#a85a07d89783f0112d98159dfe854f3f8":[1,0,123,7],
-"structSNEPPX__OptimizerConfig.html#a8a8719a217b48f5448c68ab46b8821e0":[1,0,123,13],
-"structSNEPPX__OptimizerConfig.html#ae3a475098b7df692f527a8f8272056a7":[1,0,123,3],
-"structSNEPPX__OptimizerConfig.html#afb4599348f2982c002e99a45d975929a":[1,0,123,0],
-"structSNEPPX__OptimizerState.html":[1,0,124],
-"structSNEPPX__OptimizerState.html#a0330bd24eb11efaf86e44b4060acf0fa":[1,0,124,5],
-"structSNEPPX__OptimizerState.html#a072f7bf852f4256e1c91e68e6fafdf6d":[1,0,124,10]
+"structSNEPPX__OptimizerConfig.html#a5ef7672c93cddf9f0c6e9f5badd3adda":[1,0,123,10]
 };

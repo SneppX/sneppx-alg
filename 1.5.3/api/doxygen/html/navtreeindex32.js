@@ -1,5 +1,15 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXCFG.html#aa0df861ea11076869bc274e87cd757a1":[1,0,172,1],
+"structSNEPPXCFG.html#af97912575ec9cf65f246cd16dfa0a48f":[1,0,172,0],
+"structSNEPPXCFICheck.html":[1,0,173],
+"structSNEPPXCFICheck.html#a08fd8866ba494130a6e210e419255d54":[1,0,173,5],
+"structSNEPPXCFICheck.html#a2a7c29537b776476dfaef7c893fcb5c5":[1,0,173,4],
+"structSNEPPXCFICheck.html#a92a0377628f98fa60aebc37b839363ad":[1,0,173,1],
+"structSNEPPXCFICheck.html#a92fc7d9a3c056ac5c16cd734f640388d":[1,0,173,2],
+"structSNEPPXCFICheck.html#aace20f5522b1e9b9735728a03f2c9295":[1,0,173,0],
+"structSNEPPXCFICheck.html#ab6ee82674980b7b21e4dd4fe4ee06d35":[1,0,173,3],
+"structSNEPPXCFIState.html":[1,0,174],
 "structSNEPPXCFIState.html#a109400e4618c95dfbd3f6d5777ca3164":[1,0,174,2],
 "structSNEPPXCFIState.html#a82a6968aac4c57af4da3a60680b3e531":[1,0,174,0],
 "structSNEPPXCFIState.html#abe242f771824821fc52fe3274bc5800e":[1,0,174,3],
@@ -239,15 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXEd25519Keypair.html":[1,0,195],
 "structSNEPPXEd25519Keypair.html#a3302e6d76e3d12010dd2b0791a720b9b":[1,0,195,0],
 "structSNEPPXEd25519Keypair.html#aa74fce81aa544291f3cf972247e874ca":[1,0,195,1],
-"structSNEPPXEd25519Signature.html":[1,0,196],
-"structSNEPPXEd25519Signature.html#a7fa7866628ad1d46ef131f64634e98dc":[1,0,196,0],
-"structSNEPPXElasticTraining.html":[1,0,197],
-"structSNEPPXElasticTraining.html#a4fd3eba1a9bae2a8d1d58885fc3e7211":[1,0,197,12],
-"structSNEPPXElasticTraining.html#a5356b181830df38ba56a0c3f799d5134":[1,0,197,5],
-"structSNEPPXElasticTraining.html#a559fb17c21ce31dd853d14ba52277475":[1,0,197,8],
-"structSNEPPXElasticTraining.html#a6dea9934a088af8d3c3d29ff2af4f880":[1,0,197,4],
-"structSNEPPXElasticTraining.html#a6f1831c668f32344515e6891ea992de7":[1,0,197,13],
-"structSNEPPXElasticTraining.html#a779542391b93a24feed067d488ec84fb":[1,0,197,2],
-"structSNEPPXElasticTraining.html#a80ca29d5b6a995616d12caf8d56995ab":[1,0,197,15],
-"structSNEPPXElasticTraining.html#a8473cf36d443041793bcb6bc725d69e1":[1,0,197,14]
+"structSNEPPXEd25519Signature.html":[1,0,196]
 };

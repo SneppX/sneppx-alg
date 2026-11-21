@@ -1,5 +1,15 @@
 var NAVTREEINDEX29 =
 {
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975":[2,0,2,5,4,6],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a2cbbd49b9c3e80bb0ee8b1a62a4613da":[2,0,2,5,4,6,2],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a2cbe4db056ee0a63e325c07ebf61151b":[2,0,2,5,4,6,0],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a5d3df984b634f6e0c21ddd3db5b8e403":[2,0,2,5,4,6,3],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975a7447e7e537c261bda35b272268392fbe":[2,0,2,5,4,6,4],
+"soc2__framework_8h.html#a5316ccac4e698999f4663d70a0681975aa2e6bf71ad533d7c0373b8236da492fb":[2,0,2,5,4,6,1],
+"soc2__framework_8h.html#a5631e1c59c2c01f82771de52f9c5f7e2":[2,0,2,5,4,4],
+"soc2__framework_8h.html#a6c976e963d6cd57ec7135df8aead30d1":[2,0,2,5,4,8],
+"soc2__framework_8h.html#a852d0d10eaac341ae4b0bcbd7ddf6018":[2,0,2,5,4,11],
+"soc2__framework_8h.html#a91ab60cb1a38b92f5bc7ee2e02cf014c":[2,0,2,5,4,10],
 "soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2":[2,0,2,5,4,5],
 "soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2a2f86c70e942d6b66deacd89de4819310":[2,0,2,5,4,5,2],
 "soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2a3bae1386c8763cfc11915b81db36679e":[2,0,2,5,4,5,4],
@@ -239,15 +249,5 @@ var NAVTREEINDEX29 =
 "structEventLogEntry.html#afd6d802c0630ff3cb2a103a30627e0e4":[1,0,38,3],
 "structExpCtx.html":[1,0,39],
 "structExpCtx.html#a02e50a9e2019f71164475c44354020ef":[1,0,39,0],
-"structFakeQuantCtx.html":[1,0,40],
-"structFakeQuantCtx.html#a14548299ae7bb1b6a3bbec7808d67b60":[1,0,40,2],
-"structFakeQuantCtx.html#a19d12fd2e7a1eae39da20ab379d66222":[1,0,40,1],
-"structFakeQuantCtx.html#ac138a0ffb618e281379251d8be59306f":[1,0,40,0],
-"structForTaskArg.html":[1,0,42],
-"structForTaskArg.html#a276dc6e3ff49888419559dfc13493bd1":[1,0,42,1],
-"structForTaskArg.html#a46904939a4d4b68815c557682ea05fff":[1,0,42,4],
-"structForTaskArg.html#a660e9f1f2cad6fe7d084a4faae58e9d0":[1,0,42,2],
-"structForTaskArg.html#a843a3a1bf1a8c2ab17c1d7073f3b27e2":[1,0,42,0],
-"structForTaskArg.html#aebc4f5d1ced6a0419d0e726311a64cb7":[1,0,42,3],
-"structFreqSample.html":[1,0,43]
+"structFakeQuantCtx.html":[1,0,40]
 };

@@ -1,5 +1,15 @@
 var NAVTREEINDEX35 =
 {
+"structSNEPPXHeapCorruptionDetector.html":[1,0,247],
+"structSNEPPXHeapCorruptionDetector.html#a45122c75ece01300f0b792ce05fa10c2":[1,0,247,0],
+"structSNEPPXHeapCorruptionDetector.html#a66e2ed3c5f3c65fb4a82011f6babdf1f":[1,0,247,1],
+"structSNEPPXHeapMetadataEncrypt.html":[1,0,248],
+"structSNEPPXHeapMetadataEncrypt.html#a61d63b4b4aa36ff98d7abd16cffeae60":[1,0,248,1],
+"structSNEPPXHeapMetadataEncrypt.html#af0b535ea28f1e5de1ca40459f5e670ce":[1,0,248,0],
+"structSNEPPXHeartbeat.html":[1,0,249],
+"structSNEPPXHeartbeat.html#a0b6810ddeb7f62a20042bcf27d9838e5":[1,0,249,8],
+"structSNEPPXHeartbeat.html#a154d78ab5e63c8ced0ac28f8646742a4":[1,0,249,3],
+"structSNEPPXHeartbeat.html#a16d0ca01e50dcc2f723eb6062a8beae3":[1,0,249,11],
 "structSNEPPXHeartbeat.html#a2f8d10a6c4073f679c265189a720b576":[1,0,249,6],
 "structSNEPPXHeartbeat.html#a365638b80de7c0f8f9a31efd1c6a40a8":[1,0,249,1],
 "structSNEPPXHeartbeat.html#a58dbab675ad4981c80d5f21f0aa7ff9a":[1,0,249,5],
@@ -239,15 +249,5 @@ var NAVTREEINDEX35 =
 "structSNEPPXKeyCeremony.html#a2e444e7c3bc387a08b0489235dc8080e":[1,0,281,1],
 "structSNEPPXKeyRotationScheduler.html":[1,0,282],
 "structSNEPPXKeyRotationScheduler.html#a0398dc836a2b3dbbfd08fc20ea746375":[1,0,282,2],
-"structSNEPPXKeyRotationScheduler.html#a0d2481fb8da9429cdfa28aa65769441e":[1,0,282,1],
-"structSNEPPXKeyRotationScheduler.html#a1bff9653122e95f9f11f232c93f827b6":[1,0,282,0],
-"structSNEPPXKeyVault.html":[1,0,283],
-"structSNEPPXKeyVault.html#a01e5bee39b3a74b9098a45d699401679":[1,0,283,0],
-"structSNEPPXKeyVault.html#a2a4ef8040d64d909821f8d29523e195d":[1,0,283,2],
-"structSNEPPXKeyVault.html#a3476ef8bd817f9306f9477bbebd9c92d":[1,0,283,1],
-"structSNEPPXLLMConfig.html":[1,0,286],
-"structSNEPPXLLMConfig.html#a19e0bd917cbf1c4694c0da0f76c36243":[1,0,286,3],
-"structSNEPPXLLMConfig.html#a35ade6f10df283780ce88da59f4cc4b9":[1,0,286,5],
-"structSNEPPXLLMConfig.html#a43e6d6f76663aa7bfe11432bd71cb2ec":[1,0,286,2],
-"structSNEPPXLLMConfig.html#aaaac7ac6ce2d7f341420b979a2046d1f":[1,0,286,1]
+"structSNEPPXKeyRotationScheduler.html#a0d2481fb8da9429cdfa28aa65769441e":[1,0,282,1]
 };

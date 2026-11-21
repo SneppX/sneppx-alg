@@ -1,5 +1,15 @@
 var NAVTREEINDEX41 =
 {
+"structSNEPPXTextDataset.html#aca0e4dbfb86335da51079e2531b6b68e":[1,0,411,0],
+"structSNEPPXThreadCanaryPool.html":[1,0,412],
+"structSNEPPXThreadCanaryPool.html#a5d8890d0cc843cdd1cd1507d9546ad53":[1,0,412,0],
+"structSNEPPXThreadCanaryPool.html#a606b74a94551b87b0c9b37370759e7cb":[1,0,412,1],
+"structSNEPPXThreadPool.html":[1,0,413],
+"structSNEPPXThreadPool.html#a0cdaf9f99ef14e0745325834717e158c":[1,0,413,0],
+"structSNEPPXThreadPool.html#a1002e951802861cd7bd619bf8a91dd15":[1,0,413,6],
+"structSNEPPXThreadPool.html#a2d3262f3bbe11479eb869869754bb5fb":[1,0,413,5],
+"structSNEPPXThreadPool.html#a586b21d8f1aab7bc059552bcadc45173":[1,0,413,2],
+"structSNEPPXThreadPool.html#ab6c34814aee7817d0fab8421dc920370":[1,0,413,4],
 "structSNEPPXThreadPool.html#abde981102af2361a0c155fcdf54f78e6":[1,0,413,1],
 "structSNEPPXThreadPool.html#af4678e374effa57af24391fe199ae023":[1,0,413,3],
 "structSNEPPXThreadPool.html#af94437e4d41680ddc72e1e94eaefb7f8":[1,0,413,7],
@@ -239,15 +249,5 @@ var NAVTREEINDEX41 =
 "structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d":[1,0,456,0],
 "structSNEPPXZTCondition.html":[1,0,458],
 "structSNEPPXZTCondition.html#a080578ada6d96cc3d1fa221d8f808344":[1,0,458,3],
-"structSNEPPXZTCondition.html#a0a04c002569d00e5840ea97b44c93df8":[1,0,458,0],
-"structSNEPPXZTCondition.html#a49410664bbd27d8179c398029cf2223c":[1,0,458,2],
-"structSNEPPXZTCondition.html#a49a69ed2981de764795ea87f9f44281a":[1,0,458,8],
-"structSNEPPXZTCondition.html#a60008fc0c7888ca9fcd1f57e10259cf7":[1,0,458,7],
-"structSNEPPXZTCondition.html#a89120e6c028b77bd13352ae4b10a8673":[1,0,458,4],
-"structSNEPPXZTCondition.html#ab36fd77c30acc779ef82e759e6273989":[1,0,458,1],
-"structSNEPPXZTCondition.html#ac3bfb39bf1241dba5f970ce547a608df":[1,0,458,5],
-"structSNEPPXZTCondition.html#aca171e4df987b7b15b72a49d65b0f4c8":[1,0,458,6],
-"structSNEPPXZTPolicy.html":[1,0,459],
-"structSNEPPXZTPolicy.html#a2dfabd3208171817d82d28e7eceb38a5":[1,0,459,6],
-"structSNEPPXZTPolicy.html#a40cf52ae1cb0cf65ed9eb45d4aa52185":[1,0,459,3]
+"structSNEPPXZTCondition.html#a0a04c002569d00e5840ea97b44c93df8":[1,0,458,0]
 };

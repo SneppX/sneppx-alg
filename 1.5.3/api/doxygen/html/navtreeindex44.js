@@ -1,5 +1,15 @@
 var NAVTREEINDEX44 =
 {
+"structSNEPPX__OptimizerConfig.html#a6214bb430f51f8da53da5de9d9554dd0":[1,0,123,12],
+"structSNEPPX__OptimizerConfig.html#a6d3fed4458ac16002e15c3d5aa4d69e0":[1,0,123,9],
+"structSNEPPX__OptimizerConfig.html#a7216e52756b211de0261e3554130d6e8":[1,0,123,1],
+"structSNEPPX__OptimizerConfig.html#a85a07d89783f0112d98159dfe854f3f8":[1,0,123,7],
+"structSNEPPX__OptimizerConfig.html#a8a8719a217b48f5448c68ab46b8821e0":[1,0,123,13],
+"structSNEPPX__OptimizerConfig.html#ae3a475098b7df692f527a8f8272056a7":[1,0,123,3],
+"structSNEPPX__OptimizerConfig.html#afb4599348f2982c002e99a45d975929a":[1,0,123,0],
+"structSNEPPX__OptimizerState.html":[1,0,124],
+"structSNEPPX__OptimizerState.html#a0330bd24eb11efaf86e44b4060acf0fa":[1,0,124,5],
+"structSNEPPX__OptimizerState.html#a072f7bf852f4256e1c91e68e6fafdf6d":[1,0,124,10],
 "structSNEPPX__OptimizerState.html#a162cca2af65630d69f49045101074441":[1,0,124,7],
 "structSNEPPX__OptimizerState.html#a1c57f444d87ac46d42353cd67014cbe8":[1,0,124,0],
 "structSNEPPX__OptimizerState.html#a1e1228f025ed7d0025acaa5d7162cef3":[1,0,124,14],
@@ -239,15 +249,5 @@ var NAVTREEINDEX44 =
 "structdp__mechanism__t.html#a737ca8143868cbebd1aeb8e4ef2ae795":[1,0,34,3],
 "structdp__mechanism__t.html#a90ffe39f735aab30e0b33697703a1653":[1,0,34,1],
 "structdp__mechanism__t.html#ac68284d3643dff65eca7eedd4a07c4ca":[1,0,34,2],
-"structdp__mechanism__t.html#add792bdd6d0e9f5698a21f8f81fd4b20":[1,0,34,0],
-"structdp__mechanism__t.html#af5f51a3aaadd4ce4f27cbd8f2e702497":[1,0,34,4],
-"structdp__stats__t.html":[1,0,35],
-"structdp__stats__t.html#a23c200d90390be7b1f85307fe2ab6ed1":[1,0,35,0],
-"structdp__stats__t.html#a2b36df7bb83bc326132fb5e153fcaba0":[1,0,35,4],
-"structdp__stats__t.html#a5722829a8d874dca33043ba95f4f0b42":[1,0,35,5],
-"structdp__stats__t.html#a68a2cdae1e11c141c83088e683344ea6":[1,0,35,2],
-"structdp__stats__t.html#abff374ce065ab304110e56ad2632f61f":[1,0,35,3],
-"structdp__stats__t.html#ad592c5c3f655e195b23f52780ccc7cd4":[1,0,35,1],
-"structfield.html":[1,0,41],
-"structfield.html#acc8e5286a1025b320479d231beb304be":[1,0,41,0]
+"structdp__mechanism__t.html#add792bdd6d0e9f5698a21f8f81fd4b20":[1,0,34,0]
 };
