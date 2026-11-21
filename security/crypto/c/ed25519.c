@@ -248,6 +248,14 @@ static void fe_invert(field* r, const field* a) {
 
 /* Decode Edwards point from 32 bytes: Y in bytes, X parity in top bit of byte[31] */
 static int point_from_bytes(point* p, const uint8_t b[32]) {
+    /* Reject non-canonical y encodings instead of silently reducing mod p. */
+    uint8_t encoded_y[32], canonical_y[32];
+    memcpy(encoded_y, b, sizeof(encoded_y));
+    encoded_y[31] &= 0x7f;
+    field decoded_y;
+    fe_from_bytes(&decoded_y, encoded_y);
+    fe_to_bytes(canonical_y, &decoded_y);
+    if (!SNEPPX_ct_equal(encoded_y, canonical_y, sizeof(encoded_y))) return -1;
     fe_from_bytes(&p->Y, b);
     memset(&p->Z, 0, sizeof(field));
     p->Z.v[0] = 1;
@@ -389,6 +397,15 @@ static const uint8_t L_BYTES[32] = {
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10
 };
+
+/* RFC 8032 requires S to be the canonical little-endian scalar in [0, L). */
+static int scalar_is_canonical(const uint8_t scalar[32]) {
+    for (int i = 31; i >= 0; i--) {
+        if (scalar[i] < L_BYTES[i]) return 1;
+        if (scalar[i] > L_BYTES[i]) return 0;
+    }
+    return 0;
+}
 
 /* Subtract L << (8*shift) from t[64]; return 0 if result >= 0, 1 if borrow */
 static int sub_sc_shifted(uint8_t t[64], int shift) {
@@ -569,6 +586,8 @@ int SNEPPX_ed25519_sign(const SNEPPXEd25519Keypair* kp, const uint8_t* message, 
 static int ed25519_verify_core(const uint8_t* public_key, const uint8_t* message, size_t msg_len,
                                const SNEPPXEd25519Signature* sig, int legacy) {
     if (!public_key || !message || !sig) return -1;
+    /* Non-canonical S values make Ed25519 signatures malleable. */
+    if (!scalar_is_canonical(sig->data + 32)) return 0;
     init_base_point();
     uint8_t hram[64];
     SNEPPXSHA512Context ctx;

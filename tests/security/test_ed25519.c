@@ -77,6 +77,35 @@ void test_signature_malleability(void) {
     SX_TEST("modified R fails", ret == 0 || ret == -1);
 }
 
+
+void test_reject_noncanonical_scalar(void) {
+    SNEPPXEd25519Keypair kp;
+    SNEPPXEd25519Signature sig;
+    uint8_t message[] = "canonical scalar";
+    static const uint8_t group_order[32] = {
+        0xed,0xd3,0xf5,0x5c,0x1a,0x63,0x12,0x58,
+        0xd6,0x9c,0xf7,0xa2,0xde,0xf9,0xde,0x14,
+        0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+        0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10
+    };
+    SX_TEST("keypair for scalar canonical test", SNEPPX_ed25519_keypair_generate(&kp) == 0);
+    SX_TEST("sign for scalar canonical test", SNEPPX_ed25519_sign(&kp, message, sizeof(message), &sig) == 0);
+    memcpy(sig.data + 32, group_order, sizeof(group_order));
+    SX_TEST("reject S equal to group order", SNEPPX_ed25519_verify(kp.public_key, message, sizeof(message), &sig) == 0);
+}
+
+void test_reject_noncanonical_point_encoding(void) {
+    uint8_t public_key[32];
+    SNEPPXEd25519Signature sig;
+    uint8_t message[] = "noncanonical point";
+    memset(public_key, 0xff, sizeof(public_key));
+    public_key[0] = 0xed;
+    public_key[31] = 0x7f; /* y = 2^255 - 19, which is not a canonical field encoding. */
+    memset(&sig, 0, sizeof(sig));
+    SX_TEST("reject noncanonical public-key y encoding",
+            SNEPPX_ed25519_verify(public_key, message, sizeof(message), &sig) == -1);
+}
+
 void test_large_message(void) {
     printf("\n--- test_large_message ---\n");
     SNEPPXEd25519Keypair kp;
@@ -97,4 +126,6 @@ void test_large_message(void) {
 TEST(test_ed25519, test_keypair_generate) { test_keypair_generate(); }
 TEST(test_ed25519, test_sign_verify) { test_sign_verify(); }
 TEST(test_ed25519, test_signature_malleability) { test_signature_malleability(); }
+TEST(test_ed25519, test_reject_noncanonical_scalar) { test_reject_noncanonical_scalar(); }
+TEST(test_ed25519, test_reject_noncanonical_point_encoding) { test_reject_noncanonical_point_encoding(); }
 TEST(test_ed25519, test_large_message) { test_large_message(); }
