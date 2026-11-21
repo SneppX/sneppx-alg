@@ -93,35 +93,27 @@ $(function(){initNavTree('s7__extensions_8c.html','',''); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="s7__extensions_8h_source.html">s7_extensions.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="cryptographic__random__generator_8h_source.html">neural_core/security/cryptographic_random_generator.h</a>&quot;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &lt;time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for s7_extensions.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="s7__extensions_8c__incl.png" border="0" usemap="#asecurity_2updates_2s7__extensions_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2updates_2s7__extensions_8c" id="asecurity_2updates_2s7__extensions_8c">
-<area shape="rect" title=" " alt="" coords="360,5,508,50"/>
-<area shape="rect" href="s7__extensions_8h.html" title=" " alt="" coords="5,115,132,143"/>
-<area shape="poly" title=" " alt="" coords="357,45,257,70,145,101,115,111,112,107,144,95,256,65,362,43"/>
-<area shape="rect" href="cryptographic__random__generator_8h.html" title=" " alt="" coords="156,98,328,160"/>
-<area shape="poly" title=" " alt="" coords="394,49,315,93,313,88,389,52"/>
-<area shape="rect" title=" " alt="" coords="352,115,422,143"/>
-<area shape="poly" title=" " alt="" coords="426,49,402,103,398,99,422,52"/>
-<area shape="rect" title=" " alt="" coords="446,115,515,143"/>
-<area shape="poly" title=" " alt="" coords="445,48,471,102,465,100,443,53"/>
-<area shape="rect" title=" " alt="" coords="540,115,605,143"/>
-<area shape="poly" title=" " alt="" coords="465,48,544,106,539,105,464,53"/>
-<area shape="rect" title=" " alt="" coords="629,115,692,143"/>
-<area shape="poly" title=" " alt="" coords="504,48,561,69,619,96,634,106,629,106,617,100,559,74,504,53"/>
-<area shape="rect" title=" " alt="" coords="70,208,144,235"/>
-<area shape="poly" title=" " alt="" coords="76,141,98,193,93,194,72,145"/>
-<area shape="rect" title=" " alt="" coords="187,208,257,235"/>
-<area shape="poly" title=" " alt="" coords="91,141,189,198,184,201,90,146"/>
-<area shape="poly" title=" " alt="" coords="200,159,140,201,138,197,194,161"/>
-<area shape="poly" title=" " alt="" coords="237,158,230,194,226,191,233,162"/>
+<area shape="rect" title=" " alt="" coords="185,5,334,50"/>
+<area shape="rect" href="s7__extensions_8h.html" title=" " alt="" coords="27,98,153,126"/>
+<area shape="poly" title=" " alt="" coords="212,52,132,93,129,89,216,49"/>
+<area shape="rect" title=" " alt="" coords="178,98,248,126"/>
+<area shape="poly" title=" " alt="" coords="249,49,230,86,226,82,245,52"/>
+<area shape="rect" title=" " alt="" coords="271,98,341,126"/>
+<area shape="poly" title=" " alt="" coords="273,48,294,85,288,84,271,53"/>
+<area shape="rect" title=" " alt="" coords="365,98,431,126"/>
+<area shape="poly" title=" " alt="" coords="297,48,365,89,360,90,296,53"/>
+<area shape="rect" title=" " alt="" coords="5,174,79,201"/>
+<area shape="poly" title=" " alt="" coords="84,125,61,162,57,159,79,128"/>
+<area shape="rect" title=" " alt="" coords="103,174,173,201"/>
+<area shape="poly" title=" " alt="" coords="100,124,124,161,119,161,97,129"/>
 </map>
 </div>
 </div>
@@ -133,7 +125,6 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae6a9ee9a9fb60ebcfa54a1c27706835d" id="r_ae6a9ee9a9fb60ebcfa54a1c27706835d"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6a9ee9a9fb60ebcfa54a1c27706835d">hash_djb2</a> (const uint8_t *data, size_t len)</td></tr>
 <tr class="memitem:a741ded59f7d146aa414b12e3956eb2dc" id="r_a741ded59f7d146aa414b12e3956eb2dc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a741ded59f7d146aa414b12e3956eb2dc">patch_write_u64</a> (uint8_t *out, uint64_t value)</td></tr>
 <tr class="memitem:add1ae38e0d854e181be29c1b4f077ad4" id="r_add1ae38e0d854e181be29c1b4f077ad4"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add1ae38e0d854e181be29c1b4f077ad4">patch_read_u64</a> (const uint8_t *in)</td></tr>
 <tr class="memitem:aea6b70f8c6c7a7afb1a719f523d7fb03" id="r_aea6b70f8c6c7a7afb1a719f523d7fb03"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea6b70f8c6c7a7afb1a719f523d7fb03">patch_parse</a> (const uint8_t *old_data, size_t old_len, const uint8_t *patch, size_t patch_len, uint8_t *new_data, size_t new_capacity, size_t *result_len, int emit)</td></tr>
@@ -190,8 +181,6 @@ Functions</h2></td></tr>
 <tr class="memdesc:a850f3fb0b596daf5341cbfcdbb9ade0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Canary Rollout Get Percentage.  <br /></td></tr>
 <tr class="memitem:af00a0df289b554d9046cf5969cb98838" id="r_af00a0df289b554d9046cf5969cb98838"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af00a0df289b554d9046cf5969cb98838">SNEPPX_offline_bundle_verify</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle, const uint8_t *public_key, size_t key_len)</td></tr>
 <tr class="memdesc:af00a0df289b554d9046cf5969cb98838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify Offline Bundle.  <br /></td></tr>
-<tr class="memitem:ac85f52060b83a8ea7bbc812211ee6cad" id="r_ac85f52060b83a8ea7bbc812211ee6cad"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac85f52060b83a8ea7bbc812211ee6cad">key_type_valid</a> (int key_type)</td></tr>
-<tr class="memitem:a8e5093fc93ca0100fab0ae41ff5dfe1e" id="r_a8e5093fc93ca0100fab0ae41ff5dfe1e"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e5093fc93ca0100fab0ae41ff5dfe1e">hash_xor</a> (const uint8_t *data, size_t len)</td></tr>
 <tr class="memitem:a23829e6a51109a495d595de57ad4bc5f" id="r_a23829e6a51109a495d595de57ad4bc5f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23829e6a51109a495d595de57ad4bc5f">SNEPPX_tuf_is_initialized</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf)</td></tr>
 <tr class="memdesc:a23829e6a51109a495d595de57ad4bc5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Is Initialized.  <br /></td></tr>
 <tr class="memitem:a92462b98393037dd268f70c0723b054c" id="r_a92462b98393037dd268f70c0723b054c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92462b98393037dd268f70c0723b054c">SNEPPX_tuf_get_key</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, int key_type, uint8_t *key_out, size_t key_len)</td></tr>
@@ -279,13 +268,11 @@ Functions</h2></td></tr>
 <tr class="memitem:adbeee25f77205044cd98257ad49f172a" id="r_adbeee25f77205044cd98257ad49f172a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbeee25f77205044cd98257ad49f172a">SNEPPX_dep_resolver_get_resolved_count</a> (<a class="el" href="structSNEPPXDepResolver.html">SNEPPXDepResolver</a> *dr)</td></tr>
 <tr class="memdesc:adbeee25f77205044cd98257ad49f172a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Dep Resolver Get Resolved Count.  <br /></td></tr>
 <tr class="memitem:a31d9f4da6695377d26fbe1de2e3fd856" id="r_a31d9f4da6695377d26fbe1de2e3fd856"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31d9f4da6695377d26fbe1de2e3fd856">tuf_validate_key</a> (const uint8_t *key, size_t len)</td></tr>
-<tr class="memitem:ac02bde92f0173148492b32c4133f9efa" id="r_ac02bde92f0173148492b32c4133f9efa"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac02bde92f0173148492b32c4133f9efa">tuf_compute_metadata_hash</a> (const uint8_t *meta, size_t len)</td></tr>
 <tr class="memitem:aeccf010d16489f65fb43989b78d098ed" id="r_aeccf010d16489f65fb43989b78d098ed"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeccf010d16489f65fb43989b78d098ed">bsdiff_validate_patch</a> (const uint8_t *patch, size_t len)</td></tr>
 <tr class="memitem:a67d5bb5f5f36fb8fde8456ef2723c384" id="r_a67d5bb5f5f36fb8fde8456ef2723c384"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67d5bb5f5f36fb8fde8456ef2723c384">ab_partition_is_valid</a> (int slot)</td></tr>
 <tr class="memitem:a38027ff9ccb3a8db09392db1c9c344cc" id="r_a38027ff9ccb3a8db09392db1c9c344cc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38027ff9ccb3a8db09392db1c9c344cc">ab_read_bootloader_config</a> (void)</td></tr>
 <tr class="memitem:a09cdc2a362bbdb6af4c37c435d08d4fb" id="r_a09cdc2a362bbdb6af4c37c435d08d4fb"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09cdc2a362bbdb6af4c37c435d08d4fb">ab_write_bootloader_config</a> (int slot)</td></tr>
 <tr class="memitem:ab713c96e3ed79985e2a1897bc25c228a" id="r_ab713c96e3ed79985e2a1897bc25c228a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab713c96e3ed79985e2a1897bc25c228a">canary_clamp_percent</a> (int percent)</td></tr>
-<tr class="memitem:a498814c965683fda3def871d24a70c68" id="r_a498814c965683fda3def871d24a70c68"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a498814c965683fda3def871d24a70c68">manifest_compute_hash</a> (const char *path)</td></tr>
 <tr class="memitem:a5c2dd25837a23be25261667f8fc4dbf7" id="r_a5c2dd25837a23be25261667f8fc4dbf7"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c2dd25837a23be25261667f8fc4dbf7">tpm_check_pcr_range</a> (int index)</td></tr>
 <tr class="memitem:a806c83eecc1c4abfb1e6962f439e27dd" id="r_a806c83eecc1c4abfb1e6962f439e27dd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a806c83eecc1c4abfb1e6962f439e27dd">offline_bundle_xor_key</a> (uint8_t *hash, const uint8_t *key, size_t key_len)</td></tr>
 <tr class="memitem:a9aae6311775346851346962bc3c41ec5" id="r_a9aae6311775346851346962bc3c41ec5"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9aae6311775346851346962bc3c41ec5">dep_version_compare</a> (uint32_t a_maj, uint32_t a_min, uint32_t a_pat, uint32_t b_maj, uint32_t b_min, uint32_t b_pat)</td></tr>
@@ -298,7 +285,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ad3fe706fe72f4726f433baec97ee8d3a" id="r_ad3fe706fe72f4726f433baec97ee8d3a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3fe706fe72f4726f433baec97ee8d3a">ab_merge_slot_metadata</a> (int active, int candidate)</td></tr>
 <tr class="memitem:a712d1f125b8b49fec04ad8835d2b0778" id="r_a712d1f125b8b49fec04ad8835d2b0778"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a712d1f125b8b49fec04ad8835d2b0778">canary_compute_group_hash</a> (<a class="el" href="structSNEPPXCanaryRollout.html">SNEPPXCanaryRollout</a> *cr, int group)</td></tr>
 <tr class="memitem:a7bbc53da3990497ec5a92965a8b64225" id="r_a7bbc53da3990497ec5a92965a8b64225"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bbc53da3990497ec5a92965a8b64225">canary_get_node_group</a> (<a class="el" href="structSNEPPXCanaryRollout.html">SNEPPXCanaryRollout</a> *cr, int node_id)</td></tr>
-<tr class="memitem:a6f98d5f09a9f26999daa375da177edbf" id="r_a6f98d5f09a9f26999daa375da177edbf"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f98d5f09a9f26999daa375da177edbf">manifest_verify_entry_hash</a> (const unsigned char *entry, size_t entry_len, uint32_t expected)</td></tr>
 <tr class="memitem:afe6a0c5d2e710a60d263f75ec75fb0ce" id="r_afe6a0c5d2e710a60d263f75ec75fb0ce"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe6a0c5d2e710a60d263f75ec75fb0ce">tpm_extend_pcr_simulation</a> (int pcr_index, const uint8_t *data, size_t len)</td></tr>
 <tr class="memitem:a3fdf9b83fc506936af9f56f11703ebf3" id="r_a3fdf9b83fc506936af9f56f11703ebf3"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fdf9b83fc506936af9f56f11703ebf3">offline_bundle_verify_local_signature</a> (<a class="el" href="structSNEPPXOfflineBundle.html">SNEPPXOfflineBundle</a> *bundle, const uint8_t *local_key)</td></tr>
 <tr class="memitem:ac3aad360c2dbb3455ec5ad17f5c863a5" id="r_ac3aad360c2dbb3455ec5ad17f5c863a5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3aad360c2dbb3455ec5ad17f5c863a5">dep_resolver_generate_dot_output</a> (<a class="el" href="structSNEPPXDepResolver.html">SNEPPXDepResolver</a> *dr, FILE *f)</td></tr>
@@ -329,7 +315,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00031">31</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00024">24</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -357,7 +343,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01283">1283</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01226">1226</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -384,7 +370,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01224">1224</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01172">1172</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -411,7 +397,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01220">1220</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01168">1168</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -442,7 +428,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01229">1229</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01177">1177</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -469,7 +455,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01139">1139</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01099">1099</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -496,7 +482,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01143">1143</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01103">1103</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -523,7 +509,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01147">1147</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01107">1107</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -564,7 +550,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01202">1202</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01150">1150</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -595,7 +581,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01277">1277</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01220">1220</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -626,7 +612,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01132">1132</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01092">1092</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -657,7 +643,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01195">1195</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01143">1143</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -684,7 +670,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01152">1152</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01112">1112</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -715,7 +701,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01233">1233</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01181">1181</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -746,7 +732,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01241">1241</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01189">1189</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -777,7 +763,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01287">1287</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01230">1230</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -818,7 +804,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00384">384</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00377">377</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -869,7 +855,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01190">1190</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01138">1138</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -896,7 +882,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01270">1270</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01213">1213</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -927,7 +913,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01265">1265</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01208">1208</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -954,7 +940,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01311">1311</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01254">1254</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1005,151 +991,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01183">1183</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-
-</div>
-</div>
-<a id="ae6a9ee9a9fb60ebcfa54a1c27706835d" name="ae6a9ee9a9fb60ebcfa54a1c27706835d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6a9ee9a9fb60ebcfa54a1c27706835d">&#9670;&#160;</a></span>hash_djb2()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t hash_djb2 </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00024">24</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_ae6a9ee9a9fb60ebcfa54a1c27706835d_icgraph.png" border="0" usemap="#as7__extensions_8c_ae6a9ee9a9fb60ebcfa54a1c27706835d_icgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_ae6a9ee9a9fb60ebcfa54a1c27706835d_icgraph" id="as7__extensions_8c_ae6a9ee9a9fb60ebcfa54a1c27706835d_icgraph">
-<area shape="rect" title=" " alt="" coords="265,109,352,137"/>
-<area shape="rect" href="s7__extensions_8c.html#a498814c965683fda3def871d24a70c68" title=" " alt="" coords="20,5,202,33"/>
-<area shape="poly" title=" " alt="" coords="281,98,252,73,215,48,187,36,186,31,218,43,255,68,287,98"/>
-<area shape="rect" href="s7__extensions_8c.html#a6f98d5f09a9f26999daa375da177edbf" title=" " alt="" coords="10,57,212,85"/>
-<area shape="poly" title=" " alt="" coords="247,107,216,100,170,88,170,83,217,95,252,106"/>
-<area shape="rect" href="s7__extensions_8c.html#acc7195d2c451067f0fbd3b3f2ecfa787" title="Create Manifest." alt="" coords="18,109,204,137"/>
-<area shape="poly" title=" " alt="" coords="246,124,205,126,204,121,251,122"/>
-<area shape="rect" href="s7__extensions_8c.html#ac6bcfc1b0f1451873ec0f987f397cd54" title="Hash Manifest." alt="" coords="23,161,199,189"/>
-<area shape="poly" title=" " alt="" coords="247,140,217,151,171,163,169,158,216,146,252,139"/>
-<area shape="rect" href="s7__extensions_8c.html#ac02bde92f0173148492b32c4133f9efa" title=" " alt="" coords="5,213,217,241"/>
-<area shape="poly" title=" " alt="" coords="286,147,255,178,218,203,187,215,186,210,215,198,252,174,281,149"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a8e5093fc93ca0100fab0ae41ff5dfe1e" name="a8e5093fc93ca0100fab0ae41ff5dfe1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e5093fc93ca0100fab0ae41ff5dfe1e">&#9670;&#160;</a></span>hash_xor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t hash_xor </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00523">523</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-
-</div>
-</div>
-<a id="ac85f52060b83a8ea7bbc812211ee6cad" name="ac85f52060b83a8ea7bbc812211ee6cad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac85f52060b83a8ea7bbc812211ee6cad">&#9670;&#160;</a></span>key_type_valid()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int key_type_valid </td>
-          <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>key_type</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00519">519</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-
-</div>
-</div>
-<a id="a498814c965683fda3def871d24a70c68" name="a498814c965683fda3def871d24a70c68"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a498814c965683fda3def871d24a70c68">&#9670;&#160;</a></span>manifest_compute_hash()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t manifest_compute_hash </td>
-          <td>(</td>
-          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01158">1158</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_a498814c965683fda3def871d24a70c68_cgraph.png" border="0" usemap="#as7__extensions_8c_a498814c965683fda3def871d24a70c68_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_a498814c965683fda3def871d24a70c68_cgraph" id="as7__extensions_8c_a498814c965683fda3def871d24a70c68_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,187,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="235,5,322,33"/>
-<area shape="poly" title=" " alt="" coords="187,17,222,19,217,19,187,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01131">1131</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1176,53 +1018,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01293">1293</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-
-</div>
-</div>
-<a id="a6f98d5f09a9f26999daa375da177edbf" name="a6f98d5f09a9f26999daa375da177edbf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f98d5f09a9f26999daa375da177edbf">&#9670;&#160;</a></span>manifest_verify_entry_hash()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int manifest_verify_entry_hash </td>
-          <td>(</td>
-          <td class="paramtype">const unsigned char *</td>          <td class="paramname"><span class="paramname"><em>entry</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>entry_len</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>expected</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01246">1246</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_a6f98d5f09a9f26999daa375da177edbf_cgraph.png" border="0" usemap="#as7__extensions_8c_a6f98d5f09a9f26999daa375da177edbf_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_a6f98d5f09a9f26999daa375da177edbf_cgraph" id="as7__extensions_8c_a6f98d5f09a9f26999daa375da177edbf_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,208,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="256,5,343,33"/>
-<area shape="poly" title=" " alt="" coords="208,17,243,19,237,19,208,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01236">1236</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1253,7 +1049,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01307">1307</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01250">1250</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1284,7 +1080,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01258">1258</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01201">1201</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1320,7 +1116,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01176">1176</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01124">1124</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1381,7 +1177,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00040">40</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00033">33</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1441,7 +1237,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00090">90</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00083">83</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1482,7 +1278,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00035">35</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00028">28</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1535,7 +1331,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00110">110</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00103">103</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1580,7 +1376,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00032">32</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00025">25</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1614,7 +1410,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Force Swap. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00773">773</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00758">758</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1646,7 +1442,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00729">729</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00714">714</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1668,7 +1464,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Get Active. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00948">948</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00926">926</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1690,7 +1486,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Get Active Slot. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00590">590</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00575">575</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1712,7 +1508,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Get Inactive. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00959">959</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00937">937</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1734,7 +1530,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Get Inactive Slot. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00601">601</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00586">586</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1756,7 +1552,7 @@ Here is the caller graph for this function:</div>
 <p>Initialize Ab Partition. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00243">243</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00236">236</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1778,7 +1574,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Is Swap Ready. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00612">612</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00597">597</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1810,7 +1606,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00256">256</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00249">249</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1832,7 +1628,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Partition Swap. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00267">267</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00260">260</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1854,7 +1650,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Rollback. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00458">458</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00451">451</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1876,7 +1672,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ab Set Bootloader Slot. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00970">970</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00948">948</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1908,7 +1704,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00742">742</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00727">727</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1964,7 +1760,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00172">172</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00165">165</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2022,7 +1818,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00901">901</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00879">879</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2081,7 +1877,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00875">875</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00853">853</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2129,7 +1925,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00562">562</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00547">547</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2197,7 +1993,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00446">446</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00439">439</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2254,7 +2050,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00223">223</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00216">216</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2316,7 +2112,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00913">913</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00891">891</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2367,7 +2163,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Get Canary. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00661">661</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00646">646</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2389,7 +2185,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Get Percentage. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00501">501</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00494">494</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2411,7 +2207,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Get Total. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00652">652</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00637">637</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2433,7 +2229,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Has Promoted. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00670">670</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00655">655</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2471,7 +2267,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00324">324</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00317">317</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2493,7 +2289,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Is Promoted. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01052">1052</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01016">1016</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2515,7 +2311,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Canary Rollout Promote. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00334">334</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00327">327</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2547,7 +2343,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01040">1040</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01004">1004</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2597,7 +2393,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00376">376</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00369">369</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2629,7 +2425,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01104">1104</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01068">1068</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2651,7 +2447,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Dep Resolver Get Resolved Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01115">1115</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01079">1079</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2673,7 +2469,7 @@ Here is the caller graph for this function:</div>
 <p>Initialize Dep Resolver. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00362">362</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00355">355</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2695,7 +2491,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Dep Resolver Is Resolved. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00697">697</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00682">682</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2727,7 +2523,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01090">1090</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01054">1054</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2748,7 +2544,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reset Dep Resolver. </p>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00704">704</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00689">689</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2770,7 +2566,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Dep Resolver Resolve. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00400">400</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00393">393</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2831,17 +2627,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00986">986</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_acc7195d2c451067f0fbd3b3f2ecfa787_cgraph.png" border="0" usemap="#as7__extensions_8c_acc7195d2c451067f0fbd3b3f2ecfa787_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_acc7195d2c451067f0fbd3b3f2ecfa787_cgraph" id="as7__extensions_8c_acc7195d2c451067f0fbd3b3f2ecfa787_cgraph">
-<area shape="rect" title="Create Manifest." alt="" coords="5,5,191,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="239,5,326,33"/>
-<area shape="poly" title=" " alt="" coords="191,17,225,19,220,19,191,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00964">964</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2879,17 +2665,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00787">787</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_ac6bcfc1b0f1451873ec0f987f397cd54_cgraph.png" border="0" usemap="#as7__extensions_8c_ac6bcfc1b0f1451873ec0f987f397cd54_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_ac6bcfc1b0f1451873ec0f987f397cd54_cgraph" id="as7__extensions_8c_ac6bcfc1b0f1451873ec0f987f397cd54_cgraph">
-<area shape="rect" title="Hash Manifest." alt="" coords="5,5,181,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="229,5,316,33"/>
-<area shape="poly" title=" " alt="" coords="181,17,216,19,211,19,181,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00772">772</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2927,7 +2703,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00281">281</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00274">274</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2965,7 +2741,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01014">1014</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00978">978</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3009,7 +2785,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00627">627</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00612">612</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3059,7 +2835,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00351">351</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00344">344</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3091,7 +2867,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01077">1077</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01041">1041</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3113,7 +2889,7 @@ Here is the call graph for this function:</div>
 <p>Perform Offline Bundle Get Size. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00688">688</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00673">673</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3135,7 +2911,7 @@ Here is the call graph for this function:</div>
 <p>Perform Offline Bundle Is Signed. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00679">679</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00664">664</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3173,7 +2949,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01064">1064</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01028">1028</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3211,7 +2987,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00514">514</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00507">507</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3249,7 +3025,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00641">641</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00626">626</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3281,7 +3057,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01027">1027</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00991">991</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3303,7 +3079,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tpm Get Variable. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00763">763</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00748">748</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3341,7 +3117,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00295">295</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00288">288</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3385,7 +3161,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00310">310</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00303">303</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3435,7 +3211,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00474">474</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00467">467</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3466,7 +3242,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00753">753</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00738">738</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3516,7 +3292,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00490">490</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00483">483</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3538,7 +3314,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tuf Generate Keypair. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00416">416</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00409">409</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3582,7 +3358,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00549">549</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00534">534</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3604,7 +3380,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tuf Get Keys Loaded. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00861">861</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00839">839</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3626,7 +3402,7 @@ Here is the call graph for this function:</div>
 <p>Initialize Tuf. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00125">125</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00118">118</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3648,7 +3424,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tuf Is Initialized. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00534">534</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00519">519</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3670,7 +3446,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tuf Revoke Key. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00427">427</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00420">420</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3714,7 +3490,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00716">716</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00701">701</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3764,7 +3540,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00141">141</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00134">134</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3796,7 +3572,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00809">809</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00787">787</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3828,7 +3604,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00822">822</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00800">800</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3866,7 +3642,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00836">836</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00814">814</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3904,7 +3680,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00155">155</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00148">148</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3942,7 +3718,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00850">850</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00828">828</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3969,7 +3745,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01171">1171</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01119">1119</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4005,7 +3781,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01252">1252</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01195">1195</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4036,48 +3812,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01301">1301</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-
-</div>
-</div>
-<a id="ac02bde92f0173148492b32c4133f9efa" name="ac02bde92f0173148492b32c4133f9efa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac02bde92f0173148492b32c4133f9efa">&#9670;&#160;</a></span>tuf_compute_metadata_hash()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t tuf_compute_metadata_hash </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>meta</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01127">1127</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8c_ac02bde92f0173148492b32c4133f9efa_cgraph.png" border="0" usemap="#as7__extensions_8c_ac02bde92f0173148492b32c4133f9efa_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8c_ac02bde92f0173148492b32c4133f9efa_cgraph" id="as7__extensions_8c_ac02bde92f0173148492b32c4133f9efa_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,217,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="265,5,352,33"/>
-<area shape="poly" title=" " alt="" coords="217,17,252,19,246,19,217,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01244">1244</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4118,7 +3853,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01208">1208</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01156">1156</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4149,7 +3884,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01120">1120</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l01084">1084</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4174,7 +3909,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00382">382</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00375">375</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4198,7 +3933,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00381">381</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00374">374</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>

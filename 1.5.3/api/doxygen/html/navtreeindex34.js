@@ -1,8 +1,5 @@
 var NAVTREEINDEX34 =
 {
-"structSNEPPXFormalModel.html#a4ea2cc04878231c96769262fe857fe86":[1,0,226,3],
-"structSNEPPXFormalModel.html#a67ee9763808efd80eef42f00c96fb1f7":[1,0,226,2],
-"structSNEPPXFormalModel.html#a68da67f6e10b934a75a2be1d0d310b6e":[1,0,226,0],
 "structSNEPPXFormalModel.html#a94265ea5f47777118597875fb3e2a89a":[1,0,226,1],
 "structSNEPPXFormalModel.html#a9b01474c189b703650f056c4233879be":[1,0,226,4],
 "structSNEPPXFormalModel.html#ae1ba27092660a96fe092cce481b3ae56":[1,0,226,5],
@@ -249,5 +246,8 @@ var NAVTREEINDEX34 =
 "structSNEPPXHashDRBG.html#a9e4808453b36d9c8e0d19552d6096bee":[1,0,246,0],
 "structSNEPPXHashDRBG.html#ab60c08a459c23342bc3b62332e50bf6a":[1,0,246,2],
 "structSNEPPXHashDRBG.html#ae9456f8fde4e195f372dc445fbce6bce":[1,0,246,4],
-"structSNEPPXHashDRBG.html#aeee092b63ba6757881eb263c6aa79388":[1,0,246,3]
+"structSNEPPXHashDRBG.html#aeee092b63ba6757881eb263c6aa79388":[1,0,246,3],
+"structSNEPPXHeapCorruptionDetector.html":[1,0,247],
+"structSNEPPXHeapCorruptionDetector.html#a45122c75ece01300f0b792ce05fa10c2":[1,0,247,0],
+"structSNEPPXHeapCorruptionDetector.html#a66e2ed3c5f3c65fb4a82011f6babdf1f":[1,0,247,1]
 };

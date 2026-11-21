@@ -1,8 +1,5 @@
 var NAVTREEINDEX45 =
 {
-"structdp__mechanism__t.html#af5f51a3aaadd4ce4f27cbd8f2e702497":[1,0,34,4],
-"structdp__stats__t.html":[1,0,35],
-"structdp__stats__t.html#a23c200d90390be7b1f85307fe2ab6ed1":[1,0,35,0],
 "structdp__stats__t.html#a2b36df7bb83bc326132fb5e153fcaba0":[1,0,35,4],
 "structdp__stats__t.html#a5722829a8d874dca33043ba95f4f0b42":[1,0,35,5],
 "structdp__stats__t.html#a68a2cdae1e11c141c83088e683344ea6":[1,0,35,2],
@@ -249,5 +246,8 @@ var NAVTREEINDEX45 =
 "tensor_8c.html#a0c66082ea09400960255c9d11d02a1a5":[2,0,1,16,2,99],
 "tensor_8c.html#a0dcb1e82695c6ee25e59c62ac374b4ed":[2,0,1,16,2,138],
 "tensor_8c.html#a0e187862b778256d73bed0cde0bb00b0":[2,0,1,16,2,35],
-"tensor_8c.html#a0f19e556979d29b4389029613204093d":[2,0,1,16,2,25]
+"tensor_8c.html#a0f19e556979d29b4389029613204093d":[2,0,1,16,2,25],
+"tensor_8c.html#a11110f02db88bcea348d31d3f4937a6d":[2,0,1,16,2,95],
+"tensor_8c.html#a1163959bdea9fc07abb957cd57a8ea5f":[2,0,1,16,2,65],
+"tensor_8c.html#a11d38c38d1db72a4e81042b154deb563":[2,0,1,16,2,105]
 };

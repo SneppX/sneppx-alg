@@ -1,8 +1,5 @@
 var NAVTREEINDEX42 =
 {
-"structSNEPPXZTCondition.html#a49410664bbd27d8179c398029cf2223c":[1,0,458,2],
-"structSNEPPXZTCondition.html#a49a69ed2981de764795ea87f9f44281a":[1,0,458,8],
-"structSNEPPXZTCondition.html#a60008fc0c7888ca9fcd1f57e10259cf7":[1,0,458,7],
 "structSNEPPXZTCondition.html#a89120e6c028b77bd13352ae4b10a8673":[1,0,458,4],
 "structSNEPPXZTCondition.html#ab36fd77c30acc779ef82e759e6273989":[1,0,458,1],
 "structSNEPPXZTCondition.html#ac3bfb39bf1241dba5f970ce547a608df":[1,0,458,5],
@@ -249,5 +246,8 @@ var NAVTREEINDEX42 =
 "structSNEPPX__DeviceProps.html#a2c57fe65e4ef67317f16171fe30d9125":[1,0,98,3],
 "structSNEPPX__DeviceProps.html#a2d6e7d5cf2524972981bfa89c7d1f3d6":[1,0,98,7],
 "structSNEPPX__DeviceProps.html#a327c741728f12d2f52848b68b03eb391":[1,0,98,5],
-"structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11]
+"structSNEPPX__DeviceProps.html#a6e291fe51bd6813c8ec426489c39f173":[1,0,98,11],
+"structSNEPPX__DeviceProps.html#a801b9a8e6cda5b1a468e450d39d1dd62":[1,0,98,14],
+"structSNEPPX__DeviceProps.html#a98871bb09c7b0f590e27651bb3b72cba":[1,0,98,9],
+"structSNEPPX__DeviceProps.html#aa75024b3534ba3db15fdea4715b18364":[1,0,98,10]
 };

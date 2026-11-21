@@ -1,8 +1,5 @@
 var NAVTREEINDEX49 =
 {
-"x25519_8c.html#acf4abb2fe5d1dc07d9991a4d8f0bc215":[2,0,2,8,0,31,6],
-"x25519_8c.html#ae763058b04b2a32e662302b0e61c2320":[2,0,2,8,0,31,5],
-"x25519_8c.html#af8fbd60b13aa0ce3b98e24f269b9cafc":[2,0,2,8,0,31,14],
 "x25519_8c_source.html":[2,0,2,8,0,31],
 "x25519_8h.html":[2,0,0,0,2,72],
 "x25519_8h.html#a5df29ac41aa4a0c35a1dcc8561ad6c33":[2,0,0,0,2,72,6],

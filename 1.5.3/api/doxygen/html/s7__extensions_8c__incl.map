@@ -1,21 +1,15 @@
 <map id="security/updates/s7_extensions.c" name="security/updates/s7_extensions.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="360,5,508,50"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8h.html" title=" " alt="" coords="5,115,132,143"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="357,45,257,70,145,101,115,111,112,107,144,95,256,65,362,43"/>
-<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="156,98,328,160"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="394,49,315,93,313,88,389,52"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="352,115,422,143"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="426,49,402,103,398,99,422,52"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="446,115,515,143"/>
-<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="445,48,471,102,465,100,443,53"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="540,115,605,143"/>
-<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="465,48,544,106,539,105,464,53"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="629,115,692,143"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="504,48,561,69,619,96,634,106,629,106,617,100,559,74,504,53"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="70,208,144,235"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="76,141,98,193,93,194,72,145"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="187,208,257,235"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="91,141,189,198,184,201,90,146"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="200,159,140,201,138,197,194,161"/>
-<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="237,158,230,194,226,191,233,162"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="185,5,334,50"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8h.html" title=" " alt="" coords="27,98,153,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,52,132,93,129,89,216,49"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="178,98,248,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="249,49,230,86,226,82,245,52"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="271,98,341,126"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="273,48,294,85,288,84,271,53"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="365,98,431,126"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="297,48,365,89,360,90,296,53"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,174,79,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="84,125,61,162,57,159,79,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="103,174,173,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="100,124,124,161,119,161,97,129"/>
 </map>

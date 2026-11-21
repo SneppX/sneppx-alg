@@ -6004,6 +6004,7 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <ul>
 <li><code>SNEPPX_bsdiff_with_signature()</code> used XOR masking, not a digital signature; it now always fails closed.</li>
 <li><code>SNEPPX_manifest_verify_from_buffer()</code> compared a short non-cryptographic hash; it now always fails closed.</li>
+<li>Legacy manifest creation and hashing also used weak, truncated non-cryptographic hashes; those APIs now fail closed without modifying output buffers.</li>
 <li>These compatibility APIs do not authenticate updates. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.</li>
 <li>TUF metadata/key-management APIs are compatibility stubs and now all fail closed. They do not generate, expose, revoke, sign, or verify trusted metadata.</li>
 <li>TPM compatibility APIs now fail closed: PCR read/extend, quote, seal/unseal, and TPM-random calls return failure without modifying caller buffers. Legacy NV reads return <code>UINT32_MAX</code>; the void NV setter is a no-op. No TPM hardware-backed implementation is currently available.</li>

@@ -1,8 +1,5 @@
 var NAVTREEINDEX47 =
 {
-"tensor__cuda_8h.html#acc59b7735b91edfdd5f759606b6ada88":[2,0,1,5,5,15],
-"tensor__cuda_8h.html#acd90316cec6f27e05949b26ba2ae28ac":[2,0,1,5,5,47],
-"tensor__cuda_8h.html#ad4a2bb94d3fe08b3041b93c5e04d3600":[2,0,1,5,5,63],
 "tensor__cuda_8h.html#adc0f033b437d06e1c79e0d3c9c31c42d":[2,0,1,5,5,43],
 "tensor__cuda_8h.html#adc2f4bb47913a7eb405c54591c26e9ce":[2,0,1,5,5,30],
 "tensor__cuda_8h.html#adfda0f4fa4ee07717285e500f48b750e":[2,0,1,5,5,20],
@@ -249,5 +246,8 @@ var NAVTREEINDEX47 =
 "tls__extended_8h.html#a55a2819295813297b6eee8322e9e9ac8ae2a3db2aa1c229c446f326bd89b256ea":[2,0,2,8,2,1,5,2],
 "tls__extended_8h.html#a55a2819295813297b6eee8322e9e9ac8ae5f546e7409d3b3aea94a7478bdac4b6":[2,0,2,8,2,1,5,6],
 "tls__extended_8h.html#a65a53d515a0569012c9cb5faf2f94baf":[2,0,2,8,2,1,4],
-"tls__extended_8h.html#a66bac1d2433e171a8220307a26eece93":[2,0,2,8,2,1,6]
+"tls__extended_8h.html#a66bac1d2433e171a8220307a26eece93":[2,0,2,8,2,1,6],
+"tls__extended_8h.html#a66bac1d2433e171a8220307a26eece93a1159810f8fe080b7ff457c5940dcd999":[2,0,2,8,2,1,6,0],
+"tls__extended_8h.html#a66bac1d2433e171a8220307a26eece93a39ec706065a37baf8c48a0ccb259f6f0":[2,0,2,8,2,1,6,3],
+"tls__extended_8h.html#a66bac1d2433e171a8220307a26eece93a4e7eab4d0e599c2bc4211ccd63135084":[2,0,2,8,2,1,6,11]
 };
