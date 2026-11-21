@@ -1,5 +1,11 @@
 var NAVTREEINDEX29 =
 {
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2":[2,0,2,5,4,5],
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2a2f86c70e942d6b66deacd89de4819310":[2,0,2,5,4,5,2],
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2a3bae1386c8763cfc11915b81db36679e":[2,0,2,5,4,5,4],
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2aa39609454608d67dc9abb85b926504b0":[2,0,2,5,4,5,1],
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2aa796585485ea7e2c99acf67b574c74cf":[2,0,2,5,4,5,3],
+"soc2__framework_8h.html#ab497acfc5751da7bc8fe49068054ccd2ad875c4b73f60350ca31d693a0f69bb9f":[2,0,2,5,4,5,0],
 "soc2__framework_8h.html#ae05c50c563e88034d47446f7edae65ae":[2,0,2,5,4,13],
 "soc2__framework_8h.html#ae3aa2a882a7ba372ca7367c9e579ec58":[2,0,2,5,4,9],
 "soc2__framework_8h.html#aec382a8b0b02b65ad5266cfdc4c82e33":[2,0,2,5,4,7],
@@ -243,11 +249,5 @@ var NAVTREEINDEX29 =
 "structForTaskArg.html#a660e9f1f2cad6fe7d084a4faae58e9d0":[1,0,42,2],
 "structForTaskArg.html#a843a3a1bf1a8c2ab17c1d7073f3b27e2":[1,0,42,0],
 "structForTaskArg.html#aebc4f5d1ced6a0419d0e726311a64cb7":[1,0,42,3],
-"structFreqSample.html":[1,0,43],
-"structFreqSample.html#a5d4fd81bde954517f639bc8a7700cda0":[1,0,43,0],
-"structFreqSample.html#a9bb5c8293d000d0c0b7130a6bfb6d5b7":[1,0,43,1],
-"structFreqSample.html#acdd2ef30b92ad98b9499830fc2952576":[1,0,43,2],
-"structFutureWrapper.html":[1,0,44],
-"structFutureWrapper.html#a6936485f3391533074ae0161bb96cf3d":[1,0,44,0],
-"structFutureWrapper.html#ad9f9117a0ee5cb4f32749617d60234d4":[1,0,44,1]
+"structFreqSample.html":[1,0,43]
 };

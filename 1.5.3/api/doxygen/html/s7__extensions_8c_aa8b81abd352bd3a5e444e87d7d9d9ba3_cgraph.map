@@ -1,5 +1,0 @@
-<map id="SNEPPX_tpm_get_random" name="SNEPPX_tpm_get_random">
-<area shape="rect" id="Node000001" title="Perform Tpm Get Random." alt="" coords="5,5,196,33"/>
-<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="244,5,416,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,17,231,19,226,19,196,22"/>
-</map>

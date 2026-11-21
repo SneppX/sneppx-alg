@@ -1,7 +1,7 @@
 {
   "repository": "SneppX/sneppx-alg",
   "default_branch": "main",
-  "generated_at": "2026-11-21T10:58:10.678761+00:00",
+  "generated_at": "2026-11-21T11:02:28.556698+00:00",
   "branches": [
     {
       "name": "ci-gated/episodic-consolidate-linkage",
@@ -105,18 +105,18 @@
     {
       "name": "gh-pages",
       "id": "Z2gtcGFnZXM",
-      "commit": "79c3c028349d3089980619803713486d04d49a0d",
-      "file_count": 42614,
-      "commit_count": 106,
+      "commit": "e38c929a480b5f301e576006a152c5bb0573e4ae",
+      "file_count": 42593,
+      "commit_count": 108,
       "search_count": 0,
       "search_truncated": false
     },
     {
       "name": "main",
       "id": "bWFpbg",
-      "commit": "d2d999b289452b7bb48797ba6a78fa379d9c1a5f",
+      "commit": "09883106630642876bd3940452ca235fd731d7c3",
       "file_count": 1613,
-      "commit_count": 2625,
+      "commit_count": 2626,
       "search_count": 0,
       "search_truncated": false
     },
@@ -180,6 +180,15 @@
       "commit": "d2d999b289452b7bb48797ba6a78fa379d9c1a5f",
       "file_count": 1613,
       "commit_count": 2625,
+      "search_count": 0,
+      "search_truncated": false
+    },
+    {
+      "name": "security/disable-simulated-tpm",
+      "id": "c2VjdXJpdHkvZGlzYWJsZS1zaW11bGF0ZWQtdHBt",
+      "commit": "09883106630642876bd3940452ca235fd731d7c3",
+      "file_count": 1613,
+      "commit_count": 2626,
       "search_count": 0,
       "search_truncated": false
     },

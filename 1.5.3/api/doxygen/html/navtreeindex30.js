@@ -1,5 +1,11 @@
 var NAVTREEINDEX30 =
 {
+"structFreqSample.html#a5d4fd81bde954517f639bc8a7700cda0":[1,0,43,0],
+"structFreqSample.html#a9bb5c8293d000d0c0b7130a6bfb6d5b7":[1,0,43,1],
+"structFreqSample.html#acdd2ef30b92ad98b9499830fc2952576":[1,0,43,2],
+"structFutureWrapper.html":[1,0,44],
+"structFutureWrapper.html#a6936485f3391533074ae0161bb96cf3d":[1,0,44,0],
+"structFutureWrapper.html#ad9f9117a0ee5cb4f32749617d60234d4":[1,0,44,1],
 "structGeluCtx.html":[1,0,50],
 "structGeluCtx.html#af375ff9d76843a68bd134e862956cfd6":[1,0,50,0],
 "structHsmSlot.html":[1,0,51],
@@ -243,11 +249,5 @@ var NAVTREEINDEX30 =
 "structSNEPPXAIGuardrailRule.html#aa9bbbf0eedf137374fc61d7483cacd0e":[1,0,142,2],
 "structSNEPPXAIGuardrailRule.html#aab0c9ca0f32256546ecf23a3ac547971":[1,0,142,7],
 "structSNEPPXAIGuardrailRule.html#aba19b0295d6cd7c871074f367b41c760":[1,0,142,0],
-"structSNEPPXAIGuardrailRule.html#abe7c8e91faca4790ea8428138ccf83b8":[1,0,142,9],
-"structSNEPPXAIGuardrailRule.html#ac1195eef60026ffcfc712dd49fe05cd4":[1,0,142,6],
-"structSNEPPXAIGuardrailRule.html#adeaf3398fc700e94cad6397256360d37":[1,0,142,4],
-"structSNEPPXARCConfig.html":[1,0,145],
-"structSNEPPXARCConfig.html#a0b3f700ba25f6e7b1e44ff643bb4dc66":[1,0,145,7],
-"structSNEPPXARCConfig.html#a7cada6f7437fe2b01519ff629be8d4e1":[1,0,145,8],
-"structSNEPPXARCConfig.html#a9778954703c08fba88e50611b31bcc96":[1,0,145,1]
+"structSNEPPXAIGuardrailRule.html#abe7c8e91faca4790ea8428138ccf83b8":[1,0,142,9]
 };

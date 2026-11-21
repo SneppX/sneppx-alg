@@ -1,5 +1,11 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__DifferentialAttn.html#a43851f17a561786b65bec20dab9cd330":[1,0,99,8],
+"structSNEPPX__DifferentialAttn.html#a706ab58118b62e8cd2a50b7b84666313":[1,0,99,6],
+"structSNEPPX__DifferentialAttn.html#a985106abe2c20d0f6055ff3610d049a1":[1,0,99,2],
+"structSNEPPX__DifferentialAttn.html#a99e34e2c3f0dd0e41ce95570f50281f3":[1,0,99,0],
+"structSNEPPX__DifferentialAttn.html#a9dc4b5a404a5a03c33131211a2ab290d":[1,0,99,5],
+"structSNEPPX__DifferentialAttn.html#aa9e6a0f6d98910baeca9c4a879a94a28":[1,0,99,3],
 "structSNEPPX__DifferentialAttn.html#add930e2a6eed37e2c504ff50267a1dce":[1,0,99,1],
 "structSNEPPX__DifferentialAttn.html#aeb222e9d737b6bf9ca0d8930f7de6db1":[1,0,99,4],
 "structSNEPPX__DistributedConfig.html":[1,0,100],
@@ -243,11 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__OptimizerConfig.html#afb4599348f2982c002e99a45d975929a":[1,0,123,0],
 "structSNEPPX__OptimizerState.html":[1,0,124],
 "structSNEPPX__OptimizerState.html#a0330bd24eb11efaf86e44b4060acf0fa":[1,0,124,5],
-"structSNEPPX__OptimizerState.html#a072f7bf852f4256e1c91e68e6fafdf6d":[1,0,124,10],
-"structSNEPPX__OptimizerState.html#a162cca2af65630d69f49045101074441":[1,0,124,7],
-"structSNEPPX__OptimizerState.html#a1c57f444d87ac46d42353cd67014cbe8":[1,0,124,0],
-"structSNEPPX__OptimizerState.html#a1e1228f025ed7d0025acaa5d7162cef3":[1,0,124,14],
-"structSNEPPX__OptimizerState.html#a32f6a996f403f4a2d6a1a7b776a66416":[1,0,124,3],
-"structSNEPPX__OptimizerState.html#a347ae38cee8a8831fbf8e24aaa564207":[1,0,124,20],
-"structSNEPPX__OptimizerState.html#a36fc186a7afe02cf9c0ec9588eb05f0b":[1,0,124,16]
+"structSNEPPX__OptimizerState.html#a072f7bf852f4256e1c91e68e6fafdf6d":[1,0,124,10]
 };

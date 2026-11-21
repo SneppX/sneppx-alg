@@ -1,5 +1,11 @@
 var NAVTREEINDEX49 =
 {
+"x25519_8h.html#abea9649e9fe35572141a12223e30b67a":[2,0,0,0,2,72,1],
+"x25519_8h.html#adb01117ec50ace18cf1760ab815d0236":[2,0,0,0,2,72,0],
+"x25519_8h.html#af8fbd60b13aa0ce3b98e24f269b9cafc":[2,0,0,0,2,72,7],
+"x25519_8h_source.html":[2,0,0,0,2,72],
+"yarn_8c.html":[2,0,1,13,2],
+"yarn_8c.html#a60d9d895fe845927ea3c616d915f509b":[2,0,1,13,2,1],
 "yarn_8c.html#ae418eba89cbd155922393f3ebb747a7f":[2,0,1,13,2,0],
 "yarn_8c_source.html":[2,0,1,13,2],
 "zero_8c.html":[2,0,1,7,9],

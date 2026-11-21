@@ -1,5 +1,11 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXCFIState.html#a109400e4618c95dfbd3f6d5777ca3164":[1,0,174,2],
+"structSNEPPXCFIState.html#a82a6968aac4c57af4da3a60680b3e531":[1,0,174,0],
+"structSNEPPXCFIState.html#abe242f771824821fc52fe3274bc5800e":[1,0,174,3],
+"structSNEPPXCFIState.html#afce660a71326be84508e9ed1e4eb906f":[1,0,174,1],
+"structSNEPPXCISBenchmark.html":[1,0,180],
+"structSNEPPXCISBenchmark.html#a0de2266a9846b825b5c2ca3bb0d81eff":[1,0,180,9],
 "structSNEPPXCISBenchmark.html#a15f9b6d40d3a5858a417734f1e197c86":[1,0,180,3],
 "structSNEPPXCISBenchmark.html#a1e20fb655c7259a20c8526d5606602c9":[1,0,180,11],
 "structSNEPPXCISBenchmark.html#a25290ab9e5758ac7b575c2fcb51e7292":[1,0,180,7],
@@ -243,11 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXElasticTraining.html#a6f1831c668f32344515e6891ea992de7":[1,0,197,13],
 "structSNEPPXElasticTraining.html#a779542391b93a24feed067d488ec84fb":[1,0,197,2],
 "structSNEPPXElasticTraining.html#a80ca29d5b6a995616d12caf8d56995ab":[1,0,197,15],
-"structSNEPPXElasticTraining.html#a8473cf36d443041793bcb6bc725d69e1":[1,0,197,14],
-"structSNEPPXElasticTraining.html#aa249863c704847b0832e6ff8db203f53":[1,0,197,10],
-"structSNEPPXElasticTraining.html#aa587fe112bffadb08cb7186718f2d3b3":[1,0,197,0],
-"structSNEPPXElasticTraining.html#ab566ab494f95a17273c70e4c1430b607":[1,0,197,6],
-"structSNEPPXElasticTraining.html#ac8a9966bc0aeadab410f7f5c559fc09e":[1,0,197,3],
-"structSNEPPXElasticTraining.html#ad399afe87dc7e529dc0a438598aab2e6":[1,0,197,7],
-"structSNEPPXElasticTraining.html#ae686a2645a781961efddfce7bb318845":[1,0,197,16]
+"structSNEPPXElasticTraining.html#a8473cf36d443041793bcb6bc725d69e1":[1,0,197,14]
 };

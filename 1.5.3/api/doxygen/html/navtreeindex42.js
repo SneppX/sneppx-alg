@@ -1,5 +1,11 @@
 var NAVTREEINDEX42 =
 {
+"structSNEPPXZTPolicy.html#a481406edf489f1cd88795b39bf0767ae":[1,0,459,8],
+"structSNEPPXZTPolicy.html#a4a07ae2a374acb025b288718b9ff525c":[1,0,459,1],
+"structSNEPPXZTPolicy.html#a53d6acf27266cf924603d53fa30eca4f":[1,0,459,4],
+"structSNEPPXZTPolicy.html#a5c8c3c24890e83df9d69f99f227f0c80":[1,0,459,2],
+"structSNEPPXZTPolicy.html#a8234bcb7d2962553e867309dcbfc888d":[1,0,459,9],
+"structSNEPPXZTPolicy.html#a9073482c29a37d4392f57298c37abeb1":[1,0,459,0],
 "structSNEPPXZTPolicy.html#adf218fce308eb8f80c668e4e5f4a2fe6":[1,0,459,5],
 "structSNEPPXZTPolicy.html#ae87a27a6cd1e9f1707a9ad1b3857bbec":[1,0,459,7],
 "structSNEPPXZTRequest.html":[1,0,460],
@@ -243,11 +249,5 @@ var NAVTREEINDEX42 =
 "structSNEPPX__DeviceProps.html#ae483660feb4f4a748d1d2fee8d3de589":[1,0,98,8],
 "structSNEPPX__DeviceProps.html#aea7989238452cf71def72f7abc2fd3e9":[1,0,98,12],
 "structSNEPPX__DifferentialAttn.html":[1,0,99],
-"structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53":[1,0,99,7],
-"structSNEPPX__DifferentialAttn.html#a43851f17a561786b65bec20dab9cd330":[1,0,99,8],
-"structSNEPPX__DifferentialAttn.html#a706ab58118b62e8cd2a50b7b84666313":[1,0,99,6],
-"structSNEPPX__DifferentialAttn.html#a985106abe2c20d0f6055ff3610d049a1":[1,0,99,2],
-"structSNEPPX__DifferentialAttn.html#a99e34e2c3f0dd0e41ce95570f50281f3":[1,0,99,0],
-"structSNEPPX__DifferentialAttn.html#a9dc4b5a404a5a03c33131211a2ab290d":[1,0,99,5],
-"structSNEPPX__DifferentialAttn.html#aa9e6a0f6d98910baeca9c4a879a94a28":[1,0,99,3]
+"structSNEPPX__DifferentialAttn.html#a2d24b6c2dc872609f2f8dc6bde115e53":[1,0,99,7]
 };
