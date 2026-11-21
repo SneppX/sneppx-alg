@@ -662,7 +662,9 @@ int SNEPPX_canary_rollout_has_promoted(SNEPPXCanaryRollout* cr) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_is_signed(SNEPPXOfflineBundle* ob) {
-    return ob ? ob->signed_offline : 0;
+    /* Offline bundle state is unavailable until a real signed format is implemented. */
+    (void)ob;
+    return -1;
 }
 
 /**
@@ -671,7 +673,9 @@ int SNEPPX_offline_bundle_is_signed(SNEPPXOfflineBundle* ob) {
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_get_size(SNEPPXOfflineBundle* ob) {
-    return ob ? (int)ob->bundle_size : 0;
+    /* Offline bundle state is unavailable until a real signed format is implemented. */
+    (void)ob;
+    return -1;
 }
 
 /**
@@ -1039,9 +1043,9 @@ int SNEPPX_offline_bundle_sign(SNEPPXOfflineBundle* bundle, const uint8_t* signi
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_offline_bundle_get_hash(SNEPPXOfflineBundle* bundle, uint8_t* hash_out) {
-    if (!bundle || !hash_out) return -1;
-    memcpy(hash_out, bundle->bundle_hash, 32);
-    return 0;
+    /* Offline bundle state is unavailable until a real signed format is implemented. */
+    (void)bundle; (void)hash_out;
+    return -1;
 }
 
 /**

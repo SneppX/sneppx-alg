@@ -271,7 +271,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - `SNEPPX_bsdiff_with_signature()` used XOR masking, not a digital signature; it now always fails closed.
 - `SNEPPX_manifest_verify_from_buffer()` compared a short non-cryptographic hash; it now always fails closed.
 - Legacy manifest creation and hashing also used weak, truncated non-cryptographic hashes; those APIs now fail closed without modifying output buffers.
-- These compatibility APIs do not authenticate updates. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.
+- These compatibility APIs do not authenticate updates. All legacy offline-bundle creation, signing, verification, and state-query APIs fail closed; a caller-supplied struct flag is not accepted as proof of a signature. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.
 - TUF metadata/key-management APIs are compatibility stubs and now all fail closed. They do not generate, expose, revoke, sign, or verify trusted metadata.
 - TPM compatibility APIs now fail closed: PCR read/extend, quote, seal/unseal, and TPM-random calls return failure without modifying caller buffers. Legacy NV reads return `UINT32_MAX`; the void NV setter is a no-op. No TPM hardware-backed implementation is currently available.
 - A/B partition and bootloader APIs now fail closed. The previous implementation only changed in-memory state and fabricated slot hashes; it did not operate on partitions or a bootloader. No slot selection, rollback, or health result is reported as successful.

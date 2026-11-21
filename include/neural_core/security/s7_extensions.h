@@ -263,6 +263,13 @@ typedef struct {
  */
 int  SNEPPX_offline_bundle_create(SNEPPXOfflineBundle* ob, const uint8_t* data, size_t data_len, const uint8_t* signing_key, size_t key_len);
 
+/* Offline bundle compatibility APIs are unavailable until real Ed25519 signing and verification exist. */
+int SNEPPX_offline_bundle_sign(SNEPPXOfflineBundle* bundle, const uint8_t* signing_key, size_t key_len);
+int SNEPPX_offline_bundle_verify(SNEPPXOfflineBundle* bundle, const uint8_t* public_key, size_t key_len);
+int SNEPPX_offline_bundle_is_signed(SNEPPXOfflineBundle* bundle);
+int SNEPPX_offline_bundle_get_size(SNEPPXOfflineBundle* bundle);
+int SNEPPX_offline_bundle_get_hash(SNEPPXOfflineBundle* bundle, uint8_t* hash_out);
+
 /* Dependency resolver */
 typedef struct {
     char name[64];

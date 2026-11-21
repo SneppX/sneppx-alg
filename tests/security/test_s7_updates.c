@@ -339,6 +339,24 @@ static void test_legacy_offline_bundle_creation_fails_closed(void) {
 }
 
 
+static void test_legacy_offline_bundle_state_apis_fail_closed_without_mutating_outputs(void) {
+    SNEPPXOfflineBundle bundle;
+    uint8_t hash[32];
+    memset(&bundle, 0xA5, sizeof(bundle));
+    memset(hash, 0xB6, sizeof(hash));
+    SX_ASSERT(SNEPPX_offline_bundle_sign(&bundle, hash, sizeof(hash)) == -1,
+              "offline bundle signer remains disabled");
+    SX_ASSERT(SNEPPX_offline_bundle_verify(&bundle, hash, sizeof(hash)) == -1,
+              "offline bundle verifier remains disabled");
+    SX_ASSERT(SNEPPX_offline_bundle_is_signed(&bundle) == -1,
+              "untrusted struct flag cannot claim a signed bundle");
+    SX_ASSERT(SNEPPX_offline_bundle_get_size(&bundle) == -1,
+              "offline bundle size unavailable without validated bundle");
+    SX_ASSERT(SNEPPX_offline_bundle_get_hash(&bundle, hash) == -1,
+              "offline bundle hash unavailable without validated bundle");
+    SX_ASSERT(hash[0] == 0xB6, "disabled bundle hash getter preserves output");
+}
+
 static void test_legacy_signed_diff_fails_closed_without_mutating_outputs(void) {
     static const uint8_t old_data[] = "old";
     static const uint8_t new_data[] = "new";
@@ -422,6 +440,7 @@ TEST(test_s7_updates, legacy_tuf_apis_fail_closed_without_mutating_outputs) { te
 TEST(test_s7_updates, legacy_tpm_apis_fail_closed_without_mutating_outputs) { test_legacy_tpm_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_creation_and_hash_fail_closed_without_mutating_outputs) { test_legacy_manifest_creation_and_hash_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_verification_fails_closed) { test_legacy_manifest_verification_fails_closed(); }
+TEST(test_s7_updates, legacy_offline_bundle_state_apis_fail_closed_without_mutating_outputs) { test_legacy_offline_bundle_state_apis_fail_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_offline_bundle_creation_fails_closed) { test_legacy_offline_bundle_creation_fails_closed(); }
 TEST(test_s7_updates, legacy_signed_diff_fails_closed_without_mutating_outputs) { test_legacy_signed_diff_fails_closed_without_mutating_outputs(); }
 TEST(test_s7_updates, legacy_manifest_buffer_verification_fails_closed) { test_legacy_manifest_buffer_verification_fails_closed(); }
