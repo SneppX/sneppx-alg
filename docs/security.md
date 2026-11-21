@@ -275,6 +275,10 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - TUF metadata/key-management APIs are compatibility stubs and now all fail closed. They do not generate, expose, revoke, sign, or verify trusted metadata.
 - TPM compatibility APIs now fail closed: PCR read/extend, quote, seal/unseal, and TPM-random calls return failure without modifying caller buffers. Legacy NV reads return `UINT32_MAX`; the void NV setter is a no-op. No TPM hardware-backed implementation is currently available.
 - A/B partition and bootloader APIs now fail closed. The previous implementation only changed in-memory state and fabricated slot hashes; it did not operate on partitions or a bootloader. No slot selection, rollback, or health result is reported as successful.
+- The legacy update-verifier private-key getter/setter now fail closed. The verifier stores only a trusted public key and never claims to retain or export a signing private key.
+- The legacy history-count setter rejects negative values and values beyond the fixed ten-entry history capacity.
+- Signed-update version and history state are process-local memory only. They are not persisted across restarts and are not a hardware-backed monotonic counter; deployments requiring durable anti-rollback must supply trusted persistent state.
+- The integrity-verification helper requires exactly a 32-byte Ed25519 public key and a 64-byte signature; truncated or trailing key/signature bytes are rejected.
 - Signed update bundles: Ed25519-signed update payloads with version rolling
 - Rollback protection: monotonic version counter preventing downgrade attacks
 - Staged rollout: gradual update distribution with health-check gating

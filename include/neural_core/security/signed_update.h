@@ -121,6 +121,23 @@ int  SNEPPX_update_verifier_set_trusted_pubkey(SNEPPXUpdateVerifier* uv, const u
 int  SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len);
 int  SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t* signing_key, size_t key_len);
 
+
+/*
+ * Legacy compatibility helpers. The verifier does not retain private signing
+ * keys; the signing-key accessors therefore fail closed. History counts are
+ * bounded to the fixed internal history capacity.
+ */
+int  SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv,
+        const uint8_t* data, size_t len, const uint8_t* signature, size_t sig_len,
+        const uint8_t* public_key, size_t key_len);
+int  SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* key_out, size_t key_len);
+int  SNEPPX_update_verifier_set_signing_key(SNEPPXUpdateVerifier* uv, const uint8_t* key, size_t key_len);
+int  SNEPPX_update_verifier_get_history_count(void);
+void SNEPPX_update_verifier_set_history_count(int count);
+int  SNEPPX_update_verifier_record_history(const SNEPPXSignedUpdate* update);
+int  SNEPPX_update_verifier_get_history_entry(uint32_t index, uint32_t* major,
+        uint32_t* minor, uint32_t* patch, uint64_t* timestamp);
+
 #ifdef __cplusplus
 }
 #endif

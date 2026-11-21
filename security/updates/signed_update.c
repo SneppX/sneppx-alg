@@ -619,7 +619,10 @@ int SNEPPX_update_verifier_get_rollback_protection(void) { return rollback_prote
 /**
  * @brief Perform Update Verifier Set History Count.
  */
-void SNEPPX_update_verifier_set_history_count(int c) { update_history_count = c; }
+void SNEPPX_update_verifier_set_history_count(int c) {
+    if (c < 0 || c > SNEPPX_UPDATE_HISTORY_MAX) return;
+    update_history_count = c;
+}
 
 /**
  * @brief Perform Update Verifier Get Signing Key.
@@ -630,10 +633,9 @@ void SNEPPX_update_verifier_set_history_count(int c) { update_history_count = c;
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* key_out, size_t key_len) {
-    if (!uv || !key_out || key_len < 32) return -1;
-    (void)uv;
-    memset(key_out, 0, key_len);
-    return 0;
+    /* The verifier stores only a trusted public key, never a signing private key. */
+    (void)uv; (void)key_out; (void)key_len;
+    return -1;
 }
 
 /**
@@ -645,10 +647,9 @@ int SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* ke
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_update_verifier_set_signing_key(SNEPPXUpdateVerifier* uv, const uint8_t* key, size_t key_len) {
-    if (!uv || !key) return -1;
-    (void)key;
-    (void)key_len;
-    return 0;
+    /* Private signing keys are not stored in the update verifier. */
+    (void)uv; (void)key; (void)key_len;
+    return -1;
 }
 
 /**
@@ -679,14 +680,18 @@ int SNEPPX_update_verifier_compute_hash(const uint8_t* data, size_t len, uint8_t
  * @return 0 on success, -1 on error.
  */
 int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint8_t* data, size_t len, const uint8_t* signature, size_t sig_len, const uint8_t* public_key, size_t key_len) {
-    (void)uv; (void)key_len;
-    if (!data || !signature || !public_key || sig_len < SNEPPX_ED25519_SIGNATURE_LEN) return -1;
+    (void)uv;
+    if (!data || !signature || !public_key ||
+        sig_len != SNEPPX_ED25519_SIGNATURE_LEN ||
+        key_len != SNEPPX_ED25519_PUBLIC_KEY_LEN) return -1;
     uint8_t hash[SNEPPX_UPDATE_HASH_LEN];
-    SNEPPX_update_verifier_compute_hash(data, len, hash);
+    if (SNEPPX_update_verifier_compute_hash(data, len, hash) != 0) return -1;
     SNEPPXEd25519Signature sig;
-    memcpy(sig.data, signature, SNEPPX_ED25519_SIGNATURE_LEN);
-    int rc = SNEPPX_ed25519_verify(public_key, hash, SNEPPX_UPDATE_HASH_LEN, &sig);
-    return (rc == 1) ? 0 : -1;
+    memcpy(sig.data, signature, sizeof(sig.data));
+    int rc = SNEPPX_ed25519_verify(public_key, hash, sizeof(hash), &sig);
+    memset(hash, 0, sizeof(hash));
+    memset(&sig, 0, sizeof(sig));
+    return rc == 1 ? 0 : -1;
 }
 
 /**
