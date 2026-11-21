@@ -1,0 +1,9 @@
+<map id="patch_read_file" name="patch_read_file">
+<area shape="rect" id="Node000001" title=" " alt="" coords="433,48,553,76"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#afe4b7b13e535f6da1fc1a4bf84ed6711" title="Perform Bsdiff Create Patch File." alt="" coords="217,5,380,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="415,49,381,45,381,40,420,49"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,75,385,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="420,75,386,84,385,79,415,76"/>
+<area shape="rect" id="Node000004" href="$s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,75,164,119"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="193,97,164,100,164,94,199,97"/>
+</map>

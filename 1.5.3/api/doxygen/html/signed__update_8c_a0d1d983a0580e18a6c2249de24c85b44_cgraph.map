@@ -1,0 +1,9 @@
+<map id="update_hash_u64" name="update_hash_u64">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,141,33"/>
+<area shape="rect" id="Node000002" href="$blake3_8c.html#a318c7e0e112bc3cb04fdb300e26c36ea" title="Update Blake3." alt="" coords="189,5,363,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,17,176,19,170,19,141,22"/>
+<area shape="rect" id="Node000003" href="$blake3_8c.html#a48fd214b4b29feec04376eeb9216a5d5" title=" " alt="" coords="411,5,559,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="364,17,398,19,393,19,364,22"/>
+<area shape="rect" id="Node000004" href="$blake3_8c.html#a8cd5822ab9c71f318152c899fa211e5f" title=" " alt="" coords="607,5,742,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="560,17,594,19,589,19,560,22"/>
+</map>

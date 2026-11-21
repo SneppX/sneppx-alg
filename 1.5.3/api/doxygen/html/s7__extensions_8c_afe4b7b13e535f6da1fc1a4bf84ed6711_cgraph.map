@@ -1,5 +1,11 @@
 <map id="SNEPPX_bsdiff_create_patch_file" name="SNEPPX_bsdiff_create_patch_file">
-<area shape="rect" id="Node000001" title="Perform Bsdiff Create Patch File." alt="" coords="5,5,169,50"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a7128fb627688e73dbabaa4aad0728c08" title="Perform Bsdiff." alt="" coords="217,14,332,42"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,25,204,27,199,28,169,30"/>
+<area shape="rect" id="Node000001" title="Perform Bsdiff Create Patch File." alt="" coords="5,49,169,94"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#aae7275d6479182e3c73215bd97f29a4f" title=" " alt="" coords="219,5,339,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,46,213,37,208,39,170,51"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#aae664d5c2b7cb6ce69812aaf1fd14cfe" title=" " alt="" coords="217,57,341,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="169,69,204,71,199,72,169,74"/>
+<area shape="rect" id="Node000004" href="$s7__extensions_8c.html#a7128fb627688e73dbabaa4aad0728c08" title="Perform Bsdiff." alt="" coords="221,109,336,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="169,91,213,104,208,105,169,96"/>
+<area shape="rect" id="Node000005" href="$s7__extensions_8c.html#a741ded59f7d146aa414b12e3956eb2dc" title=" " alt="" coords="389,109,517,137"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="337,121,376,123,371,123,337,126"/>
 </map>

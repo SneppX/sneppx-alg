@@ -1,0 +1,11 @@
+<map id="update_compute_digest" name="update_compute_digest">
+<area shape="rect" id="Node000001" title=" " alt="" coords="681,48,859,76"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#a117d63f8525f86c2ec6d59c88fd40a99" title="Update Update Verifier Sign." alt="" coords="456,5,633,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="663,46,634,44,634,39,669,46"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="456,75,633,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="669,78,634,86,634,81,664,79"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,75,408,119"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="438,97,409,100,408,94,443,97"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,75,183,119"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,97,183,100,183,94,218,97"/>
+</map>

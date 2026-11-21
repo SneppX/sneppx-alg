@@ -142,10 +142,14 @@ Functions</h2></td></tr>
 <tr class="memdesc:a4100eddb976aca8b816b4ae9c6d9ac4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Sign Root.  <br /></td></tr>
 <tr class="memitem:ad9e2b8d07bfa0cffe55e4097bb285682" id="r_ad9e2b8d07bfa0cffe55e4097bb285682"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9e2b8d07bfa0cffe55e4097bb285682">SNEPPX_tuf_verify_targets</a> (<a class="el" href="structSNEPPXTUFMetadata.html">SNEPPXTUFMetadata</a> *tuf, const uint8_t *targets_json, size_t len)</td></tr>
 <tr class="memdesc:ad9e2b8d07bfa0cffe55e4097bb285682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Tuf Verify Targets.  <br /></td></tr>
+<tr class="memitem:a706df364052bb9e23a5b594a2aaf310f" id="r_a706df364052bb9e23a5b594a2aaf310f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a706df364052bb9e23a5b594a2aaf310f">SNEPPX_bsdiff_with_signature</a> (const uint8_t *old_data, size_t old_len, const uint8_t *new_data, size_t new_len, uint8_t *patch, size_t *patch_len, const uint8_t *signing_key, size_t key_len)</td></tr>
+<tr class="memdesc:a706df364052bb9e23a5b594a2aaf310f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff With Signature.  <br /></td></tr>
+<tr class="memitem:a35c2bb466f6991aee2eaa65f3974592a" id="r_a35c2bb466f6991aee2eaa65f3974592a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35c2bb466f6991aee2eaa65f3974592a">SNEPPX_manifest_verify_from_buffer</a> (const uint8_t *manifest_data, size_t data_len, const uint8_t *signature, size_t sig_len)</td></tr>
+<tr class="memdesc:a35c2bb466f6991aee2eaa65f3974592a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Manifest Verify From Buffer.  <br /></td></tr>
 <tr class="memitem:a7128fb627688e73dbabaa4aad0728c08" id="r_a7128fb627688e73dbabaa4aad0728c08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7128fb627688e73dbabaa4aad0728c08">SNEPPX_bsdiff</a> (const uint8_t *old_data, size_t old_len, const uint8_t *new_data, size_t new_len, uint8_t *patch, size_t *patch_len)</td></tr>
 <tr class="memdesc:a7128fb627688e73dbabaa4aad0728c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff.  <br /></td></tr>
 <tr class="memitem:a6689c4b8497f7913aeb47e9a3619d50f" id="r_a6689c4b8497f7913aeb47e9a3619d50f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6689c4b8497f7913aeb47e9a3619d50f">SNEPPX_bspatch</a> (const uint8_t *old_data, size_t old_len, const uint8_t *patch, size_t patch_len, uint8_t *new_data, size_t *new_len)</td></tr>
-<tr class="memdesc:a6689c4b8497f7913aeb47e9a3619d50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bspatch.  <br /></td></tr>
+<tr class="memdesc:a6689c4b8497f7913aeb47e9a3619d50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply an SXP1 patch after validating the complete record stream.  <br /></td></tr>
 <tr class="memitem:ab36e5de71cfe329567d1563aae589e04" id="r_ab36e5de71cfe329567d1563aae589e04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab36e5de71cfe329567d1563aae589e04">SNEPPX_bsdiff_apply_patch</a> (const char *old_path, const char *patch_path, const char *new_path)</td></tr>
 <tr class="memdesc:ab36e5de71cfe329567d1563aae589e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform Bsdiff Apply Patch.  <br /></td></tr>
 <tr class="memitem:ad741ebaa7991c5ace3f60bf313df93a4" id="r_ad741ebaa7991c5ace3f60bf313df93a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad741ebaa7991c5ace3f60bf313df93a4">SNEPPX_bspatch_apply_patch</a> (const char *old_path, const char *patch_path, const char *new_path)</td></tr>
@@ -235,7 +239,7 @@ Functions</h2></td></tr>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00150">150</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00248">248</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -275,7 +279,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00161">161</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00259">259</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -305,7 +309,7 @@ Functions</h2></td></tr>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00174">174</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00272">272</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -356,7 +360,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">new_data</td><td>[in] New Data value. </td></tr>
     <tr><td class="paramname">new_len</td><td>[in] New Len value. </td></tr>
     <tr><td class="paramname">patch</td><td>[out] Patch value. </td></tr>
-    <tr><td class="paramname">patch_len</td><td>[out] Patch Len value.</td></tr>
+    <tr><td class="paramname">patch_len</td><td>[in,out] Patch capacity on entry; bytes written on success. If capacity is insufficient, the required size is returned.</td></tr>
   </table>
   </dd>
 </dl>
@@ -373,17 +377,25 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00089">89</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00177">177</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_cgraph.png" border="0" usemap="#as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_cgraph" loading="lazy" alt=""/></div>
+<map name="as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_cgraph" id="as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_cgraph">
+<area shape="rect" title="Perform Bsdiff." alt="" coords="5,5,121,33"/>
+<area shape="rect" href="s7__extensions_8c.html#a741ded59f7d146aa414b12e3956eb2dc" title=" " alt="" coords="169,5,297,33"/>
+<area shape="poly" title=" " alt="" coords="121,17,156,19,150,19,121,22"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_icgraph.png" border="0" usemap="#as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_icgraph" loading="lazy" alt=""/></div>
 <map name="as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_icgraph" id="as7__extensions_8h_a7128fb627688e73dbabaa4aad0728c08_icgraph">
-<area shape="rect" title="Perform Bsdiff." alt="" coords="217,48,332,76"/>
+<area shape="rect" title="Perform Bsdiff." alt="" coords="217,14,332,42"/>
 <area shape="rect" href="s7__extensions_8c.html#afe4b7b13e535f6da1fc1a4bf84ed6711" title="Perform Bsdiff Create Patch File." alt="" coords="5,5,169,50"/>
-<area shape="poly" title=" " alt="" coords="198,49,169,46,169,40,204,48"/>
-<area shape="rect" href="s7__extensions_8c.html#a706df364052bb9e23a5b594a2aaf310f" title="Perform Bsdiff With Signature." alt="" coords="12,75,162,119"/>
-<area shape="poly" title=" " alt="" coords="198,76,163,86,162,80,204,75"/>
+<area shape="poly" title=" " alt="" coords="198,28,169,30,169,25,204,27"/>
 </map>
 </div>
 
@@ -423,19 +435,96 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00887">887</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00956">956</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph.png" border="0" usemap="#as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph" loading="lazy" alt=""/></div>
 <map name="as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph" id="as7__extensions_8h_ab36e5de71cfe329567d1563aae589e04_cgraph">
-<area shape="rect" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
-<area shape="rect" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
-<area shape="poly" title=" " alt="" coords="164,25,199,27,193,28,164,30"/>
-<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
-<area shape="poly" title=" " alt="" coords="386,25,420,28,415,28,386,30"/>
+<area shape="rect" title="Perform Bsdiff Apply Patch." alt="" coords="5,73,164,118"/>
+<area shape="rect" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,73,385,118"/>
+<area shape="poly" title=" " alt="" coords="163,93,198,94,193,96,164,98"/>
+<area shape="rect" href="s7__extensions_8c.html#aae7275d6479182e3c73215bd97f29a4f" title=" " alt="" coords="438,5,558,33"/>
+<area shape="poly" title=" " alt="" coords="358,70,443,40,448,38,360,75"/>
+<area shape="rect" href="s7__extensions_8c.html#add1ae38e0d854e181be29c1b4f077ad4" title=" " alt="" coords="760,107,884,134"/>
+<area shape="poly" title=" " alt="" coords="385,90,563,93,747,111,742,111,563,98,385,96"/>
+<area shape="rect" href="s7__extensions_8c.html#aae664d5c2b7cb6ce69812aaf1fd14cfe" title=" " alt="" coords="436,107,560,134"/>
+<area shape="poly" title=" " alt="" coords="386,104,423,111,418,111,386,109"/>
+<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="433,159,563,186"/>
+<area shape="poly" title=" " alt="" coords="359,116,449,153,444,153,358,121"/>
+<area shape="rect" href="s7__extensions_8c.html#aea6b70f8c6c7a7afb1a719f523d7fb03" title=" " alt="" coords="611,132,712,160"/>
+<area shape="poly" title=" " alt="" coords="564,159,593,157,599,156,564,164"/>
+<area shape="poly" title=" " alt="" coords="712,135,741,133,747,133,713,141"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="a706df364052bb9e23a5b594a2aaf310f" name="a706df364052bb9e23a5b594a2aaf310f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a706df364052bb9e23a5b594a2aaf310f">&#9670;&#160;</a></span>SNEPPX_bsdiff_with_signature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_bsdiff_with_signature </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>old_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>old_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>new_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>new_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>patch</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>patch_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>signing_key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>key_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Bsdiff With Signature. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">old_data</td><td>[in] Old Data value. </td></tr>
+    <tr><td class="paramname">old_len</td><td>[in] Old Len value. </td></tr>
+    <tr><td class="paramname">new_data</td><td>[in] New Data value. </td></tr>
+    <tr><td class="paramname">new_len</td><td>[in] New Len value. </td></tr>
+    <tr><td class="paramname">patch</td><td>[out] Patch value. </td></tr>
+    <tr><td class="paramname">patch_len</td><td>[out] Patch Len value. </td></tr>
+    <tr><td class="paramname">signing_key</td><td>[in] Signing Key value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00458">458</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -478,19 +567,20 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Perform Bspatch. </p>
+<p>Apply an SXP1 patch after validating the complete record stream. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">old_data</td><td>[in] Old Data value. </td></tr>
-    <tr><td class="paramname">old_len</td><td>[in] Old Len value. </td></tr>
-    <tr><td class="paramname">patch</td><td>[in] Patch value. </td></tr>
-    <tr><td class="paramname">patch_len</td><td>[in] Patch Len value. </td></tr>
-    <tr><td class="paramname">new_data</td><td>[out] New Data value. </td></tr>
-    <tr><td class="paramname">new_len</td><td>[out] New Len value.</td></tr>
+    <tr><td class="paramname">old_data</td><td>[in] Source data; may be NULL only when old_len is zero. </td></tr>
+    <tr><td class="paramname">old_len</td><td>[in] Source data length. </td></tr>
+    <tr><td class="paramname">patch</td><td>[in] Complete SXP1 patch. </td></tr>
+    <tr><td class="paramname">patch_len</td><td>[in] Patch length in bytes. </td></tr>
+    <tr><td class="paramname">new_data</td><td>[out] Destination buffer; may be NULL only for empty output. </td></tr>
+    <tr><td class="paramname">new_len</td><td>[in,out] Destination capacity on entry; actual output size on success.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on malformed input or insufficient capacity.</dd></dl>
+<p>Apply an SXP1 patch after validating the complete record stream.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">old_data</td><td>[in] Old Data value. </td></tr>
@@ -503,13 +593,25 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00126">126</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00228">228</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_cgraph.png" border="0" usemap="#as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_cgraph" loading="lazy" alt=""/></div>
+<map name="as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_cgraph" id="as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_cgraph">
+<area shape="rect" title="Apply an SXP1 patch after validating the complete record stream." alt="" coords="5,5,136,33"/>
+<area shape="rect" href="s7__extensions_8c.html#aea6b70f8c6c7a7afb1a719f523d7fb03" title=" " alt="" coords="184,5,284,33"/>
+<area shape="poly" title=" " alt="" coords="136,17,171,19,166,19,136,22"/>
+<area shape="rect" href="s7__extensions_8c.html#add1ae38e0d854e181be29c1b4f077ad4" title=" " alt="" coords="332,5,456,33"/>
+<area shape="poly" title=" " alt="" coords="285,17,319,19,314,19,285,22"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_icgraph.png" border="0" usemap="#as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_icgraph" loading="lazy" alt=""/></div>
 <map name="as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_icgraph" id="as7__extensions_8h_a6689c4b8497f7913aeb47e9a3619d50f_icgraph">
-<area shape="rect" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
+<area shape="rect" title="Apply an SXP1 patch after validating the complete record stream." alt="" coords="433,14,563,42"/>
 <area shape="rect" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
 <area shape="poly" title=" " alt="" coords="415,28,386,30,386,25,420,28"/>
 <area shape="rect" href="s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
@@ -553,15 +655,24 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00899">899</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00968">968</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph.png" border="0" usemap="#as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph" loading="lazy" alt=""/></div>
 <map name="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph" id="as7__extensions_8h_ad741ebaa7991c5ace3f60bf313df93a4_cgraph">
-<area shape="rect" title="Perform Bspatch Apply Patch." alt="" coords="5,5,179,50"/>
-<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="227,14,357,42"/>
-<area shape="poly" title=" " alt="" coords="179,25,214,27,208,28,179,30"/>
+<area shape="rect" title="Perform Bspatch Apply Patch." alt="" coords="5,73,179,118"/>
+<area shape="rect" href="s7__extensions_8c.html#aae7275d6479182e3c73215bd97f29a4f" title=" " alt="" coords="232,5,352,33"/>
+<area shape="poly" title=" " alt="" coords="151,70,241,37,237,41,154,75"/>
+<area shape="rect" href="s7__extensions_8c.html#add1ae38e0d854e181be29c1b4f077ad4" title=" " alt="" coords="553,107,678,134"/>
+<area shape="poly" title=" " alt="" coords="179,90,357,93,541,110,536,112,357,98,179,96"/>
+<area shape="rect" href="s7__extensions_8c.html#aae664d5c2b7cb6ce69812aaf1fd14cfe" title=" " alt="" coords="230,107,354,134"/>
+<area shape="poly" title=" " alt="" coords="179,104,217,110,211,111,179,109"/>
+<area shape="rect" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="227,159,357,186"/>
+<area shape="poly" title=" " alt="" coords="152,116,242,152,237,154,151,121"/>
+<area shape="rect" href="s7__extensions_8c.html#aea6b70f8c6c7a7afb1a719f523d7fb03" title=" " alt="" coords="405,132,505,160"/>
+<area shape="poly" title=" " alt="" coords="357,159,387,157,392,156,358,164"/>
+<area shape="poly" title=" " alt="" coords="506,135,535,133,540,132,506,141"/>
 </map>
 </div>
 <div class="dynheader">
@@ -620,7 +731,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00243">243</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00336">336</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -650,7 +761,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00253">253</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00346">346</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -711,7 +822,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00300">300</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00388">388</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -741,7 +852,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00286">286</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00374">374</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -771,7 +882,7 @@ Here is the caller graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00324">324</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00412">412</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -829,17 +940,51 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00192">192</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8h_a0a7dc1fbf4903ddd5f29fedd608d7042_cgraph.png" border="0" usemap="#as7__extensions_8h_a0a7dc1fbf4903ddd5f29fedd608d7042_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8h_a0a7dc1fbf4903ddd5f29fedd608d7042_cgraph" id="as7__extensions_8h_a0a7dc1fbf4903ddd5f29fedd608d7042_cgraph">
-<area shape="rect" title="Verify Manifest." alt="" coords="5,5,187,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="235,5,322,33"/>
-<area shape="poly" title=" " alt="" coords="187,17,222,19,217,19,187,22"/>
-</map>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00290">290</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+
 </div>
+</div>
+<a id="a35c2bb466f6991aee2eaa65f3974592a" name="a35c2bb466f6991aee2eaa65f3974592a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35c2bb466f6991aee2eaa65f3974592a">&#9670;&#160;</a></span>SNEPPX_manifest_verify_from_buffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SNEPPX_manifest_verify_from_buffer </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>manifest_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>data_len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>signature</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>sig_len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform Manifest Verify From Buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">manifest_data</td><td>[in] Manifest Data value. </td></tr>
+    <tr><td class="paramname">data_len</td><td>[in] Data Len value. </td></tr>
+    <tr><td class="paramname">signature</td><td>[in] Signature value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00650">650</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -900,7 +1045,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00270">270</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00363">363</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -947,7 +1092,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00211">211</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00304">304</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1011,7 +1156,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00226">226</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00319">319</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1051,7 +1196,7 @@ Here is the call graph for this function:</div>
 <dd>
 0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00035">35</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00125">125</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1122,7 +1267,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00056">56</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00146">146</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1169,17 +1314,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00071">71</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="s7__extensions_8h_ad9e2b8d07bfa0cffe55e4097bb285682_cgraph.png" border="0" usemap="#as7__extensions_8h_ad9e2b8d07bfa0cffe55e4097bb285682_cgraph" loading="lazy" alt=""/></div>
-<map name="as7__extensions_8h_ad9e2b8d07bfa0cffe55e4097bb285682_cgraph" id="as7__extensions_8h_ad9e2b8d07bfa0cffe55e4097bb285682_cgraph">
-<area shape="rect" title="Perform Tuf Verify Targets." alt="" coords="5,5,200,33"/>
-<area shape="rect" href="s7__extensions_8c.html#ae6a9ee9a9fb60ebcfa54a1c27706835d" title=" " alt="" coords="248,5,335,33"/>
-<area shape="poly" title=" " alt="" coords="200,17,235,19,229,19,200,22"/>
-</map>
-</div>
+<p class="definition">Definition at line <a class="el" href="s7__extensions_8c_source.html#l00160">160</a> of file <a class="el" href="s7__extensions_8c_source.html">s7_extensions.c</a>.</p>
 
 </div>
 </div>

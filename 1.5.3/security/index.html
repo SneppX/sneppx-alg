@@ -2096,6 +2096,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#explicitly&#702;disabled&#702;legacy&#702;scaffolding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly disabled legacy scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#api_4" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5435,6 +5446,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#explicitly&#702;disabled&#702;legacy&#702;scaffolding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly disabled legacy scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#api_4" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5977,6 +5999,13 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <h3 id="implemented_5">Implemented<a class="headerlink" href="#implemented_5" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Container security: OCI-compatible layer verification, manifest integrity checking, image signing</li>
+</ul>
+<h3 id="explicitly&#702;disabled&#702;legacy&#702;scaffolding">Explicitly disabled legacy scaffolding<a class="headerlink" href="#explicitly&#702;disabled&#702;legacy&#702;scaffolding" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>SNEPPX_bsdiff_with_signature()</code> used XOR masking, not a digital signature; it now always fails closed.</li>
+<li><code>SNEPPX_manifest_verify_from_buffer()</code> compared a short non-cryptographic hash; it now always fails closed.</li>
+<li>These compatibility APIs do not authenticate updates. Use the separate Ed25519-backed signed-update verifier only with a configured trusted public key and verified payload hashes.</li>
+<li>TUF metadata/key-management and TPM hardware operations are not yet production implementations; their remaining legacy entry points are being disabled and audited separately.</li>
 <li>Signed update bundles: Ed25519-signed update payloads with version rolling</li>
 <li>Rollback protection: monotonic version counter preventing downgrade attacks</li>
 <li>Staged rollout: gradual update distribution with health-check gating</li>

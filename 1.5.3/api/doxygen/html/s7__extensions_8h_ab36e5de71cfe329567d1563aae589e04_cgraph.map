@@ -1,7 +1,16 @@
 <map id="SNEPPX_bsdiff_apply_patch" name="SNEPPX_bsdiff_apply_patch">
-<area shape="rect" id="Node000001" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,25,199,27,193,28,164,30"/>
-<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="433,14,563,42"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="386,25,420,28,415,28,386,30"/>
+<area shape="rect" id="Node000001" title="Perform Bsdiff Apply Patch." alt="" coords="5,73,164,118"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,73,385,118"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,93,198,94,193,96,164,98"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#aae7275d6479182e3c73215bd97f29a4f" title=" " alt="" coords="438,5,558,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="358,70,443,40,448,38,360,75"/>
+<area shape="rect" id="Node000004" href="$s7__extensions_8c.html#add1ae38e0d854e181be29c1b4f077ad4" title=" " alt="" coords="760,107,884,134"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="385,90,563,93,747,111,742,111,563,98,385,96"/>
+<area shape="rect" id="Node000005" href="$s7__extensions_8c.html#aae664d5c2b7cb6ce69812aaf1fd14cfe" title=" " alt="" coords="436,107,560,134"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="386,104,423,111,418,111,386,109"/>
+<area shape="rect" id="Node000006" href="$s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Perform Bspatch." alt="" coords="433,159,563,186"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="359,116,449,153,444,153,358,121"/>
+<area shape="rect" id="Node000007" href="$s7__extensions_8c.html#aea6b70f8c6c7a7afb1a719f523d7fb03" title=" " alt="" coords="611,132,712,160"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="564,159,593,157,599,156,564,164"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="712,135,741,133,747,133,713,141"/>
 </map>

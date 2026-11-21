@@ -1,11 +1,11 @@
 <map id="SNEPPX_ed25519_verify" name="SNEPPX_ed25519_verify">
-<area shape="rect" id="Node000001" title="Verify Ed25519." alt="" coords="456,83,635,111"/>
-<area shape="rect" id="Node000002" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,5,408,50"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="481,78,394,53,395,48,486,78"/>
-<area shape="rect" id="Node000004" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="231,75,408,119"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="438,97,409,100,408,94,443,97"/>
-<area shape="rect" id="Node000005" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="231,144,408,189"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="486,115,395,146,394,141,481,116"/>
-<area shape="rect" id="Node000003" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,183,50"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="213,29,184,30,182,25,218,27"/>
+<area shape="rect" id="Node000001" title="Verify Ed25519." alt="" coords="681,48,861,76"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#aafa1789ad48735abd7c131b8ddafcf27" title="Perform Update Verifier Verify Integrity." alt="" coords="456,5,633,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="664,46,634,44,634,39,669,46"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html#ad8329a2b7dc86922fef2152067f168e8" title=" " alt="" coords="456,75,633,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="669,78,634,86,633,81,664,79"/>
+<area shape="rect" id="Node000004" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,75,408,119"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="438,97,409,100,408,94,443,97"/>
+<area shape="rect" id="Node000005" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,75,183,119"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,97,183,100,183,94,218,97"/>
 </map>

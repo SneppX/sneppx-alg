@@ -94,6 +94,7 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <h3 class="doxsection"><a id="index_s" name="index_s"></a>- s -</h3><ul>
 <li>sc_mul256()&#160;:&#160;<a class="el" href="ed25519_8c.html#a4875c915b5012acdc3e68dcf80beccc1">ed25519.c</a></li>
 <li>sc_reduce64()&#160;:&#160;<a class="el" href="ed25519_8c.html#ab3c853739132cbae79f3a1a24778eafa">ed25519.c</a></li>
+<li>scalar_is_canonical()&#160;:&#160;<a class="el" href="ed25519_8c.html#af136f49afb80f1676f303e966e9e3f72">ed25519.c</a></li>
 <li>secure_scrub()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187">secure_allocator.c</a></li>
 <li>secure_zero()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#ac1aac81267563ec22c5f50b392aaf893">secure_allocator.c</a></li>
 <li>set_flat()&#160;:&#160;<a class="el" href="gradient__optimization_8c.html#a7a063b9fda2e4a41462acb15b3b1d5d4">gradient_optimization.c</a></li>
@@ -324,7 +325,7 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>SNEPPX_bsdiff_apply_patch()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#ab36e5de71cfe329567d1563aae589e04">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04">s7_extensions.c</a></li>
 <li>SNEPPX_bsdiff_create_patch_file()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#afe4b7b13e535f6da1fc1a4bf84ed6711">s7_extensions.c</a></li>
 <li>SNEPPX_bsdiff_total_size()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#ab2400c66b8c331765d642f3ec5b7a829">s7_extensions.c</a></li>
-<li>SNEPPX_bsdiff_with_signature()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#a706df364052bb9e23a5b594a2aaf310f">s7_extensions.c</a></li>
+<li>SNEPPX_bsdiff_with_signature()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#a706df364052bb9e23a5b594a2aaf310f">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#a706df364052bb9e23a5b594a2aaf310f">s7_extensions.c</a></li>
 <li>SNEPPX_bspatch()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#a6689c4b8497f7913aeb47e9a3619d50f">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f">s7_extensions.c</a></li>
 <li>SNEPPX_bspatch_apply_patch()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#ad741ebaa7991c5ace3f60bf313df93a4">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4">s7_extensions.c</a></li>
 <li>SNEPPX_bugbounty_get_recommendation()&#160;:&#160;<a class="el" href="s9__extensions_8c.html#aba6e46c88e1c63229b86a5610eaed005">s9_extensions.c</a></li>
@@ -1275,7 +1276,7 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>SNEPPX_manifest_hash()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#ac6bcfc1b0f1451873ec0f987f397cd54">s7_extensions.c</a></li>
 <li>SNEPPX_manifest_verify()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#a0a7dc1fbf4903ddd5f29fedd608d7042">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#a0a7dc1fbf4903ddd5f29fedd608d7042">s7_extensions.c</a></li>
 <li>SNEPPX_manifest_verify_all()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#aefe9fcaffcbeda406a45bc19c175d410">s7_extensions.c</a></li>
-<li>SNEPPX_manifest_verify_from_buffer()&#160;:&#160;<a class="el" href="s7__extensions_8c.html#a35c2bb466f6991aee2eaa65f3974592a">s7_extensions.c</a></li>
+<li>SNEPPX_manifest_verify_from_buffer()&#160;:&#160;<a class="el" href="s7__extensions_8h.html#a35c2bb466f6991aee2eaa65f3974592a">s7_extensions.h</a>, <a class="el" href="s7__extensions_8c.html#a35c2bb466f6991aee2eaa65f3974592a">s7_extensions.c</a></li>
 <li>SNEPPX_matmul()&#160;:&#160;<a class="el" href="automatic__differentiation__framework_8h.html#a099d6baf60b11293d6460faf12a14be0">automatic_differentiation_framework.h</a>, <a class="el" href="ops_8c.html#a099d6baf60b11293d6460faf12a14be0">ops.c</a></li>
 <li>SNEPPX_maximum()&#160;:&#160;<a class="el" href="automatic__differentiation__framework_8h.html#a9561193a242bed27fed6bc69c9b547f3">automatic_differentiation_framework.h</a>, <a class="el" href="ops_8c.html#a9561193a242bed27fed6bc69c9b547f3">ops.c</a></li>
 <li>SNEPPX_mean()&#160;:&#160;<a class="el" href="automatic__differentiation__framework_8h.html#a31e534bee56778f505e1cb80452b2e5d">automatic_differentiation_framework.h</a>, <a class="el" href="ops_8c.html#a31e534bee56778f505e1cb80452b2e5d">ops.c</a></li>

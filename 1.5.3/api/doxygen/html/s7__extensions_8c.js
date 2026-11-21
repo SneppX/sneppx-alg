@@ -1,5 +1,6 @@
 var s7__extensions_8c =
 [
+    [ "SNEPPX_PATCH_HEADER_SIZE", "s7__extensions_8c.html#a2f2cc97c6dadeffa658765c83b2327f0", null ],
     [ "ab_get_current_slot", "s7__extensions_8c.html#a7ad54ac5de2f70de761d1ffbeab43a51", null ],
     [ "ab_is_slot_marked_successful", "s7__extensions_8c.html#ac80c9ea5055fe5a729f41fdfc93c5806", null ],
     [ "ab_mark_slot_unbootable", "s7__extensions_8c.html#adce842c983ca07bf14c296075d1f0141", null ],
@@ -30,6 +31,11 @@ var s7__extensions_8c =
     [ "offline_bundle_set_signed_flag", "s7__extensions_8c.html#a18003e2ea53e6f757100a85dbd5a19ec", null ],
     [ "offline_bundle_verify_local_signature", "s7__extensions_8c.html#a3fdf9b83fc506936af9f56f11703ebf3", null ],
     [ "offline_bundle_xor_key", "s7__extensions_8c.html#a806c83eecc1c4abfb1e6962f439e27dd", null ],
+    [ "patch_parse", "s7__extensions_8c.html#aea6b70f8c6c7a7afb1a719f523d7fb03", null ],
+    [ "patch_read_file", "s7__extensions_8c.html#aae7275d6479182e3c73215bd97f29a4f", null ],
+    [ "patch_read_u64", "s7__extensions_8c.html#add1ae38e0d854e181be29c1b4f077ad4", null ],
+    [ "patch_write_file", "s7__extensions_8c.html#aae664d5c2b7cb6ce69812aaf1fd14cfe", null ],
+    [ "patch_write_u64", "s7__extensions_8c.html#a741ded59f7d146aa414b12e3956eb2dc", null ],
     [ "SNEPPX_ab_force_swap", "s7__extensions_8c.html#a14441d531b938cb1b148b637850b3e6f", null ],
     [ "SNEPPX_ab_mark_slot_bad", "s7__extensions_8c.html#a7e28eb806d73b34b15bb2bad726c6316", null ],
     [ "SNEPPX_ab_partition_get_active", "s7__extensions_8c.html#a9a9e5ee866641c902f9f7b01c30c411d", null ],

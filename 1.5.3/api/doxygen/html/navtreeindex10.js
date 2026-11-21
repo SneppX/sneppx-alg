@@ -1,5 +1,8 @@
 var NAVTREEINDEX10 =
 {
+"functions_n.html":[1,2,0,14],
+"functions_o.html":[1,2,0,15],
+"functions_p.html":[1,2,0,16],
 "functions_q.html":[1,2,0,17],
 "functions_r.html":[1,2,0,18],
 "functions_s.html":[1,2,0,19],
@@ -246,8 +249,5 @@ var NAVTREEINDEX10 =
 "gradient__optimization__suite_8h.html#abf1e99863949f34b031d7e63c51ce5ba":[2,0,0,0,1,8,7],
 "gradient__optimization__suite_8h.html#ac6136ee5e6fe3d919080eb2db0e79d38":[2,0,0,0,1,8,11],
 "gradient__optimization__suite_8h.html#ade7275b032c773e173556f67921a27df":[2,0,0,0,1,8,16],
-"gradient__optimization__suite_8h.html#adf4a9d996ece7341e38f9cd3060f7959":[2,0,0,0,1,8,18],
-"gradient__optimization__suite_8h.html#aea591f7dee3c8e44628c16220aafb3ee":[2,0,0,0,1,8,20],
-"gradient__optimization__suite_8h_source.html":[2,0,0,0,1,8],
-"graph__convolutional__network_8h.html":[2,0,0,0,0,8]
+"gradient__optimization__suite_8h.html#adf4a9d996ece7341e38f9cd3060f7959":[2,0,0,0,1,8,18]
 };

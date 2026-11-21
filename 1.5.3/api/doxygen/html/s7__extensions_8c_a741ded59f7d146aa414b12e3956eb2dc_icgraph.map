@@ -1,0 +1,7 @@
+<map id="patch_write_u64" name="patch_write_u64">
+<area shape="rect" id="Node000001" title=" " alt="" coords="380,14,508,42"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a7128fb627688e73dbabaa4aad0728c08" title="Perform Bsdiff." alt="" coords="217,14,332,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="362,28,332,30,332,25,367,28"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#afe4b7b13e535f6da1fc1a4bf84ed6711" title="Perform Bsdiff Create Patch File." alt="" coords="5,5,169,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="198,28,169,30,169,25,204,27"/>
+</map>

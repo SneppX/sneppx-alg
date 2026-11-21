@@ -1,0 +1,7 @@
+<map id="SNEPPX_update_verifier_verify_signature" name="SNEPPX_update_verifier_verify_signature">
+<area shape="rect" id="Node000001" title=" " alt="" coords="456,5,633,50"/>
+<area shape="rect" id="Node000002" href="$signed__update_8c.html#a84c0dd812043421d04fa4591c2f46373" title="Perform Update Verifier Check." alt="" coords="231,5,408,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="438,28,409,30,408,25,443,28"/>
+<area shape="rect" id="Node000003" href="$signed__update_8c.html#a5b9a7ec7752033e1d24aa7abf07d316e" title="Apply Update Verifier." alt="" coords="5,5,183,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="213,28,183,30,183,25,218,27"/>
+</map>
