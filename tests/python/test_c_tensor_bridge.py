@@ -115,6 +115,66 @@ def test_public_tensor_native_round_trip_for_all_supported_dtypes(dtype_name, va
     assert np.array_equal(restored.data, values)
 
 
+def test_native_shape_conversion_accepts_integer_dtypes_and_strides():
+    T = cb._get_Tensor()
+    dtype = cb._ext.SNEPPXDtype.FLOAT32
+    shape = np.array([2, 99, 3], dtype=np.int32)[::2]
+    tensor = T.zeros(shape, dtype)
+    assert tensor.shape == (2, 3)
+
+
+@pytest.mark.parametrize(
+    "shape",
+    [
+        np.array([-1, 3], dtype=np.int64),
+        np.array([2.5, 3.0], dtype=np.float64),
+        np.ones((2, 2), dtype=np.int64),
+        np.ones(17, dtype=np.int64),
+    ],
+)
+def test_native_shape_conversion_rejects_invalid_dimensions(shape):
+    with pytest.raises((ValueError, RuntimeError, TypeError)):
+        cb._get_Tensor().create(shape, cb._ext.SNEPPXDtype.FLOAT32)
+
+
+def test_native_set_data_copies_non_contiguous_arrays():
+    T = cb._get_Tensor()
+    tensor = T.zeros(np.array([2, 3], dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32)
+    source = np.arange(12, dtype=np.float32).reshape(2, 6)[:, ::2]
+    tensor.set_data(source)
+    assert np.array_equal(tensor.data(), source)
+
+
+def test_native_indexing_rejects_negative_missing_and_extra_indices():
+    T = cb._get_Tensor()
+    tensor = T.zeros(np.array([2, 3], dtype=np.int64), cb._ext.SNEPPXDtype.FLOAT32)
+    with pytest.raises(IndexError):
+        _ = tensor[-1, 0]
+    with pytest.raises(IndexError):
+        _ = tensor[2, 0]
+    with pytest.raises(IndexError):
+        _ = tensor[0]
+    with pytest.raises(IndexError):
+        _ = tensor[0, 0, 0]
+    with pytest.raises(IndexError):
+        tensor[-1, 0] = 1.0
+    with pytest.raises(IndexError):
+        tensor[0] = 1.0
+    tensor[1, 2] = 7.0
+    assert float(tensor[1, 2]) == 7.0
+
+
+def test_native_split_uses_allocator_contract_and_validates_failures():
+    T = cb._get_Tensor()
+    tensor = cb.from_numpy(np.arange(12, dtype=np.float32).reshape(4, 3))
+    parts = tensor.split(2, 0)
+    assert len(parts) == 2
+    assert np.array_equal(parts[0].data(), np.arange(6, dtype=np.float32).reshape(2, 3))
+    assert np.array_equal(parts[1].data(), np.arange(6, 12, dtype=np.float32).reshape(2, 3))
+    with pytest.raises(RuntimeError):
+        tensor.split(3, 0)
+
+
 def test_public_tensor_native_conversion_rejects_autograd_history():
     from SneppX_ALG.interface_bindings.tensor import Tensor
 

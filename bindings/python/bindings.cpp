@@ -38,6 +38,7 @@ extern "C" {
 #include <cstring>
 #include <string>
 #include <vector>
+#include <limits>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -104,10 +105,29 @@ size_t SNEPPX_dtype_itemsize(SNEPPXDtype d) {
 }
 
 static std::vector<size_t> pyarray_to_sizevec(py::array a) {
-    py::buffer_info buf = a.request();
-    if (buf.ndim != 1) throw std::runtime_error("expected 1-D array");
-    const auto* ptr = static_cast<const size_t*>(buf.ptr);
-    return std::vector<size_t>(ptr, ptr + buf.size);
+    if (!a) throw std::invalid_argument("shape/repetitions array is required");
+    py::buffer_info original = a.request();
+    if (original.ndim != 1)
+        throw std::invalid_argument("shape/repetitions must be a 1-D integer array");
+    const std::string kind = py::cast<std::string>(a.dtype().attr("kind"));
+    if (kind != "i" && kind != "u")
+        throw std::invalid_argument("shape/repetitions must contain integers");
+    if (original.size > 16)
+        throw std::invalid_argument("tensor dimensions cannot exceed 16");
+
+    using ShapeArray = py::array_t<py::ssize_t,
+        py::array::c_style | py::array::forcecast>;
+    ShapeArray converted(a);
+    py::buffer_info buf = converted.request();
+    const auto* values = static_cast<const py::ssize_t*>(buf.ptr);
+    std::vector<size_t> result;
+    result.reserve(static_cast<size_t>(buf.size));
+    for (py::ssize_t i = 0; i < buf.size; ++i) {
+        if (values[i] < 0)
+            throw std::invalid_argument("shape/repetitions cannot contain negative values");
+        result.push_back(static_cast<size_t>(values[i]));
+    }
+    return result;
 }
 
 // ---- Include split module files ----
