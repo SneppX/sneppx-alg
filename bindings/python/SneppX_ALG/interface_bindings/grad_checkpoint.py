@@ -72,11 +72,19 @@ def checkpoint_sequential(functions, input, segments=1):
     is split into (1 = checkpoint the whole sequence as one unit)."""
     if segments < 1:
         segments = 1
-    chunks = (
-        [functions[i::segments] for i in range(segments)]
-        if segments > 1
-        else [functions]
-    )
+    functions = list(functions)
+    if segments > 1:
+        # Sequential checkpoints must preserve layer order. The previous
+        # ``functions[i::segments]`` interleaved layers (f0, f2, ... then
+        # f1, f3, ...), which silently changed the forward result for any
+        # non-commuting pair.
+        chunk_size = max(1, (len(functions) + segments - 1) // segments)
+        chunks = [
+            functions[start : start + chunk_size] for start in range(0, len(functions), chunk_size)
+        ]
+        segments = len(chunks)
+    else:
+        chunks = [functions]
 
     def run_chunk(fns, x):
         for f in fns:

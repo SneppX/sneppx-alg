@@ -2,9 +2,7 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import nn
@@ -62,6 +60,23 @@ def test_checkpoint_sequential_matches_plain():
     for (n1, p1), (_, p3) in zip(net1.named_parameters(), net3.named_parameters()):
         assert p1.grad is not None and p3.grad is not None
         assert np.allclose(p1.grad.data, p3.grad.data, atol=1e-5), n1
+
+
+def test_checkpoint_sequential_preserves_layer_order():
+    x = Tensor(np.array([1.0], dtype=np.float32))
+    fns = [
+        lambda z: z + 1.0,
+        lambda z: z * 2.0,
+        lambda z: z - 3.0,
+        lambda z: z * 4.0,
+    ]
+
+    expected = x
+    for fn in fns:
+        expected = fn(expected)
+
+    out = cp.checkpoint_sequential(fns, x, segments=2)
+    assert np.allclose(out.data, expected.data)
 
 
 def test_no_grad_disables_graph():
