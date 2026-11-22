@@ -1,37 +1,39 @@
-"""Tests for crypto_kem.py — KyberKEM, X25519."""
+"""Tests for crypto_kem.py — KyberKEM, X25519.
 
-import sys
+KyberKEM must fail closed: the Python bindings have no validated ML-KEM
+backend, and fabricating random secrets used to let two peers "succeed"
+while deriving unrelated keys.
+"""
+
 import os
+import sys
+
+import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings import KyberKEM, X25519
 
 
-def test_kyber_keypair():
+def test_kyber_keypair_fails_closed():
     k = KyberKEM(KyberKEM.MODE_ML_KEM_512)
-    pk, sk = k.keypair()
-    assert len(pk) > 0
-    assert len(sk) > 0
+    with pytest.raises(RuntimeError, match="ML-KEM"):
+        k.keypair()
 
 
-def test_kyber_encaps_decaps():
+def test_kyber_encaps_decaps_fails_closed():
     k = KyberKEM()
-    pk, sk = k.keypair()
-    ct, ss = k.encapsulate(pk)
-    assert len(ct) > 0
-    assert len(ss) == 32
-    ss2 = k.decapsulate(sk, ct)
-    assert ss2 is not None
+    with pytest.raises(RuntimeError, match="ML-KEM"):
+        k.encapsulate(b"\x00" * 800)
+    with pytest.raises(RuntimeError, match="ML-KEM"):
+        k.decapsulate(b"\x00" * 1632, b"\x00" * 768)
 
 
-def test_kyber_modes():
+def test_kyber_modes_fail_closed():
     for mode in [KyberKEM.MODE_ML_KEM_512, KyberKEM.MODE_ML_KEM_768, KyberKEM.MODE_ML_KEM_1024]:
         k = KyberKEM(mode)
-        pk, sk = k.keypair()
-        assert len(pk) > 0
-        ct, ss = k.encapsulate(pk)
-        ss2 = k.decapsulate(sk, ct)
-        assert ss2 is not None
+        with pytest.raises(RuntimeError, match="ML-KEM"):
+            k.keypair()
 
 
 def test_x25519_keypair():
@@ -52,7 +54,7 @@ def test_x25519_dh():
     ss_a = X25519.dh(sk_a, pk_b)
     ss_b = X25519.dh(sk_b, pk_a)
     assert len(ss_a) == 32
-    assert len(ss_b) == 32
+    assert ss_a == ss_b
 
 
 def test_x25519_scalar_mult():
@@ -61,12 +63,9 @@ def test_x25519_scalar_mult():
     assert len(result) == 32
 
 
-if __name__ == "__main__":
-    test_kyber_keypair()
-    test_kyber_encaps_decaps()
-    test_kyber_modes()
-    test_x25519_keypair()
-    test_x25519_keypair_seed()
-    test_x25519_dh()
-    test_x25519_scalar_mult()
-    print("All crypto_kem tests passed.")
+def test_x25519_fails_closed_without_backend(monkeypatch):
+    monkeypatch.setitem(sys.modules, "cryptography.hazmat.primitives.asymmetric.x25519", None)
+    with pytest.raises(RuntimeError, match="cryptography"):
+        X25519.keypair()
+    with pytest.raises(RuntimeError, match="cryptography"):
+        X25519.dh(b"\x00" * 32, b"\x00" * 32)
