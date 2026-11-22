@@ -56,12 +56,16 @@ def test_file_url_outside_storage_is_rejected(tmp_path):
     assert not dest.exists()
 
 
-@pytest.mark.parametrize("filename", ["../secret.txt", "nested/file.bin", "C:\\secret.txt"])
+@pytest.mark.parametrize(
+    "filename", ["../secret.txt", "nested/file.bin", "C:\\secret.txt"]
+)
 def test_model_file_rejects_traversal_filename(filename):
     with pytest.raises(ValueError, match="plain basename"):
         ModelFile(filename=filename, sha256="0" * 64, size=1, url="weights.bin")
 
 
 def test_model_file_accepts_plain_filename():
-    f = ModelFile(filename="weights.bin", sha256="0" * 64, size=1, url="org/model/weights.bin")
+    f = ModelFile(
+        filename="weights.bin", sha256="0" * 64, size=1, url="org/model/weights.bin"
+    )
     assert f.filename == "weights.bin"

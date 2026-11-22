@@ -199,7 +199,9 @@ class LocalStorageBackend(StorageBackend):
             if not local_path or "://" in local_path:
                 raise ValueError("invalid local file URL")
             resolved = self._contained(local_path)
-            storage_key = os.path.relpath(resolved, self._base_root()).replace(os.sep, "/")
+            storage_key = os.path.relpath(resolved, self._base_root()).replace(
+                os.sep, "/"
+            )
         src = self._full_path(storage_key)
         if not os.path.exists(src):
             raise FileNotFoundError(f"File not found: {key}")
@@ -373,9 +375,9 @@ class S3StorageBackend(StorageBackend):
         import concurrent.futures
 
         file_size = os.path.getsize(local_path)
-        upload_id = self._s3_client.create_multipart_upload(Bucket=self._bucket, Key=dest_key)[
-            "UploadId"
-        ]
+        upload_id = self._s3_client.create_multipart_upload(
+            Bucket=self._bucket, Key=dest_key
+        )["UploadId"]
 
         parts = []
         part_number = 1
@@ -412,7 +414,10 @@ class S3StorageBackend(StorageBackend):
             Key=dest_key,
             UploadId=upload_id,
             MultipartUpload={
-                "Parts": [{"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())]
+                "Parts": [
+                    {"ETag": etags[i]["ETag"], "PartNumber": i}
+                    for i in sorted(etags.keys())
+                ]
             },
         )
 
@@ -423,9 +428,9 @@ class S3StorageBackend(StorageBackend):
         import io
         import concurrent.futures
 
-        upload_id = self._s3_client.create_multipart_upload(Bucket=self._bucket, Key=dest_key)[
-            "UploadId"
-        ]
+        upload_id = self._s3_client.create_multipart_upload(
+            Bucket=self._bucket, Key=dest_key
+        )["UploadId"]
 
         parts = []
         for i in range(0, len(data), part_size):
@@ -453,7 +458,10 @@ class S3StorageBackend(StorageBackend):
             Key=dest_key,
             UploadId=upload_id,
             MultipartUpload={
-                "Parts": [{"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())]
+                "Parts": [
+                    {"ETag": etags[i]["ETag"], "PartNumber": i}
+                    for i in sorted(etags.keys())
+                ]
             },
         )
 
