@@ -37,10 +37,10 @@ def convert_hf_to_sneppx(hf_dir: str, out_dir: str) -> str:
                 tensors[key] = f.get_tensor(key)
         source_format = "safetensors"
     elif os.path.exists(pytorch_path) or os.path.exists(hf_model_path):
-        import torch
+        from .pytorch import safe_torch_load
 
         path = pytorch_path if os.path.exists(pytorch_path) else hf_model_path
-        checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+        checkpoint = safe_torch_load(path)
         for name, param in checkpoint.items():
             if hasattr(param, "numpy"):
                 tensors[name] = param.cpu().numpy()
@@ -143,9 +143,7 @@ def convert_from_hf(hf_dir: str, out_dir: str) -> str:
         return convert_hf_to_sneppx(hf_dir, out_dir)
     elif fmt == "pytorch":
         return convert_pt_to_sneppx(
-            os.path.join(
-                hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir
-            ),
+            os.path.join(hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir),
             out_dir,
         )[0]  # Handle if directory
     raise ValueError(f"Unsupported format: {fmt}")
@@ -180,12 +178,12 @@ def convert_from_torch(pt_path: str, out_dir: str) -> str:
 
 def _convert_pt_to_hf(pt_path: str, out_dir: str, **kwargs) -> str:
     """Convert PyTorch checkpoint directly to HF format."""
-    import torch
+    from .pytorch import safe_torch_load
     from ..utils import ensure_dir
 
     ensure_dir(out_dir)
 
-    checkpoint = torch.load(pt_path, map_location="cpu", weights_only=False)
+    checkpoint = safe_torch_load(pt_path)
     if "model_state_dict" in checkpoint:
         state_dict = checkpoint["model_state_dict"]
     elif "state_dict" in checkpoint:

@@ -10,14 +10,25 @@ from .format import detect_format
 from .sneppx_format import load_sneppx_native, save_sneppx_native
 
 
+def safe_torch_load(path: str):
+    """Load a PyTorch checkpoint without allowing arbitrary pickle globals.
+
+    Model artifacts can arrive from untrusted sources (for example via model
+    hub downloads). ``weights_only=True`` restricts torch.load to tensors and
+    primitive containers instead of executing arbitrary reduction code.
+    """
+    import torch
+
+    return torch.load(path, map_location="cpu", weights_only=True)
+
+
 def convert_pt_to_sneppx(pt_path: str, out_dir: str) -> str:
     """Convert a PyTorch checkpoint to SNEPPX native format."""
-    import torch
     import numpy as np
 
     os.makedirs(out_dir, exist_ok=True)
 
-    checkpoint = torch.load(pt_path, map_location="cpu", weights_only=False)
+    checkpoint = safe_torch_load(pt_path)
 
     if isinstance(checkpoint, dict):
         if "model_state_dict" in checkpoint:
@@ -59,9 +70,7 @@ def convert_pt_to_sneppx(pt_path: str, out_dir: str) -> str:
     return out_path
 
 
-def convert_sneppx_to_pt(
-    sneppx_path: str, out_path: str, metadata: Optional[Dict] = None
-) -> str:
+def convert_sneppx_to_pt(sneppx_path: str, out_path: str, metadata: Optional[Dict] = None) -> str:
     """Convert a SNEPPX native model to PyTorch format."""
     import torch
     import numpy as np
