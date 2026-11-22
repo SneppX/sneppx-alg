@@ -620,6 +620,31 @@ static int ed25519_verify_core(const uint8_t* public_key, const uint8_t* message
     SNEPPX_sha512_update(&ctx, sig->data, 32);
     SNEPPX_sha512_update(&ctx, public_key, 32);
     SNEPPX_sha512_update(&ctx, message, msg_len);
+    SNEPPX_sha512_finish(&ctx, hram);
+    point A; int ret_A = point_from_bytes(&A, public_key);
+    if (ret_A != 0) return -1;
+    point R; int ret_R = point_from_bytes(&R, sig->data);
+    if (ret_R != 0) return -1;
+
+    uint8_t h_scalar[32];
+    sc_reduce64(h_scalar, hram);
+
+    point hA; point_scalar_mult(&hA, h_scalar, 32, &A);
+    /* Cofactor 8: [8]R + [8]hA */
+    point R8; point_double(&R8, &R); point_double(&R8, &R8); point_double(&R8, &R8);
+    point hA8; point_double(&hA8, &hA); point_double(&hA8, &hA8); point_double(&hA8, &hA8);
+    point R8_plus_hA8; point_add(&R8_plus_hA8, &R8, &hA8);
+
+    /* Cofactor 8: [8]S * B */
+    point sB8; point_scalar_mult(&sB8, sig->data + 32, 32, &B);
+    point_double(&sB8, &sB8); point_double(&sB8, &sB8); point_double(&sB8, &sB8);
+
+    /* Compare [8]sB and [8]R + [8]hA */
+    field lhs_x, rhs_x, lhs_y, rhs_y;
+    fe_mul(&lhs_x, &R8_plus_hA8.X, &sB8.Z);
+    fe_mul(&rhs_x, &sB8.X, &R8_plus_hA8.Z);
+    fe_mul(&lhs_y, &R8_plus_hA8.Y, &sB8.Z);
+    fe_mul(&rhs_y, &sB8.Y, &R8_plus_hA8.Z);
     if (legacy)
         SNEPPX_sha512_legacy_finish(&ctx, hram);
     else
