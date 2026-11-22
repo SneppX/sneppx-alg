@@ -102,7 +102,7 @@ static void test_signed_update_apply_succeeds_with_trusted_key(void)
     uint8_t seed[SNEPPX_ED25519_SEED_LEN];
     static const uint8_t payload[] = "signed update payload";
     SX_ASSERT(prepare_signed_update(&uv, &update, payload, sizeof(payload) - 1, seed, 1) == 0, "prepare signed update");
-    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == 1, "signed metadata accepted");
+    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == 0, "signed metadata accepted");
     SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == 0, "apply verified payload");
     SX_ASSERT(uv.current_version[0] == 2, "version updated");
     SNEPPX_update_verifier_destroy(&uv);
@@ -121,7 +121,7 @@ static void test_signed_update_apply_rejects_same_version_replay(void)
     SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == 0,
               "first application of signed update succeeds");
     SX_ASSERT(SNEPPX_update_verifier_get_history_count() == 1, "first application recorded once");
-    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == 1, "replayed update remains cryptographically valid");
+    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == 0, "replayed update remains cryptographically valid");
     SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == -1,
               "already-applied version is rejected");
     SX_ASSERT(uv.current_version[0] == 2 && uv.current_version[1] == 0 && uv.current_version[2] == 0,
@@ -142,6 +142,9 @@ static void test_signed_update_rejects_tampered_payload(void)
     payload[0] ^= 0x01;
     SX_ASSERT(SNEPPX_update_verifier_apply(&uv, &update, payload, sizeof(payload) - 1) == -1,
               "tampered payload rejected");
+    update.signature[0] ^= 0x01;
+    SX_ASSERT(SNEPPX_update_verifier_check(&uv, &update) == -1,
+              "invalid signature returns the documented error convention");
     SX_ASSERT(uv.current_version[0] == 1, "tampered payload did not change version");
     SNEPPX_update_verifier_destroy(&uv);
 }

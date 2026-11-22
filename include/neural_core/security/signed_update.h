@@ -95,7 +95,9 @@ extern "C"
      * @param uv [out] Uv value.
      * @param update [in] Update value.
      *
-     * @return 0 on success, -1 on error.
+     * @return 0 when the update signature is valid under the configured
+     *         trusted key, -1 when verification is disabled, unavailable,
+     *         blocked by rollback policy, or the signature is invalid.
      */
     int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update);
     /**

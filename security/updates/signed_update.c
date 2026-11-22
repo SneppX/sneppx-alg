@@ -174,17 +174,18 @@ int SNEPPX_update_verifier_set_min_version(SNEPPXUpdateVerifier* uv, uint32_t ma
 int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update)
 {
     if (!uv || !update || !uv->verification_enabled)
-        return 0;
+        return -1;
     if (uv->rollback_protection_enabled)
     {
         uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
         if (SNEPPX_update_verifier_rollback_check(uv, target) != 0)
-            return 0;
+            return -1;
     }
     if (!uv->has_trusted_key)
-        return 0;
-    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey, SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0 ? 1
-                                                                                                                   : 0;
+        return -1;
+    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey, SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0
+               ? 0
+               : -1;
 }
 
 /**
@@ -205,7 +206,7 @@ int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
     if (update->version_major == uv->current_version[0] && update->version_minor == uv->current_version[1] &&
         update->version_patch == uv->current_version[2])
         return -1;
-    if (!uv->verification_enabled || SNEPPX_update_verifier_check(uv, update) != 1)
+    if (!uv->verification_enabled || SNEPPX_update_verifier_check(uv, update) != 0)
         return -1;
     if (update_payload_matches(update, update_data, data_len) != 0)
         return -1;
