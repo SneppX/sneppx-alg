@@ -3,7 +3,11 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        # GitHub Apps cannot update workflow files without the restricted
+        # `workflows` permission, so the formatter bot must not rewrite them.
+        exclude: '^\.github/workflows/'
       - id: end-of-file-fixer
+        exclude: '^\.github/workflows/'
       - id: check-yaml
         # conda-forge/meta.yaml is a Jinja recipe, not parseable YAML.
         exclude: '^conda-forge-recipe/meta\.yaml$'
@@ -17,6 +21,7 @@ repos:
       - id: check-case-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
+        exclude: '^\.github/workflows/'
 
   - repo: https://github.com/BlankSpruce/gersemi
     rev: 0.16.0
@@ -48,7 +53,7 @@ repos:
         # same files in opposite directions and makes the promotion bot loop.
         types_or: [javascript, jsx, ts, tsx, json, yaml, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/|^benchmarks/baseline\.json$|^\.clang-tidy$|^tests/data/acvp/slhdsa_keygen_kat\.json$|^conda-forge-recipe/meta\.yaml$'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/|^benchmarks/baseline\.json$|^\.clang-tidy$|^tests/data/acvp/slhdsa_keygen_kat\.json$|^conda-forge-recipe/meta\.yaml$|^\.github/workflows/'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
