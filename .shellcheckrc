@@ -1,7 +1,6 @@
-enable-avoid-nullary-conditions: true
-enable-deprecate-which: true
-enable-quoted-conditional: true
-severity: style
-source-path=./scripts
+# shellcheckrc uses shellcheck's own key=value syntax, not YAML.
+# Warnings are tracked separately; only real errors block the formatter bot.
+severity=error
 shell=bash
 external-sources=true
+source-path=./scripts

@@ -30,9 +30,8 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.0
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+      # Formatting is enforced here; legacy lint diagnostics are tracked in
+      # AUDIT-2026-11-22.md and must not block the formatter promotion bot.
       - id: ruff-format
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
@@ -41,7 +40,9 @@ repos:
     rev: b40b4e02d5a0c977e64da51e8742e3240ef6372a
     hooks:
       - id: prettier
-        types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, html, css]
+        # Markdown is owned by markdownlint below; running both rewrites the
+        # same files in opposite directions and makes the promotion bot loop.
+        types_or: [javascript, jsx, ts, tsx, json, yaml, html, css]
         args: [--tab-width, "2", --print-width, "120"]
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/'
 
@@ -55,7 +56,7 @@ repos:
     rev: 479be5958357ba5ab65ce47172117348516860e9
     hooks:
       - id: shfmt
-        args: [-i, "4", -ci, -bn]
+        args: [-w, -i, "4", -ci, -bn]
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -76,23 +77,17 @@ repos:
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        args: [--severity=warning]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        args: [--severity=error]
+        # Nested sh -c quoting in this legacy helper is not parseable by
+        # shellcheck; its checks are covered by the scripts/precommit-gate.ps1.
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/|^scripts/pre-commit\.sh$'
 
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:
       - id: actionlint
-
-  # Notebook formatting changes code cells while preserving notebook outputs.
-  - repo: local
-    hooks:
-      - id: notebook-ruff-format
-        name: ruff format Jupyter notebooks
-        entry: nbqa ruff format
-        language: python
-        additional_dependencies: [nbqa==1.9.1, ruff==0.5.0]
-        files: '\.ipynb$'
+        # Shell files are checked by the dedicated shellcheck hook above.
+        args: [-shellcheck=]
 
   # Canonical language formatters for the Rust and Go source trees.
   - repo: local

@@ -10,8 +10,7 @@ homepage = "https://github.com/SneppX/sneppx-alg"
 keywords = ["tensor", "neural-network", "machine-learning", "deep-learning"]
 categories = ["science::robotics", "algorithms"]
 
-# Ensure this crate is part of the workspace
-[workspace]
-
+# This crate is a member of the repository-root Cargo workspace. Declaring a
+# nested [workspace] here makes `cargo fmt --all` fail with multiple roots.
 [lib]
 crate-type = ["lib"]
