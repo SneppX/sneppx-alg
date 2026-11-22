@@ -23,8 +23,7 @@ class LRScheduler:
             self.base_lrs = [float(g.get("lr", 1e-3)) for g in self.base_lrs]
         else:
             self.base_lrs = [
-                float(x) if not isinstance(x, (int, float)) else float(x)
-                for x in self.base_lrs
+                float(x) if not isinstance(x, (int, float)) else float(x) for x in self.base_lrs
             ]
         self.last_epoch = last_epoch
         self._initial_step()
@@ -43,7 +42,11 @@ class LRScheduler:
         else:
             self.last_epoch += 1
         lr = self.get_lr()
-        # apply to optimizer (single-group simplified)
+        # Optimizers read group["lr"] when stepping, so update every group.
+        # Keep the scalar attribute and set_lr() for backwards compatibility.
+        for group in getattr(self.optimizer, "param_groups", []) or []:
+            if isinstance(group, dict):
+                group["lr"] = lr
         if hasattr(self.optimizer, "lr"):
             self.optimizer.lr = lr
         if hasattr(self.optimizer, "set_lr"):
@@ -60,9 +63,7 @@ class LRScheduler:
 class StepLR(LRScheduler):
     """Decay LR by ``gamma`` every ``step_size`` epochs."""
 
-    def __init__(
-        self, optimizer, step_size: int, gamma: float = 0.1, last_epoch: int = -1
-    ):
+    def __init__(self, optimizer, step_size: int, gamma: float = 0.1, last_epoch: int = -1):
         self.step_size = step_size
         self.gamma = gamma
         super().__init__(optimizer, last_epoch)
@@ -85,9 +86,7 @@ class ExponentialLR(LRScheduler):
 class CosineAnnealingLR(LRScheduler):
     """Cosine annealing from ``eta_max`` to ``eta_min`` over ``T_max``."""
 
-    def __init__(
-        self, optimizer, T_max: int, eta_min: float = 0.0, last_epoch: int = -1
-    ):
+    def __init__(self, optimizer, T_max: int, eta_min: float = 0.0, last_epoch: int = -1):
         self.T_max = T_max
         self.eta_min = eta_min
         super().__init__(optimizer, last_epoch)
@@ -164,13 +163,9 @@ class LinearWarmupCosineDecay(LRScheduler):
         base = self.base_lrs[0]
         if step < self.warmup_steps:
             return base * (step + 1) / self.warmup_steps
-        progress = (step - self.warmup_steps) / max(
-            1, self.total_steps - self.warmup_steps
-        )
+        progress = (step - self.warmup_steps) / max(1, self.total_steps - self.warmup_steps)
         progress = min(1.0, max(0.0, progress))
-        return self.min_lr + 0.5 * (base - self.min_lr) * (
-            1 + math.cos(math.pi * progress)
-        )
+        return self.min_lr + 0.5 * (base - self.min_lr) * (1 + math.cos(math.pi * progress))
 
 
 class PolynomialLR(LRScheduler):
@@ -316,9 +311,7 @@ class CosineAnnealingWithWarmupRestarts(LRScheduler):
         last_epoch: int = -1,
     ):
         self.warmup = ConstantLRWithWarmup(optimizer, warmup_steps, last_epoch - 1)
-        self.cosine = CosineAnnealingWarmRestarts(
-            optimizer, T_0, T_mult, eta_min, last_epoch
-        )
+        self.cosine = CosineAnnealingWarmRestarts(optimizer, T_0, T_mult, eta_min, last_epoch)
         super().__init__(optimizer, last_epoch)
 
     def get_lr(self) -> float:
@@ -404,9 +397,7 @@ class TriStageLR(LRScheduler):
         if step < self.warmup_steps:
             return base * (step + 1) / self.warmup_steps
         if step > self.decay_start:
-            progress = (step - self.decay_start) / max(
-                1, self.total_steps - self.decay_start
-            )
+            progress = (step - self.decay_start) / max(1, self.total_steps - self.decay_start)
             return base * (1 - progress)
         return base
 
@@ -432,13 +423,9 @@ class CosineAnnealingWithWarmup(LRScheduler):
         base = self.base_lrs[0]
         if step < self.warmup_steps:
             return base * (step + 1) / self.warmup_steps
-        progress = (step - self.warmup_steps) / max(
-            1, self.total_steps - self.warmup_steps
-        )
+        progress = (step - self.warmup_steps) / max(1, self.total_steps - self.warmup_steps)
         progress = min(1.0, max(0.0, progress))
-        return self.eta_min + 0.5 * (base - self.eta_min) * (
-            1 + math.cos(math.pi * progress)
-        )
+        return self.eta_min + 0.5 * (base - self.eta_min) * (1 + math.cos(math.pi * progress))
 
 
 def get_scheduler(name: str, optimizer, **kwargs) -> LRScheduler:
