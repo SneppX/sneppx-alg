@@ -3,11 +3,20 @@
 import numpy as np
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.pruning import (
-    magnitude_prune, l1_channel_prune, taylor_pruning,
-    global_magnitude_prune, movement_pruning, soft_pruning,
-    compute_sparsity, count_parameters, print_pruning_summary,
-    apply_pruning_mask, recover_pruned_weights,
-    distillation_loss, prune_and_distill, find_winning_ticket,
+    magnitude_prune,
+    l1_channel_prune,
+    taylor_pruning,
+    global_magnitude_prune,
+    movement_pruning,
+    soft_pruning,
+    compute_sparsity,
+    count_parameters,
+    print_pruning_summary,
+    apply_pruning_mask,
+    recover_pruned_weights,
+    distillation_loss,
+    prune_and_distill,
+    find_winning_ticket,
     rewrite_weights,
 )
 from SneppX_ALG.interface_bindings.nn import Linear, Sequential
@@ -63,7 +72,9 @@ def test_soft_pruning():
 
 
 def test_compute_sparsity():
-    w = Tensor.from_numpy(np.array([[1.0, 0.0, 0.0], [0.0, 2.0, 0.0]], dtype=np.float32))
+    w = Tensor.from_numpy(
+        np.array([[1.0, 0.0, 0.0], [0.0, 2.0, 0.0]], dtype=np.float32)
+    )
     sparsity = compute_sparsity(w)
     assert abs(sparsity - (1.0 - 2.0 / 6.0)) < 1e-6
 
@@ -75,7 +86,12 @@ def test_compute_sparsity_dense():
 
 
 def test_count_parameters():
-    params = [Tensor.randn((4, 8)), Tensor.randn((8,)), Tensor.randn((8, 2)), Tensor.randn((2,))]
+    params = [
+        Tensor.randn((4, 8)),
+        Tensor.randn((8,)),
+        Tensor.randn((8, 2)),
+        Tensor.randn((2,)),
+    ]
     total, nonzero = count_parameters(params)
     assert total == 4 * 8 + 8 + 8 * 2 + 2
 
@@ -97,16 +113,35 @@ def test_recover_pruned_weights():
 
 def test_prune_and_distill():
     from SneppX_ALG.interface_bindings.pruning import PolynomialSparsityScheduler
-    teacher_params = [Tensor.randn((4, 8)), Tensor.randn((8,)), Tensor.randn((8, 2)), Tensor.randn((2,))]
-    student_params = [Tensor.randn((4, 8)), Tensor.randn((8,)), Tensor.randn((8, 2)), Tensor.randn((2,))]
+
+    teacher_params = [
+        Tensor.randn((4, 8)),
+        Tensor.randn((8,)),
+        Tensor.randn((8, 2)),
+        Tensor.randn((2,)),
+    ]
+    student_params = [
+        Tensor.randn((4, 8)),
+        Tensor.randn((8,)),
+        Tensor.randn((8, 2)),
+        Tensor.randn((2,)),
+    ]
     scheduler = PolynomialSparsityScheduler(total_steps=10, final_sparsity=0.5)
-    pruned = prune_and_distill(student_params, teacher_params, dataloader=None, sparsity_scheduler=scheduler, epochs=2)
+    pruned = prune_and_distill(
+        student_params,
+        teacher_params,
+        dataloader=None,
+        sparsity_scheduler=scheduler,
+        epochs=2,
+    )
     assert len(pruned) == 4
 
 
 def test_find_winning_ticket():
     params = [Tensor.randn((4, 4))]
-    ticket, masks = find_winning_ticket(params, dataloader=None, sparsity=0.3, iterations=2)
+    ticket, masks = find_winning_ticket(
+        params, dataloader=None, sparsity=0.3, iterations=2
+    )
     assert len(ticket) == 1
     assert len(masks) == 2
 
@@ -134,6 +169,7 @@ def test_print_pruning_summary():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

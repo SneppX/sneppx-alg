@@ -22,8 +22,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_EVIDENCE_TYPE_MEMORY_DUMP,
     SNEPPX_IR_EVIDENCE_TYPE_DISK_IMAGE,
     SNEPPX_IR_EVIDENCE_TYPE_FILE_COPY,
@@ -45,14 +45,16 @@ typedef enum {
     SNEPPX_IR_EVIDENCE_TYPE_MEMORY_PAGE
 } SNEPPXIREvidenceType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_CHAIN_HASH_SHA256,
     SNEPPX_IR_CHAIN_HASH_SHA512,
     SNEPPX_IR_CHAIN_HASH_BLAKE2B,
     SNEPPX_IR_CHAIN_HASH_SHA3_256
 } SNEPPXIRHashAlgorithm;
 
-typedef struct {
+typedef struct
+{
     uint64_t evidence_id;
     SNEPPXIREvidenceType evidence_type;
     uint8_t* evidence_name;
@@ -84,7 +86,8 @@ typedef struct {
     uint8_t tampered : 1;
 } SNEPPXIREvidence;
 
-typedef struct {
+typedef struct
+{
     char* case_name;
     size_t case_name_len;
     char* case_id;
@@ -114,7 +117,8 @@ int snepx_ir_evidence_compress(SNEPPXIREvidence* evidence);
 int snepx_ir_evidence_decompress(SNEPPXIREvidence* evidence);
 int snepx_ir_evidence_export(const SNEPPXIREvidenceManager* mgr, uint64_t evidence_id, uint8_t* out, size_t* out_len);
 int snepx_ir_evidence_import(SNEPPXIREvidenceManager* mgr, const uint8_t* in, size_t in_len);
-int snepx_ir_evidence_search(const SNEPPXIREvidenceManager* mgr, const uint8_t* query, size_t query_len, uint64_t* results, uint32_t* num_results);
+int snepx_ir_evidence_search(const SNEPPXIREvidenceManager* mgr, const uint8_t* query, size_t query_len,
+                             uint64_t* results, uint32_t* num_results);
 int snepx_ir_evidence_manager_destroy(SNEPPXIREvidenceManager* mgr);
 
 #endif

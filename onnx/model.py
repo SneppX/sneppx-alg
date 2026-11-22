@@ -78,6 +78,7 @@ NP_DTYPE_TO_ONNX = {
     np.dtype("bool"): "bool",
 }
 
+
 # AttributeProto.AttributeType enum
 class AttrType:
     UNDEFINED = 0
@@ -142,7 +143,9 @@ class Attribute:
                 return AttrType.FLOATS
             if value and all(isinstance(v, str) for v in value):
                 return AttrType.STRINGS
-            if value and all(isinstance(v, np.ndarray) or isinstance(v, Tensor) for v in value):
+            if value and all(
+                isinstance(v, np.ndarray) or isinstance(v, Tensor) for v in value
+            ):
                 return AttrType.TENSORS
             if value and all(isinstance(v, Graph) for v in value):
                 return AttrType.GRAPHS
@@ -159,8 +162,12 @@ class Dimension:
 
     __slots__ = ("value", "param", "denotation")
 
-    def __init__(self, value: Optional[int] = None, param: Optional[str] = None,
-                 denotation: str = ""):
+    def __init__(
+        self,
+        value: Optional[int] = None,
+        param: Optional[str] = None,
+        denotation: str = "",
+    ):
         self.value = value
         self.param = param
         self.denotation = denotation
@@ -221,9 +228,7 @@ class Tensor:
             "name": self.name,
             "dtype": DTYPE_TO_ONNX.get(self.dtype, 1),
             "shape": [repr(d) if isinstance(d, str) else d for d in self.shape],
-            "data": (
-                self.data.tobytes().hex() if self.data is not None else None
-            ),
+            "data": (self.data.tobytes().hex() if self.data is not None else None),
             "doc_string": self.doc_string,
         }
 
@@ -233,24 +238,38 @@ class ValueInfo:
 
     __slots__ = ("name", "dtype", "shape", "doc_string")
 
-    def __init__(self, name: str, dtype: str = "float32",
-                 shape: Optional[List[Union[int, str, None]]] = None,
-                 doc_string: str = ""):
+    def __init__(
+        self,
+        name: str,
+        dtype: str = "float32",
+        shape: Optional[List[Union[int, str, None]]] = None,
+        doc_string: str = "",
+    ):
         self.name = name
         self.dtype = dtype
         self.shape = list(shape) if shape is not None else []
         self.doc_string = doc_string
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"name": self.name, "dtype": DTYPE_TO_ONNX.get(self.dtype, 1),
-                "shape": self.shape}
+        return {
+            "name": self.name,
+            "dtype": DTYPE_TO_ONNX.get(self.dtype, 1),
+            "shape": self.shape,
+        }
 
 
 class Node:
     """An ONNX graph node (operator instantiation)."""
 
-    __slots__ = ("op_type", "inputs", "outputs", "name", "attributes",
-                 "domain", "doc_string")
+    __slots__ = (
+        "op_type",
+        "inputs",
+        "outputs",
+        "name",
+        "attributes",
+        "domain",
+        "doc_string",
+    )
 
     def __init__(
         self,
@@ -272,9 +291,11 @@ class Node:
 
     def get_attr(self, name: str, default: Any = None) -> Any:
         if name in self.attributes:
-            return self.attributes[name].value if isinstance(
-                self.attributes[name], Attribute
-            ) else self.attributes[name]
+            return (
+                self.attributes[name].value
+                if isinstance(self.attributes[name], Attribute)
+                else self.attributes[name]
+            )
         return default
 
     def set_attr(self, name: str, value: Any) -> None:
@@ -300,8 +321,15 @@ class Node:
 class Graph:
     """ONNX computation graph."""
 
-    __slots__ = ("name", "nodes", "initializers", "inputs", "outputs",
-                 "value_info", "doc_string")
+    __slots__ = (
+        "name",
+        "nodes",
+        "initializers",
+        "inputs",
+        "outputs",
+        "value_info",
+        "doc_string",
+    )
 
     def __init__(
         self,
@@ -363,9 +391,18 @@ class MetadataProp:
 class Model:
     """Top-level ONNX model container."""
 
-    __slots__ = ("graph", "opset_imports", "ir_version", "producer_name",
-                 "producer_version", "domain", "model_version", "doc_string",
-                 "metadata_props", "functions")
+    __slots__ = (
+        "graph",
+        "opset_imports",
+        "ir_version",
+        "producer_name",
+        "producer_version",
+        "domain",
+        "model_version",
+        "doc_string",
+        "metadata_props",
+        "functions",
+    )
 
     def __init__(
         self,
@@ -381,9 +418,11 @@ class Model:
         functions: Optional[List[Any]] = None,
     ):
         self.graph = graph
-        self.opset_imports = list(opset_imports) if opset_imports else [
-            OpsetImport("", ONNX_OPSET_VERSION)
-        ]
+        self.opset_imports = (
+            list(opset_imports)
+            if opset_imports
+            else [OpsetImport("", ONNX_OPSET_VERSION)]
+        )
         self.ir_version = ir_version
         self.producer_name = producer_name
         self.producer_version = producer_version

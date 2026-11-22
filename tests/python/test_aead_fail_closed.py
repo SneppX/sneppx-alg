@@ -15,7 +15,9 @@ from SneppX_ALG.interface_bindings import crypto_symmetric as cs
     ],
 )
 def test_encrypt_refuses_without_backend(monkeypatch, factory, key):
-    monkeypatch.setitem(sys.modules, "cryptography.hazmat.primitives.ciphers.aead", None)
+    monkeypatch.setitem(
+        sys.modules, "cryptography.hazmat.primitives.ciphers.aead", None
+    )
     cipher = factory(key)
     with pytest.raises(RuntimeError, match="cryptography"):
         cipher.encrypt(b"top secret")
@@ -29,7 +31,9 @@ def test_encrypt_refuses_without_backend(monkeypatch, factory, key):
     ],
 )
 def test_decrypt_refuses_without_backend(monkeypatch, factory, key):
-    monkeypatch.setitem(sys.modules, "cryptography.hazmat.primitives.ciphers.aead", None)
+    monkeypatch.setitem(
+        sys.modules, "cryptography.hazmat.primitives.ciphers.aead", None
+    )
     cipher = factory(key)
     with pytest.raises(RuntimeError, match="cryptography"):
         cipher.decrypt(b"\x00" * 28)

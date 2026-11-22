@@ -1,6 +1,6 @@
 #include "virtualized_code_execution.h"
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
 #include <iostream>
 #include <vector>
 
@@ -19,16 +19,38 @@
  *
  */
 
-
 static int tests_passed = 0;
 static int tests_failed = 0;
 
-#define TEST(name) do { printf("  TEST: %s ... ", name); } while(0)
-#define PASS() do { printf("PASS\n"); tests_passed++; } while(0)
-#define FAIL(msg) do { printf("FAIL: %s\n", msg); tests_failed++; } while(0)
-#define ASSERT(cond, msg) do { if (!(cond)) { FAIL(msg); return; } } while(0)
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST: %s ... ", name);                                                                               \
+    } while (0)
+#define PASS()                                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+        tests_passed++;                                                                                                \
+    } while (0)
+#define FAIL(msg)                                                                                                      \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("FAIL: %s\n", msg);                                                                                     \
+        tests_failed++;                                                                                                \
+    } while (0)
+#define ASSERT(cond, msg)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            FAIL(msg);                                                                                                 \
+            return;                                                                                                    \
+        }                                                                                                              \
+    } while (0)
 
-void test_vm_add() {
+void test_vm_add()
+{
     TEST("vm_add_registers");
     SNEPPX::SNEPPXObfVM vm;
 
@@ -61,7 +83,8 @@ void test_vm_add() {
     PASS();
 }
 
-void test_vm_loop() {
+void test_vm_loop()
+{
     TEST("vm_simple_loop");
     SNEPPX::SNEPPXObfVM vm;
 
@@ -94,7 +117,8 @@ void test_vm_loop() {
     PASS();
 }
 
-void test_handler_encryption() {
+void test_handler_encryption()
+{
     TEST("handler_encryption");
     SNEPPX::SNEPPXObfVM vm;
 
@@ -117,7 +141,8 @@ void test_handler_encryption() {
     PASS();
 }
 
-void test_vm_arithmetic() {
+void test_vm_arithmetic()
+{
     TEST("vm_arithmetic_chain");
     SNEPPX::SNEPPXObfVM vm;
 
@@ -160,7 +185,8 @@ void test_vm_arithmetic() {
     PASS();
 }
 
-int main() {
+int main()
+{
     printf("\n=== S2 Obfuscation VM Tests ===\n\n");
 
     test_vm_add();
@@ -168,8 +194,7 @@ int main() {
     test_handler_encryption();
     test_vm_arithmetic();
 
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
+    printf("\nResults: %d passed, %d failed out of %d\n", tests_passed, tests_failed, tests_passed + tests_failed);
 
     return tests_failed > 0 ? 1 : 0;
 }

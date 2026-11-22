@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -45,7 +47,7 @@ def test_higher_order_chain_mlp():
 
     H_eng = _engine_hessian(build, p)
     # analytic: logits = h @ p  => J[(n,m),(k,m')] = h[n,k] * delta_{m,m'}
-    h = (x.data @ W1.data)
+    h = x.data @ W1.data
     # LayerNorm then Gelu (recompute numerically using the op's forward)
     ln = ops.LayerNorm.apply(Tensor(h), gamma, beta).data
     h_act = ops.Gelu.apply(Tensor(ln)).data  # (3,4)
@@ -56,9 +58,9 @@ def test_higher_order_chain_mlp():
         for kk in range(D):
             for m in range(M):
                 H_ref[k * M + m, kk * M + m] = 2.0 * S[k, kk]
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"Hessian mismatch (MLP chain) max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"Hessian mismatch (MLP chain) max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 def test_higher_order_chain_rmsnorm_mse():
@@ -85,11 +87,11 @@ def test_higher_order_chain_rmsnorm_mse():
     H_eng = _engine_hessian(build, p)
     # J[(n,d_out), d'] = lin[n,d_out]/rms[n] * delta_{d_out,d'}
     #   => J^T J is DIAGONAL: H[d,d'] = 2*delta_{d,d'} * sum_n (lin[n,d]/rms[n])^2
-    scale = (lin / rms)  # (2,5)
+    scale = lin / rms  # (2,5)
     H_ref = 2.0 * np.diag((scale**2).sum(axis=0))  # (5,5) diagonal
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"Hessian mismatch (RMSNorm/MSE) max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"Hessian mismatch (RMSNorm/MSE) max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 if __name__ == "__main__":

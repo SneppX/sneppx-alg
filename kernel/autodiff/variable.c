@@ -17,8 +17,6 @@
  *   None (internal kernel module).
  */
 
-
-
 /**
  * @brief Create Variable.
  *
@@ -26,9 +24,11 @@
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXVariable* SNEPPX_variable_create(SNEPPXTensor* data, int requires_grad) {
-    SNEPPXVariable* var = (SNEPPXVariable*)SNEPPX_malloc(sizeof(SNEPPXVariable), 64);
-    if (!var) return NULL;
+SNEPPXVariable* SNEPPX_variable_create(SNEPPXTensor* data, int requires_grad)
+{
+    SNEPPXVariable* var = (SNEPPXVariable*) SNEPPX_malloc(sizeof(SNEPPXVariable), 64);
+    if (!var)
+        return NULL;
     memset(var, 0, sizeof(SNEPPXVariable));
     var->data = data;
     var->requires_grad = SNEPPX_no_grad_is_active() ? 0 : requires_grad;
@@ -48,12 +48,18 @@ SNEPPXVariable* SNEPPX_variable_create(SNEPPXTensor* data, int requires_grad) {
 /**
  * @brief Destroy Variable.
  */
-void SNEPPX_variable_destroy(SNEPPXVariable* var) {
-    if (!var) return;
-    if (var->data) SNEPPX_tensor_destroy(var->data);
-    if (var->grad) SNEPPX_tensor_destroy(var->grad);
-    if (var->backward_ctx && var->free_ctx) var->free_ctx(var->backward_ctx);
-    if (var->parents) SNEPPX_free(var->parents, var->num_parents * sizeof(SNEPPXVariable*));
+void SNEPPX_variable_destroy(SNEPPXVariable* var)
+{
+    if (!var)
+        return;
+    if (var->data)
+        SNEPPX_tensor_destroy(var->data);
+    if (var->grad)
+        SNEPPX_tensor_destroy(var->grad);
+    if (var->backward_ctx && var->free_ctx)
+        var->free_ctx(var->backward_ctx);
+    if (var->parents)
+        SNEPPX_free(var->parents, var->num_parents * sizeof(SNEPPXVariable*));
     SNEPPX_free(var, sizeof(SNEPPXVariable));
 }
 
@@ -62,8 +68,10 @@ void SNEPPX_variable_destroy(SNEPPXVariable* var) {
  *
  * @param var [out] Var value.
  */
-void SNEPPX_variable_set_requires_grad(SNEPPXVariable* var, int requires_grad) {
-    if (!var) return;
+void SNEPPX_variable_set_requires_grad(SNEPPXVariable* var, int requires_grad)
+{
+    if (!var)
+        return;
     var->requires_grad = requires_grad;
 }
 
@@ -72,11 +80,14 @@ void SNEPPX_variable_set_requires_grad(SNEPPXVariable* var, int requires_grad) {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXVariable* SNEPPX_variable_detach(SNEPPXVariable* var) {
-    if (!var || !var->data) return NULL;
-    SNEPPXVariable* out = SNEPPX_variable_create(
-        SNEPPX_tensor_create(var->data->shape, var->data->ndim, SNEPPX_FLOAT32), 0);
-    if (out && out->data) {
+SNEPPXVariable* SNEPPX_variable_detach(SNEPPXVariable* var)
+{
+    if (!var || !var->data)
+        return NULL;
+    SNEPPXVariable* out =
+        SNEPPX_variable_create(SNEPPX_tensor_create(var->data->shape, var->data->ndim, SNEPPX_FLOAT32), 0);
+    if (out && out->data)
+    {
         memcpy(out->data->data, var->data->data, var->data->size * sizeof(float));
     }
     return out;
@@ -87,15 +98,20 @@ SNEPPXVariable* SNEPPX_variable_detach(SNEPPXVariable* var) {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXVariable* SNEPPX_variable_copy(SNEPPXVariable* var) {
-    if (!var || !var->data) return NULL;
+SNEPPXVariable* SNEPPX_variable_copy(SNEPPXVariable* var)
+{
+    if (!var || !var->data)
+        return NULL;
     SNEPPXVariable* out = SNEPPX_variable_create(
         SNEPPX_tensor_create(var->data->shape, var->data->ndim, SNEPPX_FLOAT32), var->requires_grad);
-    if (out && out->data) {
+    if (out && out->data)
+    {
         memcpy(out->data->data, var->data->data, var->data->size * sizeof(float));
-        if (var->grad) {
+        if (var->grad)
+        {
             out->grad = SNEPPX_tensor_create(var->grad->shape, var->grad->ndim, SNEPPX_FLOAT32);
-            if (out->grad) memcpy(out->grad->data, var->grad->data, var->grad->size * sizeof(float));
+            if (out->grad)
+                memcpy(out->grad->data, var->grad->data, var->grad->size * sizeof(float));
         }
     }
     return out;
@@ -104,9 +120,15 @@ SNEPPXVariable* SNEPPX_variable_copy(SNEPPXVariable* var) {
 /**
  * @brief Perform Variable Zero Grad.
  */
-void SNEPPX_variable_zero_grad(SNEPPXVariable* var) {
-    if (!var) return;
-    if (var->grad) { SNEPPX_tensor_destroy(var->grad); var->grad = NULL; }
+void SNEPPX_variable_zero_grad(SNEPPXVariable* var)
+{
+    if (!var)
+        return;
+    if (var->grad)
+    {
+        SNEPPX_tensor_destroy(var->grad);
+        var->grad = NULL;
+    }
 }
 
 /**
@@ -114,9 +136,11 @@ void SNEPPX_variable_zero_grad(SNEPPXVariable* var) {
  *
  * @return The result value, or 0 on error.
  */
-float SNEPPX_variable_item(SNEPPXVariable* var) {
-    if (!var || !var->data || var->data->size == 0) return 0.0f;
-    return ((float*)var->data->data)[0];
+float SNEPPX_variable_item(SNEPPXVariable* var)
+{
+    if (!var || !var->data || var->data->size == 0)
+        return 0.0f;
+    return ((float*) var->data->data)[0];
 }
 
 /**
@@ -124,7 +148,9 @@ float SNEPPX_variable_item(SNEPPXVariable* var) {
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_variable_numel(SNEPPXVariable* var) {
-    if (!var || !var->data) return 0;
+size_t SNEPPX_variable_numel(SNEPPXVariable* var)
+{
+    if (!var || !var->data)
+        return 0;
     return var->data->size;
 }

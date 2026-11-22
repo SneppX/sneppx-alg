@@ -48,18 +48,19 @@ def test_grad_single_argnum():
     w = RNG.normal(size=(6, 4)).astype(np.float32)
     b = RNG.normal(size=4).astype(np.float32)
     gx = grad(_mlp, argnums=0)(x, w, b)
-    num = np.array([_finite_diff(lambda t: _mlp(t, w, b), x, k)
-                    for k in range(x.size)])
+    num = np.array([_finite_diff(lambda t: _mlp(t, w, b), x, k) for k in range(x.size)])
     assert gx.shape == x.shape
     assert np.abs(gx - num).max() < 1e-3
     gw = grad(_mlp, argnums=1)(x, w, b)
-    numw = np.array([_finite_diff(lambda t: _mlp(x, t, b), w, k)
-                     for k in range(w.size)]).reshape(w.shape)
+    numw = np.array(
+        [_finite_diff(lambda t: _mlp(x, t, b), w, k) for k in range(w.size)]
+    ).reshape(w.shape)
     assert gw.shape == w.shape
     assert np.abs(gw - numw).max() < 1e-3
     gb = grad(_mlp, argnums=2)(x, w, b)
-    numb = np.array([_finite_diff(lambda t: _mlp(x, w, t), b, k)
-                     for k in range(b.size)]).reshape(b.shape)
+    numb = np.array(
+        [_finite_diff(lambda t: _mlp(x, w, t), b, k) for k in range(b.size)]
+    ).reshape(b.shape)
     assert np.abs(gb - numb).max() < 1e-3
     print("  test_grad_single_argnum PASS")
 
@@ -71,12 +72,15 @@ def test_grad_multi_argnum_returns_tuple():
     g = grad(_mlp, argnums=[0, 1, 2])(x, w, b)
     assert isinstance(g, tuple) and len(g) == 3
     assert g[0].shape == x.shape and g[1].shape == w.shape and g[2].shape == b.shape
-    num0 = np.array([_finite_diff(lambda t: _mlp(t, w, b), x, k)
-                     for k in range(x.size)])
-    num1 = np.array([_finite_diff(lambda t: _mlp(x, t, b), w, k)
-                     for k in range(w.size)]).reshape(w.shape)
-    num2 = np.array([_finite_diff(lambda t: _mlp(x, w, t), b, k)
-                     for k in range(b.size)]).reshape(b.shape)
+    num0 = np.array(
+        [_finite_diff(lambda t: _mlp(t, w, b), x, k) for k in range(x.size)]
+    )
+    num1 = np.array(
+        [_finite_diff(lambda t: _mlp(x, t, b), w, k) for k in range(w.size)]
+    ).reshape(w.shape)
+    num2 = np.array(
+        [_finite_diff(lambda t: _mlp(x, w, t), b, k) for k in range(b.size)]
+    ).reshape(b.shape)
     assert np.abs(g[0] - num0).max() < 1e-3
     assert np.abs(g[1] - num1).max() < 1e-3
     assert np.abs(g[2] - num2).max() < 1e-3
@@ -135,14 +139,18 @@ def test_mean_and_reduce_grads():
     assert np.allclose(gmean, 0.2, atol=1e-6)
     gsum = grad(lambda a: a.sum())(np.arange(5, dtype=np.float32))
     assert np.allclose(gsum, 1.0, atol=1e-6)
-    gsum_axis = grad(lambda a: a.sum(axis=0))(np.arange(6).reshape(2, 3).astype(np.float32))
+    gsum_axis = grad(lambda a: a.sum(axis=0))(
+        np.arange(6).reshape(2, 3).astype(np.float32)
+    )
     assert gsum_axis.shape == (2, 3)
     assert np.allclose(gsum_axis, 1.0, atol=1e-6)
     print("  test_mean_and_reduce_grads PASS")
 
 
 def test_getitem_and_reshape_grads():
-    ggi = grad(lambda a: (a[0] * a[1]).sum())(np.array([2.0, 3.0, 4.0], dtype=np.float32))
+    ggi = grad(lambda a: (a[0] * a[1]).sum())(
+        np.array([2.0, 3.0, 4.0], dtype=np.float32)
+    )
     assert np.allclose(ggi, [3.0, 2.0, 0.0], atol=1e-5)
     ggr = grad(lambda a: a.reshape(2, 2).sum())(np.arange(4, dtype=np.float32))
     assert np.allclose(ggr, [1.0, 1.0, 1.0, 1.0], atol=1e-6)
@@ -171,9 +179,15 @@ def test_vmap():
     assert out.shape == (5,)
     ref = np.array([body(X[i]) for i in range(5)])
     assert np.allclose(out, ref, atol=1e-5)
-    meanv = vmap(lambda a: (a * a).mean())(np.arange(12).reshape(4, 3).astype(np.float32))
+    meanv = vmap(lambda a: (a * a).mean())(
+        np.arange(12).reshape(4, 3).astype(np.float32)
+    )
     assert meanv.shape == (4,)
-    assert np.allclose(meanv, np.array([(r * r).mean() for r in np.arange(12).reshape(4, 3)]), atol=1e-5)
+    assert np.allclose(
+        meanv,
+        np.array([(r * r).mean() for r in np.arange(12).reshape(4, 3)]),
+        atol=1e-5,
+    )
     print("  test_vmap PASS")
 
 

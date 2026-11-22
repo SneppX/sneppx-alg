@@ -46,7 +46,11 @@ def _find_library() -> Optional[ctypes.CDLL]:
         if not d:
             continue
         for name in candidates:
-            path = os.path.join(d, name) if not name.endswith((".dll", ".so", ".dylib")) else name
+            path = (
+                os.path.join(d, name)
+                if not name.endswith((".dll", ".so", ".dylib"))
+                else name
+            )
             try:
                 return ctypes.CDLL(path)
             except OSError:
@@ -75,7 +79,16 @@ def _lower(text: str) -> str:
 
 
 def _ml_jailbreak_patterns() -> List[str]:
-    return ["ignora", "ignorer", "忽略", "무시", "ignore", "jailbreak", "dan", "override"]
+    return [
+        "ignora",
+        "ignorer",
+        "忽略",
+        "무시",
+        "ignore",
+        "jailbreak",
+        "dan",
+        "override",
+    ]
 
 
 def _py_ml_jailbreak_detect(text: str) -> int:
@@ -163,11 +176,21 @@ def _encoded_attack_decode(text: str, in_len: Optional[int] = None) -> str:
 
 
 _ENCODED_PATTERNS = [
-    "drop table", "select * from", "delete from", "insert into",
-    "exec ", "eval(", "os.system", "subprocess",
-    "<?php", "<script>", "javascript:",
-    "ignore all instructions", "ignore previous",
-    "jailbreak", "override filter",
+    "drop table",
+    "select * from",
+    "delete from",
+    "insert into",
+    "exec ",
+    "eval(",
+    "os.system",
+    "subprocess",
+    "<?php",
+    "<script>",
+    "javascript:",
+    "ignore all instructions",
+    "ignore previous",
+    "jailbreak",
+    "override filter",
 ]
 
 
@@ -190,7 +213,9 @@ def _py_token_anomaly_score(probs: List[float]) -> float:
     return total / len(probs)
 
 
-def _py_model_inversion_apply(gradients: np.ndarray, noise_scale: float, clip_norm: float) -> np.ndarray:
+def _py_model_inversion_apply(
+    gradients: np.ndarray, noise_scale: float, clip_norm: float
+) -> np.ndarray:
     g = gradients.astype(np.float64).copy()
     norm = float(np.sqrt(np.sum(g * g)))
     if clip_norm > 0 and norm > clip_norm:
@@ -215,19 +240,40 @@ def _py_data_extraction_prevent(text: str) -> int:
     i = 0
     # SSN-like patterns: dddd-dddd or ddd-dd-dddd
     while i + 13 < n:
-        if (text[i:i + 4].isdigit() and text[i + 4] == "-" and text[i + 5:i + 9].isdigit()
-                and text[i + 9] == "-" and text[i + 10:i + 14].isdigit()):
+        if (
+            text[i : i + 4].isdigit()
+            and text[i + 4] == "-"
+            and text[i + 5 : i + 9].isdigit()
+            and text[i + 9] == "-"
+            and text[i + 10 : i + 14].isdigit()
+        ):
             return 1
         i += 1
     i = 0
     while i + 10 < n:
-        if (text[i:i + 3].isdigit() and text[i + 3] == "-" and text[i + 4:i + 6].isdigit()
-                and text[i + 6] == "-" and text[i + 7:i + 11].isdigit()):
+        if (
+            text[i : i + 3].isdigit()
+            and text[i + 3] == "-"
+            and text[i + 4 : i + 6].isdigit()
+            and text[i + 6] == "-"
+            and text[i + 7 : i + 11].isdigit()
+        ):
             return 1
         i += 1
     low = _lower(text)
-    for p in ["sk-", "pk-", "api_key", "apikey", "api-key", "akia", "asia",
-               "ghp_", "gho_", "ghu_", "ghs_"]:
+    for p in [
+        "sk-",
+        "pk-",
+        "api_key",
+        "apikey",
+        "api-key",
+        "akia",
+        "asia",
+        "ghp_",
+        "gho_",
+        "ghu_",
+        "ghs_",
+    ]:
         if p in low:
             return 1
     return 0
@@ -239,7 +285,7 @@ def _py_training_sanitize(text: str) -> str:
     n = len(text)
     redacted = "[REDACTED]"
     while i < n:
-        if i + 3 < n and text[i:i + 4].lower() == "http":
+        if i + 3 < n and text[i : i + 4].lower() == "http":
             end = i
             while end < n and text[end] not in " \t\n\r,":
                 end += 1
@@ -256,14 +302,19 @@ def _py_training_sanitize(text: str) -> str:
             out.append(redacted)
             i = end
             continue
-        if i + 6 < n and text[i:i + 3].isdigit() and text[i + 3] == "." and text[i + 4:i + 7].isdigit():
+        if (
+            i + 6 < n
+            and text[i : i + 3].isdigit()
+            and text[i + 3] == "."
+            and text[i + 4 : i + 7].isdigit()
+        ):
             end = i
             while end < n and (text[end].isdigit() or text[end] == "."):
                 end += 1
             out.append(redacted)
             i = end
             continue
-        if i + 2 < n and text[i:i + 2].isdigit() and text[i + 2] == "-":
+        if i + 2 < n and text[i : i + 2].isdigit() and text[i + 2] == "-":
             end = i
             while end < n and (text[end].isdigit() or text[end] == "-"):
                 end += 1
@@ -278,15 +329,17 @@ def _py_training_sanitize(text: str) -> str:
 def _py_factuality_score(statement: str, reference: str) -> float:
     if not statement or not reference or len(statement) < 2 or len(reference) < 2:
         return 0.5
-    s_bi = set(statement[i:i + 2].lower() for i in range(len(statement) - 1))
-    r_bi = set(reference[i:i + 2].lower() for i in range(len(reference) - 1))
+    s_bi = set(statement[i : i + 2].lower() for i in range(len(statement) - 1))
+    r_bi = set(reference[i : i + 2].lower() for i in range(len(reference) - 1))
     if not s_bi or not r_bi:
         return 0.5
     intersect = len(s_bi & r_bi)
     return (2.0 * intersect) / (len(s_bi) + len(r_bi))
 
 
-def _py_bias_measure(predictions: List[float], sensitive: List[int]) -> Dict[str, float]:
+def _py_bias_measure(
+    predictions: List[float], sensitive: List[int]
+) -> Dict[str, float]:
     sum0 = sum1 = 0.0
     cnt0 = cnt1 = 0
     for p, s in zip(predictions, sensitive):
@@ -300,7 +353,9 @@ def _py_bias_measure(predictions: List[float], sensitive: List[int]) -> Dict[str
     mean1 = sum1 / cnt1 if cnt1 else 0.0
     return {
         "demographic_parity": mean1 - mean0,
-        "equalized_odds": (mean1 - mean0) / (mean0 + 1e-10) if (mean0 > 0 and mean1 > 0) else 0.0,
+        "equalized_odds": (mean1 - mean0) / (mean0 + 1e-10)
+        if (mean0 > 0 and mean1 > 0)
+        else 0.0,
     }
 
 
@@ -311,14 +366,16 @@ def _text_to_embedding(text: str) -> np.ndarray:
         ci = ord(c) if ord(c) < 256 else 0
         h[i % 8] += ci
         h[(i + 1) % 8] += math.sin(ci) * (i + 1)
-    h /= (n + 1)
+    h /= n + 1
     norm = float(np.sqrt(np.sum(h * h)))
     if norm > 1e-10:
         h /= norm
     return h
 
 
-def _py_semantic_injection_score(detector_attacks: List[np.ndarray], embedding: np.ndarray, threshold: float) -> Tuple[int, float]:
+def _py_semantic_injection_score(
+    detector_attacks: List[np.ndarray], embedding: np.ndarray, threshold: float
+) -> Tuple[int, float]:
     best = 0.0
     for atk in detector_attacks:
         dot = float(np.dot(embedding, atk))
@@ -372,7 +429,11 @@ def _ctypes_encoded_attack_scan(text: str) -> int:
 def _ctypes_data_extraction_prevent(text: str) -> int:
     b = text.encode("utf-8")
     out = ctypes.c_int()
-    _LIB.SNEPPX_data_extraction_prevent.argtypes = [ctypes.c_char_p, ctypes.c_size_t, ctypes.POINTER(ctypes.c_int)]
+    _LIB.SNEPPX_data_extraction_prevent.argtypes = [
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int),
+    ]
     _LIB.SNEPPX_data_extraction_prevent.restype = ctypes.c_int
     rc = _LIB.SNEPPX_data_extraction_prevent(b, len(b), ctypes.byref(out))
     return out.value if rc == 0 else 0
@@ -477,7 +538,10 @@ class S5OutputVerifier:
         buf = ctypes.create_string_buffer(len(b) + 1024)
         out_len = ctypes.c_size_t(len(buf))
         _LIB.SNEPPX_training_sanitize.argtypes = [
-            ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p, ctypes.POINTER(ctypes.c_size_t)
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.c_size_t),
         ]
         _LIB.SNEPPX_training_sanitize.restype = ctypes.c_int
         _LIB.SNEPPX_training_sanitize(b, len(b), buf, ctypes.byref(out_len))
@@ -500,9 +564,9 @@ class S5RLHFSafety:
         self._membership_epsilon = 1.0
         self._inv_noise = 0.01
         self._inv_clip = 1.0
-        self._watermark_key = (
-            np.frombuffer((watermark_key or b"sneppx-s5").ljust(32, b"\0")[:32], dtype=np.uint8).astype(np.float64)
-        )
+        self._watermark_key = np.frombuffer(
+            (watermark_key or b"sneppx-s5").ljust(32, b"\0")[:32], dtype=np.uint8
+        ).astype(np.float64)
 
     # --- Factuality -------------------------------------------------------
     def factuality_score(self, statement: str, reference: str) -> float:
@@ -515,7 +579,9 @@ class S5RLHFSafety:
         return _py_factuality_score(statement, reference)
 
     # --- Bias -------------------------------------------------------------
-    def bias_measure(self, predictions: List[float], sensitive: List[int]) -> Dict[str, float]:
+    def bias_measure(
+        self, predictions: List[float], sensitive: List[int]
+    ) -> Dict[str, float]:
         return _py_bias_measure(predictions, sensitive)
 
     def bias_report(self, predictions: List[float], sensitive: List[int]) -> str:
@@ -534,7 +600,9 @@ class S5RLHFSafety:
 
     def semantic_injection_score(self, text: str) -> Tuple[int, float]:
         emb = _text_to_embedding(text)
-        return _py_semantic_injection_score(self._semantic_attacks, emb, self._semantic_threshold)
+        return _py_semantic_injection_score(
+            self._semantic_attacks, emb, self._semantic_threshold
+        )
 
     # --- Token anomaly ----------------------------------------------------
     def token_anomaly_score(self, probs: List[float]) -> float:
@@ -544,42 +612,60 @@ class S5RLHFSafety:
         self._token_anomaly_threshold = t
 
     def token_anomaly_check(self, probs: List[float]) -> int:
-        return 1 if self.token_anomaly_score(probs) > self._token_anomaly_threshold else 0
+        return (
+            1 if self.token_anomaly_score(probs) > self._token_anomaly_threshold else 0
+        )
 
     # --- Membership inference defense -------------------------------------
-    def membership_inference_defense(self, logits: np.ndarray, epsilon: Optional[float] = None) -> np.ndarray:
+    def membership_inference_defense(
+        self, logits: np.ndarray, epsilon: Optional[float] = None
+    ) -> np.ndarray:
         eps = self._membership_epsilon if epsilon is None else epsilon
         if _HAS_C_S5:
             arr = np.asarray(logits, dtype=np.float64).reshape(-1)
             out = np.empty_like(arr)
             _LIB.SNEPPX_membership_inference_defense_apply.argtypes = [
-                ctypes.POINTER(ctypes.c_double), ctypes.c_size_t, ctypes.c_double,
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.c_size_t,
+                ctypes.c_double,
                 ctypes.POINTER(ctypes.c_double),
             ]
             _LIB.SNEPPX_membership_inference_defense_apply.restype = ctypes.c_int
             _LIB.SNEPPX_membership_inference_defense_apply(
                 arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-                arr.size, eps,
+                arr.size,
+                eps,
                 out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             )
             return out.reshape(np.asarray(logits).shape)
-        return _py_membership_inference_defense(np.asarray(logits, dtype=np.float64), eps)
+        return _py_membership_inference_defense(
+            np.asarray(logits, dtype=np.float64), eps
+        )
 
     # --- Model inversion defense ------------------------------------------
-    def model_inversion_defense(self, gradients: np.ndarray, noise: Optional[float] = None,
-                                clip: Optional[float] = None) -> np.ndarray:
+    def model_inversion_defense(
+        self,
+        gradients: np.ndarray,
+        noise: Optional[float] = None,
+        clip: Optional[float] = None,
+    ) -> np.ndarray:
         g = np.asarray(gradients, dtype=np.float64)
         noise = self._inv_noise if noise is None else noise
         clip = self._inv_clip if clip is None else clip
         if _HAS_C_S5:
             out = np.empty_like(g)
             _LIB.SNEPPX_model_inversion_defend_gradients.argtypes = [
-                ctypes.POINTER(ctypes.c_double), ctypes.c_size_t, ctypes.c_double, ctypes.c_double
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.c_size_t,
+                ctypes.c_double,
+                ctypes.c_double,
             ]
             _LIB.SNEPPX_model_inversion_defend_gradients.restype = ctypes.c_int
             _LIB.SNEPPX_model_inversion_defend_gradients(
                 g.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-                g.size, noise, clip,
+                g.size,
+                noise,
+                clip,
                 out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             )
             return out
@@ -593,7 +679,9 @@ class S5RLHFSafety:
         return w
 
     def watermark_detect(self, weights: np.ndarray) -> int:
-        return _py_watermark_detect(np.asarray(weights, dtype=np.float64), self._watermark_key)
+        return _py_watermark_detect(
+            np.asarray(weights, dtype=np.float64), self._watermark_key
+        )
 
     # --- Adversarial smoothing --------------------------------------------
     def adversarial_smooth(self, inp: np.ndarray, epsilon: float) -> np.ndarray:

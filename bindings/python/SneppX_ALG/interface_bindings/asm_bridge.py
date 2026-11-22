@@ -22,17 +22,18 @@ class CPUFeatures:
         self._detect()
 
     def _detect(self):
-        self._features["aes_ni"] = self._check_bit(2, 25)   # ECX bit 25
-        self._features["sha_ni"] = self._check_bit(7, 29)   # EBX bit 29 (leaf 7)
-        self._features["avx2"] = self._check_bit(7, 5)      # EBX bit 5 (leaf 7)
-        self._features["sse2"] = self._check_bit(1, 26)     # EDX bit 26
-        self._features["bmi2"] = self._check_bit(7, 8)      # EBX bit 8 (leaf 7)
-        self._features["adx"] = self._check_bit(7, 19)      # EBX bit 19 (leaf 7)
+        self._features["aes_ni"] = self._check_bit(2, 25)  # ECX bit 25
+        self._features["sha_ni"] = self._check_bit(7, 29)  # EBX bit 29 (leaf 7)
+        self._features["avx2"] = self._check_bit(7, 5)  # EBX bit 5 (leaf 7)
+        self._features["sse2"] = self._check_bit(1, 26)  # EDX bit 26
+        self._features["bmi2"] = self._check_bit(7, 8)  # EBX bit 8 (leaf 7)
+        self._features["adx"] = self._check_bit(7, 19)  # EBX bit 19 (leaf 7)
 
     @staticmethod
     def _check_bit(leaf: int, bit: int) -> bool:
         try:
             import cpuid
+
             if leaf == 1:
                 _, _, ecx, edx = cpuid.cpuid(1)
                 return bool(ecx & (1 << 25)) if bit >= 32 else bool(edx & (1 << bit))
@@ -86,8 +87,7 @@ class AsmLibrary:
     def available(self) -> bool:
         return self._has_c
 
-    def get_function(self, name: str, restype=ctypes.c_int,
-                     *argtypes) -> AsmFunction:
+    def get_function(self, name: str, restype=ctypes.c_int, *argtypes) -> AsmFunction:
         return AsmFunction(self._lib, name, restype, *argtypes)
 
 
@@ -99,8 +99,11 @@ class ConstantTime:
         self._ct_cmp = None
         if self._asm.available:
             self._ct_cmp = self._asm.get_function(
-                "sneppx_ct_compare_u64", ctypes.c_uint64,
-                ctypes.c_uint64, ctypes.c_uint64)
+                "sneppx_ct_compare_u64",
+                ctypes.c_uint64,
+                ctypes.c_uint64,
+                ctypes.c_uint64,
+            )
 
     def compare_u64(self, a: int, b: int) -> bool:
         if self._ct_cmp and self._ct_cmp.available:
@@ -128,8 +131,8 @@ class SecureMemory:
         self._wipe_func = None
         if self._asm.available:
             self._wipe_func = self._asm.get_function(
-                "sneppx_secure_wipe", None,
-                ctypes.c_void_p, ctypes.c_size_t)
+                "sneppx_secure_wipe", None, ctypes.c_void_p, ctypes.c_size_t
+            )
 
     def wipe(self, data: bytearray):
         n = len(data)

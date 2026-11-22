@@ -142,7 +142,7 @@ See `docs/CODE_REVIEW_GUIDE.md` for:
 ## Security
 
 - All security-related PRs require an L3 security review
-- Report vulnerabilities to algoSNEPPX@gmail.com
+- Report vulnerabilities to <algoSNEPPX@gmail.com>
 - See `SECURITY.md` for full security policy
 
 ---
@@ -169,4 +169,4 @@ By contributing, you agree that your contributions are licensed under the MIT Li
 
 ---
 
-**Questions?** Contact: algoSNEPPX@gmail.com
+**Questions?** Contact: <algoSNEPPX@gmail.com>

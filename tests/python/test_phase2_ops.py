@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 
@@ -31,8 +33,9 @@ def check(name, inp, loss_fn, atol=1e-5):
     inp2.requires_grad_(True)
     loss_fn(inp2).backward()
     numeric = fd(inp, loss_fn)
-    assert np.allclose(inp2.grad.data, numeric, atol=atol), \
-        f"{name}: max|d|={np.abs(inp2.grad.data - numeric).max()}"
+    assert np.allclose(
+        inp2.grad.data, numeric, atol=atol
+    ), f"{name}: max|d|={np.abs(inp2.grad.data - numeric).max()}"
     print(f"{name}: OK")
 
 
@@ -80,8 +83,7 @@ def test_sign_zero_grad():
     x.requires_grad_(True)
     (x.sign() * x.sign()).mean().backward()
     assert np.all(np.asarray(x.grad.data) == 0.0)
-    assert np.allclose(np.asarray(x.sign().data),
-                       np.sign(np.asarray(x.data)))
+    assert np.allclose(np.asarray(x.sign().data), np.sign(np.asarray(x.data)))
 
 
 def test_reduction_backward_fd():
@@ -173,7 +175,7 @@ def test_keepdim_and_higher_order_elementwise():
     a = Tensor(arr.copy())
     a.requires_grad_(True)
     (a.square() ** 2).sum().backward()
-    assert np.allclose(np.asarray(a.grad.data), 4.0 * arr ** 3)
+    assert np.allclose(np.asarray(a.grad.data), 4.0 * arr**3)
 
     # prod(dim=tuple)
     p = t.prod(dim=(0, 1))

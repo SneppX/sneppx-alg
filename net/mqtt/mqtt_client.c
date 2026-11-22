@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Perform Mqtt Connect.
  *
@@ -27,11 +26,21 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_mqtt_connect(const char* broker, int port, const char* client_id, int keepalive) { (void)broker; (void)port; (void)client_id; (void)keepalive; return NULL; }
+void* SNEPPX_mqtt_connect(const char* broker, int port, const char* client_id, int keepalive)
+{
+    (void) broker;
+    (void) port;
+    (void) client_id;
+    (void) keepalive;
+    return NULL;
+}
 /**
  * @brief Perform Mqtt Disconnect.
  */
-void SNEPPX_mqtt_disconnect(void* client) { free(client); }
+void SNEPPX_mqtt_disconnect(void* client)
+{
+    free(client);
+}
 /**
  * @brief Perform Mqtt Subscribe.
  *
@@ -40,7 +49,13 @@ void SNEPPX_mqtt_disconnect(void* client) { free(client); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_subscribe(void* client, const char* topic, int qos) { (void)client; (void)topic; (void)qos; return 0; }
+int SNEPPX_mqtt_subscribe(void* client, const char* topic, int qos)
+{
+    (void) client;
+    (void) topic;
+    (void) qos;
+    return 0;
+}
 /**
  * @brief Perform Mqtt Unsubscribe.
  *
@@ -48,7 +63,12 @@ int SNEPPX_mqtt_subscribe(void* client, const char* topic, int qos) { (void)clie
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_unsubscribe(void* client, const char* topic) { (void)client; (void)topic; return 0; }
+int SNEPPX_mqtt_unsubscribe(void* client, const char* topic)
+{
+    (void) client;
+    (void) topic;
+    return 0;
+}
 /**
  * @brief Perform Mqtt Publish.
  *
@@ -60,23 +80,50 @@ int SNEPPX_mqtt_unsubscribe(void* client, const char* topic) { (void)client; (vo
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_publish(void* client, const char* topic, const unsigned char* payload, size_t len, int qos, int retain) { (void)client; (void)topic; (void)payload; (void)len; (void)qos; (void)retain; return 0; }
-int SNEPPX_mqtt_set_on_message(void* client, void (*cb)(void* client, const char* topic, const unsigned char* payload, size_t len)) { (void)client; (void)cb; return 0; }
+int SNEPPX_mqtt_publish(void* client, const char* topic, const unsigned char* payload, size_t len, int qos, int retain)
+{
+    (void) client;
+    (void) topic;
+    (void) payload;
+    (void) len;
+    (void) qos;
+    (void) retain;
+    return 0;
+}
+int SNEPPX_mqtt_set_on_message(void* client,
+                               void (*cb)(void* client, const char* topic, const unsigned char* payload, size_t len))
+{
+    (void) client;
+    (void) cb;
+    return 0;
+}
 /**
  * @brief Start Mqtt Loop.
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_loop_start(void* client) { (void)client; return 0; }
+int SNEPPX_mqtt_loop_start(void* client)
+{
+    (void) client;
+    return 0;
+}
 /**
  * @brief Stop Mqtt Loop.
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_loop_stop(void* client) { (void)client; return 0; }
+int SNEPPX_mqtt_loop_stop(void* client)
+{
+    (void) client;
+    return 0;
+}
 /**
  * @brief Perform Mqtt Is Connected.
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_mqtt_is_connected(void* client) { (void)client; return 0; }
+int SNEPPX_mqtt_is_connected(void* client)
+{
+    (void) client;
+    return 0;
+}

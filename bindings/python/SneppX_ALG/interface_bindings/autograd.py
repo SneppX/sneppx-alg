@@ -156,7 +156,9 @@ class Function:
         # Determine whether any input requires gradient. Under create_graph the
         # gradient tensors themselves carry grad_fn, so treat those as needing
         # grad too (this is what wires up higher-order derivatives).
-        needs_grad = _any_requires_grad(args) or (_create_graph_enabled() and _grad_enabled())
+        needs_grad = _any_requires_grad(args) or (
+            _create_graph_enabled() and _grad_enabled()
+        )
 
         output = cls.forward(ctx, *args, **kwargs)
 
@@ -223,6 +225,7 @@ def _backward(root, grad_output=None, create_graph=False, return_grads=False):
     """
 
     from .sparse import SparseTensor
+
     if not isinstance(root, (Tensor, SparseTensor)):
         return None
 
@@ -330,10 +333,12 @@ def _wrap_tensor_backward(tensor, grad_output=None, create_graph=False):
     """Replace Tensor.backward() so it clears and traverses."""
     if grad_output is None:
         import numpy as np
+
         if hasattr(tensor, "_values"):
             # SparseTensor: grad_output must match full dense shape, not just values
-            grad_output = Tensor(np.ones(tensor.size, dtype=np.float32),
-                                 dtype=tensor.dtype)
+            grad_output = Tensor(
+                np.ones(tensor.size, dtype=np.float32), dtype=tensor.dtype
+            )
         elif getattr(tensor, "numel", 0) == 1:
             grad_output = Tensor(np.ones_like(tensor.data), dtype=tensor.dtype)
 
@@ -449,6 +454,7 @@ def jvp(func, inputs, tangents):
 def _tensor_inputs(args):
     """Extract only the Tensor objects from an argument list."""
     from .sparse import SparseTensor
+
     result = []
     for a in args:
         if isinstance(a, (Tensor, SparseTensor)):
@@ -467,6 +473,7 @@ def _tensor_positions(args):
     so callers fall back to assuming backward output is already in Tensor order.
     """
     from .sparse import SparseTensor
+
     positions = []
     for i, a in enumerate(args):
         if isinstance(a, (Tensor, SparseTensor)):
@@ -481,6 +488,7 @@ def _any_requires_grad(args):
         if isinstance(a, Tensor) and (a.requires_grad or a._grad_fn is not None):
             return True
         from .sparse import SparseTensor
+
         if isinstance(a, SparseTensor) and (a.requires_grad or a._grad_fn is not None):
             return True
         if isinstance(a, (list, tuple)):

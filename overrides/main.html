@@ -1,39 +1,35 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block extrahead %} {{ super() }}
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="{{ base_url }}/feed_rss_updated.xml"
+/>
 
-{% block extrahead %}
-  {{ super() }}
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="{{ base_url }}/feed_rss_updated.xml">
+{% set sx_card = "https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" %} {% if page and
+page.is_homepage %} {% set sx_title = "SneppX-ALG documentation" %} {% set sx_desc = "Documentation for the SneppX-ALG
+native C/C++ project and Python bindings." %} {% elif page and page.title %} {% set sx_title = page.title ~ " |
+SneppX-ALG" %} {% set sx_desc = page.description or "Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." %} {% else %} {% set sx_title = "SneppX-ALG documentation" %} {% set sx_desc = "Documentation for the
+SneppX-ALG native C/C++ project and Python bindings." %} {% endif %}
 
-  {% set sx_card = "https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" %}
-  {% if page and page.is_homepage %}
-    {% set sx_title = "SneppX-ALG documentation" %}
-    {% set sx_desc = "Documentation for the SneppX-ALG native C/C++ project and Python bindings." %}
-  {% elif page and page.title %}
-    {% set sx_title = page.title ~ " | SneppX-ALG" %}
-    {% set sx_desc = page.description or "Documentation for the SneppX-ALG native C/C++ project and Python bindings." %}
-  {% else %}
-    {% set sx_title = "SneppX-ALG documentation" %}
-    {% set sx_desc = "Documentation for the SneppX-ALG native C/C++ project and Python bindings." %}
-  {% endif %}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="{{ sx_title | trim }}" />
+<meta property="og:description" content="{{ sx_desc | trim }}" />
+{% if page %}<meta property="og:url" content="{{ page.canonical_url }}" />{% endif %}
+<meta property="og:image" content="{{ sx_card }}" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{{ sx_title | trim }}" />
+<meta name="twitter:description" content="{{ sx_desc | trim }}" />
+<meta name="twitter:image" content="{{ sx_card }}" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="{{ sx_title | trim }}">
-  <meta property="og:description" content="{{ sx_desc | trim }}">
-  {% if page %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
-  <meta property="og:image" content="{{ sx_card }}">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ sx_title | trim }}">
-  <meta name="twitter:description" content="{{ sx_desc | trim }}">
-  <meta name="twitter:image" content="{{ sx_card }}">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
-
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -45,5 +41,5 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 {% endblock %}

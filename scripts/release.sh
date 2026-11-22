@@ -51,19 +51,19 @@ fi
 echo ">> Generating checksums..."
 cd "${RELEASE_DIR}"
 if command -v sha256sum &>/dev/null; then
-    sha256sum ${RELEASE_NAME}.* > SHA256SUMS 2>/dev/null || true
+    sha256sum ${RELEASE_NAME}.* >SHA256SUMS 2>/dev/null || true
 elif command -v shasum &>/dev/null; then
-    shasum -a 256 ${RELEASE_NAME}.* > SHA256SUMS 2>/dev/null || true
+    shasum -a 256 ${RELEASE_NAME}.* >SHA256SUMS 2>/dev/null || true
 fi
 
 if command -v sha512sum &>/dev/null; then
-    sha512sum ${RELEASE_NAME}.* > SHA512SUMS 2>/dev/null || true
+    sha512sum ${RELEASE_NAME}.* >SHA512SUMS 2>/dev/null || true
 elif command -v shasum &>/dev/null; then
-    shasum -a 512 ${RELEASE_NAME}.* > SHA512SUMS 2>/dev/null || true
+    shasum -a 512 ${RELEASE_NAME}.* >SHA512SUMS 2>/dev/null || true
 fi
 
 if command -v b3sum &>/dev/null; then
-    b3sum ${RELEASE_NAME}.* > BLAKE3SUMS 2>/dev/null || true
+    b3sum ${RELEASE_NAME}.* >BLAKE3SUMS 2>/dev/null || true
 fi
 
 # Print results

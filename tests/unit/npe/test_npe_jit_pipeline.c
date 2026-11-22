@@ -1,8 +1,8 @@
 #include "neural_programming_engine.h"
 #include "test_gtest.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Npe Jit Pipeline
@@ -19,11 +19,8 @@
  *
  */
 
-
-
-
-
-static void test_pipeline_identity(void) {
+static void test_pipeline_identity(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(64);
     SX_ASSERT(prog != NULL, "create program");
 
@@ -49,7 +46,8 @@ static void test_pipeline_identity(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-static void test_pipeline_null_profile(void) {
+static void test_pipeline_null_profile(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(16);
     SX_ASSERT(prog != NULL, "create program");
 
@@ -65,12 +63,14 @@ static void test_pipeline_null_profile(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-static void test_pipeline_null_prog(void) {
+static void test_pipeline_null_prog(void)
+{
     SNEPPXNPEProgram* opt = SNEPPX_npe_jit_optimize(NULL, NULL, NULL);
     SX_ASSERT(opt == NULL, "null prog returns null");
 }
 
-static void test_pipeline_fuses_matmul_add_relu(void) {
+static void test_pipeline_fuses_matmul_add_relu(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(64);
     SX_ASSERT(prog != NULL, "create program");
 
@@ -97,9 +97,10 @@ static void test_pipeline_fuses_matmul_add_relu(void) {
     SX_ASSERT(opt != NULL, "optimize returns program");
 
     int fused_count = 0;
-    for (size_t i = 0; i < opt->num_instructions; i++) {
-        if (opt->instructions[i].opcode == SNEPPX_MATMUL &&
-            (opt->instructions[i].immediate & 0x20000000)) {
+    for (size_t i = 0; i < opt->num_instructions; i++)
+    {
+        if (opt->instructions[i].opcode == SNEPPX_MATMUL && (opt->instructions[i].immediate & 0x20000000))
+        {
             fused_count++;
         }
     }
@@ -109,7 +110,8 @@ static void test_pipeline_fuses_matmul_add_relu(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-static void test_vm_auto_jit(void) {
+static void test_vm_auto_jit(void)
+{
     SNEPPXNPEConfig cfg = SNEPPX_npe_config_default();
     cfg.jit_enabled = 1;
     cfg.jit_hot_threshold = 5;
@@ -122,15 +124,19 @@ static void test_vm_auto_jit(void) {
     SX_ASSERT(prog != NULL, "mlp program created");
 
     float mem_data[128];
-    for (int i = 0; i < 128; i++) mem_data[i] = (float)(i % 4);
+    for (int i = 0; i < 128; i++)
+        mem_data[i] = (float) (i % 4);
     prog->memory = SNEPPX_tensor_create(SX_ARR_C(size_t, 1, 128), 1, SNEPPX_FLOAT32);
     memcpy(prog->memory->data, mem_data, 128 * sizeof(float));
 
     SNEPPX_npe_vm_load(vm, prog);
 
-    SNEPPXTensor* input = SNEPPX_tensor_create(SX_ARR_C(size_t, 2, 1,4), 2, SNEPPX_FLOAT32);
-    float* id = (float*)input->data;
-    id[0] = 1.0f; id[1] = 2.0f; id[2] = 3.0f; id[3] = 4.0f;
+    SNEPPXTensor* input = SNEPPX_tensor_create(SX_ARR_C(size_t, 2, 1, 4), 2, SNEPPX_FLOAT32);
+    float* id = (float*) input->data;
+    id[0] = 1.0f;
+    id[1] = 2.0f;
+    id[2] = 3.0f;
+    id[3] = 4.0f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_npe_vm_run(vm, input, &output);
@@ -145,7 +151,8 @@ static void test_vm_auto_jit(void) {
     SNEPPX_npe_vm_destroy(vm);
 }
 
-static void test_vm_optimize_direct(void) {
+static void test_vm_optimize_direct(void)
+{
     SNEPPXNPEConfig cfg = SNEPPX_npe_config_default();
     cfg.jit_enabled = 1;
     cfg.jit_hot_threshold = 1;
@@ -157,7 +164,8 @@ static void test_vm_optimize_direct(void) {
     SX_ASSERT(prog != NULL, "mlp program created");
 
     float mem_data[128];
-    for (int i = 0; i < 128; i++) mem_data[i] = (float)(i % 4);
+    for (int i = 0; i < 128; i++)
+        mem_data[i] = (float) (i % 4);
     prog->memory = SNEPPX_tensor_create(SX_ARR_C(size_t, 1, 128), 1, SNEPPX_FLOAT32);
     memcpy(prog->memory->data, mem_data, 128 * sizeof(float));
 
@@ -167,14 +175,32 @@ static void test_vm_optimize_direct(void) {
     SX_ASSERT(ret == 0, "direct optimize succeeded");
     SX_ASSERT(vm->program != NULL, "program replaced after optimize");
 
-    if (prog->memory) SNEPPX_tensor_destroy(prog->memory);
+    if (prog->memory)
+        SNEPPX_tensor_destroy(prog->memory);
     SNEPPX_npe_vm_destroy(vm);
 }
 
-
-TEST(test_npe_jit_pipeline, pipeline_identity) { test_pipeline_identity(); }
-TEST(test_npe_jit_pipeline, pipeline_null_profile) { test_pipeline_null_profile(); }
-TEST(test_npe_jit_pipeline, pipeline_null_prog) { test_pipeline_null_prog(); }
-TEST(test_npe_jit_pipeline, pipeline_fuses_matmul_add_relu) { test_pipeline_fuses_matmul_add_relu(); }
-TEST(test_npe_jit_pipeline, vm_auto_jit) { test_vm_auto_jit(); }
-TEST(test_npe_jit_pipeline, vm_optimize_direct) { test_vm_optimize_direct(); }
+TEST(test_npe_jit_pipeline, pipeline_identity)
+{
+    test_pipeline_identity();
+}
+TEST(test_npe_jit_pipeline, pipeline_null_profile)
+{
+    test_pipeline_null_profile();
+}
+TEST(test_npe_jit_pipeline, pipeline_null_prog)
+{
+    test_pipeline_null_prog();
+}
+TEST(test_npe_jit_pipeline, pipeline_fuses_matmul_add_relu)
+{
+    test_pipeline_fuses_matmul_add_relu();
+}
+TEST(test_npe_jit_pipeline, vm_auto_jit)
+{
+    test_vm_auto_jit();
+}
+TEST(test_npe_jit_pipeline, vm_optimize_direct)
+{
+    test_vm_optimize_direct();
+}

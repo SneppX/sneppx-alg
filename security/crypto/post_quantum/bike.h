@@ -34,14 +34,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_BIKE_128,
     SNEPPX_BIKE_192,
     SNEPPX_BIKE_256
 } SNEPPXBIKEVariant;
 
-typedef struct {
+typedef struct
+{
     SNEPPXBIKEVariant variant;
     uint32_t r_param;
     uint32_t w_param;
@@ -57,7 +58,8 @@ typedef struct {
     uint64_t* error_generator_state;
 } SNEPPXBIKEKeypair;
 
-typedef struct {
+typedef struct
+{
     uint8_t* ciphertext;
     size_t ciphertext_len;
     uint8_t* shared_secret;
@@ -70,7 +72,8 @@ typedef struct {
 
 int snepx_bike_keygen(SNEPPXBIKEKeypair* keypair, SNEPPXBIKEVariant variant);
 int snepx_bike_encapsulate(const SNEPPXBIKEKeypair* keypair, SNEPPXBIKECiphertext* ct);
-int snepx_bike_decapsulate(const SNEPPXBIKEKeypair* keypair, const SNEPPXBIKECiphertext* ct, uint8_t* shared_secret, size_t* ss_len);
+int snepx_bike_decapsulate(const SNEPPXBIKEKeypair* keypair, const SNEPPXBIKECiphertext* ct, uint8_t* shared_secret,
+                           size_t* ss_len);
 int snepx_bike_export_pubkey(const SNEPPXBIKEKeypair* keypair, uint8_t* out, size_t* out_len);
 int snepx_bike_import_pubkey(SNEPPXBIKEKeypair* keypair, const uint8_t* in, size_t in_len);
 int snepx_bike_export_seckey(const SNEPPXBIKEKeypair* keypair, uint8_t* out, size_t* out_len);
@@ -78,7 +81,8 @@ int snepx_bike_import_seckey(SNEPPXBIKEKeypair* keypair, const uint8_t* in, size
 int snepx_bike_keypair_destroy(SNEPPXBIKEKeypair* keypair);
 
 // BIKE decoder
-int snepx_bike_decode(uint64_t* syndrome, const uint64_t* h0, const uint64_t* h1, uint32_t r, uint32_t w, uint32_t t, uint64_t* error_out);
+int snepx_bike_decode(uint64_t* syndrome, const uint64_t* h0, const uint64_t* h1, uint32_t r, uint32_t w, uint32_t t,
+                      uint64_t* error_out);
 
 // Constant-time helpers
 int snepx_bike_ct_cmp(const uint8_t* a, const uint8_t* b, size_t len);

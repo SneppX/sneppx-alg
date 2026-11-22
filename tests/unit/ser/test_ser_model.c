@@ -1,7 +1,7 @@
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Ser Model
@@ -18,14 +18,14 @@
  *
  */
 
-
-
-
-
-static void test_model_create(void) {
+static void test_model_create(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16;
-    cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERModel* model = SNEPPX_ser_model_create(&cfg, 42, 2);
     SX_ASSERT(model != NULL, "model not null");
     SX_ASSERT(model->num_layers == 2, "num_layers == 2");
@@ -35,10 +35,14 @@ static void test_model_create(void) {
     SNEPPX_ser_model_destroy(model);
 }
 
-static void test_model_forward(void) {
+static void test_model_forward(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16;
-    cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERModel* model = SNEPPX_ser_model_create(&cfg, 42, 1);
     SX_ASSERT(model != NULL, "model not null");
 
@@ -63,10 +67,15 @@ static void test_model_forward(void) {
     SX_ASSERT(output->shape[0] == num_tokens, "output tokens");
     SX_ASSERT(output->shape[1] == 16, "output dim == 16");
 
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int ok = 1;
-    for (size_t i = 0; i < output->size; i++) {
-        if (!isfinite(od[i])) { ok = 0; break; }
+    for (size_t i = 0; i < output->size; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            ok = 0;
+            break;
+        }
     }
     SX_ASSERT(ok, "all finite");
 
@@ -75,6 +84,11 @@ static void test_model_forward(void) {
     SNEPPX_ser_model_destroy(model);
 }
 
-
-TEST(test_ser_model, test_model_create) { test_model_create(); }
-TEST(test_ser_model, test_model_forward) { test_model_forward(); }
+TEST(test_ser_model, test_model_create)
+{
+    test_model_create();
+}
+TEST(test_ser_model, test_model_forward)
+{
+    test_model_forward();
+}

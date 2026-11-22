@@ -81,10 +81,14 @@ class UserStore:
         salt, _ = parts
         return hmac.compare_digest(self._hash_password(password, salt), stored)
 
-    def create_user(self, email: str, password: str, tier: str = "free") -> Optional[Dict[str, Any]]:
+    def create_user(
+        self, email: str, password: str, tier: str = "free"
+    ) -> Optional[Dict[str, Any]]:
         """Register a new user. Returns user info dict (without password_hash)."""
         if not isinstance(email, str) or not email.strip() or len(email.strip()) > 320:
-            raise ValueError("email must be a non-empty string of at most 320 characters")
+            raise ValueError(
+                "email must be a non-empty string of at most 320 characters"
+            )
         if not isinstance(password, str) or len(password) < 8 or len(password) > 1024:
             raise ValueError("password must contain between 8 and 1024 characters")
         email = email.strip().casefold()
@@ -122,7 +126,9 @@ class UserStore:
             return None
         if not self._check_password(password, user["password_hash"]):
             return None
-        conn.execute("UPDATE users SET last_login_at = ? WHERE id = ?", (time.time(), user["id"]))
+        conn.execute(
+            "UPDATE users SET last_login_at = ? WHERE id = ?", (time.time(), user["id"])
+        )
         conn.commit()
         del user["password_hash"]
         return user
@@ -150,7 +156,10 @@ class UserStore:
         self, user_id: str, expires_in_seconds: int = 86400
     ) -> str:
         """Create a random, hashed, revocable login session token."""
-        if not isinstance(expires_in_seconds, int) or not 60 <= expires_in_seconds <= 2_592_000:
+        if (
+            not isinstance(expires_in_seconds, int)
+            or not 60 <= expires_in_seconds <= 2_592_000
+        ):
             raise ValueError("session lifetime must be between 60 seconds and 30 days")
         conn = self._get_conn()
         user = conn.execute(

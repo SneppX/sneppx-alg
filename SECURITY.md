@@ -18,6 +18,7 @@ Report security vulnerabilities privately. Do NOT open public issues.
 Do not send secrets, private keys, or production credentials with a report. An authenticated disclosure channel is preferred.
 
 Please include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Affected versions and components
@@ -61,6 +62,7 @@ No coordinated vulnerability disclosures are recorded in this policy. This does 
 ### S2 Obfuscation — Audit Findings (2026-08-16)
 
 See `docs/security/obf_audit.md` for the full audit report. Key findings:
+
 - **Remediated in `obfuscation_advanced.cpp`:** `rand()` / `srand()` were replaced with the OS-backed `SNEPPX_random_bytes` interface for junk-pattern selection. This is not a repository-wide RNG audit.
 - **Disabled:** the former whitebox AES placeholder was not AES and used secret-dependent table lookups; init now returns -1 and encrypt zeroes output.
 - **Disabled:** bogus control-flow add/redirect APIs return -1; redirect leaves the caller's code buffer unchanged.

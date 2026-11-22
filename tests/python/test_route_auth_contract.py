@@ -64,9 +64,9 @@ def test_inference_routes_require_authentication():
     )
     for key in protected:
         assert key in routes, f"Missing expected route: {key}"
-        assert _has_dependency(routes[key], "require_auth"), (
-            f"{key} must enforce require_auth"
-        )
+        assert _has_dependency(
+            routes[key], "require_auth"
+        ), f"{key} must enforce require_auth"
 
 
 def test_serving_mutations_require_admin_authentication():
@@ -78,9 +78,9 @@ def test_serving_mutations_require_admin_authentication():
     )
     for key in protected:
         assert key in routes, f"Missing expected route: {key}"
-        assert _has_dependency(routes[key], "require_admin"), (
-            f"{key} must enforce require_admin"
-        )
+        assert _has_dependency(
+            routes[key], "require_admin"
+        ), f"{key} must enforce require_admin"
 
 
 def test_admin_routes_use_central_admin_dependency():
@@ -94,15 +94,16 @@ def test_admin_routes_use_central_admin_dependency():
         ("GET", "/v1/admin/keys/{key_id}/usage"),
     )
     for key in admin_routes:
-        assert _has_dependency(routes[key], "require_admin"), (
-            f"{key} must use the centralized require_admin dependency"
-        )
+        assert _has_dependency(
+            routes[key], "require_admin"
+        ), f"{key} must use the centralized require_admin dependency"
 
 
 def test_admin_dependency_reads_authorization_from_header():
     tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
     require_admin = next(
-        node for node in ast.walk(tree)
+        node
+        for node in ast.walk(tree)
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
         and node.name == "require_admin"
     )
@@ -127,7 +128,8 @@ def test_admin_dependency_reads_authorization_from_header():
 def test_auth_dependency_enforces_rate_limiting():
     tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
     require_auth = next(
-        node for node in ast.walk(tree)
+        node
+        for node in ast.walk(tree)
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
         and node.name == "require_auth"
     )
@@ -143,7 +145,8 @@ def test_auth_dependency_enforces_rate_limiting():
 def test_admin_dependency_throttles_authentication_attempts():
     tree = ast.parse(SOURCE.read_text(encoding="utf-8"))
     require_admin = next(
-        node for node in ast.walk(tree)
+        node
+        for node in ast.walk(tree)
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
         and node.name == "require_admin"
     )

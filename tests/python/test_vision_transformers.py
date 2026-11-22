@@ -1,11 +1,21 @@
 """Tests for Vision Transformer Implementations."""
 
 from SneppX_ALG.interface_bindings.vision_transformers import (
-    PatchEmbedding, ViTBlock, VisionTransformer, VisionTransformerMoE,
-    SwinPatchEmbed, SwinPatchMerging, SwinBlock, WindowAttention,
-    SwinTransformer, SwinStage, MAE,
-    vit_tiny_patch16_224, vit_base_patch16_224,
-    mae_base, create_vision_model,
+    PatchEmbedding,
+    ViTBlock,
+    VisionTransformer,
+    VisionTransformerMoE,
+    SwinPatchEmbed,
+    SwinPatchMerging,
+    SwinBlock,
+    WindowAttention,
+    SwinTransformer,
+    SwinStage,
+    MAE,
+    vit_tiny_patch16_224,
+    vit_base_patch16_224,
+    mae_base,
+    create_vision_model,
 )
 from SneppX_ALG.interface_bindings.tensor import Tensor
 import numpy as np
@@ -26,9 +36,16 @@ def test_vit_block():
 
 
 def test_vision_transformer():
-    model = VisionTransformer(img_size=32, patch_size=8, in_channels=3,
-                               embed_dim=64, num_layers=2, num_heads=4,
-                               mlp_dim=128, num_classes=10)
+    model = VisionTransformer(
+        img_size=32,
+        patch_size=8,
+        in_channels=3,
+        embed_dim=64,
+        num_layers=2,
+        num_heads=4,
+        mlp_dim=128,
+        num_classes=10,
+    )
     x = Tensor.randn((2, 3, 32, 32))
     out = model(x)
     assert out.shape == (2, 10)
@@ -70,23 +87,40 @@ def test_swin_block():
 
 
 def test_swin_stage():
-    stage = SwinStage(dim=32, num_heads=4, window_size=4, depth=2, input_resolution=(8, 8))
+    stage = SwinStage(
+        dim=32, num_heads=4, window_size=4, depth=2, input_resolution=(8, 8)
+    )
     x = Tensor.randn((2, 64, 32))
     out = stage(x)
     assert out is not None
 
 
 def test_mae_init():
-    mae = MAE(img_size=32, patch_size=8, embed_dim=64, num_layers=2,
-              num_heads=4, decoder_embed_dim=32, decoder_num_layers=1,
-              decoder_num_heads=2)
+    mae = MAE(
+        img_size=32,
+        patch_size=8,
+        embed_dim=64,
+        num_layers=2,
+        num_heads=4,
+        decoder_embed_dim=32,
+        decoder_num_layers=1,
+        decoder_num_heads=2,
+    )
     assert mae is not None
 
 
 def test_mae_forward():
-    mae = MAE(img_size=32, patch_size=8, embed_dim=64, num_layers=2,
-              num_heads=4, decoder_embed_dim=32, decoder_num_layers=1,
-              decoder_num_heads=2, masking_ratio=0.5)
+    mae = MAE(
+        img_size=32,
+        patch_size=8,
+        embed_dim=64,
+        num_layers=2,
+        num_heads=4,
+        decoder_embed_dim=32,
+        decoder_num_layers=1,
+        decoder_num_heads=2,
+        masking_ratio=0.5,
+    )
     x = Tensor.randn((2, 3, 32, 32))
     loss, pred, mask = mae(x)
     assert loss is not None
@@ -99,6 +133,7 @@ def test_create_vision_model():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

@@ -16,6 +16,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- HMAC (FIPS 198-1) --------------------------------------------------
 
+
 class HMAC:
     """Keyed-hash message authentication code."""
 
@@ -34,6 +35,7 @@ class HMAC:
 
 # ---- HKDF (RFC 5869) ----------------------------------------------------
 
+
 class HKDF:
     """HMAC-based extract-and-expand key derivation function."""
 
@@ -42,7 +44,11 @@ class HKDF:
         self._has_c = _HAS_C
 
     def _extract(self, salt: bytes, ikm: bytes) -> bytes:
-        return _hmac.new(salt or b'\x00' * hashlib.new(self._digestmod().name).digest_size, ikm, self._digestmod).digest()
+        return _hmac.new(
+            salt or b"\x00" * hashlib.new(self._digestmod().name).digest_size,
+            ikm,
+            self._digestmod,
+        ).digest()
 
     def _expand(self, prk: bytes, info: bytes, length: int) -> bytes:
         t = b""
@@ -54,12 +60,15 @@ class HKDF:
             i += 1
         return okm[:length]
 
-    def derive(self, ikm: bytes, length: int, salt: Optional[bytes] = None, info: bytes = b"") -> bytes:
+    def derive(
+        self, ikm: bytes, length: int, salt: Optional[bytes] = None, info: bytes = b""
+    ) -> bytes:
         prk = self._extract(salt, ikm)
         return self._expand(prk, info, length)
 
 
 # ---- PBKDF2 (RFC 2898) --------------------------------------------------
+
 
 class PBKDF2:
     """Password-based key derivation function 2."""
@@ -68,15 +77,28 @@ class PBKDF2:
         self._digestmod = digestmod
         self._has_c = _HAS_C
 
-    def derive(self, password: bytes, salt: bytes, iterations: int = 600000, dklen: Optional[int] = None) -> bytes:
-        return hashlib.pbkdf2_hmac(self._digestmod().name, password, salt, iterations, dklen=dklen)
+    def derive(
+        self,
+        password: bytes,
+        salt: bytes,
+        iterations: int = 600000,
+        dklen: Optional[int] = None,
+    ) -> bytes:
+        return hashlib.pbkdf2_hmac(
+            self._digestmod().name, password, salt, iterations, dklen=dklen
+        )
 
-    def verify(self, password: bytes, salt: bytes, iterations: int, expected: bytes) -> bool:
+    def verify(
+        self, password: bytes, salt: bytes, iterations: int, expected: bytes
+    ) -> bool:
         derived = self.derive(password, salt, iterations, len(expected))
-        return len(derived) == len(expected) and all(a == b for a, b in zip(derived, expected))
+        return len(derived) == len(expected) and all(
+            a == b for a, b in zip(derived, expected)
+        )
 
 
 # ---- Argon2 (RFC 9106) --------------------------------------------------
+
 
 class Argon2:
     """Argon2 memory-hard password hash (Argon2id recommended).
@@ -88,19 +110,41 @@ class Argon2:
         self._mode = mode
         self._has_c = _HAS_C
 
-    def hash(self, password: bytes, salt: Optional[bytes] = None, time_cost: int = 3,
-             mem_cost: int = 65536, parallelism: int = 4, tag_len: int = 32) -> bytes:
+    def hash(
+        self,
+        password: bytes,
+        salt: Optional[bytes] = None,
+        time_cost: int = 3,
+        mem_cost: int = 65536,
+        parallelism: int = 4,
+        tag_len: int = 32,
+    ) -> bytes:
         salt = salt or os.urandom(16)
         try:
             from argon2.low_level import hash_secret_raw
+
             return hash_secret_raw(
-                password, salt, time_cost, mem_cost, parallelism, tag_len,
-                type=self._mode.upper() if hasattr(self._mode, 'upper') else self._mode,
+                password,
+                salt,
+                time_cost,
+                mem_cost,
+                parallelism,
+                tag_len,
+                type=self._mode.upper() if hasattr(self._mode, "upper") else self._mode,
             )
         except ImportError:
-            return hashlib.pbkdf2_hmac("sha256", password, salt, time_cost * 100, dklen=tag_len)
+            return hashlib.pbkdf2_hmac(
+                "sha256", password, salt, time_cost * 100, dklen=tag_len
+            )
 
-    def verify(self, password: bytes, salt: bytes, tag: bytes, time_cost: int = 3,
-               mem_cost: int = 65536, parallelism: int = 4) -> bool:
+    def verify(
+        self,
+        password: bytes,
+        salt: bytes,
+        tag: bytes,
+        time_cost: int = 3,
+        mem_cost: int = 65536,
+        parallelism: int = 4,
+    ) -> bool:
         expected = self.hash(password, salt, time_cost, mem_cost, parallelism, len(tag))
         return len(expected) == len(tag) and all(a == b for a, b in zip(expected, tag))

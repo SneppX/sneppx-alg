@@ -1,8 +1,8 @@
 #include "cognitive_memory.h"
 #include "polymorphic_memory_allocator.h"
 #include "test_gtest.h"
-#include <string.h>
 #include <math.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Cognitive Memory
@@ -19,8 +19,8 @@
  *
  */
 
-
-static void test_config_defaults(void) {
+static void test_config_defaults(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     SX_ASSERT_EQ(cfg.episodic.capacity, 1000, "episodic capacity");
     SX_ASSERT_EQ(cfg.semantic.max_concepts, 100, "semantic max concepts");
@@ -31,14 +31,16 @@ static void test_config_defaults(void) {
     SX_ASSERT_EQ(cfg.procedural.compilation_threshold, 5, "compilation threshold");
 }
 
-static void test_create_destroy(void) {
+static void test_create_destroy(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     SNEPPXCognitiveMemory* cmem = SNEPPX_cognitive_memory_create(&cfg, 42);
     SX_ASSERT_NOT_NULL(cmem, "create cognitive memory");
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_forward_pass(void) {
+static void test_forward_pass(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.semantic.embedding_dim = 8;
     cfg.working.slot_dim = 8;
@@ -59,7 +61,8 @@ static void test_forward_pass(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_episodic_record_retrieve(void) {
+static void test_episodic_record_retrieve(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.episodic.capacity = 10;
     SNEPPXCognitiveMemory* cmem = SNEPPX_cognitive_memory_create(&cfg, 42);
@@ -84,16 +87,18 @@ static void test_episodic_record_retrieve(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_episodic_sample(void) {
+static void test_episodic_sample(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.episodic.capacity = 20;
     SNEPPXCognitiveMemory* cmem = SNEPPX_cognitive_memory_create(&cfg, 42);
     SX_ASSERT_NOT_NULL(cmem, "create for sample test");
     size_t shape[2] = {1, 4};
-    for (int i = 0; i < 10; i++) {
-        SNEPPXTensor* s = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float)i));
-        SNEPPXTensor* ns = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float)(i + 1)));
-        SNEPPX_episodic_record(cmem, s, NULL, (float)i * 0.1f, ns);
+    for (int i = 0; i < 10; i++)
+    {
+        SNEPPXTensor* s = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float) i));
+        SNEPPXTensor* ns = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float) (i + 1)));
+        SNEPPX_episodic_record(cmem, s, NULL, (float) i * 0.1f, ns);
         SNEPPX_tensor_destroy(s);
         SNEPPX_tensor_destroy(ns);
     }
@@ -101,7 +106,8 @@ static void test_episodic_sample(void) {
     float rewards[5];
     int ret = SNEPPX_episodic_sample(cmem, 5, states, NULL, rewards, NULL);
     SX_ASSERT(ret > 0, "sampled at least some experiences");
-    for (int i = 0; i < ret; i++) {
+    for (int i = 0; i < ret; i++)
+    {
         SX_ASSERT_NOT_NULL(states[i], "sampled state not null");
         SX_ASSERT(rewards[i] >= 0.0f, "reward non-negative");
         SNEPPX_tensor_destroy(states[i]);
@@ -109,7 +115,8 @@ static void test_episodic_sample(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_semantic_store_retrieve(void) {
+static void test_semantic_store_retrieve(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.semantic.max_concepts = 10;
     cfg.semantic.embedding_dim = 4;
@@ -132,15 +139,17 @@ static void test_semantic_store_retrieve(void) {
     SX_ASSERT_NOT_NULL(results, "results tensor not null");
     SX_ASSERT_STREQ(keys[0], "cat", "closest concept is cat");
     SNEPPX_tensor_destroy(results);
-    for (int i = 0; i < ret; i++) SNEPPX_free(keys[i], SNEPPX_MAX_CONCEPT_KEY_LEN);
-    SNEPPX_free(keys, (size_t)ret * sizeof(char*));
+    for (int i = 0; i < ret; i++)
+        SNEPPX_free(keys[i], SNEPPX_MAX_CONCEPT_KEY_LEN);
+    SNEPPX_free(keys, (size_t) ret * sizeof(char*));
     SNEPPX_tensor_destroy(query);
     SNEPPX_tensor_destroy(emb1);
     SNEPPX_tensor_destroy(emb2);
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_semantic_relate_forget(void) {
+static void test_semantic_relate_forget(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.semantic.max_concepts = 10;
     cfg.semantic.embedding_dim = 4;
@@ -162,7 +171,8 @@ static void test_semantic_relate_forget(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_working_write_read(void) {
+static void test_working_write_read(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.working.num_slots = 5;
     cfg.working.slot_dim = 4;
@@ -176,13 +186,14 @@ static void test_working_write_read(void) {
     ret = SNEPPX_working_read(cmem, 0, &readback);
     SX_ASSERT_EQ(ret, 0, "read slot 0");
     SX_ASSERT_NOT_NULL(readback, "readback not null");
-    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(readback, SX_ARR_C(size_t, 2, 0,0)), 1.0f, 0.001f, "slot content");
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(readback, SX_ARR_C(size_t, 2, 0, 0)), 1.0f, 0.001f, "slot content");
     SNEPPX_tensor_destroy(readback);
     SNEPPX_tensor_destroy(content);
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_working_attend(void) {
+static void test_working_attend(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.working.num_slots = 3;
     cfg.working.slot_dim = 4;
@@ -198,7 +209,7 @@ static void test_working_attend(void) {
     int ret = SNEPPX_working_attend(cmem, query, &attended);
     SX_ASSERT_EQ(ret, 0, "attend success");
     SX_ASSERT_NOT_NULL(attended, "attended output not null");
-    float val = SNEPPX_tensor_get_f32(attended, SX_ARR_C(size_t, 2, 0,0));
+    float val = SNEPPX_tensor_get_f32(attended, SX_ARR_C(size_t, 2, 0, 0));
     SX_ASSERT(val > 0.0f, "attended value positive");
     SNEPPX_tensor_destroy(attended);
     SNEPPX_tensor_destroy(query);
@@ -207,7 +218,8 @@ static void test_working_attend(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_working_clear(void) {
+static void test_working_clear(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.working.num_slots = 3;
     SNEPPXCognitiveMemory* cmem = SNEPPX_cognitive_memory_create(&cfg, 42);
@@ -224,7 +236,8 @@ static void test_working_clear(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_procedural_learn_recall(void) {
+static void test_procedural_learn_recall(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.procedural.cache_size = 5;
     cfg.procedural.state_dim = 4;
@@ -240,7 +253,7 @@ static void test_procedural_learn_recall(void) {
     ret = SNEPPX_procedural_recall(cmem, state, &recalled);
     SX_ASSERT_EQ(ret, 0, "recall skill");
     SX_ASSERT_NOT_NULL(recalled, "recalled skill not null");
-    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(recalled, SX_ARR_C(size_t, 2, 0,0)), 2.0f, 0.001f, "skill output");
+    SX_ASSERT_NEAR(SNEPPX_tensor_get_f32(recalled, SX_ARR_C(size_t, 2, 0, 0)), 2.0f, 0.001f, "skill output");
     SNEPPX_tensor_destroy(recalled);
     SNEPPXTensor* unknown = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
     ret = SNEPPX_procedural_recall(cmem, unknown, &recalled);
@@ -252,7 +265,8 @@ static void test_procedural_learn_recall(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_procedural_compile(void) {
+static void test_procedural_compile(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.procedural.cache_size = 5;
     cfg.procedural.state_dim = 4;
@@ -263,7 +277,8 @@ static void test_procedural_compile(void) {
     size_t shape[2] = {1, 4};
     SNEPPXTensor* state = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* skill = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         SNEPPX_procedural_learn(cmem, state, skill);
     }
     int compiled = SNEPPX_procedural_compile(cmem);
@@ -273,17 +288,19 @@ static void test_procedural_compile(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_consolidation(void) {
+static void test_consolidation(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.episodic.capacity = 5;
     cfg.episodic.consolidation_interval = 2;
     SNEPPXCognitiveMemory* cmem = SNEPPX_cognitive_memory_create(&cfg, 42);
     SX_ASSERT_NOT_NULL(cmem, "create for consolidation test");
     size_t shape[2] = {1, 2};
-    for (int i = 0; i < 5; i++) {
-        SNEPPXTensor* s = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float)i));
-        SNEPPXTensor* ns = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float)(i + 1)));
-        SNEPPX_episodic_record(cmem, s, NULL, (float)i * 0.2f, ns);
+    for (int i = 0; i < 5; i++)
+    {
+        SNEPPXTensor* s = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float) i));
+        SNEPPXTensor* ns = SNEPPX_tensor_full(shape, 2, SNEPPX_FLOAT32, SX_ARR_C(float, 1, (float) (i + 1)));
+        SNEPPX_episodic_record(cmem, s, NULL, (float) i * 0.2f, ns);
         SNEPPX_tensor_destroy(s);
         SNEPPX_tensor_destroy(ns);
     }
@@ -292,7 +309,8 @@ static void test_consolidation(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_build_train_graph(void) {
+static void test_build_train_graph(void)
+{
     SNEPPXCognitiveMemoryConfig cfg = SNEPPX_cognitive_memory_config_default();
     cfg.semantic.embedding_dim = 4;
     cfg.working.slot_dim = 4;
@@ -316,7 +334,8 @@ static void test_build_train_graph(void) {
     SNEPPX_cognitive_memory_destroy(cmem);
 }
 
-static void test_edge_cases(void) {
+static void test_edge_cases(void)
+{
     SX_ASSERT_NULL(SNEPPX_cognitive_memory_create(NULL, 0), "null config returns null");
     int ret = SNEPPX_cognitive_memory_forward(NULL, NULL, NULL);
     SX_ASSERT_EQ(ret, -1, "null forward returns -1");
@@ -330,19 +349,63 @@ static void test_edge_cases(void) {
     SX_ASSERT_EQ(ret, -1, "null procedural learn returns -1");
 }
 
-
-TEST(test_cognitive_memory, config_defaults) { test_config_defaults(); }
-TEST(test_cognitive_memory, create_destroy) { test_create_destroy(); }
-TEST(test_cognitive_memory, forward_pass) { test_forward_pass(); }
-TEST(test_cognitive_memory, episodic_record_retrieve) { test_episodic_record_retrieve(); }
-TEST(test_cognitive_memory, episodic_sample) { test_episodic_sample(); }
-TEST(test_cognitive_memory, semantic_store_retrieve) { test_semantic_store_retrieve(); }
-TEST(test_cognitive_memory, semantic_relate_forget) { test_semantic_relate_forget(); }
-TEST(test_cognitive_memory, working_write_read) { test_working_write_read(); }
-TEST(test_cognitive_memory, working_attend) { test_working_attend(); }
-TEST(test_cognitive_memory, working_clear) { test_working_clear(); }
-TEST(test_cognitive_memory, procedural_learn_recall) { test_procedural_learn_recall(); }
-TEST(test_cognitive_memory, procedural_compile) { test_procedural_compile(); }
-TEST(test_cognitive_memory, consolidation) { test_consolidation(); }
-TEST(test_cognitive_memory, build_train_graph) { test_build_train_graph(); }
-TEST(test_cognitive_memory, edge_cases) { test_edge_cases(); }
+TEST(test_cognitive_memory, config_defaults)
+{
+    test_config_defaults();
+}
+TEST(test_cognitive_memory, create_destroy)
+{
+    test_create_destroy();
+}
+TEST(test_cognitive_memory, forward_pass)
+{
+    test_forward_pass();
+}
+TEST(test_cognitive_memory, episodic_record_retrieve)
+{
+    test_episodic_record_retrieve();
+}
+TEST(test_cognitive_memory, episodic_sample)
+{
+    test_episodic_sample();
+}
+TEST(test_cognitive_memory, semantic_store_retrieve)
+{
+    test_semantic_store_retrieve();
+}
+TEST(test_cognitive_memory, semantic_relate_forget)
+{
+    test_semantic_relate_forget();
+}
+TEST(test_cognitive_memory, working_write_read)
+{
+    test_working_write_read();
+}
+TEST(test_cognitive_memory, working_attend)
+{
+    test_working_attend();
+}
+TEST(test_cognitive_memory, working_clear)
+{
+    test_working_clear();
+}
+TEST(test_cognitive_memory, procedural_learn_recall)
+{
+    test_procedural_learn_recall();
+}
+TEST(test_cognitive_memory, procedural_compile)
+{
+    test_procedural_compile();
+}
+TEST(test_cognitive_memory, consolidation)
+{
+    test_consolidation();
+}
+TEST(test_cognitive_memory, build_train_graph)
+{
+    test_build_train_graph();
+}
+TEST(test_cognitive_memory, edge_cases)
+{
+    test_edge_cases();
+}

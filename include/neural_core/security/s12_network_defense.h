@@ -25,8 +25,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_NET_ACTION_ALLOW,
     SNEPPX_NET_ACTION_DROP,
     SNEPPX_NET_ACTION_REJECT,
@@ -37,7 +37,8 @@ typedef enum {
     SNEPPX_NET_ACTION_THROTTLE
 } SNEPPXNetAction;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_SIG_TYPE_EXACT,
     SNEPPX_SIG_TYPE_REGEX,
     SNEPPX_SIG_TYPE_PATTERN,
@@ -46,7 +47,8 @@ typedef enum {
     SNEPPX_SIG_TYPE_ML
 } SNEPPXSigType;
 
-typedef struct {
+typedef struct
+{
     uint32_t sig_id;
     SNEPPXSigType sig_type;
     uint8_t pattern[256];
@@ -60,7 +62,8 @@ typedef struct {
     uint8_t mitre_attack_id[32];
 } SNEPPXIdsSignature;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_signatures;
     SNEPPXIdsSignature signatures[SNEPPX_IDS_MAX_SIGNATURES];
     uint8_t* pattern_matcher_state;
@@ -70,7 +73,8 @@ typedef struct {
     uint64_t false_positives;
 } SNEPPXIdsEngine;
 
-typedef struct {
+typedef struct
+{
     char param_name[64];
     char param_pattern[256];
     SNEPPXNetAction action;
@@ -80,7 +84,8 @@ typedef struct {
     uint8_t block_on_match : 1;
 } SNEPPXWafRule;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_rules;
     SNEPPXWafRule rules[SNEPPX_WAF_MAX_RULES];
     uint64_t requests_blocked;
@@ -88,7 +93,8 @@ typedef struct {
     uint64_t total_inspection_time_ns;
 } SNEPPXWafEngine;
 
-typedef struct {
+typedef struct
+{
     uint16_t service_port;
     char service_banner[1024];
     uint8_t service_protocol;
@@ -100,7 +106,8 @@ typedef struct {
     SNEPPXNetAction action_on_interact;
 } SNEPPXHoneypotService;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_services;
     SNEPPXHoneypotService services[SNEPPX_HONEYPOT_MAX_SERVICES];
     uint64_t total_interactions;
@@ -111,23 +118,28 @@ typedef struct {
 int snepx_ids_engine_init(SNEPPXIdsEngine* ids);
 int snepx_ids_add_signature(SNEPPXIdsEngine* ids, const SNEPPXIdsSignature* sig);
 int snepx_ids_remove_signature(SNEPPXIdsEngine* ids, uint32_t sig_id);
-int snepx_ids_inspect_packet(SNEPPXIdsEngine* ids, const uint8_t* packet, size_t packet_len, SNEPPXNetAction* action, uint32_t* matched_sig_id);
-int snepx_ids_train_ml(SNEPPXIdsEngine* ids, const uint8_t* benign_samples, size_t benign_count, const uint8_t* malicious_samples, size_t malicious_count);
+int snepx_ids_inspect_packet(SNEPPXIdsEngine* ids, const uint8_t* packet, size_t packet_len, SNEPPXNetAction* action,
+                             uint32_t* matched_sig_id);
+int snepx_ids_train_ml(SNEPPXIdsEngine* ids, const uint8_t* benign_samples, size_t benign_count,
+                       const uint8_t* malicious_samples, size_t malicious_count);
 int snepx_ids_export_stats(SNEPPXIdsEngine* ids, uint8_t* stats_json, size_t* json_len);
 
 int snepx_waf_init(SNEPPXWafEngine* waf);
 int snepx_waf_add_rule(SNEPPXWafEngine* waf, const SNEPPXWafRule* rule);
-int snepx_waf_inspect_request(SNEPPXWafEngine* waf, const char* uri, const char* method, const char* headers, size_t headers_len, const uint8_t* body, size_t body_len, SNEPPXNetAction* action);
+int snepx_waf_inspect_request(SNEPPXWafEngine* waf, const char* uri, const char* method, const char* headers,
+                              size_t headers_len, const uint8_t* body, size_t body_len, SNEPPXNetAction* action);
 int snepx_waf_update_rule_set(SNEPPXWafEngine* waf, const char* rule_set_json, size_t rule_set_len);
 
 int snepx_honeypot_init(SNEPPXHoneypotNetwork* honeypot, const uint16_t* ports, size_t num_ports);
 int snepx_honeypot_start_service(SNEPPXHoneypotNetwork* honeypot, uint16_t port, const char* banner);
 int snepx_honeypot_stop_service(SNEPPXHoneypotNetwork* honeypot, uint16_t port);
-int snepx_honeypot_process_connection(SNEPPXHoneypotNetwork* honeypot, const uint8_t* src_ip, size_t ip_len, uint16_t src_port, uint16_t dst_port, const uint8_t* payload, size_t payload_len);
+int snepx_honeypot_process_connection(SNEPPXHoneypotNetwork* honeypot, const uint8_t* src_ip, size_t ip_len,
+                                      uint16_t src_port, uint16_t dst_port, const uint8_t* payload, size_t payload_len);
 SNEPPXNetAction snepx_honeypot_get_action(SNEPPXHoneypotNetwork* honeypot, const uint8_t* src_ip, size_t ip_len);
 
 // Active Defense
-typedef struct {
+typedef struct
+{
     uint8_t decoy_token[64];
     uint32_t token_id;
     uint64_t deployment_time;
@@ -142,7 +154,8 @@ int snepx_canary_token_check(SNEPPXCanaryToken* token);
 int snepx_canary_token_alert(SNEPPXCanaryToken* token);
 
 // Network Tarpit
-typedef struct {
+typedef struct
+{
     uint16_t ports[32];
     uint32_t num_ports;
     uint64_t slow_response_delay_us;

@@ -1,7 +1,9 @@
 """Tests for Firewall Orchestrator (S4)."""
 
 from SneppX_ALG.interface_bindings.firewall import (
-    FirewallConfig, FirewallRunner, create_firewall,
+    FirewallConfig,
+    FirewallRunner,
+    create_firewall,
 )
 
 
@@ -46,6 +48,7 @@ def test_create_firewall_with_cli_overrides():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

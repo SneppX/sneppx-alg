@@ -14,6 +14,7 @@ This directory contains seed corpora for fuzz testing SneppX-ALG components.
 ## Adding Corpora
 
 Each corpus file should be:
+
 - Small (< 1 KB for seeds)
 - Valid input for the target function
 - Named to indicate what code path it exercises

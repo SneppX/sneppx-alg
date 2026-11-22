@@ -82,8 +82,9 @@ def layer_mapping(arch: str) -> Dict[str, str]:
     return LAYER_MAP.get(arch.lower(), {})
 
 
-def convert_hf_layer(hf_name: str, arch: str,
-                     layer_index: Optional[int] = None) -> Optional[str]:
+def convert_hf_layer(
+    hf_name: str, arch: str, layer_index: Optional[int] = None
+) -> Optional[str]:
     """Map a single HF parameter name to its SNEPPX equivalent.
 
     ``{i}`` placeholders are replaced by ``layer_index`` when provided.

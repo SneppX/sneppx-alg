@@ -63,7 +63,7 @@ CONDITIONAL_RE = re.compile(r"^\s*#\s*(if|ifdef|ifndef)\b")
 ENDIF_RE = re.compile(r"^\s*#\s*endif\b")
 
 OPEN_BLOCK = [
-    "\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n",
+    '\n#ifdef __cplusplus\nextern "C" {\n#endif\n',
 ]
 CLOSE_BLOCK = [
     "\n#ifdef __cplusplus\n}\n#endif\n",
@@ -84,7 +84,7 @@ def resolve_include(includer_path, name):
 
 def collect_headers():
     """Collect every header (direct + transitive) included by test sources."""
-    headers = {}          # path -> list of includers
+    headers = {}  # path -> list of includers
     pending = []
     seen = set()
 
@@ -158,7 +158,7 @@ def find_guard(lines):
 
 def needs_guard(lines):
     text = "".join(lines)
-    return "extern \"C\"" not in text
+    return 'extern "C"' not in text
 
 
 def patch_header(path, lines):
@@ -181,8 +181,9 @@ def patch_header(path, lines):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--dry-run", action="store_true",
-                    help="report headers without writing")
+    ap.add_argument(
+        "--dry-run", action="store_true", help="report headers without writing"
+    )
     args = ap.parse_args()
 
     headers = collect_headers()
@@ -215,8 +216,10 @@ def main():
         print("  [patched] %s" % rel)
         patched += 1
 
-    print("\nSummary: %d unique headers, %d patched, %d already guarded" %
-          (len(headers), patched, skipped))
+    print(
+        "\nSummary: %d unique headers, %d patched, %d already guarded"
+        % (len(headers), patched, skipped)
+    )
 
 
 if __name__ == "__main__":

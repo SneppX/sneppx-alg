@@ -69,7 +69,9 @@ def test_param_groups_apply_distinct_lrs():
     moved_fast = np.linalg.norm(p_fast.data - A)
     moved_slow = np.linalg.norm(p_slow.data - A)
     # initial distance identical; fast lr => smaller residual
-    assert moved_fast < moved_slow, f"param_groups lr not honoured: {moved_fast} vs {moved_slow}"
+    assert (
+        moved_fast < moved_slow
+    ), f"param_groups lr not honoured: {moved_fast} vs {moved_slow}"
 
 
 if __name__ == "__main__":

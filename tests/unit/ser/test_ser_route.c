@@ -1,8 +1,8 @@
+#include "polymorphic_memory_allocator.h"
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include "polymorphic_memory_allocator.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -20,13 +20,14 @@
  *
  */
 
-
-
-
-
-static void test_route_shapes(void) {
+static void test_route_shapes(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16; cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERLayer* layer = SNEPPX_ser_layer_create(&cfg, 42);
     SX_ASSERT(layer != NULL, "layer not null");
 
@@ -48,9 +49,14 @@ static void test_route_shapes(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-static void test_route_topk(void) {
+static void test_route_topk(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16; cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERLayer* layer = SNEPPX_ser_layer_create(&cfg, 42);
     SX_ASSERT(layer != NULL, "layer not null");
 
@@ -63,17 +69,21 @@ static void test_route_topk(void) {
     SNEPPX_ser_route(layer, input, &gw, &ei);
     SX_ASSERT(gw != NULL, "gw not null");
 
-    float* gw_data = (float*)gw->data;
+    float* gw_data = (float*) gw->data;
     int in_range = 1;
     float sum_ok = 1;
-    for (size_t t = 0; t < 8; t++) {
+    for (size_t t = 0; t < 8; t++)
+    {
         float sum = 0.0f;
-        for (size_t k = 0; k < 2; k++) {
+        for (size_t k = 0; k < 2; k++)
+        {
             int idx = ei[t * 2 + k];
-            if (idx < 0 || idx >= 4) in_range = 0;
+            if (idx < 0 || idx >= 4)
+                in_range = 0;
             sum += gw_data[t * 2 + k];
         }
-        if (fabsf(sum - 1.0f) > 0.01f) sum_ok = 0;
+        if (fabsf(sum - 1.0f) > 0.01f)
+            sum_ok = 0;
     }
     SX_ASSERT(in_range, "all indices in [0,3]");
     SX_ASSERT(sum_ok, "gate weights sum to ~1");
@@ -84,6 +94,11 @@ static void test_route_topk(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-
-TEST(test_ser_route, test_route_shapes) { test_route_shapes(); }
-TEST(test_ser_route, test_route_topk) { test_route_topk(); }
+TEST(test_ser_route, test_route_shapes)
+{
+    test_route_shapes();
+}
+TEST(test_ser_route, test_route_topk)
+{
+    test_route_topk();
+}

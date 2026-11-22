@@ -1,12 +1,15 @@
 """Tests for Train CLI."""
 
 from SneppX_ALG.interface_bindings.train_cli import (
-    main as train_main, build_model_from_config, build_dummy_data,
+    main as train_main,
+    build_model_from_config,
+    build_dummy_data,
 )
 
 
 def test_train_cli_import():
     from SneppX_ALG.interface_bindings import train_cli
+
     assert train_cli is not None
 
 
@@ -22,6 +25,7 @@ def test_build_model_from_config():
 
 def test_build_dummy_data():
     from types import SimpleNamespace
+
     config = SimpleNamespace(training=SimpleNamespace(batch_size=4))
     loader = build_dummy_data(config)
     assert loader is not None
@@ -29,6 +33,7 @@ def test_build_dummy_data():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

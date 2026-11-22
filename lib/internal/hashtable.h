@@ -15,7 +15,6 @@
  *
  */
 
-
 /*
  * Hash Table — v0.5 (generic library)
  *
@@ -33,94 +32,96 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-typedef struct {
-    uint64_t hash;
-    uint64_t key;
-    void*    value;
-    int      occupied;
-    int      deleted;
-} SNEPPXHTEntry;
+    typedef struct
+    {
+        uint64_t hash;
+        uint64_t key;
+        void* value;
+        int occupied;
+        int deleted;
+    } SNEPPXHTEntry;
 
-typedef struct {
-    SNEPPXHTEntry* buckets;
-    size_t       capacity;
-    size_t       count;
-    float        load_factor_threshold;
-    uint64_t     (*hash_fn)(uint64_t key);
-} SNEPPXHashTable;
+    typedef struct
+    {
+        SNEPPXHTEntry* buckets;
+        size_t capacity;
+        size_t count;
+        float load_factor_threshold;
+        uint64_t (*hash_fn)(uint64_t key);
+    } SNEPPXHashTable;
 
-/**
- * @brief Create Ht.
- *
- * @param initial_capacity [in] Initial Capacity value.
- *
- * @return Pointer on success, NULL on error.
- */
-SNEPPXHashTable* SNEPPX_ht_create(size_t initial_capacity);
-/**
- * @brief Destroy Ht.
- *
- * @param ht [out] Ht value.
- */
-void           SNEPPX_ht_destroy(SNEPPXHashTable* ht);
+    /**
+     * @brief Create Ht.
+     *
+     * @param initial_capacity [in] Initial Capacity value.
+     *
+     * @return Pointer on success, NULL on error.
+     */
+    SNEPPXHashTable* SNEPPX_ht_create(size_t initial_capacity);
+    /**
+     * @brief Destroy Ht.
+     *
+     * @param ht [out] Ht value.
+     */
+    void SNEPPX_ht_destroy(SNEPPXHashTable* ht);
 
-/**
- * @brief Perform Ht Insert.
- *
- * @param ht [out] Ht value.
- * @param key [in] Key value.
- * @param value [out] Value value.
- *
- * @return 0 on success, -1 on error.
- */
-int   SNEPPX_ht_insert(SNEPPXHashTable* ht, uint64_t key, void* value);
-/**
- * @brief Perform Ht Lookup.
- *
- * @param ht [in] Ht value.
- * @param key [in] Key value.
- *
- * @return Pointer on success, NULL on error.
- */
-void* SNEPPX_ht_lookup(const SNEPPXHashTable* ht, uint64_t key);
-/**
- * @brief Perform Ht Delete.
- *
- * @param ht [out] Ht value.
- * @param key [in] Key value.
- *
- * @return 0 on success, -1 on error.
- */
-int   SNEPPX_ht_delete(SNEPPXHashTable* ht, uint64_t key);
+    /**
+     * @brief Perform Ht Insert.
+     *
+     * @param ht [out] Ht value.
+     * @param key [in] Key value.
+     * @param value [out] Value value.
+     *
+     * @return 0 on success, -1 on error.
+     */
+    int SNEPPX_ht_insert(SNEPPXHashTable* ht, uint64_t key, void* value);
+    /**
+     * @brief Perform Ht Lookup.
+     *
+     * @param ht [in] Ht value.
+     * @param key [in] Key value.
+     *
+     * @return Pointer on success, NULL on error.
+     */
+    void* SNEPPX_ht_lookup(const SNEPPXHashTable* ht, uint64_t key);
+    /**
+     * @brief Perform Ht Delete.
+     *
+     * @param ht [out] Ht value.
+     * @param key [in] Key value.
+     *
+     * @return 0 on success, -1 on error.
+     */
+    int SNEPPX_ht_delete(SNEPPXHashTable* ht, uint64_t key);
 
-/**
- * @brief Clear Ht.
- *
- * @param ht [out] Ht value.
- */
-void  SNEPPX_ht_clear(SNEPPXHashTable* ht);
-/**
- * @brief Perform Ht Resize.
- *
- * @param ht [out] Ht value.
- * @param new_capacity [in] New Capacity value.
- *
- * @return 0 on success, -1 on error.
- */
-int   SNEPPX_ht_resize(SNEPPXHashTable* ht, size_t new_capacity);
-/**
- * @brief Perform Ht Foreach.
- *
- * @param ht [in] Ht value.
- * @param key [out] Key value.
- * @param value [out] Value value.
- * @param ctx [out] Ctx value.
- */
-void  SNEPPX_ht_foreach(const SNEPPXHashTable* ht,
-                      void (*fn)(uint64_t key, void* value, void* ctx), void* ctx);
+    /**
+     * @brief Clear Ht.
+     *
+     * @param ht [out] Ht value.
+     */
+    void SNEPPX_ht_clear(SNEPPXHashTable* ht);
+    /**
+     * @brief Perform Ht Resize.
+     *
+     * @param ht [out] Ht value.
+     * @param new_capacity [in] New Capacity value.
+     *
+     * @return 0 on success, -1 on error.
+     */
+    int SNEPPX_ht_resize(SNEPPXHashTable* ht, size_t new_capacity);
+    /**
+     * @brief Perform Ht Foreach.
+     *
+     * @param ht [in] Ht value.
+     * @param key [out] Key value.
+     * @param value [out] Value value.
+     * @param ctx [out] Ctx value.
+     */
+    void SNEPPX_ht_foreach(const SNEPPXHashTable* ht, void (*fn)(uint64_t key, void* value, void* ctx), void* ctx);
 
 #ifdef __cplusplus
 }

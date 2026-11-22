@@ -1,8 +1,8 @@
+#include "polymorphic_memory_allocator.h"
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include "polymorphic_memory_allocator.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Ser Gating
@@ -19,19 +19,16 @@
  *
  */
 
-
-
-
-
-
-static void test_ser_config_default(void) {
+static void test_ser_config_default(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     SX_ASSERT(cfg.num_experts == 8, "default has 8 experts");
     SX_ASSERT(cfg.num_active == 2, "default 2 active experts");
     SX_ASSERT(cfg.top_k_method == SNEPPX_TOPK_GREEDY, "default greedy top-k");
 }
 
-static void test_ser_load_balance_loss(void) {
+static void test_ser_load_balance_loss(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.num_experts = 4;
     cfg.num_active = 2;
@@ -43,8 +40,9 @@ static void test_ser_load_balance_loss(void) {
 
     size_t shape_in[] = {4, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = ((float)(i % 5) - 2.0f) * 0.1f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = ((float) (i % 5) - 2.0f) * 0.1f;
 
     SNEPPXTensor* gate_weights = NULL;
     int* expert_indices = NULL;
@@ -61,7 +59,8 @@ static void test_ser_load_balance_loss(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-static void test_ser_z_loss(void) {
+static void test_ser_z_loss(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.num_experts = 4;
     cfg.num_active = 2;
@@ -69,8 +68,9 @@ static void test_ser_z_loss(void) {
 
     size_t shape_in[] = {2, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = 0.5f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = 0.5f;
 
     SNEPPXTensor* gate_weights = NULL;
     int* expert_indices = NULL;
@@ -85,7 +85,15 @@ static void test_ser_z_loss(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-
-TEST(test_ser_gating, ser_config_default) { test_ser_config_default(); }
-TEST(test_ser_gating, ser_load_balance_loss) { test_ser_load_balance_loss(); }
-TEST(test_ser_gating, ser_z_loss) { test_ser_z_loss(); }
+TEST(test_ser_gating, ser_config_default)
+{
+    test_ser_config_default();
+}
+TEST(test_ser_gating, ser_load_balance_loss)
+{
+    test_ser_load_balance_loss();
+}
+TEST(test_ser_gating, ser_z_loss)
+{
+    test_ser_z_loss();
+}

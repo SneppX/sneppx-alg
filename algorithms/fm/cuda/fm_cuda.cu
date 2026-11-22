@@ -26,7 +26,7 @@ __global__ void ring_reduce_scatter_kernel(
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     int send_to = (rank + 1) % world_size;
     int recv_from = (rank - 1 + world_size) % world_size;
-    
+
     // In a real implementation, this would use peer-to-peer or NCCL
     // Here we simulate with a simple accumulation
     if (idx < chunk_size) {
@@ -41,17 +41,17 @@ SNEPPX_CudaError sneppx_cuda_all_reduce_ring(
     int rank, int world_size
 ) {
     if (!data || world_size <= 0) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int chunk_size = numel / world_size;
     int block = 256;
     int grid = (chunk_size + block - 1) / block;
-    
+
     for (int step = 0; step < world_size - 1; step++) {
         ring_reduce_scatter_kernel<<<grid, block, 0, stream>>>(
             data, chunk_size, rank, world_size
         );
     }
-    
+
     // All-gather phase (broadcast reduced chunks)
     auto all_gather = [] __global__ (half* d, int cs, int ws) {
         int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -61,7 +61,7 @@ SNEPPX_CudaError sneppx_cuda_all_reduce_ring(
         }
     };
     all_gather<<<grid * world_size, block, 0, stream>>>(data, chunk_size, world_size);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -76,13 +76,13 @@ SNEPPX_CudaError sneppx_cuda_all_reduce_butterfly(
     if (!(world_size && !(world_size & (world_size - 1)))) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;  // Must be power of 2
     }
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     for (int stride = 1; stride < world_size; stride <<= 1) {
         int partner = rank ^ stride;
-        
+
         auto butterfly_step = [] __global__ (half* d, int n, int r, int p) {
             int idx = threadIdx.x + blockIdx.x * blockDim.x;
             if (idx < n && r < p) {
@@ -91,7 +91,7 @@ SNEPPX_CudaError sneppx_cuda_all_reduce_butterfly(
         };
         butterfly_step<<<grid, block, 0, stream>>>(data, numel, rank, partner);
     }
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -107,25 +107,25 @@ __global__ void quantize_gradients_kernel(
     int block_size = blockDim.x;
     int start = bid * block_size;
     int end = min(start + block_size, numel);
-    
+
     float local_max = 0.0f;
     for (int i = start + tid; i < end; i += block_size) {
         float g = fabsf(__half2float(gradients[i]));
         local_max = fmaxf(local_max, g);
     }
     local_max = sneppx_warp_reduce_max(local_max);
-    
+
     if (tid == 0) {
         smem[bid] = local_max;
         scale[bid] = local_max / (float)((1 << (bits - 1)) - 1);
     }
     __syncthreads();
-    
+
     float s = tid == 0 ? scale[bid] : 0.0f;
     if (tid == 0) s = scale[bid];
     __syncthreads();
     s = scale[bid];
-    
+
     float inv_scale = (s > 0.0f) ? 1.0f / s : 0.0f;
     for (int i = start + tid; i < end; i += block_size) {
         float g = __half2float(gradients[i]);
@@ -183,11 +183,11 @@ __global__ void topk_sparsify_kernel(
     int bid = blockIdx.x;
     int start = bid * blockDim.x;
     int end = min(start + blockDim.x, numel);
-    
+
     // Each thread tracks its best
     float best_val[2] = {0.0f, 0.0f};
     int best_idx[2] = {-1, -1};
-    
+
     for (int i = start + tid; i < end; i += blockDim.x) {
         float g = fabsf(__half2float(gradients[i]));
         if (g > best_val[0]) {
@@ -197,7 +197,7 @@ __global__ void topk_sparsify_kernel(
             best_val[1] = g; best_idx[1] = i;
         }
     }
-    
+
     // Write block-local top-2 (in practice, use global Top-K)
     if (tid < 2 && best_idx[tid] >= 0) {
         int out_idx = bid * 2 + tid;
@@ -228,7 +228,7 @@ __global__ void federated_average_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= chunk_size) return;
-    
+
     float sum = 0.0f;
     float w_sum = 0.0f;
     for (int c = 0; c < num_chunks; c++) {
@@ -259,7 +259,7 @@ __global__ void memory_bank_sync_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= bank_size / sizeof(half)) return;
-    
+
     if (sync_direction == 0) {
         local_bank[idx] = remote_bank[idx];
     } else if (sync_direction == 1) {

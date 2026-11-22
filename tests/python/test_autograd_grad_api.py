@@ -37,8 +37,6 @@ def test_grad_of_tensor_with_respect_to_itself_is_identity():
     np.testing.assert_array_equal(result.data, np.ones_like(source.data))
 
 
-
-
 def test_grad_accumulates_multiple_outputs_for_non_leaf_input():
     source = Tensor([1.0, 2.0], requires_grad=True)
     intermediate = source * 2.0

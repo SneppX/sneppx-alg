@@ -9,13 +9,17 @@ Written in C11 with MASM x64 hot-path routines and Python bindings. 21,809+ line
 ## Security Layers
 
 ### S0 — Build Integrity
+
 Ensures the software supply chain from source to binary is verifiable and tamper-proof.
+
 - **SBOM** generation and verification
 - **Reproducible builds** with deterministic compilation
 - **TUF** (The Update Framework) for metadata signing
 
 ### S1 — Memory Hardening
+
 Runtime memory protection against corruption, leakage, and exploitation.
+
 - **Guard pages** around heap allocations
 - **Stack canaries** for buffer overflow detection
 - **ASLR** (Address Space Layout Randomization)
@@ -24,7 +28,9 @@ Runtime memory protection against corruption, leakage, and exploitation.
 - Files: `memory/memory_hardening.c`, `memory/secure_allocator.c`, `memory/memory_leak_detector.c`
 
 ### S2 — Code Obfuscation
+
 C++-based obfuscation pipeline protecting intellectual property.
+
 - **CFG flattening** — Control-flow graph obfuscation
 - **Instruction substitution** — Pattern-based replacement
 - **Opaque predicates** — Computed jump targets
@@ -33,14 +39,18 @@ C++-based obfuscation pipeline protecting intellectual property.
 - Files: `obfuscation/`, `cpp/`
 
 ### S3 — Runtime Monitoring
+
 Real-time integrity verification and anomaly detection.
+
 - **Integrity monitoring** — File and memory hash verification
 - **Container breakout detection** — Namespace escape detection
 - **ML anomaly detection** — Behavioral ML for threat identification
 - Files: `monitor/integrity_monitor.c`, `monitor/monitor_advanced.c`, `monitor/container_breakout.c`
 
 ### S4 — Network Security
+
 Comprehensive network defense with multi-ring firewall architecture.
+
 - **TLS 1.3** with mTLS, cert pinning, ALPN
 - **Noise protocol** (NK/XX/IK handshakes)
 - **QUIC** transport support
@@ -50,7 +60,9 @@ Comprehensive network defense with multi-ring firewall architecture.
 - Files: `network/transport_security.c`, `network/ddos_mitigation.c`, `network/identity_management.c`, `firewall/`
 
 ### S5 — AI Safety
+
 Protects against AI-specific attacks and ensures responsible output.
+
 - **RLHF safety** — Reward model integration
 - **Differential privacy** — Gradient noise for DP-SGD
 - **Prompt injection defense** — Semantic filtering
@@ -59,7 +71,9 @@ Protects against AI-specific attacks and ensures responsible output.
 - Files: `ai/rlhf_safety.c`, `ai/differential_privacy.c`, `ai/prompt_filter.c`, `ai/output_verifier.c`
 
 ### S6 — AI Sanitizer
+
 Advanced defense against semantic and encoded attacks on ML systems.
+
 - **Semantic injection detection** — Intent classification
 - **Encoded attack decoder** — Base64/hex/unicode deobfuscation
 - **Token anomaly scoring** — Distribution shift detection
@@ -67,7 +81,9 @@ Advanced defense against semantic and encoded attacks on ML systems.
 - Files: `ai/s5_extensions.c`, `ai/`
 
 ### S7 — Supply Chain Security
+
 End-to-end software update integrity.
+
 - **TUF multi-role keys** — Root/targets/snapshot/timestamp delegation
 - **bsdiff deltas** — Binary patch generation and application
 - **A/B partitions** — Atomic update with rollback
@@ -76,7 +92,9 @@ End-to-end software update integrity.
 - Files: `updates/signed_update.c`, `updates/container_security.c`, `updates/s7_extensions.c`
 
 ### S8 — Formal Verification
+
 Mathematical proof and model checking of critical security properties.
+
 - **TLA+ parser** — Spec language parsing
 - **LTL model checking** — Linear temporal logic verification
 - **Symbolic execution** — Path exploration
@@ -84,7 +102,9 @@ Mathematical proof and model checking of critical security properties.
 - Files: `formal/model_checking.c`, `formal/s8_extensions.c`
 
 ### S9 — Penetration Testing
+
 Continuous automated security assessment.
+
 - **CVE scanner** — Dependency vulnerability matching
 - **Network fuzzer** — Protocol-aware fuzzing
 - **API security scanner** — REST/gRPC endpoint testing
@@ -148,6 +168,7 @@ constant-time operations, secure memory wipe.
 ## MASM x64 Accelerated Routines
 
 Located in `crypto/asm/x86_64/`:
+
 - `aes_ni.asm` — AES-NI round encryption
 - `sha_ni.asm` — SHA-NI hash computation
 - `chacha20_avx2.asm` — ChaCha20 AVX2 stream cipher
@@ -163,7 +184,6 @@ Located in `crypto/asm/x86_64/`:
 - `sc_cmov.asm` — Conditional move
 - `gf256_mul.asm` — GF(256) multiplication
 - `fe25519_ops.asm` — Field element operations
-
 
 ## Native Firewall Policy Engine
 
@@ -182,7 +202,6 @@ The engine evaluates packet metadata supplied by a network adapter. It does not
 install Windows Filtering Platform, Linux netfilter/eBPF, or macOS Network
 Extension hooks, and it does not capture packets itself. Those platform adapters
 must be implemented and deployed separately before it can filter host traffic.
-
 
 ## Python Firewall Deployment
 

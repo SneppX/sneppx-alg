@@ -1,8 +1,8 @@
 #include "hierarchical_state_space.h"
 #include "test_gtest.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
 /*
  * SNEPPX - Test Hss Layer
@@ -19,11 +19,8 @@
  *
  */
 
-
-
-
-
-static void test_layer_create(void) {
+static void test_layer_create(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -48,7 +45,8 @@ static void test_layer_create(void) {
     SNEPPX_hss_layer_destroy(layer);
 }
 
-static void test_discretize(void) {
+static void test_discretize(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -65,7 +63,8 @@ static void test_discretize(void) {
     SNEPPX_hss_layer_destroy(layer);
 }
 
-static void test_step(void) {
+static void test_step(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -79,13 +78,15 @@ static void test_step(void) {
     SNEPPXTensor* x = SNEPPX_tensor_zeros(shape_x, 1, SNEPPX_FLOAT32);
     SNEPPXTensor* h_next = SNEPPX_tensor_zeros(shape_h, 1, SNEPPX_FLOAT32);
     SX_ASSERT(x != NULL && h_next != NULL, "tensors not null");
-    ((float*)x->data)[0] = 1.0f;
+    ((float*) x->data)[0] = 1.0f;
 
     SNEPPX_hss_step(layer, x, h_next);
-    float* hd = (float*)h_next->data;
+    float* hd = (float*) h_next->data;
     int finite = 1;
-    for (size_t i = 0; i < 4; i++) {
-        if (!isfinite(hd[i])) finite = 0;
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (!isfinite(hd[i]))
+            finite = 0;
     }
     SX_ASSERT(finite, "h_next values are finite");
     SNEPPX_tensor_destroy(x);
@@ -93,7 +94,8 @@ static void test_step(void) {
     SNEPPX_hss_layer_destroy(layer);
 }
 
-static void test_scan(void) {
+static void test_scan(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -124,8 +126,19 @@ static void test_scan(void) {
     SNEPPX_hss_layer_destroy(layer);
 }
 
-
-TEST(test_hss_layer, test_layer_create) { test_layer_create(); }
-TEST(test_hss_layer, test_discretize) { test_discretize(); }
-TEST(test_hss_layer, test_step) { test_step(); }
-TEST(test_hss_layer, test_scan) { test_scan(); }
+TEST(test_hss_layer, test_layer_create)
+{
+    test_layer_create();
+}
+TEST(test_hss_layer, test_discretize)
+{
+    test_discretize();
+}
+TEST(test_hss_layer, test_step)
+{
+    test_step();
+}
+TEST(test_hss_layer, test_scan)
+{
+    test_scan();
+}

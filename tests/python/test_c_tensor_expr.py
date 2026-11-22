@@ -1,7 +1,10 @@
 """Tests for c_tensor_expr.py — tensor expression kernels."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings import TensorExpr, TensorExprCompiler
@@ -66,9 +69,11 @@ def test_compiler_compile():
 
 
 def test_repr():
-    expr = TensorExpr("add",
-                      TensorExpr.constant(np.array([1.0])),
-                      TensorExpr.constant(np.array([2.0])))
+    expr = TensorExpr(
+        "add",
+        TensorExpr.constant(np.array([1.0])),
+        TensorExpr.constant(np.array([2.0])),
+    )
     r = repr(expr)
     assert "TensorExpr" in r
 

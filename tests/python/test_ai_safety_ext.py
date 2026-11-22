@@ -1,10 +1,18 @@
 """Tests for ai_safety_ext.py — S5 extensions."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
-from SneppX_ALG.interface_bindings import RLHFSafety, AIPromptFilter, AIOutputVerifier, DataPoisoningDefense
+from SneppX_ALG.interface_bindings import (
+    RLHFSafety,
+    AIPromptFilter,
+    AIOutputVerifier,
+    DataPoisoningDefense,
+)
 
 
 def test_rlhf_factuality():

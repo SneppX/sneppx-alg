@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TEE_NONE,
     SNEPPX_TEE_SGX,
     SNEPPX_TEE_SEV_SNP,
@@ -35,14 +35,16 @@ typedef enum {
     SNEPPX_TEE_CCA
 } SNEPPXTeeType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TPM_ALG_SHA256,
     SNEPPX_TPM_ALG_SHA384,
     SNEPPX_TPM_ALG_SHA512,
     SNEPPX_TPM_ALG_SM3_256
 } SNEPPXTPMAlg;
 
-typedef struct {
+typedef struct
+{
     uint8_t pcr_values[SNEPPX_TPM_MAX_PCR_BANKS][64];
     size_t pcr_count;
     SNEPPXTPMAlg pcr_bank_alg;
@@ -51,7 +53,8 @@ typedef struct {
     size_t quote_len;
 } SNEPPXTPMAttestation;
 
-typedef struct {
+typedef struct
+{
     uint8_t sealed_key[128];
     uint8_t auth_data[64];
     uint32_t key_slot;
@@ -59,7 +62,8 @@ typedef struct {
     uint32_t timeout_ms;
 } SNEPPXTpmKey;
 
-typedef struct {
+typedef struct
+{
     uint8_t measurement[64];
     uint8_t mrenclave[32];
     uint8_t mrsigner[32];
@@ -68,7 +72,8 @@ typedef struct {
     uint16_t svn;
 } SNEPPXSGXEnclave;
 
-typedef struct {
+typedef struct
+{
     uint64_t physical_id;
     uint64_t api_major;
     uint64_t api_minor;
@@ -79,7 +84,8 @@ typedef struct {
     uint32_t policy_flags;
 } SNEPPXSevSnpAttestation;
 
-typedef struct {
+typedef struct
+{
     uint8_t key_derivation_key[32];
     uint8_t sealing_key[32];
     uint32_t session_handle;
@@ -88,10 +94,13 @@ typedef struct {
 
 int snepx_tee_initialize(SNEPPXTeeType tee_type);
 int snepx_tee_create_session(SNEPPXTeeSession* session, const uint8_t* policy, size_t policy_len);
-int snepx_tee_seal_data(SNEPPXTeeSession* session, const uint8_t* data, size_t data_len, uint8_t* sealed, size_t* sealed_len);
-int snepx_tee_unseal_data(SNEPPXTeeSession* session, const uint8_t* sealed, size_t sealed_len, uint8_t* data, size_t* data_len);
+int snepx_tee_seal_data(SNEPPXTeeSession* session, const uint8_t* data, size_t data_len, uint8_t* sealed,
+                        size_t* sealed_len);
+int snepx_tee_unseal_data(SNEPPXTeeSession* session, const uint8_t* sealed, size_t sealed_len, uint8_t* data,
+                          size_t* data_len);
 int snepx_tee_attest(SNEPPXTeeSession* session, uint8_t* attestation, size_t* attestation_len);
-int snepx_tee_verify_attestation(const uint8_t* attestation, size_t attestation_len, const uint8_t* expected_measurement);
+int snepx_tee_verify_attestation(const uint8_t* attestation, size_t attestation_len,
+                                 const uint8_t* expected_measurement);
 int snepx_tee_destroy_session(SNEPPXTeeSession* session);
 
 int snepx_tpm_pcr_read(uint32_t pcr_index, uint8_t* value, size_t* value_len);
@@ -100,8 +109,10 @@ int snepx_tpm_quote(SNEPPXTPMAttestation* attestation, const uint8_t* nonce, siz
 int snepx_tpm_seal(SNEPPXTpmKey* key, const uint8_t* data, size_t data_len);
 int snepx_tpm_unseal(SNEPPXTpmKey* key, uint8_t* data, size_t* data_len);
 
-int snepx_sgx_create_enclave(const uint8_t* enclave_binary, size_t binary_len, SNEPPXSGXEnclave* enclave, uint32_t* enclave_id);
-int snepx_sgx_enter_enclave(uint32_t enclave_id, uint32_t function_id, void* input, size_t input_len, void* output, size_t* output_len);
+int snepx_sgx_create_enclave(const uint8_t* enclave_binary, size_t binary_len, SNEPPXSGXEnclave* enclave,
+                             uint32_t* enclave_id);
+int snepx_sgx_enter_enclave(uint32_t enclave_id, uint32_t function_id, void* input, size_t input_len, void* output,
+                            size_t* output_len);
 int snepx_sgx_destroy_enclave(uint32_t enclave_id);
 
 int snepx_sev_snp_attest(SNEPPXSevSnpAttestation* attestation, const uint8_t* report_data, size_t report_data_len);

@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_playbook_create(void) {
+static void test_playbook_create(void)
+{
     SNEPPXIRPlaybook pb;
     memset(&pb, 0, sizeof(pb));
     int ret = snepx_ir_playbook_create(&pb, "test_playbook", SNEPPX_IR_PLAYBOOK_TYPE_INCIDENT_RESPONSE);
@@ -28,7 +28,8 @@ static void test_playbook_create(void) {
     snepx_ir_playbook_destroy(&pb);
 }
 
-static void test_playbook_add_step(void) {
+static void test_playbook_add_step(void)
+{
     SNEPPXIRPlaybook pb;
     snepx_ir_playbook_create(&pb, "step_test", SNEPPX_IR_PLAYBOOK_TYPE_FORENSIC_ACQUISITION);
     SNEPPXIRPlaybookStep step;
@@ -45,7 +46,8 @@ static void test_playbook_add_step(void) {
     snepx_ir_playbook_destroy(&pb);
 }
 
-int main(void) {
+int main(void)
+{
     test_playbook_create();
     test_playbook_add_step();
     return 0;

@@ -91,8 +91,9 @@ class CpuBackend:
     # ---- Normalization --------------------------------------------------
 
     @staticmethod
-    def layernorm(x: np.ndarray, weight: np.ndarray, bias: np.ndarray,
-                  eps: float = 1e-5) -> np.ndarray:
+    def layernorm(
+        x: np.ndarray, weight: np.ndarray, bias: np.ndarray, eps: float = 1e-5
+    ) -> np.ndarray:
         mean = np.mean(x, axis=-1, keepdims=True)
         var = np.var(x, axis=-1, keepdims=True)
         out = (x - mean) / np.sqrt(var + eps)
@@ -100,7 +101,7 @@ class CpuBackend:
 
     @staticmethod
     def rmsnorm(x: np.ndarray, weight: np.ndarray, eps: float = 1e-5) -> np.ndarray:
-        ss = np.mean(x ** 2, axis=-1, keepdims=True)
+        ss = np.mean(x**2, axis=-1, keepdims=True)
         return x / np.sqrt(ss + eps) * weight
 
     # ---- Random number generation ---------------------------------------

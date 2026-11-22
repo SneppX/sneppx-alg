@@ -24,56 +24,77 @@ if _HAS_C and _VIZMON_LIB:
 
     # Scalars
     _VIZMON_LIB.SNEPPX_vizmon_push_scalar.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_double,
+        ctypes.c_double,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_scalar.restype = ctypes.c_int
 
     # Graph
     _VIZMON_LIB.SNEPPX_vizmon_add_node.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_int), ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_int),
         ctypes.c_int,
-        ctypes.POINTER(ctypes.c_double), ctypes.c_int
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_int,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_add_node.restype = ctypes.c_int
 
     # Embeddings
     _VIZMON_LIB.SNEPPX_vizmon_push_embedding.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_int,
+        ctypes.c_int,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_embedding.restype = ctypes.c_int
 
-    _VIZMON_LIB.SNEPPX_vizmon_project_pca.argtypes = [
-        ctypes.c_void_p, ctypes.c_int
-    ]
+    _VIZMON_LIB.SNEPPX_vizmon_project_pca.argtypes = [ctypes.c_void_p, ctypes.c_int]
     _VIZMON_LIB.SNEPPX_vizmon_project_pca.restype = ctypes.c_int
 
     # Samples
     _VIZMON_LIB.SNEPPX_vizmon_push_sample.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int,
-        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_size_t, ctypes.c_double
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_ubyte),
+        ctypes.c_size_t,
+        ctypes.c_double,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_sample.restype = ctypes.c_int
 
     # Histograms
     _VIZMON_LIB.SNEPPX_vizmon_push_histogram.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int, ctypes.c_double
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_int,
+        ctypes.c_int,
+        ctypes.c_double,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_histogram.restype = ctypes.c_int
 
     # Timeline
     _VIZMON_LIB.SNEPPX_vizmon_push_timeline.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p,
-        ctypes.c_double, ctypes.c_double, ctypes.c_size_t
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_double,
+        ctypes.c_double,
+        ctypes.c_size_t,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_timeline.restype = ctypes.c_int
 
     # Sweeps
     _VIZMON_LIB.SNEPPX_vizmon_push_sweep.argtypes = [
-        ctypes.c_void_p, ctypes.c_char_p,
-        ctypes.c_double, ctypes.c_double, ctypes.c_double
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_double,
+        ctypes.c_double,
+        ctypes.c_double,
     ]
     _VIZMON_LIB.SNEPPX_vizmon_push_sweep.restype = ctypes.c_int
 
@@ -101,6 +122,7 @@ if _HAS_C and _VIZMON_LIB:
 
 # --- Pythonic wrapper ---
 
+
 class VizMon:
     """High-level Python wrapper for the SNEPPX vizmon control plane.
 
@@ -112,7 +134,9 @@ class VizMon:
 
     def __init__(self):
         if not _HAS_C:
-            raise RuntimeError("C vizmon library not found. Build with SNEPPX_BUILD_VIZMON=ON.")
+            raise RuntimeError(
+                "C vizmon library not found. Build with SNEPPX_BUILD_VIZMON=ON."
+            )
         self._handle = _VIZMON_LIB.SNEPPX_vizmon_create()
         if not self._handle:
             raise RuntimeError("Failed to create vizmon engine")
@@ -144,23 +168,26 @@ class VizMon:
             ts: Optional timestamp (monotonic seconds). Defaults to time.time().
         """
         import time
+
         if ts is None:
             ts = time.time()
-        r = _VIZMON_LIB.SNEPPX_vizmon_push_scalar(
-            self._handle, tag.encode(), value, ts
-        )
+        r = _VIZMON_LIB.SNEPPX_vizmon_push_scalar(self._handle, tag.encode(), value, ts)
         if r != 0:
             raise RuntimeError(f"push_scalar failed for tag '{tag}'")
 
     # ---- Graph ----
-    def add_node(self, name: str, in_nodes: List[int], out_node: int,
-                 shape: List[int]):
+    def add_node(self, name: str, in_nodes: List[int], out_node: int, shape: List[int]):
         """Register a graph node (operation + tensor shape)."""
         in_arr = (ctypes.c_int * len(in_nodes))(*in_nodes)
         shape_arr = (ctypes.c_double * len(shape))(*[float(s) for s in shape])
         r = _VIZMON_LIB.SNEPPX_vizmon_add_node(
-            self._handle, name.encode(), in_arr, len(in_nodes),
-            out_node, shape_arr, len(shape)
+            self._handle,
+            name.encode(),
+            in_arr,
+            len(in_nodes),
+            out_node,
+            shape_arr,
+            len(shape),
         )
         if r != 0:
             raise RuntimeError(f"add_node failed for '{name}'")
@@ -175,9 +202,11 @@ class VizMon:
             raise ValueError("embedding data must be 2-D (n_samples, n_dim)")
         arr = np.ascontiguousarray(data, dtype=np.float64)
         r = _VIZMON_LIB.SNEPPX_vizmon_push_embedding(
-            self._handle, tag.encode(),
+            self._handle,
+            tag.encode(),
             arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-            arr.shape[0], arr.shape[1]
+            arr.shape[0],
+            arr.shape[1],
         )
         if r != 0:
             raise RuntimeError(f"push_embedding failed for '{tag}'")
@@ -192,12 +221,12 @@ class VizMon:
     def push_image(self, tag: str, png_bytes: bytes, ts: Optional[float] = None):
         """Push a PNG image sample."""
         import time
+
         if ts is None:
             ts = time.time()
         arr = (ctypes.c_ubyte * len(png_bytes)).from_buffer_copy(png_bytes)
         r = _VIZMON_LIB.SNEPPX_vizmon_push_sample(
-            self._handle, tag.encode(), self.SAMPLE_KIND_IMG,
-            arr, len(png_bytes), ts
+            self._handle, tag.encode(), self.SAMPLE_KIND_IMG, arr, len(png_bytes), ts
         )
         if r != 0:
             raise RuntimeError(f"push_image failed for '{tag}'")
@@ -205,35 +234,39 @@ class VizMon:
     def push_audio(self, tag: str, wav_bytes: bytes, ts: Optional[float] = None):
         """Push a WAV audio sample."""
         import time
+
         if ts is None:
             ts = time.time()
         arr = (ctypes.c_ubyte * len(wav_bytes)).from_buffer_copy(wav_bytes)
         r = _VIZMON_LIB.SNEPPX_vizmon_push_sample(
-            self._handle, tag.encode(), self.SAMPLE_KIND_AUD,
-            arr, len(wav_bytes), ts
+            self._handle, tag.encode(), self.SAMPLE_KIND_AUD, arr, len(wav_bytes), ts
         )
         if r != 0:
             raise RuntimeError(f"push_audio failed for '{tag}'")
 
     # ---- Histograms ----
-    def push_histogram(self, tag: str, values: np.ndarray,
-                       n_bins: int = 64, ts: Optional[float] = None):
+    def push_histogram(
+        self, tag: str, values: np.ndarray, n_bins: int = 64, ts: Optional[float] = None
+    ):
         """Push weight/bias/gradient histogram."""
         import time
+
         if ts is None:
             ts = time.time()
         arr = np.ascontiguousarray(values, dtype=np.float64).flatten()
         r = _VIZMON_LIB.SNEPPX_vizmon_push_histogram(
-            self._handle, tag.encode(),
+            self._handle,
+            tag.encode(),
             arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-            arr.shape[0], n_bins, ts
+            arr.shape[0],
+            n_bins,
+            ts,
         )
         if r != 0:
             raise RuntimeError(f"push_histogram failed for '{tag}'")
 
     # ---- Timeline ----
-    def push_timeline(self, name: str, start_ms: float,
-                      dur_ms: float, mem_bytes: int):
+    def push_timeline(self, name: str, start_ms: float, dur_ms: float, mem_bytes: int):
         """Push a kernel profiling event."""
         r = _VIZMON_LIB.SNEPPX_vizmon_push_timeline(
             self._handle, name.encode(), start_ms, dur_ms, mem_bytes
@@ -242,12 +275,12 @@ class VizMon:
             raise RuntimeError(f"push_timeline failed for '{name}'")
 
     # ---- Sweeps ----
-    def push_sweep(self, config_id: str, final_loss: float,
-                   final_acc: float, duration_s: float):
+    def push_sweep(
+        self, config_id: str, final_loss: float, final_acc: float, duration_s: float
+    ):
         """Record a hyperparameter sweep result."""
         r = _VIZMON_LIB.SNEPPX_vizmon_push_sweep(
-            self._handle, config_id.encode(),
-            final_loss, final_acc, duration_s
+            self._handle, config_id.encode(), final_loss, final_acc, duration_s
         )
         if r != 0:
             raise RuntimeError(f"push_sweep failed for '{config_id}'")
@@ -256,6 +289,7 @@ class VizMon:
     def snapshot_json(self) -> Dict[str, Any]:
         """Get current dashboard state as a JSON-decoded dict."""
         import json
+
         ptr = _VIZMON_LIB.SNEPPX_vizmon_snapshot_json(self._handle)
         if not ptr:
             return {}
@@ -300,6 +334,7 @@ class VizMon:
 
 
 # --- Convenience functions ---
+
 
 def start_dashboard(port: int = 8300) -> VizMon:
     """Create a VizMon instance and start its HTTP+WS server.

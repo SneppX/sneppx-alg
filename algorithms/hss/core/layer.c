@@ -1,8 +1,8 @@
 #include "hierarchical_state_space.h"
 #include "polymorphic_memory_allocator.h"
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 /*
  * SNEPPX - HSS Layer Wrapper
  *
@@ -19,14 +19,13 @@
  *   None (internal module).
  */
 
-
-
 /**
  * @brief Perform Hss Config Default.
  *
  * @return The result value, or 0 on error.
  */
-SNEPPXHSSConfig SNEPPX_hss_config_default(void) {
+SNEPPXHSSConfig SNEPPX_hss_config_default(void)
+{
     SNEPPXHSSConfig cfg;
     cfg.state_dim = 64;
     cfg.input_dim = 512;
@@ -40,25 +39,30 @@ SNEPPXHSSConfig SNEPPX_hss_config_default(void) {
     return cfg;
 }
 
-static unsigned long lcg_next(unsigned long state) {
+static unsigned long lcg_next(unsigned long state)
+{
     return state * 1103515245UL + 12345UL;
 }
 
-static float uniform_float(unsigned long* state, float min, float max) {
+static float uniform_float(unsigned long* state, float min, float max)
+{
     *state = lcg_next(*state);
-    float t = (float)((*state >> 16) & 0x7FFF) / 32767.0f;
+    float t = (float) ((*state >> 16) & 0x7FFF) / 32767.0f;
     return min + t * (max - min);
 }
 
-static void fill_randn(SNEPPXTensor* t, unsigned long* state, float scale) {
-    float* data = (float*)t->data;
-    for (size_t i = 0; i < t->size; i += 2) {
+static void fill_randn(SNEPPXTensor* t, unsigned long* state, float scale)
+{
+    float* data = (float*) t->data;
+    for (size_t i = 0; i < t->size; i += 2)
+    {
         float u1 = uniform_float(state, 0.0f, 1.0f);
         float u2 = uniform_float(state, 0.0f, 1.0f);
         float r = sqrtf(-2.0f * logf(u1 + 1e-10f));
         float theta = 2.0f * 3.14159265f * u2;
         data[i] = r * cosf(theta) * scale;
-        if (i + 1 < t->size) {
+        if (i + 1 < t->size)
+        {
             data[i + 1] = r * sinf(theta) * scale;
         }
     }
@@ -71,9 +75,11 @@ static void fill_randn(SNEPPXTensor* t, unsigned long* state, float scale) {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXHSSLayer* SNEPPX_hss_layer_create(const SNEPPXHSSConfig* config, unsigned int seed) {
-    SNEPPXHSSLayer* layer = (SNEPPXHSSLayer*)SNEPPX_malloc(sizeof(SNEPPXHSSLayer), 64);
-    if (!layer) return NULL;
+SNEPPXHSSLayer* SNEPPX_hss_layer_create(const SNEPPXHSSConfig* config, unsigned int seed)
+{
+    SNEPPXHSSLayer* layer = (SNEPPXHSSLayer*) SNEPPX_malloc(sizeof(SNEPPXHSSLayer), 64);
+    if (!layer)
+        return NULL;
     memset(layer, 0, sizeof(SNEPPXHSSLayer));
 
     unsigned long state = seed;
@@ -97,14 +103,15 @@ SNEPPXHSSLayer* SNEPPX_hss_layer_create(const SNEPPXHSSConfig* config, unsigned 
     layer->x_proj = SNEPPX_tensor_create(shape_ii, 2, SNEPPX_FLOAT32);
     layer->x_proj_bias = SNEPPX_tensor_create(shape_i1, 1, SNEPPX_FLOAT32);
 
-    if (layer->A && layer->B && layer->C && layer->D && layer->dt &&
-        layer->h && layer->x_proj && layer->x_proj_bias) {
+    if (layer->A && layer->B && layer->C && layer->D && layer->dt && layer->h && layer->x_proj && layer->x_proj_bias)
+    {
         fill_randn(layer->A, &state, 0.01f);
         fill_randn(layer->B, &state, 0.1f);
         fill_randn(layer->C, &state, 0.1f);
 
-        float* dt_data = (float*)layer->dt->data;
-        for (size_t i = 0; i < s_dim; i++) {
+        float* dt_data = (float*) layer->dt->data;
+        for (size_t i = 0; i < s_dim; i++)
+        {
             dt_data[i] = uniform_float(&state, config->dt_min, config->dt_max);
         }
 
@@ -122,17 +129,29 @@ SNEPPXHSSLayer* SNEPPX_hss_layer_create(const SNEPPXHSSConfig* config, unsigned 
 /**
  * @brief Destroy Hss Layer.
  */
-void SNEPPX_hss_layer_destroy(SNEPPXHSSLayer* layer) {
-    if (!layer) return;
-    if (layer->A) SNEPPX_tensor_destroy(layer->A);
-    if (layer->B) SNEPPX_tensor_destroy(layer->B);
-    if (layer->C) SNEPPX_tensor_destroy(layer->C);
-    if (layer->D) SNEPPX_tensor_destroy(layer->D);
-    if (layer->dt) SNEPPX_tensor_destroy(layer->dt);
-    if (layer->h) SNEPPX_tensor_destroy(layer->h);
-    if (layer->x_proj) SNEPPX_tensor_destroy(layer->x_proj);
-    if (layer->x_proj_bias) SNEPPX_tensor_destroy(layer->x_proj_bias);
-    if (layer->A_bar) SNEPPX_tensor_destroy(layer->A_bar);
-    if (layer->B_bar) SNEPPX_tensor_destroy(layer->B_bar);
+void SNEPPX_hss_layer_destroy(SNEPPXHSSLayer* layer)
+{
+    if (!layer)
+        return;
+    if (layer->A)
+        SNEPPX_tensor_destroy(layer->A);
+    if (layer->B)
+        SNEPPX_tensor_destroy(layer->B);
+    if (layer->C)
+        SNEPPX_tensor_destroy(layer->C);
+    if (layer->D)
+        SNEPPX_tensor_destroy(layer->D);
+    if (layer->dt)
+        SNEPPX_tensor_destroy(layer->dt);
+    if (layer->h)
+        SNEPPX_tensor_destroy(layer->h);
+    if (layer->x_proj)
+        SNEPPX_tensor_destroy(layer->x_proj);
+    if (layer->x_proj_bias)
+        SNEPPX_tensor_destroy(layer->x_proj_bias);
+    if (layer->A_bar)
+        SNEPPX_tensor_destroy(layer->A_bar);
+    if (layer->B_bar)
+        SNEPPX_tensor_destroy(layer->B_bar);
     SNEPPX_free(layer, sizeof(SNEPPXHSSLayer));
 }

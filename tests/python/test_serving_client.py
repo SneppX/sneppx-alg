@@ -4,13 +4,20 @@ import json
 import time
 import threading
 from SneppX_ALG.interface_bindings import (
-    ServingEngine, ServingConfig, ServingServer, ServingClient,
+    ServingEngine,
+    ServingConfig,
+    ServingServer,
+    ServingClient,
 )
 
 
 def _start_server(model_fn=None):
-    cfg = ServingConfig(max_batch_size=4, batch_timeout_ms=5.0, n_workers=1, warmup_iters=0)
-    eng = ServingEngine(config=cfg, model_fn=model_fn or (lambda x: {"out": str(x)[-1:]}))
+    cfg = ServingConfig(
+        max_batch_size=4, batch_timeout_ms=5.0, n_workers=1, warmup_iters=0
+    )
+    eng = ServingEngine(
+        config=cfg, model_fn=model_fn or (lambda x: {"out": str(x)[-1:]})
+    )
     srv = ServingServer(eng, host="127.0.0.1", port=0)
     srv.start_background()
     # wait for readiness
@@ -42,7 +49,9 @@ def test_metrics_endpoint():
         s, data = client._request("GET", "/metrics", headers={"Accept": "text/plain"})
         assert "sneppx_serving_requests_total" in (data.get("raw") or "")
         # json metrics
-        s2, data2 = client._request("GET", "/metrics", headers={"Accept": "application/json"})
+        s2, data2 = client._request(
+            "GET", "/metrics", headers={"Accept": "application/json"}
+        )
         assert data2["requests"] >= 2
         assert "latency_ms" in data2
     finally:
@@ -100,7 +109,9 @@ def test_generate_and_error_counters():
     try:
         ver, out = client.generate("echo-model", {"msg": "hi"}, request_id="g1")
         assert out["echo"] == {"msg": "hi"}
-        s, data = client._request("GET", "/metrics", headers={"Accept": "application/json"})
+        s, data = client._request(
+            "GET", "/metrics", headers={"Accept": "application/json"}
+        )
         assert data["requests"] >= 1
     finally:
         srv.stop()
@@ -109,6 +120,7 @@ def test_generate_and_error_counters():
 
 def test_config_hot_reload_over_http():
     import tempfile, os
+
     cfg = ServingConfig(max_batch_size=4, warmup_iters=0)
     eng = ServingEngine(config=cfg, model_fn=lambda x: x)
     with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False) as f:
@@ -125,6 +137,7 @@ def test_config_hot_reload_over_http():
             f.write("serving:\n  max_batch_size: 128\n  n_workers: 5\n")
         # poll reload
         import time as _t
+
         deadline = _t.time() + 2.0
         while _t.time() < deadline:
             if eng.reload():

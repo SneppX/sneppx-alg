@@ -1,8 +1,8 @@
+#include "polymorphic_memory_allocator.h"
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include "polymorphic_memory_allocator.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -20,14 +20,14 @@
  *
  */
 
-
-
-
-
-static void test_layer_forward(void) {
+static void test_layer_forward(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16;
-    cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERLayer* layer = SNEPPX_ser_layer_create(&cfg, 42);
     SX_ASSERT(layer != NULL, "layer not null");
 
@@ -41,10 +41,15 @@ static void test_layer_forward(void) {
     SX_ASSERT(output->shape[0] == 16, "output tokens == 16");
     SX_ASSERT(output->shape[1] == 16, "output dim == 16");
 
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int ok = 1;
-    for (size_t i = 0; i < 16 * 16; i++) {
-        if (!isfinite(od[i])) { ok = 0; break; }
+    for (size_t i = 0; i < 16 * 16; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            ok = 0;
+            break;
+        }
     }
     SX_ASSERT(ok, "all finite");
 
@@ -53,10 +58,14 @@ static void test_layer_forward(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-static void test_layer_load_balance(void) {
+static void test_layer_load_balance(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16;
-    cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXSERLayer* layer = SNEPPX_ser_layer_create(&cfg, 42);
     SX_ASSERT(layer != NULL, "layer not null");
 
@@ -79,6 +88,11 @@ static void test_layer_load_balance(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-
-TEST(test_ser_layer, test_layer_forward) { test_layer_forward(); }
-TEST(test_ser_layer, test_layer_load_balance) { test_layer_load_balance(); }
+TEST(test_ser_layer, test_layer_forward)
+{
+    test_layer_forward();
+}
+TEST(test_ser_layer, test_layer_load_balance)
+{
+    test_layer_load_balance();
+}

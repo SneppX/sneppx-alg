@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Open Hdf5.
  *
@@ -25,11 +24,19 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_hdf5_open(const char* path, const char* mode) { (void)path; (void)mode; return NULL; }
+void* SNEPPX_hdf5_open(const char* path, const char* mode)
+{
+    (void) path;
+    (void) mode;
+    return NULL;
+}
 /**
  * @brief Close Hdf5.
  */
-void SNEPPX_hdf5_close(void* file) { free(file); }
+void SNEPPX_hdf5_close(void* file)
+{
+    free(file);
+}
 /**
  * @brief Perform Hdf5 Create Group.
  *
@@ -37,7 +44,12 @@ void SNEPPX_hdf5_close(void* file) { free(file); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_create_group(void* file, const char* path) { (void)file; (void)path; return 0; }
+int SNEPPX_hdf5_create_group(void* file, const char* path)
+{
+    (void) file;
+    (void) path;
+    return 0;
+}
 /**
  * @brief Perform Hdf5 Dataset Exists.
  *
@@ -45,7 +57,12 @@ int SNEPPX_hdf5_create_group(void* file, const char* path) { (void)file; (void)p
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_dataset_exists(void* file, const char* path) { (void)file; (void)path; return 0; }
+int SNEPPX_hdf5_dataset_exists(void* file, const char* path)
+{
+    (void) file;
+    (void) path;
+    return 0;
+}
 /**
  * @brief Set Hdf5 Read Data.
  *
@@ -56,7 +73,15 @@ int SNEPPX_hdf5_dataset_exists(void* file, const char* path) { (void)file; (void
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_read_dataset(void* file, const char* path, void* data, size_t* dims, size_t ndim) { (void)file; (void)path; (void)data; (void)dims; (void)ndim; return 0; }
+int SNEPPX_hdf5_read_dataset(void* file, const char* path, void* data, size_t* dims, size_t ndim)
+{
+    (void) file;
+    (void) path;
+    (void) data;
+    (void) dims;
+    (void) ndim;
+    return 0;
+}
 /**
  * @brief Set Hdf5 Write Data.
  *
@@ -68,7 +93,17 @@ int SNEPPX_hdf5_read_dataset(void* file, const char* path, void* data, size_t* d
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_write_dataset(void* file, const char* path, const void* data, const size_t* dims, size_t ndim, int dtype) { (void)file; (void)path; (void)data; (void)dims; (void)ndim; (void)dtype; return 0; }
+int SNEPPX_hdf5_write_dataset(void* file, const char* path, const void* data, const size_t* dims, size_t ndim,
+                              int dtype)
+{
+    (void) file;
+    (void) path;
+    (void) data;
+    (void) dims;
+    (void) ndim;
+    (void) dtype;
+    return 0;
+}
 /**
  * @brief Perform Hdf5 Read Attribute.
  *
@@ -79,7 +114,15 @@ int SNEPPX_hdf5_write_dataset(void* file, const char* path, const void* data, co
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_read_attribute(void* file, const char* path, const char* attr_name, void* data, size_t* size) { (void)file; (void)path; (void)attr_name; (void)data; (void)size; return 0; }
+int SNEPPX_hdf5_read_attribute(void* file, const char* path, const char* attr_name, void* data, size_t* size)
+{
+    (void) file;
+    (void) path;
+    (void) attr_name;
+    (void) data;
+    (void) size;
+    return 0;
+}
 /**
  * @brief Perform Hdf5 Write Attribute.
  *
@@ -90,7 +133,15 @@ int SNEPPX_hdf5_read_attribute(void* file, const char* path, const char* attr_na
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_write_attribute(void* file, const char* path, const char* attr_name, const void* data, size_t size) { (void)file; (void)path; (void)attr_name; (void)data; (void)size; return 0; }
+int SNEPPX_hdf5_write_attribute(void* file, const char* path, const char* attr_name, const void* data, size_t size)
+{
+    (void) file;
+    (void) path;
+    (void) attr_name;
+    (void) data;
+    (void) size;
+    return 0;
+}
 /**
  * @brief Perform Hdf5 List Children.
  *
@@ -100,4 +151,11 @@ int SNEPPX_hdf5_write_attribute(void* file, const char* path, const char* attr_n
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_hdf5_list_children(void* file, const char* path, char*** children, size_t* count) { (void)file; (void)path; (void)children; (void)count; return 0; }
+int SNEPPX_hdf5_list_children(void* file, const char* path, char*** children, size_t* count)
+{
+    (void) file;
+    (void) path;
+    (void) children;
+    (void) count;
+    return 0;
+}

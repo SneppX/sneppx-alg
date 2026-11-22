@@ -18,6 +18,7 @@
 **⭐ Star this repo** to support the project and help us reach 1,000+ stars!
 
 ## 📑 Table of Contents
+
 - [Overview](#overview)
 - [By the numbers](#by-the-numbers)
 - [Why SNEPPX-Alg?](#why-sneppx-alg)
@@ -40,6 +41,7 @@
 SNEPPX-Alg (under the SneppX organization) is a universal, MIT-licensed AI algorithm framework written primarily in **C11 / C++20 with CUDA**. It organizes model construction and inference as a composable, secure **5-stage pipeline** and wraps it with a layered security model (S0–S9). The codebase is large (~183K LOC) and spans a core tensor/autograd substrate, algorithm implementations, accelerator drivers, a security stack, an HTTP serving layer, and Python bindings.
 
 Design goals:
+
 - **Auditable native core** — the hot path lives in C/CUDA you can read and verify.
 - **Composable pipeline** — HSS → SER → ARC → NPE → FM stages are independently testable.
 - **Security by design** — ten layers from crypto to pentest are built into the framework.

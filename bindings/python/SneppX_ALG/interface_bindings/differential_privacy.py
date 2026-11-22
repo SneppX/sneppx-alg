@@ -22,7 +22,9 @@ class LaplaceMech:
             raise ValueError(f"epsilon must be > 0, got {epsilon}")
         self.epsilon = epsilon
 
-    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
+    def apply(
+        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
+    ) -> np.ndarray:
         scale = sensitivity / self.epsilon
         noise = np.random.laplace(0, scale, size=np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -43,7 +45,9 @@ class GaussianMech:
         self.epsilon = epsilon
         self.delta = delta
 
-    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
+    def apply(
+        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
+    ) -> np.ndarray:
         sigma = sensitivity * math.sqrt(2 * math.log(1.25 / self.delta)) / self.epsilon
         noise = np.random.normal(0, sigma, size=np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -87,8 +91,10 @@ class PrivacyBudget:
 
     @property
     def remaining(self) -> Tuple[float, float]:
-        return (self._total_epsilon - self._spent_epsilon,
-                self._total_delta - self._spent_delta)
+        return (
+            self._total_epsilon - self._spent_epsilon,
+            self._total_delta - self._spent_delta,
+        )
 
     @property
     def spent(self) -> Tuple[float, float]:
@@ -138,7 +144,9 @@ class RDPAccountant:
         self._orders = (
             orders
             if orders is not None
-            else [1 + 0.1 * i for i in range(1, 100)] + list(range(11, 65)) + [128, 256, 512]
+            else [1 + 0.1 * i for i in range(1, 100)]
+            + list(range(11, 65))
+            + [128, 256, 512]
         )
         self._rdp = np.zeros(len(self._orders))
         self._steps = 0
@@ -171,7 +179,14 @@ class RDPAccountant:
             # Subsampling amplification (Poisson, dominant-term approx)
             if q < 1.0:
                 # E[ (q * N(0,sigma^2) + (1-q))^alpha ] approximation
-                step_rdp = math.log(1.0 + q * q * alpha * (alpha - 1) / (2.0 * noise_multiplier * noise_multiplier)) / (alpha - 1)
+                step_rdp = math.log(
+                    1.0
+                    + q
+                    * q
+                    * alpha
+                    * (alpha - 1)
+                    / (2.0 * noise_multiplier * noise_multiplier)
+                ) / (alpha - 1)
                 if step_rdp < 0:
                     step_rdp = 0.0
 
@@ -296,7 +311,7 @@ class DPSGD:
                 else:
                     per_sample_grads.append(np.zeros_like(p.data, dtype=np.float64))
 
-            total_norm_sq = sum(np.sum(g ** 2) for g in per_sample_grads)
+            total_norm_sq = sum(np.sum(g**2) for g in per_sample_grads)
             total_norm = float(np.sqrt(total_norm_sq))
 
             clip_coef = self._max_grad_norm / (total_norm + 1e-8)

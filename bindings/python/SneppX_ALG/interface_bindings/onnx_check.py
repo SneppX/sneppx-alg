@@ -46,9 +46,7 @@ def _is_symbolic(dim: Any) -> bool:
     return dim is None or isinstance(dim, str)
 
 
-def broadcast_shape(
-    a: List[Any], b: List[Any]
-) -> List[Any]:
+def broadcast_shape(a: List[Any], b: List[Any]) -> List[Any]:
     """NumPy-style broadcast of two dim lists, preserving symbolic dims."""
     rank = max(len(a), len(b))
     da = [1] * (rank - len(a)) + list(a)
@@ -75,8 +73,9 @@ def _concat_dims(*lists: List[Any]) -> List[Any]:
     return out
 
 
-def _pool_out_dim(size: Any, kernel: int, stride: int, pad: int,
-                  dilation: int = 1) -> Any:
+def _pool_out_dim(
+    size: Any, kernel: int, stride: int, pad: int, dilation: int = 1
+) -> Any:
     if _is_symbolic(size):
         return size
     return max(0, (int(size) + 2 * pad - dilation * (kernel - 1) - 1) // stride + 1)
@@ -87,7 +86,9 @@ def _attr_int(node: OnnxNode, name: str, default: int = 0) -> int:
     return int(val)
 
 
-def _attr_ints(node: OnnxNode, name: str, default: Optional[List[int]] = None) -> List[int]:
+def _attr_ints(
+    node: OnnxNode, name: str, default: Optional[List[int]] = None
+) -> List[int]:
     val = node.attributes.get(name, default)
     if val is None:
         return []
@@ -132,7 +133,9 @@ class _InferenceContext:
         return self.constants.get(name)
 
 
-def _infer_broadcast_binary(ctx: _InferenceContext, node: OnnxNode) -> Tuple[List[Any], str]:
+def _infer_broadcast_binary(
+    ctx: _InferenceContext, node: OnnxNode
+) -> Tuple[List[Any], str]:
     sa = ctx.get_shape(node.inputs[0])
     sb = ctx.get_shape(node.inputs[1])
     if sa is None and sb is None:
@@ -147,8 +150,18 @@ def _infer_broadcast_binary(ctx: _InferenceContext, node: OnnxNode) -> Tuple[Lis
 
 
 def _promote_dtype(da: str, db: str) -> str:
-    order = ["bool", "int8", "int16", "int32", "int64",
-             "uint8", "uint16", "float16", "float32", "float64"]
+    order = [
+        "bool",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "uint8",
+        "uint16",
+        "float16",
+        "float32",
+        "float64",
+    ]
     ia = order.index(da) if da in order else order.index("float32")
     ib = order.index(db) if db in order else order.index("float32")
     return order[max(ia, ib)]
@@ -162,9 +175,7 @@ def _infer_matmul(ctx: _InferenceContext, node: OnnxNode) -> Tuple[List[Any], st
     if len(sa) < 1 or len(sb) < 1:
         raise OnnxShapeError("MatMul: inputs must have rank >= 1")
     if sa[-1] != sb[-2] and not (_is_symbolic(sa[-1]) or _is_symbolic(sb[-2])):
-        raise OnnxShapeError(
-            f"MatMul: inner dims {sa[-1]} vs {sb[-2]} mismatch"
-        )
+        raise OnnxShapeError(f"MatMul: inner dims {sa[-1]} vs {sb[-2]} mismatch")
     batch = broadcast_shape(sa[:-2], sb[:-2])
     shape = batch + [sa[-2], sb[-1]]
     da = ctx.get_dtype(node.inputs[0]) or "float32"
@@ -220,14 +231,16 @@ def _infer_conv(ctx: _InferenceContext, node: OnnxNode) -> Tuple[List[Any], str]
         dilation = dilations[i] if i < len(dilations) else 1
         pad_top = pads[i] if i < len(pads) else 0
         pad_bot = pads[i + n_spatial] if i + n_spatial < len(pads) else 0
-        spatial.append(_pool_out_dim(size, kernel, stride, max(pad_top, pad_bot),
-                                     dilation))
+        spatial.append(
+            _pool_out_dim(size, kernel, stride, max(pad_top, pad_bot), dilation)
+        )
     dtype = ctx.get_dtype(node.inputs[0]) or "float32"
     return [n, out_c] + spatial, dtype
 
 
-def _infer_pool(ctx: _InferenceContext, node: OnnxNode,
-                kernel_attr: str = "kernel_shape") -> Tuple[List[Any], str]:
+def _infer_pool(
+    ctx: _InferenceContext, node: OnnxNode, kernel_attr: str = "kernel_shape"
+) -> Tuple[List[Any], str]:
     sx = ctx.get_shape(node.inputs[0])
     if sx is None or len(sx) < 2:
         raise OnnxShapeError(f"{node.op_type}: input must have rank >= 2")
@@ -377,13 +390,14 @@ def _infer_gather(ctx: _InferenceContext, node: OnnxNode) -> Tuple[List[Any], st
     rank = len(sx)
     if axis < 0:
         axis += rank
-    out = sx[:axis] + si + sx[axis + 1:]
+    out = sx[:axis] + si + sx[axis + 1 :]
     dtype = ctx.get_dtype(node.inputs[0]) or "float32"
     return out, dtype
 
 
-def _infer_reduce(ctx: _InferenceContext, node: OnnxNode,
-                  keepdims_default: int = 1) -> Tuple[List[Any], str]:
+def _infer_reduce(
+    ctx: _InferenceContext, node: OnnxNode, keepdims_default: int = 1
+) -> Tuple[List[Any], str]:
     sx = ctx.get_shape(node.inputs[0])
     if sx is None:
         raise OnnxShapeError(f"{node.op_type}: missing input shape")
@@ -402,7 +416,9 @@ def _infer_reduce(ctx: _InferenceContext, node: OnnxNode,
     return out, dtype
 
 
-def _split_shapes(ctx: _InferenceContext, node: OnnxNode) -> Tuple[List[List[Any]], str]:
+def _split_shapes(
+    ctx: _InferenceContext, node: OnnxNode
+) -> Tuple[List[List[Any]], str]:
     sx = ctx.get_shape(node.inputs[0])
     if sx is None:
         raise OnnxShapeError("Split: missing input shape")
@@ -603,9 +619,7 @@ def infer_shapes(model: OnnxModel) -> Dict[str, OnnxTensor]:
     # Graph outputs must resolve to concrete types.
     for out in graph.outputs:
         if out.name not in result:
-            raise OnnxShapeError(
-                f"Graph output '{out.name}' has no inferred shape"
-            )
+            raise OnnxShapeError(f"Graph output '{out.name}' has no inferred shape")
     return result
 
 
@@ -634,9 +648,7 @@ def onnx_check(model: OnnxModel) -> Tuple[bool, List[str]]:
         inferred_tensor = inferred.get(out.name)
         if inferred_tensor is None:
             continue
-        for i, (declared, got) in enumerate(
-            zip(out.shape, inferred_tensor.shape)
-        ):
+        for i, (declared, got) in enumerate(zip(out.shape, inferred_tensor.shape)):
             if isinstance(declared, int) and isinstance(got, int) and declared != got:
                 errors.append(
                     f"Graph output '{out.name}' dim {i}: declared {declared}, "

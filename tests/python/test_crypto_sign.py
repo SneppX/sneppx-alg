@@ -3,7 +3,10 @@
 import sys
 import os
 import pytest
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import SneppX_ALG.interface_bindings.crypto_sign as crypto_sign_module
 from SneppX_ALG.interface_bindings import Ed25519, Dilithium, SphincsPlus
@@ -43,7 +46,9 @@ def test_ed25519_empty_message():
     assert Ed25519.verify(pk, b"", sig)
 
 
-@pytest.mark.skipif(crypto_sign_module._C is None, reason="native post-quantum backend unavailable")
+@pytest.mark.skipif(
+    crypto_sign_module._C is None, reason="native post-quantum backend unavailable"
+)
 def test_dilithium_keypair():
     d = Dilithium(Dilithium.MODE_ML_DSA_44)
     pk, sk = d.keypair()
@@ -51,16 +56,24 @@ def test_dilithium_keypair():
     assert len(sk) > 0
 
 
-@pytest.mark.skipif(crypto_sign_module._C is None, reason="native post-quantum backend unavailable")
+@pytest.mark.skipif(
+    crypto_sign_module._C is None, reason="native post-quantum backend unavailable"
+)
 def test_dilithium_modes():
-    for mode in [Dilithium.MODE_ML_DSA_44, Dilithium.MODE_ML_DSA_65, Dilithium.MODE_ML_DSA_87]:
+    for mode in [
+        Dilithium.MODE_ML_DSA_44,
+        Dilithium.MODE_ML_DSA_65,
+        Dilithium.MODE_ML_DSA_87,
+    ]:
         d = Dilithium(mode)
         pk, sk = d.keypair()
         sig = d.sign(sk, b"test")
         assert d.verify(pk, b"test", sig)
 
 
-@pytest.mark.skipif(crypto_sign_module._C is None, reason="native post-quantum backend unavailable")
+@pytest.mark.skipif(
+    crypto_sign_module._C is None, reason="native post-quantum backend unavailable"
+)
 def test_sphincsplus_keypair():
     s = SphincsPlus("128s")
     pk, sk = s.keypair()
@@ -68,7 +81,9 @@ def test_sphincsplus_keypair():
     assert len(sk) == 64
 
 
-@pytest.mark.skipif(crypto_sign_module._C is None, reason="native post-quantum backend unavailable")
+@pytest.mark.skipif(
+    crypto_sign_module._C is None, reason="native post-quantum backend unavailable"
+)
 def test_sphincsplus_variants():
     for v in ["128s", "128f", "192s", "192f", "256s", "256f"]:
         s = SphincsPlus(v)
@@ -77,7 +92,9 @@ def test_sphincsplus_variants():
         assert s.verify(pk, b"msg", sig)
 
 
-@pytest.mark.skipif(crypto_sign_module._C is None, reason="native post-quantum backend unavailable")
+@pytest.mark.skipif(
+    crypto_sign_module._C is None, reason="native post-quantum backend unavailable"
+)
 def test_dilithium_sign_verify():
     d = Dilithium()
     pk, sk = d.keypair()

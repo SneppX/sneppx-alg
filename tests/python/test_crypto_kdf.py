@@ -2,7 +2,10 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import HMAC_, HKDF, PBKDF2, Argon2
 
@@ -35,6 +38,7 @@ def test_hmac_empty():
 
 def test_hmac_sha512():
     import hashlib
+
     hm = HMAC_(b"key", digestmod=hashlib.sha512)
     tag = hm.sign(b"msg")
     assert len(tag) == 64

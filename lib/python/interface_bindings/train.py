@@ -27,7 +27,7 @@ class DataLoader:
     def __next__(self):
         if self._pos >= len(self.dataset):
             raise StopIteration
-        batch_idx = self.indices[self._pos:self._pos + self.batch_size]
+        batch_idx = self.indices[self._pos : self._pos + self.batch_size]
         self._pos += self.batch_size
         batch = [self.dataset[i] for i in batch_idx]
         xs = Tensor(np.stack([b[0] for b in batch]))
@@ -56,9 +56,15 @@ class Metrics:
 
 
 class Trainer:
-    def __init__(self, model: Module, optimizer: Optimizer, loss_fn: Callable,
-                 device: str = "cpu", gradient_accumulation_steps: int = 1,
-                 max_grad_norm: float = 1.0):
+    def __init__(
+        self,
+        model: Module,
+        optimizer: Optimizer,
+        loss_fn: Callable,
+        device: str = "cpu",
+        gradient_accumulation_steps: int = 1,
+        max_grad_norm: float = 1.0,
+    ):
         self.model = model
         self.optimizer = optimizer
         self.loss_fn = loss_fn
@@ -126,7 +132,7 @@ class Trainer:
         for p in self.model.parameters():
             if p.grad is not None:
                 g = p.grad.numpy()
-                total_norm += np.sum(g ** 2)
+                total_norm += np.sum(g**2)
         total_norm = np.sqrt(total_norm)
         if total_norm > self.max_grad_norm:
             scale = self.max_grad_norm / total_norm

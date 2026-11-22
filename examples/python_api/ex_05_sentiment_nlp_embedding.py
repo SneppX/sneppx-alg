@@ -1,8 +1,19 @@
 """
 Example 5: NLP Sentiment Analysis with Embedding Layer using SNEPPX-Alg API
 """
+
 import numpy as np
-from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Module, Embedding, Linear, Adam, Trainer, Dataset, DataLoader
+from SneppX_ALG.interface_bindings.pytorch_api import (
+    Tensor,
+    Module,
+    Embedding,
+    Linear,
+    Adam,
+    Trainer,
+    Dataset,
+    DataLoader,
+)
+
 
 class SentimentDataset(Dataset):
     def __init__(self, n=150, seq_len=8):
@@ -14,6 +25,7 @@ class SentimentDataset(Dataset):
 
     def __getitem__(self, idx):
         return Tensor(self.x[idx]), self.y[idx]
+
 
 class SentimentModel(Module):
     def __init__(self):
@@ -27,6 +39,7 @@ class SentimentModel(Module):
         pooled = Tensor(np.mean(emb.data, axis=1), requires_grad=emb.requires_grad)
         return self.fc(pooled)
 
+
 def loss_fn(preds, targets):
     exps = np.exp(preds.data - np.max(preds.data, axis=-1, keepdims=True))
     probs = exps / np.sum(exps, axis=-1, keepdims=True)
@@ -34,6 +47,7 @@ def loss_fn(preds, targets):
     targets_arr = np.array(targets)
     loss = -np.mean(np.log(probs[np.arange(n), targets_arr] + 1e-7))
     return Tensor(loss, requires_grad=True)
+
 
 if __name__ == "__main__":
     dataset = SentimentDataset()

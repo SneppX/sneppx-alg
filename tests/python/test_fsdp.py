@@ -247,6 +247,7 @@ def test_module_property():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * Security Unit Tests — SKELETON
  * VERSION: v0.5
@@ -22,10 +21,11 @@
  * key derivation, constant-time operations, secure memory.
  */
 
-#include <stdio.h>
 #include "test_gtest.h"
+#include <stdio.h>
 
-TEST(test_security_common, suite) {
+TEST(test_security_common, suite)
+{
     printf("test_security: skeleton — no security unit tests implemented\n");
     return;
 }

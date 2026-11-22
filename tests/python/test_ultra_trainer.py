@@ -72,12 +72,8 @@ def test_basic_training():
 
 def test_autocast():
     with autocast(enabled=True, dtype="float16"), Timer("autocast_block"):
-        a = tensor.Tensor.from_numpy(
-            np.array([1.0, 2.0, 3.0]), dtype="float32"
-        )
-        b = tensor.Tensor.from_numpy(
-            np.array([0.5, 1.0, 1.5]), dtype="float32"
-        )
+        a = tensor.Tensor.from_numpy(np.array([1.0, 2.0, 3.0]), dtype="float32")
+        b = tensor.Tensor.from_numpy(np.array([0.5, 1.0, 1.5]), dtype="float32")
         c = a * b
         c.sum()
         print(f"  Autocast done, dtype = {a.dtype_name}")
@@ -98,7 +94,9 @@ def test_amp():
     scaled_loss.backward()
     assert params[0].grad is not None
     scaler.unscale_([params[0].grad])
-    np.testing.assert_allclose(params[0].grad.data, [2.0, 4.0, 6.0], rtol=1e-5, atol=1e-6)
+    np.testing.assert_allclose(
+        params[0].grad.data, [2.0, 4.0, 6.0], rtol=1e-5, atol=1e-6
+    )
     print(f"  AMPLoss (scaled): {float(scaled_loss.data.item())}")
 
 
@@ -128,9 +126,7 @@ def test_checkpointing():
 
 
 def test_quantization():
-    inp = tensor.Tensor.from_numpy(
-        np.array([1.0, 2.0, 3.0, 4.0]), dtype="float32"
-    )
+    inp = tensor.Tensor.from_numpy(np.array([1.0, 2.0, 3.0, 4.0]), dtype="float32")
     quant_tensor, scale = quantize_int8_sym(inp)
     print(f"  INT8 quantized: scale={scale:.4f}, dtype={quant_tensor.dtype_name}")
 

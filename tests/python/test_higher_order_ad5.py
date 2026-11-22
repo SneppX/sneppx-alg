@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -44,8 +46,10 @@ def _fd_hessian(target, grad_fn, h=1e-4):
     H = np.zeros((flat, flat), dtype=np.float64)
     base = target.ravel().astype(np.float64).copy()
     for j in range(flat):
-        bp = base.copy(); bp[j] += h
-        bn = base.copy(); bn[j] -= h
+        bp = base.copy()
+        bp[j] += h
+        bn = base.copy()
+        bn[j] -= h
         gp = grad_fn(bp.reshape(target.shape)).ravel().astype(np.float64)
         gn = grad_fn(bn.reshape(target.shape)).ravel().astype(np.float64)
         H[:, j] = (gp - gn) / (2 * h)
@@ -64,7 +68,7 @@ def _run(stride, padding, seed):
 
     def build(xin, wkern):
         out = ops.Conv1d.apply(xin, wkern, stride, padding)
-        sq = out ** 2
+        sq = out**2
         return sq.sum() * 0.5
 
     # Kernel Hessian (grad_w is linear in w -> FD essentially exact)

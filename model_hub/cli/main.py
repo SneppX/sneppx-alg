@@ -42,7 +42,8 @@ def _get_api_key() -> Optional[str]:
     if key:
         return key
     cache_dir = os.environ.get(
-        "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+        "SNEPPX_HUB_CACHE",
+        os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"),
     )
     token_path = os.path.join(cache_dir, "token")
     if os.path.exists(token_path):
@@ -113,7 +114,9 @@ def _format_model_card(card: Dict[str, Any], verbose: bool = False) -> str:
         if files:
             lines.append(f"\n  Files:")
             for f in files:
-                lines.append(f"    - {f['filename']} ({format_file_size(f.get('size', 0))})")
+                lines.append(
+                    f"    - {f['filename']} ({format_file_size(f.get('size', 0))})"
+                )
 
         reqs = card.get("requirements", {})
         if reqs:
@@ -276,7 +279,9 @@ def cmd_upload(args: argparse.Namespace):
     # Upload files
     for filename, filepath in files.items():
         size = os.path.getsize(filepath)
-        print(f"  Uploading {filename} ({_format_file_size(size)})...", end="", flush=True)
+        print(
+            f"  Uploading {filename} ({_format_file_size(size)})...", end="", flush=True
+        )
 
         with open(filepath, "rb") as f:
             resp = client._request(
@@ -299,7 +304,9 @@ def cmd_download(args: argparse.Namespace):
 
     print(f"Downloading {args.model_name}@{args.version}...")
     try:
-        result_dir = registry.download_model(args.model_name, args.version, download_dir)
+        result_dir = registry.download_model(
+            args.model_name, args.version, download_dir
+        )
         print(f"Downloaded to: {result_dir}")
     except Exception as e:
         print(f"Error: {e}")
@@ -389,7 +396,8 @@ def cmd_login(args: argparse.Namespace):
     token = result.get("access_token")
     if token:
         cache_dir = os.environ.get(
-            "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+            "SNEPPX_HUB_CACHE",
+            os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"),
         )
         os.makedirs(cache_dir, exist_ok=True)
         with open(os.path.join(cache_dir, "token"), "w") as f:
@@ -424,7 +432,9 @@ def cmd_keys(args: argparse.Namespace):
             for k in keys:
                 kid = k.get("key_id", "?")[:19]
                 created = k.get("created_at", "?")[:25]
-                used = k.get("last_used", "never")[:25] if k.get("last_used") else "never"
+                used = (
+                    k.get("last_used", "never")[:25] if k.get("last_used") else "never"
+                )
                 print(f"{kid:<20} {created:<26} {used:<26}")
         else:
             print("No API keys found.")
@@ -432,7 +442,13 @@ def cmd_keys(args: argparse.Namespace):
 
 def cmd_init(args: argparse.Namespace):
     """Initialize a model directory structure with template files."""
-    from model_hub.api.models import ModelCard, ModelTask, ModelFormat, ModelVisibility, License
+    from model_hub.api.models import (
+        ModelCard,
+        ModelTask,
+        ModelFormat,
+        ModelVisibility,
+        License,
+    )
 
     model_name = args.model_name
     org = model_name.split("/")[0] if "/" in model_name else None
@@ -572,7 +588,9 @@ def main():
 
     # keys
     p_keys = sub.add_parser("keys", help="Manage API keys")
-    p_keys.add_argument("--create", type=str, default=None, help="Create a new key for username")
+    p_keys.add_argument(
+        "--create", type=str, default=None, help="Create a new key for username"
+    )
     p_keys.add_argument("--scopes", type=str, default="read,write,models")
     p_keys.set_defaults(func=cmd_keys)
 
@@ -610,7 +628,8 @@ def cmd_server(args: argparse.Namespace):
 
     db_path = args.db or os.path.join(
         os.environ.get(
-            "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+            "SNEPPX_HUB_CACHE",
+            os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"),
         ),
         "data",
     )

@@ -2,9 +2,15 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
-from SneppX_ALG.interface_bindings.firewall_network import FirewallNetwork, SlidingWindowCounter, ConnectionTracker
+from SneppX_ALG.interface_bindings.firewall_network import (
+    FirewallNetwork,
+    SlidingWindowCounter,
+    ConnectionTracker,
+)
 
 
 class TestSlidingWindowCounter:

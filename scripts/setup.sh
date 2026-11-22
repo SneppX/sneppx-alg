@@ -9,7 +9,10 @@ echo "=== SNEPPX-Algo Development Setup ==="
 echo ""
 
 # Check prerequisites
-command -v cmake >/dev/null 2>&1 || { echo "ERROR: cmake not found. Install CMake >= 3.16."; exit 1; }
+command -v cmake >/dev/null 2>&1 || {
+    echo "ERROR: cmake not found. Install CMake >= 3.16."
+    exit 1
+}
 echo "[OK] cmake $(cmake --version | head -1 | awk '{print $3}')"
 
 if command -v python3 >/dev/null 2>&1; then

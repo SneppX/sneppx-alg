@@ -31,7 +31,7 @@ class NetworkFuzzer:
             if buf:
                 byte_idx = random.randint(0, len(buf) - 1)
                 bit_idx = random.randint(0, 7)
-                buf[byte_idx] ^= (1 << bit_idx)
+                buf[byte_idx] ^= 1 << bit_idx
         return bytes(buf)
 
     @staticmethod
@@ -41,7 +41,9 @@ class NetworkFuzzer:
     def fuzz(self, template: bytes, n: int = 100) -> List[bytes]:
         results = [self._bit_flip(template) for _ in range(n)]
         with self._lock:
-            self._mutations.append(f"fuzz {n} variants from {len(template)}-byte template")
+            self._mutations.append(
+                f"fuzz {n} variants from {len(template)}-byte template"
+            )
         return results
 
     def fuzz_protocol(self, template: bytes, protocol: str = "tcp") -> List[bytes]:
@@ -53,7 +55,9 @@ class NetworkFuzzer:
         variants.append(template + b"\x00" * 16)
         variants.append(template[:-1])
         with self._lock:
-            self._mutations.append(f"fuzz_protocol {protocol}: {len(variants)} variants")
+            self._mutations.append(
+                f"fuzz_protocol {protocol}: {len(variants)} variants"
+            )
         return variants
 
     @property
@@ -74,8 +78,9 @@ class SelfAuditor:
         self._lock = threading.Lock()
         self._has_c = _HAS_C
 
-    def register_check(self, name: str, check_fn: Callable[[], bool],
-                       severity: str = "medium") -> None:
+    def register_check(
+        self, name: str, check_fn: Callable[[], bool], severity: str = "medium"
+    ) -> None:
         with self._lock:
             self._checks[name] = (check_fn, severity)
 

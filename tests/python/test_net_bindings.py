@@ -1,11 +1,20 @@
 """Tests for net_bindings.py — network infrastructure."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings.net_bindings import (
-    Topology, TopologyType, SocketComm, RDMA, GRPCService, NCCLComm, ProcessGroup
+    Topology,
+    TopologyType,
+    SocketComm,
+    RDMA,
+    GRPCService,
+    NCCLComm,
+    ProcessGroup,
 )
 
 

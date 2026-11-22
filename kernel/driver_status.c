@@ -15,10 +15,10 @@
  *   None (internal kernel module).
  */
 
-
-
-const char* sneppx_driver_status_string(sneppx_driver_status_t status) {
-    switch (status) {
+const char* sneppx_driver_status_string(sneppx_driver_status_t status)
+{
+    switch (status)
+    {
         case SNEPPX_DRIVER_OK:
             return "ok";
         case SNEPPX_DRIVER_UNSUPPORTED:

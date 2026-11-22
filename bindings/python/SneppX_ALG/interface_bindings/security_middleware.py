@@ -22,6 +22,7 @@ def _get_firewall_runner():
     global _FirewallRunner
     if _FirewallRunner is None:
         from .firewall import FirewallRunner as _FR
+
         _FirewallRunner = _FR
     return _FirewallRunner
 
@@ -30,6 +31,7 @@ def _get_s5_prompt_filter():
     global _S5PromptFilter
     if _S5PromptFilter is None:
         from .s5_safety import S5PromptFilter as _S5PF
+
         _S5PromptFilter = _S5PF
     return _S5PromptFilter
 
@@ -38,8 +40,10 @@ def _get_s5_output_verifier():
     global _S5OutputVerifier
     if _S5OutputVerifier is None:
         from .s5_safety import S5OutputVerifier as _S5OV
+
         _S5OutputVerifier = _S5OV
     return _S5OutputVerifier
+
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +56,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AuthConfig:
     """Authentication configuration."""
+
     mode: str = "none"  # "none", "bearer", "api_key"
     api_keys: List[str] = field(default_factory=list)
     jwt_secret: Optional[str] = None
@@ -68,6 +73,7 @@ class AuthConfig:
 @dataclass
 class RateLimitConfig:
     """Rate limiting configuration."""
+
     enabled: bool = True
     requests_per_minute: int = 60
     burst_size: int = 10
@@ -77,46 +83,53 @@ class RateLimitConfig:
 @dataclass
 class PromptFilterConfig:
     """Prompt injection / jailbreak detection configuration."""
+
     enabled: bool = True
     max_token_length: int = 4096
     anomaly_threshold: float = 0.85
     use_s5: bool = False
-    patterns: List[str] = field(default_factory=lambda: [
-        "ignore previous instructions",
-        "ignore all instructions",
-        "DAN",
-        "do anything now",
-        "jailbreak",
-        "you are now",
-        "pretend to be",
-        "override",
-        "system prompt",
-        "developer mode",
-        "as a language model",
-        "as an ai",
-        "I'm going to",
-        "from now on",
-    ])
+    patterns: List[str] = field(
+        default_factory=lambda: [
+            "ignore previous instructions",
+            "ignore all instructions",
+            "DAN",
+            "do anything now",
+            "jailbreak",
+            "you are now",
+            "pretend to be",
+            "override",
+            "system prompt",
+            "developer mode",
+            "as a language model",
+            "as an ai",
+            "I'm going to",
+            "from now on",
+        ]
+    )
 
 
 @dataclass
 class OutputVerifierConfig:
     """Output verification configuration."""
+
     enabled: bool = True
     toxicity_threshold: float = 0.8
     use_s5: bool = False
-    blocked_topics: List[str] = field(default_factory=lambda: [
-        "how to make a bomb",
-        "instructions for illegal",
-        "child exploitation",
-        "self-harm methods",
-        "suicide methods",
-    ])
+    blocked_topics: List[str] = field(
+        default_factory=lambda: [
+            "how to make a bomb",
+            "instructions for illegal",
+            "child exploitation",
+            "self-harm methods",
+            "suicide methods",
+        ]
+    )
 
 
 @dataclass
 class SecurityConfig:
     """Complete security configuration for the inference server."""
+
     auth: AuthConfig = field(default_factory=AuthConfig)
     rate_limit: RateLimitConfig = field(default_factory=RateLimitConfig)
     prompt_filter: PromptFilterConfig = field(default_factory=PromptFilterConfig)
@@ -137,8 +150,12 @@ class SecurityConfig:
         output_verifier = OutputVerifierConfig(
             enabled=os.environ.get("SNEPPX_OUTPUT_VERIFIER", "true").lower() == "true",
         )
-        return cls(auth=auth, rate_limit=rate_limit,
-                    prompt_filter=prompt_filter, output_verifier=output_verifier)
+        return cls(
+            auth=auth,
+            rate_limit=rate_limit,
+            prompt_filter=prompt_filter,
+            output_verifier=output_verifier,
+        )
 
 
 # ===========================================================================
@@ -239,7 +256,9 @@ class PromptFilter:
         if pattern not in self._config.patterns:
             self._config.patterns.append(pattern)
         try:
-            self._compiled.append((re.compile(re.escape(pattern), re.IGNORECASE), pattern))
+            self._compiled.append(
+                (re.compile(re.escape(pattern), re.IGNORECASE), pattern)
+            )
         except re.error:
             pass
         if self._s5 is not None:
@@ -338,6 +357,7 @@ class Authenticator:
             return None
         try:
             from .user_store import get_user_store
+
             return get_user_store().validate_session_token(token)
         except (ImportError, OSError):
             return None
@@ -364,8 +384,10 @@ class Authenticator:
                 if info:
                     return info
             if token in self._key_set:
-                return {"user_id": f"user_{hashlib.sha256(token.encode()).hexdigest()[:16]}",
-                        "tier": "static"}
+                return {
+                    "user_id": f"user_{hashlib.sha256(token.encode()).hexdigest()[:16]}",
+                    "tier": "static",
+                }
             return None
         if self._config.mode == "api_key":
             key = self._extract_bearer(authorization) or authorization.strip()
@@ -379,8 +401,10 @@ class Authenticator:
                 if info:
                     return info
             if key in self._key_set:
-                return {"user_id": f"user_{hashlib.sha256(key.encode()).hexdigest()[:16]}",
-                        "tier": "static"}
+                return {
+                    "user_id": f"user_{hashlib.sha256(key.encode()).hexdigest()[:16]}",
+                    "tier": "static",
+                }
             return None
         return None
 
@@ -416,11 +440,14 @@ class SecurityMiddleware:
 
         # After generation:
         result = security.verify_output(text)
-"""
+    """
 
-    def __init__(self, config: Optional[SecurityConfig] = None,
-                 key_manager: Optional[ApiKeyManager] = None,
-                 max_rate_limiters: int = 100_000):
+    def __init__(
+        self,
+        config: Optional[SecurityConfig] = None,
+        key_manager: Optional[ApiKeyManager] = None,
+        max_rate_limiters: int = 100_000,
+    ):
         self.config = config or SecurityConfig()
         self._key_manager = key_manager
         self.authenticator = Authenticator(self.config.auth, key_manager=key_manager)
@@ -432,7 +459,9 @@ class SecurityMiddleware:
         self._max_rate_limiters = int(max_rate_limiters)
         self._rate_limiters_lock = Lock()
         self._tier_limits: Dict[str, int] = {
-            "free": 60, "pro": 1000, "enterprise": 10000,
+            "free": 60,
+            "pro": 1000,
+            "enterprise": 10000,
         }
         self._firewall = None
 
@@ -457,7 +486,17 @@ class SecurityMiddleware:
     def firewall(self, value):
         self._firewall = value
 
-    def check_firewall(self, client_ip, method="GET", path="/", headers=None, body=None, query="", ssl_object=None, knock_header=""):
+    def check_firewall(
+        self,
+        client_ip,
+        method="GET",
+        path="/",
+        headers=None,
+        body=None,
+        query="",
+        ssl_object=None,
+        knock_header="",
+    ):
         return self.firewall.check_request(
             client_ip=client_ip,
             method=method,

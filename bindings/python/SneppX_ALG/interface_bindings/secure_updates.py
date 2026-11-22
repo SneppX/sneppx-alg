@@ -146,12 +146,14 @@ class ContainerSecurity:
             "components": [],
         }
         for pkg in packages:
-            sbom["components"].append({
-                "type": "library",
-                "name": pkg.get("name", "unknown"),
-                "version": pkg.get("version", "0.0.0"),
-                "purl": f"pkg:pypi/{pkg.get('name', 'unknown')}@{pkg.get('version', '0.0.0')}",
-            })
+            sbom["components"].append(
+                {
+                    "type": "library",
+                    "name": pkg.get("name", "unknown"),
+                    "version": pkg.get("version", "0.0.0"),
+                    "purl": f"pkg:pypi/{pkg.get('name', 'unknown')}@{pkg.get('version', '0.0.0')}",
+                }
+            )
         return sbom
 
     def register_sbom(self, image_id: str, sbom: dict) -> None:

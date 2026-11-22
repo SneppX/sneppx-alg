@@ -54,24 +54,30 @@ class SecurityBackend:
     def sha256(self, data: bytes) -> bytes:
         if self.has_c:
             import hashlib
+
             return hashlib.sha256(data).digest()
         import hashlib
+
         return hashlib.sha256(data).digest()
 
     def sha3_256(self, data: bytes) -> bytes:
         import hashlib
+
         return hashlib.sha3_256(data).digest()
 
     def blake3(self, data: bytes) -> bytes:
         try:
             import blake3
+
             return blake3.blake3(data).digest()
         except ImportError:
             import hashlib
+
             return hashlib.sha256(data).digest()
 
     def random_bytes(self, n: int) -> bytes:
         import os
+
         return os.urandom(n)
 
     # ---- Memory-hardening dispatch (S1) ----------------------------------

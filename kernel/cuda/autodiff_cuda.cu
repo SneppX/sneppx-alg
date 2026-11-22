@@ -40,22 +40,22 @@ SNEPPX_CudaError sneppx_cuda_gemm_bwd(
     if (!d_a || !d_b || !d_c || !a || !b) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;
     }
-    
+
     cublasHandle_t handle = sneppx_cublas_get_handle();
     cublasSetStream(handle, stream);
-    
+
     cublasStatus_t status;
     float one = 1.0f;
     float zero = 0.0f;
-    
+
     // Handle activation gradient if needed
     half* d_c_act = const_cast<half*>(d_c);  // Will point to temp buffer if activation
-    
+
     half* temp_grad = nullptr;
     if (act != SNEPPX_ACT_NONE && c != nullptr) {
         size_t temp_size = (size_t)M * N * sizeof(half);
         cudaMallocAsync(&temp_grad, temp_size, stream);
-        
+
         // dC_act = dC * act'(C)
         if (act == SNEPPX_ACT_RELU) {
             sneppx_cuda_activation_bwd(stream, temp_grad, d_c, c, c, SNEPPX_ACT_RELU, M * N);
@@ -66,7 +66,7 @@ SNEPPX_CudaError sneppx_cuda_gemm_bwd(
         }
         d_c_act = temp_grad;
     }
-    
+
     // dA = dC_act * B^T  [M, K] = [M, N] * [K, N]^T
     status = cublasGemmEx(
         handle,
@@ -81,7 +81,7 @@ SNEPPX_CudaError sneppx_cuda_gemm_bwd(
         CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
     if (status != CUBLAS_STATUS_SUCCESS) return SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
-    
+
     // dB = A^T * dC_act  [K, N] = [K, M] * [M, N]
     status = cublasGemmEx(
         handle,
@@ -95,11 +95,11 @@ SNEPPX_CudaError sneppx_cuda_gemm_bwd(
         CUDA_R_32F,
         CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
-    
+
     if (temp_grad) {
         cudaFreeAsync(temp_grad, stream);
     }
-    
+
     return (status == CUBLAS_STATUS_SUCCESS) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
 
@@ -122,19 +122,19 @@ SNEPPX_CudaError sneppx_cuda_batched_gemm_bwd(
     if (!d_a || !d_b || !d_c || !a || !b) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;
     }
-    
+
     cublasHandle_t handle = sneppx_cublas_get_handle();
     cublasSetStream(handle, stream);
-    
+
     float one = 1.0f;
     float zero = 0.0f;
-    
+
     int stride_a = M * K;
     int stride_b = K * N;
     int stride_c = M * N;
-    
+
     cublasStatus_t status;
-    
+
     // dA_i = dC_i * B_i^T
     status = cublasGemmStridedBatchedEx(
         handle,
@@ -150,7 +150,7 @@ SNEPPX_CudaError sneppx_cuda_batched_gemm_bwd(
         CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
     if (status != CUBLAS_STATUS_SUCCESS) return SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
-    
+
     // dB_i = A_i^T * dC_i
     status = cublasGemmStridedBatchedEx(
         handle,
@@ -165,7 +165,7 @@ SNEPPX_CudaError sneppx_cuda_batched_gemm_bwd(
         CUDA_R_32F,
         CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
-    
+
     return (status == CUBLAS_STATUS_SUCCESS) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
 
@@ -187,14 +187,14 @@ __global__ void ew_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float grad = __half2float(d_output[idx]);
     float va = __half2float(a[idx]);
     float vb = __half2float(b[idx]);
     float vo = output ? __half2float(output[idx]) : 0.0f;
-    
+
     float da = 0.0f, db = 0.0f;
-    
+
     switch (op) {
         case SNEPPX_EW_BWD_ADD:
             da = grad;
@@ -217,7 +217,7 @@ __global__ void ew_bwd_kernel(
             db = grad * vo * logf(fmaxf(va, 1e-10f));
             break;
     }
-    
+
     if (d_a) d_a[idx] = __float2half_rn(da);
     if (d_b) d_b[idx] = __float2half_rn(db);
 }
@@ -234,14 +234,14 @@ SNEPPX_CudaError sneppx_cuda_elementwise_bwd(
     int numel
 ) {
     if (!d_output || !a || !b) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     ew_bwd_kernel<<<grid, block, 0, stream>>>(
         d_a, d_b, d_output, a, b, output, op, numel
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -260,12 +260,12 @@ __global__ void activation_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float grad = __half2float(d_output[idx]);
     float x = __half2float(input[idx]);
     float y = __half2float(output[idx]);
     float dx = 0.0f;
-    
+
     switch (act) {
         case SNEPPX_ACT_RELU:
             dx = (x > 0.0f) ? grad : 0.0f;
@@ -298,7 +298,7 @@ __global__ void activation_bwd_kernel(
             dx = grad;
             break;
     }
-    
+
     d_input[idx] = __float2half_rn(dx);
 }
 
@@ -312,14 +312,14 @@ SNEPPX_CudaError sneppx_cuda_activation_bwd(
     int numel
 ) {
     if (!d_input || !d_output || !input) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     activation_bwd_kernel<<<grid, block, 0, stream>>>(
         d_input, d_output, input, output, act, numel
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -342,39 +342,39 @@ __global__ void layernorm_bwd_kernel(
 ) {
     int row = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     extern __shared__ float smem[];
     float* dgamma_partial = smem;
     float* dbeta_partial = &smem[cols];
-    
+
     // Per-row statistics
     float r_var = __half2float(rsigma[row]);
     float m = __half2float(mu[row]);
-    
+
     float dgamma_local = 0.0f;
     float dbeta_local = 0.0f;
-    
+
     // First pass: compute dgamma, dbeta
     for (int c = tid; c < cols; c += blockDim.x) {
         float dx_norm = __half2float(d_output[row * cols + c]);
         float x = __half2float(input[row * cols + c]);
         float g = gamma ? __half2float(gamma[c]) : 1.0f;
         float x_hat = (x - m) * r_var;
-        
+
         dgamma_local += dx_norm * x_hat;
         dbeta_local += dx_norm;
     }
-    
+
     // Warp reduce
     dgamma_local = sneppx_warp_reduce_sum(dgamma_local);
     dbeta_local = sneppx_warp_reduce_sum(dbeta_local);
-    
+
     if (tid == 0) {
         dgamma_partial[blockIdx.x % cols] = dgamma_local;
         dbeta_partial[blockIdx.x % cols] = dbeta_local;
     }
     __syncthreads();
-    
+
     // Second pass: compute d_input
     // Reduce dgamma, dbeta across rows
     float dg_sum = 0.0f, db_sum = 0.0f;
@@ -384,25 +384,25 @@ __global__ void layernorm_bwd_kernel(
     }
     dg_sum = sneppx_warp_reduce_sum(dg_sum);
     db_sum = sneppx_warp_reduce_sum(db_sum);
-    
+
     // Compute d_input
     float inv_N = 1.0f / cols;
     float r_var_val = r_var;
     float dgamma_total = dg_sum;
     float dbeta_total = db_sum;
-    
+
     for (int c = tid; c < cols; c += blockDim.x) {
         float dx_norm = __half2float(d_output[row * cols + c]);
         float x = __half2float(input[row * cols + c]);
         float g = gamma ? __half2float(gamma[c]) : 1.0f;
         float x_hat = (x - m) * r_var_val;
-        
-        float dx = r_var_val * (dx_norm * g 
+
+        float dx = r_var_val * (dx_norm * g
                   - (dbeta_total + x_hat * dgamma_total) * inv_N);
-        
+
         d_input[row * cols + c] = __float2half_rn(dx);
     }
-    
+
     // Accumulate d_gamma, d_beta
     if (d_gamma) d_gamma[tid] = __float2half_rn(dgamma_local);
     if (d_beta) d_beta[tid] = __float2half_rn(dbeta_local);
@@ -424,15 +424,15 @@ SNEPPX_CudaError sneppx_cuda_layernorm_bwd(
     if (!d_input || !d_output || !input || !mu || !rsigma) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;
     }
-    
+
     int block = min(cols, 256);
     size_t smem_size = 2 * cols * sizeof(float);
-    
+
     layernorm_bwd_kernel<<<rows, block, smem_size, stream>>>(
         d_input, d_gamma, d_beta, d_output, input, gamma, mu, rsigma,
         rows, cols, epsilon
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -453,11 +453,11 @@ __global__ void rmsnorm_bwd_kernel(
 ) {
     int row = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     float rms_val = __half2float(rms[row]);
     float inv_rms = __fdividef(1.0f, rms_val);
     float inv_N = __fdividef(1.0f, cols);
-    
+
     // Accumulate dot product for d_weight
     float dw_local = 0.0f;
     for (int c = tid; c < cols; c += blockDim.x) {
@@ -467,20 +467,20 @@ __global__ void rmsnorm_bwd_kernel(
         dw_local += dx * x_norm;
     }
     dw_local = sneppx_warp_reduce_sum(dw_local);
-    
+
     if (tid == 0 && d_weight) {
         d_weight[row] = __float2half_rn(dw_local);
     }
-    
+
     // Compute d_input
     float w = weight ? __half2float(weight[0]) : 1.0f;
     float dw = dw_local;
-    
+
     for (int c = tid; c < cols; c += blockDim.x) {
         float dx = __half2float(d_output[row * cols + c]);
         float x = __half2float(input[row * cols + c]);
         float x_norm = x * inv_rms;
-        
+
         float di = inv_rms * (dx * w - x_norm * (dw * inv_N * w));
         d_input[row * cols + c] = __float2half_rn(di);
     }
@@ -500,14 +500,14 @@ SNEPPX_CudaError sneppx_cuda_rmsnorm_bwd(
     if (!d_input || !d_output || !input || !rms) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;
     }
-    
+
     int block = min(cols, 256);
-    
+
     rmsnorm_bwd_kernel<<<rows, block, 0, stream>>>(
         d_input, d_weight, d_output, input, weight, rms,
         rows, cols, epsilon
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -524,7 +524,7 @@ __global__ void softmax_bwd_kernel(
 ) {
     int row = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     // Compute dot product: sum(d_output * output) for this row
     float dot = 0.0f;
     for (int c = tid; c < cols; c += blockDim.x) {
@@ -533,7 +533,7 @@ __global__ void softmax_bwd_kernel(
         dot += do_val * o_val;
     }
     dot = sneppx_warp_reduce_sum(dot);
-    
+
     // Compute d_input = output * (d_output - dot)
     for (int c = tid; c < cols; c += blockDim.x) {
         float do_val = __half2float(d_output[row * cols + c]);
@@ -551,11 +551,11 @@ SNEPPX_CudaError sneppx_cuda_softmax_bwd(
     int rows, int cols
 ) {
     if (!d_input || !d_output || !output) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = min(cols, 256);
-    
+
     softmax_bwd_kernel<<<rows, block, 0, stream>>>(d_input, d_output, output, rows, cols);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -574,15 +574,15 @@ __global__ void cross_entropy_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     int total = batch_size * num_classes;
-    
+
     if (idx < total) {
         int batch = idx / num_classes;
         int cls = idx % num_classes;
-        
+
         float p = __half2float(probs[idx]);
         float do_val = __half2float(d_output[batch]); // scalar per batch
         int target = targets[batch];
-        
+
         float di = do_val * (p - (cls == target ? 1.0f : 0.0f));
         d_input[idx] = __float2half_rn(di);
     }
@@ -600,15 +600,15 @@ SNEPPX_CudaError sneppx_cuda_cross_entropy_bwd(
     if (!d_input || !d_output || !probs || !targets) {
         return SNEPPX_CUDA_ERROR_INVALID_ARG;
     }
-    
+
     int total = batch_size * num_classes;
     int block = 256;
     int grid = (total + block - 1) / block;
-    
+
     cross_entropy_bwd_kernel<<<grid, block, 0, stream>>>(
         d_input, d_output, probs, targets, batch_size, num_classes
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -630,10 +630,10 @@ __global__ void conv2d_bwd_weight_kernel(
     int c = blockIdx.y;
     int kh = threadIdx.x / KW;
     int kw = threadIdx.x % KW;
-    
+
     int H_out = (H + 2 * pad_h - KH) / stride_h + 1;
     int W_out = (W + 2 * pad_w - KW) / stride_w + 1;
-    
+
     float grad = 0.0f;
     for (int n = 0; n < N; n++) {
         for (int h_out = 0; h_out < H_out; h_out++) {
@@ -641,14 +641,14 @@ __global__ void conv2d_bwd_weight_kernel(
                 int h_in = h_out * stride_h + kh - pad_h;
                 int w_in = w_out * stride_w + kw - pad_w;
                 if (h_in < 0 || h_in >= H || w_in < 0 || w_in >= W) continue;
-                
+
                 float do_val = __half2float(d_output[((n * F + f) * H_out + h_out) * W_out + w_out]);
                 float in_val = __half2float(input[((n * C + c) * H + h_in) * W + w_in]);
                 grad += do_val * in_val;
             }
         }
     }
-    
+
     int w_idx = ((f * C + c) * KH + kh) * KW + kw;
     atomicAdd(&d_weight[w_idx], __float2half_rn(grad));
 }
@@ -666,25 +666,25 @@ __global__ void conv2d_bwd_input_kernel(
     int c = blockIdx.y;
     int h_out = blockIdx.z;
     int w_out = threadIdx.x;
-    
+
     int H_out = (H + 2 * pad_h - KH) / stride_h + 1;
     int W_out = (W + 2 * pad_w - KW) / stride_w + 1;
-    
+
     if (h_out >= H_out || w_out >= W_out) return;
-    
+
     for (int kh = 0; kh < KH; kh++) {
         for (int kw = 0; kw < KW; kw++) {
             int h_in = h_out * stride_h + kh - pad_h;
             int w_in = w_out * stride_w + kw - pad_w;
             if (h_in < 0 || h_in >= H || w_in < 0 || w_in >= W) continue;
-            
+
             float grad = 0.0f;
             for (int f = 0; f < F; f++) {
                 float do_val = __half2float(d_output[((n * F + f) * H_out + h_out) * W_out + w_out]);
                 float w_val = __half2float(weight[((f * C + c) * KH + kh) * KW + kw]);
                 grad += do_val * w_val;
             }
-            
+
             int d_idx = ((n * C + c) * H + h_in) * W + w_in;
             atomicAdd(&d_input[d_idx], __float2half_rn(grad));
         }
@@ -704,37 +704,37 @@ SNEPPX_CudaError sneppx_cuda_conv2d_bwd(
     int pad_h, int pad_w
 ) {
     if (!d_input || !d_output || !weight) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int H_out = (H + 2 * pad_h - KH) / stride_h + 1;
     int W_out = (W + 2 * pad_w - KW) / stride_w + 1;
-    
+
     // Zero d_input
     cudaMemsetAsync(d_input, 0, (size_t)N * C * H * W * sizeof(half), stream);
-    
+
     // d_input gradient
     dim3 grid(N, C, H_out);
     dim3 block(W_out);
-    
+
     conv2d_bwd_input_kernel<<<grid, block, 0, stream>>>(
         d_input, d_output, weight,
         N, C, H, W, F, KH, KW,
         stride_h, stride_w, pad_h, pad_w
     );
-    
+
     // d_weight gradient
     if (d_weight) {
         cudaMemsetAsync(d_weight, 0, (size_t)F * C * KH * KW * sizeof(half), stream);
-        
+
         dim3 grid2(F, C);
         dim3 block2(KH * KW);
-        
+
         conv2d_bwd_weight_kernel<<<grid2, block2, 0, stream>>>(
             d_weight, d_output, input,
             N, C, H, W, F, KH, KW,
             stride_h, stride_w, pad_h, pad_w
         );
     }
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -763,22 +763,22 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
     // dV = softmax(Q*K^T)^T * dO
     // dK = dO * (P * V)^T   (where P = softmax(Q*K^T))
     // dQ = (dO * V^T) * P_derivative
-    
+
     // Use cuBLAS for matrix multiplications
     cublasHandle_t handle = sneppx_cublas_get_handle();
     cublasSetStream(handle, stream);
-    
+
     int M = batch_size * num_heads * seq_len_q;
     int N_kv = batch_size * num_heads * seq_len_kv;
-    
+
     float one = 1.0f;
     float zero = 0.0f;
-    
+
     // Allocate temporary for softmax scores (P)
     size_t p_size = (size_t)M * seq_len_kv * sizeof(half);
     half* p_scores;
     cudaMallocAsync(&p_scores, p_size, stream);
-    
+
     // P = softmax(Q*K^T * scale)
     cublasGemmEx(
         handle, CUBLAS_OP_N, CUBLAS_OP_T,
@@ -790,10 +790,10 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
         p_scores, CUDA_R_16F, seq_len_kv,
         CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
-    
+
     // Apply softmax in-place
     sneppx_cuda_softmax_fwd(stream, p_scores, M, seq_len_kv);
-    
+
     // dV = P^T * dO
     cublasGemmEx(
         handle, CUBLAS_OP_T, CUBLAS_OP_N,
@@ -805,11 +805,11 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
         d_v, CUDA_R_16F, head_dim,
         CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
-    
+
     // Allocate temp for dP and softmax gradient
     half* dP;
     cudaMallocAsync(&dP, p_size, stream);
-    
+
     // dP = dO * V^T  (gradient before softmax)
     cublasGemmEx(
         handle, CUBLAS_OP_N, CUBLAS_OP_T,
@@ -821,11 +821,11 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
         dP, CUDA_R_16F, seq_len_kv,
         CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP
     );
-    
+
     // Backprop through softmax: dS = P * (dP - sum(P * dP, axis=1))
     // In-place modify dP to get dS
     sneppx_cuda_softmax_bwd(stream, dP, p_scores, M, seq_len_kv);
-    
+
     // dK = dS^T * Q
     if (d_k) {
         cublasGemmEx(
@@ -839,7 +839,7 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
             CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP
         );
     }
-    
+
     // dQ = dS * K
     if (d_q) {
         cublasGemmEx(
@@ -856,10 +856,10 @@ SNEPPX_CudaError sneppx_cuda_attention_bwd(
         // The actual dQ for Q should be re-arranged to match Q's layout
         // For simplicity, assume same layout as softmax scores
     }
-    
+
     cudaFreeAsync(dP, stream);
     cudaFreeAsync(p_scores, stream);
-    
+
     return SNEPPX_CUDA_SUCCESS;
 }
 
@@ -876,11 +876,11 @@ __global__ void dropout_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float scale = 1.0f / (1.0f - p);
     float m = __half2float(mask[idx]);
     float g = __half2float(d_output[idx]);
-    
+
     d_input[idx] = __float2half_rn(g * m * scale);
 }
 
@@ -893,12 +893,12 @@ SNEPPX_CudaError sneppx_cuda_dropout_bwd(
     float p
 ) {
     if (!d_input || !d_output || !mask) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     dropout_bwd_kernel<<<grid, block, 0, stream>>>(d_input, d_output, mask, numel, p);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -915,11 +915,11 @@ __global__ void mse_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float pred = __half2float(prediction[idx]);
     float tgt = __half2float(target[idx]);
     float grad = 2.0f * (pred - tgt) / numel;
-    
+
     d_input[idx] = __float2half_rn(grad);
 }
 
@@ -931,12 +931,12 @@ SNEPPX_CudaError sneppx_cuda_mse_bwd(
     int numel
 ) {
     if (!d_input || !prediction || !target) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     mse_bwd_kernel<<<grid, block, 0, stream>>>(d_input, prediction, target, numel);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -954,11 +954,11 @@ __global__ void bce_bwd_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float pred = fmaxf(fminf(__half2float(prediction[idx]), 1.0f - epsilon), epsilon);
     float tgt = __half2float(target[idx]);
     float grad = (pred - tgt) / (pred * (1.0f - pred)) / numel;
-    
+
     d_input[idx] = __float2half_rn(grad);
 }
 
@@ -971,12 +971,12 @@ SNEPPX_CudaError sneppx_cuda_bce_bwd(
     float epsilon
 ) {
     if (!d_input || !prediction || !target) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     bce_bwd_kernel<<<grid, block, 0, stream>>>(d_input, prediction, target, numel, epsilon);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -997,35 +997,35 @@ __global__ void grad_clip_kernel(
     int block_size = blockDim.x;
     int start = bid * block_size;
     int end = min(start + block_size, numel);
-    
+
     float local_sum = 0.0f;
     for (int i = start + tid; i < end; i += block_size) {
         float g = __half2float(gradients[i]);
         local_sum += powf(fabsf(g), norm_type);
     }
     local_sum = sneppx_warp_reduce_sum(local_sum);
-    
+
     if (tid == 0) {
         smem[bid] = local_sum;
     }
     __syncthreads();
-    
+
     if (bid == 0) {
         float total = 0.0f;
         for (int i = tid; i < gridDim.x; i += block_size) {
             total += smem[i];
         }
         total = sneppx_warp_reduce_sum(total);
-        
+
         float norm = powf(total, 1.0f / norm_type);
         float scale = (norm > max_norm) ? max_norm / norm : 1.0f;
-        
+
         if (tid == 0) smem[0] = scale;
     }
     __syncthreads();
-    
+
     float scale = smem[0];
-    
+
     // Apply scaling (second pass)
     for (int i = start + tid; i < end; i += block_size) {
         gradients[i] = __float2half_rn(__half2float(gradients[i]) * scale);
@@ -1040,15 +1040,15 @@ SNEPPX_CudaError sneppx_cuda_grad_clip(
     float norm_type
 ) {
     if (!gradients) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = min((numel + block - 1) / block, 1024);
     size_t smem_size = grid * sizeof(float);
-    
+
     grad_clip_kernel<<<grid, block, smem_size, stream>>>(
         gradients, numel, max_norm, norm_type
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -1066,37 +1066,37 @@ SNEPPX_CudaError sneppx_cuda_grad_clip_global(
     float norm_type
 ) {
     if (!gradients || !sizes) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     float total_norm = 0.0f;
-    
+
     for (int t = 0; t < num_tensors; t++) {
         int n = sizes[t];
         half* g = gradients[t];
-        
+
         float* d_norm;
         cudaMallocAsync(&d_norm, sizeof(float), stream);
-        
+
         auto sum_sq = [&](half* g, int n) -> float {
             cublasHandle_t handle = sneppx_cublas_get_handle();
             cublasSetStream(handle, stream);
-            
+
             float norm_part = 0.0f;
             cublasNrm2Ex(handle, n, g, CUDA_R_16F, 1, &norm_part, CUDA_R_32F, CUDA_R_32F);
             return norm_part * norm_part;
         };
-        
+
         total_norm += sum_sq(g, n);
     }
-    
+
     float norm = sqrtf(total_norm);
     float scale = (norm > max_norm) ? max_norm / norm : 1.0f;
-    
+
     // Apply scaling
     for (int t = 0; t < num_tensors; t++) {
         int n = sizes[t];
         sneppx_cuda_grad_scale(stream, gradients[t], scale, n);
     }
-    
+
     return SNEPPX_CUDA_SUCCESS;
 }
 
@@ -1111,7 +1111,7 @@ __global__ void grad_scale_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     gradients[idx] = __float2half_rn(__half2float(gradients[idx]) * scale_factor);
 }
 
@@ -1122,14 +1122,14 @@ SNEPPX_CudaError sneppx_cuda_grad_scale(
     int numel
 ) {
     if (!gradients) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     if (scale_factor == 1.0f) return SNEPPX_CUDA_SUCCESS;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     grad_scale_kernel<<<grid, block, 0, stream>>>(gradients, scale_factor, numel);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -1146,10 +1146,10 @@ __global__ void grad_accumulate_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float old_g = __half2float(grad_accum[idx]);
     float new_g = __half2float(grad_new[idx]);
-    
+
     grad_accum[idx] = __float2half_rn(beta * old_g + (1.0f - beta) * new_g);
 }
 
@@ -1161,12 +1161,12 @@ SNEPPX_CudaError sneppx_cuda_grad_accumulate(
     int numel
 ) {
     if (!grad_accum || !grad_new) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int block = 256;
     int grid = (numel + block - 1) / block;
-    
+
     grad_accumulate_kernel<<<grid, block, 0, stream>>>(grad_accum, grad_new, beta, numel);
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
