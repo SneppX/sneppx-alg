@@ -265,7 +265,7 @@ int SNEPPX_sbom_export_json(sbom_doc_t* doc, char* out, size_t out_len)
         int need_ = snprintf(NULL, 0, __VA_ARGS__);                                                                    \
         if (need_ < 0 || (size_t) need_ >= remaining)                                                                  \
             return -1;                                                                                                 \
-        int written_ = snprintf(cursor, remaining, __VA_ARGS__);                                                      \
+        int written_ = snprintf(cursor, remaining, __VA_ARGS__);                                                       \
         if (written_ < 0 || written_ != need_)                                                                         \
             return -1;                                                                                                 \
         cursor += written_;                                                                                            \
