@@ -2,7 +2,7 @@ name: Repository-wide formatting
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   schedule:
     - cron: "23 2 * * 1"
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: repository-formatting-main
+  group: repository-formatting-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Check out main
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -54,6 +54,7 @@ jobs:
           set -euo pipefail
           BASE_SHA="$(git rev-parse HEAD)"
           BRANCH="automation/format-${GITHUB_RUN_ID}"
+          TARGET_BRANCH="$GITHUB_REF_NAME"
           git switch --create "$BRANCH" "$BASE_SHA"
 
           # The first pass may report files it just reformatted. A clean second
@@ -64,8 +65,14 @@ jobs:
 
           git diff --check
           if git diff --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "The repository already satisfies the configured formatters."
+            git push origin "$BRANCH"
+            CANDIDATE_SHA="$BASE_SHA"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+            echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "target_branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+            echo "The repository already satisfies the configured formatters; validating the unchanged tree." 
             exit 0
           fi
 
@@ -141,15 +148,16 @@ jobs:
           BRANCH: ${{ steps.format.outputs.branch }}
           BASE_SHA: ${{ steps.format.outputs.base_sha }}
           CANDIDATE_SHA: ${{ steps.format.outputs.candidate_sha }}
+          TARGET_BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          git fetch origin main
-          CURRENT_MAIN="$(git rev-parse origin/main)"
-          if [ "$CURRENT_MAIN" != "$BASE_SHA" ]; then
-            echo "main changed during formatting; refusing to overwrite newer work."
+          git fetch origin "$TARGET_BRANCH"
+          CURRENT_TARGET="$(git rev-parse "origin/$TARGET_BRANCH")"
+          if [ "$CURRENT_TARGET" != "$BASE_SHA" ]; then
+            echo "$TARGET_BRANCH changed during formatting; refusing to overwrite newer work."
             exit 1
           fi
-          git push origin "$BRANCH:refs/heads/main"
-          git fetch origin main
-          test "$(git rev-parse origin/main)" = "$CANDIDATE_SHA"
+          git push origin "$BRANCH:refs/heads/$TARGET_BRANCH"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$CANDIDATE_SHA"
           git push origin --delete "$BRANCH"
