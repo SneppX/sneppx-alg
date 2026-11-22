@@ -96,6 +96,7 @@ class FullyShardedDataParallel(Module):
             return
         try:
             from .distributed import get_world_size, get_rank
+
             self._world_size = get_world_size()
             self._rank = get_rank()
         except Exception:
@@ -136,6 +137,7 @@ class FullyShardedDataParallel(Module):
                 gathered.add(name)
             return gathered
         from .distributed import all_gather as dist_all_gather
+
         for name, sp in self._sharded_params.items():
             shard_t = sp.shard
             try:
@@ -154,9 +156,10 @@ class FullyShardedDataParallel(Module):
         if self._world_size <= 1:
             return
         from .distributed import all_reduce as dist_all_reduce
+
         for name, sp in self._sharded_params.items():
             for p_name, param in self._module.named_parameters():
-                if p_name == name and hasattr(param, 'grad') and param.grad is not None:
+                if p_name == name and hasattr(param, "grad") and param.grad is not None:
                     grad_shard = _shard_tensor(param.grad, self._rank, self._world_size)
                     try:
                         reduced = dist_all_reduce(grad_shard, op="sum")
@@ -164,7 +167,9 @@ class FullyShardedDataParallel(Module):
                     except Exception:
                         grad_data = grad_shard.data
                     sp.grad_shard = grad_data
-                    param.grad = None
+                    # The optimizer steps on the local shard, so it needs the
+                    # reduced gradient for that shard — not a cleared grad.
+                    param.grad = Tensor.from_numpy(np.asarray(grad_data).copy())
 
     def unscale_params(self, gathered: Set[str]):
         if self._world_size <= 1:
@@ -219,6 +224,7 @@ class FullyShardedDataParallel(Module):
             return self._module.state_dict()
         sd = self._module.state_dict()
         from .distributed import all_gather as dist_all_gather
+
         for name, sp in self._sharded_params.items():
             try:
                 gathered_tensors = dist_all_gather(sp.shard)
@@ -262,6 +268,7 @@ def fsdp_save_checkpoint(
     optimizer_state: Optional[dict] = None,
 ):
     import pickle
+
     state = {
         "model": fsdp_model.state_dict(),
         "optimizer": optimizer_state,
@@ -278,6 +285,7 @@ def fsdp_load_checkpoint(
     load_optimizer: bool = True,
 ) -> Optional[dict]:
     import pickle
+
     with open(path, "rb") as f:
         state = pickle.load(f)
     fsdp_model.load_state_dict(state.get("model", {}))
