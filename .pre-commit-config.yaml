@@ -108,7 +108,6 @@ repos:
         entry: rustfmt --edition 2021
         language: system
         files: '^security/rust/.*\.rs$'
-        pass_filenames: false
       - id: gofmt
         name: gofmt
         entry: gofmt -w
@@ -122,6 +121,5 @@ repos:
         name: sneppx-format --docs (Layer 1/4 doc coverage)
         entry: sneppx-format --docs --no-color
         language: system
-        files: '\\.(c|h|cc|cpp|cxx|hpp|cu|cuh)        fail_fast: false
-
+        files: '\.(c|h|cc|cpp|cxx|hpp|cu|cuh)$'
         fail_fast: false
