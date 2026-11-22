@@ -4095,6 +4095,7 @@ class LogSigmoidFn(Function):
         x = np.asarray(a.data, dtype=np.float64)
         out = -np.log1p(np.exp(-np.abs(x))) + np.minimum(x, 0.0)
         ctx.save_attr(x=x)
+        ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
     @staticmethod
@@ -4105,8 +4106,8 @@ class LogSigmoidFn(Function):
         if create_graph:
             from .autograd_ops import Sigmoid, Neg, Mul
 
-            x_t = Tensor(np.asarray(x), dtype=grad_output.dtype)
-            sig_neg_t = Sigmoid.apply(Neg.apply(x_t))
+            a_t = ctx.get_saved_tensor("a")
+            sig_neg_t = Sigmoid.apply(Neg.apply(a_t))
             return [Mul.apply(grad_output, sig_neg_t)]
         return [Tensor(g * sig_neg, dtype=grad_output.dtype)]
 
