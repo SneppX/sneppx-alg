@@ -30,6 +30,12 @@ typedef struct
     uint64_t last_used_time;
 } SNEPPXTransportSessionInfo;
 
+/*
+ * AES-GCM is not wired into this transport API: there is no authentication
+ * tag storage or verification path. The former "AES-GCM" branch was a
+ * repeating-key XOR stream and has been removed. Keep the selector false so
+ * every supported encryption request uses the ChaCha20 path below.
+ */
 static int use_aes_gcm = 0;
 
 static uint64_t session_rekey_time[SNEPPX_TLS_MAX_SESSIONS];
@@ -168,13 +174,9 @@ int SNEPPX_transport_encrypt(SNEPPXTransportSecurity* ts, int session_id, const 
         if (now - s->last_used > session_timeouts[session_id])
             return -1;
     }
-    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
     if (use_aes_gcm)
-    {
-        for (size_t i = 0; i < len; i++)
-            ciphertext[i] = plaintext[i] ^ s->session_key[i % SNEPPX_TLS_KEY_LEN];
-    }
-    else
+        return -1;
+    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
     {
         SNEPPXChaCha20State state;
         SNEPPX_chacha20_init(&state, s->session_key, nonce, 0);
@@ -222,11 +224,7 @@ int SNEPPX_transport_decrypt(SNEPPXTransportSecurity* ts, int session_id, const 
             return -1;
     }
     if (use_aes_gcm)
-    {
-        for (size_t i = 0; i < len; i++)
-            plaintext[i] = ciphertext[i] ^ s->session_key[i % SNEPPX_TLS_KEY_LEN];
-    }
-    else
+        return -1;
     {
         SNEPPXChaCha20State state;
         SNEPPX_chacha20_init(&state, s->session_key, nonce, 0);
@@ -335,9 +333,9 @@ int SNEPPX_transport_cleanup_expired(SNEPPXTransportSecurity* ts, uint64_t max_a
  */
 int SNEPPX_transport_set_cipher(SNEPPXTransportSecurity* ts, int use_aes)
 {
-    if (!ts)
+    if (!ts || use_aes != 0)
         return -1;
-    use_aes_gcm = use_aes;
+    use_aes_gcm = 0;
     return 0;
 }
 
@@ -388,18 +386,9 @@ int SNEPPX_transport_list_sessions(int* session_ids, int max)
  */
 int SNEPPX_transport_set_cipher_type(int cipher_type)
 {
-    if (cipher_type == 0)
-    {
-        use_aes_gcm = 0;
-    }
-    else if (cipher_type == 1)
-    {
-        use_aes_gcm = 1;
-    }
-    else
-    {
+    if (cipher_type != 0)
         return -1;
-    }
+    use_aes_gcm = 0;
     return 0;
 }
 
@@ -435,13 +424,9 @@ int SNEPPX_transport_encrypt_with_aad(SNEPPXTransportSecurity* ts, int session_i
         if (now - s->last_used > session_timeouts[session_id])
             return -1;
     }
-    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
     if (use_aes_gcm)
-    {
-        for (size_t i = 0; i < len; i++)
-            ciphertext[i] = plaintext[i] ^ s->session_key[i % SNEPPX_TLS_KEY_LEN];
-    }
-    else
+        return -1;
+    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
     {
         SNEPPXChaCha20State state;
         uint8_t aad_nonce[12];

@@ -56,6 +56,35 @@ static void test_transport_encrypt_decrypt(void)
     SNEPPX_transport_shutdown(&ts);
 }
 
+static void test_transport_rejects_xor_aes_mode(void)
+{
+    SNEPPXTransportSecurity ts;
+    SX_ASSERT(SNEPPX_transport_init(&ts) == 0, "init");
+    SX_ASSERT(SNEPPX_transport_get_cipher_type() == 0, "default cipher is chacha20");
+
+    SX_ASSERT(SNEPPX_transport_set_cipher(&ts, 1) == -1, "aes cipher request rejected");
+    SX_ASSERT(SNEPPX_transport_get_cipher_type() == 0, "still chacha20");
+    SX_ASSERT(SNEPPX_transport_set_cipher_type(1) == -1, "aes cipher type rejected");
+    SX_ASSERT(SNEPPX_transport_get_cipher_type() == 0, "still chacha20 after type request");
+    SX_ASSERT(SNEPPX_transport_set_cipher_type(2) == -1, "unknown cipher type rejected");
+    SX_ASSERT(SNEPPX_transport_set_cipher_type(0) == 0, "chacha20 selection allowed");
+
+    int sid = SNEPPX_transport_new_session(&ts, NULL, 0);
+    SX_ASSERT(sid >= 0, "new session");
+    uint8_t zeros[64] = {0};
+    uint8_t ciphertext[64];
+    uint8_t nonce[12];
+    SX_ASSERT(SNEPPX_transport_encrypt(&ts, sid, zeros, sizeof(zeros), ciphertext, nonce) == 0,
+              "encrypt after rejected aes mode");
+    SX_ASSERT(memcmp(ciphertext, ciphertext + 32, 32) != 0,
+              "no 32-byte repeating-key stream");
+    uint8_t decrypted[64];
+    SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), nonce, decrypted) == 0,
+              "decrypt after rejected aes mode");
+    SX_ASSERT(memcmp(zeros, decrypted, sizeof(zeros)) == 0, "roundtrip after rejected aes mode");
+    SNEPPX_transport_shutdown(&ts);
+}
+
 static void test_transport_noise_handshake(void)
 {
     SNEPPXTransportSecurity ts;
@@ -115,6 +144,10 @@ TEST(test_s4_network, transport_session)
 TEST(test_s4_network, transport_encrypt_decrypt)
 {
     test_transport_encrypt_decrypt();
+}
+TEST(test_s4_network, transport_rejects_xor_aes_mode)
+{
+    test_transport_rejects_xor_aes_mode();
 }
 TEST(test_s4_network, transport_noise_handshake)
 {
