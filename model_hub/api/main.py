@@ -435,10 +435,10 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
 
     # ---- Auth dependency ----
 
-    async def get_current_user(
+    async def get_current_identity(
         authorization: Annotated[Optional[str], Header()] = None,
         x_api_key: Annotated[Optional[str], Header()] = None,
-    ) -> Optional[User]:
+    ) -> "Optional[tuple[User, APIKey]]":
         api_key = None
         if authorization and authorization.startswith("Bearer "):
             api_key = authorization[7:]
@@ -448,15 +448,37 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         if not api_key:
             return None  # Public endpoints allowed
 
-        user = db.verify_api_key(api_key)
-        if not user:
+        identity = db.authenticate_api_key(api_key)
+        if identity is None:
             raise HTTPException(status_code=401, detail="Invalid API key")
-        return user
+        return identity
+
+    async def get_current_user(
+        authorization: Annotated[Optional[str], Header()] = None,
+        x_api_key: Annotated[Optional[str], Header()] = None,
+    ) -> Optional[User]:
+        identity = await get_current_identity(authorization=authorization, x_api_key=x_api_key)
+        return identity[0] if identity is not None else None
 
     async def require_auth(user: Optional[User] = Depends(get_current_user)) -> User:
         if user is None:
             raise HTTPException(status_code=401, detail="Authentication required")
         return user
+
+    def require_scope(scope: str):
+        async def _require_scope(
+            identity: "Optional[tuple[User, APIKey]]" = Depends(get_current_identity),
+        ) -> User:
+            if identity is None:
+                raise HTTPException(status_code=401, detail="Authentication required")
+            user, key = identity
+            if scope not in key.scopes:
+                raise HTTPException(
+                    status_code=403, detail=f"API key is missing the '{scope}' scope"
+                )
+            return user
+
+        return _require_scope
 
     # ---- Models API ----
 
@@ -500,7 +522,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     @app.post("/api/v1/models/upload", status_code=201)
     async def api_upload_model(
         card: str = Form(...),
-        user: User = Depends(require_auth),
+        user: User = Depends(require_scope("write")),
     ):
         import json
 
@@ -532,7 +554,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         version: str,
         filename: str,
         file: UploadFile = File(...),
-        user: User = Depends(require_auth),
+        user: User = Depends(require_scope("write")),
     ):
         # Verify model exists and user has access
         card = db.get_model_card(model_name, version)
@@ -577,7 +599,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     async def api_delete_model(
         model_name: str,
         version: Optional[str] = Query(default=None),
-        user: User = Depends(require_auth),
+        user: User = Depends(require_scope("write")),
     ):
         card = db.get_model_card(model_name, version or "latest")
         if not card:
@@ -644,7 +666,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     async def api_create_key(
         username: str = Form(...),
         scopes: Optional[str] = Form(default="read,write,models"),
-        admin_user: User = Depends(require_auth),
+        admin_user: User = Depends(require_scope("admin")),
     ):
         if not admin_user.is_admin:
             raise HTTPException(status_code=403, detail="Admin access required")
@@ -658,7 +680,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         return {"api_key": raw, "key_id": key.key_id, "scopes": key.scopes}
 
     @app.get("/api/v1/keys/me")
-    async def api_list_keys(current_user: User = Depends(require_auth)):
+    async def api_list_keys(current_user: User = Depends(require_scope("read"))):
         user_keys = [k for k in db._keys if k["user_id"] == current_user.id]
         return {
             "keys": [
@@ -684,7 +706,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     @app.post("/api/v1/leaderboard/submit")
     async def api_submit_benchmark(
         result: BenchmarkResult,
-        current_user: User = Depends(require_auth),
+        current_user: User = Depends(require_scope("write")),
     ):
         result.evaluated_by = current_user.username
         db.add_leaderboard_entry(result)
@@ -706,7 +728,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         name: str = Form(...),
         description: str = Form(default=""),
         is_public: bool = Form(default=True),
-        admin_user: User = Depends(require_auth),
+        admin_user: User = Depends(require_scope("admin")),
     ):
         if not admin_user.is_admin:
             raise HTTPException(status_code=403, detail="Admin access required")
