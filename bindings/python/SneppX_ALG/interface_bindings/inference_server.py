@@ -36,7 +36,12 @@ from .api_key_manager import ApiKeyManager, get_key_manager
 from .usage_tracker import UsageTracker, get_usage_tracker, set_usage_tracker
 from .api_gateway import router as auth_router, self_service_router as keys_router
 from .firewall import create_firewall as _create_firewall
-from .continuous_batching import ContinuousBatchScheduler, SchedulerConfig, ScheduledRequest, continuous_generate_loop
+from .continuous_batching import (
+    ContinuousBatchScheduler,
+    SchedulerConfig,
+    ScheduledRequest,
+    continuous_generate_loop,
+)
 from .quantized_serve import QuantizedModelConfig, quantize_model_weights, dequantize_weights
 from .serving_engine import ServingEngine, ServingConfig, MetricsCollector
 
@@ -54,8 +59,7 @@ def get_serving_engine() -> ServingEngine:
     """Shared production-grade serving engine for metrics, readiness, A/B routing."""
     global _serving_engine
     if _serving_engine is None:
-        _serving_engine = ServingEngine(config=ServingConfig(),
-                                        model_fn=lambda batch: batch)
+        _serving_engine = ServingEngine(config=ServingConfig(), model_fn=lambda batch: batch)
         _serving_engine.set_ready(True)
     return _serving_engine
 
@@ -213,7 +217,9 @@ def register_model(
     # Mirror into the production serving engine (model versioning surface).
     eng = get_serving_engine()
     if not eng.versions(model_id):
-        eng.register_model(model_id, "v1", meta.get("description", "") if isinstance(meta, dict) else "")
+        eng.register_model(
+            model_id, "v1", meta.get("description", "") if isinstance(meta, dict) else ""
+        )
 
 
 def get_model(model_id: Optional[str] = None) -> ModelEntry:
@@ -288,12 +294,17 @@ def get_security() -> Optional[SecurityMiddleware]:
     return _security
 
 
-def set_security(config: Optional[SecurityConfig] = None, firewall_config: Optional[dict] = None,
-                admin_key: Optional[str] = None, key_store_path: Optional[str] = None,
-                usage_db_path: Optional[str] = None):
+def set_security(
+    config: Optional[SecurityConfig] = None,
+    firewall_config: Optional[dict] = None,
+    admin_key: Optional[str] = None,
+    key_store_path: Optional[str] = None,
+    usage_db_path: Optional[str] = None,
+):
     global _security, _admin_key
     if key_store_path:
         from .api_key_store import ApiKeyStore
+
         store = ApiKeyStore(db_path=key_store_path)
         km = ApiKeyManager(store=store)
         if admin_key:
@@ -320,7 +331,10 @@ def require_auth(request: "Request"):
     """
     sec = get_security()
     if sec is None:
-        return None
+        raise HTTPException(
+            status_code=503,
+            detail="Security middleware is not initialized; refusing unauthenticated access",
+        )
     auth = sec.authenticator
     if not auth.enabled:
         client_host = request.client.host if request.client else "unknown"
@@ -362,7 +376,7 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
     scheme, separator, credential = value.partition(" ")
     if separator and scheme.casefold() == "bearer":
         value = credential.strip()
-    return bool(value) and hmac.compare_digest(value.encode('utf-8'), _admin_key.encode('utf-8'))
+    return bool(value) and hmac.compare_digest(value.encode("utf-8"), _admin_key.encode("utf-8"))
 
 
 def require_admin(
@@ -413,6 +427,7 @@ def _key_hash(raw_key: str) -> str:
 app = FastAPI(
     title="SneppX Inference API",
     version="1.5.3",
+    lifespan=lifespan,
 )
 
 # Enforce the transport, network, and application firewall rings before any
@@ -426,6 +441,7 @@ app.include_router(keys_router)
 @app.middleware("http")
 async def usage_middleware(request: callable, call_next):
     import time as time_module
+
     start = time_module.time()
     response = await call_next(request)
     elapsed_ms = (time_module.time() - start) * 1000
@@ -450,7 +466,8 @@ async def usage_middleware(request: callable, call_next):
     # Feed the production serving engine's metrics (latency/throughput/errors).
     try:
         get_serving_engine().metrics.record(
-            latency_us=elapsed_ms * 1000.0, tokens=0, error=response.status_code >= 500)
+            latency_us=elapsed_ms * 1000.0, tokens=0, error=response.status_code >= 500
+        )
     except Exception:
         pass
     return response
@@ -470,11 +487,15 @@ async def health_endpoint():
 # Production serving surface: liveness, readiness, metrics, versioning, A/B
 # ---------------------------------------------------------------------------
 
+
 @app.get("/healthz")
 async def healthz_endpoint():
     eng = get_serving_engine()
-    return {"status": "ok", "ready": eng.ready,
-            "uptime_ms": int((time.time() - _start_time) * 1000)}
+    return {
+        "status": "ok",
+        "ready": eng.ready,
+        "uptime_ms": int((time.time() - _start_time) * 1000),
+    }
 
 
 @app.get("/readyz")
@@ -486,13 +507,17 @@ async def readyz_endpoint():
 
 
 @app.get("/metrics", dependencies=[Depends(require_auth)])
-async def metrics_endpoint(format: str = Query(default=""), accept: Optional[str] = Header(default=None)):
+async def metrics_endpoint(
+    format: str = Query(default=""), accept: Optional[str] = Header(default=None)
+):
     from fastapi.responses import PlainTextResponse
+
     eng = get_serving_engine()
     if format == "json" or (accept and "application/json" in accept):
         return JSONResponse(eng.metrics.to_dict())
-    return PlainTextResponse(eng.metrics.render_prometheus(),
-                             media_type="text/plain; version=0.0.4")
+    return PlainTextResponse(
+        eng.metrics.render_prometheus(), media_type="text/plain; version=0.0.4"
+    )
 
 
 @app.get("/v1/models/{model_id}/versions")
@@ -505,8 +530,12 @@ async def model_versions_endpoint(model_id: str):
 
 
 @app.post("/v1/deploy", dependencies=[Depends(require_admin)])
-async def deploy_endpoint(model: str = Query(...), version: str = Query("v1"),
-                          description: str = Query(""), promote: bool = Query(False)):
+async def deploy_endpoint(
+    model: str = Query(...),
+    version: str = Query("v1"),
+    description: str = Query(""),
+    promote: bool = Query(False),
+):
     eng = get_serving_engine()
     ok = eng.deploy(model, version, description, weight=100 if promote else 0, promote=promote)
     return {"status": "deployed" if ok else "error"}
@@ -586,7 +615,9 @@ async def generate_endpoint(req: GenerateRequest):
     )
 
 
-@app.post("/v1/generate/batch", response_model=BatchGenerateResponse, dependencies=[Depends(require_auth)])
+@app.post(
+    "/v1/generate/batch", response_model=BatchGenerateResponse, dependencies=[Depends(require_auth)]
+)
 async def batch_generate_endpoint(req: BatchGenerateRequest):
     sanitized_prompts = []
     for prompt in req.prompts:
@@ -636,7 +667,11 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
     )
 
 
-@app.post("/v1/generate/continuous-batch", response_model=BatchGenerateResponse, dependencies=[Depends(require_auth)])
+@app.post(
+    "/v1/generate/continuous-batch",
+    response_model=BatchGenerateResponse,
+    dependencies=[Depends(require_auth)],
+)
 async def continuous_batch_endpoint(req: BatchGenerateRequest):
     sanitized_prompts = []
     for prompt in req.prompts:
@@ -651,16 +686,22 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     for prompt in sanitized_prompts:
         ids = _encode_prompt(entry, prompt)
         req_id = scheduler.submit(
-            prompt=prompt, prompt_tokens=ids,
+            prompt=prompt,
+            prompt_tokens=ids,
             max_new_tokens=req.max_new_tokens,
-            temperature=req.temperature, top_k=req.top_k, top_p=req.top_p,
+            temperature=req.temperature,
+            top_k=req.top_k,
+            top_p=req.top_p,
         )
         req_ids.append(req_id)
 
     def model_fn(input_ids_list, positions):
         gen_config = GenerationConfig(
-            max_new_tokens=1, do_sample=req.do_sample,
-            temperature=req.temperature, top_k=req.top_k, top_p=req.top_p,
+            max_new_tokens=1,
+            do_sample=req.do_sample,
+            temperature=req.temperature,
+            top_k=req.top_k,
+            top_p=req.top_p,
         )
         batch_input = [np.array(ids, dtype=np.int64) for ids in input_ids_list]
         result = batch_generate(entry.model, batch_input, generation_config=gen_config)
@@ -670,7 +711,9 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     def decode_fn(token_ids):
         return _decode_tokens(entry, token_ids)
 
-    for batch_result in continuous_generate_loop(model_fn, scheduler, decode_fn, max_steps=req.max_new_tokens * len(req.prompts)):
+    for batch_result in continuous_generate_loop(
+        model_fn, scheduler, decode_fn, max_steps=req.max_new_tokens * len(req.prompts)
+    ):
         pass
 
     results_list = []
@@ -679,15 +722,17 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
         completed = [r for r in scheduler._completed if r.request_id == rid]
         if completed:
             row = completed[-1]
-            results_list.append(GenerateResponse(
-                generated_text=row.generated_text,
-                token_ids=row.token_ids,
-                prompt_tokens=row.prompt_tokens,
-                completion_tokens=row.completion_tokens,
-                total_tokens=row.prompt_tokens + row.completion_tokens,
-                model=entry.model_id,
-                created=int(time.time()),
-            ))
+            results_list.append(
+                GenerateResponse(
+                    generated_text=row.generated_text,
+                    token_ids=row.token_ids,
+                    prompt_tokens=row.prompt_tokens,
+                    completion_tokens=row.completion_tokens,
+                    total_tokens=row.prompt_tokens + row.completion_tokens,
+                    model=entry.model_id,
+                    created=int(time.time()),
+                )
+            )
     return BatchGenerateResponse(
         results=results_list,
         model=entry.model_id,
@@ -700,28 +745,35 @@ async def quantize_model_endpoint(model_id: str = Query(...), quant_mode: str = 
     entry = get_model(model_id)
     mode_map = {"int4": "INT4_SYM", "int8": "INT8_SYM", "fp8": "INT4_SYM"}
     from .quantization import QuantMode
+
     mode = getattr(QuantMode, mode_map.get(quant_mode, "INT4_SYM"), QuantMode.INT4_SYM)
     cfg = QuantizedModelConfig(quant_mode=mode)
     params = {}
-    for name, param in entry.model.named_parameters().items() if hasattr(entry.model, "named_parameters") else []:
+    for name, param in (
+        entry.model.named_parameters().items() if hasattr(entry.model, "named_parameters") else []
+    ):
         from .tensor import Tensor
+
         p = param.data if hasattr(param, "data") else param
         params[name] = np.asarray(p, dtype=np.float32)
     if not params:
         return JSONResponse({"status": "skipped", "message": "No parameters to quantize"})
     quantized = quantize_model_weights(params, cfg)
     from .quantized_serve import estimate_model_size_mb
+
     size_mb = estimate_model_size_mb(quantized)
     entry.meta["quantized"] = True
     entry.meta["quant_mode"] = quant_mode
     entry.meta["quantized_size_mb"] = round(size_mb, 2)
-    return JSONResponse({
-        "status": "ok",
-        "model_id": model_id,
-        "quant_mode": quant_mode,
-        "layers_quantized": len(quantized),
-        "size_mb": round(size_mb, 2),
-    })
+    return JSONResponse(
+        {
+            "status": "ok",
+            "model_id": model_id,
+            "quant_mode": quant_mode,
+            "layers_quantized": len(quantized),
+            "size_mb": round(size_mb, 2),
+        }
+    )
 
 
 @app.post("/v1/generate/stream", dependencies=[Depends(require_auth)])
@@ -799,13 +851,9 @@ async def chat_completions(req: ChatCompletionRequest):
     gen_config = _make_chat_config(req)
 
     if entry.tokenizer and hasattr(entry.tokenizer, "apply_chat_template"):
-        prompt = entry.tokenizer.apply_chat_template(
-            [m.model_dump() for m in req.messages]
-        )
+        prompt = entry.tokenizer.apply_chat_template([m.model_dump() for m in req.messages])
     else:
-        prompt = (
-            "\n".join(f"{m.role}: {m.content}" for m in req.messages) + "\nassistant:"
-        )
+        prompt = "\n".join(f"{m.role}: {m.content}" for m in req.messages) + "\nassistant:"
 
     filter_status, sanitized = _filter_prompt(prompt)
     if filter_status == "injection":
@@ -914,8 +962,10 @@ async def admin_create_key(
 ):
     km = get_key_manager()
     result = km.create_key(
-        name=name, tier=tier,
-        expires_in_days=expires_in_days, user_id=user_id,
+        name=name,
+        tier=tier,
+        expires_in_days=expires_in_days,
+        user_id=user_id,
     )
     if result is None:
         raise HTTPException(400, "Failed to create key")
@@ -948,8 +998,9 @@ async def admin_update_key(
     expires_in_days: Optional[int] = Query(default=None),
 ):
     km = get_key_manager()
-    if not km.update_key(key_id, name=name, tier=tier,
-                         rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days):
+    if not km.update_key(
+        key_id, name=name, tier=tier, rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days
+    ):
         raise HTTPException(404, "Key not found")
     return {"status": "updated", "key_id": key_id}
 
