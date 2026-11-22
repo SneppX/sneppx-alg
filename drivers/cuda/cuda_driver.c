@@ -104,7 +104,7 @@ int SNEPPX_cuda_get_device_props(int dev_id, SNEPPXCUDADeviceProps* props) {
     if (!props) return -1;
     memset(props, 0, sizeof(*props));
 #if defined(SNEPPX_HAS_CUDA)
-    cudaDeviceProp p;
+    struct cudaDeviceProp p;
     cudaError_t err = cudaGetDeviceProperties(&p, dev_id);
     if (err != cudaSuccess) return -1;
     strncpy(props->name, p.name, sizeof(props->name) - 1);
@@ -469,14 +469,13 @@ int SNEPPX_cuda_mem_set(void* dev_ptr, int value, size_t bytes) {
 int SNEPPX_cuda_launch_kernel(const SNEPPXCUDAKernelLaunch* launch) {
     if (!launch) return -1;
 #if defined(SNEPPX_HAS_CUDA)
-    if (!launch->kernel_func) return -1;
-    void* args[] = { /* kernel args would be passed through launch */ };
-    cudaError_t err = cudaLaunchKernel(launch->kernel_func,
-        dim3(launch->grid_x, launch->grid_y, launch->grid_z),
-        dim3(launch->block_x, launch->block_y, launch->block_z),
-        args, launch->shared_mem_bytes,
-        launch->stream ? (cudaStream_t)launch->stream->handle : 0);
-    return (err == cudaSuccess) ? 0 : -1;
+    /*
+     * SNEPPXCUDAKernelLaunch currently has no kernel-argument array. Do not
+     * submit an invalid zero-length argument list or report a false success.
+     * Extend the public launch descriptor before enabling actual dispatch.
+     */
+    (void)launch;
+    return -1;
 #else
     return 0;
 #endif
