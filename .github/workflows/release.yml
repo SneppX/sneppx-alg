@@ -1,0 +1,72 @@
+name: Validated Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Build and validate release artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+      - name: Build Python wheel and source distribution
+        run: |
+          python -m pip install --disable-pip-version-check --upgrade build
+          python -m build --sdist --wheel --outdir dist .
+          test -n "$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$(find dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
+      - name: Install and smoke-test the built wheel
+        run: |
+          python -m venv .release-venv
+          .release-venv/bin/python -m pip install --disable-pip-version-check dist/*.whl
+          .release-venv/bin/python -c "import SneppX_ALG; print(SneppX_ALG.__file__)"
+      - name: Build native release configuration
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential
+          cmake -S . -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_CUDA=OFF
+          cmake --build build/release --parallel 2
+          ctest --test-dir build/release --output-on-failure --timeout 180
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: dist/sneppx-alg.spdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-release-${{ github.ref_name }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Publish GitHub Release
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-release-${{ github.ref_name }}
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*

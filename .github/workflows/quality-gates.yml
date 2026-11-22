@@ -140,6 +140,20 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  public-api-compatibility:
+    name: Public C and C++ API compile compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Compile representative public C headers
+        run: |
+          printf '%s\\n' '#include "neural_core/kernel/multidimensional_tensor_engine.h"' '#include "neural_core/security/sha256.h"' 'int main(void) { return 0; }' | cc -std=c11 -Wall -Wextra -Werror -Iinclude -x c -fsyntax-only -
+      - name: Compile representative public C++ headers
+        run: |
+          printf '%s\\n' '#include "neural_core/model_zoo/model_factory.hpp"' 'int main() { return 0; }' | c++ -std=c++20 -Wall -Wextra -Werror -Iinclude -fsyntax-only -x c++ -
+
   sbom-and-license-inventory:
     name: SBOM and license inventory
     runs-on: ubuntu-latest
