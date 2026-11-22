@@ -3,7 +3,10 @@
 import os
 import sys
 import tempfile
+
 import numpy as np
+import pytest
+
 from SneppX_ALG.interface_bindings import (
     Tensor,
     Linear,
@@ -125,7 +128,7 @@ def test_checkpoint_rng_restore():
 def test_checkpoint_binary_format():
     with tempfile.TemporaryDirectory() as tmp:
         mgr = CheckpointManager(
-            tmp, keep_last=3, save_format="binary", async_save=False
+            tmp, keep_last=3, save_format="binary", async_save=False, allow_unsafe=True
         )
         trainer = _make_trainer(tmp)
         original_w = trainer.model.weight.data.copy()
@@ -141,7 +144,7 @@ def test_checkpoint_binary_format():
 
 def test_checkpoint_load_best():
     with tempfile.TemporaryDirectory() as tmp:
-        mgr = CheckpointManager(tmp, keep_last=5, keep_best=2, async_save=False)
+        mgr = CheckpointManager(tmp, keep_last=5, keep_best=2, async_save=False, allow_unsafe=True)
         trainer = _make_trainer(tmp)
         orig = trainer.model.weight.data.copy()
 
@@ -155,6 +158,48 @@ def test_checkpoint_load_best():
         assert loaded
         assert np.allclose(trainer.model.weight.data, orig)
     print("  test_checkpoint_load_best PASS")
+
+
+def test_pickle_checkpoint_requires_explicit_opt_in(capsys):
+    with tempfile.TemporaryDirectory() as tmp:
+        trainer = _make_trainer(tmp)
+        mgr = trainer.checkpoint_manager
+        mgr.async_save = False
+        mgr.save(trainer)
+        path = mgr._latest_path()
+
+        strict = CheckpointManager(tmp, allow_unsafe=False)
+        assert strict.load(trainer, path) is False
+        assert "Refusing to deserialize" in capsys.readouterr().out
+
+
+def test_binary_checkpoint_requires_explicit_opt_in(capsys):
+    with tempfile.TemporaryDirectory() as tmp:
+        trainer = _make_trainer(tmp)
+        mgr = CheckpointManager(tmp, save_format="binary", async_save=False, allow_unsafe=True)
+        mgr.save(trainer)
+        path = mgr._latest_path()
+
+        strict = CheckpointManager(tmp, save_format="binary", allow_unsafe=False)
+        assert strict.load(trainer, path) is False
+        assert "Refusing to deserialize" in capsys.readouterr().out
+
+
+def test_explicit_opt_in_warns_and_loads():
+    with tempfile.TemporaryDirectory() as tmp:
+        trainer = _make_trainer(tmp)
+        mgr = trainer.checkpoint_manager
+        mgr.async_save = False
+        original_w = trainer.model.weight.data.copy()
+        mgr.save(trainer)
+        trainer.model.weight.data = np.zeros_like(original_w)
+        path = mgr._latest_path()
+
+        permissive = CheckpointManager(tmp, allow_unsafe=True)
+        with pytest.warns(RuntimeWarning):
+            loaded = permissive.load(trainer, path)
+        assert loaded
+        assert np.allclose(trainer.model.weight.data, original_w)
 
 
 if __name__ == "__main__":

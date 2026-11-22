@@ -180,9 +180,7 @@ class _ConfigView:
 # ===========================================================================
 
 
-def clip_grad_norm_(
-    params: List[Tensor], max_norm: float, norm_type: float = 2.0
-) -> float:
+def clip_grad_norm_(params: List[Tensor], max_norm: float, norm_type: float = 2.0) -> float:
     """Clip gradient norms in-place. Returns total norm before clipping."""
     if max_norm <= 0:
         return 0.0
@@ -315,6 +313,10 @@ class Trainer:
                 keep_last=int(ckpt_cfg.keep_last_n or 5),
                 keep_best=int(getattr(ckpt_cfg, "keep_best", 3) or 3),
                 async_save=True,
+                # Trainer-owned checkpoints are written locally by this
+                # process, so loading them is trusted. Untrusted artifacts
+                # should be converted to a native safe format first.
+                allow_unsafe=True,
             )
 
         # Profiler
@@ -341,9 +343,7 @@ class Trainer:
 
             comp = CompositeTracker()
             comp.add(
-                ExperimentTracker(
-                    storage_dir=self.config.training.checkpoint_dir or "experiments"
-                )
+                ExperimentTracker(storage_dir=self.config.training.checkpoint_dir or "experiments")
             )
             comp.add(
                 WandbTracker(
@@ -479,9 +479,7 @@ class Trainer:
             step_elapsed = time.perf_counter() - step_t0
             if self.profiler is not None:
                 self.profiler.record_step(step_elapsed)
-                if hasattr(self.profiler, "memory") and hasattr(
-                    self.profiler.memory, "update"
-                ):
+                if hasattr(self.profiler, "memory") and hasattr(self.profiler.memory, "update"):
                     total_params = sum(p.numel for p in self.model.parameters())
                     self.profiler.memory.update(total_params * 4)
             return loss
@@ -490,9 +488,7 @@ class Trainer:
         if self.scaler is not None:
             with autocast(enabled=True, dtype=self.config.amp.dtype):
                 outputs = self.model(inputs)
-                loss = (
-                    self.loss_fn(outputs, targets) if targets is not None else outputs
-                )
+                loss = self.loss_fn(outputs, targets) if targets is not None else outputs
                 loss = self.scaler.scale_tensor(loss)
         else:
             outputs = self.model(inputs)
@@ -526,9 +522,7 @@ class Trainer:
         step_elapsed = time.perf_counter() - step_t0
         if self.profiler is not None:
             self.profiler.record_step(step_elapsed)
-            if hasattr(self.profiler, "memory") and hasattr(
-                self.profiler.memory, "update"
-            ):
+            if hasattr(self.profiler, "memory") and hasattr(self.profiler.memory, "update"):
                 total_params = sum(p.numel for p in self.model.parameters())
                 self.profiler.memory.update(total_params * 4)
 
@@ -672,9 +666,7 @@ class Trainer:
 
                 if cfg.save_every > 0 and self._step % cfg.save_every == 0:
                     metric = (
-                        val_loss
-                        if val_loss is not None
-                        else (epoch_loss / max(epoch_batches, 1))
+                        val_loss if val_loss is not None else (epoch_loss / max(epoch_batches, 1))
                     )
                     is_best = self._best_metric is None or (
                         val_loss is not None and val_loss < self._best_metric

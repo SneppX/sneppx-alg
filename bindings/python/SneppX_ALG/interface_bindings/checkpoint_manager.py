@@ -9,6 +9,7 @@ import pickle
 import random
 import shutil
 import threading
+import warnings
 from typing import Optional, Dict, Any, List, Callable
 
 import numpy as np
@@ -46,6 +47,7 @@ class CheckpointManager:
         async_save: bool = True,
         metric_mode: str = "min",
         save_format: str = "pickle",
+        allow_unsafe: bool = False,
     ):
         self.checkpoint_dir = checkpoint_dir
         self.keep_last = keep_last
@@ -53,6 +55,7 @@ class CheckpointManager:
         self.async_save = async_save
         self.metric_mode = metric_mode
         self.save_format = save_format
+        self.allow_unsafe = allow_unsafe
         self._save_thread: Optional[threading.Thread] = None
         self._lock = threading.Lock()
         self._best_metrics: List[Dict[str, Any]] = []
@@ -94,9 +97,7 @@ class CheckpointManager:
             "config": trainer.config.to_dict(),
             "model_state": trainer.model.state_dict(),
             "optimizer_state": (
-                trainer.optimizer.state_dict()
-                if hasattr(trainer.optimizer, "state_dict")
-                else {}
+                trainer.optimizer.state_dict() if hasattr(trainer.optimizer, "state_dict") else {}
             ),
             "rng_state": {
                 "random": _random.getstate(),
@@ -165,9 +166,23 @@ class CheckpointManager:
         )
         w.close()
 
+    def _require_unsafe(self, what: str) -> None:
+        if not self.allow_unsafe:
+            raise RuntimeError(
+                f"Refusing to {what}: pickle-based checkpoints can execute "
+                "arbitrary code. Only load trusted artifacts and pass "
+                "allow_unsafe=True explicitly."
+            )
+        warnings.warn(
+            f"Loading {what} with pickle is unsafe; only use trusted checkpoints.",
+            RuntimeWarning,
+            stacklevel=3,
+        )
+
     def _do_load(self, path: str) -> dict:
         if self.save_format == "binary":
             return self._load_binary(path)
+        self._require_unsafe("deserialize a pickle checkpoint")
         with open(path, "rb") as f:
             return pickle.load(f)
 
@@ -184,7 +199,11 @@ class CheckpointManager:
             model_sd[name] = arr
         meta_tensor_idx = meta.get("meta_tensor_idx", len(tensor_names))
         meta_raw = r.read_tensor(meta_tensor_idx)
-        main_meta = pickle.loads(meta_raw) if meta_raw else {}
+        if meta_raw:
+            self._require_unsafe("deserialize binary checkpoint metadata")
+            main_meta = pickle.loads(meta_raw)
+        else:
+            main_meta = {}
         main_meta["model_state"] = model_sd
         r.close()
         return main_meta
@@ -209,9 +228,7 @@ class CheckpointManager:
             self._save_thread.join()
 
         if self.async_save:
-            self._save_thread = threading.Thread(
-                target=self._do_save, args=(path, state)
-            )
+            self._save_thread = threading.Thread(target=self._do_save, args=(path, state))
             self._save_thread.start()
         else:
             self._do_save(path, state)
@@ -233,13 +250,9 @@ class CheckpointManager:
 
         if _best:
             best_tag = f"metric={metric:.6f}" if metric is not None else "best"
-            best_path = os.path.join(
-                self.checkpoint_dir, f"best_{step}_{best_tag}.ckpt"
-            )
+            best_path = os.path.join(self.checkpoint_dir, f"best_{step}_{best_tag}.ckpt")
             self._do_save(best_path, state)
-            self._best_metrics.append(
-                {"path": best_path, "metric": metric, "step": step}
-            )
+            self._best_metrics.append({"path": best_path, "metric": metric, "step": step})
             self._prune_best()
 
         self._prune_last()
@@ -307,9 +320,7 @@ class CheckpointManager:
             "checkpoint_dir": self.checkpoint_dir,
             "total_checkpoints": len(ckpts),
             "best_checkpoints": len(bests),
-            "latest": (
-                os.path.basename(self._latest_path()) if self._latest_path() else None
-            ),
+            "latest": (os.path.basename(self._latest_path()) if self._latest_path() else None),
             "last_checkpoints": [os.path.basename(p) for p in ckpts[-3:]],
             "best_metrics": list(self._best_metrics),
         }
