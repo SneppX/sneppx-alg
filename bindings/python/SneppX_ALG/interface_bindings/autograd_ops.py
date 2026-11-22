@@ -32,16 +32,8 @@ def _reduce_to_shape(grad, shape):
 
 def _broadcast_grad(grad, a_shape, b_shape):
     """Return per-input gradients reduced to their broadcast shapes."""
-    ga = (
-        grad
-        if a_shape is None
-        else Tensor(_reduce_to_shape(grad, a_shape), dtype=grad.dtype)
-    )
-    gb = (
-        grad
-        if b_shape is None
-        else Tensor(_reduce_to_shape(grad, b_shape), dtype=grad.dtype)
-    )
+    ga = grad if a_shape is None else Tensor(_reduce_to_shape(grad, a_shape), dtype=grad.dtype)
+    gb = grad if b_shape is None else Tensor(_reduce_to_shape(grad, b_shape), dtype=grad.dtype)
     return [ga, gb]
 
 
@@ -103,9 +95,7 @@ def _cg_broadcast(g, target_shape):
             g2 = Expand.apply(g2, tuple(ns))
             out_p[i] = tgt_p[i]
         else:
-            raise ValueError(
-                f"broadcast mismatch: target dim {tgt_p[i]}, output dim {out_p[i]}"
-            )
+            raise ValueError(f"broadcast mismatch: target dim {tgt_p[i]}, output dim {out_p[i]}")
     if tuple(g2.shape) != tuple(target_shape):
         g2 = Reshape.apply(g2, tuple(target_shape))
     return g2
@@ -177,9 +167,7 @@ class Sub(Function):
             ga = _cg_broadcast(grad_output, a_shape)
             gb = _cg_broadcast(grad_output, b_shape)
             return [ga, Mul.apply(gb, _as_const(-1.0, grad_output.dtype))]
-        ga, gb = _broadcast_grad(
-            grad_output, _get_attr(ctx, "a_shape"), _get_attr(ctx, "b_shape")
-        )
+        ga, gb = _broadcast_grad(grad_output, _get_attr(ctx, "a_shape"), _get_attr(ctx, "b_shape"))
         return [ga, -gb]
 
 
@@ -297,9 +285,7 @@ class Div(Function):
             gb = Mul.apply(_as_const(-1.0, grad_output.dtype), Div.apply(num, den))
             return [ga, gb]
         g = grad_output.data
-        ga = Tensor(
-            _reduce_to_shape(g / b.data, _get_attr(ctx, "a_shape")), dtype=a.dtype
-        )
+        ga = Tensor(_reduce_to_shape(g / b.data, _get_attr(ctx, "a_shape")), dtype=a.dtype)
         gb = Tensor(
             _reduce_to_shape(-g * a.data / (b.data**2), _get_attr(ctx, "b_shape")),
             dtype=b.dtype,
@@ -333,9 +319,7 @@ class Pow(Function):
         b = ctx.get_attr("b_val")
         if create_graph:
             base = Pow.apply(a, _as_const(b - 1, grad_output.dtype))
-            return [
-                Mul.apply(Mul.apply(grad_output, _as_const(b, grad_output.dtype)), base)
-            ]
+            return [Mul.apply(Mul.apply(grad_output, _as_const(b, grad_output.dtype)), base)]
         return [Tensor(b * (a.data ** (b - 1)) * grad_output.data, dtype=a.dtype)]
 
 
@@ -379,12 +363,8 @@ class MatMul(Function):
             if b_vector:
                 upstream = Unsqueeze.apply(upstream, -1)
 
-            grad_a = MatMul.apply(
-                upstream, Transpose.apply(b_matrix, -1, -2)
-            )
-            grad_b = MatMul.apply(
-                Transpose.apply(a_matrix, -1, -2), upstream
-            )
+            grad_a = MatMul.apply(upstream, Transpose.apply(b_matrix, -1, -2))
+            grad_b = MatMul.apply(Transpose.apply(a_matrix, -1, -2), upstream)
             if a_vector:
                 grad_a = Squeeze.apply(grad_a, -2)
             if b_vector:
@@ -436,9 +416,12 @@ class SparseMM(Function):
     @staticmethod
     def forward(ctx, mat1, mat2):
         from .sparse import SparseTensor
+
         ctx.save_for_backward(mat1=mat1, mat2=mat2)
-        ctx.save_attr(mat1_is_sparse=isinstance(mat1, SparseTensor),
-                      mat2_is_sparse=isinstance(mat2, SparseTensor))
+        ctx.save_attr(
+            mat1_is_sparse=isinstance(mat1, SparseTensor),
+            mat2_is_sparse=isinstance(mat2, SparseTensor),
+        )
 
         # Compute forward result (dense path, matching sparse_mm semantics)
         if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
@@ -522,7 +505,11 @@ class SparseMM(Function):
         if mat2_is_sparse:
             grads[1] = None
         else:
-            mat1_np = np.asarray(mat1.data) if isinstance(mat1, Tensor) else np.asarray(mat1.to_dense().data)
+            mat1_np = (
+                np.asarray(mat1.data)
+                if isinstance(mat1, Tensor)
+                else np.asarray(mat1.to_dense().data)
+            )
             grad_mat2 = mat1_np.T @ gnp
             grads[1] = Tensor(grad_mat2, dtype=mat2.dtype)
         return grads
@@ -534,10 +521,14 @@ class SparseAddMM(Function):
     @staticmethod
     def forward(ctx, input, mat1, mat2, beta=1.0, alpha=1.0):
         from .sparse import SparseTensor
+
         ctx.save_for_backward(input=input, mat1=mat1, mat2=mat2)
-        ctx.save_attr(beta=beta, alpha=alpha,
-                      mat1_is_sparse=isinstance(mat1, SparseTensor),
-                      input_is_sparse=isinstance(input, SparseTensor))
+        ctx.save_attr(
+            beta=beta,
+            alpha=alpha,
+            mat1_is_sparse=isinstance(mat1, SparseTensor),
+            input_is_sparse=isinstance(input, SparseTensor),
+        )
 
         # Compute mat1 @ mat2 result directly
         if isinstance(mat1, SparseTensor) and isinstance(mat2, SparseTensor):
@@ -592,9 +583,17 @@ class SparseAddMM(Function):
 
         # Non-create_graph path
         gnp = g.data if isinstance(g, Tensor) else np.asarray(g)
-        grad_input = _Tensor(beta * gnp, dtype=input.dtype) if beta != 1.0 else _Tensor(gnp, dtype=input.dtype)
+        grad_input = (
+            _Tensor(beta * gnp, dtype=input.dtype)
+            if beta != 1.0
+            else _Tensor(gnp, dtype=input.dtype)
+        )
         g_scaled_np = alpha * gnp if alpha != 1.0 else gnp
-        mm_grads = SparseMM.backward(ctx, _Tensor(g_scaled_np, dtype=g.dtype if hasattr(g, 'dtype') else "float32"), create_graph=False)
+        mm_grads = SparseMM.backward(
+            ctx,
+            _Tensor(g_scaled_np, dtype=g.dtype if hasattr(g, "dtype") else "float32"),
+            create_graph=False,
+        )
         grad_mat1 = mm_grads[0]
         grad_mat2 = mm_grads[1]
         return [grad_input, grad_mat1, grad_mat2, None, None]
@@ -610,13 +609,12 @@ class SparseSum(Function):
     @staticmethod
     def forward(ctx, input, dim=None, dtype=None):
         from .sparse import SparseTensor
+
         ctx.save_for_backward(input=input)
-        ctx.save_attr(dim=dim, input_shape=tuple(input.size),
-                      dtype=dtype)
+        ctx.save_attr(dim=dim, input_shape=tuple(input.size), dtype=dtype)
         dense = input.to_dense()
         if dtype is not None and dtype != input.dtype:
-            dense = Tensor(dense.data.astype(_numpy_dtype(dtype)), dtype=dtype,
-                           device=input.device)
+            dense = Tensor(dense.data.astype(_numpy_dtype(dtype)), dtype=dtype, device=input.device)
         if dim is None:
             return Tensor(float(dense.data.sum()), dtype=dense.dtype_name)
         return Tensor(dense.data.sum(axis=dim), dtype=dense.dtype_name)
@@ -680,6 +678,7 @@ class SparseSoftmax(Function):
     @staticmethod
     def forward(ctx, input, dim):
         from .sparse import SparseTensor
+
         ctx.save_for_backward(input=input)
         ctx.save_attr(dim=dim, input_shape=tuple(input.size))
         dense = input.to_dense()
@@ -709,6 +708,7 @@ class SparseSoftmax(Function):
 
         if create_graph:
             from .autograd_ops import Mul, Sum, Unsqueeze, Reshape, MatMul, Sub
+
             g = grad_output
             out_t = _as_const(out_data, g.dtype)
             # Softmax backward: grad_input = out * (g - sum(g * out, dim, keepdims=True))
@@ -750,13 +750,12 @@ class SparseConv2d(Function):
     """
 
     @staticmethod
-    def forward(ctx, input, weight, bias=None, stride=1, padding=0,
-                dilation=1, groups=1):
+    def forward(ctx, input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
         from .sparse import SparseTensor
         from .advanced_ops import conv2d as _dense_conv2d
+
         ctx.save_for_backward(input=input, weight=weight, bias=bias)
-        ctx.save_attr(stride=stride, padding=padding, dilation=dilation,
-                      groups=groups)
+        ctx.save_attr(stride=stride, padding=padding, dilation=dilation, groups=groups)
         x = input.to_dense() if isinstance(input, SparseTensor) else input
         if isinstance(stride, int):
             stride = (stride, stride)
@@ -764,8 +763,9 @@ class SparseConv2d(Function):
             padding = (padding, padding)
         if isinstance(dilation, int):
             dilation = (dilation, dilation)
-        out = _dense_conv2d(x, weight, bias, stride=stride, padding=padding,
-                            dilation=dilation, groups=groups)
+        out = _dense_conv2d(
+            x, weight, bias, stride=stride, padding=padding, dilation=dilation, groups=groups
+        )
         return out
 
     @staticmethod
@@ -830,28 +830,43 @@ class SparseConv2d(Function):
                             h_end = h_start + stride_h * (H_out - 1) + 1
                             w_start = kw
                             w_end = w_start + stride_w * (W_out - 1) + 1
-                            grad_input[n, ci] += (g_pad[n, co, h_start:h_end:stride_h, w_start:w_end:stride_w] * w_rot[co, ci, kh, kw])
+                            grad_input[n, ci] += (
+                                g_pad[n, co, h_start:h_end:stride_h, w_start:w_end:stride_w]
+                                * w_rot[co, ci, kh, kw]
+                            )
 
         if create_graph:
             from .autograd_ops import Sum, Add, _as_const
+
             # grad_bias via graph-connected Sum (chain over N, H_out, W_out axes)
-            g_t = grad_output if isinstance(grad_output, Tensor) else Tensor(np.asarray(grad_output))
+            g_t = (
+                grad_output if isinstance(grad_output, Tensor) else Tensor(np.asarray(grad_output))
+            )
             if bias is not None:
                 grad_bias_t = Sum.apply(Sum.apply(Sum.apply(g_t, 0), 1), 1)
             else:
                 grad_bias_t = None
             # grad_input and grad_weight graph-connected via identity Add
-            grad_input_t = Add.apply(Tensor(grad_input, dtype=input.dtype),
-                                     _as_const(np.zeros_like(grad_input), input.dtype))
-            grad_weight_t = Add.apply(Tensor(grad_weight, dtype=weight.dtype),
-                                      _as_const(np.zeros_like(grad_weight), weight.dtype))
+            grad_input_t = Add.apply(
+                Tensor(grad_input, dtype=input.dtype),
+                _as_const(np.zeros_like(grad_input), input.dtype),
+            )
+            grad_weight_t = Add.apply(
+                Tensor(grad_weight, dtype=weight.dtype),
+                _as_const(np.zeros_like(grad_weight), weight.dtype),
+            )
             grads = [grad_input_t, grad_weight_t, grad_bias_t, None, None, None, None]
             return grads
 
-        grads = [_Tensor(grad_input, dtype=input.dtype),
-                 _Tensor(grad_weight, dtype=weight.dtype),
-                 _Tensor(grad_bias, dtype=bias.dtype) if bias is not None else None,
-                 None, None, None, None]
+        grads = [
+            _Tensor(grad_input, dtype=input.dtype),
+            _Tensor(grad_weight, dtype=weight.dtype),
+            _Tensor(grad_bias, dtype=bias.dtype) if bias is not None else None,
+            None,
+            None,
+            None,
+            None,
+        ]
         return grads
 
 
@@ -887,9 +902,7 @@ class Sum(Function):
         if dim is None:
             return [
                 Tensor(
-                    np.full(
-                        shape, g.flatten()[0], dtype=_numpy_dtype(grad_output.dtype)
-                    ),
+                    np.full(shape, g.flatten()[0], dtype=_numpy_dtype(grad_output.dtype)),
                     dtype=grad_output.dtype,
                 )
             ]
@@ -922,8 +935,9 @@ class Mean(Function):
             return [
                 Tensor(
                     np.full(
-                        shape, grad_output.data.flatten()[0] / n,
-                        dtype=_numpy_dtype(grad_output.dtype)
+                        shape,
+                        grad_output.data.flatten()[0] / n,
+                        dtype=_numpy_dtype(grad_output.dtype),
                     ),
                     dtype=grad_output.dtype,
                 )
@@ -941,8 +955,7 @@ class Mean(Function):
         g_br = grad_output.data.reshape(expand_shape)
         return [
             Tensor(
-                np.broadcast_to(g_br, shape).astype(_numpy_dtype(grad_output.dtype))
-                / nelem,
+                np.broadcast_to(g_br, shape).astype(_numpy_dtype(grad_output.dtype)) / nelem,
                 dtype=grad_output.dtype,
             )
         ]
@@ -1030,9 +1043,7 @@ class Gelu(Function):
             c = 0.79788456
             dt = grad_output.dtype
             a3 = Pow.apply(a, _as_const(3.0, dt))
-            ta = Mul.apply(
-                _as_const(c, dt), Add.apply(a, Mul.apply(_as_const(0.044715, dt), a3))
-            )
+            ta = Mul.apply(_as_const(c, dt), Add.apply(a, Mul.apply(_as_const(0.044715, dt), a3)))
             tanh_ta = Tanh.apply(ta)
             sech2 = Sub.apply(_as_const(1.0, dt), Mul.apply(tanh_ta, tanh_ta))
             ta_prime = Mul.apply(
@@ -1042,21 +1053,15 @@ class Gelu(Function):
                     Mul.apply(_as_const(0.134145, dt), Mul.apply(a, a)),
                 ),
             )
-            term1 = Mul.apply(
-                _as_const(0.5, dt), Add.apply(_as_const(1.0, dt), tanh_ta)
-            )
-            term2 = Mul.apply(
-                Mul.apply(_as_const(0.5, dt), a), Mul.apply(sech2, ta_prime)
-            )
+            term1 = Mul.apply(_as_const(0.5, dt), Add.apply(_as_const(1.0, dt), tanh_ta))
+            term2 = Mul.apply(Mul.apply(_as_const(0.5, dt), a), Mul.apply(sech2, ta_prime))
             grad_x = Add.apply(term1, term2)
             return [Mul.apply(grad_output, grad_x)]
         x = a.data
         tanh_arg = ctx.get_attr("tanh_arg")
         sech2 = 1 - np.tanh(tanh_arg) ** 2
         c = 0.79788456
-        grad_x = 0.5 * (1 + np.tanh(tanh_arg)) + 0.5 * x * sech2 * c * (
-            1 + 0.134145 * x**2
-        )
+        grad_x = 0.5 * (1 + np.tanh(tanh_arg)) + 0.5 * x * sech2 * c * (1 + 0.134145 * x**2)
         return [Tensor(grad_x * grad_output.data, dtype=grad_output.dtype)]
 
 
@@ -1082,9 +1087,7 @@ class Silu(Function):
             return [Mul.apply(grad_output, grad_x)]
         sig = ctx.get_attr("sig")
         out = ctx.get_attr("out")
-        return [
-            Tensor((sig + out * (1 - sig)) * grad_output.data, dtype=grad_output.dtype)
-        ]
+        return [Tensor((sig + out * (1 - sig)) * grad_output.data, dtype=grad_output.dtype)]
 
 
 class LeakyRelu(Function):
@@ -1100,9 +1103,7 @@ class LeakyRelu(Function):
         a = ctx.get_saved_tensor("a")
         slope = ctx.get_attr("slope")
         if create_graph:
-            mask = _as_const(
-                (a.data > 0).astype(grad_output.data.dtype), grad_output.dtype
-            )
+            mask = _as_const((a.data > 0).astype(grad_output.data.dtype), grad_output.dtype)
             neg_mask = _as_const(
                 (a.data <= 0).astype(grad_output.data.dtype) * slope, grad_output.dtype
             )
@@ -1137,9 +1138,7 @@ class Elu(Function):
             return [
                 Mul.apply(
                     grad_output,
-                    Add.apply(
-                        grad_t, Mul.apply(term, Sub.apply(_as_const(1.0, dt), grad_t))
-                    ),
+                    Add.apply(grad_t, Mul.apply(term, Sub.apply(_as_const(1.0, dt), grad_t))),
                 )
             ]
         out = ctx.get_attr("out")
@@ -1207,9 +1206,9 @@ class Hardswish(Function):
     def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         x = a.data
-        grad = np.where(
-            x <= -3.0, 0.0, np.where(x >= 3.0, 1.0, (x + 1.5) / 3.0)
-        ).astype(grad_output.data.dtype)
+        grad = np.where(x <= -3.0, 0.0, np.where(x >= 3.0, 1.0, (x + 1.5) / 3.0)).astype(
+            grad_output.data.dtype
+        )
         if create_graph:
             dt = grad_output.dtype
             g_t = _as_const(grad, dt)
@@ -1231,9 +1230,7 @@ class Hardtanh(Function):
         a = ctx.get_saved_tensor("a")
         min_val = ctx.get_attr("min_val")
         max_val = ctx.get_attr("max_val")
-        mask = ((a.data >= min_val) & (a.data <= max_val)).astype(
-            grad_output.data.dtype
-        )
+        mask = ((a.data >= min_val) & (a.data <= max_val)).astype(grad_output.data.dtype)
         if create_graph:
             dt = grad_output.dtype
             g_t = _as_const(mask, dt)
@@ -1308,9 +1305,7 @@ class Hardsigmoid(Function):
     def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         x = a.data
-        grad = np.where((x > -3.0) & (x < 3.0), 1.0 / 6.0, 0.0).astype(
-            grad_output.data.dtype
-        )
+        grad = np.where((x > -3.0) & (x < 3.0), 1.0 / 6.0, 0.0).astype(grad_output.data.dtype)
         if create_graph:
             dt = grad_output.dtype
             g_t = _as_const(grad, dt)
@@ -1452,9 +1447,8 @@ class GLU(Function):
             return np.concatenate([a_, b_], axis=dim)
 
         if create_graph:
-            from .autograd_ops import (
-                GetItem, Sigmoid, Mul, Sub, Cat, _as_const
-            )
+            from .autograd_ops import GetItem, Sigmoid, Mul, Sub, Cat, _as_const
+
             # Split input into x_a and x_b
             key_xa = [slice(None)] * a.ndim
             key_xa[dim] = slice(0, half)
@@ -1529,11 +1523,7 @@ class Log(Function):
     def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         if create_graph:
-            return [
-                Div.apply(
-                    grad_output, Add.apply(a, _as_const(1e-10, grad_output.dtype))
-                )
-            ]
+            return [Div.apply(grad_output, Add.apply(a, _as_const(1e-10, grad_output.dtype)))]
         return [Tensor(grad_output.data / (a.data + 1e-10), dtype=grad_output.dtype)]
 
 
@@ -1547,9 +1537,7 @@ class Abs(Function):
     def backward(ctx, grad_output, create_graph=False):
         a = ctx.get_saved_tensor("a")
         if create_graph:
-            return [
-                Mul.apply(grad_output, _as_const(np.sign(a.data), grad_output.dtype))
-            ]
+            return [Mul.apply(grad_output, _as_const(np.sign(a.data), grad_output.dtype))]
         return [Tensor(np.sign(a.data) * grad_output.data, dtype=grad_output.dtype)]
 
 
@@ -1575,7 +1563,7 @@ class Softmax(Function):
             a = ctx.get_saved_tensor("a")
             out = Softmax.apply(a, dim)
             og = Mul.apply(out, grad_output)
-            s = Sum.apply(og, dim)
+            s = _sum_keepdim(og, dim)
             diff = Sub.apply(grad_output, s)
             return [Mul.apply(out, diff)]
         out = ctx.get_attr("out")
@@ -1671,9 +1659,7 @@ class UpsampleNearestFn(Function):
         spatial = x.shape[-ndim:]
         idxs = []
         for s, t in zip(spatial, target):
-            idxs.append(
-                np.repeat(np.arange(s, dtype=np.int64), int(np.ceil(t / s)))[:t]
-            )
+            idxs.append(np.repeat(np.arange(s, dtype=np.int64), int(np.ceil(t / s)))[:t])
         out = x
         for k, idx in enumerate(idxs):
             axis = out.ndim - ndim + k
@@ -1691,8 +1677,11 @@ class UpsampleNearestFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const,
+                Reshape,
+                MatMul,
+                _as_const,
             )
+
             dt = grad_output.dtype
             lead = in_shape[:-ndim]
             lead_size = int(np.prod(lead)) if lead else 1
@@ -1762,9 +1751,7 @@ class UnfoldFn(Function):
             H, W, kH, kW, dilH, dilW, padH, padW, sH, sW
         )
         if padH or padW:
-            xp = np.pad(
-                x, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant"
-            )
+            xp = np.pad(x, ((0, 0), (0, 0), (padH, padH), (padW, padW)), mode="constant")
         else:
             xp = x
         cols = np.zeros((N, C * kH * kW, L), dtype=np.float64)
@@ -1772,9 +1759,7 @@ class UnfoldFn(Function):
         for o in range(L):
             for kh in range(kH):
                 for kw in range(kW):
-                    cols[:, cbase + kh * kW + kw, o] = xp[
-                        :, :, hi[o, kh, kw], wi[o, kh, kw]
-                    ]
+                    cols[:, cbase + kh * kW + kw, o] = xp[:, :, hi[o, kh, kw], wi[o, kh, kw]]
         ctx.save_attr(
             Hp=Hp,
             Wp=Wp,
@@ -1810,8 +1795,12 @@ class UnfoldFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const, GetItem,
+                Reshape,
+                MatMul,
+                _as_const,
+                GetItem,
             )
+
             dt = grad_output.dtype
             n_col_per_channel = kH * kW * L
             n_pos = Hp * Wp
@@ -1841,9 +1830,7 @@ class UnfoldFn(Function):
         for o in range(L):
             for kh in range(kH):
                 for kw in range(kW):
-                    gxp[:, :, hi[o, kh, kw], wi[o, kh, kw]] += gcol[
-                        :, :, kh * kW + kw, o
-                    ]
+                    gxp[:, :, hi[o, kh, kw], wi[o, kh, kw]] += gcol[:, :, kh * kW + kw, o]
         gx = gxp[:, :, padH : padH + H, padW : padW + W] if (padH or padW) else gxp
         return [Tensor(gx, dtype=grad_output.dtype)]
 
@@ -1913,8 +1900,15 @@ class FoldFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, Div, GetItem, Stack, Unsqueeze, _as_const, Cat,
+                Reshape,
+                Div,
+                GetItem,
+                Stack,
+                Unsqueeze,
+                _as_const,
+                Cat,
             )
+
             dt = grad_output.dtype
             # Pad g to (N, C, Hp, Wp)
             if padH or padW:
@@ -1956,9 +1950,7 @@ class FoldFn(Function):
         for o in range(L):
             for kh in range(kH):
                 for kw in range(kW):
-                    gcol[:, :, kh * kW + kw, o] = dacc[
-                        :, :, hi[o, kh, kw], wi[o, kh, kw]
-                    ]
+                    gcol[:, :, kh * kW + kw, o] = dacc[:, :, hi[o, kh, kw], wi[o, kh, kw]]
         return [Tensor(gcol.reshape(N, C * kH * kW, L), dtype=grad_output.dtype)]
 
 
@@ -2032,8 +2024,11 @@ class UpsampleBilinearFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const,
+                Reshape,
+                MatMul,
+                _as_const,
             )
+
             dt = grad_output.dtype
             lead = a.data.shape[:-2]
             lead_size = int(np.prod(lead)) if lead else 1
@@ -2042,8 +2037,12 @@ class UpsampleBilinearFn(Function):
             # Build scatter matrix: (n_out, n_in) mapping output positions to input
             # positions with bilinear weights
             scatter = np.zeros((n_out, n_in), dtype=np.float64)
-            corners = [(y0, x0, wy0, wx0), (y0, x1, wy0, wx1),
-                       (y1, x0, wy1, wx0), (y1, x1, wy1, wx1)]
+            corners = [
+                (y0, x0, wy0, wx0),
+                (y0, x1, wy0, wx1),
+                (y1, x0, wy1, wx0),
+                (y1, x1, wy1, wx1),
+            ]
             for o_flat in range(n_out):
                 ho, wo = np.unravel_index(o_flat, (Ho, Wo))
                 for yy, xx, wy, wx in corners:
@@ -2086,9 +2085,7 @@ class UpsampleLinearNdFn(Function):
         nd = len(size)
         in_sp = x.shape[-nd:]
         out_sp = tuple(int(s) for s in size)
-        coords = [
-            _bilinear_coords(in_sp[k], out_sp[k], align_corners) for k in range(nd)
-        ]
+        coords = [_bilinear_coords(in_sp[k], out_sp[k], align_corners) for k in range(nd)]
         idx0 = [np.array([c[0] for c in coords[k]]) for k in range(nd)]
         idx1 = [np.array([c[1] for c in coords[k]]) for k in range(nd)]
         w0 = [np.array([c[2] for c in coords[k]]) for k in range(nd)]
@@ -2133,8 +2130,11 @@ class UpsampleLinearNdFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, MatMul, _as_const,
+                Reshape,
+                MatMul,
+                _as_const,
             )
+
             dt = grad_output.dtype
             in_sp = a.data.shape[-nd:]
             lead_shape = a.data.shape[:-nd]
@@ -2203,12 +2203,8 @@ class AdaptiveAvgPoolFn(Function):
         lead_sl = (slice(None),) * len(lead)
         out = np.zeros(lead + output_size, dtype=np.float64)
         for idx in itertools.product(*[range(o) for o in output_size]):
-            sl = tuple(
-                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-            )
-            out[lead_sl + idx] = x[lead_sl + sl].mean(
-                axis=tuple(range(len(lead), x.ndim))
-            )
+            sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
+            out[lead_sl + idx] = x[lead_sl + sl].mean(axis=tuple(range(len(lead), x.ndim)))
         ctx.save_attr(ranges=ranges, nd=nd, in_shape=x.shape)
         return Tensor(out, dtype=a.dtype)
 
@@ -2226,22 +2222,23 @@ class AdaptiveAvgPoolFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, Mul, Add, Unsqueeze, _as_const,
+                GetItem,
+                Mul,
+                Add,
+                Unsqueeze,
+                _as_const,
             )
+
             dt = grad_output.dtype
             spatial_shape = in_shape[lead_nd:]
 
             grad_acc = None
             for idx in itertools.product(*[range(o) for o in osz]):
-                sizes = tuple(
-                    ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
-                )
+                sizes = tuple(ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd))
                 area = int(np.prod(sizes))
                 if area == 0:
                     continue
-                sl = tuple(
-                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-                )
+                sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
                 g_val = GetItem.apply(grad_output, lead_sl + idx)  # lead_shape
                 g_val_reshaped = g_val
                 for _ in range(nd):
@@ -2264,15 +2261,11 @@ class AdaptiveAvgPoolFn(Function):
         lead_nd = len(in_shape) - nd
         lead_sl = (slice(None),) * lead_nd
         for idx in itertools.product(*[range(o) for o in osz]):
-            sizes = tuple(
-                ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd)
-            )
+            sizes = tuple(ranges[k][idx[k]][1] - ranges[k][idx[k]][0] for k in range(nd))
             area = int(np.prod(sizes))
             if area == 0:
                 continue
-            sl = tuple(
-                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-            )
+            sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
             gbin = g[lead_sl + idx].reshape(lead_shape + (1,) * nd)
             gi[lead_sl + sl] += gbin / area
         return [Tensor(gi, dtype=grad_output.dtype)]
@@ -2293,9 +2286,7 @@ class Expand(Function):
         if len(orig_shape) < g.ndim:
             axes = tuple(range(g.ndim - len(orig_shape)))
             g = g.sum(axis=axes)
-        axes = tuple(
-            i for i in range(len(orig_shape)) if orig_shape[i] == 1 and g.shape[i] > 1
-        )
+        axes = tuple(i for i in range(len(orig_shape)) if orig_shape[i] == 1 and g.shape[i] > 1)
         if axes:
             g = g.sum(axis=axes, keepdims=True)
         return [Tensor(g.reshape(orig_shape), dtype=grad_output.dtype)]
@@ -2347,6 +2338,7 @@ class GetItem(Function):
         key = ctx.get_attr("key")
         if create_graph:
             from .autograd_ops import Reshape, MatMul, _as_const
+
             dt = grad_output.dtype
             orig_shape = ctx.get_attr("orig_shape")
             # Index a flat-position tensor with the original key. Unlike a
@@ -2393,9 +2385,7 @@ class LayerNorm(Function):
         g = gamma.data if isinstance(gamma, Tensor) else gamma
         b = beta.data if isinstance(beta, Tensor) else beta
         out = x_norm * g + b
-        ctx.save_attr(
-            mean=mean, var=var, x_norm=x_norm, gamma_val=g, eps=eps, shape=x.shape
-        )
+        ctx.save_attr(mean=mean, var=var, x_norm=x_norm, gamma_val=g, eps=eps, shape=x.shape)
         ctx.save_for_backward(a=a)
         return Tensor(out, dtype=a.dtype)
 
@@ -2409,9 +2399,7 @@ class LayerNorm(Function):
             g = grad_output
             dt = g.dtype
             eps = ctx.get_attr("eps")
-            gamma_t = (
-                gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
-            )
+            gamma_t = gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
             mean = _mean_keepdim(a, -1)
             xc = Sub.apply(a, mean)
             var = _mean_keepdim(Mul.apply(xc, xc), -1)
@@ -2470,12 +2458,8 @@ class RMSNorm(Function):
             dt = g.dtype
             eps = ctx.get_attr("eps")
             n = a.shape[-1]
-            gamma_t = (
-                gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
-            )
-            rms_g = Sqrt.apply(
-                Add.apply(_mean_keepdim(Mul.apply(a, a), -1), _as_const(eps, dt))
-            )
+            gamma_t = gamma_val if isinstance(gamma_val, Tensor) else _as_const(gamma_val, dt)
+            rms_g = Sqrt.apply(Add.apply(_mean_keepdim(Mul.apply(a, a), -1), _as_const(eps, dt)))
             dx_norm = Mul.apply(g, gamma_t)
             inner = _sum_keepdim(Mul.apply(dx_norm, a), -1)
             rms3 = Mul.apply(rms_g, Mul.apply(rms_g, rms_g))
@@ -2569,9 +2553,7 @@ class EmbeddingFn(Function):
         weight = ctx.get_saved_tensor("weight")
         indices = ctx.get_attr("indices")
         g = grad_output.data
-        grad_w = np.zeros(
-            (weight.shape[0], weight.shape[1]), dtype=_numpy_dtype(weight.dtype)
-        )
+        grad_w = np.zeros((weight.shape[0], weight.shape[1]), dtype=_numpy_dtype(weight.dtype))
         for i in range(grad_w.shape[0]):
             mask = indices == i
             if mask.any():
@@ -2597,9 +2579,7 @@ class Conv1d(Function):
         cin_g = C_in // groups
         cout_g = C_out // groups
         Lp = L + 2 * padding
-        padded = (
-            np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
-        )
+        padded = np.pad(arr, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arr
         Lout = (Lp - dilation * (K - 1) - 1) // stride + 1
         out = np.zeros((N, C_out, Lout), dtype=arr.dtype)
         for g in range(groups):
@@ -2665,19 +2645,13 @@ class Conv1d(Function):
             for l in range(Lout):
                 for kk in range(K):
                     padded[:, :, l * stride + kk * dilation] += contrib[:, :, l, kk]
-            grad_inp_full = (
-                padded[:, :, padding : L + padding] if padding > 0 else padded
-            )
+            grad_inp_full = padded[:, :, padding : L + padding] if padding > 0 else padded
             grad_inp = grad_inp_full if batched else grad_inp_full[0]
 
             # grad w.r.t kernel: manual windowed gather with dilation
             arr = inp.data
             arrb = arr if arr.ndim == 3 else arr[None]
-            padded_in = (
-                np.pad(arrb, [(0, 0), (0, 0), (padding, padding)])
-                if padding > 0
-                else arrb
-            )
+            padded_in = np.pad(arrb, [(0, 0), (0, 0), (padding, padding)]) if padding > 0 else arrb
             grad_k = np.zeros((k.shape[0], k.shape[1], k.shape[2]), dtype=g.dtype)
             cin_g = C_in // groups
             cout_g = k.shape[0] // groups
@@ -2702,9 +2676,7 @@ class Conv1d(Function):
         # ---- graph-aware backward (higher-order differentiation) ----
         groups = ctx.get_attr("groups")
         if groups != 1:
-            raise NotImplementedError(
-                "Conv1d create_graph backward supports groups=1 only"
-            )
+            raise NotImplementedError("Conv1d create_graph backward supports groups=1 only")
         dt = grad_output.dtype
         N = garr.shape[0]
         # build batched graph tensors
@@ -2724,9 +2696,7 @@ class Conv1d(Function):
         wins = []
         for l in range(Lout):
             cols = [
-                GetItem.apply(
-                    inp_padded, (slice(None), slice(None), l * stride + kk * dilation)
-                )
+                GetItem.apply(inp_padded, (slice(None), slice(None), l * stride + kk * dilation))
                 for kk in range(K)
             ]
             wins.append(Stack.apply(*cols, -1))  # (N,C_in,K)
@@ -2743,9 +2713,7 @@ class Conv1d(Function):
             gl = GetItem.apply(g_graph, (slice(None), slice(None), l))  # (N,C_out)
             for kk in range(K):
                 p = l * stride + kk
-                kk_t = GetItem.apply(
-                    kernel, (slice(None), slice(None), kk)
-                )  # (C_out,C_in)
+                kk_t = GetItem.apply(kernel, (slice(None), slice(None), kk))  # (C_out,C_in)
                 Tlk = MatMul.apply(gl, kk_t)  # (N,C_in)
                 mask_t = _as_const((pos == p).astype(np.float64), dt)  # (Lp,)
                 full_p = Mul.apply(Unsqueeze.apply(Tlk, -1), mask_t)  # (N,C_in,Lp)
@@ -2795,9 +2763,7 @@ def _conv2d_backward_single(x, w, g, sh, sw, ph, pw, dh, dw, has_bias):
                 for b in range(kW):
                     hi = i * sh + a * dh
                     wi = j * sw + b * dw
-                    padded[:, :, hi, wi] += np.einsum(
-                        "no,oc->nc", g[:, :, i, j], w[:, :, a, b]
-                    )
+                    padded[:, :, hi, wi] += np.einsum("no,oc->nc", g[:, :, i, j], w[:, :, a, b])
     grad_x = padded[:, :, ph : ph + H, pw : pw + W] if (ph or pw) else padded
     return grad_x, grad_k, grad_b
 
@@ -2851,9 +2817,19 @@ class Conv2d(Function):
 
         if create_graph and groups == 1:
             from .autograd_ops import (
-                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Stack,
+                GetItem,
+                MatMul,
+                Transpose,
+                Sum,
+                Mul,
+                Add,
+                Unsqueeze,
+                Squeeze,
+                Cat,
+                _as_const,
+                Stack,
             )
+
             dt = grad_output.dtype
             N, C_in, H, W = x.shape
             C_out, _, kH, kW = w.shape
@@ -2887,13 +2863,13 @@ class Conv2d(Function):
                                 xp,
                                 (slice(None), slice(None), i * sh + kh * dh, j * sw + kw * dw),
                             )  # (N,C_in)
-                            contrib = MatMul.apply(Transpose.apply(g_ij, -1, -2), x_ij)  # (C_out,C_in)
+                            contrib = MatMul.apply(
+                                Transpose.apply(g_ij, -1, -2), x_ij
+                            )  # (C_out,C_in)
                             if grad_k_parts[kh][kw] is None:
                                 grad_k_parts[kh][kw] = contrib
                             else:
-                                grad_k_parts[kh][kw] = Add.apply(
-                                    grad_k_parts[kh][kw], contrib
-                                )
+                                grad_k_parts[kh][kw] = Add.apply(grad_k_parts[kh][kw], contrib)
             grad_k_rows = []
             for kh in range(kH):
                 row = Stack.apply(*grad_k_parts[kh], -1)  # (C_out,C_in,kW)
@@ -2916,7 +2892,8 @@ class Conv2d(Function):
                                     Transpose.apply(w_kk, -1, -2),
                                     Transpose.apply(g_ij, -1, -2),
                                 ),
-                                -1, -2,
+                                -1,
+                                -2,
                             )  # (N,C_in)
                             # scatter to (i*sh+kh*dh, j*sw+kw*dw) via mask
                             mask_np = np.zeros((Hp, Wp), dtype=np.float64)
@@ -2983,9 +2960,7 @@ class Conv2d(Function):
         return [
             Tensor(grad_x, dtype=inp.dtype),
             Tensor(grad_k, dtype=kernel.dtype),
-            Tensor(grad_b, dtype=grad_output.dtype)
-            if (has_bias and grad_b is not None)
-            else None,
+            Tensor(grad_b, dtype=grad_output.dtype) if (has_bias and grad_b is not None) else None,
         ]
 
 
@@ -3004,11 +2979,7 @@ def _conv3d_backward_single(x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bia
     C_out, _, kD, kH, kW = w.shape
     Do, Ho, Wo = g.shape[2], g.shape[3], g.shape[4]
 
-    xp = (
-        np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw)))
-        if (pd or ph or pw)
-        else x
-    )
+    xp = np.pad(x, ((0, 0), (0, 0), (pd, pd), (ph, ph), (pw, pw))) if (pd or ph or pw) else x
 
     win = np.zeros((N, C_in, Do, Ho, Wo, kD, kH, kW), dtype=np.float64)
     for a in range(kD):
@@ -3038,11 +3009,7 @@ def _conv3d_backward_single(x, w, g, sd, sh, sw, pd, ph, pw, dd, dh, dw, has_bia
                             padded[:, :, di, hi, wi] += np.einsum(
                                 "no,oc->nc", g[:, :, i, j, k], w[:, :, a, b, c]
                             )
-    grad_x = (
-        padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W]
-        if (pd or ph or pw)
-        else padded
-    )
+    grad_x = padded[:, :, pd : pd + D, ph : ph + H, pw : pw + W] if (pd or ph or pw) else padded
     return grad_x, grad_k, grad_b
 
 
@@ -3093,9 +3060,19 @@ class Conv3d(Function):
 
         if create_graph and groups == 1:
             from .autograd_ops import (
-                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Stack,
+                GetItem,
+                MatMul,
+                Transpose,
+                Sum,
+                Mul,
+                Add,
+                Unsqueeze,
+                Squeeze,
+                Cat,
+                _as_const,
+                Stack,
             )
+
             dt = grad_output.dtype
             N, C_in, D, H, W = x.shape
             C_out, _, kD, kH, kW = w.shape
@@ -3127,15 +3104,25 @@ class Conv3d(Function):
             for d in range(Do):
                 for h in range(Ho):
                     for w_idx in range(Wo):
-                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        g_dhw = GetItem.apply(
+                            g_graph, (slice(None), slice(None), d, h, w_idx)
+                        )  # (N,C_out)
                         for kd in range(kD):
                             for kh in range(kH):
                                 for kw in range(kW):
                                     x_dhw = GetItem.apply(
                                         xp,
-                                        (slice(None), slice(None), d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw),
+                                        (
+                                            slice(None),
+                                            slice(None),
+                                            d * sd + kd * dd,
+                                            h * sh + kh * dh,
+                                            w_idx * sw + kw * dw,
+                                        ),
                                     )  # (N,C_in)
-                                    contrib = MatMul.apply(Transpose.apply(g_dhw, -1, -2), x_dhw)  # (C_out,C_in)
+                                    contrib = MatMul.apply(
+                                        Transpose.apply(g_dhw, -1, -2), x_dhw
+                                    )  # (C_out,C_in)
                                     if grad_k_parts[0][kd][kh][kw] is None:
                                         grad_k_parts[0][kd][kh][kw] = contrib
                                     else:
@@ -3160,7 +3147,9 @@ class Conv3d(Function):
             for d in range(Do):
                 for h in range(Ho):
                     for w_idx in range(Wo):
-                        g_dhw = GetItem.apply(g_graph, (slice(None), slice(None), d, h, w_idx))  # (N,C_out)
+                        g_dhw = GetItem.apply(
+                            g_graph, (slice(None), slice(None), d, h, w_idx)
+                        )  # (N,C_out)
                         for kd in range(kD):
                             for kh in range(kH):
                                 for kw in range(kW):
@@ -3173,16 +3162,21 @@ class Conv3d(Function):
                                             Transpose.apply(w_kkk, -1, -2),
                                             Transpose.apply(g_dhw, -1, -2),
                                         ),
-                                        -1, -2,
+                                        -1,
+                                        -2,
                                     )  # (N,C_in)
                                     # scatter to (d*sd+kd*dd, h*sh+kh*dh, w*sw+kw*dw) via mask
                                     mask_np = np.zeros((Dp, Hp, Wp), dtype=np.float64)
-                                    mask_np[d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw] = 1.0
+                                    mask_np[
+                                        d * sd + kd * dd, h * sh + kh * dh, w_idx * sw + kw * dw
+                                    ] = 1.0
                                     mask_t = _as_const(mask_np, dt)
                                     contrib_5d = Unsqueeze.apply(
                                         Unsqueeze.apply(Unsqueeze.apply(contrib, -1), -1), -1
                                     )  # (N,C_in,1,1,1)
-                                    contrib_full = Mul.apply(contrib_5d, mask_t)  # (N,C_in,Dp,Hp,Wp)
+                                    contrib_full = Mul.apply(
+                                        contrib_5d, mask_t
+                                    )  # (N,C_in,Dp,Hp,Wp)
                                     if grad_x_acc is None:
                                         grad_x_acc = contrib_full
                                     else:
@@ -3192,7 +3186,13 @@ class Conv3d(Function):
             if pd > 0 or ph > 0 or pw > 0:
                 grad_x = GetItem.apply(
                     grad_x_acc,
-                    (slice(None), slice(None), slice(pd, D + pd), slice(ph, H + ph), slice(pw, W + pw)),
+                    (
+                        slice(None),
+                        slice(None),
+                        slice(pd, D + pd),
+                        slice(ph, H + ph),
+                        slice(pw, W + pw),
+                    ),
                 )
             else:
                 grad_x = grad_x_acc
@@ -3243,9 +3243,7 @@ class Conv3d(Function):
         return [
             Tensor(grad_x, dtype=inp.dtype),
             Tensor(grad_k, dtype=kernel.dtype),
-            Tensor(grad_b, dtype=grad_output.dtype)
-            if (has_bias and grad_b is not None)
-            else None,
+            Tensor(grad_b, dtype=grad_output.dtype) if (has_bias and grad_b is not None) else None,
         ]
 
 
@@ -3345,9 +3343,19 @@ class ConvTranspose2d(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
-                Squeeze, Cat, _as_const, Stack,
+                GetItem,
+                MatMul,
+                Transpose,
+                Sum,
+                Mul,
+                Add,
+                Unsqueeze,
+                Squeeze,
+                Cat,
+                _as_const,
+                Stack,
             )
+
             dt = grad_output.dtype
             x_graph = inp if x.ndim == 4 else Unsqueeze.apply(inp, 0)
             g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
@@ -3364,9 +3372,15 @@ class ConvTranspose2d(Function):
                             aw = j * sw - pw + kw * dw
                             if aw < 0 or aw >= Wo:
                                 continue
-                            g_slice = GetItem.apply(g_graph, (slice(None), slice(None), ah, aw))  # (N,C_out_g)
-                            w_slice = GetItem.apply(kernel, (slice(None), slice(None), kh, kw))  # (C_in,C_out_g)
-                            contrib = MatMul.apply(g_slice, Transpose.apply(w_slice, -1, -2))  # (N,C_in)
+                            g_slice = GetItem.apply(
+                                g_graph, (slice(None), slice(None), ah, aw)
+                            )  # (N,C_out_g)
+                            w_slice = GetItem.apply(
+                                kernel, (slice(None), slice(None), kh, kw)
+                            )  # (C_in,C_out_g)
+                            contrib = MatMul.apply(
+                                g_slice, Transpose.apply(w_slice, -1, -2)
+                            )  # (N,C_in)
                             mask_np = np.zeros((H, W), dtype=np.float64)
                             mask_np[i, j] = 1.0
                             mask_t = _as_const(mask_np, dt)
@@ -3391,9 +3405,15 @@ class ConvTranspose2d(Function):
                             aw = j * sw - pw + kw * dw
                             if aw < 0 or aw >= Wo:
                                 continue
-                            x_slice = GetItem.apply(x_graph, (slice(None), slice(None), i, j))  # (N,C_in)
-                            g_slice = GetItem.apply(g_graph, (slice(None), slice(None), ah, aw))  # (N,C_out_g)
-                            contrib = MatMul.apply(Transpose.apply(x_slice, -1, -2), g_slice)  # (C_in,C_out_g)
+                            x_slice = GetItem.apply(
+                                x_graph, (slice(None), slice(None), i, j)
+                            )  # (N,C_in)
+                            g_slice = GetItem.apply(
+                                g_graph, (slice(None), slice(None), ah, aw)
+                            )  # (N,C_out_g)
+                            contrib = MatMul.apply(
+                                Transpose.apply(x_slice, -1, -2), g_slice
+                            )  # (C_in,C_out_g)
                             mask_np = np.zeros((kH, kW), dtype=np.float64)
                             mask_np[kh, kw] = 1.0
                             mask_t = _as_const(mask_np, dt)
@@ -3514,9 +3534,16 @@ class ConvTransposeNd(Function):
 
         if create_graph and groups == 1:
             from .autograd_ops import (
-                GetItem, MatMul, Transpose, Sum, Mul, Add, Unsqueeze,
+                GetItem,
+                MatMul,
+                Transpose,
+                Sum,
+                Mul,
+                Add,
+                Unsqueeze,
                 _as_const,
             )
+
             dt = grad_output.dtype
             xa = (slice(None), slice(None))
             x_graph = inp
@@ -3533,7 +3560,9 @@ class ConvTransposeNd(Function):
                     if any(oidx[d] < 0 or oidx[d] >= S_out[d] for d in range(ndim)):
                         continue
                     g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
-                    w_slice = GetItem.apply(kernel, (slice(None), slice(None)) + kidx)  # (C_in,C_out)
+                    w_slice = GetItem.apply(
+                        kernel, (slice(None), slice(None)) + kidx
+                    )  # (C_in,C_out)
                     contrib = MatMul.apply(g_slice, w_slice)  # (N,C_in)
                     mask_np = np.zeros(spatial_in, dtype=np.float64)
                     mask_np[sidx] = 1.0
@@ -3560,7 +3589,9 @@ class ConvTransposeNd(Function):
                         continue
                     x_slice = GetItem.apply(x_graph, xa + (slice(None),) + sidx)  # (N,C_in)
                     g_slice = GetItem.apply(g_graph, xa + (slice(None),) + oidx)  # (N,C_out)
-                    contrib = MatMul.apply(Transpose.apply(x_slice, -1, -2), g_slice)  # (C_in,C_out)
+                    contrib = MatMul.apply(
+                        Transpose.apply(x_slice, -1, -2), g_slice
+                    )  # (C_in,C_out)
                     mask_np = np.zeros(kshape, dtype=np.float64)
                     mask_np[kidx] = 1.0
                     mask_t = _as_const(mask_np, dt)
@@ -3649,9 +3680,7 @@ class AdaptiveMaxPoolFn(Function):
         lead_sl = (slice(None),) * len(lead)
         out = np.zeros(lead + output_size, dtype=np.float64)
         for idx in itertools.product(*[range(o) for o in output_size]):
-            sl = tuple(
-                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-            )
+            sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
             win = x[lead_sl + sl]
             if win.size and all(s.stop > s.start for s in sl):
                 out[lead_sl + idx] = win.max(axis=tuple(range(len(lead), x.ndim)))
@@ -3674,17 +3703,23 @@ class AdaptiveMaxPoolFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, _as_const,
+                GetItem,
+                MaxDim,
+                Sub,
+                Sign,
+                Add,
+                Mul,
+                Unsqueeze,
+                _as_const,
             )
+
             dt = grad_output.dtype
             lead_sl = (slice(None),) * nlead
             spatial_shape = x.shape[nlead:]
 
             grad_acc = None
             for idx in itertools.product(*[range(o) for o in osz]):
-                sl = tuple(
-                    slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-                )
+                sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
                 if any(s.stop <= s.start for s in sl):
                     continue
                 binshape = tuple(s.stop - s.start for s in sl)
@@ -3713,9 +3748,7 @@ class AdaptiveMaxPoolFn(Function):
             return [Tensor(grad_acc, dtype=grad_output.dtype)]
 
         for idx in itertools.product(*[range(o) for o in osz]):
-            sl = tuple(
-                slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd)
-            )
+            sl = tuple(slice(ranges[k][idx[k]][0], ranges[k][idx[k]][1]) for k in range(nd))
             if any(s.stop <= s.start for s in sl):
                 continue
             win = x[(slice(None),) * nlead + sl]
@@ -3752,14 +3785,17 @@ class MaxUnpoolFn(Function):
         idxf = ctx.get_attr("idxf")
         in_shape = ctx.get_attr("in_shape")
         n_out = ctx.get_attr("n_out")
-        g = np.asarray(grad_output.data, dtype=np.float64).reshape(
-            in_shape[0], in_shape[1], n_out
-        )
+        g = np.asarray(grad_output.data, dtype=np.float64).reshape(in_shape[0], in_shape[1], n_out)
 
         if create_graph:
             from .autograd_ops import (
-                Reshape, Unsqueeze, Squeeze, MatMul, _as_const,
+                Reshape,
+                Unsqueeze,
+                Squeeze,
+                MatMul,
+                _as_const,
             )
+
             dt = grad_output.dtype
             N, C = in_shape[0], in_shape[1]
             n_in = int(np.prod(in_shape[2:]))
@@ -3800,10 +3836,7 @@ class EmbeddingBagFn(Function):
             groups = [np.arange(idx.size, dtype=np.int64)]
         else:
             off = np.clip(np.asarray(off, dtype=np.int64), 0, idx.size)
-            groups = [
-                np.arange(off[i], off[i + 1], dtype=np.int64)
-                for i in range(off.size - 1)
-            ]
+            groups = [np.arange(off[i], off[i + 1], dtype=np.int64) for i in range(off.size - 1)]
         D = w.shape[1]
         out = np.zeros((len(groups), D), dtype=np.float64)
         argmax = []
@@ -3842,9 +3875,17 @@ class EmbeddingBagFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, Mul, Add, Div, Cat, Unsqueeze, Transpose, MatMul,
+                GetItem,
+                Mul,
+                Add,
+                Div,
+                Cat,
+                Unsqueeze,
+                Transpose,
+                MatMul,
                 _as_const,
             )
+
             dt = grad_output.dtype
 
             # Build scatter matrix S: (n_emb, total_rows), S[src_idx, row_pos] = 1
@@ -3872,9 +3913,7 @@ class EmbeddingBagFn(Function):
                     if factor is not None:
                         contrib = Mul.apply(g_val, factor)  # (D,)
                         if psw is not None:
-                            contrib = Mul.apply(
-                                contrib, _as_const(float(psw[int(rows[j])]), dt)
-                            )
+                            contrib = Mul.apply(contrib, _as_const(float(psw[int(rows[j])]), dt))
                     else:
                         # max mode: only dimensions where am[d] == j contribute
                         mask_row = np.zeros(D, dtype=np.float64)
@@ -3882,13 +3921,9 @@ class EmbeddingBagFn(Function):
                             for d in range(D):
                                 if int(am[d]) == j:
                                     mask_row[d] = 1.0
-                        contrib = Mul.apply(
-                            g_val, _as_const(mask_row, dt)
-                        )
+                        contrib = Mul.apply(g_val, _as_const(mask_row, dt))
                         if psw is not None:
-                            contrib = Mul.apply(
-                                contrib, _as_const(float(psw[int(rows[j])]), dt)
-                            )
+                            contrib = Mul.apply(contrib, _as_const(float(psw[int(rows[j])]), dt))
                     contrib_parts.append(Unsqueeze.apply(contrib, 0))  # (1, D)
                     row_pos += 1
 
@@ -3910,9 +3945,7 @@ class EmbeddingBagFn(Function):
             if mode == "sum":
                 contrib = np.broadcast_to(g[gi][None, :], (rows.size, D)).copy()
             elif mode == "mean":
-                contrib = np.broadcast_to(
-                    g[gi][None, :] / rows.size, (rows.size, D)
-                ).copy()
+                contrib = np.broadcast_to(g[gi][None, :] / rows.size, (rows.size, D)).copy()
             else:
                 contrib = np.zeros((rows.size, D), dtype=np.float64)
                 am = argmax[gi]
@@ -3955,8 +3988,13 @@ class PadNdFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, Mul, Add, Reshape, _as_const,
+                GetItem,
+                Mul,
+                Add,
+                Reshape,
+                _as_const,
             )
+
             dt = grad_output.dtype
             imap_flat = imap.reshape(-1)
             mask_flat = mask.reshape(-1)
@@ -4018,6 +4056,7 @@ class PReluFn(Function):
 
         if create_graph:
             from .autograd_ops import Mul, Sub, Add, Sum, Unsqueeze, _as_const
+
             dt = grad_output.dtype
             x_t = _as_const(x, dt)
             w_t = _as_const(wv, dt)
@@ -4065,6 +4104,7 @@ class LogSigmoidFn(Function):
         sig_neg = 1.0 / (1.0 + np.exp(x))
         if create_graph:
             from .autograd_ops import Sigmoid, Neg, Mul
+
             x_t = Tensor(np.asarray(x), dtype=grad_output.dtype)
             sig_neg_t = Sigmoid.apply(Neg.apply(x_t))
             return [Mul.apply(grad_output, sig_neg_t)]
@@ -4095,9 +4135,17 @@ class BilinearFn(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, MatMul, Transpose, Mul, Add, Sum, Unsqueeze,
-                Stack, _as_const,
+                GetItem,
+                MatMul,
+                Transpose,
+                Mul,
+                Add,
+                Sum,
+                Unsqueeze,
+                Stack,
+                _as_const,
             )
+
             dt = grad_output.dtype
             B = g.shape[0]
             K = g.shape[1]
@@ -4206,8 +4254,17 @@ class MaxPool2d(Function):
 
         if create_graph:
             from .autograd_ops import (
-                GetItem, MaxDim, Sub, Sign, Add, Mul, Unsqueeze, Squeeze, _as_const,
+                GetItem,
+                MaxDim,
+                Sub,
+                Sign,
+                Add,
+                Mul,
+                Unsqueeze,
+                Squeeze,
+                _as_const,
             )
+
             dt = grad_output.dtype
             x_graph = inp if arr.ndim == 4 else Unsqueeze.apply(inp, 0)
             g_graph = grad_output if g.ndim == 4 else Unsqueeze.apply(grad_output, 0)
@@ -4227,9 +4284,7 @@ class MaxPool2d(Function):
                     max_val = MaxDim.apply(MaxDim.apply(patch, -2, True), -1, True)  # (N,C,1,1)
                     diff = Sub.apply(patch, max_val)
                     mask = Add.apply(_as_const(1.0, dt), Sign.apply(diff))  # (N,C,k_h,k_w)
-                    g_val = GetItem.apply(
-                        g_graph, (slice(None), slice(None), gi, gj)
-                    )  # (N,C)
+                    g_val = GetItem.apply(g_graph, (slice(None), slice(None), gi, gj))  # (N,C)
                     for di in range(k_h):
                         for dj in range(k_w):
                             contrib_d = GetItem.apply(
@@ -4489,10 +4544,7 @@ class Stack(Function):
                 grads.append(Squeeze.apply(GetItem.apply(grad_output, tuple(key)), dim))
             return grads
         grads = np.split(grad_output.data, n, axis=dim)
-        return [
-            Tensor(np.squeeze(g, axis=dim).copy(), dtype=grad_output.dtype)
-            for g in grads
-        ]
+        return [Tensor(np.squeeze(g, axis=dim).copy(), dtype=grad_output.dtype) for g in grads]
 
 
 class Cat(Function):
@@ -4655,9 +4707,7 @@ class BCEWithLogitsLoss(Function):
         if create_graph:
             dt = grad_output.dtype
             sig = Sigmoid.apply(inp)
-            grad_in = Div.apply(
-                Mul.apply(Sub.apply(sig, target), grad_output), _as_const(n, dt)
-            )
+            grad_in = Div.apply(Mul.apply(Sub.apply(sig, target), grad_output), _as_const(n, dt))
             return [grad_in, None]
         g = grad_output.data.flat[0]
         z = np.clip(inp.data, -30, 30)
@@ -4681,9 +4731,7 @@ class FocalLoss(Function):
         loss = -alpha * (1 - pt) ** gamma * np.log(pt + 1e-10)
         ctx.save_for_backward(logits=logits, target=target)
         ctx.save_attr(gamma=gamma, alpha=alpha, n=n, p=p, pt=pt)
-        return Tensor(
-            np.array([float(np.mean(loss))], dtype=z.dtype), dtype=logits.dtype
-        )
+        return Tensor(np.array([float(np.mean(loss))], dtype=z.dtype), dtype=logits.dtype)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
@@ -4698,10 +4746,7 @@ class FocalLoss(Function):
         t = target.data.astype(np.int64).ravel()
         onehot = np.zeros_like(p)
         onehot[np.arange(n), t] = 1.0
-        f = (
-            gamma * pt * (1 - pt) ** (gamma - 1) * np.log(pt + 1e-10)
-            - (1 - pt) ** gamma
-        )
+        f = gamma * pt * (1 - pt) ** (gamma - 1) * np.log(pt + 1e-10) - (1 - pt) ** gamma
         grad_z = alpha * (onehot - p) * f[:, None] / n * g
         return [Tensor(grad_z.astype(np.float64), dtype=logits.dtype), None]
 
@@ -4754,9 +4799,7 @@ class TripletMarginLoss(Function):
         loss = np.maximum(0.0, hinge)
         ctx.save_for_backward(anchor=anchor, positive=positive, negative=negative)
         ctx.save_attr(margin=margin, n=a.shape[0], d_ap=d_ap, d_an=d_an)
-        return Tensor(
-            np.array([float(np.mean(loss))], dtype=a.dtype), dtype=anchor.dtype
-        )
+        return Tensor(np.array([float(np.mean(loss))], dtype=a.dtype), dtype=anchor.dtype)
 
     @staticmethod
     def backward(ctx, grad_output):
@@ -4814,9 +4857,7 @@ class ContrastiveLoss(Function):
         dd_ddiff = diff / dn
         grad_d2 = yy[:, None] * 2.0 * diff
         mask = (d < margin)[:, None]
-        grad_sim = (1 - yy)[:, None] * np.where(
-            mask, -2.0 * (margin - d)[:, None] * dd_ddiff, 0.0
-        )
+        grad_sim = (1 - yy)[:, None] * np.where(mask, -2.0 * (margin - d)[:, None] * dd_ddiff, 0.0)
         ga = (grad_d2 + grad_sim) / n * g
         gb = -ga
         return [Tensor(ga, dtype=x1.dtype), Tensor(gb, dtype=x1.dtype), None]
@@ -4905,15 +4946,9 @@ class CTCLoss(Function):
                 for s in range(L):
                     a = alpha[t - 1, s]
                     b = alpha[t - 1, s - 1] if s - 1 >= 0 else -1e30
-                    c = (
-                        alpha[t - 1, s - 2]
-                        if (s - 2 >= 0 and ext[s - 2] != ext[s])
-                        else -1e30
-                    )
+                    c = alpha[t - 1, s - 2] if (s - 2 >= 0 and ext[s - 2] != ext[s]) else -1e30
                     alpha[t, s] = _ctc_logsumexp([a, b, c]) + lp[t, n, ext[s]]
-            z = _ctc_logsumexp(
-                [alpha[Ti - 1, L - 1], alpha[Ti - 1, L - 2] if L >= 2 else -1e30]
-            )
+            z = _ctc_logsumexp([alpha[Ti - 1, L - 1], alpha[Ti - 1, L - 2] if L >= 2 else -1e30])
             losses[n] = -z
             alphas.append(alpha)
             exts.append(ext)
@@ -4960,11 +4995,7 @@ class CTCLoss(Function):
             for t in range(Ti - 2, -1, -1):
                 for s in range(L):
                     a = beta[t + 1, s] + lp[t + 1, n, ext[s]]
-                    b = (
-                        beta[t + 1, s + 1] + lp[t + 1, n, ext[s + 1]]
-                        if s + 1 < L
-                        else -1e30
-                    )
+                    b = beta[t + 1, s + 1] + lp[t + 1, n, ext[s + 1]] if s + 1 < L else -1e30
                     c = (
                         beta[t + 1, s + 2] + lp[t + 1, n, ext[s + 2]]
                         if (s + 2 < L and ext[s + 2] != ext[s])
@@ -5088,9 +5119,7 @@ class MaxPool(Function):
             sl = []
             for d in range(ndim):
                 st = oi[d] * stride[d]
-                sl.append(
-                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
-                )
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
             window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
             red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
             out[(slice(None),) * (arr.ndim - ndim) + oi] = window.max(axis=red_axes)
@@ -5131,9 +5160,7 @@ class MaxPool(Function):
             sl = []
             for d in range(ndim):
                 st = oi[d] * stride[d]
-                sl.append(
-                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
-                )
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
             sl_orig = []
             for d in range(ndim):
                 st_orig = sl[d].start - padding[d]
@@ -5146,9 +5173,7 @@ class MaxPool(Function):
                     )
                 )
             window_orig = x[(slice(None),) * (x.ndim - ndim) + tuple(sl_orig)]
-            max_val = window_orig.max(
-                axis=tuple(range(x.ndim - ndim, x.ndim)), keepdims=True
-            )
+            max_val = window_orig.max(axis=tuple(range(x.ndim - ndim, x.ndim)), keepdims=True)
             mask = (window_orig == max_val).astype(g.dtype)
             g_val = g[(slice(None),) * (x.ndim - ndim) + oi]
             gb = g_val
@@ -5199,14 +5224,10 @@ class AvgPool(Function):
             sl = []
             for d in range(ndim):
                 st = oi[d] * stride[d]
-                sl.append(
-                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
-                )
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
             window = padded[(slice(None),) * (arr.ndim - ndim) + tuple(sl)]
             red_axes = tuple(range(arr.ndim - ndim, arr.ndim))
-            out[(slice(None),) * (arr.ndim - ndim) + oi] = (
-                window.sum(axis=red_axes) / kvol
-            )
+            out[(slice(None),) * (arr.ndim - ndim) + oi] = window.sum(axis=red_axes) / kvol
             it.iternext()
         ctx.save_attr(
             arr_shape=arr.shape,
@@ -5246,9 +5267,7 @@ class AvgPool(Function):
             sl = []
             for d in range(ndim):
                 st = oi[d] * stride[d]
-                sl.append(
-                    slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d])
-                )
+                sl.append(slice(st, st + dilation[d] * (kernel[d] - 1) + 1, dilation[d]))
             sl_orig = []
             for d in range(ndim):
                 st_orig = sl[d].start - padding[d]
@@ -5285,15 +5304,9 @@ class Square(Function):
     def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         if x is None:
-            return [
-                Tensor(
-                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
-                )
-            ]
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
         if create_graph:
-            return [
-                Mul.apply(Mul.apply(grad_output, _as_const(2.0, grad_output.dtype)), x)
-            ]
+            return [Mul.apply(Mul.apply(grad_output, _as_const(2.0, grad_output.dtype)), x)]
         g = np.asarray(grad_output.data)
         return [Tensor(g * (2.0 * np.asarray(x.data)), dtype=grad_output.dtype)]
 
@@ -5309,11 +5322,7 @@ class Reciprocal(Function):
     def backward(ctx, grad_output, create_graph=False):
         x = _get_saved_tensor(ctx, "x")
         if x is None:
-            return [
-                Tensor(
-                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
-                )
-            ]
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
         xd = np.asarray(x.data)
         if create_graph:
             neg_one = _as_const(-1.0, grad_output.dtype)
@@ -5329,9 +5338,7 @@ class Sign(Function):
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
-        return [
-            Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)
-        ]
+        return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
 
 
 class Clamp(Function):
@@ -5348,19 +5355,11 @@ class Clamp(Function):
         min_val = _get_attr(ctx, "min_val")
         max_val = _get_attr(ctx, "max_val")
         if x is None:
-            return [
-                Tensor(
-                    np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype
-                )
-            ]
+            return [Tensor(np.zeros_like(np.asarray(grad_output.data)), dtype=grad_output.dtype)]
         xd = np.asarray(x.data)
         mask = np.logical_and(xd >= min_val, xd <= max_val)
         if create_graph:
-            return [
-                Mul.apply(
-                    grad_output, _as_const(mask.astype(np.float64), grad_output.dtype)
-                )
-            ]
+            return [Mul.apply(grad_output, _as_const(mask.astype(np.float64), grad_output.dtype))]
         g = np.asarray(grad_output.data)
         return [Tensor(g * mask, dtype=grad_output.dtype)]
 
@@ -5374,9 +5373,7 @@ class Remainder(Function):
         if ctx is not None:
             ctx.save_for_backward(a=a)
         _save_attr(ctx, a_shape=tuple(a.shape))
-        return Tensor(
-            np.mod(np.asarray(a.data), np.asarray(divisor.data)), dtype=a.dtype
-        )
+        return Tensor(np.mod(np.asarray(a.data), np.asarray(divisor.data)), dtype=a.dtype)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
@@ -5386,9 +5383,7 @@ class Remainder(Function):
         if divisor_val is not None:
             if create_graph:
                 return [_cg_broadcast(grad_output, a_shape)]
-            return [
-                Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)
-            ]
+            return [Tensor(_reduce_to_shape(grad_output, a_shape), dtype=grad_output.dtype)]
         # Tensor divisor: grad flows to a unchanged (d remainder/d a == 1 a.e.)
         if create_graph:
             ga = _cg_broadcast(grad_output, a_shape)
@@ -5411,9 +5406,7 @@ class Prod(Function):
         # Let NumPy validate the requested axes, then store normalized axes so
         # shape reconstruction is deterministic for negative dimensions.
         out = np.asarray(np.prod(xd, axis=axes, keepdims=keepdim))
-        normalized_axes = (
-            tuple(axis % xd.ndim for axis in axes) if axes else ()
-        )
+        normalized_axes = tuple(axis % xd.ndim for axis in axes) if axes else ()
         if ctx is not None:
             ctx.save_for_backward(x=x)
         _save_attr(ctx, axes=normalized_axes, keepdim=keepdim)
@@ -5441,27 +5434,18 @@ class Prod(Function):
             # The replacement value at a zero input must be constant with
             # respect to that input; otherwise higher-order gradients leak
             # through the safe denominator/product branch.
-            safe_x_t = Add.apply(
-                Mul.apply(x, nonzero_mask_t), zero_mask_t
-            )
+            safe_x_t = Add.apply(Mul.apply(x, nonzero_mask_t), zero_mask_t)
             product_t = Prod.apply(x, axes, True)
             nonzero_product_t = Prod.apply(safe_x_t, axes, True)
 
             # With no zeros, d(prod)/dx_i is product/x_i. With one
             # zero, only that zero position receives the nonzero product.
-            no_zero_term = Div.apply(
-                Mul.apply(no_zero_t, product_t), safe_x_t
-            )
-            one_zero_term = Mul.apply(
-                Mul.apply(zero_mask_t, one_zero_t), nonzero_product_t
-            )
+            no_zero_term = Div.apply(Mul.apply(no_zero_t, product_t), safe_x_t)
+            one_zero_term = Mul.apply(Mul.apply(zero_mask_t, one_zero_t), nonzero_product_t)
             derivative = Add.apply(no_zero_term, one_zero_term)
 
             if not keepdim:
-                grad_shape = tuple(
-                    1 if axis in axes else size
-                    for axis, size in enumerate(x.shape)
-                )
+                grad_shape = tuple(1 if axis in axes else size for axis, size in enumerate(x.shape))
                 grad = Reshape.apply(grad_output, grad_shape)
             else:
                 grad = grad_output
@@ -5477,10 +5461,7 @@ class Prod(Function):
         )
         grad = np.asarray(grad_output.data)
         if not keepdim:
-            grad_shape = tuple(
-                1 if axis in axes else size
-                for axis, size in enumerate(xd.shape)
-            )
+            grad_shape = tuple(1 if axis in axes else size for axis, size in enumerate(xd.shape))
             grad = np.reshape(grad, grad_shape)
         return [Tensor(grad * derivative, dtype=grad_output.dtype)]
 
@@ -5555,9 +5536,7 @@ class Diagonal(Function):
         xd = np.asarray(x.data)
         assert xd.ndim == 2, "diagonal currently supports 2-D tensors"
         _save_attr(ctx, offset=offset, in_shape=tuple(xd.shape))
-        return Tensor(
-            np.diagonal(xd, offset=offset, axis1=dim1, axis2=dim2).copy(), dtype=x.dtype
-        )
+        return Tensor(np.diagonal(xd, offset=offset, axis1=dim1, axis2=dim2).copy(), dtype=x.dtype)
 
     @staticmethod
     def backward(ctx, grad_output):
@@ -5621,6 +5600,7 @@ class Log1p(Function):
         grad = g / (1.0 + xd)
         if create_graph:
             from .autograd_ops import Add, Div, _as_const
+
             x_t = Tensor(xd, dtype=grad_output.dtype)
             den = Add.apply(x_t, _as_const(1.0, grad_output.dtype))
             return [Div.apply(grad_output, den)]
@@ -5644,6 +5624,7 @@ class Expm1(Function):
         grad = g * np.exp(xd)
         if create_graph:
             from .autograd_ops import Exp, Mul
+
             x_t = Tensor(xd, dtype=grad_output.dtype)
             return [Mul.apply(grad_output, Exp.apply(x_t))]
         return [Tensor(grad, dtype=grad_output.dtype)]
@@ -5702,10 +5683,16 @@ class Flip(Function):
 class Roll(Function):
     @staticmethod
     def forward(ctx, a, shifts, dims=None):
-        normalized_shifts = tuple(int(v) for v in shifts) if isinstance(shifts, (tuple, list)) else int(shifts)
+        normalized_shifts = (
+            tuple(int(v) for v in shifts) if isinstance(shifts, (tuple, list)) else int(shifts)
+        )
         normalized_dims = tuple(int(v) for v in dims) if isinstance(dims, (tuple, list)) else dims
         if normalized_dims is not None:
-            normalized_dims = int(normalized_dims) if isinstance(normalized_dims, (int, np.integer)) else normalized_dims
+            normalized_dims = (
+                int(normalized_dims)
+                if isinstance(normalized_dims, (int, np.integer))
+                else normalized_dims
+            )
         ctx.save_attr(shifts=normalized_shifts, dims=normalized_dims)
         return Tensor(np.roll(a.data, shift=normalized_shifts, axis=normalized_dims), dtype=a.dtype)
 
@@ -5716,7 +5703,9 @@ class Roll(Function):
         inverse = tuple(-v for v in shifts) if isinstance(shifts, tuple) else -shifts
         if create_graph:
             return [Roll.apply(grad_output, inverse, dims)]
-        return [Tensor(np.roll(grad_output.data, shift=inverse, axis=dims), dtype=grad_output.dtype)]
+        return [
+            Tensor(np.roll(grad_output.data, shift=inverse, axis=dims), dtype=grad_output.dtype)
+        ]
 
 
 class Tril(Function):
