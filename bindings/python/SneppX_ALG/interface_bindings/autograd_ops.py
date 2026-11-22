@@ -4431,7 +4431,7 @@ class CrossEntropyLoss(Function):
         grad = sm.copy()
         grad[np.arange(sm.shape[0]), t] -= 1.0
         grad /= sm.shape[0]
-        return [Tensor(grad * g, dtype="float32"), None]
+        return [Tensor(grad * g, dtype=grad_output.dtype), None]
 
 
 class NLLLoss(Function):
