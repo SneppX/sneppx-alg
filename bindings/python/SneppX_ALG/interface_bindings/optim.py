@@ -524,27 +524,22 @@ class ASGD(Optimizer):
                 st["eta"] = group.get("lr", self.lr)
                 st["mu"] = 1.0
                 st["ax"] = np.zeros_like(g)
-                st["ax_comp"] = np.zeros_like(g)
             st["step"] += 1
             step = st["step"]
-            if step == 1:
-                etamu = 1.0
+            eta = st["eta"]
+            # Decay term followed by the SGD update (PyTorch ASGD semantics).
+            p.data = p.data * (1.0 - self.lambd * eta) - eta * g
+            # Average the *updated parameter*, not the gradient. On the first
+            # step (mu == 1) the average is seeded with the parameter itself.
+            if st["mu"] != 1.0:
+                st["ax"] = st["ax"] + (p.data - st["ax"]) * st["mu"]
             else:
-                etamu = group.get("lr", self.lr) / (
-                    self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd
-                )
-            if etamu > 1.0:
-                etamu = 1.0
-            mu = st["eta"] * (1.0 - etamu) / etamu
-            st["eta"] = group.get("lr", self.lr) / (
-                self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd
-            )
-            st["mu"] = mu
-            p.data = p.data - etamu * g
-            st["ax"] = mu * st["ax"] + etamu * st["mu"] * g
-            st["ax_comp"] += st["mu"] * g - st["ax"]
+                st["ax"] = p.data.copy()
+            lr = group.get("lr", self.lr)
+            st["eta"] = lr / (1.0 + self.lambd * lr * step) ** self.alpha
+            st["mu"] = 1.0 / max(1, step - self.t0)
             if self.average_pars:
-                p.data = st["ax"] - st["ax_comp"]
+                p.data = st["ax"].copy()
 
 
 class LBFGS(Optimizer):

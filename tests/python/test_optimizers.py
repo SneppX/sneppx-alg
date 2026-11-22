@@ -56,6 +56,40 @@ def test_adamax_bias_correction_first_step():
     assert np.allclose(p.data, [4.9])
 
 
+def test_asgd_first_step_matches_sgd():
+    # PyTorch ASGD seeds its running average with the updated parameter on
+    # step 1, so the first step must not zero the parameter.
+    p = _make_param(np.array([5.0]))
+    opt = optim.ASGD([p], lr=0.1, lambd=0.0, average_pars=True)
+    p.grad = Tensor(np.array([1.0]), dtype="float64")
+    opt.step()
+    assert np.allclose(p.data, [4.9])
+
+
+def test_asgd_average_tracks_pytorch_reference():
+    lr, lambd, alpha, t0 = 0.1, 1e-4, 0.75, 1.0
+    grads = [1.0, -0.5, 2.0, 0.25]
+    # Exact PyTorch 1.13 ASGD reference (SGD iterate + running average in ax).
+    ref_p, ref_ax, ref_eta, ref_mu, ref_step = 5.0, 0.0, lr, 1.0, 0.0
+    for g in grads:
+        ref_step += 1
+        ref_p = ref_p * (1.0 - lambd * ref_eta) - ref_eta * g
+        if ref_mu != 1.0:
+            ref_ax += (ref_p - ref_ax) * ref_mu
+        else:
+            ref_ax = ref_p
+        ref_eta = lr / (1.0 + lambd * lr * ref_step) ** alpha
+        ref_mu = 1.0 / max(1, ref_step - t0)
+
+    p = _make_param(np.array([5.0]))
+    opt = optim.ASGD([p], lr=lr, lambd=lambd, alpha=alpha, t0=t0, average_pars=False)
+    for g in grads:
+        p.grad = Tensor(np.array([g]), dtype="float64")
+        opt.step()
+    assert np.allclose(p.data, [ref_p], atol=1e-9)
+    assert np.allclose(opt.state[0]["ax"], [ref_ax], atol=1e-9)
+
+
 def test_param_groups_apply_distinct_lrs():
     rng = np.random.default_rng(8)
     p_fast = _make_param(rng.standard_normal((3,)))
