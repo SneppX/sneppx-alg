@@ -97,7 +97,9 @@ class CheckpointManager:
             "config": trainer.config.to_dict(),
             "model_state": trainer.model.state_dict(),
             "optimizer_state": (
-                trainer.optimizer.state_dict() if hasattr(trainer.optimizer, "state_dict") else {}
+                trainer.optimizer.state_dict()
+                if hasattr(trainer.optimizer, "state_dict")
+                else {}
             ),
             "rng_state": {
                 "random": _random.getstate(),
@@ -228,7 +230,9 @@ class CheckpointManager:
             self._save_thread.join()
 
         if self.async_save:
-            self._save_thread = threading.Thread(target=self._do_save, args=(path, state))
+            self._save_thread = threading.Thread(
+                target=self._do_save, args=(path, state)
+            )
             self._save_thread.start()
         else:
             self._do_save(path, state)
@@ -250,9 +254,13 @@ class CheckpointManager:
 
         if _best:
             best_tag = f"metric={metric:.6f}" if metric is not None else "best"
-            best_path = os.path.join(self.checkpoint_dir, f"best_{step}_{best_tag}.ckpt")
+            best_path = os.path.join(
+                self.checkpoint_dir, f"best_{step}_{best_tag}.ckpt"
+            )
             self._do_save(best_path, state)
-            self._best_metrics.append({"path": best_path, "metric": metric, "step": step})
+            self._best_metrics.append(
+                {"path": best_path, "metric": metric, "step": step}
+            )
             self._prune_best()
 
         self._prune_last()
@@ -320,7 +328,9 @@ class CheckpointManager:
             "checkpoint_dir": self.checkpoint_dir,
             "total_checkpoints": len(ckpts),
             "best_checkpoints": len(bests),
-            "latest": (os.path.basename(self._latest_path()) if self._latest_path() else None),
+            "latest": (
+                os.path.basename(self._latest_path()) if self._latest_path() else None
+            ),
             "last_checkpoints": [os.path.basename(p) for p in ckpts[-3:]],
             "best_metrics": list(self._best_metrics),
         }
