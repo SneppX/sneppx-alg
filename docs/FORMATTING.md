@@ -10,7 +10,7 @@ This repository uses pinned formatters and validation hooks so formatting is rep
 - JavaScript, TypeScript, JSON, YAML, HTML, CSS, and Markdown: Prettier
 - TOML: Taplo
 - Shell scripts: shfmt, followed by ShellCheck validation
-- Rust: `cargo fmt` for the root workspace and the security crate
+- Rust: `cargo fmt` for the root workspace and rustfmt for the security source
 - Go: gofmt
 - Jupyter notebooks: nbqa with Ruff formatting for code cells
 - All tracked text files: trailing-whitespace, end-of-file, and LF line-ending checks
@@ -32,6 +32,6 @@ The local-only `sneppx-docs` hook is a separate documentation-coverage check and
 
 The **Repository-wide formatting** workflow runs on pushes to `main`, weekly, and on manual dispatch. It formats a temporary candidate branch, runs the complete required CI workflow set against that exact tree, and fast-forwards `main` only when every workflow succeeds. It does not open pull requests.
 
-The **Code Formatting Check** workflow runs on pushes and pull requests. It fails if any configured formatter would modify a tracked file. This prevents new formatting drift from entering the repository.
+The **Code Formatting Check** workflow runs on pull requests and can be dispatched manually against a formatted candidate. It fails if any configured formatter would modify a tracked file. The repository-wide formatter workflow dispatches it after producing the candidate tree.
 
 Formatting automation deliberately refuses to promote if `main` changes while validation is running. It never force-pushes or overwrites concurrent work.
