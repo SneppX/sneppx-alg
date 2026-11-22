@@ -62,9 +62,7 @@ def test_state_dict_nested_and_buffers():
     o2 = Outer()
     res = o2.load_state_dict(sd)
     assert res.missing_keys == [] and res.unexpected_keys == []
-    assert np.allclose(
-        np.asarray(o2.seq[0].weight.data), np.asarray(o.seq[0].weight.data)
-    )
+    assert np.allclose(np.asarray(o2.seq[0].weight.data), np.asarray(o.seq[0].weight.data))
     assert np.allclose(
         np.asarray(o2.seq[1].running_mean.data), np.asarray(o.seq[1].running_mean.data)
     )
@@ -122,9 +120,7 @@ def test_strict_partial_load_returns_missing():
 def test_unexpected_key_raises_in_strict():
     m = nn.Linear(4, 3)
     try:
-        m.load_state_dict(
-            {"weight": m.weight.data.copy(), "bias": m.bias.data.copy(), "extra": 1}
-        )
+        m.load_state_dict({"weight": m.weight.data.copy(), "bias": m.bias.data.copy(), "extra": 1})
         assert False, "expected RuntimeError for unexpected key"
     except RuntimeError as e:
         assert "extra" in str(e)
@@ -163,6 +159,17 @@ def test_modulelist_moduledict_roundtrip():
     assert "a.weight" in sdb and "b.bias" in sdb
     md2 = nn.ModuleDict({"a": nn.Linear(2, 2), "b": nn.Linear(2, 4)})
     md2.load_state_dict(sdb)
-    assert np.allclose(
-        np.asarray(md2["a"].weight.data), np.asarray(md["a"].weight.data)
-    )
+    assert np.allclose(np.asarray(md2["a"].weight.data), np.asarray(md["a"].weight.data))
+
+
+def test_load_state_dict_ignores_non_persistent_buffers():
+    class Foo(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.weight = Tensor.randn((2, 2))
+            self.register_buffer("persist", Tensor.ones((2,)))
+            self.register_buffer("temp", Tensor.zeros((2,)), persistent=False)
+
+    f = Foo()
+    res = f.load_state_dict(f.state_dict())
+    assert res.missing_keys == [] and res.unexpected_keys == []
