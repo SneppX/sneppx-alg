@@ -123,11 +123,36 @@ class LocalStorageBackend(StorageBackend):
     def backend_name(self) -> str:
         return "local"
 
+    def _base_root(self) -> str:
+        return os.path.realpath(self._base)
+
+    def _contained(self, path: str) -> str:
+        """Resolve ``path`` and ensure it stays under the storage root."""
+        base = self._base_root()
+        resolved = os.path.realpath(path)
+        try:
+            contained = os.path.commonpath([base, resolved]) == base
+        except ValueError:
+            contained = False  # Different drives on Windows
+        if not contained:
+            raise ValueError("storage key escapes the storage root")
+        return resolved
+
     def _full_path(self, key: str) -> str:
         """Convert a storage key to a safe filesystem path."""
-        # Prevent path traversal
-        clean = os.path.normpath(key).lstrip("/")
-        return os.path.join(self._base, clean)
+        if not isinstance(key, str) or not key or "\x00" in key:
+            raise ValueError("invalid storage key")
+        normalized = key.replace("\\", "/")
+        if (
+            "://" in normalized
+            or normalized.startswith("/")
+            or (len(normalized) >= 2 and normalized[1] == ":")
+        ):
+            raise ValueError("invalid storage key")
+        parts = [part for part in normalized.split("/") if part not in ("", ".")]
+        if not parts or any(part == ".." for part in parts):
+            raise ValueError("invalid storage key")
+        return self._contained(os.path.join(self._base, *parts))
 
     async def upload_file(self, local_path: str, dest_key: str) -> StoredFile:
         from ..utils import compute_sha256_async
@@ -165,9 +190,17 @@ class LocalStorageBackend(StorageBackend):
         )
 
     async def download_file(self, key: str, dest_path: str) -> str:
-        src = self._full_path(key)
-        if key.startswith("file://"):
-            src = key[len("file://") :]
+        storage_key = key
+        if storage_key.startswith("file://"):
+            # Local backends publish file:// URLs for their own artifacts.
+            # Accept them only when they resolve inside this storage root;
+            # never treat a model card URL as an arbitrary host path.
+            local_path = storage_key[len("file://") :]
+            if not local_path or "://" in local_path:
+                raise ValueError("invalid local file URL")
+            resolved = self._contained(local_path)
+            storage_key = os.path.relpath(resolved, self._base_root()).replace(os.sep, "/")
+        src = self._full_path(storage_key)
         if not os.path.exists(src):
             raise FileNotFoundError(f"File not found: {key}")
         shutil.copy2(src, dest_path)
@@ -340,9 +373,9 @@ class S3StorageBackend(StorageBackend):
         import concurrent.futures
 
         file_size = os.path.getsize(local_path)
-        upload_id = self._s3_client.create_multipart_upload(
-            Bucket=self._bucket, Key=dest_key
-        )["UploadId"]
+        upload_id = self._s3_client.create_multipart_upload(Bucket=self._bucket, Key=dest_key)[
+            "UploadId"
+        ]
 
         parts = []
         part_number = 1
@@ -379,10 +412,7 @@ class S3StorageBackend(StorageBackend):
             Key=dest_key,
             UploadId=upload_id,
             MultipartUpload={
-                "Parts": [
-                    {"ETag": etags[i]["ETag"], "PartNumber": i}
-                    for i in sorted(etags.keys())
-                ]
+                "Parts": [{"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())]
             },
         )
 
@@ -393,9 +423,9 @@ class S3StorageBackend(StorageBackend):
         import io
         import concurrent.futures
 
-        upload_id = self._s3_client.create_multipart_upload(
-            Bucket=self._bucket, Key=dest_key
-        )["UploadId"]
+        upload_id = self._s3_client.create_multipart_upload(Bucket=self._bucket, Key=dest_key)[
+            "UploadId"
+        ]
 
         parts = []
         for i in range(0, len(data), part_size):
@@ -423,10 +453,7 @@ class S3StorageBackend(StorageBackend):
             Key=dest_key,
             UploadId=upload_id,
             MultipartUpload={
-                "Parts": [
-                    {"ETag": etags[i]["ETag"], "PartNumber": i}
-                    for i in sorted(etags.keys())
-                ]
+                "Parts": [{"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())]
             },
         )
 
