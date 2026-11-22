@@ -76,8 +76,7 @@ static void test_transport_rejects_xor_aes_mode(void)
     uint8_t nonce[12];
     SX_ASSERT(SNEPPX_transport_encrypt(&ts, sid, zeros, sizeof(zeros), ciphertext, nonce) == 0,
               "encrypt after rejected aes mode");
-    SX_ASSERT(memcmp(ciphertext, ciphertext + 32, 32) != 0,
-              "no 32-byte repeating-key stream");
+    SX_ASSERT(memcmp(ciphertext, ciphertext + 32, 32) != 0, "no 32-byte repeating-key stream");
     uint8_t decrypted[64];
     SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), nonce, decrypted) == 0,
               "decrypt after rejected aes mode");
