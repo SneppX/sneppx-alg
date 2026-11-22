@@ -48,6 +48,14 @@ def test_classic_optimizers_minimize():
         assert final < tol, f"{name} failed: {init:.3f} -> {final:.3f}"
 
 
+def test_adamax_bias_correction_first_step():
+    p = _make_param(np.array([5.0]))
+    opt = optim.Adamax([p], lr=0.1, betas=(0.9, 0.999))
+    p.grad = Tensor(np.array([1.0]), dtype="float64")
+    opt.step()
+    assert np.allclose(p.data, [4.9])
+
+
 def test_param_groups_apply_distinct_lrs():
     rng = np.random.default_rng(8)
     p_fast = _make_param(rng.standard_normal((3,)))

@@ -362,7 +362,8 @@ class Adamax(Optimizer):
             u = np.maximum(self.betas[1] * st["exp_inf"], np.abs(g))
             st["exp_avg"] = m
             st["exp_inf"] = u
-            p.data = p.data - group.get("lr", self.lr) * m / (u + self.eps)
+            m_hat = m / (1 - self.betas[0] ** self._step)
+            p.data = p.data - group.get("lr", self.lr) * m_hat / (u + self.eps)
 
 
 class Adam(Optimizer):
