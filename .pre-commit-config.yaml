@@ -18,44 +18,108 @@ repos:
     rev: 0.16.0
     hooks:
       - id: gersemi
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
       - id: clang-format
         args: [-style=file, -i]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.0
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
       - id: ruff-format
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+
+  # Prettier owns consistent formatting for web sources, JSON, YAML, and Markdown.
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: b40b4e02d5a0c977e64da51e8742e3240ef6372a
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, html, css]
+        args: [--tab-width, "2", --print-width, "120"]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/'
+
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: 479be5958357ba5ab65ce47172117348516860e9
+    hooks:
+      - id: shfmt
+        args: [-i, "4", -ci, -bn]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.42.0
     hooks:
       - id: markdownlint
-        args: [--config, .markdownlint.yaml]
+        args: [--config, .markdownlint.yaml, --fix]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:
       - id: yamllint
         args: [-c, .yamllint.yml]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
         args: [--severity=warning]
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
-  # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4)
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  # Notebook formatting changes code cells while preserving notebook outputs.
+  - repo: local
+    hooks:
+      - id: notebook-ruff-format
+        name: ruff format Jupyter notebooks
+        entry: nbqa ruff format
+        language: python
+        additional_dependencies: [nbqa==1.9.1, ruff==0.5.0]
+        files: '\.ipynb$'
+
+  # Canonical language formatters for the Rust and Go source trees.
+  - repo: local
+    hooks:
+      - id: rustfmt-workspace
+        name: rustfmt workspace
+        entry: cargo fmt --all
+        language: system
+        types: [rust]
+        pass_filenames: false
+      - id: rustfmt-security
+        name: rustfmt security crate
+        entry: rustfmt --edition 2021
+        language: system
+        files: '^security/rust/.*\.rs$'
+      - id: gofmt
+        name: gofmt
+        entry: gofmt -w
+        language: system
+        types: [go]
+
+  # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4).
   - repo: local
     hooks:
       - id: sneppx-docs
         name: sneppx-format --docs (Layer 1/4 doc coverage)
         entry: sneppx-format --docs --no-color
         language: system
-        types: [c, cpp, cuda]
+        files: '\.(c|h|cc|cpp|cxx|hpp|cu|cuh)$'
         fail_fast: false

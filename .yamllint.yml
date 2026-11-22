@@ -10,7 +10,7 @@ rules:
     min-spaces-inside: 0
     max-spaces-inside: 1
   indentation:
-    spaces: 4
+    spaces: 2
     indent-sequences: true
   document-start: disable
   truthy:

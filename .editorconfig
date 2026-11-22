@@ -8,7 +8,7 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{c,h,cpp,hpp}]
+[*.{c,h,cpp,hpp,cu,cuh}]
 indent_style = space
 indent_size = 4
 
@@ -16,7 +16,7 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
-[*.{yml,yaml}]
+[*.{js,jsx,ts,tsx,json,css,scss,html,yml,yaml}]
 indent_style = space
 indent_size = 2
 
