@@ -5624,8 +5624,7 @@ class Expm1(Function):
         if create_graph:
             from .autograd_ops import Exp, Mul
 
-            x_t = Tensor(xd, dtype=grad_output.dtype)
-            return [Mul.apply(grad_output, Exp.apply(x_t))]
+            return [Mul.apply(grad_output, Exp.apply(x))]
         return [Tensor(grad, dtype=grad_output.dtype)]
 
 
