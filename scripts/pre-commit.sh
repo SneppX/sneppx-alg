@@ -46,6 +46,7 @@ no_merge_conflicts() {
         printf '%s\\n' "$matches"
         return 1
     fi
+    return 0
 }
 
 no_trailing_whitespace() {
