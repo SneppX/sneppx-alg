@@ -84,7 +84,7 @@ jobs:
           persist-credentials: false
       - name: Compile CUDA configuration in NVIDIA toolkit container
         run: |
-          docker run --rm -v "$PWD:/workspace" -w /workspace nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y cmake ninja-build build-essential && cmake -S . -B build/cuda-ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_CUDA=ON -DSNEPPX_BUILD_BENCHMARKS=OFF && cmake --build build/cuda-ci --parallel 2'
+          docker run --rm -v "$PWD:/workspace" -w /workspace nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git cmake ninja-build build-essential && cmake -S . -B build/cuda-ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_CUDA=ON -DSNEPPX_BUILD_BENCHMARKS=OFF && cmake --build build/cuda-ci --parallel 2'
 
   benchmark-smoke:
     name: Performance benchmark smoke tests
