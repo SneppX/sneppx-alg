@@ -21,7 +21,9 @@ repos:
       - id: check-case-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
-        exclude: '^\.github/workflows/'
+        # PowerShell scripts legitimately use CRLF on Windows; forcing LF
+        # makes the non-mutating format-check workflow fail on every run.
+        exclude: '^\.github/workflows/|\.ps1$'
 
   - repo: https://github.com/BlankSpruce/gersemi
     rev: 0.16.0
