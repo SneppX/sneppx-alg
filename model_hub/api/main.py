@@ -282,14 +282,13 @@ class HubDatabase:
         self, user_id: str, org_id: Optional[str] = None, scopes: Optional[List[str]] = None
     ) -> tuple[APIKey, str]:
         """Create an API key. Returns (key_obj, raw_key_string)."""
-        key, _raw = APIKey.generate(user_id=user_id, org_id=org_id)
+        key, raw = APIKey.generate(user_id=user_id, org_id=org_id)
         key.scopes = scopes or ["read", "write", "models"]
-        key_dict = key.model_dump(mode="json")
-        # Store the raw key (in production, hash it)
-        key_dict["raw_key"] = _raw
-        self._keys.append(key_dict)
+        # Persist only the prefix and SHA-256 digest. The raw key is returned
+        # exactly once to the caller and must never be written to disk.
+        self._keys.append(key.model_dump(mode="json"))
         self._save_json(self._keys_file, self._keys)
-        return key, key_dict["raw_key"]
+        return key, raw
 
     def bootstrap_admin(self) -> Optional[str]:
         """Create the initial admin user + API key if none exist.
@@ -324,17 +323,29 @@ class HubDatabase:
         _, raw = self.create_api_key(user.id, None, ["read", "write", "models", "admin"])
         return raw
 
-    def verify_api_key(self, api_key: str) -> Optional[User]:
-        import hmac
-
+    def authenticate_api_key(self, api_key: str) -> "Optional[tuple[User, APIKey]]":
+        """Return the user and key record for a valid token, else ``None``."""
+        now = datetime.now(timezone.utc)
         for k in self._keys:
             key_obj = APIKey(**k)
-            if APIKey.verify(api_key, key_obj):
-                # Update last_used
-                k["last_used"] = datetime.now(timezone.utc).isoformat()
-                self._save_json(self._keys_file, self._keys)
-                return self.get_user(key_obj.user_id)
+            if not key_obj.is_active:
+                continue
+            if key_obj.expires_at is not None:
+                expires = key_obj.expires_at
+                if expires.tzinfo is None:
+                    expires = expires.replace(tzinfo=timezone.utc)
+                if expires <= now:
+                    continue
+            if not APIKey.verify(api_key, key_obj):
+                continue
+            k["last_used"] = now.isoformat()
+            self._save_json(self._keys_file, self._keys)
+            return self.get_user(key_obj.user_id), key_obj
         return None
+
+    def verify_api_key(self, api_key: str) -> Optional[User]:
+        result = self.authenticate_api_key(api_key)
+        return result[0] if result is not None else None
 
     # ---- Leaderboard ----
 
@@ -618,18 +629,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         if not user or not verify_password(password, user.hashed_api_key or ""):
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        # Issue an API key for the user so the returned token is usable
-        from ..api.models import APIKey as _APIKeyModel
-
-        raw = None
-        for k in db._keys:
-            key_obj = _APIKeyModel(**k)
-            if key_obj.user_id == user.id:
-                raw = k.get("raw_key") or (key_obj.prefix + key_obj.key_id)
-                break
-        if not raw:
-            _, raw = db.create_api_key(user.id, user.org_id, ["read", "write", "models"])
-
+        # Issue a fresh API key. Raw keys are never persisted, so a login
+        # cannot recover a previously issued token from the database.
+        _, raw = db.create_api_key(user.id, user.org_id, ["read", "write", "models"])
         return {"access_token": raw, "token_type": "bearer", "username": user.username}
 
     @app.get("/api/v1/auth/verify")
