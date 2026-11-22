@@ -2,6 +2,9 @@
 
 import sys
 import os
+
+import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings import HMAC_, HKDF, PBKDF2, Argon2
@@ -35,6 +38,7 @@ def test_hmac_empty():
 
 def test_hmac_sha512():
     import hashlib
+
     hm = HMAC_(b"key", digestmod=hashlib.sha512)
     tag = hm.sign(b"msg")
     assert len(tag) == 64
@@ -92,22 +96,32 @@ def test_pbkdf2_deterministic():
 
 
 def test_argon2_hash():
+    pytest.importorskip("argon2")
     a2 = Argon2("id")
     h = a2.hash(b"password", b"salt123456789012", time_cost=1, mem_cost=1024)
     assert len(h) == 32
 
 
 def test_argon2_verify():
+    pytest.importorskip("argon2")
     a2 = Argon2("id")
     h = a2.hash(b"pass", b"salt123456789012", time_cost=1, mem_cost=1024)
     assert a2.verify(b"pass", b"salt123456789012", h, time_cost=1, mem_cost=1024)
 
 
 def test_argon2_deterministic():
+    pytest.importorskip("argon2")
     a2 = Argon2("id")
     a = a2.hash(b"p", b"salt123456789012", time_cost=1, mem_cost=1024)
     b = a2.hash(b"p", b"salt123456789012", time_cost=1, mem_cost=1024)
     assert a == b
+
+
+def test_argon2_fails_closed_without_backend(monkeypatch):
+    monkeypatch.setitem(sys.modules, "argon2.low_level", None)
+    a2 = Argon2("id")
+    with pytest.raises(RuntimeError, match="refusing to silently downgrade"):
+        a2.hash(b"password", b"salt123456789012")
 
 
 if __name__ == "__main__":
