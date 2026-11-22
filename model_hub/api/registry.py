@@ -77,7 +77,9 @@ class ModelRegistry:
 
             loop = asyncio.new_event_loop()
             try:
-                stored = loop.run_until_complete(self._storage.upload_file(src, dest_key))
+                stored = loop.run_until_complete(
+                    self._storage.upload_file(src, dest_key)
+                )
             finally:
                 loop.close()
 
@@ -95,7 +97,9 @@ class ModelRegistry:
             ModelCard.model_fields["files"].__class__(**f) if False else _FileMeta(**f)
             for f in uploaded_files
         ]
-        card.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+        card.updated_at = __import__("datetime").datetime.now(
+            __import__("datetime").timezone.utc
+        )
 
         # Save model card
         import json
@@ -106,7 +110,9 @@ class ModelRegistry:
 
         return card
 
-    def get_model_local(self, name: str, version: str = "latest") -> Optional[ModelCard]:
+    def get_model_local(
+        self, name: str, version: str = "latest"
+    ) -> Optional[ModelCard]:
         """Get a model from local registry."""
         if version == "latest":
             versions = self.list_versions_local(name)

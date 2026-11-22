@@ -80,7 +80,9 @@ class License(str, Enum):
 class SemVer:
     """Semantic version parsing and comparison (v1.0.0, v1.1.0, etc.)."""
 
-    _RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.]+))?(?:\+([a-zA-Z0-9.]+))?$")
+    _RE = re.compile(
+        r"^v?(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.]+))?(?:\+([a-zA-Z0-9.]+))?$"
+    )
 
     def __init__(self, version: str):
         m = self._RE.match(version)
@@ -242,7 +244,9 @@ class ModelCard(BaseModel):
         try:
             SemVer(v)
         except ValueError:
-            raise ValueError(f"version must be a semantic version (e.g. 'v1.0.0'), got: {v}")
+            raise ValueError(
+                f"version must be a semantic version (e.g. 'v1.0.0'), got: {v}"
+            )
         return v
 
     @field_validator("name")
@@ -349,7 +353,9 @@ class Org(BaseModel):
     @classmethod
     def validate_name(cls, v: str) -> str:
         if not re.match(r"^[a-zA-Z0-9_-]+$", v):
-            raise ValueError("org name can only contain alphanumeric, dash, and underscore")
+            raise ValueError(
+                "org name can only contain alphanumeric, dash, and underscore"
+            )
         return v
 
 
@@ -369,7 +375,9 @@ class User(BaseModel):
     @classmethod
     def validate_username(cls, v: str) -> str:
         if not re.match(r"^[a-zA-Z0-9_-]+$", v):
-            raise ValueError("username can only contain alphanumeric, dash, and underscore")
+            raise ValueError(
+                "username can only contain alphanumeric, dash, and underscore"
+            )
         return v
 
 

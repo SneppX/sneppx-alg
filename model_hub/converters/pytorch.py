@@ -70,7 +70,9 @@ def convert_pt_to_sneppx(pt_path: str, out_dir: str) -> str:
     return out_path
 
 
-def convert_sneppx_to_pt(sneppx_path: str, out_path: str, metadata: Optional[Dict] = None) -> str:
+def convert_sneppx_to_pt(
+    sneppx_path: str, out_path: str, metadata: Optional[Dict] = None
+) -> str:
     """Convert a SNEPPX native model to PyTorch format."""
     import torch
     import numpy as np
