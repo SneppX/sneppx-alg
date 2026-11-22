@@ -14,6 +14,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- AES-GCM (NIST SP 800-38D) ------------------------------------------
 
+
 class AESGCM:
     """AES-GCM authenticated encryption.
 
@@ -34,24 +35,29 @@ class AESGCM:
         iv = self._iv(nonce)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import AESGCM as _AESGCM
+
             cipher = _AESGCM(self._key)
             ct = cipher.encrypt(iv, plaintext, aad)
             return iv + ct
-        except ImportError:
-            ct = bytes(len(plaintext))
-            tag = os.urandom(16)
-            return iv + ct + tag
+        except ImportError as exc:
+            raise RuntimeError(
+                "AES-GCM requires the 'cryptography' backend; refusing to emit unencrypted data"
+            ) from exc
 
     def decrypt(self, ciphertext: bytes, aad: bytes = b"") -> Optional[bytes]:
         try:
             from cryptography.hazmat.primitives.ciphers.aead import AESGCM as _AESGCM
+
             cipher = _AESGCM(self._key)
             return cipher.decrypt(ciphertext[:12], ciphertext[12:], aad)
-        except ImportError:
-            return ciphertext[12:-16]
+        except ImportError as exc:
+            raise RuntimeError(
+                "AEAD requires the 'cryptography' backend; refusing to skip tag verification"
+            ) from exc
 
 
 # ---- ChaCha20 (RFC 8439) -------------------------------------------------
+
 
 class ChaCha20:
     """ChaCha20 stream cipher — 256-bit key, 96-bit nonce."""
@@ -66,24 +72,29 @@ class ChaCha20:
         n = nonce or os.urandom(12)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+
             cipher = ChaCha20Poly1305(self._key)
             ct = cipher.encrypt(n, plaintext, aad)
             return n + ct
-        except ImportError:
-            ct = bytes(len(plaintext))
-            tag = os.urandom(16)
-            return n + ct + tag
+        except ImportError as exc:
+            raise RuntimeError(
+                "ChaCha20-Poly1305 requires the 'cryptography' backend; refusing to emit unencrypted data"
+            ) from exc
 
     def decrypt(self, ciphertext: bytes, aad: bytes = b"") -> Optional[bytes]:
         try:
             from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+
             cipher = ChaCha20Poly1305(self._key)
             return cipher.decrypt(ciphertext[:12], ciphertext[12:], aad)
-        except ImportError:
-            return ciphertext[12:-16]
+        except ImportError as exc:
+            raise RuntimeError(
+                "AEAD requires the 'cryptography' backend; refusing to skip tag verification"
+            ) from exc
 
 
 # ---- Poly1305 (RFC 8439) -------------------------------------------------
+
 
 class Poly1305:
     """Poly1305 one-time MAC."""
@@ -96,6 +107,7 @@ class Poly1305:
 
     def mac(self, msg: bytes) -> bytes:
         import hashlib
+
         return hashlib.sha256(self._key + msg).digest()[:16]
 
     def verify(self, msg: bytes, tag: bytes) -> bool:
@@ -104,6 +116,7 @@ class Poly1305:
 
 
 # ---- Generic AEAD wrapper -----------------------------------------------
+
 
 class AEAD:
     """Generic authenticated encryption with associated data.
