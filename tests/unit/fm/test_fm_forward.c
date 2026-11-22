@@ -1,7 +1,7 @@
 #include "fractal_memory_orchestrator.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Fm Forward
@@ -18,12 +18,8 @@
  *
  */
 
-
-
-
-
-
-static void test_fm_forward_simple(void) {
+static void test_fm_forward_simple(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.memory_dim = 8;
     cfg.memory_capacity = 16;
@@ -44,7 +40,8 @@ static void test_fm_forward_simple(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-static void test_fm_forward_memory_write(void) {
+static void test_fm_forward_memory_write(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.memory_dim = 4;
     cfg.memory_capacity = 4;
@@ -70,7 +67,8 @@ static void test_fm_forward_memory_write(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-static void test_fm_forward_batch(void) {
+static void test_fm_forward_batch(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.memory_dim = 4;
     cfg.memory_capacity = 8;
@@ -78,8 +76,9 @@ static void test_fm_forward_batch(void) {
 
     size_t shape[] = {3, cfg.memory_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < 12; i++) d[i] = (float)(i % 4) * 0.25f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < 12; i++)
+        d[i] = (float) (i % 4) * 0.25f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_fm_forward(ctrl, 0, input, &output);
@@ -92,7 +91,15 @@ static void test_fm_forward_batch(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-
-TEST(test_fm_forward, fm_forward_simple) { test_fm_forward_simple(); }
-TEST(test_fm_forward, fm_forward_memory_write) { test_fm_forward_memory_write(); }
-TEST(test_fm_forward, fm_forward_batch) { test_fm_forward_batch(); }
+TEST(test_fm_forward, fm_forward_simple)
+{
+    test_fm_forward_simple();
+}
+TEST(test_fm_forward, fm_forward_memory_write)
+{
+    test_fm_forward_memory_write();
+}
+TEST(test_fm_forward, fm_forward_batch)
+{
+    test_fm_forward_batch();
+}

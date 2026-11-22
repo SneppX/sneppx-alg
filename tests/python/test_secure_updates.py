@@ -9,7 +9,9 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import SignedUpdate, Ed25519, Blake3
 
@@ -159,17 +161,21 @@ def test_rollback_missing():
 def test_container_sbom():
     cs = SignedUpdate.__new__(type("CS", (), {}))  # noqa
     from SneppX_ALG.interface_bindings.secure_updates import ContainerSecurity
+
     cs = ContainerSecurity()
-    sbom = cs.generate_sbom([
-        {"name": "numpy", "version": "1.26.0"},
-        {"name": "requests", "version": "2.31.0"},
-    ])
+    sbom = cs.generate_sbom(
+        [
+            {"name": "numpy", "version": "1.26.0"},
+            {"name": "requests", "version": "2.31.0"},
+        ]
+    )
     assert sbom["bomFormat"] == "CycloneDX"
     assert len(sbom["components"]) == 2
 
 
 def test_container_sbom_register():
     from SneppX_ALG.interface_bindings.secure_updates import ContainerSecurity
+
     cs = ContainerSecurity()
     sbom = cs.generate_sbom([{"name": "pkg", "version": "1.0"}])
     cs.register_sbom("image:latest", sbom)
@@ -178,6 +184,7 @@ def test_container_sbom_register():
 
 def test_container_vulnerability():
     from SneppX_ALG.interface_bindings.secure_updates import ContainerSecurity
+
     cs = ContainerSecurity()
     cs.add_vulnerability("img:v1", {"id": "CVE-2024-0001", "severity": "critical"})
     vulns = cs.scan_cves("img:v1")
@@ -187,6 +194,7 @@ def test_container_vulnerability():
 
 def test_container_compliance():
     from SneppX_ALG.interface_bindings.secure_updates import ContainerSecurity
+
     cs = ContainerSecurity()
     cs.add_vulnerability("img:v2", {"id": "CVE-1", "severity": "critical"})
     assert not cs.is_compliant("img:v2", {"max_critical": 0})

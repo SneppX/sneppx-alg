@@ -31,10 +31,16 @@ from .optim_extra import Lion, LAMB  # noqa: F401
 
 
 class Optimizer:
-    def __init__(self, params: Iterator[Tensor], lr: float, weight_decay: float = 0.0, **kwargs):
+    def __init__(
+        self, params: Iterator[Tensor], lr: float, weight_decay: float = 0.0, **kwargs
+    ):
         self.lr = lr
         self.weight_decay = weight_decay
-        self.defaults: Dict[str, Any] = {"lr": lr, "weight_decay": weight_decay, **kwargs}
+        self.defaults: Dict[str, Any] = {
+            "lr": lr,
+            "weight_decay": weight_decay,
+            **kwargs,
+        }
         self.param_groups = self._build_param_groups(params, lr, weight_decay, **kwargs)
         self.params = [p for g in self.param_groups for p in g["params"]]
         self.state = [{} for _ in self.params]
@@ -113,7 +119,14 @@ class SGD(Optimizer):
         dampening: float = 0.0,
         nesterov: bool = False,
     ):
-        super().__init__(params, lr, weight_decay, momentum=momentum, dampening=dampening, nesterov=nesterov)
+        super().__init__(
+            params,
+            lr,
+            weight_decay,
+            momentum=momentum,
+            dampening=dampening,
+            nesterov=nesterov,
+        )
         self.momentum = momentum
         self.dampening = dampening
         self.nesterov = nesterov
@@ -126,7 +139,10 @@ class SGD(Optimizer):
             if self.momentum > 0:
                 if "momentum_buf" not in self.state[i]:
                     self.state[i]["momentum_buf"] = np.zeros_like(g)
-                buf = self.momentum * self.state[i]["momentum_buf"] + (1 - self.dampening) * g
+                buf = (
+                    self.momentum * self.state[i]["momentum_buf"]
+                    + (1 - self.dampening) * g
+                )
                 self.state[i]["momentum_buf"] = buf
                 if self.nesterov:
                     g = g + self.momentum * buf
@@ -138,8 +154,12 @@ class SGD(Optimizer):
 class NesterovSGD(SGD):
     """SGD with Nesterov momentum (convenience alias)."""
 
-    def __init__(self, params, lr: float = 0.01, momentum: float = 0.9, weight_decay: float = 0.0):
-        super().__init__(params, lr, momentum=momentum, weight_decay=weight_decay, nesterov=True)
+    def __init__(
+        self, params, lr: float = 0.01, momentum: float = 0.9, weight_decay: float = 0.0
+    ):
+        super().__init__(
+            params, lr, momentum=momentum, weight_decay=weight_decay, nesterov=True
+        )
 
 
 class AdamW(Optimizer):
@@ -213,7 +233,15 @@ class RMSprop(Optimizer):
         momentum: float = 0.0,
         centered: bool = False,
     ):
-        super().__init__(params, lr, weight_decay, alpha=alpha, eps=eps, momentum=momentum, centered=centered)
+        super().__init__(
+            params,
+            lr,
+            weight_decay,
+            alpha=alpha,
+            eps=eps,
+            momentum=momentum,
+            centered=centered,
+        )
         self.alpha = alpha
         self.eps = eps
         self.momentum = momentum
@@ -416,9 +444,9 @@ class NAdam(Adam):
             v = beta2 * self.state[i]["exp_avg_sq"] + (1 - beta2) * g**2
             self.state[i]["exp_avg"] = m
             self.state[i]["exp_avg_sq"] = v
-            m_hat = m / (1 - beta1 ** self._step)
+            m_hat = m / (1 - beta1**self._step)
             m_bar = (1 - mu_t) * g + mu_t1 * m_hat
-            v_hat = v / (1 - beta2 ** self._step)
+            v_hat = v / (1 - beta2**self._step)
             lr = group.get("lr", self.lr)
             wd = group.get("weight_decay", self.weight_decay)
             p.data = p.data - lr * (wd * p.data + m_bar / (np.sqrt(v_hat) + self.eps))
@@ -501,11 +529,15 @@ class ASGD(Optimizer):
             if step == 1:
                 etamu = 1.0
             else:
-                etamu = group.get("lr", self.lr) / (self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd)
+                etamu = group.get("lr", self.lr) / (
+                    self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd
+                )
             if etamu > 1.0:
                 etamu = 1.0
             mu = st["eta"] * (1.0 - etamu) / etamu
-            st["eta"] = group.get("lr", self.lr) / (self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd)
+            st["eta"] = group.get("lr", self.lr) / (
+                self.alpha * (step / (self.t0 + 1)) ** self.alpha + self.lambd
+            )
             st["mu"] = mu
             p.data = p.data - etamu * g
             st["ax"] = mu * st["ax"] + etamu * st["mu"] * g
@@ -537,7 +569,10 @@ class LBFGS(Optimizer):
         ``closure`` and taking a quasi-Newton direction."""
         for _ in range(self.max_iter):
             loss = closure()
-            grads = [p.grad.data.copy() if p.grad is not None else np.zeros_like(p.data) for p in self.params]
+            grads = [
+                p.grad.data.copy() if p.grad is not None else np.zeros_like(p.data)
+                for p in self.params
+            ]
             # simple gradient step fallback (BFGS direction approximation omitted)
             for i, p in enumerate(self.params):
                 if p.grad is not None:
@@ -559,7 +594,9 @@ class SparseAdam(Adam):
     semantics for a COO gradient).
     """
 
-    def __init__(self, params, lr: float = 0.001, betas=(0.9, 0.999), eps: float = 1e-8):
+    def __init__(
+        self, params, lr: float = 0.001, betas=(0.9, 0.999), eps: float = 1e-8
+    ):
         super().__init__(params, lr=lr, betas=betas, eps=eps)
 
     def step(self):
@@ -588,7 +625,7 @@ class SparseAdam(Adam):
             mi = m[idx[0], idx[1]]
             vi = v[idx[0], idx[1]]
             mi = self.betas[0] * mi + (1 - self.betas[0]) * gv
-            vi = self.betas[1] * vi + (1 - self.betas[1]) * gv ** 2
+            vi = self.betas[1] * vi + (1 - self.betas[1]) * gv**2
             m[idx[0], idx[1]] = mi
             v[idx[0], idx[1]] = vi
             m_hat = mi / (1 - self.betas[0] ** self._step)

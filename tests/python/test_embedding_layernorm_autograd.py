@@ -92,9 +92,9 @@ def test_layernorm_grad_finite_difference():
         xm = x0.copy()
         xm[i] -= eps
         num[i] = (loss(xp) - loss(xm)) / (2 * eps)
-    assert np.allclose(ana, num, atol=1e-2, rtol=1e-2), (
-        f"layernorm input grad mismatch max|diff|={np.max(np.abs(ana - num)):.3e}"
-    )
+    assert np.allclose(
+        ana, num, atol=1e-2, rtol=1e-2
+    ), f"layernorm input grad mismatch max|diff|={np.max(np.abs(ana - num)):.3e}"
 
 
 def test_rmsnorm_is_differentiable():
@@ -135,9 +135,9 @@ def test_rmsnorm_grad_finite_difference():
         xm = x0.copy()
         xm[i] -= eps
         num[i] = (loss(xp) - loss(xm)) / (2 * eps)
-    assert np.allclose(ana, num, atol=1e-2, rtol=1e-2), (
-        f"rmsnorm input grad mismatch max|diff|={np.max(np.abs(ana - num)):.3e}"
-    )
+    assert np.allclose(
+        ana, num, atol=1e-2, rtol=1e-2
+    ), f"rmsnorm input grad mismatch max|diff|={np.max(np.abs(ana - num)):.3e}"
 
 
 def test_permute_is_differentiable():
@@ -381,9 +381,9 @@ def test_upsample_bilinear_grad_matches_numeric():
 
         f([x]).backward()
         num = numerical_grads(f, [x])
-        assert np.allclose(x.grad.data, num[0], atol=1e-2, rtol=1e-2), (
-            f"align_corners={ac} max|diff|={np.max(np.abs(x.grad.data - num[0])):.3e}"
-        )
+        assert np.allclose(
+            x.grad.data, num[0], atol=1e-2, rtol=1e-2
+        ), f"align_corners={ac} max|diff|={np.max(np.abs(x.grad.data - num[0])):.3e}"
 
 
 def test_adaptive_max_pool2d_is_differentiable_and_matches_reference():

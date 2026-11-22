@@ -1,11 +1,11 @@
-#include "test_gtest.h"
 #include "data_pipeline.h"
 #include "inference_engine.h"
-#include "polymorphic_memory_allocator.h"
 #include "multi_head_attention_module.h"
-#include <string.h>
+#include "polymorphic_memory_allocator.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Inference
@@ -22,10 +22,10 @@
  *
  */
 
-
 /* ===== Data Pipeline Tests ===== */
 
-static void test_dataset_create(void) {
+static void test_dataset_create(void)
+{
     SNEPPXTokenizer* tok = SNEPPX_tokenizer_create(256);
     SX_ASSERT_NOT_NULL(tok, "tokenizer created");
     SNEPPX_tokenizer_add_token(tok, "hello", 0);
@@ -52,7 +52,8 @@ static void test_dataset_create(void) {
     SNEPPX_tokenizer_destroy(tok);
 }
 
-static void test_dataset_batch(void) {
+static void test_dataset_batch(void)
+{
     SNEPPXTokenizer* tok = SNEPPX_tokenizer_create(256);
     SX_ASSERT_NOT_NULL(tok, "tokenizer created");
     const char* texts[] = {"a b c d e f g h i j k l m n o p q r s t u v w x y z"};
@@ -87,13 +88,15 @@ static void test_dataset_batch(void) {
 
 /* ===== Inference Engine Tests ===== */
 
-static void test_argmax(void) {
+static void test_argmax(void)
+{
     float logits[] = {-2.0f, 5.0f, 1.0f, 3.0f};
     int result = SNEPPX_argmax(logits, 4);
     SX_ASSERT_EQ(result, 1, "argmax at index 1");
 }
 
-static void test_sample_logits(void) {
+static void test_sample_logits(void)
+{
     float logits[] = {0.0f, 0.0f, 100.0f, 0.0f};
     SNEPPXGenerationConfig cfg = SNEPPX_generation_config_default();
     cfg.temperature = 1.0f;
@@ -103,14 +106,16 @@ static void test_sample_logits(void) {
     SX_ASSERT_EQ(result, 2, "sample picks highest prob");
 }
 
-static void test_gen_config_default(void) {
+static void test_gen_config_default(void)
+{
     SNEPPXGenerationConfig cfg = SNEPPX_generation_config_default();
     SX_ASSERT_EQ(cfg.max_new_tokens, 256, "max tokens default");
     SX_ASSERT(cfg.temperature > 0, "temperature positive");
     SX_ASSERT(cfg.top_p > 0, "top-p positive");
 }
 
-static void test_generate_tokens_small(void) {
+static void test_generate_tokens_small(void)
+{
     SNEPPXAttentionConfig attn_cfg = SNEPPX_attn_config_default();
     attn_cfg.d_model = 16;
     attn_cfg.num_heads = 2;
@@ -125,12 +130,14 @@ static void test_generate_tokens_small(void) {
     size_t emb_shape[] = {vocab, d};
     SNEPPXTensor* embed = SNEPPX_tensor_empty(emb_shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT_NOT_NULL(embed, "embed created");
-    for (size_t i = 0; i < vocab * d; i++) ((float*)embed->data)[i] = ((float)(i % 7) - 3.0f) * 0.1f;
+    for (size_t i = 0; i < vocab * d; i++)
+        ((float*) embed->data)[i] = ((float) (i % 7) - 3.0f) * 0.1f;
 
     size_t unemb_shape[] = {d, vocab};
     SNEPPXTensor* unembed = SNEPPX_tensor_create(unemb_shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT_NOT_NULL(unembed, "unembed created");
-    for (size_t i = 0; i < d * vocab; i++) ((float*)unembed->data)[i] = ((float)(i * 3 % 11) - 5.0f) * 0.1f;
+    for (size_t i = 0; i < d * vocab; i++)
+        ((float*) unembed->data)[i] = ((float) (i * 3 % 11) - 5.0f) * 0.1f;
 
     int input[] = {0, 1, 2, 3};
     int output[32];
@@ -149,10 +156,27 @@ static void test_generate_tokens_small(void) {
 
 /* ===== Main ===== */
 
-
-TEST(test_inference, dataset_create) { test_dataset_create(); }
-TEST(test_inference, dataset_batch) { test_dataset_batch(); }
-TEST(test_inference, argmax) { test_argmax(); }
-TEST(test_inference, sample_logits) { test_sample_logits(); }
-TEST(test_inference, gen_config_default) { test_gen_config_default(); }
-TEST(test_inference, generate_tokens_small) { test_generate_tokens_small(); }
+TEST(test_inference, dataset_create)
+{
+    test_dataset_create();
+}
+TEST(test_inference, dataset_batch)
+{
+    test_dataset_batch();
+}
+TEST(test_inference, argmax)
+{
+    test_argmax();
+}
+TEST(test_inference, sample_logits)
+{
+    test_sample_logits();
+}
+TEST(test_inference, gen_config_default)
+{
+    test_gen_config_default();
+}
+TEST(test_inference, generate_tokens_small)
+{
+    test_generate_tokens_small();
+}

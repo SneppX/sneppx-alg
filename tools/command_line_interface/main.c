@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * SNEPPX Command-Line Interface — SKELETON
  * VERSION: v0.5
@@ -35,38 +34,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
+typedef struct
+{
     const char* name;
     int (*handler)(int argc, char** argv);
     const char* description;
 } SNEPPXCommand;
 
-static int cmd_train(int argc, char** argv) {
-    (void)argc; (void)argv;
+static int cmd_train(int argc, char** argv)
+{
+    (void) argc;
+    (void) argv;
     printf("train: not yet implemented\n");
     return 0;
 }
 
-static int cmd_eval(int argc, char** argv) {
-    (void)argc; (void)argv;
+static int cmd_eval(int argc, char** argv)
+{
+    (void) argc;
+    (void) argv;
     printf("eval: not yet implemented\n");
     return 0;
 }
 
-static int cmd_export(int argc, char** argv) {
-    (void)argc; (void)argv;
+static int cmd_export(int argc, char** argv)
+{
+    (void) argc;
+    (void) argv;
     printf("export: not yet implemented\n");
     return 0;
 }
 
-static int cmd_benchmark(int argc, char** argv) {
-    (void)argc; (void)argv;
+static int cmd_benchmark(int argc, char** argv)
+{
+    (void) argc;
+    (void) argv;
     printf("benchmark: not yet implemented\n");
     return 0;
 }
 
-static int cmd_inspect(int argc, char** argv) {
-    (void)argc; (void)argv;
+static int cmd_inspect(int argc, char** argv)
+{
+    (void) argc;
+    (void) argv;
     printf("inspect: not yet implemented\n");
     return 0;
 }
@@ -80,14 +90,17 @@ static const SNEPPXCommand commands[] = {
     {NULL, NULL, NULL},
 };
 
-int main(int argc, char** argv) {
-    if (argc < 2) {
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: SNEPPX <command> [options]\n\nCommands:\n");
         for (int i = 0; commands[i].name; i++)
             fprintf(stderr, "  %-12s %s\n", commands[i].name, commands[i].description);
         return 1;
     }
-    for (int i = 0; commands[i].name; i++) {
+    for (int i = 0; commands[i].name; i++)
+    {
         if (strcmp(argv[1], commands[i].name) == 0)
             return commands[i].handler(argc - 1, argv + 1);
     }

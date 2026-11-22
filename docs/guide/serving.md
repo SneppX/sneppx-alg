@@ -20,6 +20,7 @@ server.start(port=8080)
 ```
 
 ### Endpoints
+
 - `GET /v1/health`: Server health check.
 - `GET /v1/models`: List loaded models.
 - `POST /v1/generate`: Text generation with streaming and token counts.
@@ -51,6 +52,7 @@ rejects unauthenticated non-loopback binds.
 ## C HTTP Control Plane
 
 Built in C (`net/http/http_api.c`) with zero external dependencies (Winsock / BSD sockets):
+
 - Bearer token authentication middleware (`http_auth.c`).
 - Static file serving and route parameter capture (`{param}`).
 - Demo binary: `examples/http_server_demo.c`.

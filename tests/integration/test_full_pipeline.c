@@ -1,14 +1,14 @@
+#include "adversarial_robustness_certification.h"
+#include "differentiable_training_pipeline.h"
+#include "fractal_memory_orchestrator.h"
+#include "hierarchical_state_space.h"
+#include "neural_programming_engine.h"
+#include "polymorphic_memory_allocator.h"
+#include "sparse_expert_routing.h"
 #include "system_architecture_definitions.h"
 #include "test_gtest.h"
-#include "differentiable_training_pipeline.h"
-#include "hierarchical_state_space.h"
-#include "sparse_expert_routing.h"
-#include "adversarial_robustness_certification.h"
-#include "neural_programming_engine.h"
-#include "fractal_memory_orchestrator.h"
-#include "polymorphic_memory_allocator.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Full Pipeline
@@ -25,17 +25,15 @@
  *
  */
 
-
-
-
-
-static void test_arch_config_default(void) {
+static void test_arch_config_default(void)
+{
     SNEPPXArchConfig cfg = SNEPPX_arch_config_default();
     SX_ASSERT(cfg.input_dim == 512, "default input dim");
     SX_ASSERT(cfg.output_dim == 512, "default output dim");
 }
 
-static void test_model_create(void) {
+static void test_model_create(void)
+{
     SNEPPXArchConfig cfg = SNEPPX_arch_config_default();
     cfg.input_dim = 16;
     cfg.output_dim = 16;
@@ -57,7 +55,8 @@ static void test_model_create(void) {
     SNEPPX_model_destroy(model);
 }
 
-static void test_hss_ser_arc_stack(void) {
+static void test_hss_ser_arc_stack(void)
+{
     SNEPPXHSSConfig hss_cfg = SNEPPX_hss_config_default();
     hss_cfg.state_dim = 4;
     hss_cfg.input_dim = 8;
@@ -86,8 +85,9 @@ static void test_hss_ser_arc_stack(void) {
 
     size_t shape_in[] = {1, hss_cfg.seq_len, hss_cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = sinf((float)i * 0.5f);
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = sinf((float) i * 0.5f);
 
     SNEPPXTensor* hss_out = NULL;
     int ret = SNEPPX_hss_forward(hss, input, &hss_out);
@@ -101,7 +101,15 @@ static void test_hss_ser_arc_stack(void) {
     SNEPPX_hss_model_destroy(hss);
 }
 
-
-TEST(test_full_pipeline, arch_config_default) { test_arch_config_default(); }
-TEST(test_full_pipeline, model_create) { test_model_create(); }
-TEST(test_full_pipeline, hss_ser_arc_stack) { test_hss_ser_arc_stack(); }
+TEST(test_full_pipeline, arch_config_default)
+{
+    test_arch_config_default();
+}
+TEST(test_full_pipeline, model_create)
+{
+    test_model_create();
+}
+TEST(test_full_pipeline, hss_ser_arc_stack)
+{
+    test_hss_ser_arc_stack();
+}

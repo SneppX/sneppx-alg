@@ -7,18 +7,42 @@ from SneppX_ALG.interface_bindings.tensor import DTYPE_MAP
 
 def test_dtype_and_device_enum_contract():
     expected_dtype_names = (
-        "FLOAT32", "FLOAT64", "FLOAT16", "BFLOAT16", "FLOAT8",
-        "INT32", "INT64", "INT16", "INT8", "UINT8", "BOOL",
-        "COMPLEX64", "COMPLEX128",
+        "FLOAT32",
+        "FLOAT64",
+        "FLOAT16",
+        "BFLOAT16",
+        "FLOAT8",
+        "INT32",
+        "INT64",
+        "INT16",
+        "INT8",
+        "UINT8",
+        "BOOL",
+        "COMPLEX64",
+        "COMPLEX128",
     )
     assert all(hasattr(Dtype, name) for name in expected_dtype_names)
-    assert all(hasattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU"))
-    assert all(hasattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED"))
+    assert all(
+        hasattr(Device, name)
+        for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")
+    )
+    assert all(
+        hasattr(Layout, name)
+        for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")
+    )
     if not _HAS_C_BACKEND:
         assert Layout.DENSE == Layout.ROW_MAJOR
-        assert [getattr(Dtype, name) for name in expected_dtype_names] == list(range(13))
-        assert [getattr(Device, name) for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")] == list(range(6))
-        assert [getattr(Layout, name) for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")] == list(range(4))
+        assert [getattr(Dtype, name) for name in expected_dtype_names] == list(
+            range(13)
+        )
+        assert [
+            getattr(Device, name)
+            for name in ("CPU", "CUDA", "METAL", "VULKAN", "TPU", "NPU")
+        ] == list(range(6))
+        assert [
+            getattr(Layout, name)
+            for name in ("ROW_MAJOR", "COL_MAJOR", "CHANNELS_LAST", "TILED")
+        ] == list(range(4))
 
 
 def test_item_requires_exactly_one_element():
@@ -90,7 +114,11 @@ def test_scatter_add_rejects_invalid_inputs():
         (2, np.zeros((2, 2), dtype=np.int64), source),
         (1, np.zeros((2, 2), dtype=np.float32), source),
         (1, np.full((2, 2), 3, dtype=np.int64), source),
-        (1, np.zeros((2, 2), dtype=np.int64), Tensor(np.ones((2, 2), dtype=np.float64), dtype="float64")),
+        (
+            1,
+            np.zeros((2, 2), dtype=np.int64),
+            Tensor(np.ones((2, 2), dtype=np.float64), dtype="float64"),
+        ),
     )
     for dim, index, values in invalid:
         try:
@@ -151,7 +179,9 @@ def test_index_select_rejects_invalid_indices():
         except (IndexError, ValueError, TypeError):
             pass
         else:
-            raise AssertionError(f"invalid index_select input accepted: {(dim, index)!r}")
+            raise AssertionError(
+                f"invalid index_select input accepted: {(dim, index)!r}"
+            )
 
 
 def test_flip_roll_and_triangular_tensor_ops():

@@ -1,6 +1,6 @@
+#include "../../mm/internal/slab_alloc.c"
 #include "../../mm/internal/slab_alloc.h"
 #include "test_gtest.h"
-#include "../../mm/internal/slab_alloc.c"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,11 +19,8 @@
  *
  */
 
-
-
-
-
-static void test_slab_create_destroy(void) {
+static void test_slab_create_destroy(void)
+{
     SNEPPXSlabCache* cache = NULL;
     int ret = SNEPPX_slab_cache_create(&cache, 64, 16);
     SX_ASSERT(ret == 0, "slab cache create");
@@ -31,32 +28,38 @@ static void test_slab_create_destroy(void) {
     SNEPPX_slab_cache_destroy(cache);
 }
 
-static void test_slab_alloc_free(void) {
+static void test_slab_alloc_free(void)
+{
     SNEPPXSlabCache* cache = NULL;
     int ret = SNEPPX_slab_cache_create(&cache, 32, 8);
     SX_ASSERT(ret == 0, "slab cache create");
-    if (!cache) return;
+    if (!cache)
+        return;
     void* p = SNEPPX_slab_cache_alloc(cache);
-    if (p == NULL) {
+    if (p == NULL)
+    {
         printf("SKIP (stub returns NULL): ");
         SNEPPX_slab_cache_destroy(cache);
         return;
     }
     memset(p, 0x42, 32);
-    unsigned char* buf = (unsigned char*)p;
+    unsigned char* buf = (unsigned char*) p;
     SX_ASSERT(buf[0] == 0x42, "memory writable");
     SNEPPX_slab_cache_free(cache, p);
     SNEPPX_slab_cache_destroy(cache);
 }
 
-static void test_slab_multiple_allocs(void) {
+static void test_slab_multiple_allocs(void)
+{
     SNEPPXSlabCache* cache = NULL;
     int ret = SNEPPX_slab_cache_create(&cache, 16, 4);
     SX_ASSERT(ret == 0, "slab cache create");
-    if (!cache) return;
+    if (!cache)
+        return;
     void* p1 = SNEPPX_slab_cache_alloc(cache);
     void* p2 = SNEPPX_slab_cache_alloc(cache);
-    if (p1 == NULL || p2 == NULL) {
+    if (p1 == NULL || p2 == NULL)
+    {
         printf("SKIP (stub returns NULL): ");
         SNEPPX_slab_cache_destroy(cache);
         return;
@@ -67,7 +70,15 @@ static void test_slab_multiple_allocs(void) {
     SNEPPX_slab_cache_destroy(cache);
 }
 
-
-TEST(test_slab_alloc, slab_create_destroy) { test_slab_create_destroy(); }
-TEST(test_slab_alloc, slab_alloc_free) { test_slab_alloc_free(); }
-TEST(test_slab_alloc, slab_multiple_allocs) { test_slab_multiple_allocs(); }
+TEST(test_slab_alloc, slab_create_destroy)
+{
+    test_slab_create_destroy();
+}
+TEST(test_slab_alloc, slab_alloc_free)
+{
+    test_slab_alloc_free();
+}
+TEST(test_slab_alloc, slab_multiple_allocs)
+{
+    test_slab_multiple_allocs();
+}

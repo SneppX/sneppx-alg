@@ -23,14 +23,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_FEDRAMP_LOW,
     SNEPPX_FEDRAMP_MODERATE,
     SNEPPX_FEDRAMP_HIGH
 } SNEPPPXFedRAMPImpactLevel;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_FEDRAMP_CONTROL_FAMILY_AC,
     SNEPPX_FEDRAMP_CONTROL_FAMILY_AT,
     SNEPPX_FEDRAMP_CONTROL_FAMILY_AU,
@@ -52,7 +53,8 @@ typedef enum {
     SNEPPX_FEDRAMP_CONTROL_FAMILY_SR
 } SNEPPPXFedRAMPControlFamily;
 
-typedef struct {
+typedef struct
+{
     char control_id[16];
     SNEPPPXFedRAMPControlFamily family;
     char control_name[256];
@@ -68,7 +70,8 @@ typedef struct {
     char poaam[512];
 } SNEPPPXFedRAMPControl;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_controls;
     SNEPPPXFedRAMPControl controls[SNEPPX_FEDRAMP_MAX_CONTROLS];
     SNEPPPXFedRAMPImpactLevel impact_level;
@@ -94,7 +97,8 @@ int snepx_fedramp_assess_control(SNEPPPXFedRAMPAuthPackage* package, const char*
 int snepx_fedramp_generate_ssp(SNEPPPXFedRAMPAuthPackage* package, uint8_t* ssp_out, size_t* ssp_len);
 int snepx_fedramp_generate_sap(SNEPPPXFedRAMPAuthPackage* package, uint8_t* sap_out, size_t* sap_len);
 int snepx_fedramp_generate_sar(SNEPPPXFedRAMPAuthPackage* package, uint8_t* sar_out, size_t* sar_len);
-int snepx_fedramp_continuous_monitoring(SNEPPPXFedRAMPAuthPackage* package, uint8_t* monitor_report, size_t* report_len);
+int snepx_fedramp_continuous_monitoring(SNEPPPXFedRAMPAuthPackage* package, uint8_t* monitor_report,
+                                        size_t* report_len);
 int snepx_fedramp_readiness_assessment(SNEPPPXFedRAMPAuthPackage* package, double* readiness_score);
 int snepx_fedramp_compliance_percentage(SNEPPPXFedRAMPAuthPackage* package, double* compliance_pct);
 

@@ -24,12 +24,19 @@ except ImportError:
 # 1. TENSOR & AUTOGRAD
 # ============================================================================
 
+
 class Tensor:
     """
     High-level Tensor wrapping NumPy arrays and SNEPPX-Alg C backend buffers
     with PyTorch-like automatic differentiation tape tracing.
     """
-    def __init__(self, data: Union[np.ndarray, list, float, int], requires_grad: bool = False, dtype=np.float32):
+
+    def __init__(
+        self,
+        data: Union[np.ndarray, list, float, int],
+        requires_grad: bool = False,
+        dtype=np.float32,
+    ):
         if isinstance(data, Tensor):
             self.data = np.array(data.data, dtype=dtype)
             self.requires_grad = requires_grad or data.requires_grad
@@ -52,7 +59,7 @@ class Tensor:
         return self.data.dtype
 
     @property
-    def grad(self) -> Optional['Tensor']:
+    def grad(self) -> Optional["Tensor"]:
         if self._grad is None:
             return None
         t = Tensor(self._grad, requires_grad=False)
@@ -67,7 +74,7 @@ class Tensor:
         else:
             self._grad = np.array(value, dtype=self.data.dtype)
 
-    def backward(self, gradient: Optional['Tensor'] = None):
+    def backward(self, gradient: Optional["Tensor"] = None):
         """Backpropagate gradients through the computation graph."""
         if not self.requires_grad:
             return
@@ -75,7 +82,9 @@ class Tensor:
             if self.shape == () or self.data.size == 1:
                 grad_arr = np.ones_like(self.data)
             else:
-                raise RuntimeError("Grad can be implicitly created only for scalar outputs")
+                raise RuntimeError(
+                    "Grad can be implicitly created only for scalar outputs"
+                )
         else:
             grad_arr = gradient.data
 
@@ -107,7 +116,7 @@ class Tensor:
         return self.data
 
     @classmethod
-    def from_c_backend(cls, c_tensor, requires_grad: bool = False) -> 'Tensor':
+    def from_c_backend(cls, c_tensor, requires_grad: bool = False) -> "Tensor":
         """Create high-level Tensor from C backend tensor."""
         if hasattr(c_tensor, "numpy"):
             arr = c_tensor.numpy()
@@ -117,12 +126,17 @@ class Tensor:
 
     def __add__(self, other):
         other_t = other if isinstance(other, Tensor) else Tensor(other)
-        out = Tensor(self.data + other_t.data, requires_grad=self.requires_grad or other_t.requires_grad)
+        out = Tensor(
+            self.data + other_t.data,
+            requires_grad=self.requires_grad or other_t.requires_grad,
+        )
+
         def grad_fn(grad):
             if self.requires_grad:
                 self.backward(Tensor(grad))
             if other_t.requires_grad:
                 other_t.backward(Tensor(grad))
+
         out._grad_fn = grad_fn
         return out
 
@@ -131,23 +145,35 @@ class Tensor:
 
     def __sub__(self, other):
         other_t = other if isinstance(other, Tensor) else Tensor(other)
-        out = Tensor(self.data - other_t.data, requires_grad=self.requires_grad or other_t.requires_grad)
+        out = Tensor(
+            self.data - other_t.data,
+            requires_grad=self.requires_grad or other_t.requires_grad,
+        )
+
         def grad_fn(grad):
             if self.requires_grad:
                 self.backward(Tensor(grad))
             if other_t.requires_grad:
-                other_t.backward(Tensor(-grad.data if isinstance(grad, Tensor) else -grad))
+                other_t.backward(
+                    Tensor(-grad.data if isinstance(grad, Tensor) else -grad)
+                )
+
         out._grad_fn = grad_fn
         return out
 
     def __mul__(self, other):
         other_t = other if isinstance(other, Tensor) else Tensor(other)
-        out = Tensor(self.data * other_t.data, requires_grad=self.requires_grad or other_t.requires_grad)
+        out = Tensor(
+            self.data * other_t.data,
+            requires_grad=self.requires_grad or other_t.requires_grad,
+        )
+
         def grad_fn(grad):
             if self.requires_grad:
                 self.backward(Tensor(grad.data * other_t.data))
             if other_t.requires_grad:
                 other_t.backward(Tensor(grad.data * self.data))
+
         out._grad_fn = grad_fn
         return out
 
@@ -156,13 +182,18 @@ class Tensor:
 
     def __matmul__(self, other):
         other_t = other if isinstance(other, Tensor) else Tensor(other)
-        out = Tensor(self.data @ other_t.data, requires_grad=self.requires_grad or other_t.requires_grad)
+        out = Tensor(
+            self.data @ other_t.data,
+            requires_grad=self.requires_grad or other_t.requires_grad,
+        )
+
         def grad_fn(grad):
             grad_arr = grad.data if isinstance(grad, Tensor) else grad
             if self.requires_grad:
                 self.backward(Tensor(grad_arr @ other_t.data.T))
             if other_t.requires_grad:
                 other_t.backward(Tensor(self.data.T @ grad_arr))
+
         out._grad_fn = grad_fn
         return out
 
@@ -174,17 +205,20 @@ class Tensor:
 # 2. NEURAL NETWORK MODULES (sneppx.nn)
 # ============================================================================
 
+
 class Parameter(Tensor):
     """A Tensor that is considered a trainable module parameter."""
+
     def __init__(self, data: Union[np.ndarray, list]):
         super().__init__(data, requires_grad=True)
 
 
 class Module:
     """Base class for all neural network modules mirroring PyTorch nn.Module."""
+
     def __init__(self):
         self._parameters: Dict[str, Parameter] = {}
-        self._modules: Dict[str, 'Module'] = {}
+        self._modules: Dict[str, "Module"] = {}
         self.training = True
 
     def register_parameter(self, name: str, param: Optional[Parameter]):
@@ -193,7 +227,7 @@ class Module:
         else:
             self._parameters[name] = param
 
-    def add_module(self, name: str, module: Optional['Module']):
+    def add_module(self, name: str, module: Optional["Module"]):
         if module is None:
             self._modules.pop(name, None)
         else:
@@ -234,11 +268,18 @@ class Module:
 
 class Linear(Module):
     """Fully connected linear layer: y = xW^T + b."""
+
     def __init__(self, in_features: int, out_features: int, bias: bool = True):
         super().__init__()
         bound = 1.0 / math.sqrt(in_features)
-        self.weight = Parameter(np.random.uniform(-bound, bound, (out_features, in_features)))
-        self.bias = Parameter(np.random.uniform(-bound, bound, (out_features,))) if bias else None
+        self.weight = Parameter(
+            np.random.uniform(-bound, bound, (out_features, in_features))
+        )
+        self.bias = (
+            Parameter(np.random.uniform(-bound, bound, (out_features,)))
+            if bias
+            else None
+        )
 
     def forward(self, x: Tensor) -> Tensor:
         out = x @ Tensor(self.weight.data.T, requires_grad=self.weight.requires_grad)
@@ -249,6 +290,7 @@ class Linear(Module):
 
 class LayerNorm(Module):
     """Layer Normalization."""
+
     def __init__(self, normalized_shape: int, eps: float = 1e-5):
         super().__init__()
         self.normalized_shape = normalized_shape
@@ -266,6 +308,7 @@ class LayerNorm(Module):
 
 class Dropout(Module):
     """Dropout regularization layer."""
+
     def __init__(self, p: float = 0.5):
         super().__init__()
         self.p = p
@@ -279,9 +322,14 @@ class Dropout(Module):
 
 class Embedding(Module):
     """Lookup table for embeddings."""
+
     def __init__(self, num_embeddings: int, embedding_dim: int):
         super().__init__()
-        self.weight = Parameter(np.random.normal(0, 1.0 / math.sqrt(embedding_dim), (num_embeddings, embedding_dim)))
+        self.weight = Parameter(
+            np.random.normal(
+                0, 1.0 / math.sqrt(embedding_dim), (num_embeddings, embedding_dim)
+            )
+        )
 
     def forward(self, indices: Union[list, np.ndarray, Tensor]) -> Tensor:
         idx_arr = indices.numpy() if isinstance(indices, Tensor) else np.array(indices)
@@ -291,7 +339,15 @@ class Embedding(Module):
 
 class Conv2d(Module):
     """2D Convolutional Layer."""
-    def __init__(self, in_channels: int, out_channels: int, kernel_size: int, stride: int = 1, padding: int = 0):
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int = 1,
+        padding: int = 0,
+    ):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -299,7 +355,11 @@ class Conv2d(Module):
         self.stride = stride
         self.padding = padding
         bound = 1.0 / math.sqrt(in_channels * kernel_size * kernel_size)
-        self.weight = Parameter(np.random.uniform(-bound, bound, (out_channels, in_channels, kernel_size, kernel_size)))
+        self.weight = Parameter(
+            np.random.uniform(
+                -bound, bound, (out_channels, in_channels, kernel_size, kernel_size)
+            )
+        )
         self.bias = Parameter(np.zeros((out_channels,)))
 
     def forward(self, x: Tensor) -> Tensor:
@@ -307,7 +367,16 @@ class Conv2d(Module):
         batch_size, in_c, in_h, in_w = x.data.shape
         out_h = (in_h + 2 * self.padding - self.kernel_size) // self.stride + 1
         out_w = (in_w + 2 * self.padding - self.kernel_size) // self.stride + 1
-        padded = np.pad(x.data, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
+        padded = np.pad(
+            x.data,
+            (
+                (0, 0),
+                (0, 0),
+                (self.padding, self.padding),
+                (self.padding, self.padding),
+            ),
+            mode="constant",
+        )
         out = np.zeros((batch_size, self.out_channels, out_h, out_w), dtype=np.float32)
         for b in range(batch_size):
             for oc in range(self.out_channels):
@@ -315,13 +384,18 @@ class Conv2d(Module):
                     for ow in range(out_w):
                         hs = oh * self.stride
                         ws = ow * self.stride
-                        patch = padded[b, :, hs:hs+self.kernel_size, ws:ws+self.kernel_size]
-                        out[b, oc, oh, ow] = np.sum(patch * self.weight.data[oc]) + self.bias.data[oc]
+                        patch = padded[
+                            b, :, hs : hs + self.kernel_size, ws : ws + self.kernel_size
+                        ]
+                        out[b, oc, oh, ow] = (
+                            np.sum(patch * self.weight.data[oc]) + self.bias.data[oc]
+                        )
         return Tensor(out, requires_grad=x.requires_grad)
 
 
 class Sequential(Module):
     """Sequential container of modules."""
+
     def __init__(self, *args: Module):
         super().__init__()
         for idx, module in enumerate(args):
@@ -337,8 +411,10 @@ class Sequential(Module):
 # 3. OPTIMIZERS (sneppx.optim)
 # ============================================================================
 
+
 class Optimizer:
     """Base class for optimizers."""
+
     def __init__(self, params: List[Parameter], lr: float = 1e-3):
         self.params = list(params)
         self.lr = lr
@@ -353,7 +429,10 @@ class Optimizer:
 
 class SGD(Optimizer):
     """Stochastic Gradient Descent optimizer with momentum."""
-    def __init__(self, params: List[Parameter], lr: float = 1e-2, momentum: float = 0.0):
+
+    def __init__(
+        self, params: List[Parameter], lr: float = 1e-2, momentum: float = 0.0
+    ):
         super().__init__(params, lr)
         self.momentum = momentum
         self.velocities = [np.zeros_like(p.data) for p in self.params]
@@ -373,7 +452,14 @@ class SGD(Optimizer):
 
 class Adam(Optimizer):
     """Adam Optimizer."""
-    def __init__(self, params: List[Parameter], lr: float = 1e-3, betas: Tuple[float, float] = (0.9, 0.999), eps: float = 1e-8):
+
+    def __init__(
+        self,
+        params: List[Parameter],
+        lr: float = 1e-3,
+        betas: Tuple[float, float] = (0.9, 0.999),
+        eps: float = 1e-8,
+    ):
         super().__init__(params, lr)
         self.beta1, self.beta2 = betas
         self.eps = eps
@@ -388,15 +474,23 @@ class Adam(Optimizer):
                 continue
             grad = p.grad.data
             self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * grad
-            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (grad ** 2)
-            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
-            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (grad**2)
+            m_hat = self.m[i] / (1 - self.beta1**self.t)
+            v_hat = self.v[i] / (1 - self.beta2**self.t)
             p.data -= self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
 
 
 class AdamW(Adam):
     """AdamW Optimizer with decoupled weight decay."""
-    def __init__(self, params: List[Parameter], lr: float = 1e-3, betas: Tuple[float, float] = (0.9, 0.999), eps: float = 1e-8, weight_decay: float = 0.01):
+
+    def __init__(
+        self,
+        params: List[Parameter],
+        lr: float = 1e-3,
+        betas: Tuple[float, float] = (0.9, 0.999),
+        eps: float = 1e-8,
+        weight_decay: float = 0.01,
+    ):
         super().__init__(params, lr, betas, eps)
         self.weight_decay = weight_decay
 
@@ -409,9 +503,9 @@ class AdamW(Adam):
                 p.data -= self.lr * self.weight_decay * p.data
             grad = p.grad.data
             self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * grad
-            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (grad ** 2)
-            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
-            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (grad**2)
+            m_hat = self.m[i] / (1 - self.beta1**self.t)
+            v_hat = self.v[i] / (1 - self.beta2**self.t)
             p.data -= self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
 
 
@@ -419,8 +513,10 @@ class AdamW(Adam):
 # 4. DATA LOADER (sneppx.data)
 # ============================================================================
 
+
 class Dataset:
     """Base Dataset class."""
+
     def __len__(self) -> int:
         raise NotImplementedError
 
@@ -439,7 +535,9 @@ class TensorDataset(Dataset):
             raise ValueError("TensorDataset inputs must have a batch dimension")
         length = arrays[0].shape[0]
         if any(array.shape[0] != length for array in arrays[1:]):
-            raise ValueError("all TensorDataset inputs must have the same first dimension")
+            raise ValueError(
+                "all TensorDataset inputs must have the same first dimension"
+            )
         self.tensors = arrays
         self._length = length
 
@@ -483,12 +581,15 @@ class ConcatDataset(Dataset):
 
     def __getitem__(self, index: int):
         from bisect import bisect_right
+
         if index < 0:
             index += len(self)
         if index < 0 or index >= len(self):
             raise IndexError("ConcatDataset index out of range")
         dataset_index = bisect_right(self.cumulative_sizes, index)
-        previous_end = 0 if dataset_index == 0 else self.cumulative_sizes[dataset_index - 1]
+        previous_end = (
+            0 if dataset_index == 0 else self.cumulative_sizes[dataset_index - 1]
+        )
         return self.datasets[dataset_index][index - previous_end]
 
 
@@ -502,7 +603,10 @@ def random_split(dataset: Dataset, lengths, generator=None):
     lengths = tuple(lengths)
     if not lengths:
         raise ValueError("lengths must not be empty")
-    if all(isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_)) for value in lengths):
+    if all(
+        isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_))
+        for value in lengths
+    ):
         normalized = tuple(int(value) for value in lengths)
         if any(value < 0 for value in normalized):
             raise ValueError("split lengths must be non-negative")
@@ -511,11 +615,15 @@ def random_split(dataset: Dataset, lengths, generator=None):
     elif all(isinstance(value, (float, np.floating)) for value in lengths):
         fractions = tuple(float(value) for value in lengths)
         if any(value < 0 for value in fractions) or not np.isclose(sum(fractions), 1.0):
-            raise ValueError("fractional split lengths must be non-negative and sum to 1")
+            raise ValueError(
+                "fractional split lengths must be non-negative and sum to 1"
+            )
         exact = [len(dataset) * value for value in fractions]
         normalized_list = [int(value) for value in exact]
         remainder = len(dataset) - sum(normalized_list)
-        order = sorted(range(len(exact)), key=lambda i: exact[i] - normalized_list[i], reverse=True)
+        order = sorted(
+            range(len(exact)), key=lambda i: exact[i] - normalized_list[i], reverse=True
+        )
         for i in order[:remainder]:
             normalized_list[i] += 1
         normalized = tuple(normalized_list)
@@ -615,7 +723,10 @@ class DataLoader:
             return batch
         elem = batch[0]
         if isinstance(elem, tuple):
-            if not all(isinstance(sample, tuple) and len(sample) == len(elem) for sample in batch):
+            if not all(
+                isinstance(sample, tuple) and len(sample) == len(elem)
+                for sample in batch
+            ):
                 raise ValueError("all tuple samples must have the same structure")
             zipped = list(zip(*batch))
             return tuple(Tensor(np.array(values)) for values in zipped)
@@ -632,22 +743,31 @@ class DataLoader:
 # 5. METRICS (sneppx.metrics)
 # ============================================================================
 
+
 def accuracy(preds: np.ndarray, targets: np.ndarray) -> float:
     """Compute classification accuracy."""
     pred_labels = np.argmax(preds, axis=-1) if preds.ndim > 1 else np.round(preds)
     return float(np.mean(pred_labels == targets))
 
 
-def precision_recall_f1(preds: np.ndarray, targets: np.ndarray) -> Tuple[float, float, float]:
+def precision_recall_f1(
+    preds: np.ndarray, targets: np.ndarray
+) -> Tuple[float, float, float]:
     """Compute binary Precision, Recall, and F1 Score."""
-    pred_labels = (preds >= 0.5).astype(int) if preds.ndim == 1 else np.argmax(preds, axis=-1)
+    pred_labels = (
+        (preds >= 0.5).astype(int) if preds.ndim == 1 else np.argmax(preds, axis=-1)
+    )
     tp = np.sum((pred_labels == 1) & (targets == 1))
     fp = np.sum((pred_labels == 1) & (targets == 0))
     fn = np.sum((pred_labels == 0) & (targets == 1))
-    
+
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+    f1 = (
+        2 * precision * recall / (precision + recall)
+        if (precision + recall) > 0
+        else 0.0
+    )
     return float(precision), float(recall), float(f1)
 
 
@@ -655,15 +775,24 @@ def precision_recall_f1(preds: np.ndarray, targets: np.ndarray) -> Tuple[float, 
 # 6. TRAINER (sneppx.trainer)
 # ============================================================================
 
+
 class Trainer:
     """High-level training loop controller with validation, checkpointing, and early stopping."""
-    def __init__(self, model: Module, criterion: Callable, optimizer: Optimizer, val_loader: Optional[DataLoader] = None, patience: int = 3):
+
+    def __init__(
+        self,
+        model: Module,
+        criterion: Callable,
+        optimizer: Optimizer,
+        val_loader: Optional[DataLoader] = None,
+        patience: int = 3,
+    ):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
         self.val_loader = val_loader
         self.patience = patience
-        self.best_val_loss = float('inf')
+        self.best_val_loss = float("inf")
         self.epochs_without_improvement = 0
 
     def fit(self, train_loader: DataLoader, epochs: int):

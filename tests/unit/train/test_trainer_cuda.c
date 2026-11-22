@@ -1,10 +1,10 @@
 #include "differentiable_training_pipeline.h"
 #include "test_gtest.h"
 #include "trainer_cuda.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Trainer Cuda
@@ -21,18 +21,17 @@
  *
  */
 
-
-
-
-
-static void test_cuda_available(void) {
+static void test_cuda_available(void)
+{
     int avail = SNEPPX_trainer_cuda_available();
     printf("[CUDA avail=%d] ", avail);
 }
 
-static void test_cuda_init_shutdown(void) {
+static void test_cuda_init_shutdown(void)
+{
     int avail = SNEPPX_trainer_cuda_available();
-    if (!avail) {
+    if (!avail)
+    {
         printf("[SKIP: no CUDA device] ");
         GTEST_SKIP() << "legacy pass-on-skip";
         return;
@@ -54,9 +53,11 @@ static void test_cuda_init_shutdown(void) {
     SNEPPX_tensor_destroy(p);
 }
 
-static void test_cuda_transfer(void) {
+static void test_cuda_transfer(void)
+{
     int avail = SNEPPX_trainer_cuda_available();
-    if (!avail) {
+    if (!avail)
+    {
         printf("[SKIP: no CUDA device] ");
         GTEST_SKIP() << "legacy pass-on-skip";
         return;
@@ -79,7 +80,7 @@ static void test_cuda_transfer(void) {
     ret = SNEPPX_trainer_cuda_transfer_to_host(params, 1);
     SX_ASSERT(ret == 0, "transfer to host");
 
-    float* pd = (float*)p->data;
+    float* pd = (float*) p->data;
     SX_ASSERT(fabsf(pd[0] - 1.0f) < 1e-5f, "val[0] == 1.0");
     SX_ASSERT(fabsf(pd[4] - 5.0f) < 1e-5f, "val[4] == 5.0");
 
@@ -87,22 +88,37 @@ static void test_cuda_transfer(void) {
     SNEPPX_tensor_destroy(p);
 }
 
-static void test_trainer_config_cuda(void) {
+static void test_trainer_config_cuda(void)
+{
     SNEPPXTrainConfig cfg = SNEPPX_train_config_default();
     SX_ASSERT(cfg.use_cuda_optimizer == 0, "default cuda_optimizer off");
     cfg.use_cuda_optimizer = 1;
 
     SNEPPXModel* model = NULL;
 
-    if (SNEPPX_trainer_cuda_available()) {
+    if (SNEPPX_trainer_cuda_available())
+    {
         SX_ASSERT(1, "CUDA available on this system");
-    } else {
+    }
+    else
+    {
         printf("[NO CUDA] ");
     }
 }
 
-
-TEST(test_trainer_cuda, cuda_available) { test_cuda_available(); }
-TEST(test_trainer_cuda, cuda_init_shutdown) { test_cuda_init_shutdown(); }
-TEST(test_trainer_cuda, cuda_transfer) { test_cuda_transfer(); }
-TEST(test_trainer_cuda, trainer_config_cuda) { test_trainer_config_cuda(); }
+TEST(test_trainer_cuda, cuda_available)
+{
+    test_cuda_available();
+}
+TEST(test_trainer_cuda, cuda_init_shutdown)
+{
+    test_cuda_init_shutdown();
+}
+TEST(test_trainer_cuda, cuda_transfer)
+{
+    test_cuda_transfer();
+}
+TEST(test_trainer_cuda, trainer_config_cuda)
+{
+    test_trainer_config_cuda();
+}

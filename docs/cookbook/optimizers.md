@@ -138,4 +138,3 @@ CPU-safe.
 | **AdaFactor** | Factored row/col stats ($<1\times$) | Extremely large architectures | `scale_parameter=True`, `relative_step=True` |
 | **SparseAdam**| Sparse tracking on indexed slices | Embedding tables, sparse features | `lr=1e-3`, `betas=(0.9, 0.999)` |
 | **ScheduleFree**| $2\times$ (internal eval point) | Zero-scheduler training loops | `warmup_steps=500`, `weight_decay=0.01` |
-

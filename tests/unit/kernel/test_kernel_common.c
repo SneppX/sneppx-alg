@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * Kernel Unit Tests — SKELETON
  * VERSION: v0.5
@@ -22,10 +21,11 @@
  * tensor operations, optimizer, thread pool, autodiff.
  */
 
-#include <stdio.h>
 #include "test_gtest.h"
+#include <stdio.h>
 
-TEST(test_kernel_common, suite) {
+TEST(test_kernel_common, suite)
+{
     printf("test_kernel: skeleton — no kernel unit tests implemented\n");
     return;
 }

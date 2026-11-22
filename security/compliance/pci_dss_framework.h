@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_PCI_DSS_REQ_BUILD_MAINTAIN_NETWORK,
     SNEPPX_PCI_DSS_REQ_PROTECT_CARDHOLDER_DATA,
     SNEPPX_PCI_DSS_REQ_MAINTAIN_VULNERABILITY,
@@ -34,7 +34,8 @@ typedef enum {
     SNEPPX_PCI_DSS_REQ_MAINTAIN_POLICY
 } SNEPPXPCIDSSRequirement;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_PCI_STATUS_NOT_APPLICABLE,
     SNEPPX_PCI_STATUS_IN_PLACE,
     SNEPPX_PCI_STATUS_PARTIALLY_IN_PLACE,
@@ -42,7 +43,8 @@ typedef enum {
     SNEPPX_PCI_STATUS_REMEDIATION_SCHEDULED
 } SNEPPXPCIStatus;
 
-typedef struct {
+typedef struct
+{
     uint32_t req_number;
     uint32_t sub_req_number;
     char requirement_text[512];
@@ -57,7 +59,8 @@ typedef struct {
     uint8_t manual_test : 1;
 } SNEPPXPCIDSSRequirementItem;
 
-typedef struct {
+typedef struct
+{
     char pan[19];
     char cardholder_name[64];
     char expiration[8];
@@ -78,7 +81,8 @@ typedef struct {
     size_t access_log_len;
 } SNEPPXPCICardholderRecord;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_records;
     SNEPPXPCICardholderRecord records[SNEPPX_PCI_DSS_MAX_CARDHOLDER_RECORDS];
     uint32_t num_stored;
@@ -88,7 +92,8 @@ typedef struct {
     uint32_t num_access_events_30d;
 } SNEPPXPCICardholderDataEnv;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_requirements;
     SNEPPXPCIDSSRequirementItem requirements[SNEPPX_PCI_DSS_SUB_REQUIREMENTS];
     uint64_t assessment_date;
@@ -109,13 +114,15 @@ typedef struct {
 
 int snepx_pci_dss_assessment_init(SNEPPXPCIDSSAssessment* assessment, const char* saq_type);
 int snepx_pci_dss_add_requirement(SNEPPXPCIDSSAssessment* assessment, const SNEPPXPCIDSSRequirementItem* req);
-int snepx_pci_dss_update_status(SNEPPXPCIDSSAssessment* assessment, uint32_t req_number, uint32_t sub_req, SNEPPXPCIStatus status);
+int snepx_pci_dss_update_status(SNEPPXPCIDSSAssessment* assessment, uint32_t req_number, uint32_t sub_req,
+                                SNEPPXPCIStatus status);
 int snepx_pci_dss_generate_asc(SNEPPXPCIDSSAssessment* assessment, uint8_t* asc_out, size_t* asc_len);
 int snepx_pci_dss_generate_roc(SNEPPXPCIDSSAssessment* assessment, uint8_t* roc_out, size_t* roc_len);
 int snepx_pci_dss_summary(SNEPPXPCIDSSAssessment* assessment, char* summary_out, size_t summary_max);
 
 int snepx_pci_dss_cardholder_store(SNEPPXPCICardholderDataEnv* env, const SNEPPXPCICardholderRecord* record);
-int snepx_pci_dss_cardholder_retrieve(SNEPPXPCICardholderDataEnv* env, const char* pan, SNEPPXPCICardholderRecord* record);
+int snepx_pci_dss_cardholder_retrieve(SNEPPXPCICardholderDataEnv* env, const char* pan,
+                                      SNEPPXPCICardholderRecord* record);
 int snepx_pci_dss_cardholder_delete(SNEPPXPCICardholderDataEnv* env, const char* pan);
 int snepx_pci_dss_cardholder_purge_expired(SNEPPXPCICardholderDataEnv* env);
 int snepx_pci_dss_cardholder_mask(SNEPPXPCICardholderDataEnv* env);

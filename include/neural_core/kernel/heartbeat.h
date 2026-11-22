@@ -5,9 +5,9 @@
 #include <stdint.h>
 
 #ifdef _WIN32
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
 /*
  * SNEPPX - Heartbeat
  *
@@ -23,13 +23,12 @@
  *
  */
 
-
 typedef SOCKET snepx_socket_t;
 #define SNEPPX_INVALID_SOCKET INVALID_SOCKET
 #else
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 typedef int snepx_socket_t;
 #define SNEPPX_INVALID_SOCKET (-1)
@@ -39,7 +38,8 @@ typedef int snepx_socket_t;
 #define SNEPPX_HB_PORT_BASE 28700
 #define SNEPPX_HB_MAGIC 0x534E5048
 
-typedef enum {
+typedef enum
+{
     SNEPPX_HB_ALIVE = 0,
     SNEPPX_HB_SUSPECT = 1,
     SNEPPX_HB_DEAD = 2,
@@ -47,18 +47,20 @@ typedef enum {
     SNEPPX_HB_LEAVE = 4
 } SNEPPXHeartbeatStatus;
 
-typedef struct {
+typedef struct
+{
     uint32_t magic;
-    int32_t  rank;
-    int32_t  world_size;
+    int32_t rank;
+    int32_t world_size;
     SNEPPXHeartbeatStatus status;
-    int64_t  timestamp_ns;
+    int64_t timestamp_ns;
     uint32_t step;
-    float    avg_loss;
-    uint8_t  reserved[32];
+    float avg_loss;
+    uint8_t reserved[32];
 } SNEPPXHeartbeatMessage;
 
-typedef struct {
+typedef struct
+{
     int world_size;
     int rank;
     int heartbeat_interval_ms;
@@ -91,8 +93,7 @@ typedef struct {
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_init(SNEPPXHeartbeat** hb, int world_size, int rank,
-                           int interval_ms, int timeout_ms);
+int SNEPPX_heartbeat_init(SNEPPXHeartbeat** hb, int world_size, int rank, int interval_ms, int timeout_ms);
 /**
  * @brief Perform Heartbeat Listen.
  *
@@ -102,7 +103,7 @@ int  SNEPPX_heartbeat_init(SNEPPXHeartbeat** hb, int world_size, int rank,
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_listen(SNEPPXHeartbeat* hb, const char* addr, int port);
+int SNEPPX_heartbeat_listen(SNEPPXHeartbeat* hb, const char* addr, int port);
 /**
  * @brief Perform Heartbeat Connect.
  *
@@ -113,8 +114,7 @@ int  SNEPPX_heartbeat_listen(SNEPPXHeartbeat* hb, const char* addr, int port);
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_connect(SNEPPXHeartbeat* hb, int peer_rank,
-                              const char* addr, int port);
+int SNEPPX_heartbeat_connect(SNEPPXHeartbeat* hb, int peer_rank, const char* addr, int port);
 /**
  * @brief Perform Heartbeat Send.
  *
@@ -124,8 +124,7 @@ int  SNEPPX_heartbeat_connect(SNEPPXHeartbeat* hb, int peer_rank,
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_send(SNEPPXHeartbeat* hb, int peer_rank,
-                           SNEPPXHeartbeatStatus status);
+int SNEPPX_heartbeat_send(SNEPPXHeartbeat* hb, int peer_rank, SNEPPXHeartbeatStatus status);
 /**
  * @brief Perform Heartbeat Recv.
  *
@@ -135,8 +134,7 @@ int  SNEPPX_heartbeat_send(SNEPPXHeartbeat* hb, int peer_rank,
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_recv(SNEPPXHeartbeat* hb, SNEPPXHeartbeatMessage* msg,
-                           int timeout_ms);
+int SNEPPX_heartbeat_recv(SNEPPXHeartbeat* hb, SNEPPXHeartbeatMessage* msg, int timeout_ms);
 /**
  * @brief Perform Heartbeat Check Alive.
  *
@@ -144,7 +142,7 @@ int  SNEPPX_heartbeat_recv(SNEPPXHeartbeat* hb, SNEPPXHeartbeatMessage* msg,
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_check_alive(SNEPPXHeartbeat* hb);
+int SNEPPX_heartbeat_check_alive(SNEPPXHeartbeat* hb);
 /**
  * @brief Perform Heartbeat Get Alive Ranks.
  *
@@ -154,8 +152,7 @@ int  SNEPPX_heartbeat_check_alive(SNEPPXHeartbeat* hb);
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_heartbeat_get_alive_ranks(SNEPPXHeartbeat* hb, int* alive_ranks,
-                                      int max_count);
+int SNEPPX_heartbeat_get_alive_ranks(SNEPPXHeartbeat* hb, int* alive_ranks, int max_count);
 /**
  * @brief Destroy Heartbeat.
  *

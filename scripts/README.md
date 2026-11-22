@@ -35,6 +35,7 @@ powershell -ExecutionPolicy Bypass -File scripts\dev-tools.ps1
 ```
 
 The chain runs:
+
 1. Security scan (`sneppx-analyze`) over `kernel/`, `algorithms/`, `net/`, `security/`
 2. Formatting / lint (`sneppx-format`)
 3. Circular dependency check (`sneppx-deps`)
@@ -45,6 +46,7 @@ The chain runs:
 Tool configuration lives in `.sneppx-tools.json` at the repo root.
 
 Sanitizer scripts perform:
+
 1. CMake configure with `-DSNEPPX_ENABLE_ASAN=ON -DSNEPPX_ENABLE_UBSAN=ON`
 2. Build all targets
 3. Run ctest with output-on-failure

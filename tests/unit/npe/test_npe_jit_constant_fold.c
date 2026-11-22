@@ -1,9 +1,9 @@
 #include "neural_programming_engine.h"
 #include "test_gtest.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Npe Jit Constant Fold
@@ -20,11 +20,8 @@
  *
  */
 
-
-
-
-
-static void test_constant_fold_identity(void) {
+static void test_constant_fold_identity(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(64);
     SX_ASSERT(prog != NULL, "program created");
 
@@ -47,7 +44,8 @@ static void test_constant_fold_identity(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-static void test_constant_fold_add(void) {
+static void test_constant_fold_add(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(64);
     SX_ASSERT(prog != NULL, "program created");
 
@@ -73,7 +71,8 @@ static void test_constant_fold_add(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-static void test_constant_fold_null_memory(void) {
+static void test_constant_fold_null_memory(void)
+{
     SNEPPXNPEProgram* prog = SNEPPX_npe_program_create(16);
     SNEPPXNPEInstruction load = {SNEPPX_LOAD, 0, -1, -1, 0, {1, 1}, {0, 0}};
     SNEPPX_npe_program_append(prog, load);
@@ -87,7 +86,15 @@ static void test_constant_fold_null_memory(void) {
     SNEPPX_npe_program_destroy(prog);
 }
 
-
-TEST(test_npe_jit_constant_fold, constant_fold_identity) { test_constant_fold_identity(); }
-TEST(test_npe_jit_constant_fold, constant_fold_add) { test_constant_fold_add(); }
-TEST(test_npe_jit_constant_fold, constant_fold_null_memory) { test_constant_fold_null_memory(); }
+TEST(test_npe_jit_constant_fold, constant_fold_identity)
+{
+    test_constant_fold_identity();
+}
+TEST(test_npe_jit_constant_fold, constant_fold_add)
+{
+    test_constant_fold_add();
+}
+TEST(test_npe_jit_constant_fold, constant_fold_null_memory)
+{
+    test_constant_fold_null_memory();
+}

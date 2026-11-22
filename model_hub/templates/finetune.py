@@ -22,32 +22,70 @@ import numpy as np
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fine-tune a model from the SNEPPX Hub")
-    parser.add_argument("--model", required=True, help="Model name (e.g. sneppx/llama-7b)")
-    parser.add_argument("--version", default="latest", help="Model version (default: latest)")
-    parser.add_argument("--dataset", required=True, help="Path to training dataset (JSONL or CSV)")
-    parser.add_argument("--output-dir", default="./outputs", help="Output directory for checkpoints")
-    parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs")
+    parser = argparse.ArgumentParser(
+        description="Fine-tune a model from the SNEPPX Hub"
+    )
+    parser.add_argument(
+        "--model", required=True, help="Model name (e.g. sneppx/llama-7b)"
+    )
+    parser.add_argument(
+        "--version", default="latest", help="Model version (default: latest)"
+    )
+    parser.add_argument(
+        "--dataset", required=True, help="Path to training dataset (JSONL or CSV)"
+    )
+    parser.add_argument(
+        "--output-dir", default="./outputs", help="Output directory for checkpoints"
+    )
+    parser.add_argument(
+        "--epochs", type=int, default=3, help="Number of training epochs"
+    )
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
     parser.add_argument("--lr", type=float, default=2e-5, help="Learning rate")
     parser.add_argument("--weight-decay", type=float, default=0.01, help="Weight decay")
     parser.add_argument("--warmup-steps", type=int, default=100, help="Warmup steps")
-    parser.add_argument("--max-seq-len", type=int, default=2048, help="Maximum sequence length")
-    parser.add_argument("--lora-rank", type=int, default=0, help="LoRA rank (0 = no LoRA)")
+    parser.add_argument(
+        "--max-seq-len", type=int, default=2048, help="Maximum sequence length"
+    )
+    parser.add_argument(
+        "--lora-rank", type=int, default=0, help="LoRA rank (0 = no LoRA)"
+    )
     parser.add_argument("--lora-alpha", type=int, default=16, help="LoRA alpha")
     parser.add_argument("--lora-dropout", type=float, default=0.05, help="LoRA dropout")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--eval-dataset", default=None, help="Path to eval dataset")
-    parser.add_argument("--push-to-hub", action="store_true", help="Push fine-tuned model to hub")
+    parser.add_argument(
+        "--push-to-hub", action="store_true", help="Push fine-tuned model to hub"
+    )
     parser.add_argument("--hub-username", default=None, help="Hub username for upload")
     parser.add_argument("--hub-token", default=None, help="Hub API token")
-    parser.add_argument("--use-flash-attn", action="store_true", help="Use Flash Attention (CUDA only)")
-    parser.add_argument("--mixed-precision", default="fp16", choices=["fp16", "bf16", "fp32"], help="Mixed precision")
-    parser.add_argument("--gradient-accumulation", type=int, default=1, help="Gradient accumulation steps")
-    parser.add_argument("--max-grad-norm", type=float, default=1.0, help="Max gradient norm")
-    parser.add_argument("--logging-steps", type=int, default=10, help="Log every N steps")
-    parser.add_argument("--save-steps", type=int, default=500, help="Save checkpoint every N steps")
-    parser.add_argument("--num-workers", type=int, default=4, help="Data loading workers")
+    parser.add_argument(
+        "--use-flash-attn", action="store_true", help="Use Flash Attention (CUDA only)"
+    )
+    parser.add_argument(
+        "--mixed-precision",
+        default="fp16",
+        choices=["fp16", "bf16", "fp32"],
+        help="Mixed precision",
+    )
+    parser.add_argument(
+        "--gradient-accumulation",
+        type=int,
+        default=1,
+        help="Gradient accumulation steps",
+    )
+    parser.add_argument(
+        "--max-grad-norm", type=float, default=1.0, help="Max gradient norm"
+    )
+    parser.add_argument(
+        "--logging-steps", type=int, default=10, help="Log every N steps"
+    )
+    parser.add_argument(
+        "--save-steps", type=int, default=500, help="Save checkpoint every N steps"
+    )
+    parser.add_argument(
+        "--num-workers", type=int, default=4, help="Data loading workers"
+    )
 
     args = parser.parse_args()
 
@@ -56,7 +94,9 @@ def main():
         from SneppX_ALG import Hub, Tensor, AdamW, Trainer, LoRAConfig, apply_lora
         from SneppX_ALG.interface_bindings.dataset import load_dataset
     except ImportError as e:
-        print("Error: SneppX_ALG not found. Install with: pip install -e bindings/python")
+        print(
+            "Error: SneppX_ALG not found. Install with: pip install -e bindings/python"
+        )
         sys.exit(1)
 
     # Download model from hub
@@ -66,6 +106,7 @@ def main():
     if isinstance(model, str):
         # It's a directory path — load from config
         from SneppX_ALG import build_model_from_config
+
         with open(os.path.join(model, "config.json")) as f:
             config = json.load(f)
         model = build_model_from_config(config)
@@ -88,7 +129,9 @@ def main():
     # Training config
     from SneppX_ALG import TrainConfig, cosine_schedule_with_warmup
 
-    total_steps = len(dataset) * args.epochs // (args.batch_size * args.gradient_accumulation)
+    total_steps = (
+        len(dataset) * args.epochs // (args.batch_size * args.gradient_accumulation)
+    )
     warmup_steps = min(args.warmup_steps, total_steps // 10)
 
     train_cfg = TrainConfig(
@@ -178,6 +221,7 @@ def main():
                 dst = os.path.join(upload_dir, f)
                 if os.path.isfile(src):
                     import shutil
+
                     shutil.copy2(src, dst)
 
         # Write model card

@@ -1,7 +1,7 @@
 #include "multidimensional_tensor_engine.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 /*
@@ -19,12 +19,8 @@
  *
  */
 
-
-
-
-
-
-static void test_create_2d(void) {
+static void test_create_2d(void)
+{
     size_t shape[] = {2, 3};
     SNEPPXTensor* t = SNEPPX_tensor_create(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
@@ -35,29 +31,34 @@ static void test_create_2d(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-static void test_zeros(void) {
+static void test_zeros(void)
+{
     size_t shape[] = {2, 2};
     SNEPPXTensor* t = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
-    float* data = (float*)t->data;
-    for (size_t i = 0; i < 4; i++) {
+    float* data = (float*) t->data;
+    for (size_t i = 0; i < 4; i++)
+    {
         SX_ASSERT(data[i] == 0.0f, "all zeros");
     }
     SNEPPX_tensor_destroy(t);
 }
 
-static void test_ones(void) {
+static void test_ones(void)
+{
     size_t shape[] = {2, 2};
     SNEPPXTensor* t = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
-    float* data = (float*)t->data;
-    for (size_t i = 0; i < 4; i++) {
+    float* data = (float*) t->data;
+    for (size_t i = 0; i < 4; i++)
+    {
         SX_ASSERT(data[i] == 1.0f, "all ones");
     }
     SNEPPX_tensor_destroy(t);
 }
 
-static void test_set_get(void) {
+static void test_set_get(void)
+{
     size_t shape[] = {3, 3};
     SNEPPXTensor* t = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
@@ -68,22 +69,27 @@ static void test_set_get(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-static void test_randn_range(void) {
+static void test_randn_range(void)
+{
     size_t shape[] = {100};
     SNEPPXTensor* t = SNEPPX_tensor_randn(shape, 1, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
-    float* data = (float*)t->data;
+    float* data = (float*) t->data;
     float min_val = data[0], max_val = data[0];
-    for (size_t i = 0; i < 100; i++) {
-        if (data[i] < min_val) min_val = data[i];
-        if (data[i] > max_val) max_val = data[i];
+    for (size_t i = 0; i < 100; i++)
+    {
+        if (data[i] < min_val)
+            min_val = data[i];
+        if (data[i] > max_val)
+            max_val = data[i];
     }
     SX_ASSERT(min_val > -5.0f, "min > -5.0");
     SX_ASSERT(max_val < 5.0f, "max < 5.0");
     SNEPPX_tensor_destroy(t);
 }
 
-static void test_print(void) {
+static void test_print(void)
+{
     size_t shape[] = {2, 3};
     SNEPPXTensor* t = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor not null");
@@ -91,14 +97,32 @@ static void test_print(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-
-TEST(test_tensor, test_create_2d) { test_create_2d(); }
-TEST(test_tensor, test_zeros) { test_zeros(); }
-TEST(test_tensor, test_ones) { test_ones(); }
-TEST(test_tensor, test_set_get) { test_set_get(); }
-TEST(test_tensor, test_randn_range) { test_randn_range(); }
-TEST(test_tensor, test_print) { test_print(); }
-static void test_element_access_bounds_and_null_safety(void) {
+TEST(test_tensor, test_create_2d)
+{
+    test_create_2d();
+}
+TEST(test_tensor, test_zeros)
+{
+    test_zeros();
+}
+TEST(test_tensor, test_ones)
+{
+    test_ones();
+}
+TEST(test_tensor, test_set_get)
+{
+    test_set_get();
+}
+TEST(test_tensor, test_randn_range)
+{
+    test_randn_range();
+}
+TEST(test_tensor, test_print)
+{
+    test_print();
+}
+static void test_element_access_bounds_and_null_safety(void)
+{
     size_t shape[] = {2, 2};
     SNEPPXTensor* tensor = SNEPPX_tensor_zeros(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT_NOT_NULL(tensor, "bounds tensor");
@@ -115,4 +139,7 @@ static void test_element_access_bounds_and_null_safety(void) {
     SNEPPX_tensor_destroy(tensor);
 }
 
-TEST(test_tensor, element_access_bounds_and_null_safety) { test_element_access_bounds_and_null_safety(); }
+TEST(test_tensor, element_access_bounds_and_null_safety)
+{
+    test_element_access_bounds_and_null_safety();
+}

@@ -1,7 +1,7 @@
-#include "sparse_expert_routing.h"
 #include "neural_core/kernel/polymorphic_memory_allocator.h"
-#include <stdio.h>
+#include "sparse_expert_routing.h"
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /*
@@ -19,37 +19,56 @@
  *
  */
 
-
-int main(void) {
+int main(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.num_experts = 4; cfg.num_active = 2; cfg.input_dim = 16;
-    cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.num_experts = 4;
+    cfg.num_active = 2;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
 
     SNEPPXSERModel* model = SNEPPX_ser_model_create(&cfg, 42, 1);
-    if (!model) { printf("ERROR: create model\n"); return 1; }
+    if (!model)
+    {
+        printf("ERROR: create model\n");
+        return 1;
+    }
 
     size_t shape_in[] = {8, 16};
     SNEPPXTensor* input = SNEPPX_tensor_randn(shape_in, 2, SNEPPX_FLOAT32);
-    if (!input) { printf("ERROR: create input\n"); return 1; }
+    if (!input)
+    {
+        printf("ERROR: create input\n");
+        return 1;
+    }
 
     SNEPPXTensor* output = NULL;
     SNEPPX_ser_forward(model->layers[0], input, &output);
-    if (!output) { printf("ERROR: forward\n"); return 1; }
+    if (!output)
+    {
+        printf("ERROR: forward\n");
+        return 1;
+    }
 
     printf("Output shape: [%zu, %zu]\n", output->shape[0], output->shape[1]);
 
     SNEPPXTensor* gw = NULL;
     int* ei = NULL;
     SNEPPX_ser_route(model->layers[0], input, &gw, &ei);
-    if (gw && ei) {
+    if (gw && ei)
+    {
         int counts[4] = {0};
-        for (size_t t = 0; t < 8; t++) {
-            for (size_t k = 0; k < 2; k++) {
+        for (size_t t = 0; t < 8; t++)
+        {
+            for (size_t k = 0; k < 2; k++)
+            {
                 counts[ei[t * 2 + k]]++;
             }
         }
         printf("Routing distribution (tokens per expert): ");
-        for (int i = 0; i < 4; i++) printf("%d ", counts[i]);
+        for (int i = 0; i < 4; i++)
+            printf("%d ", counts[i]);
         printf("\n");
 
         float loss = SNEPPX_ser_load_balance_loss(gw, ei, 8);
@@ -59,11 +78,14 @@ int main(void) {
         SNEPPX_free(ei, 8 * 2 * sizeof(int));
     }
 
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int has_nan = 0, has_inf = 0;
-    for (size_t i = 0; i < output->size; i++) {
-        if (isnan(od[i])) has_nan = 1;
-        if (isinf(od[i])) has_inf = 1;
+    for (size_t i = 0; i < output->size; i++)
+    {
+        if (isnan(od[i]))
+            has_nan = 1;
+        if (isinf(od[i]))
+            has_inf = 1;
     }
     printf("NaN: %s, Inf: %s\n", has_nan ? "YES" : "NO", has_inf ? "YES" : "NO");
 

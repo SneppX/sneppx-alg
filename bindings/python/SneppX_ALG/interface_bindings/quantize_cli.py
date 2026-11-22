@@ -7,20 +7,45 @@ import logging
 
 def main():
     parser = argparse.ArgumentParser(description="SneppX Model Quantization")
-    parser.add_argument("--mode", type=str, default="int4", choices=["int4", "int8", "fp8", "awq", "gptq"],
-                        help="Quantization mode")
-    parser.add_argument("--granularity", type=str, default="per_channel", choices=["per_tensor", "per_channel"],
-                        help="Quantization granularity")
-    parser.add_argument("--model-config", type=str, required=True, help="Path to model config JSON")
-    parser.add_argument("--output", type=str, default=None, help="Output path for quantized weights")
-    parser.add_argument("--skip-layers", type=str, nargs="*", default=["lm_head", "embed_tokens"],
-                        help="Layer name substrings to skip")
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="int4",
+        choices=["int4", "int8", "fp8", "awq", "gptq"],
+        help="Quantization mode",
+    )
+    parser.add_argument(
+        "--granularity",
+        type=str,
+        default="per_channel",
+        choices=["per_tensor", "per_channel"],
+        help="Quantization granularity",
+    )
+    parser.add_argument(
+        "--model-config", type=str, required=True, help="Path to model config JSON"
+    )
+    parser.add_argument(
+        "--output", type=str, default=None, help="Output path for quantized weights"
+    )
+    parser.add_argument(
+        "--skip-layers",
+        type=str,
+        nargs="*",
+        default=["lm_head", "embed_tokens"],
+        help="Layer name substrings to skip",
+    )
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
 
     from .quantization import QuantMode, QuantGranularity
-    from .quantized_serve import QuantizedModelConfig, quantize_model_weights, estimate_model_size_mb
+    from .quantized_serve import (
+        QuantizedModelConfig,
+        quantize_model_weights,
+        estimate_model_size_mb,
+    )
 
     mode_map = {
         "int4": QuantMode.INT4_SYM,
@@ -46,6 +71,7 @@ def main():
     model_params = {}
     for name, w in config.get("weights", {}).items():
         import numpy as np
+
         model_params[name] = np.array(w, dtype=np.float32)
 
     logging.info(f"Quantizing {len(model_params)} layers with mode={args.mode}...")
@@ -55,6 +81,7 @@ def main():
 
     if args.output:
         import pickle
+
         with open(args.output, "wb") as f:
             pickle.dump(quantized, f)
         logging.info(f"Saved quantized weights to {args.output}")

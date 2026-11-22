@@ -25,8 +25,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_CFI_SHARED,
     SNEPPX_CFI_PURE_VCALL,
     SNEPPX_CFI_NON_VIRTUAL_CALL,
@@ -34,7 +34,8 @@ typedef enum {
     SNEPPX_CFI_NULL_POINTER
 } SNEPPXCFICheckType;
 
-typedef struct {
+typedef struct
+{
     uint64_t target_address;
     uint64_t expected_type_id;
     SNEPPXCFICheckType check_type;
@@ -43,14 +44,16 @@ typedef struct {
     uint8_t passthrough : 1;
 } SNEPPXCFICheck;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_checks;
     SNEPPXCFICheck checks[SNEPPX_CFI_MAX_INDIRECT_CALLS];
     uint8_t shadow_table[SNEPPX_CFI_MAX_INDIRECT_CALLS * sizeof(uint64_t)];
     uint64_t cfi_hash_seed;
 } SNEPPXCFIState;
 
-typedef struct {
+typedef struct
+{
     uint64_t shadow_stack[4096];
     uint32_t shadow_stack_pointer;
     uint64_t return_address_cache[1024];
@@ -58,7 +61,8 @@ typedef struct {
     uint64_t last_known_ret;
 } SNEPPXShadowStack;
 
-typedef struct {
+typedef struct
+{
     uint8_t* tag_table;
     size_t tag_table_size;
     uint64_t tag_generation_key;
@@ -67,7 +71,8 @@ typedef struct {
     uint8_t async_tag_clear : 1;
 } SNEPPXMemtagState;
 
-typedef struct {
+typedef struct
+{
     uint64_t ibt_enabled : 1;
     uint64_t shstk_enabled : 1;
     uint64_t endbr64_present : 1;
@@ -99,7 +104,8 @@ int snepx_cet_verify_endbr(const void* target);
 int snepx_cet_set_ibt_policy(SNEPPXCetState* cet, uint8_t track_indirect);
 
 // Pointer authentication extensions
-typedef struct {
+typedef struct
+{
     uint64_t pac_key_a[2];
     uint64_t pac_key_b[2];
     uint64_t pac_key_g[2];
@@ -117,7 +123,8 @@ int snepx_bti_register_landing(SNEPPXBTIState* bti, const void* target);
 int snepx_bti_check_landing(SNEPPXBTIState* bti, const void* target);
 
 // Intel PT / Branch tracing
-typedef struct {
+typedef struct
+{
     uint64_t config_bits;
     size_t buffer_size;
     uint8_t* trace_buffer;

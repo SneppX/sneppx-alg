@@ -70,16 +70,27 @@ class ContinuousBatchScheduler:
         self._lock = threading.Lock()
         self._next_id = 0
 
-    def submit(self, prompt: str, prompt_tokens: List[int],
-               max_new_tokens: int = 256, priority: int = 0,
-               temperature: float = 1.0, top_k: int = 0,
-               top_p: float = 1.0) -> str:
+    def submit(
+        self,
+        prompt: str,
+        prompt_tokens: List[int],
+        max_new_tokens: int = 256,
+        priority: int = 0,
+        temperature: float = 1.0,
+        top_k: int = 0,
+        top_p: float = 1.0,
+    ) -> str:
         req_id = f"req_{int(time.time() * 1000)}_{self._next_id}"
         self._next_id += 1
         req = ScheduledRequest(
-            id=req_id, prompt=prompt, prompt_tokens=prompt_tokens,
-            max_new_tokens=max_new_tokens, priority=priority,
-            temperature=temperature, top_k=top_k, top_p=top_p,
+            id=req_id,
+            prompt=prompt,
+            prompt_tokens=prompt_tokens,
+            max_new_tokens=max_new_tokens,
+            priority=priority,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
         )
         with self._lock:
             self._pending.append(req)
@@ -103,8 +114,7 @@ class ContinuousBatchScheduler:
                 active.extend(batch)
         return active
 
-    def complete(self, req_id: str, generated_tokens: List[int],
-                 generated_text: str):
+    def complete(self, req_id: str, generated_tokens: List[int], generated_text: str):
         with self._lock:
             req = self._running.pop(req_id, None)
             if req is None:
@@ -112,13 +122,16 @@ class ContinuousBatchScheduler:
             req.status = RequestStatus.COMPLETED
             req.end_time = time.time()
             total_ms = (req.end_time - req.start_time) * 1000
-            self._completed.append(BatchResult(
-                request_id=req_id, generated_text=generated_text,
-                token_ids=req.prompt_tokens + generated_tokens,
-                prompt_tokens=len(req.prompt_tokens),
-                completion_tokens=len(generated_tokens),
-                total_time_ms=total_ms,
-            ))
+            self._completed.append(
+                BatchResult(
+                    request_id=req_id,
+                    generated_text=generated_text,
+                    token_ids=req.prompt_tokens + generated_tokens,
+                    prompt_tokens=len(req.prompt_tokens),
+                    completion_tokens=len(generated_tokens),
+                    total_time_ms=total_ms,
+                )
+            )
 
     def cancel(self, req_id: str):
         with self._lock:
@@ -161,7 +174,11 @@ def continuous_generate_loop(
         next_tokens, kv_caches = model_fn(input_ids, positions)
 
         for i, req in enumerate(batch):
-            next_id = next_tokens[i][0] if isinstance(next_tokens[i], list) else next_tokens[i]
+            next_id = (
+                next_tokens[i][0]
+                if isinstance(next_tokens[i], list)
+                else next_tokens[i]
+            )
             req.generated_tokens.append(next_id)
 
             if len(req.generated_tokens) >= req.max_new_tokens:

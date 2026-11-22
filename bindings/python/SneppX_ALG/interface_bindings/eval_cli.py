@@ -6,15 +6,22 @@ import logging
 
 def main():
     parser = argparse.ArgumentParser(description="SneppX LM Evaluation Harness")
-    parser.add_argument("--tasks", type=str, nargs="+", default=["mmlu", "gsm8k", "humaneval"],
-                        help="Tasks to evaluate")
+    parser.add_argument(
+        "--tasks",
+        type=str,
+        nargs="+",
+        default=["mmlu", "gsm8k", "humaneval"],
+        help="Tasks to evaluate",
+    )
     parser.add_argument("--num-fewshot", type=int, default=0, help="Few-shot examples")
     parser.add_argument("--limit", type=int, default=None, help="Max samples per task")
     parser.add_argument("--output", type=str, default=None, help="JSON output path")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
 
     from .eval_harness import EvalHarness, EvalConfig
 

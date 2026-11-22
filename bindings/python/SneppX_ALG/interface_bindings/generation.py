@@ -393,7 +393,9 @@ def beam_search(
     input_ids = np.repeat(input_ids, num_beams, axis=0)
     if past_key_values is not None:
         past_key_values = [
-            (k, v) for layer_kv in past_key_values for k, v in [layer_kv]  # untested
+            (k, v)
+            for layer_kv in past_key_values
+            for k, v in [layer_kv]  # untested
         ]
 
     done_beams = [[] for _ in range(batch_size)]

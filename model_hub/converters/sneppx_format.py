@@ -38,7 +38,9 @@ def load_sneppx_native(path: str) -> Tuple[Dict[str, Any], Dict[str, bytes]]:
             raise ValueError(f"Unsupported SNEPPX format version: {version}")
 
         meta_size = struct.unpack(">I", f.read(4))[0]
-        metadata = json.loads(f.read(meta_size).decode("utf-8")) if meta_size > 0 else {}
+        metadata = (
+            json.loads(f.read(meta_size).decode("utf-8")) if meta_size > 0 else {}
+        )
 
         num_tensors = struct.unpack(">I", f.read(4))[0]
 
@@ -57,18 +59,22 @@ def load_sneppx_native(path: str) -> Tuple[Dict[str, Any], Dict[str, bytes]]:
             data = f.read(data_size)
 
             tensors[name] = data
-            tensor_meta.append({
-                "name": name,
-                "shape": shape,
-                "dtype_code": dtype_code,
-                "byte_size": data_size,
-            })
+            tensor_meta.append(
+                {
+                    "name": name,
+                    "shape": shape,
+                    "dtype_code": dtype_code,
+                    "byte_size": data_size,
+                }
+            )
 
         metadata["_tensors"] = tensor_meta
         return metadata, tensors
 
 
-def save_sneppx_native(path: str, tensors: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None) -> None:
+def save_sneppx_native(
+    path: str, tensors: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+) -> None:
     """Save tensors in SNEPPX native format.
 
     Format:
@@ -103,17 +109,20 @@ def save_sneppx_native(path: str, tensors: Dict[str, Any], metadata: Optional[Di
     for name, arr in tensors.items():
         arr_check = np.ascontiguousarray(arr)
         dtype_code = dtype_map.get(arr_check.dtype.type, 1)
-        tensor_meta.append({
-            "name": name,
-            "shape": list(arr_check.shape),
-            "dtype_code": dtype_code,
-            "byte_size": arr_check.nbytes,
-        })
+        tensor_meta.append(
+            {
+                "name": name,
+                "shape": list(arr_check.shape),
+                "dtype_code": dtype_code,
+                "byte_size": arr_check.nbytes,
+            }
+        )
 
     meta["_tensors"] = tensor_meta
 
     # Serialize metadata first
     import io
+
     meta_json = json.dumps(meta)
     meta_bytes = meta_json.encode("utf-8")
 

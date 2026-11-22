@@ -21,6 +21,7 @@ If you need help with SNEPPX-Alg, here are the available channels and resources:
 
 1. **`ModuleNotFoundError: No module named 'SneppX_ALG'`**:
    Ensure `bindings/python` is added to your Python path:
+
    ```powershell
    $env:PYTHONPATH = "bindings/python"
    ```
@@ -30,6 +31,7 @@ If you need help with SNEPPX-Alg, here are the available channels and resources:
 
 3. **C Compiler missing during pip install**:
    The pure-Python / NumPy engine runs out of the box without compiling C extensions:
+
    ```powershell
    pip install --no-build-isolation sneppx-alg
    ```

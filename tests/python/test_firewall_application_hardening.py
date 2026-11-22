@@ -33,14 +33,17 @@ def test_header_names_are_case_insensitive_for_security_checks():
 
 def test_rejects_duplicate_headers_after_case_normalization():
     firewall = FirewallApplication()
-    result = firewall.check_request("GET", "/", {"Host": "example.test", "host": "attacker.test"})
+    result = firewall.check_request(
+        "GET", "/", {"Host": "example.test", "host": "attacker.test"}
+    )
     assert not result.allowed
 
 
 def test_rejects_content_length_mismatch():
     firewall = FirewallApplication()
     result = firewall.check_request(
-        "POST", "/v1/data",
+        "POST",
+        "/v1/data",
         {"content-type": "application/json", "content-length": "3"},
         body=b"{}",
     )
@@ -51,7 +54,8 @@ def test_rejects_content_length_mismatch():
 def test_rejects_oversized_declared_content_length_before_body_read():
     firewall = FirewallApplication(max_body_size=16)
     result = firewall.check_request(
-        "POST", "/v1/data",
+        "POST",
+        "/v1/data",
         {"content-type": "application/json", "content-length": "100"},
     )
     assert not result.allowed
@@ -72,7 +76,9 @@ def test_rejects_header_count_and_value_limit():
 def test_benign_command_names_are_not_blocked_as_injection():
     firewall = FirewallApplication()
     result = firewall.check_request(
-        "POST", "/v1/search", {"content-type": "application/json"},
+        "POST",
+        "/v1/search",
+        {"content-type": "application/json"},
         body=b'{"tool": "curl", "description": "download a report"}',
     )
     assert result.allowed

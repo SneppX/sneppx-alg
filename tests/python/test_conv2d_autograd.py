@@ -224,9 +224,9 @@ def test_nn_conv1d_bias_grad_finite_difference():
         bm = b0.copy()
         bm[i] -= eps
         num_b[i] = (l_of(bp) - l_of(bm)) / (2 * eps)
-    assert np.allclose(ana_b, num_b, atol=1e-2, rtol=1e-2), (
-        f"conv1d bias grad mismatch max|diff|={np.max(np.abs(ana_b - num_b)):.3e}"
-    )
+    assert np.allclose(
+        ana_b, num_b, atol=1e-2, rtol=1e-2
+    ), f"conv1d bias grad mismatch max|diff|={np.max(np.abs(ana_b - num_b)):.3e}"
 
 
 def _conv_transpose2d_fd_check(
@@ -311,9 +311,9 @@ def _conv_transpose_nd_fd_check(ndim, stride, padding, output_padding, spatial=3
     analytic = [t.grad.data.copy() for t in inputs]
     numeric = numerical_grads(f, inputs)
     for a, n in zip(analytic, numeric):
-        assert np.allclose(a, n, atol=1e-2, rtol=1e-2), (
-            f"conv_transpose{ndim}d mismatch max|diff|={np.max(np.abs(a - n)):.3e}"
-        )
+        assert np.allclose(
+            a, n, atol=1e-2, rtol=1e-2
+        ), f"conv_transpose{ndim}d mismatch max|diff|={np.max(np.abs(a - n)):.3e}"
 
 
 def test_conv_transpose1d_grad():

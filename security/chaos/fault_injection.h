@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_CHAOS_FAULT_POD_KILL,
     SNEPPX_CHAOS_FAULT_CONTAINER_KILL,
     SNEPPX_CHAOS_FAULT_NETWORK_DELAY,
@@ -45,7 +45,8 @@ typedef enum {
     SNEPPX_CHAOS_FAULT_CLOCK_SKEW
 } SNEPPXChaosFaultType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_CHAOS_EXPERIMENT_RUNNING,
     SNEPPX_CHAOS_EXPERIMENT_PAUSED,
     SNEPPX_CHAOS_EXPERIMENT_STOPPED,
@@ -54,13 +55,15 @@ typedef enum {
     SNEPPX_CHAOS_EXPERIMENT_ABORTED
 } SNEPPXChaosExperimentStatus;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_CHAOS_HYSTRIX_CLOSED,
     SNEPPX_CHAOS_HYSTRIX_OPEN,
     SNEPPX_CHAOS_HYSTRIX_HALF_OPEN
 } SNEPPXChaosCircuitBreakerStatus;
 
-typedef struct {
+typedef struct
+{
     SNEPPXChaosFaultType fault_type;
     uint8_t* target_selector;
     size_t target_selector_len;
@@ -76,7 +79,8 @@ typedef struct {
     size_t labels_len;
 } SNEPPXChaosFault;
 
-typedef struct {
+typedef struct
+{
     char* name;
     size_t name_len;
     uint8_t* experiment_id;
@@ -97,7 +101,8 @@ typedef struct {
     uint8_t stop_on_failure : 1;
 } SNEPPXChaosExperiment;
 
-typedef struct {
+typedef struct
+{
     char* probe_name;
     size_t probe_name_len;
     uint8_t* endpoint;
@@ -117,7 +122,8 @@ typedef struct {
     uint8_t passing : 1;
 } SNEPPXChaosProbe;
 
-typedef struct {
+typedef struct
+{
     SNEPPXChaosCircuitBreakerStatus hystrix_status;
     uint64_t last_open_ns;
     uint64_t last_half_open_ns;
@@ -130,7 +136,8 @@ typedef struct {
     float success_threshold;
 } SNEPPXChaosCircuitBreaker;
 
-int snepx_chaos_experiment_create(SNEPPXChaosExperiment* exp, const char* name, const uint8_t* hypothesis, size_t hypothesis_len);
+int snepx_chaos_experiment_create(SNEPPXChaosExperiment* exp, const char* name, const uint8_t* hypothesis,
+                                  size_t hypothesis_len);
 int snepx_chaos_experiment_add_fault(SNEPPXChaosExperiment* exp, const SNEPPXChaosFault* fault);
 int snepx_chaos_experiment_add_probe(SNEPPXChaosExperiment* exp, const SNEPPXChaosProbe* probe);
 int snepx_chaos_experiment_run(SNEPPXChaosExperiment* exp);
@@ -151,7 +158,8 @@ int snepx_chaos_disk_fill(uint64_t size_mb, const char* path);
 int snepx_chaos_process_kill(const char* process_name);
 int snepx_chaos_dns_failure(const char* domain);
 
-int snepx_chaos_circuit_breaker_init(SNEPPXChaosCircuitBreaker* cb, float failure_threshold, float success_threshold, uint64_t open_duration_ns);
+int snepx_chaos_circuit_breaker_init(SNEPPXChaosCircuitBreaker* cb, float failure_threshold, float success_threshold,
+                                     uint64_t open_duration_ns);
 int snepx_chaos_circuit_breaker_record_success(SNEPPXChaosCircuitBreaker* cb);
 int snepx_chaos_circuit_breaker_record_failure(SNEPPXChaosCircuitBreaker* cb);
 uint8_t snepx_chaos_circuit_breaker_is_open(SNEPPXChaosCircuitBreaker* cb);

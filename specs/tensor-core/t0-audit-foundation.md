@@ -1,9 +1,11 @@
 # T0 — Tensor Core Audit & Foundation
 
 ## Objective
+
 Audit all existing tensor code, verify/extend the struct and enums, ensure all declarations exist in the header, add stub implementations for any missing functions, create the progress tracker, and verify the build.
 
 ## Critical Rules
+
 - Read every existing tensor file before modifying. Edit, never duplicate.
 - If a function or field already exists, do not recreate it. Extend or skip.
 - All new code must compile. No broken headers.
@@ -20,6 +22,7 @@ Audit all existing tensor code, verify/extend the struct and enums, ensure all d
 Read the header completely. Report:
 
 #### SNEPPXDtype enum
+
 All 13 values must be present:
 
 | Enum Value | Meaning | Byte Size |
@@ -41,6 +44,7 @@ All 13 values must be present:
 If any are missing, add them. The ordering doesn't matter for correctness but should be kept logical (floats grouped, ints grouped, etc.).
 
 #### SNEPPXLayout enum
+
 | Enum Value | Meaning |
 |------------|---------|
 | `SNEPPX_LAYOUT_ROW_MAJOR` | C-style, last dimension contiguous |
@@ -49,6 +53,7 @@ If any are missing, add them. The ordering doesn't matter for correctness but sh
 | `SNEPPX_LAYOUT_TILED` | Tiled for cache efficiency |
 
 #### SNEPPXDevice enum
+
 | Enum Value | Meaning |
 |------------|---------|
 | `SNEPPX_DEVICE_CPU` | Central processing unit |
@@ -59,6 +64,7 @@ If any are missing, add them. The ordering doesn't matter for correctness but sh
 | `SNEPPX_DEVICE_NPU` | Neural processing unit (stub) |
 
 #### SNEPPXTensor struct
+
 All 12 fields must be present:
 
 | Field | Type | Purpose |
@@ -77,16 +83,20 @@ All 12 fields must be present:
 | `backend_handle` | `void*` | Opaque backend-specific handle (NULL for CPU) |
 
 #### Every function declaration
+
 List every function: its name, parameters, return type. Group by category (creation, shape, math, comparison, reduction, linalg, nn, io, utility). Each declaration must be on its own line ending with semicolon.
 
 #### Every macro
+
 List every `#define` (excluding the include guard). Known macros to add:
+
 - `SNEPPX_DTYPE_SIZE(dtype)` — delegates to `SNEPPX_tensor_dtype_size(dtype)`
 - `SNEPPX_DTYPE_IS_FLOAT(dtype)` — expands to 1 for FLOAT32/FLOAT64/FLOAT16/BFLOAT16/FLOAT8
 - `SNEPPX_DTYPE_IS_INT(dtype)` — expands to 1 for INT32/INT64/INT16/INT8/UINT8/BOOL
 - `SNEPPX_DTYPE_IS_COMPLEX(dtype)` — expands to 1 for COMPLEX64/COMPLEX128
 
 #### Total line count
+
 Report the exact line count of the header.
 
 ### 0.2 Read `kernel/tensor/tensor.c`
@@ -94,20 +104,25 @@ Report the exact line count of the header.
 Read the source completely. Report:
 
 #### Every implemented function
+
 For each function declared in the header, check if it has a **real implementation** (not a stub). A real implementation:
+
 - Validates inputs (null checks, bounds checks)
 - Allocates memory via `SNEPPX_malloc` / `aligned_alloc_wrapper`
 - Sets struct fields
 - Returns result or NULL on error
 
 #### Every stub function
+
 A stub is a function that:
+
 - Returns `NULL` unconditionally (for pointer-returning functions)
 - Returns `0` or `0.0f` unconditionally (for value-returning functions)
 - Uses `(void)param;` to suppress unused-parameter warnings
 - Has a `/* TODO */` or similar comment
 
 Known stubs (from original codebase):
+
 - `SNEPPX_tensor_inverse` — returns NULL
 - `SNEPPX_tensor_det` — returns 0.0f
 - `SNEPPX_tensor_conv1d` — returns NULL
@@ -116,7 +131,9 @@ Known stubs (from original codebase):
 - `SNEPPX_tensor_pool2d` — returns NULL
 
 #### Every helper/static function
+
 List all `static` helper functions:
+
 - `compute_offset` — computes byte offset from n-dimensional indices using strides
 - `compute_offset_flat` — computes byte offset from flat index using strides
 - `aligned_alloc_wrapper` — calls `SNEPPX_malloc(size, alignment)`
@@ -129,6 +146,7 @@ List all `static` helper functions:
 - `lcg_state` — global LCG state variable
 
 #### Total line count
+
 Report the exact line count of the source file.
 
 ### 0.3 List All Tensor-Related Files
@@ -144,6 +162,7 @@ Find every file that references `SNEPPXTensor` or `SNEPPX_tensor`:
 ### 0.4 Report Total Existing Tensor LOC
 
 Sum the lines of:
+
 - `multidimensional_tensor_engine.h` (header declarations)
 - `tensor.c` (implementations)
 - `test_tensor.c` (unit tests)
@@ -157,6 +176,7 @@ Do NOT proceed to Step 1 until this audit is complete and reported to the user.
 ## STEP 1 — Extend SNEPPXTensor Struct
 
 ### 1.1 Verify Existing Fields
+
 Read the `SNEPPXTensor` struct definition. Check each of these 12 fields:
 
 ```
@@ -175,9 +195,11 @@ void* backend_handle;  — opaque backend-specific handle
 ```
 
 ### 1.2 Add Missing Fields
+
 If any field is missing, add it to the struct. Maintain the existing field ordering (logical grouping: identity → shape → dtype → device → layout → metadata).
 
 ### 1.3 Report
+
 After verification: all 12 fields present. Report which (if any) were missing and added.
 
 ---
@@ -185,9 +207,11 @@ After verification: all 12 fields present. Report which (if any) were missing an
 ## STEP 2 — Extend SNEPPXDtype Enum + Add Helper Macros
 
 ### 2.1 Verify Enum Values
+
 Check that all 13 enum values exist. If any are missing, add them after the existing values. Do not reorder existing values (it changes their integer assignments and breaks binary compatibility).
 
 ### 2.2 Add Helper Macros
+
 Insert these macros immediately after the `SNEPPXDtype` enum closing brace `} SNEPPXDtype;`:
 
 ```c
@@ -214,9 +238,11 @@ These macros enable compile-time dtype classification without switch statements.
 ## STEP 3 — Extend SNEPPXDevice Enum
 
 ### 3.1 Verify Enum Values
+
 Check for existing values: `SNEPPX_DEVICE_CPU`, `SNEPPX_DEVICE_CUDA`, `SNEPPX_DEVICE_METAL`, `SNEPPX_DEVICE_VULKAN`.
 
 ### 3.2 Add Missing Values
+
 Add these at the end of the enum:
 
 ```c
@@ -231,9 +257,11 @@ These are placeholders for the K0 backend system that will handle hardware abstr
 ## STEP 4 — Extend SNEPPXLayout Enum
 
 ### 4.1 Verify Enum Values
+
 Check for existing values: `SNEPPX_LAYOUT_ROW_MAJOR`, `SNEPPX_LAYOUT_COL_MAJOR`, `SNEPPX_LAYOUT_CHANNELS_LAST`.
 
 ### 4.2 Add Missing Values
+
 Add at the end:
 
 ```c
@@ -249,6 +277,7 @@ Tiled layout divides the tensor into fixed-size blocks (tiles) that fit in L1 ca
 ### 5.1 Verify All Declarations
 
 Cross-reference every function from these categories against the header. For each function, verify:
+
 - The function name exists
 - The parameter types match
 - The return type matches
@@ -257,6 +286,7 @@ Cross-reference every function from these categories against the header. For eac
 ### 5.2 Functions to Check
 
 **Creation (8 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_empty(const size_t* shape, size_t ndim, SNEPPXDtype dtype);
 SNEPPXTensor* SNEPPX_tensor_zeros(const size_t* shape, size_t ndim, SNEPPXDtype dtype);
@@ -269,6 +299,7 @@ SNEPPXTensor* SNEPPX_tensor_randn(const size_t* shape, size_t ndim, SNEPPXDtype 
 ```
 
 **Shape manipulation (16 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_copy(const SNEPPXTensor* src);
 SNEPPXTensor* SNEPPX_tensor_clone(const SNEPPXTensor* src);
@@ -290,6 +321,7 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 ```
 
 **I/O and conversion (6 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_cast(const SNEPPXTensor* src, SNEPPXDtype dtype);
 SNEPPXTensor* SNEPPX_tensor_to_device(const SNEPPXTensor* src, SNEPPXDevice device);
@@ -299,6 +331,7 @@ SNEPPXTensor* SNEPPX_tensor_load(const char* path);                    /* stub *
 ```
 
 **Comparison (6 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_eq(const SNEPPXTensor* a, const SNEPPXTensor* b);
 SNEPPXTensor* SNEPPX_tensor_ne(const SNEPPXTensor* a, const SNEPPXTensor* b);
@@ -309,6 +342,7 @@ SNEPPXTensor* SNEPPX_tensor_ge(const SNEPPXTensor* a, const SNEPPXTensor* b);
 ```
 
 **Element-wise math (16 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_add(const SNEPPXTensor* a, const SNEPPXTensor* b);
 SNEPPXTensor* SNEPPX_tensor_sub(const SNEPPXTensor* a, const SNEPPXTensor* b);
@@ -337,6 +371,7 @@ SNEPPXTensor* SNEPPX_tensor_tanh(const SNEPPXTensor* src);
 ```
 
 **Reduction (10 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_sum(const SNEPPXTensor* src, size_t dim);
 SNEPPXTensor* SNEPPX_tensor_mean(const SNEPPXTensor* src, size_t dim);
@@ -351,6 +386,7 @@ SNEPPXTensor* SNEPPX_tensor_cumprod(const SNEPPXTensor* src, size_t dim);
 ```
 
 **Linear algebra (5 functions):**
+
 ```c
 float SNEPPX_tensor_dot(const SNEPPXTensor* a, const SNEPPXTensor* b);
 SNEPPXTensor* SNEPPX_tensor_matmul(const SNEPPXTensor* a, const SNEPPXTensor* b);
@@ -360,6 +396,7 @@ float SNEPPX_tensor_det(const SNEPPXTensor* src);             /* stub */
 ```
 
 **Neural network (19 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_softmax(const SNEPPXTensor* src, size_t dim);
 SNEPPXTensor* SNEPPX_tensor_log_softmax(const SNEPPXTensor* src, size_t dim);
@@ -386,6 +423,7 @@ SNEPPXTensor* SNEPPX_tensor_pool2d(const SNEPPXTensor* src, size_t kernel_h, siz
 ```
 
 **Utility (5 functions):**
+
 ```c
 void SNEPPX_tensor_print(const SNEPPXTensor* tensor);
 size_t SNEPPX_tensor_dtype_size(SNEPPXDtype dtype);
@@ -395,6 +433,7 @@ const char* SNEPPX_tensor_dtype_name(SNEPPXDtype dtype);
 ```
 
 **Accessors (8 functions):**
+
 ```c
 float SNEPPX_tensor_get_f32(const SNEPPXTensor* tensor, const size_t* indices);
 void SNEPPX_tensor_set_f32(SNEPPXTensor* tensor, const size_t* indices, float value);
@@ -409,22 +448,27 @@ void SNEPPX_tensor_set_bool(SNEPPXTensor* tensor, const size_t* indices, uint8_t
 ```
 
 **Lifecycle (2 functions):**
+
 ```c
 SNEPPXTensor* SNEPPX_tensor_create(const size_t* shape, size_t ndim, SNEPPXDtype dtype);
 void SNEPPX_tensor_destroy(SNEPPXTensor* tensor);
 ```
 
 **Fill (2 functions):**
+
 ```c
 void SNEPPX_tensor_fill_f32(SNEPPXTensor* tensor, float value);
 void SNEPPX_tensor_fill_f64(SNEPPXTensor* tensor, double value);
 ```
 
 ### 5.2 Add Missing Declarations
+
 If any declaration is missing, add it to the header in the appropriate section. Group by category with blank-line separators.
 
 ### 5.3 Signature Adaptation
+
 If a function exists with a different signature from the spec:
+
 - Do NOT change the existing signature (it will break callers)
 - Report the difference
 - Add any genuinely missing functions
@@ -434,9 +478,11 @@ If a function exists with a different signature from the spec:
 ## STEP 6 — Add Stub Implementations
 
 ### 6.1 Identify Missing Implementations
+
 For every function declared in the header, check if it has a body in tensor.c. If a function is declared but NOT implemented, add a stub.
 
 ### 6.2 Stub Pattern
+
 Use this exact pattern for stubs:
 
 ```c
@@ -452,11 +498,13 @@ SNEPPXTensor* SNEPPX_tensor_load(const char* path) {
 ```
 
 The stub must:
+
 - Suppress unused-parameter warnings via `(void)param;`
 - Return a safe default (NULL for pointers, -1 for error-returning int, 0.0f for float)
 - Compile without warnings
 
 ### 6.3 File Organization
+
 Add stubs in a dedicated section at the end of tensor.c, with a comment:
 
 ```c
@@ -506,6 +554,7 @@ After T0 completes, update `LOC Actual` and mark all checkboxes.
 ## STEP 8 — Build and Verify
 
 ### 8.1 Build
+
 ```bash
 mkdir -p build && cd build
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
@@ -513,23 +562,28 @@ cmake --build . -j8
 ```
 
 Verify:
+
 - Zero compilation errors
 - Zero linker errors
 - All headers parseable
 - No new warnings (pre-existing warnings are acceptable)
 
 ### 8.2 Test
+
 ```bash
 ctest -C Release --output-on-failure
 ```
 
 Verify:
+
 - All existing tests still pass
 - Any NEW tests (if added) pass
 - Report total: passed/failed/not-run
 
 ### 8.3 Report
+
 After completion, report to the user:
+
 - Audit results: existing tensor LOC split by file, existing functions, existing dtypes, existing struct fields
 - Changes made to `multidimensional_tensor_engine.h`: macros added, enums extended, functions declared
 - Changes made to tensor.c: stubs added
@@ -542,10 +596,13 @@ After completion, report to the user:
 ## Known Bugs Fixed During T0
 
 ### Bug 1: `SNEPPX_tensor_create` NULL shape + ndim > 0 crashes
+
 The original code didn't check if `shape` is NULL before dereferencing it in the `for` loop that copies shape values. Fix: add early return `if (ndim > 0 && !shape) return NULL;` at the top of `SNEPPX_tensor_create`. Also handle ndim == 0 by allocating safe_ndim = 1 for shape/strides arrays (malloc(0) behavior is implementation-defined).
 
 ### Bug 2: `SNEPPX_tensor_eye` always uses float* regardless of dtype
+
 The original code cast `tensor->data` to `float*` always, even for SNEPPX_FLOAT64. Fix: use `unsigned char*` and check dtype to write the correct width. For FLOAT64 use `double`, for integer types use `memset` to 1, for everything else use `float`.
 
 ### Bug 3: `SNEPPX_tensor_arange` negative step detection
+
 The original code used `(stop - start) / step < 0` which fails when both numerator and denominator are negative (result is positive). Fix: explicit checks `if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) return NULL;`.

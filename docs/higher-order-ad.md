@@ -19,6 +19,7 @@ hessian.backward()
 ## Exact Hessian verification
 
 The higher-order AD is verified against exact Hessians for:
+
 - Linear functions: H = 2 A^T A
 - Quadratic forms
 - Conv1d (kernel and input)
@@ -65,6 +66,7 @@ out = checkpoint(heavy, x)  # saves memory
 ## Supported ops with create_graph
 
 All 40+ ops support `create_graph=True`:
+
 - Arithmetic: Add, Sub, Mul, Div, Pow, MatMul
 - Activations: ReLU, Sigmoid, Tanh, GELU, SiLU
 - Norms: LayerNorm, RMSNorm, BatchNorm

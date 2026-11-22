@@ -33,20 +33,20 @@ __global__ void npe_execute_kernel(
 ) {
     int batch_idx = blockIdx.y;
     int tid = threadIdx.x;
-    
+
     // PC initialized per batch
     int pc = 0;
-    
+
     while (pc < num_instructions) {
         int op = opcodes[pc];
         int* ops = const_cast<int*>(&operands[pc * max_operands]);
-        
+
         // Decode operands
         int dst = ops[0];
         int src1 = ops[1];
         int src2 = ops[2];
         int imm = ops[3];
-        
+
         // Execute instruction (tid processes one element)
         switch (op) {
             case 0: { // ADD
@@ -113,7 +113,7 @@ __global__ void npe_execute_kernel(
         }
         pc++;
     }
-    
+
     // Write output register
     output[batch_idx * blockDim.x + tid] = registers[0 * blockDim.x + tid];
 }
@@ -127,10 +127,10 @@ SNEPPX_CudaError sneppx_cuda_npe_execute(
     int batch_size
 ) {
     if (!program || !vm_state || !input || !output) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     dim3 grid(1, batch_size);
     dim3 block(256);
-    
+
     npe_execute_kernel<<<grid, block, 0, stream>>>(
         program->opcodes, program->operands,
         vm_state->registers, vm_state->memory,
@@ -138,7 +138,7 @@ SNEPPX_CudaError sneppx_cuda_npe_execute(
         program->num_instructions, program->max_operands,
         batch_size
     );
-    
+
     cudaError_t err = cudaGetLastError();
     return (err == cudaSuccess) ? SNEPPX_CUDA_SUCCESS : SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
 }
@@ -151,24 +151,24 @@ SNEPPX_CudaError sneppx_cuda_npe_compile(
     SNEPPX_NPE_Program** program
 ) {
     if (!ir_opcodes || !ir_operands || !program) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     SNEPPX_NPE_Program* p = (SNEPPX_NPE_Program*)malloc(sizeof(SNEPPX_NPE_Program));
     if (!p) return SNEPPX_CUDA_ERROR_OUT_OF_MEMORY;
-    
+
     p->num_instructions = num_instructions;
     p->max_operands = 4;
     p->use_registers = true;
-    
+
     cudaMallocAsync(&p->opcodes, num_instructions * sizeof(int), stream);
     cudaMallocAsync(&p->operands, num_instructions * 4 * sizeof(int), stream);
     cudaMallocAsync(&p->program_counter, sizeof(int), stream);
-    
+
     cudaMemcpyAsync(p->opcodes, ir_opcodes, num_instructions * sizeof(int), cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(p->operands, ir_operands, num_instructions * 4 * sizeof(int), cudaMemcpyHostToDevice, stream);
-    
+
     int zero = 0;
     cudaMemcpyAsync(p->program_counter, &zero, sizeof(int), cudaMemcpyHostToDevice, stream);
-    
+
     *program = p;
     return SNEPPX_CUDA_SUCCESS;
 }

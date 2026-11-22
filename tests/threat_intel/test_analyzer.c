@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_create_ioc(void) {
+static void test_create_ioc(void)
+{
     SNEPPXTIIoC ioc;
     memset(&ioc, 0, sizeof(ioc));
     const uint8_t* ip = "192.168.1.1";
@@ -29,7 +29,8 @@ static void test_create_ioc(void) {
     snepx_ti_analyzer_ioc_destroy(&ioc);
 }
 
-static void test_add_tag_and_category(void) {
+static void test_add_tag_and_category(void)
+{
     SNEPPXTIIoC ioc;
     memset(&ioc, 0, sizeof(ioc));
     snepx_ti_analyzer_create_ioc(&ioc, SNEPPX_TI_IOC_TYPE_IPV4, "10.0.0.1", 8);
@@ -40,7 +41,8 @@ static void test_add_tag_and_category(void) {
     snepx_ti_analyzer_ioc_destroy(&ioc);
 }
 
-int main(void) {
+int main(void)
+{
     test_create_ioc();
     test_add_tag_and_category();
     return 0;

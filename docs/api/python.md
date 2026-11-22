@@ -132,7 +132,6 @@ sum_tensor = left.native_add(right)
 product = matrix.native_matmul(weights)
 ```
 
-
 ### Model
 
 ```python
@@ -368,7 +367,6 @@ Sparse tensor operations (`SparseMM`, `SparseAddMM`, `SparseSum`, `SparseSoftmax
 `SparseConv2d`) support `create_graph=True` with graph-connected gradient routing
 via scatter-matrix multiplication, enabling second-order AD through sparse
 networks.
-
 
 ## Running Tests
 

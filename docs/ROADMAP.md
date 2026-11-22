@@ -3,6 +3,7 @@
 ## v1.0.0 — Stable Release (2026-07-25)
 
 ### Completed
+
 All 8 development phases complete, API frozen for stability, full regression suite passes:
 
 | Area | Deliverable | Status |

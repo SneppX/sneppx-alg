@@ -16,15 +16,15 @@
  *   None (internal kernel module).
  */
 
-
-
 typedef void (*SNEPPXTaskFn)(void* arg);
 
-typedef struct SNEPPXWorkload {
+typedef struct SNEPPXWorkload
+{
     int dummy;
 } SNEPPXWorkload;
 
-typedef struct SNEPPXTaskGroup {
+typedef struct SNEPPXTaskGroup
+{
     int dummy;
 } SNEPPXTaskGroup;
 
@@ -33,15 +33,17 @@ typedef struct SNEPPXTaskGroup {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXWorkload* SNEPPX_workload_create(size_t max_tasks) {
-    (void)max_tasks;
-    return (SNEPPXWorkload*)calloc(1, sizeof(SNEPPXWorkload));
+SNEPPXWorkload* SNEPPX_workload_create(size_t max_tasks)
+{
+    (void) max_tasks;
+    return (SNEPPXWorkload*) calloc(1, sizeof(SNEPPXWorkload));
 }
 
 /**
  * @brief Destroy Workload.
  */
-void SNEPPX_workload_destroy(SNEPPXWorkload* wl) {
+void SNEPPX_workload_destroy(SNEPPXWorkload* wl)
+{
     free(wl);
 }
 
@@ -54,8 +56,12 @@ void SNEPPX_workload_destroy(SNEPPXWorkload* wl) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_workload_add_task(SNEPPXWorkload* wl, const char* name, SNEPPXTaskFn fn, void* args) {
-    (void)wl; (void)name; (void)fn; (void)args;
+int SNEPPX_workload_add_task(SNEPPXWorkload* wl, const char* name, SNEPPXTaskFn fn, void* args)
+{
+    (void) wl;
+    (void) name;
+    (void) fn;
+    (void) args;
     return 0;
 }
 
@@ -66,8 +72,10 @@ int SNEPPX_workload_add_task(SNEPPXWorkload* wl, const char* name, SNEPPXTaskFn 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_workload_submit(SNEPPXWorkload* wl, int num_threads) {
-    (void)wl; (void)num_threads;
+int SNEPPX_workload_submit(SNEPPXWorkload* wl, int num_threads)
+{
+    (void) wl;
+    (void) num_threads;
     return 0;
 }
 
@@ -78,8 +86,10 @@ int SNEPPX_workload_submit(SNEPPXWorkload* wl, int num_threads) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_workload_wait(SNEPPXWorkload* wl, int timeout_ms) {
-    (void)wl; (void)timeout_ms;
+int SNEPPX_workload_wait(SNEPPXWorkload* wl, int timeout_ms)
+{
+    (void) wl;
+    (void) timeout_ms;
     return 0;
 }
 
@@ -88,8 +98,9 @@ int SNEPPX_workload_wait(SNEPPXWorkload* wl, int timeout_ms) {
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_workload_num_completed(const SNEPPXWorkload* wl) {
-    (void)wl;
+size_t SNEPPX_workload_num_completed(const SNEPPXWorkload* wl)
+{
+    (void) wl;
     return 0;
 }
 
@@ -98,8 +109,9 @@ size_t SNEPPX_workload_num_completed(const SNEPPXWorkload* wl) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_workload_cancel(SNEPPXWorkload* wl) {
-    (void)wl;
+int SNEPPX_workload_cancel(SNEPPXWorkload* wl)
+{
+    (void) wl;
     return 0;
 }
 
@@ -108,15 +120,17 @@ int SNEPPX_workload_cancel(SNEPPXWorkload* wl) {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTaskGroup* SNEPPX_task_group_create(size_t num_tasks) {
-    (void)num_tasks;
-    return (SNEPPXTaskGroup*)calloc(1, sizeof(SNEPPXTaskGroup));
+SNEPPXTaskGroup* SNEPPX_task_group_create(size_t num_tasks)
+{
+    (void) num_tasks;
+    return (SNEPPXTaskGroup*) calloc(1, sizeof(SNEPPXTaskGroup));
 }
 
 /**
  * @brief Destroy Task Group.
  */
-void SNEPPX_task_group_destroy(SNEPPXTaskGroup* group) {
+void SNEPPX_task_group_destroy(SNEPPXTaskGroup* group)
+{
     free(group);
 }
 
@@ -128,8 +142,11 @@ void SNEPPX_task_group_destroy(SNEPPXTaskGroup* group) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_task_group_add(SNEPPXTaskGroup* group, SNEPPXTaskFn fn, void* args) {
-    (void)group; (void)fn; (void)args;
+int SNEPPX_task_group_add(SNEPPXTaskGroup* group, SNEPPXTaskFn fn, void* args)
+{
+    (void) group;
+    (void) fn;
+    (void) args;
     return 0;
 }
 
@@ -138,8 +155,9 @@ int SNEPPX_task_group_add(SNEPPXTaskGroup* group, SNEPPXTaskFn fn, void* args) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_task_group_run_all(SNEPPXTaskGroup* group) {
-    (void)group;
+int SNEPPX_task_group_run_all(SNEPPXTaskGroup* group)
+{
+    (void) group;
     return 0;
 }
 
@@ -150,7 +168,9 @@ int SNEPPX_task_group_run_all(SNEPPXTaskGroup* group) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_task_group_wait_all(SNEPPXTaskGroup* group, int timeout_ms) {
-    (void)group; (void)timeout_ms;
+int SNEPPX_task_group_wait_all(SNEPPXTaskGroup* group, int timeout_ms)
+{
+    (void) group;
+    (void) timeout_ms;
     return 0;
 }

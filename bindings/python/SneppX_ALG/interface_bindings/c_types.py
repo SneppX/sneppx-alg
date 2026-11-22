@@ -56,7 +56,9 @@ class DataBuffer(ctypes.Structure):
 
 
 # --- Callback type for progress / logging ---
-ProgressCallback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_void_p)
+ProgressCallback = ctypes.CFUNCTYPE(
+    None, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_void_p
+)
 
 
 # --- Utility: null-terminate a string for C ---

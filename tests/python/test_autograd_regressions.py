@@ -35,6 +35,7 @@ def test_grad_accumulates_contributions_from_multiple_outputs():
 
     np.testing.assert_allclose(result.data, [7.0, 9.0], rtol=1e-5, atol=1e-6)
 
+
 def test_grad_accumulates_repeated_output_contributions():
     value = Tensor([2.0, 3.0], requires_grad=True)
     output = (value * value).sum()
@@ -55,17 +56,13 @@ def _finite_difference_matmul(a, b, epsilon=1e-3):
         minus = a.copy()
         plus[index] += epsilon
         minus[index] -= epsilon
-        grad_a[index] = (
-            objective(plus, b) - objective(minus, b)
-        ) / (2.0 * epsilon)
+        grad_a[index] = (objective(plus, b) - objective(minus, b)) / (2.0 * epsilon)
     for index in np.ndindex(b.shape):
         plus = b.copy()
         minus = b.copy()
         plus[index] += epsilon
         minus[index] -= epsilon
-        grad_b[index] = (
-            objective(a, plus) - objective(a, minus)
-        ) / (2.0 * epsilon)
+        grad_b[index] = (objective(a, plus) - objective(a, minus)) / (2.0 * epsilon)
     return grad_a, grad_b
 
 
@@ -88,11 +85,17 @@ def test_matmul_backward_matches_finite_differences_for_vector_and_batch_shapes(
         expected_a, expected_b = _finite_difference_matmul(a_data, b_data)
 
         np.testing.assert_allclose(
-            a.grad.data, expected_a, rtol=2e-3, atol=2e-3,
+            a.grad.data,
+            expected_a,
+            rtol=2e-3,
+            atol=2e-3,
             err_msg=f"left gradient mismatch for {a_shape} @ {b_shape}",
         )
         np.testing.assert_allclose(
-            b.grad.data, expected_b, rtol=2e-3, atol=2e-3,
+            b.grad.data,
+            expected_b,
+            rtol=2e-3,
+            atol=2e-3,
             err_msg=f"right gradient mismatch for {a_shape} @ {b_shape}",
         )
 
@@ -115,9 +118,8 @@ def test_batched_matmul_create_graph_preserves_second_order_dependencies():
 
     second_right = grad(first_left.sum(), right)[0]
     expected = np.full(right.shape, left.shape[0] * left.shape[1], dtype=np.float32)
-    np.testing.assert_allclose(
-        second_right.data, expected, rtol=1e-5, atol=1e-5
-    )
+    np.testing.assert_allclose(second_right.data, expected, rtol=1e-5, atol=1e-5)
+
 
 def test_getitem_backward_accumulates_duplicate_advanced_indices():
     source = Tensor([1.0, 2.0, 3.0], requires_grad=True)
@@ -156,6 +158,7 @@ def test_getitem_backward_handles_scalar_selection_shape():
     source[1].sum().backward()
 
     np.testing.assert_array_equal(source.grad.data, [0.0, 1.0, 0.0])
+
 
 def test_prod_backward_handles_single_and_multiple_zeros():
     single_zero = Tensor([0.0, 2.0, 3.0], requires_grad=True)
@@ -207,16 +210,13 @@ def test_prod_backward_matches_finite_differences_with_zero_inputs():
         minus = values.copy()
         plus[index] += epsilon
         minus[index] -= epsilon
-        expected[index] = (
-            np.prod(plus) - np.prod(minus)
-        ) / (2.0 * epsilon)
+        expected[index] = (np.prod(plus) - np.prod(minus)) / (2.0 * epsilon)
 
     np.testing.assert_allclose(source.grad.data, expected, rtol=2e-3, atol=2e-3)
 
+
 def test_logsumexp_create_graph_preserves_second_order_dependencies():
-    values = np.array(
-        [[0.2, -0.4, 1.1], [1.3, 0.1, -0.7]], dtype=np.float32
-    )
+    values = np.array([[0.2, -0.4, 1.1], [1.3, 0.1, -0.7]], dtype=np.float32)
     source = Tensor(values.copy(), requires_grad=True)
 
     first = grad(source.logsumexp(dim=-1).sum(), source, create_graph=True)[0]
@@ -270,8 +270,6 @@ def test_sum_create_graph_expands_reduced_axes_in_original_positions():
     assert first.grad_fn is not None
 
 
-
-
 def test_public_package_version_matches_distribution_metadata():
     import importlib.metadata
     import tomllib
@@ -283,6 +281,8 @@ def test_public_package_version_matches_distribution_metadata():
         expected = importlib.metadata.version("sneppx-alg")
     except importlib.metadata.PackageNotFoundError:
         project = Path(__file__).resolve().parents[2] / "pyproject.toml"
-        expected = tomllib.loads(project.read_text(encoding="utf-8"))["project"]["version"]
+        expected = tomllib.loads(project.read_text(encoding="utf-8"))["project"][
+            "version"
+        ]
 
     assert SneppX_ALG.__version__ == expected

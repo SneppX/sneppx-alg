@@ -15,7 +15,11 @@ logger = logging.getLogger(__name__)
 _TIER_CONFIGS = {
     "free": {"rate_limit_rpm": 60, "max_keys": 2, "max_tokens_per_req": 2048},
     "pro": {"rate_limit_rpm": 1000, "max_keys": 10, "max_tokens_per_req": 8192},
-    "enterprise": {"rate_limit_rpm": 10000, "max_keys": 100, "max_tokens_per_req": 65536},
+    "enterprise": {
+        "rate_limit_rpm": 10000,
+        "max_keys": 100,
+        "max_tokens_per_req": 65536,
+    },
 }
 
 
@@ -125,8 +129,11 @@ class ApiKeyManager:
     ) -> bool:
         with self._lock:
             result = self._store.update_key(
-                key_id, name=name, tier=tier,
-                rate_limit_rpm=rate_limit_rpm, expires_in_days=expires_in_days,
+                key_id,
+                name=name,
+                tier=tier,
+                rate_limit_rpm=rate_limit_rpm,
+                expires_in_days=expires_in_days,
             )
             for raw_key, entry in list(self._cache.items()):
                 if entry.key_info.get("id") == key_id:
@@ -141,7 +148,9 @@ class ApiKeyManager:
     def record_usage(
         self, raw_key: str, tokens_in: int = 0, tokens_out: int = 0, endpoint: str = ""
     ):
-        self._store.record_usage(raw_key, tokens_in=tokens_in, tokens_out=tokens_out, endpoint=endpoint)
+        self._store.record_usage(
+            raw_key, tokens_in=tokens_in, tokens_out=tokens_out, endpoint=endpoint
+        )
 
     def get_tier_config(self, tier: str) -> Dict[str, Any]:
         return dict(_TIER_CONFIGS.get(tier.lower(), _TIER_CONFIGS["free"]))

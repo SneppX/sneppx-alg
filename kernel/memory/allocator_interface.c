@@ -16,8 +16,6 @@
  *   None (internal kernel module).
  */
 
-
-
 /* NOTE: SNEPPX_malloc / SNEPPX_free / SNEPPX_realloc are intentionally NOT
  * defined here. The real, security-hardened implementations (aligned +
  * zeroing + SNEPPX_secure_zero on free) live in `allocator.c` and are linked
@@ -33,8 +31,9 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_calloc(size_t count, size_t size, size_t alignment) {
-    (void)alignment;
+void* SNEPPX_calloc(size_t count, size_t size, size_t alignment)
+{
+    (void) alignment;
     return calloc(count, size);
 }
 
@@ -43,8 +42,9 @@ void* SNEPPX_calloc(size_t count, size_t size, size_t alignment) {
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_allocated_size(const void* ptr) {
-    (void)ptr;
+size_t SNEPPX_allocated_size(const void* ptr)
+{
+    (void) ptr;
     return 0;
 }
 
@@ -56,7 +56,10 @@ size_t SNEPPX_allocated_size(const void* ptr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_malloc_stats(size_t* total_allocated, size_t* peak_allocated, size_t* num_allocs) {
-    (void)total_allocated; (void)peak_allocated; (void)num_allocs;
+int SNEPPX_malloc_stats(size_t* total_allocated, size_t* peak_allocated, size_t* num_allocs)
+{
+    (void) total_allocated;
+    (void) peak_allocated;
+    (void) num_allocs;
     return 0;
 }

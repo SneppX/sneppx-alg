@@ -50,7 +50,6 @@ SGD, Adam, AdamW, NAdam, Rprop, ASGD, LBFGS, SparseAdam.
 gradient_comm, pipeline) create and destroy a `SNEPPX_ProcessGroup` per
 collective; the NCCL binding falls back to a correct CPU path single-process.
 
-
 ## New Python packages (2026-10-16)
 
 - **sampling**   Sampler, RandomSampler, SequentialSampler, BatchSampler, DistributedSampler

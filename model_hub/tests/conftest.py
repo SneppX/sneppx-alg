@@ -1,4 +1,5 @@
 """Pytest configuration for model_hub tests."""
+
 import os
 import sys
 

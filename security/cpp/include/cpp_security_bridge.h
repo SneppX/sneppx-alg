@@ -15,7 +15,6 @@
  *
  */
 
-
 /*
  * C++ Security Bindings — v0.5
  *
@@ -32,11 +31,13 @@
 #include <string>
 #include <vector>
 
-namespace SNEPPX {
+namespace SNEPPX
+{
 
 /* ---------- Secure buffer (automatically zeroed on destruction) ---------- */
-class SecureBuffer {
-public:
+class SecureBuffer
+{
+  public:
     SecureBuffer();
     explicit SecureBuffer(size_t size);
     SecureBuffer(const uint8_t* data, size_t size);
@@ -47,42 +48,42 @@ public:
     SecureBuffer(SecureBuffer&&) noexcept;
     SecureBuffer& operator=(SecureBuffer&&) noexcept;
 
-    uint8_t*       data();
+    uint8_t* data();
     const uint8_t* data() const;
-    size_t         size() const;
-    void           resize(size_t new_size);
-    void           clear();
+    size_t size() const;
+    void resize(size_t new_size);
+    void clear();
 
-private:
+  private:
     uint8_t* data_;
-    size_t   size_;
+    size_t size_;
 };
 
 /* ---------- AEAD cipher ---------- */
-class AEADCipher {
-public:
+class AEADCipher
+{
+  public:
     AEADCipher(const uint8_t key[32]);
     ~AEADCipher();
 
-    std::vector<uint8_t> encrypt(const uint8_t* plaintext, size_t len,
-                                  const uint8_t* aad, size_t aad_len,
-                                  const uint8_t nonce[12]);
-    std::vector<uint8_t> decrypt(const uint8_t* ciphertext, size_t len,
-                                  const uint8_t* aad, size_t aad_len,
-                                  const uint8_t nonce[12], const uint8_t tag[16]);
+    std::vector<uint8_t> encrypt(const uint8_t* plaintext, size_t len, const uint8_t* aad, size_t aad_len,
+                                 const uint8_t nonce[12]);
+    std::vector<uint8_t> decrypt(const uint8_t* ciphertext, size_t len, const uint8_t* aad, size_t aad_len,
+                                 const uint8_t nonce[12], const uint8_t tag[16]);
 
-private:
+  private:
     uint8_t key_[32];
 };
 
 /* ---------- Blake3 hasher ---------- */
-class Hasher {
-public:
+class Hasher
+{
+  public:
     Hasher();
     void update(const uint8_t* data, size_t len);
     void finalize(uint8_t* out, size_t out_len);
 
-private:
+  private:
     void* ctx_;
 };
 

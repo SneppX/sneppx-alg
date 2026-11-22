@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -83,7 +85,12 @@ def test_binary_ops():
         return [Tensor(x[0], requires_grad=True)]
 
     _check_op("Div", mt, lambda *t: ops.Div.apply(t[0], t[1]).sum(), [a, b])
-    _check_op("Pow", mt_a, lambda *t: ops.Pow.apply(t[0], ops._as_const(2.0, t[0].dtype)).sum(), [a])
+    _check_op(
+        "Pow",
+        mt_a,
+        lambda *t: ops.Pow.apply(t[0], ops._as_const(2.0, t[0].dtype)).sum(),
+        [a],
+    )
     _check_op("Add", mt, lambda *t: ops.Add.apply(t[0], t[1]).sum(), [a, b])
 
 
@@ -146,13 +153,37 @@ def test_losses_fd():
         return Tensor(prob_kl)
 
     _check_op("MSELoss", mt_ab, lambda *t: ops.MSELoss.apply(t[0], t[1]).sum(), [a, b])
-    _check_op("CrossEntropyLoss", mt_in, lambda *t: ops.CrossEntropyLoss.apply(t[0], tgt()).sum(), [logits])
+    _check_op(
+        "CrossEntropyLoss",
+        mt_in,
+        lambda *t: ops.CrossEntropyLoss.apply(t[0], tgt()).sum(),
+        [logits],
+    )
     _check_op("NLLLoss", mt_in, lambda *t: ops.NLLLoss.apply(t[0], tgt()).sum(), [logp])
-    _check_op("KLDivLoss", mt_in, lambda *t: ops.KLDivLoss.apply(t[0], tprobt()).sum(), [logp])
-    _check_op("BCELoss", mt_in, lambda *t: ops.BCELoss.apply(t[0], t01t()).sum(), [prob])
-    _check_op("BCEWithLogitsLoss", mt_in, lambda *t: ops.BCEWithLogitsLoss.apply(t[0], t01t()).sum(), [logit_b])
-    _check_op("SmoothL1Loss", mt_ab, lambda *t: ops.SmoothL1Loss.apply(t[0], t[1], 1.0).sum(), [a, b])
-    _check_op("HuberLoss", mt_ab, lambda *t: ops.HuberLoss.apply(t[0], t[1], 1.0).sum(), [a, b])
+    _check_op(
+        "KLDivLoss", mt_in, lambda *t: ops.KLDivLoss.apply(t[0], tprobt()).sum(), [logp]
+    )
+    _check_op(
+        "BCELoss", mt_in, lambda *t: ops.BCELoss.apply(t[0], t01t()).sum(), [prob]
+    )
+    _check_op(
+        "BCEWithLogitsLoss",
+        mt_in,
+        lambda *t: ops.BCEWithLogitsLoss.apply(t[0], t01t()).sum(),
+        [logit_b],
+    )
+    _check_op(
+        "SmoothL1Loss",
+        mt_ab,
+        lambda *t: ops.SmoothL1Loss.apply(t[0], t[1], 1.0).sum(),
+        [a, b],
+    )
+    _check_op(
+        "HuberLoss",
+        mt_ab,
+        lambda *t: ops.HuberLoss.apply(t[0], t[1], 1.0).sum(),
+        [a, b],
+    )
 
 
 if __name__ == "__main__":

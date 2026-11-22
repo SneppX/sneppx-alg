@@ -54,9 +54,7 @@ def save_external_data(
     return model
 
 
-def extract_external_data(
-    model: Model, base_dir: Optional[str] = None
-) -> Model:
+def extract_external_data(model: Model, base_dir: Optional[str] = None) -> Model:
     """Load external initializer payloads back into ``tensor.data``.
 
     ``base_dir`` defaults to the directory containing the model file (callers
@@ -68,18 +66,28 @@ def extract_external_data(
         location = init.external_data.get("location", "")
         offset = int(init.external_data.get("offset", 0))
         length = int(init.external_data.get("length", 0))
-        path = location if os.path.isabs(location) else os.path.join(
-            base_dir or "", location
+        path = (
+            location
+            if os.path.isabs(location)
+            else os.path.join(base_dir or "", location)
         )
         with open(path, "rb") as f:
             f.seek(offset)
             payload = f.read(length)
         nptype = np.dtype(
             {
-                "float32": np.float32, "float64": np.float64, "float16": np.float16,
-                "int8": np.int8, "uint8": np.uint8, "int16": np.int16,
-                "uint16": np.uint16, "int32": np.int32, "uint32": np.uint32,
-                "int64": np.int64, "uint64": np.uint64, "bool": np.bool_,
+                "float32": np.float32,
+                "float64": np.float64,
+                "float16": np.float16,
+                "int8": np.int8,
+                "uint8": np.uint8,
+                "int16": np.int16,
+                "uint16": np.uint16,
+                "int32": np.int32,
+                "uint32": np.uint32,
+                "int64": np.int64,
+                "uint64": np.uint64,
+                "bool": np.bool_,
             }.get(init.dtype, np.float32)
         )
         arr = np.frombuffer(payload, dtype=nptype)

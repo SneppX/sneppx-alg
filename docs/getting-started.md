@@ -21,6 +21,7 @@ pip install -e .
 ```
 
 To run with local development bindings without installation:
+
 ```powershell
 $env:PYTHONPATH = "bindings/python"
 ```

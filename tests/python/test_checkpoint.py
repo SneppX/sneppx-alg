@@ -280,7 +280,9 @@ def test_signed_roundtrip_verified():
         check("signed verified flag", r.verified is True)
         check("signed data roundtrip", r.read_tensor(0) == b"\x09" * 100)
         check("signed metadata", r.read_metadata().get("step") == 9)
-        check("validate signed", validate_checkpoint(path, trusted_public_key=pk) is True)
+        check(
+            "validate signed", validate_checkpoint(path, trusted_public_key=pk) is True
+        )
         r.close()
     finally:
         if os.path.exists(path):
@@ -319,7 +321,7 @@ def test_signed_tampered_data_rejected():
         # Flip a byte inside the tensor data region (after header + one record)
         with open(path, "r+b") as f:
             f.seek(CHECKPOINT_HEADER_SIZE + TENSOR_RECORD_SIZE + 50)
-            f.write(b"\xFF")
+            f.write(b"\xff")
 
         try:
             CheckpointReader(path, trusted_public_key=pk)
@@ -360,7 +362,10 @@ def test_validate_signed_without_key_false():
         w.close()
 
         check("validate without key false", validate_checkpoint(path) is False)
-        check("validate with key true", validate_checkpoint(path, trusted_public_key=pk) is True)
+        check(
+            "validate with key true",
+            validate_checkpoint(path, trusted_public_key=pk) is True,
+        )
     finally:
         if os.path.exists(path):
             os.unlink(path)
@@ -409,16 +414,18 @@ def test_reader_rejects_truncated_header():
 def test_reader_rejects_impossible_tensor_count():
     with tempfile.NamedTemporaryFile(suffix=".sneppx", delete=False) as f:
         path = f.name
-        f.write(struct.pack(
-            CHECKPOINT_HEADER_FMT,
-            SNEPPX_CKPT_MAGIC,
-            SNEPPX_CKPT_MAGIC_HI,
-            SNEPPX_CKPT_VERSION,
-            0xFFFFFFFF,
-            CHECKPOINT_HEADER_SIZE,
-            0,
-            CHECKPOINT_HEADER_SIZE,
-        ))
+        f.write(
+            struct.pack(
+                CHECKPOINT_HEADER_FMT,
+                SNEPPX_CKPT_MAGIC,
+                SNEPPX_CKPT_MAGIC_HI,
+                SNEPPX_CKPT_VERSION,
+                0xFFFFFFFF,
+                CHECKPOINT_HEADER_SIZE,
+                0,
+                CHECKPOINT_HEADER_SIZE,
+            )
+        )
     try:
         with pytest.raises(ValueError, match="record table exceeds file size"):
             CheckpointReader(path)

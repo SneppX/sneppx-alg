@@ -1,23 +1,28 @@
 #include "obfuscation_advanced.h"
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 
-#define CHECK(expression) do { \
-    if (!(expression)) { \
-        std::fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #expression); \
-        return 1; \
-    } \
-} while (0)
+#define CHECK(expression)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(expression))                                                                                             \
+        {                                                                                                              \
+            std::fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #expression);                      \
+            return 1;                                                                                                  \
+        }                                                                                                              \
+    } while (0)
 
 static int callback_invocations = 0;
 
-static void test_callback(void*, int, void*) {
+static void test_callback(void*, int, void*)
+{
     ++callback_invocations;
 }
 
-int main() {
+int main()
+{
     SNEPPXJunkCodeGen generator{};
     CHECK(SNEPPX_junk_code_init(&generator) == 0);
     CHECK(generator.junk_count > 0 && generator.junk_count <= 64);
@@ -57,7 +62,8 @@ int main() {
     std::memset(output, 0xA5, sizeof(output));
     CHECK(SNEPPX_whitebox_aes_init(&whitebox, key) == -1);
     SNEPPX_whitebox_aes_encrypt(&whitebox, input, output);
-    for (uint8_t byte : output) CHECK(byte == 0);
+    for (uint8_t byte : output)
+        CHECK(byte == 0);
 
     callback_invocations = 0;
     CHECK(SNEPPX_tls_callback_register(test_callback) == 1);
@@ -71,7 +77,8 @@ int main() {
     anti_dump.image_size = sizeof(executable_bytes);
     anti_dump.is_protected = 1;
     CHECK(SNEPPX_antidump_init(&anti_dump) == -1);
-    for (uint8_t byte : anti_dump.section_hash) CHECK(byte == 0);
+    for (uint8_t byte : anti_dump.section_hash)
+        CHECK(byte == 0);
     CHECK(anti_dump.image_base == 0 && anti_dump.image_size == 0);
     anti_dump.image_base = reinterpret_cast<uintptr_t>(executable_bytes);
     anti_dump.image_size = sizeof(executable_bytes);

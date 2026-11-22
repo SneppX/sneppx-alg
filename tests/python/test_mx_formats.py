@@ -49,8 +49,7 @@ def test_roundtrip_all_formats():
 
 def test_small_magnitude_subnormals():
     w = (RNG.normal(size=256) * 0.01).astype(np.float32)
-    for fmt in (MXFormat.MXFP4_E2M1, MXFormat.MXFP6_E2M3,
-                MXFormat.MXFP6_E3M2):
+    for fmt in (MXFormat.MXFP4_E2M1, MXFormat.MXFP6_E2M3, MXFormat.MXFP6_E3M2):
         packed, scales = quantize_mx(w, format=fmt)
         recon = dequantize_mx(packed, scales, w.shape, format=fmt)
         assert mx_error(w, recon, metric="snr") > 10.0

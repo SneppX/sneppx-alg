@@ -16,7 +16,17 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional, Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, Query, Header, status
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    UploadFile,
+    File,
+    Form,
+    Depends,
+    Query,
+    Header,
+    status,
+)
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -74,7 +84,9 @@ class HubDatabase:
 
         self._users: List[Dict] = self._load_json(self._users_file, default=[])
         self._keys: List[Dict] = self._load_json(self._keys_file, default=[])
-        self._leaderboard: List[Dict] = self._load_json(self._leaderboard_file, default=[])
+        self._leaderboard: List[Dict] = self._load_json(
+            self._leaderboard_file, default=[]
+        )
         self._orgs: List[Dict] = self._load_json(self._orgs_file, default=[])
 
     def _load_json(self, path: str, default: Any = None) -> Any:
@@ -112,7 +124,9 @@ class HubDatabase:
 
         # Filter
         if query:
-            all_models = [m for m in all_models if query.lower() in m.get("name", "").lower()]
+            all_models = [
+                m for m in all_models if query.lower() in m.get("name", "").lower()
+            ]
         if task:
             all_models = [m for m in all_models if m.get("task") == task]
         if tag:
@@ -121,7 +135,8 @@ class HubDatabase:
             all_models = [
                 m
                 for m in all_models
-                if m.get("organization") == org or m.get("name", "").startswith(org + "/")
+                if m.get("organization") == org
+                or m.get("name", "").startswith(org + "/")
             ]
 
         total = len(all_models)
@@ -173,7 +188,9 @@ class HubDatabase:
                     data["_model_name"] = model_name
                     data["_version"] = version
                     data["_downloads"] = 0  # Would come from usage tracking
-                    data["_size"] = sum(f.get("size", 0) for f in (data.get("files") or []))
+                    data["_size"] = sum(
+                        f.get("size", 0) for f in (data.get("files") or [])
+                    )
                     results.append(data)
         return results
 
@@ -182,7 +199,9 @@ class HubDatabase:
             cards = self._scan_models()
             clean = name.replace("/", "_").replace("\\", "_")
             model_cards = [
-                c for c in cards if c.get("_model_name") == clean or c.get("name") == name
+                c
+                for c in cards
+                if c.get("_model_name") == clean or c.get("name") == name
             ]
             if not model_cards:
                 return None
@@ -279,7 +298,10 @@ class HubDatabase:
         return None
 
     def create_api_key(
-        self, user_id: str, org_id: Optional[str] = None, scopes: Optional[List[str]] = None
+        self,
+        user_id: str,
+        org_id: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
     ) -> tuple[APIKey, str]:
         """Create an API key. Returns (key_obj, raw_key_string)."""
         key, _raw = APIKey.generate(user_id=user_id, org_id=org_id)
@@ -321,7 +343,9 @@ class HubDatabase:
                 break
         self._save_json(self._users_file, self._users)
 
-        _, raw = self.create_api_key(user.id, None, ["read", "write", "models", "admin"])
+        _, raw = self.create_api_key(
+            user.id, None, ["read", "write", "models", "admin"]
+        )
         return raw
 
     def verify_api_key(self, api_key: str) -> Optional[User]:
@@ -401,7 +425,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         fresh_key = db.bootstrap_admin()
         if fresh_key:
             fingerprint = hashlib.sha256(fresh_key.encode()).hexdigest()[:16]
-            print(f"[sneppx-hub] Created initial admin API key (fingerprint: {fingerprint})")
+            print(
+                f"[sneppx-hub] Created initial admin API key (fingerprint: {fingerprint})"
+            )
         yield
         # Shutdown
         pass
@@ -473,7 +499,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     async def api_get_model(model_name: str, version: str = Query(default="latest")):
         card = db.get_model_card(model_name, version)
         if not card:
-            raise HTTPException(status_code=404, detail=f"Model not found: {model_name}@{version}")
+            raise HTTPException(
+                status_code=404, detail=f"Model not found: {model_name}@{version}"
+            )
         return card
 
     @app.get("/api/v1/models/{model_name}/{version}")
@@ -483,7 +511,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
             return {"versions": [{"version": v} for v in versions]}
         card = db.get_model_card(model_name, version)
         if not card:
-            raise HTTPException(status_code=404, detail=f"Model not found: {model_name}@{version}")
+            raise HTTPException(
+                status_code=404, detail=f"Model not found: {model_name}@{version}"
+            )
         return card
 
     @app.post("/api/v1/models/upload", status_code=201)
@@ -513,7 +543,11 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
 
         # Save metadata
         db.save_model_card(model_card.full_name, model_card.version, card_data)
-        return {"status": "uploaded", "name": model_card.full_name, "version": model_card.version}
+        return {
+            "status": "uploaded",
+            "name": model_card.full_name,
+            "version": model_card.version,
+        }
 
     @app.post("/api/v1/models/{model_name}/{version}/files/{filename}")
     async def api_upload_file(
@@ -628,7 +662,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
                 raw = k.get("raw_key") or (key_obj.prefix + key_obj.key_id)
                 break
         if not raw:
-            _, raw = db.create_api_key(user.id, user.org_id, ["read", "write", "models"])
+            _, raw = db.create_api_key(
+                user.id, user.org_id, ["read", "write", "models"]
+            )
 
         return {"access_token": raw, "token_type": "bearer", "username": user.username}
 
@@ -727,7 +763,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         total_size = sum(m.get("_size", 0) for m in models)
         return {
             "total_models": len(models),
-            "total_versions": len(set((m.get("name"), m.get("version")) for m in models)),
+            "total_versions": len(
+                set((m.get("name"), m.get("version")) for m in models)
+            ),
             "total_size_human": format_file_size(total_size),
             "total_size_bytes": total_size,
             "total_users": len(db._users),

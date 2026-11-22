@@ -13,9 +13,11 @@ def test_login_issues_a_real_revocable_session_token(tmp_path, monkeypatch):
     monkeypatch.setattr(api_gateway, "get_user_store", lambda: store)
 
     response = asyncio.run(
-        api_gateway.login(api_gateway.LoginRequest(
-            email="LOGIN@example.com", password="correct-horse-123"
-        ))
+        api_gateway.login(
+            api_gateway.LoginRequest(
+                email="LOGIN@example.com", password="correct-horse-123"
+            )
+        )
     )
     assert response.token.startswith("sxs_")
     assert response.token != "sk-session-placeholder"
@@ -29,9 +31,11 @@ def test_login_rejects_invalid_password(tmp_path, monkeypatch):
 
     try:
         asyncio.run(
-            api_gateway.login(api_gateway.LoginRequest(
-                email="login-fail@example.com", password="wrong-password"
-            ))
+            api_gateway.login(
+                api_gateway.LoginRequest(
+                    email="login-fail@example.com", password="wrong-password"
+                )
+            )
         )
     except api_gateway.HTTPException as exc:
         assert exc.status_code == 401
@@ -65,7 +69,8 @@ def test_session_token_can_authenticate_self_service_user(tmp_path, monkeypatch)
     token = store.create_session_token(user["id"])
     monkeypatch.setattr(api_gateway, "get_user_store", lambda: store)
     monkeypatch.setattr(
-        api_gateway, "get_key_manager",
+        api_gateway,
+        "get_key_manager",
         lambda: SimpleNamespace(validate_key=lambda key: None),
     )
     assert api_gateway._get_user_id_from_key("Bearer " + token) == user["id"]

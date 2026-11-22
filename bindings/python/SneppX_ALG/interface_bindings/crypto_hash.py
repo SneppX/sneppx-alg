@@ -15,6 +15,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- SHA-256 / SHA-512 (FIPS 180-4) -------------------------------------
 
+
 def sha256(data: bytes) -> bytes:
     return hashlib.sha256(data).digest()
 
@@ -24,6 +25,7 @@ def sha512(data: bytes) -> bytes:
 
 
 # ---- SHA-3 (FIPS 202) ---------------------------------------------------
+
 
 def sha3_256(data: bytes) -> bytes:
     return hashlib.sha3_256(data).digest()
@@ -43,6 +45,7 @@ def shake_256(data: bytes, outlen: int) -> bytes:
 
 # ---- BLAKE3 -------------------------------------------------------------
 
+
 class Blake3:
     """BLAKE3 cryptographic hash — fast, parallel, keyed, and XOF."""
 
@@ -53,6 +56,7 @@ class Blake3:
     def hash(self, data: bytes) -> bytes:
         try:
             import blake3
+
             hasher = blake3.blake3(data, key=self._key)
             return hasher.digest()
         except ImportError:
@@ -65,12 +69,16 @@ class Blake3:
     def derive_key(self, context: str, key_material: bytes, length: int = 32) -> bytes:
         try:
             import blake3
-            return blake3.blake3(key_material, derive_key_context=context).digest(length)
+
+            return blake3.blake3(key_material, derive_key_context=context).digest(
+                length
+            )
         except ImportError:
             return hashlib.sha256(key_material + context.encode()).digest()[:length]
 
 
 # ---- SipHash (RFC 7974) -------------------------------------------------
+
 
 class SipHash:
     """SipHash — short-input PRF, keyed, 64-bit output.
@@ -79,7 +87,7 @@ class SipHash:
     """
 
     def __init__(self, key: Optional[bytes] = None, c: int = 2, d: int = 4):
-        self._key = key or b'\x00' * 16
+        self._key = key or b"\x00" * 16
         self._c = c
         self._d = d
         self._has_c = _HAS_C
@@ -113,11 +121,11 @@ class SipHash:
         v2 = k0 ^ 0x6C7967656E657261
         v3 = k1 ^ 0x7465646279746573
 
-        msg = data + b'\x00' * ((8 - len(data) - 1) % 8)
-        msg = data + b'\x00' * (-len(data) % 8)
+        msg = data + b"\x00" * ((8 - len(data) - 1) % 8)
+        msg = data + b"\x00" * (-len(data) % 8)
         n_blocks = len(msg) // 8
         for i in range(n_blocks):
-            m = struct.unpack("<Q", msg[i * 8:(i + 1) * 8])[0]
+            m = struct.unpack("<Q", msg[i * 8 : (i + 1) * 8])[0]
             v3 ^= m
             for _ in range(self._c):
                 v0, v1, v2, v3 = self._sipround(v0, v1, v2, v3)

@@ -56,7 +56,6 @@ A corrected release must use a new version number and be tested from the exact r
 
 Publishing is a separate release action. This repository workflow validates artifacts but does not upload them to PyPI. Do not add PyPI credentials to the repository or workflow. A release must be explicitly approved, and the exact wheel and source archive must pass the release checks first.
 
-
 ## 1.5.3 release candidate
 
 The next patch candidate is version 1.5.3. It contains the current-main

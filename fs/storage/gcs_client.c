@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Create Gcs.
  *
@@ -26,11 +25,20 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_gcs_create(const char* project_id, const char* bucket_name, const char* credentials_json) { (void)project_id; (void)bucket_name; (void)credentials_json; return NULL; }
+void* SNEPPX_gcs_create(const char* project_id, const char* bucket_name, const char* credentials_json)
+{
+    (void) project_id;
+    (void) bucket_name;
+    (void) credentials_json;
+    return NULL;
+}
 /**
  * @brief Destroy Gcs.
  */
-void SNEPPX_gcs_destroy(void* client) { free(client); }
+void SNEPPX_gcs_destroy(void* client)
+{
+    free(client);
+}
 /**
  * @brief Load Gcs Up.
  *
@@ -41,7 +49,16 @@ void SNEPPX_gcs_destroy(void* client) { free(client); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_gcs_upload(void* client, const char* object_path, const unsigned char* data, size_t len, const char* content_type) { (void)client; (void)object_path; (void)data; (void)len; (void)content_type; return 0; }
+int SNEPPX_gcs_upload(void* client, const char* object_path, const unsigned char* data, size_t len,
+                      const char* content_type)
+{
+    (void) client;
+    (void) object_path;
+    (void) data;
+    (void) len;
+    (void) content_type;
+    return 0;
+}
 /**
  * @brief Load Gcs Down.
  *
@@ -51,7 +68,14 @@ int SNEPPX_gcs_upload(void* client, const char* object_path, const unsigned char
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_gcs_download(void* client, const char* object_path, unsigned char** data, size_t* len) { (void)client; (void)object_path; (void)data; (void)len; return 0; }
+int SNEPPX_gcs_download(void* client, const char* object_path, unsigned char** data, size_t* len)
+{
+    (void) client;
+    (void) object_path;
+    (void) data;
+    (void) len;
+    return 0;
+}
 /**
  * @brief Perform Gcs Delete.
  *
@@ -59,7 +83,12 @@ int SNEPPX_gcs_download(void* client, const char* object_path, unsigned char** d
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_gcs_delete(void* client, const char* object_path) { (void)client; (void)object_path; return 0; }
+int SNEPPX_gcs_delete(void* client, const char* object_path)
+{
+    (void) client;
+    (void) object_path;
+    return 0;
+}
 /**
  * @brief Perform Gcs List.
  *
@@ -69,7 +98,14 @@ int SNEPPX_gcs_delete(void* client, const char* object_path) { (void)client; (vo
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_gcs_list(void* client, const char* prefix, char*** objects, size_t* count) { (void)client; (void)prefix; (void)objects; (void)count; return 0; }
+int SNEPPX_gcs_list(void* client, const char* prefix, char*** objects, size_t* count)
+{
+    (void) client;
+    (void) prefix;
+    (void) objects;
+    (void) count;
+    return 0;
+}
 /**
  * @brief Perform Gcs Exists.
  *
@@ -77,4 +113,9 @@ int SNEPPX_gcs_list(void* client, const char* prefix, char*** objects, size_t* c
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_gcs_exists(void* client, const char* object_path) { (void)client; (void)object_path; return 0; }
+int SNEPPX_gcs_exists(void* client, const char* object_path)
+{
+    (void) client;
+    (void) object_path;
+    return 0;
+}

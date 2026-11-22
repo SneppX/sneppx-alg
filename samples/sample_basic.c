@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * Basic SNEPPX-Algo Sample — SKELETON
  * VERSION: v0.5
@@ -25,7 +24,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void) {
+int main(void)
+{
     printf("SNEPPX-Algo Basic Sample (skeleton)\n");
     printf("This sample will demonstrate:\n");
     printf("  1. Tensor creation and manipulation\n");

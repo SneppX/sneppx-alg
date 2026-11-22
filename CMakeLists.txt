@@ -10,11 +10,15 @@ project(cognitive_processing_system VERSION 1.5.3 LANGUAGES C CXX ASM_MASM)
 #   cmake -B build -G Ninja
 # works without extra flags. The EXISTS guards mean x86 builds are untouched.
 if(ASM_MASM AND MSVC)
-  get_filename_component(_sneppx_msvc_bin_dir "${CMAKE_C_COMPILER}" DIRECTORY)
-  if(EXISTS "${_sneppx_msvc_bin_dir}/ml64.exe")
-    set(CMAKE_ASM_MASM_COMPILER "${_sneppx_msvc_bin_dir}/ml64.exe"
-        CACHE FILEPATH "MASM assembler" FORCE)
-  endif()
+    get_filename_component(_sneppx_msvc_bin_dir "${CMAKE_C_COMPILER}" DIRECTORY)
+    if(EXISTS "${_sneppx_msvc_bin_dir}/ml64.exe")
+        set(CMAKE_ASM_MASM_COMPILER
+            "${_sneppx_msvc_bin_dir}/ml64.exe"
+            CACHE FILEPATH
+            "MASM assembler"
+            FORCE
+        )
+    endif()
 endif()
 
 set(CMAKE_C_STANDARD 11)
@@ -25,29 +29,69 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(SNEPPX_BUILD_TESTS "Build test suite" ON)
 set(BUILD_TESTING ${SNEPPX_BUILD_TESTS})
 option(SNEPPX_BUILD_BENCHMARKS "Build benchmarks" ON)
-option(SNEPPX_USE_GTEST "Build the C test suite against GoogleTest (FetchContent when not installed)" ON)
+option(
+    SNEPPX_USE_GTEST
+    "Build the C test suite against GoogleTest (FetchContent when not installed)"
+    ON
+)
 option(SNEPPX_BUILD_PYTHON "Build Python bindings" OFF)
-option(SNEPPX_ENABLE_TEST_RNG "Enable deterministic RNG hooks for test-only builds (never for production)" OFF)
+option(
+    SNEPPX_ENABLE_TEST_RNG
+    "Enable deterministic RNG hooks for test-only builds (never for production)"
+    OFF
+)
 option(SNEPPX_BUILD_CUDA "Build CUDA kernels" OFF)
 option(SNEPPX_BUILD_TOOLS "Build CLI tools" OFF)
 # Opt-in accelerator backends (OFF by default).
 # These enable real reference-compute implementations of the Metal and
 # oneAPI/SYCL drivers. When OFF, the drivers compile as UNSUPPORTED stubs.
-option(SNEPPX_BUILD_METAL "Build the Apple Metal backend (requires Apple SDK)" OFF)
-option(SNEPPX_BUILD_ONEAPI "Build the Intel oneAPI/SYCL backend (requires DPC++)" OFF)
+option(
+    SNEPPX_BUILD_METAL
+    "Build the Apple Metal backend (requires Apple SDK)"
+    OFF
+)
+option(
+    SNEPPX_BUILD_ONEAPI
+    "Build the Intel oneAPI/SYCL backend (requires DPC++)"
+    OFF
+)
 # Additional opt-in subsystems (v0.9.7.x). All OFF by default.
 option(SNEPPX_BUILD_VULKAN "Build the Vulkan backend (requires volk)" OFF)
 option(SNEPPX_BUILD_TPU "Build the TPU/PjRt backend (requires PJRT C API)" OFF)
 option(SNEPPX_BUILD_HTTP "Build the HTTP inference server" OFF)
 option(SNEPPX_BUILD_ZK "Build ZK proof primitives" OFF)
-option(SNEPPX_BUILD_AMD "Build AMD ROCm/HIP backend (reference compute when HIP unavailable)" OFF)
-option(SNEPPX_BUILD_INTEL "Build Intel Level Zero backend (reference compute when L0 unavailable)" OFF)
-option(SNEPPX_BUILD_QNN "Build Qualcomm QNN backend (reference compute when QNN unavailable)" OFF)
-option(SNEPPX_BUILD_NPU "Build NPU backend (reference compute when NPU SDK unavailable)" OFF)
-option(SNEPPX_BUILD_SGX "Build Intel SGX enclave backend (reference compute when SGX SDK unavailable)" OFF)
+option(
+    SNEPPX_BUILD_AMD
+    "Build AMD ROCm/HIP backend (reference compute when HIP unavailable)"
+    OFF
+)
+option(
+    SNEPPX_BUILD_INTEL
+    "Build Intel Level Zero backend (reference compute when L0 unavailable)"
+    OFF
+)
+option(
+    SNEPPX_BUILD_QNN
+    "Build Qualcomm QNN backend (reference compute when QNN unavailable)"
+    OFF
+)
+option(
+    SNEPPX_BUILD_NPU
+    "Build NPU backend (reference compute when NPU SDK unavailable)"
+    OFF
+)
+option(
+    SNEPPX_BUILD_SGX
+    "Build Intel SGX enclave backend (reference compute when SGX SDK unavailable)"
+    OFF
+)
 option(SNEPPX_BUILD_SHIM "Build shim dispatch layer" OFF)
 option(SNEPPX_USE_ASAN "Enable AddressSanitizer (GCC/Clang only)" OFF)
-option(SNEPPX_USE_UBSAN "Enable UndefinedBehaviorSanitizer (GCC/Clang only)" OFF)
+option(
+    SNEPPX_USE_UBSAN
+    "Enable UndefinedBehaviorSanitizer (GCC/Clang only)"
+    OFF
+)
 option(SNEPPX_USE_LTO "Enable Link-Time Optimization (Release only)" OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
@@ -56,22 +100,34 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     # Force-include the standard headers that MSVC injects implicitly but
     # GCC/Clang require explicitly. Without this the codebase fails to
     # compile on Linux (e.g. uintptr_t, snprintf, memcpy, math fns, off64_t).
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE -include stdint.h -include stdlib.h -include string.h -include stdio.h -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE -include cstdint -include cstdlib -include cstring -include cstdio -include cmath -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h")
+    set(CMAKE_C_FLAGS
+        "${CMAKE_C_FLAGS} -D_GNU_SOURCE -include stdint.h -include stdlib.h -include string.h -include stdio.h -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h"
+    )
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE -include cstdint -include cstdlib -include cstring -include cstdio -include cmath -include math.h -include errno.h -include sys/types.h -include unistd.h -include fcntl.h"
+    )
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lm")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
     if(SNEPPX_USE_ASAN)
         set(CMAKE_C_FLAGS_DEBUG "-g -fsanitize=address -fno-omit-frame-pointer")
-        set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address -fno-omit-frame-pointer")
+        set(CMAKE_CXX_FLAGS_DEBUG
+            "-g -fsanitize=address -fno-omit-frame-pointer"
+        )
         set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-fsanitize=address")
     else()
         set(CMAKE_C_FLAGS_DEBUG "-g")
         set(CMAKE_CXX_FLAGS_DEBUG "-g")
     endif()
     if(SNEPPX_USE_UBSAN)
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
+        set(CMAKE_C_FLAGS_DEBUG
+            "${CMAKE_C_FLAGS_DEBUG} -fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow"
+        )
+        set(CMAKE_CXX_FLAGS_DEBUG
+            "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow"
+        )
+        set(CMAKE_EXE_LINKER_FLAGS_DEBUG
+            "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined"
+        )
     endif()
     if(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
         set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
@@ -87,8 +143,12 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -maes")
     endif()
 elseif(MSVC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4 /DSNEPPX_CRYPTO_SECURE /D_CRT_SECURE_NO_WARNINGS /FS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /DSNEPPX_CRYPTO_SECURE /D_CRT_SECURE_NO_WARNINGS /FS")
+    set(CMAKE_C_FLAGS
+        "${CMAKE_C_FLAGS} /W4 /DSNEPPX_CRYPTO_SECURE /D_CRT_SECURE_NO_WARNINGS /FS"
+    )
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} /W4 /DSNEPPX_CRYPTO_SECURE /D_CRT_SECURE_NO_WARNINGS /FS"
+    )
     set(CMAKE_C_FLAGS_DEBUG "/Zi /RTC1")
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /RTC1")
     if(SNEPPX_USE_ASAN)
@@ -129,19 +189,29 @@ file(GLOB_RECURSE CORE_SECURITY_C_SRC security/crypto/c/*.c)
 file(GLOB_RECURSE FS_FORMAT_SRC fs/format/*.c)
 file(GLOB_RECURSE FS_SNAPSHOT_SRC fs/*.c)
 
-add_library(neural_core_kernel STATIC ${CORE_KERNEL_SRC} ${CORE_LIB_SRC} ${FS_SNAPSHOT_SRC} ${FS_FORMAT_SRC} ${NET_HTTP_SRC})
-target_include_directories(neural_core_kernel PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/kernel>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/architecture>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/internal>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/fs/format>
-    $<INSTALL_INTERFACE:include>
-    $<INSTALL_INTERFACE:include/neural_core/kernel>
-    $<INSTALL_INTERFACE:include/neural_core/security>
-    $<INSTALL_INTERFACE:include/neural_core/architecture>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/net/http>
+add_library(
+    neural_core_kernel
+    STATIC
+    ${CORE_KERNEL_SRC}
+    ${CORE_LIB_SRC}
+    ${FS_SNAPSHOT_SRC}
+    ${FS_FORMAT_SRC}
+    ${NET_HTTP_SRC}
+)
+target_include_directories(
+    neural_core_kernel
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/kernel>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/architecture>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/internal>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/fs/format>
+        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:include/neural_core/kernel>
+        $<INSTALL_INTERFACE:include/neural_core/security>
+        $<INSTALL_INTERFACE:include/neural_core/architecture>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/net/http>
 )
 
 if(SNEPPX_BUILD_METAL)
@@ -192,7 +262,11 @@ endif()
 # ---- SneppX vizmon: lightweight C visualization & monitoring control plane ----
 # Separate static library (libvizmon) per the dashboard requirement: pure-C,
 # no third-party deps (on Windows links ws2_32). Compile-only (ON by default).
-option(SNEPPX_BUILD_VIZMON "Build the SneppX visualization/monitoring dashboard" ON)
+option(
+    SNEPPX_BUILD_VIZMON
+    "Build the SneppX visualization/monitoring dashboard"
+    ON
+)
 if(SNEPPX_BUILD_VIZMON)
     file(GLOB SNEPPX_VIZMON_SRC net/http/vizmon.c)
     if(MSVC)
@@ -203,9 +277,11 @@ if(SNEPPX_BUILD_VIZMON)
         # On Unix, static is fine (can be dlopen'd)
         add_library(sneppx_vizmon STATIC ${SNEPPX_VIZMON_SRC})
     endif()
-    target_include_directories(sneppx_vizmon PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    target_include_directories(
+        sneppx_vizmon
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
     )
     if(NOT MSVC)
         target_link_libraries(sneppx_vizmon PUBLIC m)
@@ -220,9 +296,11 @@ endif()
 option(SNEPPX_BUILD_HUB "Build the SNEPPX Model Hub C client library" ON)
 if(SNEPPX_BUILD_HUB)
     add_library(sneppx_hub_client STATIC model_hub/src/hub_client.c)
-    target_include_directories(sneppx_hub_client PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/model_hub/include>
-        $<INSTALL_INTERFACE:include/neural_core>
+    target_include_directories(
+        sneppx_hub_client
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/model_hub/include>
+            $<INSTALL_INTERFACE:include/neural_core>
     )
     if(MSVC)
         target_link_libraries(sneppx_hub_client PUBLIC winhttp)
@@ -233,13 +311,15 @@ endif()
 file(GLOB_RECURSE NEURAL_ARCHITECTURE_SRC algorithms/*/core/*.c)
 
 add_library(neural_architecture_layer STATIC ${NEURAL_ARCHITECTURE_SRC})
-target_include_directories(neural_architecture_layer PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/architecture>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/kernel>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-    $<INSTALL_INTERFACE:include/neural_core/architecture>
-    $<INSTALL_INTERFACE:include/neural_core/kernel>
-    $<INSTALL_INTERFACE:include/neural_core/security>
+target_include_directories(
+    neural_architecture_layer
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/architecture>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/kernel>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
+        $<INSTALL_INTERFACE:include/neural_core/architecture>
+        $<INSTALL_INTERFACE:include/neural_core/kernel>
+        $<INSTALL_INTERFACE:include/neural_core/security>
 )
 target_link_libraries(neural_architecture_layer PUBLIC neural_core_kernel)
 
@@ -249,15 +329,26 @@ add_subdirectory(algorithms/model_zoo)
 if(CORE_SECURITY_C_SRC)
     add_library(neural_security_c STATIC ${CORE_SECURITY_C_SRC})
     if(SNEPPX_ENABLE_TEST_RNG)
-        target_compile_definitions(neural_security_c PUBLIC SNEPPX_ENABLE_TEST_RNG)
-        message(WARNING "SNEPPX_ENABLE_TEST_RNG is ON: deterministic RNG controls are compiled in. Do not ship this build.")
+        target_compile_definitions(
+            neural_security_c
+            PUBLIC SNEPPX_ENABLE_TEST_RNG
+        )
+        message(
+            WARNING
+            "SNEPPX_ENABLE_TEST_RNG is ON: deterministic RNG controls are compiled in. Do not ship this build."
+        )
     endif()
-    target_include_directories(neural_security_c PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-        $<INSTALL_INTERFACE:include>
+    target_include_directories(
+        neural_security_c
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
+            $<INSTALL_INTERFACE:include>
     )
-    target_compile_definitions(neural_security_c PRIVATE $<$<CONFIG:Release>:SNEPPX_S1_SECURE_MEMORY>)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE $<$<CONFIG:Release>:SNEPPX_S1_SECURE_MEMORY>
+    )
 
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
         file(GLOB SNEPPX_ASM_X86_64_S security/crypto/asm/x86_64/*.S)
@@ -267,8 +358,14 @@ if(CORE_SECURITY_C_SRC)
         if(MSVC)
             file(GLOB SNEPPX_ASM_X86_64_ASM security/crypto/asm/x86_64/*.asm)
             if(SNEPPX_ASM_X86_64_ASM)
-                set_source_files_properties(${SNEPPX_ASM_X86_64_ASM} PROPERTIES LANGUAGE ASM_MASM)
-                target_sources(neural_security_c PRIVATE ${SNEPPX_ASM_X86_64_ASM})
+                set_source_files_properties(
+                    ${SNEPPX_ASM_X86_64_ASM}
+                    PROPERTIES LANGUAGE ASM_MASM
+                )
+                target_sources(
+                    neural_security_c
+                    PRIVATE ${SNEPPX_ASM_X86_64_ASM}
+                )
             endif()
         endif()
     endif()
@@ -282,12 +379,20 @@ file(GLOB_RECURSE NEURAL_SECURITY_CPP_SRC security/obfuscation/*.cpp)
 
 if(NEURAL_SECURITY_CPP_SRC)
     add_library(neural_security_cpp STATIC ${NEURAL_SECURITY_CPP_SRC})
-    target_include_directories(neural_security_cpp PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
-        $<INSTALL_INTERFACE:include/neural_core/security>
+    target_include_directories(
+        neural_security_cpp
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/neural_core/security>
+            $<INSTALL_INTERFACE:include/neural_core/security>
     )
-    target_link_libraries(neural_security_cpp PUBLIC neural_security_c neural_core_kernel neural_architecture_layer)
-    target_compile_definitions(neural_security_cpp PRIVATE SNEPPX_S2_OBFUSCATION)
+    target_link_libraries(
+        neural_security_cpp
+        PUBLIC neural_security_c neural_core_kernel neural_architecture_layer
+    )
+    target_compile_definitions(
+        neural_security_cpp
+        PRIVATE SNEPPX_S2_OBFUSCATION
+    )
     if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         target_link_libraries(neural_security_cpp PRIVATE dl)
     endif()
@@ -319,13 +424,21 @@ if(SNEPPX_BUILD_CUDA)
 
     # CUDA compile flags
     if(CMAKE_CUDA_COMPILER_ID MATCHES "NVIDIA")
-        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -std=c++17 -O3 -DNDEBUG -use_fast_math")
+        set(CMAKE_CUDA_FLAGS
+            "${CMAKE_CUDA_FLAGS} -std=c++17 -O3 -DNDEBUG -use_fast_math"
+        )
         set(CMAKE_CUDA_FLAGS_DEBUG "-g -G")
         set(CMAKE_CUDA_FLAGS_RELEASE "-O3 -DNDEBUG -use_fast_math")
         # Architecture-specific flags
-        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_80,code=sm_80")
-        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_90,code=sm_90")
-        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -DSNEPPX_CUDA_ARCH_80 -DSNEPPX_CUDA_ARCH_90")
+        set(CMAKE_CUDA_FLAGS
+            "${CMAKE_CUDA_FLAGS} -gencode arch=compute_80,code=sm_80"
+        )
+        set(CMAKE_CUDA_FLAGS
+            "${CMAKE_CUDA_FLAGS} -gencode arch=compute_90,code=sm_90"
+        )
+        set(CMAKE_CUDA_FLAGS
+            "${CMAKE_CUDA_FLAGS} -DSNEPPX_CUDA_ARCH_80 -DSNEPPX_CUDA_ARCH_90"
+        )
     endif()
 
     # Find NCCL for distributed training
@@ -346,7 +459,10 @@ if(SNEPPX_BUILD_CUDA)
 
     # Link CUDA runtime to core libraries
     target_compile_definitions(neural_core_kernel PRIVATE SNEPPX_HAS_CUDA)
-    target_compile_definitions(neural_architecture_layer PRIVATE SNEPPX_HAS_CUDA)
+    target_compile_definitions(
+        neural_architecture_layer
+        PRIVATE SNEPPX_HAS_CUDA
+    )
     target_link_libraries(neural_core_kernel PUBLIC CUDA::cudart CUDA::cublas)
     target_link_libraries(neural_architecture_layer PUBLIC CUDA::cudart)
 endif()
@@ -359,7 +475,10 @@ endif()
 file(GLOB_RECURSE SNEPPX_SECURITY_MEMORY_SRC security/memory/*.c)
 if(SNEPPX_SECURITY_MEMORY_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_SECURITY_MEMORY_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_S1_SECURE_ALLOCATOR)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_S1_SECURE_ALLOCATOR
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_C_BINDING_SRC security/c/src/*.c)
@@ -370,13 +489,19 @@ endif()
 file(GLOB_RECURSE SNEPPX_S4_NETWORK_SRC security/network/*.c)
 if(SNEPPX_S4_NETWORK_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S4_NETWORK_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_S4_NETWORK_SECURITY)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_S4_NETWORK_SECURITY
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_FIREWALL_C_SRC security/firewall/c/*.c)
 if(SNEPPX_FIREWALL_C_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_FIREWALL_C_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_FIREWALL_POLICY_ENGINE)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_FIREWALL_POLICY_ENGINE
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_S5_AI_SRC security/ai/*.c)
@@ -394,19 +519,28 @@ endif()
 file(GLOB_RECURSE SNEPPX_S7_UPDATE_SRC security/updates/*.c)
 if(SNEPPX_S7_UPDATE_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S7_UPDATE_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_S7_SECURE_UPDATES)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_S7_SECURE_UPDATES
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_S8_FORMAL_SRC security/formal/*.c)
 if(SNEPPX_S8_FORMAL_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S8_FORMAL_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_S8_FORMAL_VERIFICATION)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_S8_FORMAL_VERIFICATION
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_S9_PENTEST_SRC security/pentest/*.c)
 if(SNEPPX_S9_PENTEST_SRC)
     target_sources(neural_security_c PRIVATE ${SNEPPX_S9_PENTEST_SRC})
-    target_compile_definitions(neural_security_c PRIVATE SNEPPX_S9_PENETRATION_TESTING)
+    target_compile_definitions(
+        neural_security_c
+        PRIVATE SNEPPX_S9_PENETRATION_TESTING
+    )
 endif()
 
 file(GLOB_RECURSE SNEPPX_CPP_BRIDGE_SRC security/cpp/src/*.cpp)
@@ -430,17 +564,21 @@ endif()
 # ---- Install ----
 include(GNUInstallDirs)
 
-install(TARGETS neural_core_kernel neural_architecture_layer neural_security_c
+install(
+    TARGETS neural_core_kernel neural_architecture_layer neural_security_c
     EXPORT SNEPPXTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-install(DIRECTORY include/neural_core/
+install(
+    DIRECTORY include/neural_core/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/neural_core
-    FILES_MATCHING PATTERN "*.h"
+    FILES_MATCHING
+    PATTERN "*.h"
 )
-install(EXPORT SNEPPXTargets
+install(
+    EXPORT SNEPPXTargets
     FILE SNEPPXTargets.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SNEPPX
 )
@@ -471,15 +609,18 @@ include(CPack)
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
     configure_file(Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
-    add_custom_target(docs
+    add_custom_target(
+        docs
         COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM
     )
 else()
-    add_custom_target(docs
-        COMMAND ${CMAKE_COMMAND} -E echo
+    add_custom_target(
+        docs
+        COMMAND
+            ${CMAKE_COMMAND} -E echo
             "Doxygen not found — install it or use docs/guide/*.md directly"
     )
 endif()

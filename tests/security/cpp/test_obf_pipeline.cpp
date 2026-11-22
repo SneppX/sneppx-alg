@@ -17,19 +17,22 @@
  *
  */
 
-
 static int tests_passed = 0;
 static int tests_failed = 0;
 
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { \
-        printf("FAIL: %s (%s)\n", msg, #cond); \
-        tests_failed++; \
-        return; \
-    } \
-} while(0)
+#define ASSERT(cond, msg)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("FAIL: %s (%s)\n", msg, #cond);                                                                     \
+            tests_failed++;                                                                                            \
+            return;                                                                                                    \
+        }                                                                                                              \
+    } while (0)
 
-static void run_test(const char* name, void (*test_fn)(void)) {
+static void run_test(const char* name, void (*test_fn)(void))
+{
     printf("Running %s... ", name);
     fflush(stdout);
     test_fn();
@@ -37,12 +40,14 @@ static void run_test(const char* name, void (*test_fn)(void)) {
     tests_passed++;
 }
 
-static void test_obf_pipeline_create(void) {
+static void test_obf_pipeline_create(void)
+{
     SNEPPX::SNEPPXObfuscator obf;
     ASSERT(true, "obfuscator created");
 }
 
-static void test_obf_pipeline_add_pass(void) {
+static void test_obf_pipeline_add_pass(void)
+{
     SNEPPX::SNEPPXObfuscator obf;
     obf.configure(SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT);
     ASSERT(obf.get_level() == SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT, "level set");
@@ -50,7 +55,8 @@ static void test_obf_pipeline_add_pass(void) {
     ASSERT(obf.get_level() == SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_MAXIMUM, "level set to max");
 }
 
-static void test_obf_pipeline_run(void) {
+static void test_obf_pipeline_run(void)
+{
     SNEPPX::SNEPPXObfuscator obf;
     SNEPPX::SNEPPXObfCFG cfg;
     // Just test that obfuscator can be used without crashing
@@ -58,7 +64,8 @@ static void test_obf_pipeline_run(void) {
     ASSERT(report.level == SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_NONE, "default level");
 }
 
-int main(void) {
+int main(void)
+{
     run_test("obf_pipeline_create", test_obf_pipeline_create);
     run_test("obf_pipeline_add_pass", test_obf_pipeline_add_pass);
     run_test("obf_pipeline_run", test_obf_pipeline_run);

@@ -75,7 +75,7 @@ __global__ void sneppx_gemm_f16_tensor_core_kernel(
             // Coalesced load from global to shared memory
             int row = threadIdx.y * 16 + threadIdx.x / 2;
             int col = threadIdx.x % 2 * 8;
-            
+
             if (block_tile_m + row < M && k + col < K) {
                 As[0][row][col] = A[(block_tile_m + row) * lda + k + col];
                 As[0][row][col + 1] = A[(block_tile_m + row) * lda + k + col + 1];
@@ -109,7 +109,7 @@ __global__ void sneppx_gemm_f16_tensor_core_kernel(
                 int k = next_k + k_inner;
                 int row = threadIdx.y * 16 + threadIdx.x / 2;
                 int col = threadIdx.x % 2 * 8;
-                
+
                 if (block_tile_m + row < M && k + col < K) {
                     As[next_tile][row][col] = A[(block_tile_m + row) * lda + k + col];
                     As[next_tile][row][col + 1] = A[(block_tile_m + row) * lda + k + col + 1];
@@ -169,7 +169,7 @@ __global__ void sneppx_gemm_f16_tensor_core_kernel(
                 for (int j = 0; j < WARP_COLS / MMA_N; ++j) {
                     uint32_t c0 = *reinterpret_cast<uint32_t*>(&accum[i][j][0]);
                     uint32_t c1 = *reinterpret_cast<uint32_t*>(&accum[i][j][1]);
-                    
+
                     #if defined(SNEPPX_HOPPER) && SNEPPX_HOPPER
                     sneppx_wgmma_f16(
                         *reinterpret_cast<uint32_t*>(&accum[i][j][0]),
@@ -199,21 +199,21 @@ __global__ void sneppx_gemm_f16_tensor_core_kernel(
         for (int j = 0; j < WARP_COLS / MMA_N; ++j) {
             int row = block_tile_m + warp_tile_m + i * MMA_M;
             int col = block_tile_n + warp_tile_n + j * MMA_N;
-            
+
             if (row < M && col < N) {
                 // Apply alpha
                 float val = accum[i][j][0] * alpha;
-                
+
                 // Apply beta * C
                 if (beta != 0.0f) {
                     val += __half2float(C[row * ldc + col]) * beta;
                 }
-                
+
                 // Apply bias
                 if (bias) {
                     val += __half2float(bias[col]);
                 }
-                
+
                 // Apply activation
                 switch (act_type) {
                     case SNEPPX_ACT_RELU:
@@ -234,7 +234,7 @@ __global__ void sneppx_gemm_f16_tensor_core_kernel(
                     default:
                         break;
                 }
-                
+
                 C[row * ldc + col] = __float2half_rn(val);
             }
         }
@@ -255,14 +255,14 @@ __global__ void sneppx_gemm_fallback_kernel(
 ) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
-    
+
     if (row >= M || col >= N) return;
-    
+
     float sum = 0.0f;
     for (int k = 0; k < K; ++k) {
         sum += __half2float(A[row * lda + k]) * __half2float(B[k * ldb + col]);
     }
-    
+
     float val = sum * alpha;
     if (beta != 0.0f) {
         val += __half2float(C[row * ldc + col]) * beta;
@@ -270,7 +270,7 @@ __global__ void sneppx_gemm_fallback_kernel(
     if (bias) {
         val += __half2float(bias[col]);
     }
-    
+
     // Activation
     switch (act_type) {
         case SNEPPX_ACT_RELU: val = fmaxf(val, 0.0f); break;
@@ -280,7 +280,7 @@ __global__ void sneppx_gemm_fallback_kernel(
         case SNEPPX_ACT_SIGMOID: val = 1.0f / (1.0f + expf(-val)); break;
         default: break;
     }
-    
+
     C[row * ldc + col] = __float2half_rn(val);
 }
 
@@ -355,17 +355,17 @@ __global__ void sneppx_sum_reduce_kernel(
     extern __shared__ half smem[];
     int tid = threadIdx.x;
     int64_t outer_idx = blockIdx.x;
-    
+
     if (outer_idx >= outer) return;
-    
+
     float sum = 0.0f;
     for (int64_t i = tid; i < inner; i += blockDim.x) {
         sum += __half2float(input[outer_idx * inner + i]);
     }
-    
+
     smem[tid] = sum;
     __syncthreads();
-    
+
     // Warp-level reduction
     for (int stride = blockDim.x / 2; stride > 32; stride >>= 1) {
         if (tid < stride) {
@@ -373,7 +373,7 @@ __global__ void sneppx_sum_reduce_kernel(
         }
         __syncthreads();
     }
-    
+
     // Warp shuffle reduction
     if (tid < 32) {
         float val = smem[tid];
@@ -400,36 +400,36 @@ __global__ void sneppx_layernorm_kernel(
 ) {
     int64_t row = blockIdx.x * blockDim.y + threadIdx.y;
     if (row >= num_rows) return;
-    
+
     int tid = threadIdx.x;
     const half* x = input + row * row_stride;
     half* y = output + row * row_stride;
     int64_t D = row_stride;
-    
+
     // Compute mean (warp-level)
     float sum = 0.0f;
     for (int64_t i = tid; i < D; i += blockDim.x) {
         sum += __half2float(x[i]);
     }
-    
+
     // Warp reduce sum
     for (int offset = 16; offset > 0; offset >>= 1) {
         sum += __shfl_down_sync(0xFFFFFFFF, sum, offset);
     }
     float mean = __shfl_sync(0xFFFFFFFF, sum, 0) / D;
-    
+
     // Compute variance
     float var_sum = 0.0f;
     for (int64_t i = tid; i < D; i += blockDim.x) {
         float diff = __half2float(x[i]) - mean;
         var_sum += diff * diff;
     }
-    
+
     for (int offset = 16; offset > 0; offset >>= 1) {
         var_sum += __shfl_down_sync(0xFFFFFFFF, var_sum, offset);
     }
     float var = __shfl_sync(0xFFFFFFFF, var_sum, 0) / D;
-    
+
     // Normalize and scale
     float inv_std = rsqrtf(var + eps);
     for (int64_t i = tid; i < D; i += blockDim.x) {
@@ -452,24 +452,24 @@ __global__ void sneppx_softmax_kernel(
 ) {
     int64_t row = blockIdx.x;
     if (row >= num_rows) return;
-    
+
     int tid = threadIdx.x;
     const half* x = input + row * row_stride;
     half* y = output + row * row_stride;
     int64_t D = row_stride;
-    
+
     // Find max (warp reduce)
     float max_val = -INFINITY;
     for (int64_t i = tid; i < D; i += blockDim.x) {
         max_val = fmaxf(max_val, __half2float(x[i]));
     }
-    
+
     for (int offset = 16; offset > 0; offset >>= 1) {
         float tmp = __shfl_down_sync(0xFFFFFFFF, max_val, offset);
         max_val = fmaxf(max_val, tmp);
     }
     max_val = __shfl_sync(0xFFFFFFFF, max_val, 0);
-    
+
     // Compute exp and sum
     float exp_sum = 0.0f;
     for (int64_t i = tid; i < D; i += blockDim.x) {
@@ -477,12 +477,12 @@ __global__ void sneppx_softmax_kernel(
         y[i] = __float2half_rn(val);
         exp_sum += val;
     }
-    
+
     for (int offset = 16; offset > 0; offset >>= 1) {
         exp_sum += __shfl_down_sync(0xFFFFFFFF, exp_sum, offset);
     }
     exp_sum = __shfl_sync(0xFFFFFFFF, exp_sum, 0);
-    
+
     // Normalize
     for (int64_t i = tid; i < D; i += blockDim.x) {
         float val = __half2float(y[i]) / exp_sum;
@@ -507,26 +507,26 @@ SNEPPX_CudaError sneppx_gemm_fused(
     // Validate inputs
     if (!A || !B || !C) return SNEPPX_CUDA_ERROR_INVALID_ARG;
     if (A->ndim != 2 || B->ndim != 2 || C->ndim != 2) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     int M = A->shape[0];
     int K = A->shape[1];
     int N = B->shape[1];
-    
+
     if (B->shape[0] != K) return SNEPPX_CUDA_ERROR_INVALID_ARG;
     if (C->shape[0] != M || C->shape[1] != N) return SNEPPX_CUDA_ERROR_INVALID_ARG;
     if (bias && (bias->shape[0] != N || bias->ndim != 1)) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     // Choose kernel based on architecture and problem size
     int device_id;
     cudaGetDevice(&device_id);
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, device_id);
-    
+
     int major = prop.major;
-    
+
     dim3 block(32, 8);  // 256 threads
     dim3 grid((N + 127) / 128, (M + 127) / 128);
-    
+
     if (major >= 8) {
         // Tensor core kernel
         sneppx_gemm_f16_tensor_core_kernel<128, 128, 64, 64, 16, 8, 16>
@@ -553,7 +553,7 @@ SNEPPX_CudaError sneppx_gemm_fused(
             act
         );
     }
-    
+
     return SNEPPX_CUDA_SUCCESS;
 }
 
@@ -634,10 +634,10 @@ SNEPPX_CudaError sneppx_layernorm(
         num_rows *= input->shape[i];
     }
     int64_t row_stride = input->shape[input->ndim - 1];
-    
+
     dim3 block(32, 8);  // 256 threads
     dim3 grid((num_rows + 7) / 8);
-    
+
     sneppx_layernorm_kernel<<<grid, block, 0, stream>>>(
         static_cast<const half*>(input->data),
         weight ? static_cast<const half*>(weight->data) : nullptr,
@@ -661,10 +661,10 @@ SNEPPX_CudaError sneppx_softmax(
         num_rows *= input->shape[i];
     }
     int64_t row_stride = input->shape[input->ndim - 1];
-    
+
     dim3 block(256);
     dim3 grid(num_rows);
-    
+
     sneppx_softmax_kernel<<<grid, block, 0, stream>>>(
         static_cast<const half*>(input->data),
         static_cast<half*>(output->data),
@@ -739,7 +739,7 @@ SNEPPX_CudaError sneppx_cuda_get_device_props(int device_id, SNEPPX_DeviceProps*
     cudaDeviceProp prop;
     cudaError_t err = cudaGetDeviceProperties(&prop, device_id);
     if (err != cudaSuccess) return SNEPPX_CUDA_ERROR_INVALID_DEVICE;
-    
+
     props->device_id = device_id;
     strncpy(props->name, prop.name, 255);
     props->compute_capability_major = prop.major;

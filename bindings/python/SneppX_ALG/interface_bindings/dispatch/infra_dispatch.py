@@ -86,16 +86,19 @@ class InfraBackend:
     @staticmethod
     def topology_ring(n: int):
         from ..net_bindings import Topology
+
         return Topology.create_ring(n)
 
     @staticmethod
     def topology_tree(n: int):
         from ..net_bindings import Topology
+
         return Topology.create_tree(n)
 
     @staticmethod
     def nccl_all_reduce(sendbuf, recvbuf, op=0):
         from ..net_bindings import NCCLComm
+
         nccl = NCCLComm()
         nccl.comm_init_rank(1, 0)
         return nccl.all_reduce(sendbuf, recvbuf, op)
@@ -105,14 +108,17 @@ class InfraBackend:
     @staticmethod
     def cuda_driver():
         from ..driver_bindings import CUDADriver
+
         return CUDADriver()
 
     @staticmethod
     def rocm_driver():
         from ..driver_bindings import ROCmDriver
+
         return ROCmDriver()
 
     @staticmethod
     def tpu_driver():
         from ..driver_bindings import TPUDriver
+
         return TPUDriver()

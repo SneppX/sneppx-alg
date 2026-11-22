@@ -46,6 +46,7 @@ def compute_sha256_bytes(data: bytes) -> str:
 def check_disk_space(path: str, required_bytes: int) -> bool:
     """Check if there's enough disk space at the given path."""
     import shutil
+
     usage = shutil.disk_usage(path)
     return usage.free >= required_bytes
 

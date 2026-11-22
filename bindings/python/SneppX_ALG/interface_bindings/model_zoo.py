@@ -218,7 +218,9 @@ class ModelConfig:
             architecture=c_config.get("architecture", "transformer"),
             vocab_size=c_config.get("vocab_size", 32000),
             hidden_size=c_config.get("hidden_size", 4096),
-            num_layers=c_config.get("num_layers", c_config.get("num_hidden_layers", 32)),
+            num_layers=c_config.get(
+                "num_layers", c_config.get("num_hidden_layers", 32)
+            ),
             num_hidden_layers=c_config.get(
                 "num_hidden_layers", c_config.get("num_layers", 32)
             ),
@@ -1446,7 +1448,9 @@ def from_pretrained(
 
     config = get_model_config(family, size)
     if verbose:
-        print(f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size} (config only; no weights downloaded)")
+        print(
+            f"[SNEPPX from_pretrained] {model_id} -> family={family}, size={size} (config only; no weights downloaded)"
+        )
         print(
             f"  hidden_size={config['hidden_size']}, "
             f"layers={config['num_hidden_layers']}, "

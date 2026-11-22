@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.optim_extra import Adam8bit, SGD8bit
@@ -24,8 +26,8 @@ def _ref_adam(params, data, target, steps=300, lr=1e-2):
             p._t += 1
             p._m = 0.9 * p._m + 0.1 * g
             p._v = 0.999 * p._v + 0.001 * (g * g)
-            mhat = p._m / (1 - 0.9 ** p._t)
-            vhat = p._v / (1 - 0.999 ** p._t)
+            mhat = p._m / (1 - 0.9**p._t)
+            vhat = p._v / (1 - 0.999**p._t)
             upd = mhat / (np.sqrt(vhat) + 1e-8)
             p.data = (p.data - lr * upd).astype(p.data.dtype)
             p.grad = None
@@ -59,7 +61,8 @@ def test_adam8bit_tracks_fp32():
 
     W = Tensor(rng.randn(3, 2), dtype="float64")
     b = Tensor(rng.randn(2), dtype="float64")
-    W.requires_grad_(True); b.requires_grad_(True)
+    W.requires_grad_(True)
+    b.requires_grad_(True)
     opt = Adam8bit([W, b], lr=1e-2)
     loss_fn = lambda: ((X @ W + b - Y) ** 2).mean()
 
@@ -69,8 +72,16 @@ def test_adam8bit_tracks_fp32():
         opt.step()
     l8 = float(loss_fn().data)
 
-    ref = _ref_adam([Tensor(rng.randn(3, 2), dtype="float64"),
-                     Tensor(rng.randn(2), dtype="float64")], X, Y, steps=1500, lr=1e-2)
+    ref = _ref_adam(
+        [
+            Tensor(rng.randn(3, 2), dtype="float64"),
+            Tensor(rng.randn(2), dtype="float64"),
+        ],
+        X,
+        Y,
+        steps=1500,
+        lr=1e-2,
+    )
     lref = float(((X.data @ ref[0].data + ref[1].data - Y.data) ** 2).mean())
 
     assert l8 < 1e-4, f"8bit adam did not converge: loss={l8}"
@@ -87,7 +98,8 @@ def test_sgd8bit_tracks_fp32():
 
     W = Tensor(rng.randn(3, 2), dtype="float64")
     b = Tensor(rng.randn(2), dtype="float64")
-    W.requires_grad_(True); b.requires_grad_(True)
+    W.requires_grad_(True)
+    b.requires_grad_(True)
     opt = SGD8bit([W, b], lr=1e-2, momentum=0.9)
     loss_fn = lambda: ((X @ W + b - Y) ** 2).mean()
 
@@ -97,8 +109,17 @@ def test_sgd8bit_tracks_fp32():
         opt.step()
     l8 = float(loss_fn().data)
 
-    ref = _ref_sgd([Tensor(rng.randn(3, 2), dtype="float64"),
-                    Tensor(rng.randn(2), dtype="float64")], X, Y, steps=400, lr=1e-2, momentum=0.9)
+    ref = _ref_sgd(
+        [
+            Tensor(rng.randn(3, 2), dtype="float64"),
+            Tensor(rng.randn(2), dtype="float64"),
+        ],
+        X,
+        Y,
+        steps=400,
+        lr=1e-2,
+        momentum=0.9,
+    )
     lref = float(((X.data @ ref[0].data + ref[1].data - Y.data) ** 2).mean())
 
     assert l8 < 1e-2, f"8bit sgd did not converge: loss={l8}"

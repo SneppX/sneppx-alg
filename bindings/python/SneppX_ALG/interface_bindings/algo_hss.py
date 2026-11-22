@@ -19,13 +19,17 @@ class HSSDiscretize:
         self._has_c = _HAS_C
 
     @staticmethod
-    def zoh(A: np.ndarray, B: np.ndarray, delta: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def zoh(
+        A: np.ndarray, B: np.ndarray, delta: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         Ad = np.exp(A * delta[..., None])
         Bd = (Ad - np.eye(A.shape[-1])) @ B * delta[..., None]
         return Ad, Bd
 
     @staticmethod
-    def bilinear(A: np.ndarray, B: np.ndarray, delta: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def bilinear(
+        A: np.ndarray, B: np.ndarray, delta: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         I = np.eye(A.shape[-1])
         Ad = (I + delta * A / 2) @ np.linalg.inv(I - delta * A / 2)
         Bd = np.linalg.inv(I - delta * A / 2) @ B * delta[..., None]
@@ -39,13 +43,14 @@ class HSSScan:
         self._has_c = _HAS_C
 
     @staticmethod
-    def selective_scan(x: np.ndarray, delta: np.ndarray, A: np.ndarray,
-                       B: np.ndarray, C: np.ndarray) -> np.ndarray:
+    def selective_scan(
+        x: np.ndarray, delta: np.ndarray, A: np.ndarray, B: np.ndarray, C: np.ndarray
+    ) -> np.ndarray:
         batch, seq_len, d_model = x.shape
         h = np.zeros((batch, d_model), dtype=np.float32)
         out = np.zeros_like(x)
         for t in range(seq_len):
-            d = delta[:, t:t+1, :]
+            d = delta[:, t : t + 1, :]
             Ad = np.exp(d @ A)
             Bd = (Ad - np.eye(A.shape[-1])) @ B
             h = h * Ad.squeeze(1) + (Bd.squeeze(1) @ x[:, t, :, None]).squeeze(-1)
@@ -53,7 +58,9 @@ class HSSScan:
         return out
 
     @staticmethod
-    def parallel_scan(x: np.ndarray, A_bar: np.ndarray, B_bar_x: np.ndarray) -> np.ndarray:
+    def parallel_scan(
+        x: np.ndarray, A_bar: np.ndarray, B_bar_x: np.ndarray
+    ) -> np.ndarray:
         batch, seq_len, d = x.shape
         h = np.zeros((batch, d), dtype=np.float32)
         out = np.zeros_like(x)
@@ -88,8 +95,13 @@ class HSSStep:
         self._has_c = _HAS_C
 
     @staticmethod
-    def step(h: np.ndarray, x_t: np.ndarray, A_bar: np.ndarray, B_bar: np.ndarray,
-             C: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def step(
+        h: np.ndarray,
+        x_t: np.ndarray,
+        A_bar: np.ndarray,
+        B_bar: np.ndarray,
+        C: np.ndarray,
+    ) -> Tuple[np.ndarray, np.ndarray]:
         h_new = A_bar * h + B_bar * x_t
         y_t = np.sum(h_new * C, axis=-1)
         return h_new, y_t

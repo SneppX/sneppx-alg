@@ -34,14 +34,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_HQC_128,
     SNEPPX_HQC_192,
     SNEPPX_HQC_256
 } SNEPPXHQCLevel;
 
-typedef struct {
+typedef struct
+{
     SNEPPXHQCLevel level;
     uint32_t n_param;
     uint32_t n1_param;
@@ -60,7 +61,8 @@ typedef struct {
     uint64_t* reed_muller_generator;
 } SNEPPXHQCKeypair;
 
-typedef struct {
+typedef struct
+{
     uint64_t* u;
     uint64_t* v;
     uint64_t* d;
@@ -75,7 +77,8 @@ typedef struct {
 
 int snepx_hqc_keygen(SNEPPXHQCKeypair* keypair, SNEPPXHQCLevel level);
 int snepx_hqc_encapsulate(const SNEPPXHQCKeypair* keypair, SNEPPXHQCCiphertext* ct);
-int snepx_hqc_decapsulate(const SNEPPXHQCKeypair* keypair, const SNEPPXHQCCiphertext* ct, uint8_t* shared_secret, size_t* ss_len);
+int snepx_hqc_decapsulate(const SNEPPXHQCKeypair* keypair, const SNEPPXHQCCiphertext* ct, uint8_t* shared_secret,
+                          size_t* ss_len);
 int snepx_hqc_keypair_destroy(SNEPPXHQCKeypair* keypair);
 
 // HQC internal arithmetic

@@ -491,11 +491,11 @@ __global__ void rand_permutation_kernel(
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
     curandStatePhilox4_32_10_t local_state = sneppx_get_rng_state(states, num_states);
-    
+
     // Initialize identity
     output[idx] = idx;
     __syncthreads();
-    
+
     // Fisher-Yates shuffle (each thread swaps its element with a random later element)
     // Simplified: each thread picks a random swap partner
     if (idx < n - 1) {

@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -39,9 +41,9 @@ def test_higher_order_kldiv():
 
     H_eng = _engine_hessian(build, p)
     H_ref = 2.0 * np.outer(t, t) / (n * n)
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"KLDiv Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"KLDiv Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 def test_higher_order_nll_index():
@@ -65,9 +67,9 @@ def test_higher_order_nll_index():
     for i in range(n):
         cvec[i * c + idx[i]] = -1.0 / n
     H_ref = 2.0 * np.outer(cvec, cvec)
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"NLL(index) Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"NLL(index) Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 def test_higher_order_bcewithlogits():
@@ -91,9 +93,9 @@ def test_higher_order_bcewithlogits():
     z = x @ w.data
     s = 1.0 / (1.0 + np.exp(-z))
     H_ref = (x.T * (s * (1 - s))) @ x / N
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"BCEWithLogits Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"BCEWithLogits Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 if __name__ == "__main__":

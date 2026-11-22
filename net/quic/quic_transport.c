@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Perform Quic Create Listener.
  *
@@ -27,11 +26,21 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_quic_create_listener(const char* host, int port, const char* cert_path, const char* key_path) { (void)host; (void)port; (void)cert_path; (void)key_path; return NULL; }
+void* SNEPPX_quic_create_listener(const char* host, int port, const char* cert_path, const char* key_path)
+{
+    (void) host;
+    (void) port;
+    (void) cert_path;
+    (void) key_path;
+    return NULL;
+}
 /**
  * @brief Perform Quic Destroy Listener.
  */
-void SNEPPX_quic_destroy_listener(void* listener) { free(listener); }
+void SNEPPX_quic_destroy_listener(void* listener)
+{
+    free(listener);
+}
 /**
  * @brief Perform Quic Listen.
  *
@@ -39,7 +48,12 @@ void SNEPPX_quic_destroy_listener(void* listener) { free(listener); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_listen(void* listener, int backlog) { (void)listener; (void)backlog; return 0; }
+int SNEPPX_quic_listen(void* listener, int backlog)
+{
+    (void) listener;
+    (void) backlog;
+    return 0;
+}
 /**
  * @brief Perform Quic Accept.
  *
@@ -47,7 +61,12 @@ int SNEPPX_quic_listen(void* listener, int backlog) { (void)listener; (void)back
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_quic_accept(void* listener, int timeout_ms) { (void)listener; (void)timeout_ms; return NULL; }
+void* SNEPPX_quic_accept(void* listener, int timeout_ms)
+{
+    (void) listener;
+    (void) timeout_ms;
+    return NULL;
+}
 /**
  * @brief Perform Quic Dial.
  *
@@ -56,11 +75,20 @@ void* SNEPPX_quic_accept(void* listener, int timeout_ms) { (void)listener; (void
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_quic_dial(const char* host, int port, int timeout_ms) { (void)host; (void)port; (void)timeout_ms; return NULL; }
+void* SNEPPX_quic_dial(const char* host, int port, int timeout_ms)
+{
+    (void) host;
+    (void) port;
+    (void) timeout_ms;
+    return NULL;
+}
 /**
  * @brief Close Quic.
  */
-void SNEPPX_quic_close(void* conn) { free(conn); }
+void SNEPPX_quic_close(void* conn)
+{
+    free(conn);
+}
 /**
  * @brief Perform Quic Send.
  *
@@ -69,7 +97,13 @@ void SNEPPX_quic_close(void* conn) { free(conn); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_send(void* conn, const unsigned char* data, size_t len) { (void)conn; (void)data; (void)len; return 0; }
+int SNEPPX_quic_send(void* conn, const unsigned char* data, size_t len)
+{
+    (void) conn;
+    (void) data;
+    (void) len;
+    return 0;
+}
 /**
  * @brief Perform Quic Recv.
  *
@@ -79,7 +113,14 @@ int SNEPPX_quic_send(void* conn, const unsigned char* data, size_t len) { (void)
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_recv(void* conn, unsigned char* buf, size_t max_len, int timeout_ms) { (void)conn; (void)buf; (void)max_len; (void)timeout_ms; return 0; }
+int SNEPPX_quic_recv(void* conn, unsigned char* buf, size_t max_len, int timeout_ms)
+{
+    (void) conn;
+    (void) buf;
+    (void) max_len;
+    (void) timeout_ms;
+    return 0;
+}
 /**
  * @brief Open Quic Stream.
  *
@@ -87,7 +128,12 @@ int SNEPPX_quic_recv(void* conn, unsigned char* buf, size_t max_len, int timeout
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_stream_open(void* conn, unsigned long long* stream_id) { (void)conn; (void)stream_id; return 0; }
+int SNEPPX_quic_stream_open(void* conn, unsigned long long* stream_id)
+{
+    (void) conn;
+    (void) stream_id;
+    return 0;
+}
 /**
  * @brief Close Quic Stream.
  *
@@ -95,7 +141,12 @@ int SNEPPX_quic_stream_open(void* conn, unsigned long long* stream_id) { (void)c
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_stream_close(void* conn, unsigned long long stream_id) { (void)conn; (void)stream_id; return 0; }
+int SNEPPX_quic_stream_close(void* conn, unsigned long long stream_id)
+{
+    (void) conn;
+    (void) stream_id;
+    return 0;
+}
 /**
  * @brief Perform Quic Stream Send.
  *
@@ -105,7 +156,14 @@ int SNEPPX_quic_stream_close(void* conn, unsigned long long stream_id) { (void)c
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_stream_send(void* conn, unsigned long long stream_id, const unsigned char* data, size_t len) { (void)conn; (void)stream_id; (void)data; (void)len; return 0; }
+int SNEPPX_quic_stream_send(void* conn, unsigned long long stream_id, const unsigned char* data, size_t len)
+{
+    (void) conn;
+    (void) stream_id;
+    (void) data;
+    (void) len;
+    return 0;
+}
 /**
  * @brief Perform Quic Stream Recv.
  *
@@ -116,4 +174,13 @@ int SNEPPX_quic_stream_send(void* conn, unsigned long long stream_id, const unsi
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_quic_stream_recv(void* conn, unsigned long long stream_id, unsigned char* buf, size_t max_len, int timeout_ms) { (void)conn; (void)stream_id; (void)buf; (void)max_len; (void)timeout_ms; return 0; }
+int SNEPPX_quic_stream_recv(void* conn, unsigned long long stream_id, unsigned char* buf, size_t max_len,
+                            int timeout_ms)
+{
+    (void) conn;
+    (void) stream_id;
+    (void) buf;
+    (void) max_len;
+    (void) timeout_ms;
+    return 0;
+}

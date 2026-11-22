@@ -24,14 +24,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_SC_SBOM_FORMAT_SPDX,
     SNEPPX_SC_SBOM_FORMAT_CYCLONEDX,
     SNEPPX_SC_SBOM_FORMAT_SWID
 } SNEPPXSCSBOMFormat;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_SC_VULN_CRITICAL,
     SNEPPX_SC_VULN_HIGH,
     SNEPPX_SC_VULN_MEDIUM,
@@ -39,14 +40,16 @@ typedef enum {
     SNEPPX_SC_VULN_NONE
 } SNEPPXSCSeverity;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_SC_POLICY_BLOCK,
     SNEPPX_SC_POLICY_WARN,
     SNEPPX_SC_POLICY_AUDIT,
     SNEPPX_SC_POLICY_IGNORE
 } SNEPPXSCPolicyAction;
 
-typedef struct {
+typedef struct
+{
     char* component_name;
     size_t name_len;
     char* component_version;
@@ -70,7 +73,8 @@ typedef struct {
     uint8_t is_optional : 1;
 } SNEPPXSCComponent;
 
-typedef struct {
+typedef struct
+{
     char* vuln_id;
     size_t vuln_id_len;
     char* cve_id;
@@ -94,7 +98,8 @@ typedef struct {
     uint8_t has_patch : 1;
 } SNEPPXSCVulnerability;
 
-typedef struct {
+typedef struct
+{
     char* sbom_name;
     size_t sbom_name_len;
     char* sbom_version;
@@ -129,6 +134,7 @@ int snepx_sc_sbom_destroy(SNEPPXSCSBOM* sbom);
 // Dependency chain analysis
 int snepx_sc_dependency_depth(const SNEPPXSCSBOM* sbom, const char* component_name, uint32_t* depth);
 int snepx_sc_dependency_tree(const SNEPPXSCSBOM* sbom, const char* root_component, uint8_t* tree_out, size_t* tree_len);
-int snepx_sc_find_transitive_vulnerabilities(SNEPPXSCSBOM* sbom, const char* component_name, SNEPPXSCVulnerability* vulns, uint32_t* num_vulns);
+int snepx_sc_find_transitive_vulnerabilities(SNEPPXSCSBOM* sbom, const char* component_name,
+                                             SNEPPXSCVulnerability* vulns, uint32_t* num_vulns);
 
 #endif

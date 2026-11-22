@@ -1,10 +1,19 @@
 """Tests for algo_arc.py — ARC algorithm bindings."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
-from SneppX_ALG.interface_bindings import ARCAttackSim, ARCFForward, ARCGradientObfuscator, ARCInputGuard, ARCOutputVerifier
+from SneppX_ALG.interface_bindings import (
+    ARCAttackSim,
+    ARCFForward,
+    ARCGradientObfuscator,
+    ARCInputGuard,
+    ARCOutputVerifier,
+)
 
 
 def test_attack_sim_pgd():

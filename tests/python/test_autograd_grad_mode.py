@@ -29,7 +29,6 @@ def test_set_grad_enabled_restores_nested_modes():
     assert is_grad_enabled() is previous
 
 
-
 def test_grad_mode_is_isolated_between_threads():
     worker_modes = []
 

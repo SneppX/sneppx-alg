@@ -40,9 +40,16 @@ def _calculate_fan_in_and_fan_out(shape):
 def calculate_gain(nonlinearity, param=None):
     """Return the recommended gain for the given nonlinearity (PyTorch semantics)."""
     nl = (nonlinearity or "linear").lower()
-    if nl in ("linear", "conv1d", "conv2d", "conv3d",
-              "conv_transpose1d", "conv_transpose2d", "conv_transpose3d",
-              "sigmoid"):
+    if nl in (
+        "linear",
+        "conv1d",
+        "conv2d",
+        "conv3d",
+        "conv_transpose1d",
+        "conv_transpose2d",
+        "conv_transpose3d",
+        "sigmoid",
+    ):
         return 1.0
     if nl == "tanh":
         return 5.0 / 3.0
@@ -117,9 +124,12 @@ def xavier_normal_(tensor: Tensor, gain: float = 1.0) -> Tensor:
     return normal_(tensor, 0.0, std)
 
 
-def kaiming_uniform_(tensor: Tensor, a: float = 0.0,
-                     mode: str = "fan_in",
-                     nonlinearity: str = "leaky_relu") -> Tensor:
+def kaiming_uniform_(
+    tensor: Tensor,
+    a: float = 0.0,
+    mode: str = "fan_in",
+    nonlinearity: str = "leaky_relu",
+) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor.shape)
     fan = fan_in if mode == "fan_in" else fan_out
     gain = calculate_gain(nonlinearity, a)
@@ -127,9 +137,12 @@ def kaiming_uniform_(tensor: Tensor, a: float = 0.0,
     return uniform_(tensor, -bound, bound)
 
 
-def kaiming_normal_(tensor: Tensor, a: float = 0.0,
-                    mode: str = "fan_in",
-                    nonlinearity: str = "leaky_relu") -> Tensor:
+def kaiming_normal_(
+    tensor: Tensor,
+    a: float = 0.0,
+    mode: str = "fan_in",
+    nonlinearity: str = "leaky_relu",
+) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor.shape)
     fan = fan_in if mode == "fan_in" else fan_out
     gain = calculate_gain(nonlinearity, a)
@@ -160,7 +173,17 @@ def orthogonal_(tensor: Tensor, gain: float = 1.0) -> Tensor:
 
 
 __all__ = [
-    "zeros_", "ones_", "constant_", "eye_", "uniform_", "normal_",
-    "xavier_uniform_", "xavier_normal_", "kaiming_uniform_", "kaiming_normal_",
-    "orthogonal_", "calculate_gain", "_calculate_fan_in_and_fan_out",
+    "zeros_",
+    "ones_",
+    "constant_",
+    "eye_",
+    "uniform_",
+    "normal_",
+    "xavier_uniform_",
+    "xavier_normal_",
+    "kaiming_uniform_",
+    "kaiming_normal_",
+    "orthogonal_",
+    "calculate_gain",
+    "_calculate_fan_in_and_fan_out",
 ]

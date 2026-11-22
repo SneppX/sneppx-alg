@@ -11,7 +11,7 @@ RELEASE_DIR="$(dirname "$PACKAGE")"
 BASENAME="$(basename "$PACKAGE")"
 FAILED=0
 
-red()   { printf "\033[31m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*"; }
 green() { printf "\033[32m%s\033[0m\n" "$*"; }
 
 check() {
@@ -20,7 +20,7 @@ check() {
     if "$@"; then
         green "  PASS  $name"
     else
-        red   "  FAIL  $name"
+        red "  FAIL  $name"
         FAILED=1
     fi
 }
@@ -64,7 +64,7 @@ trap 'rm -rf "$EXTRACT_DIR"' EXIT
 
 case "$BASENAME" in
     *.tar.gz) tar xzf "$PACKAGE" -C "$EXTRACT_DIR" ;;
-    *.zip)    unzip -q "$PACKAGE" -d "$EXTRACT_DIR" ;;
+    *.zip) unzip -q "$PACKAGE" -d "$EXTRACT_DIR" ;;
 esac
 
 check "No unexpected binaries" sh -c "

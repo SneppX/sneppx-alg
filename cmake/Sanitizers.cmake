@@ -13,7 +13,13 @@ function(target_sanitize TARGET)
         if(mode STREQUAL "address")
             list(APPEND flags "-fsanitize=address")
         elseif(mode STREQUAL "undefined")
-            list(APPEND flags "-fsanitize=undefined" "-fsanitize=float-divide-by-zero" "-fsanitize=float-cast-overflow")
+            list(
+                APPEND
+                flags
+                "-fsanitize=undefined"
+                "-fsanitize=float-divide-by-zero"
+                "-fsanitize=float-cast-overflow"
+            )
         elseif(mode STREQUAL "leak")
             list(APPEND flags "-fsanitize=leak")
         elseif(mode STREQUAL "thread")
@@ -23,7 +29,10 @@ function(target_sanitize TARGET)
         endif()
     endforeach()
     if(flags)
-        target_compile_options(${TARGET} PRIVATE ${flags} -g -fno-omit-frame-pointer)
+        target_compile_options(
+            ${TARGET}
+            PRIVATE ${flags} -g -fno-omit-frame-pointer
+        )
         target_link_options(${TARGET} PRIVATE ${flags})
     endif()
 endfunction()

@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_PLAYBOOK_TYPE_INCIDENT_RESPONSE,
     SNEPPX_IR_PLAYBOOK_TYPE_SOC_RUNBOOK,
     SNEPPX_IR_PLAYBOOK_TYPE_FORENSIC_ACQUISITION,
@@ -36,7 +36,8 @@ typedef enum {
     SNEPPX_IR_PLAYBOOK_TYPE_POST_MORTEM
 } SNEPPXIRPlaybookType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_ACTION_RUN_COMMAND,
     SNEPPX_IR_ACTION_PARSE_OUTPUT,
     SNEPPX_IR_ACTION_DECISION,
@@ -56,7 +57,8 @@ typedef enum {
     SNEPPX_IR_ACTION_SUB_PLAYBOOK
 } SNEPPXIRPlaybookAction;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_CONDITION_EQUALS,
     SNEPPX_IR_CONDITION_CONTAINS,
     SNEPPX_IR_CONDITION_MATCHES_REGEX,
@@ -70,7 +72,8 @@ typedef enum {
     SNEPPX_IR_CONDITION_NOT
 } SNEPPXIRConditionOp;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_PLAYBOOK_STATUS_IDLE,
     SNEPPX_IR_PLAYBOOK_STATUS_RUNNING,
     SNEPPX_IR_PLAYBOOK_STATUS_PAUSED,
@@ -81,7 +84,8 @@ typedef enum {
     SNEPPX_IR_PLAYBOOK_STATUS_ABORTED
 } SNEPPXIRPlaybookStatus;
 
-typedef struct {
+typedef struct
+{
     char* variable_name;
     size_t name_len;
     uint8_t* variable_value;
@@ -90,7 +94,8 @@ typedef struct {
     uint8_t is_secret : 1;
 } SNEPPXIRPlaybookVariable;
 
-typedef struct {
+typedef struct
+{
     SNEPPXIRPlaybookAction action_type;
     char* action_description;
     size_t description_len;
@@ -110,7 +115,8 @@ typedef struct {
     uint8_t automated : 1;
 } SNEPPXIRPlaybookStep;
 
-typedef struct {
+typedef struct
+{
     char* condition_variable;
     size_t condition_variable_len;
     SNEPPXIRConditionOp op;
@@ -122,7 +128,8 @@ typedef struct {
     size_t false_goto_len;
 } SNEPPXIRPlaybookCondition;
 
-typedef struct {
+typedef struct
+{
     char* playbook_name;
     size_t playbook_name_len;
     char* playbook_version;
@@ -163,8 +170,11 @@ int snepx_ir_playbook_import(SNEPPXIRPlaybook* playbook, const uint8_t* in, size
 int snepx_ir_playbook_destroy(SNEPPXIRPlaybook* playbook);
 
 // Automation rules engine
-int snepx_ir_playbook_evaluate_condition(const SNEPPXIRPlaybookCondition* condition, const uint8_t* actual_value, size_t actual_val_len, uint8_t* result);
-int snepx_ir_playbook_resolve_variable(const SNEPPXIRPlaybook* playbook, const char* var_name, uint8_t** value, size_t* value_len);
-int snepx_ir_playbook_set_variable(SNEPPXIRPlaybook* playbook, const char* var_name, const uint8_t* value, size_t value_len);
+int snepx_ir_playbook_evaluate_condition(const SNEPPXIRPlaybookCondition* condition, const uint8_t* actual_value,
+                                         size_t actual_val_len, uint8_t* result);
+int snepx_ir_playbook_resolve_variable(const SNEPPXIRPlaybook* playbook, const char* var_name, uint8_t** value,
+                                       size_t* value_len);
+int snepx_ir_playbook_set_variable(SNEPPXIRPlaybook* playbook, const char* var_name, const uint8_t* value,
+                                   size_t value_len);
 
 #endif

@@ -25,11 +25,11 @@ __global__ void fgsm_attack_kernel(
 ) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numel) return;
-    
+
     float x = __half2float(input[idx]);
     float g = __half2float(gradients[idx]);
     float sign = (g > 0.0f) ? 1.0f : ((g < 0.0f) ? -1.0f : 0.0f);
-    
+
     adversarial[idx] = __float2half_rn(x + epsilon * sign);
 }
 
@@ -55,18 +55,18 @@ SNEPPX_CudaError sneppx_cuda_pgd_attack(
     float* (*get_grad_fn)(const half*, const int*, int, int)
 ) {
     if (!input || !labels || !adversarial) return SNEPPX_CUDA_ERROR_INVALID_ARG;
-    
+
     // Initialize adversarial = input + uniform noise in [-epsilon, epsilon]
     size_t total_bytes = (size_t)batch_size * numel * sizeof(half);
     cudaMemcpyAsync(adversarial, input, total_bytes, cudaMemcpyDeviceToDevice, stream);
-    
+
     for (int step = 0; step < num_steps; step++) {
         float* gradients = get_grad_fn(adversarial, labels, batch_size, numel);
         if (!gradients) return SNEPPX_CUDA_ERROR_LAUNCH_FAILED;
-        
+
         int block = 256;
         int grid = (batch_size * numel + block - 1) / block;
-        
+
         auto pgd_step = [] __global__ (
             half* adv, const float* grads, int total,
             float alpha, float epsilon, const half* orig
@@ -84,7 +84,7 @@ SNEPPX_CudaError sneppx_cuda_pgd_attack(
         };
         pgd_step<<<grid, block, 0, stream>>>(adversarial, gradients, batch_size * numel, alpha, epsilon, input);
     }
-    
+
     return SNEPPX_CUDA_SUCCESS;
 }
 
@@ -123,10 +123,10 @@ __global__ void randomized_smoothing_kernel(
     extern __shared__ float counts[];
     int batch = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     if (tid < num_classes) counts[tid] = 0.0f;
     __syncthreads();
-    
+
     for (int s = tid; s < num_samples; s += blockDim.x) {
         // Sample from N(0, noise_std^2) and add to input
         int class_id = s % num_classes;
@@ -135,7 +135,7 @@ __global__ void randomized_smoothing_kernel(
         }
     }
     __syncthreads();
-    
+
     if (tid < num_classes) {
         output[batch * num_classes + tid] = __float2half_rn(counts[tid] / num_samples);
     }

@@ -8,7 +8,9 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import inference_server as srv
 
@@ -35,6 +37,6 @@ def test_app_registers_lifespan():
         and node.func.id == "FastAPI"
     ]
     assert app_calls
-    assert any(keyword.arg == "lifespan" for keyword in app_calls[0].keywords), (
-        "FastAPI app must register the lifespan that initializes security"
-    )
+    assert any(
+        keyword.arg == "lifespan" for keyword in app_calls[0].keywords
+    ), "FastAPI app must register the lifespan that initializes security"

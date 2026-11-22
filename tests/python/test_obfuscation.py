@@ -1,11 +1,18 @@
 """Tests for obfuscation_bridge.py — S2 C++ obfuscation."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import (
-    ObfuscationConfig, CfgFlattening, InstructionSubstitution,
-    OpaquePredicate, StringEncryption, ObfuscationPipeline,
+    ObfuscationConfig,
+    CfgFlattening,
+    InstructionSubstitution,
+    OpaquePredicate,
+    StringEncryption,
+    ObfuscationPipeline,
 )
 
 

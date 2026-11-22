@@ -1,6 +1,6 @@
 # 128K Context Extension
 
-**Introduced:** v1.0.0  
+**Introduced:** v1.0.0
 **Scope:** LLaMA 2, LLaMA 3, Mistral, Qwen 2, DeepSeek V2
 
 ## Overview
@@ -11,9 +11,11 @@ Extends a model's maximum context window to 128K tokens using NTK-aware RoPE sca
 
 1. **max_position_embeddings** is set to `target_len` (e.g. 131072).
 2. **rope_theta** is scaled using the NTK-aware formula:
+
    ```
    theta' = theta * scaling_factor^(head_dim / (head_dim - 2))
    ```
+
    where `scaling_factor = target_len / base_len`.
 3. **rope_scaling_factor** is set on architectures that support explicit scaling (Qwen 2).
 4. Attention types may be adjusted (e.g. sliding window disabled for extended contexts).
@@ -54,6 +56,7 @@ print(cfg.to_json())
 ## Verification
 
 Test coverage is in `tests/test_context_extension.c` which validates:
+
 - All 5 architectures successfully extend to 128K
 - max_position_embeddings == target_len after extension
 - rope_theta is modified (not equal to original)

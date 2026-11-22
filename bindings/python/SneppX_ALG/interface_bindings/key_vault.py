@@ -23,9 +23,16 @@ class AuditLogger:
         self._lock = threading.Lock()
         self._has_c = _HAS_C
 
-    def log(self, action: str, actor: str, resource: str, result: str,
-            details: Optional[dict] = None) -> None:
+    def log(
+        self,
+        action: str,
+        actor: str,
+        resource: str,
+        result: str,
+        details: Optional[dict] = None,
+    ) -> None:
         import hashlib
+
         entry = {
             "timestamp": time.time(),
             "action": action,
@@ -47,8 +54,12 @@ class AuditLogger:
         except (IOError, OSError):
             pass
 
-    def query(self, actor: Optional[str] = None, action: Optional[str] = None,
-              limit: int = 100) -> List[dict]:
+    def query(
+        self,
+        actor: Optional[str] = None,
+        action: Optional[str] = None,
+        limit: int = 100,
+    ) -> List[dict]:
         with self._lock:
             results = list(self._entries)
         if actor:
@@ -130,10 +141,13 @@ class KeyVault:
         key = self.get_key(key_id)
         if key is None:
             return None
-        return bytes(b ^ w for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key))))
+        return bytes(
+            b ^ w
+            for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key)))
+        )
 
     def unwrap_key(self, wrapped: bytes, key_id: str) -> Optional[bytes]:
         key = self.get_key(key_id)
         if key is None:
             return None
-        return bytes(b ^ w for b, w in zip(wrapped, key[:len(wrapped)]))
+        return bytes(b ^ w for b, w in zip(wrapped, key[: len(wrapped)]))
