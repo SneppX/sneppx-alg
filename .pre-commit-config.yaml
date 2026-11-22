@@ -43,7 +43,7 @@ repos:
       - id: prettier
         types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen|conda-forge-recipe)/|^(benchmarks/baseline[.]json|tests/data/acvp/slhdsa_keygen_kat[.]json|[.]clang-tidy)$'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen|conda-forge-recipe)/|^\.github/workflows/|^(benchmarks/baseline[.]json|tests/data/acvp/slhdsa_keygen_kat[.]json|[.]clang-tidy)$'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
