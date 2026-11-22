@@ -32,6 +32,25 @@ static void test_sbom_export_tiny_buffer(void)
         SX_ASSERT((unsigned char) buf[i] == 0x7f, "tiny buffer is untouched");
 }
 
+static void test_sbom_add_component_rejects_oversized_hash_input(void)
+{
+    sbom_doc_t doc;
+    SNEPPX_sbom_generate(&doc, "sx:test", "1.0.0");
+
+    char long_version[300];
+    memset(long_version, 'x', sizeof(long_version) - 1);
+    long_version[sizeof(long_version) - 1] = '\0';
+    int rc = SNEPPX_sbom_add_component(&doc, "lib", long_version, "library", "vendor");
+    SX_ASSERT(rc == -1, "oversized hash input rejected");
+    SX_ASSERT(doc.num_components == 0, "no component recorded");
+
+    rc = SNEPPX_sbom_add_component(&doc, "lib", NULL, NULL, NULL);
+    SX_ASSERT(rc == 0, "null metadata uses defaults");
+    SX_ASSERT(strcmp(doc.components[0].version, "0.0.0") == 0, "default version");
+    SX_ASSERT(strcmp(doc.components[0].type, "library") == 0, "default type");
+    SX_ASSERT(strcmp(doc.components[0].supplier, "unknown") == 0, "default supplier");
+}
+
 TEST(test_container_security, suite)
 {
     container_manifest_t manifest;
@@ -70,4 +89,9 @@ TEST(test_container_security, suite)
 TEST(test_container_security, export_tiny_buffer)
 {
     test_sbom_export_tiny_buffer();
+}
+
+TEST(test_container_security, add_component_rejects_oversized_hash_input)
+{
+    test_sbom_add_component_rejects_oversized_hash_input();
 }
