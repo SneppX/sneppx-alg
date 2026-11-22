@@ -207,14 +207,20 @@ int SNEPPX_sbom_add_component(sbom_doc_t* doc, const char* name, const char* ver
 {
     if (!doc || !name || doc->num_components >= SBOM_MAX_COMPONENTS)
         return -1;
+
+    const char* safe_version = version ? version : "0.0.0";
+    const char* safe_type = type ? type : "library";
+    uint8_t hash_input[256];
+    int hlen = snprintf((char*) hash_input, sizeof(hash_input), "%s:%s:%s", name, safe_version, safe_type);
+    if (hlen < 0 || (size_t) hlen >= sizeof(hash_input))
+        return -1;
+
     sbom_component_t* comp = &doc->components[doc->num_components++];
     strncpy(comp->name, name, 127);
-    strncpy(comp->version, version ? version : "0.0.0", 63);
-    strncpy(comp->type, type ? type : "library", 31);
+    strncpy(comp->version, safe_version, 63);
+    strncpy(comp->type, safe_type, 31);
     strncpy(comp->supplier, supplier ? supplier : "unknown", 127);
-    uint8_t hash_input[256];
-    size_t hlen = snprintf((char*) hash_input, 256, "%s:%s:%s", name, version, type);
-    SNEPPX_sha256(comp->hash, hash_input, hlen);
+    SNEPPX_sha256(comp->hash, hash_input, (size_t) hlen);
     comp->size = 0;
     comp->has_checksum = 1;
     return 0;
