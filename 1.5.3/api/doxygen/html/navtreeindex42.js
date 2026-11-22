@@ -1,5 +1,6 @@
 var NAVTREEINDEX42 =
 {
+"structSNEPPXWorkingSlot.html":[1,0,455],
 "structSNEPPXWorkingSlot.html#a5afdf1276e368f2b5d2167f13776583a":[1,0,455,0],
 "structSNEPPXWorkingSlot.html#a7d36170ccc6f0e63f13b7a368f5789e5":[1,0,455,2],
 "structSNEPPXWorkingSlot.html#ad409b0631dbbb1961475962f1a156763":[1,0,455,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX42 =
 "structSNEPPX__CudaTensor.html#ae4d1090124857f2bc7a2b52a7a9851db":[1,0,96,5],
 "structSNEPPX__CudaTimer.html":[1,0,97],
 "structSNEPPX__CudaTimer.html#a066bf1db4b10bd357a0ef1d7d490de9e":[1,0,97,1],
-"structSNEPPX__CudaTimer.html#ab70b35148e63e8a1ec463e27cf1e7a97":[1,0,97,2],
-"structSNEPPX__CudaTimer.html#ae350e640d87a9613a0e27fb07197abed":[1,0,97,0]
+"structSNEPPX__CudaTimer.html#ab70b35148e63e8a1ec463e27cf1e7a97":[1,0,97,2]
 };

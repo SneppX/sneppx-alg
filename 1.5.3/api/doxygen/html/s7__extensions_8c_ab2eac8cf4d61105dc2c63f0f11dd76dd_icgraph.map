@@ -1,6 +1,0 @@
-<map id="dep_dfs" name="dep_dfs">
-<area shape="rect" id="Node000001" title=" " alt="" coords="217,29,289,57"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="279,14,271,10,253,8,236,10,227,15,224,20,229,30,224,28,219,20,223,11,234,5,253,3,273,5,285,14"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a4c3e7c31a71bc8a729465fcd8dc468d7" title="Perform Dep Resolver Resolve." alt="" coords="5,21,169,66"/>
-<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="198,43,169,46,169,41,204,43"/>
-</map>

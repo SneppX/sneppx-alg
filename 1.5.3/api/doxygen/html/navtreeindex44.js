@@ -1,5 +1,6 @@
 var NAVTREEINDEX44 =
 {
+"structSNEPPX__MemoryStats.html#a7aa1e90fd4ffd53dd801f955122057a3":[1,0,122,2],
 "structSNEPPX__MemoryStats.html#add25e76ab580c40890b2e86a916b3f28":[1,0,122,3],
 "structSNEPPX__MemoryStats.html#af0f03aaf30f9f7b07c404dbeec8b955d":[1,0,122,4],
 "structSNEPPX__OptimizerConfig.html":[1,0,123],
@@ -248,6 +249,5 @@ var NAVTREEINDEX44 =
 "structddos__stats__t.html#ac809bb0a75bbfef19b3fbb6c297514a4":[1,0,30,5],
 "structdp__budget__t.html":[1,0,32],
 "structdp__budget__t.html#a8ff7cb927cb20cdead93c225a4f4702b":[1,0,32,0],
-"structdp__budget__t.html#acac1243b394d142b9ed3fc22485b49b7":[1,0,32,1],
-"structdp__composition__t.html":[1,0,33]
+"structdp__budget__t.html#acac1243b394d142b9ed3fc22485b49b7":[1,0,32,1]
 };

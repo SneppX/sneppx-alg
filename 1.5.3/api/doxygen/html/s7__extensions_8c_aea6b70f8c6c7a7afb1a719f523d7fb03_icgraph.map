@@ -1,9 +1,11 @@
 <map id="patch_parse" name="patch_parse">
-<area shape="rect" id="Node000001" title=" " alt="" coords="611,14,712,42"/>
-<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Apply an SXP1 patch after validating the complete record stream." alt="" coords="433,14,563,42"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="593,28,564,30,564,25,599,28"/>
-<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,5,385,50"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="415,28,386,30,386,25,420,28"/>
-<area shape="rect" id="Node000004" href="$s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,5,164,50"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="193,28,164,30,164,25,199,27"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="666,32,767,60"/>
+<area shape="rect" id="Node000002" href="$s7__extensions_8c.html#ab2400c66b8c331765d642f3ec5b7a829" title="Perform Bsdiff Total Size." alt="" coords="433,5,618,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="648,37,619,35,619,29,653,37"/>
+<area shape="rect" id="Node000003" href="$s7__extensions_8c.html#a6689c4b8497f7913aeb47e9a3619d50f" title="Apply an SXP1 patch after validating the complete record stream." alt="" coords="460,57,591,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="653,54,592,65,591,60,648,55"/>
+<area shape="rect" id="Node000004" href="$s7__extensions_8c.html#ad741ebaa7991c5ace3f60bf313df93a4" title="Perform Bspatch Apply Patch." alt="" coords="212,49,385,94"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="442,71,385,74,385,69,448,71"/>
+<area shape="rect" id="Node000005" href="$s7__extensions_8c.html#ab36e5de71cfe329567d1563aae589e04" title="Perform Bsdiff Apply Patch." alt="" coords="5,49,164,94"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="193,71,164,74,164,69,199,71"/>
 </map>

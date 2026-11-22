@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structSNEPPXBlockedTopic.html":[1,0,165],
 "structSNEPPXBlockedTopic.html#a72217b80adc37a04991233998b31791b":[1,0,165,1],
 "structSNEPPXBlockedTopic.html#a75b00f34afb8817ac610cdf7937e0b65":[1,0,165,0],
 "structSNEPPXBogusCF.html":[1,0,166],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structSNEPPXDriverEntry.html#a6fe92a6256cd9cc2614c844c48651a4f":[1,0,193,7],
 "structSNEPPXDriverEntry.html#a882e3b043daa6a8f14d4f02c873ffff5":[1,0,193,8],
 "structSNEPPXDriverEntry.html#a92452c3ebcd046cb299ba75d60719a27":[1,0,193,5],
-"structSNEPPXDriverEntry.html#a995a5e769d67b13e4f7f1c5d7799e25d":[1,0,193,3],
-"structSNEPPXDriverEntry.html#a9bf6785afe37a6cc7f955aafca5b3267":[1,0,193,4]
+"structSNEPPXDriverEntry.html#a995a5e769d67b13e4f7f1c5d7799e25d":[1,0,193,3]
 };

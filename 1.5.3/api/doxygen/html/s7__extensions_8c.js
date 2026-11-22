@@ -16,7 +16,6 @@ var s7__extensions_8c =
     [ "canary_compute_group_hash", "s7__extensions_8c.html#a712d1f125b8b49fec04ad8835d2b0778", null ],
     [ "canary_get_node_group", "s7__extensions_8c.html#a7bbc53da3990497ec5a92965a8b64225", null ],
     [ "canary_should_promote", "s7__extensions_8c.html#ac34f9eeb73017128c71947424e3e8a5a", null ],
-    [ "dep_dfs", "s7__extensions_8c.html#ab2eac8cf4d61105dc2c63f0f11dd76dd", null ],
     [ "dep_name_matches", "s7__extensions_8c.html#a2d7ba1c60b683bd4605696191899530c", null ],
     [ "dep_resolver_count_upgrades_available", "s7__extensions_8c.html#a313f5cf283591d6f7fbc05c465a0bec1", null ],
     [ "dep_resolver_generate_dot_output", "s7__extensions_8c.html#ac3aad360c2dbb3455ec5ad17f5c863a5", null ],
@@ -103,7 +102,5 @@ var s7__extensions_8c =
     [ "tpm_extend_pcr_simulation", "s7__extensions_8c.html#afe6a0c5d2e710a60d263f75ec75fb0ce", null ],
     [ "tpm_simulate_quote", "s7__extensions_8c.html#a55da3bb58b8961f86282910d22c80540", null ],
     [ "tuf_fetch_metadata_from_path", "s7__extensions_8c.html#ab538feeb91703bd3b2581e42895a3cbb", null ],
-    [ "tuf_validate_key", "s7__extensions_8c.html#a31d9f4da6695377d26fbe1de2e3fd856", null ],
-    [ "dep_cycle_detected", "s7__extensions_8c.html#ac60f04e83b5fd96f21488f1aacd7f6f5", null ],
-    [ "deps_visited", "s7__extensions_8c.html#a54ccc2dbabf10a7e6a59980fac280050", null ]
+    [ "tuf_validate_key", "s7__extensions_8c.html#a31d9f4da6695377d26fbe1de2e3fd856", null ]
 ];

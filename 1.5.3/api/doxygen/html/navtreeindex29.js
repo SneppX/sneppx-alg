@@ -1,5 +1,6 @@
 var NAVTREEINDEX29 =
 {
+"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da6fe7d5ce07a363a8cc6338f31026d59c":[2,0,2,1,0,8,0],
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da70e6a58d68e774802f314ff8001cc9e6":[2,0,2,1,0,8,1],
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85dab56874e620871ac88e1d2978dddebd10":[2,0,2,1,0,8,4],
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85dae87c6f787f3245e1186d1b3bf38d7e2c":[2,0,2,1,0,8,5],
@@ -248,6 +249,5 @@ var NAVTREEINDEX29 =
 "structDropoutCtx.html#a4356477d9420f36baa067907514d63c0":[1,0,36,3],
 "structDropoutCtx.html#ad3cb390b34b2c8b010ec53ce0b8ded5d":[1,0,36,1],
 "structEmbeddingCtx.html":[1,0,37],
-"structEmbeddingCtx.html#a769deea67f361d4af5127b954c3b7560":[1,0,37,0],
-"structEmbeddingCtx.html#acdfc4a8ad291e4e32471d248a8d64d81":[1,0,37,1]
+"structEmbeddingCtx.html#a769deea67f361d4af5127b954c3b7560":[1,0,37,0]
 };

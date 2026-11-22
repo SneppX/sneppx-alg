@@ -1,5 +1,6 @@
 var NAVTREEINDEX43 =
 {
+"structSNEPPX__CudaTimer.html#ae350e640d87a9613a0e27fb07197abed":[1,0,97,0],
 "structSNEPPX__DeviceProps.html":[1,0,98],
 "structSNEPPX__DeviceProps.html#a0b49ea71da2064d186d8850e8cacc545":[1,0,98,0],
 "structSNEPPX__DeviceProps.html#a0d99e080f94a96ffd1ab79178fe7bec5":[1,0,98,6],
@@ -248,6 +249,5 @@ var NAVTREEINDEX43 =
 "structSNEPPX__MemoryStats.html#a29796086aecb8f2827cd077853f40314":[1,0,122,1],
 "structSNEPPX__MemoryStats.html#a54538f9d67e71cb6988c53f77366b7f9":[1,0,122,6],
 "structSNEPPX__MemoryStats.html#a65d4101453edb60b381cc6467d8d114e":[1,0,122,5],
-"structSNEPPX__MemoryStats.html#a7453ec5eb9e283f8aa5f0c599cbd45b2":[1,0,122,0],
-"structSNEPPX__MemoryStats.html#a7aa1e90fd4ffd53dd801f955122057a3":[1,0,122,2]
+"structSNEPPX__MemoryStats.html#a7453ec5eb9e283f8aa5f0c599cbd45b2":[1,0,122,0]
 };

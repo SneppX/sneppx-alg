@@ -1,5 +1,6 @@
 var NAVTREEINDEX39 =
 {
+"structSNEPPXSGXEnclave.html#a59511eb9d42685e63939d08ad9089b6f":[1,0,384,3],
 "structSNEPPXSGXEnclave.html#a5ed4e10db457ecc69ebd5f18ac361b04":[1,0,384,0],
 "structSNEPPXSGXEnclave.html#a932654004b4d1435336eba4718803cbf":[1,0,384,5],
 "structSNEPPXSHA3State.html":[1,0,385],
@@ -248,6 +249,5 @@ var NAVTREEINDEX39 =
 "structSNEPPXShadowStack.html#aeaf166a00056263dab03710188000377":[1,0,387,5],
 "structSNEPPXSignedUpdate.html":[1,0,388],
 "structSNEPPXSignedUpdate.html#a2fd07154a412b20fdb7b89deacde5a90":[1,0,388,1],
-"structSNEPPXSignedUpdate.html#a626b71429ab04a10dba4e32d91d73e11":[1,0,388,7],
-"structSNEPPXSignedUpdate.html#a7310dd0dcbf0be6b3ac2cedcce75d4f1":[1,0,388,5]
+"structSNEPPXSignedUpdate.html#a626b71429ab04a10dba4e32d91d73e11":[1,0,388,7]
 };

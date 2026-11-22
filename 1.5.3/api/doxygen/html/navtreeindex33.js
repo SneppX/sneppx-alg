@@ -1,5 +1,6 @@
 var NAVTREEINDEX33 =
 {
+"structSNEPPXDriverEntry.html#a9bf6785afe37a6cc7f955aafca5b3267":[1,0,193,4],
 "structSNEPPXDriverEntry.html#a9caa20646aad6b34cc11d41e8a515867":[1,0,193,10],
 "structSNEPPXDriverEntry.html#aa5d989b60d378d69b14a727c9d8f4ee0":[1,0,193,0],
 "structSNEPPXDriverEntry.html#aab47b80bbb175347c3b08925fc8b5efc":[1,0,193,11],
@@ -248,6 +249,5 @@ var NAVTREEINDEX33 =
 "structSNEPPXFirewallRule.html#ab2ec9ae075c48a8c030da23c0f766f32":[1,0,218,10],
 "structSNEPPXFirewallRule.html#ab95a237b670de1eb40a21759ea058a4f":[1,0,218,4],
 "structSNEPPXFirewallRule.html#ac1039519cb8b60ad225dbf3e56e73390":[1,0,218,12],
-"structSNEPPXFirewallRule.html#ac69b65b23b71b0ff7f39b387eb07fc3a":[1,0,218,1],
-"structSNEPPXFirewallRule.html#acfdb2c3e4eb512d079e83ad363d87e7d":[1,0,218,9]
+"structSNEPPXFirewallRule.html#ac69b65b23b71b0ff7f39b387eb07fc3a":[1,0,218,1]
 };

@@ -1,5 +1,6 @@
 var NAVTREEINDEX28 =
 {
+"shap__provider_8h.html#ad3fbf4f6de31c119ff17848a60d3ef1a":[2,0,2,0,0,0,4],
 "shap__provider_8h.html#af95ca1958c7d57f94fae5d93a147baa0":[2,0,2,0,0,0,5],
 "shap__provider_8h_source.html":[2,0,2,0,0,0],
 "side__channel__resistant__primitives_8h.html":[2,0,0,0,2,61],
@@ -248,6 +249,5 @@ var NAVTREEINDEX28 =
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da023f7e98924778ba9901ca66b9f7b074":[2,0,2,1,0,8,6],
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da2d35b0d14527b31a115b2e0e7c1bb31a":[2,0,2,1,0,8,7],
 "soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da54952993446325e2cd54fb6ec9a9395c":[2,0,2,1,0,8,2],
-"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da6819f1bb97e62be25defbf92dbdde8de":[2,0,2,1,0,8,3],
-"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da6fe7d5ce07a363a8cc6338f31026d59c":[2,0,2,1,0,8,0]
+"soar__engine_8h.html#ac79a29edb3d29d9f5fb8715ff60ae85da6819f1bb97e62be25defbf92dbdde8de":[2,0,2,1,0,8,3]
 };

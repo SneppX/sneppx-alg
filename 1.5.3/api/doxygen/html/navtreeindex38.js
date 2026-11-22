@@ -1,5 +1,6 @@
 var NAVTREEINDEX38 =
 {
+"structSNEPPXProceduralCache.html#a1e31a0e93a83bbfcbfa21133494b862e":[1,0,340,3],
 "structSNEPPXProceduralCache.html#a7520583fae4050dff1cc67d054c564b4":[1,0,340,4],
 "structSNEPPXProceduralCache.html#aa2c6e53e03a55044b5dc51b2968aff95":[1,0,340,2],
 "structSNEPPXProceduralCache.html#ab854b65cb1778d1de6d8894639921dd0":[1,0,340,5],
@@ -248,6 +249,5 @@ var NAVTREEINDEX38 =
 "structSNEPPXSGXEnclave.html":[1,0,384],
 "structSNEPPXSGXEnclave.html#a03a139e7438df314c5e230a894487904":[1,0,384,1],
 "structSNEPPXSGXEnclave.html#a1043eafae4cd10383cd312e77c8ed943":[1,0,384,4],
-"structSNEPPXSGXEnclave.html#a3deeb5e3c1bed529e4f97c9cdee0d643":[1,0,384,2],
-"structSNEPPXSGXEnclave.html#a59511eb9d42685e63939d08ad9089b6f":[1,0,384,3]
+"structSNEPPXSGXEnclave.html#a3deeb5e3c1bed529e4f97c9cdee0d643":[1,0,384,2]
 };

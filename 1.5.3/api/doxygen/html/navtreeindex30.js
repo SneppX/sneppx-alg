@@ -1,5 +1,6 @@
 var NAVTREEINDEX30 =
 {
+"structEmbeddingCtx.html#acdfc4a8ad291e4e32471d248a8d64d81":[1,0,37,1],
 "structEventLogEntry.html":[1,0,38],
 "structEventLogEntry.html#a2dda8602cc0560941e99ef3f57d46bf1":[1,0,38,0],
 "structEventLogEntry.html#a339a70d43f90027bc9c92e923b657991":[1,0,38,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX30 =
 "structSNEPPXAIGuardrailResult.html#a164243a2cb0b6f4dd894382eec634613":[1,0,141,4],
 "structSNEPPXAIGuardrailResult.html#a1d676fac657a0bfe054ea03a2a9569f0":[1,0,141,1],
 "structSNEPPXAIGuardrailResult.html#a2031a37afb0bf0652b30415400960da0":[1,0,141,0],
-"structSNEPPXAIGuardrailResult.html#a58ce5a35715ed31175ff1772e91c2555":[1,0,141,9],
-"structSNEPPXAIGuardrailResult.html#a63a5996059aa3cd1ab2cb665e3f76a92":[1,0,141,13]
+"structSNEPPXAIGuardrailResult.html#a58ce5a35715ed31175ff1772e91c2555":[1,0,141,9]
 };
