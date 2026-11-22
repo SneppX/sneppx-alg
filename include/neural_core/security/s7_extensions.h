@@ -115,6 +115,8 @@ int  SNEPPX_bsdiff(const uint8_t* old_data, size_t old_len, const uint8_t* new_d
  * @return 0 on success, -1 on malformed input or insufficient capacity.
  */
 int  SNEPPX_bspatch(const uint8_t* old_data, size_t old_len, const uint8_t* patch, size_t patch_len, uint8_t* new_data, size_t* new_len);
+/* Returns the validated SXP1 output size, or -1 for malformed/unsupported patches. */
+int SNEPPX_bsdiff_total_size(const uint8_t* patch, size_t patch_len);
 
 /* File-based delta helpers used by the update pipeline. */
 int  SNEPPX_bsdiff_apply_patch(const char* old_path, const char* patch_path, const char* new_path);
@@ -300,6 +302,8 @@ int  SNEPPX_dep_resolver_init(SNEPPXDepResolver* dr);
  * @return 0 on success, -1 on error.
  */
 int  SNEPPX_dep_resolver_add_dep(SNEPPXDepResolver* dr, const char* name, uint32_t maj, uint32_t min, uint32_t pat);
+/* Removes only the exact stored dependency name; returns -1 when absent/mismatched. */
+int  SNEPPX_dep_resolver_remove_dep(SNEPPXDepResolver* dr, const char* name);
 /**
  * @brief Perform Dep Resolver Resolve.
  *
