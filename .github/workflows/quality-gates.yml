@@ -47,7 +47,7 @@ jobs:
       - uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.language == 'python' && 'none' || 'autobuild' }}
+          build-mode: ${{ matrix.language == 'c-cpp' && 'autobuild' || 'none' }}
       - uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
