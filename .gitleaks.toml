@@ -1,0 +1,5 @@
+title = "SneppX-ALG Gitleaks configuration"
+
+[[allowlists]]
+description = "This test uses deliberately fake PEM material to verify secret redaction; it is not a credential."
+paths = ['''^tests/python/test_secrets_redact\.py$''']
