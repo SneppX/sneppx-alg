@@ -80,7 +80,8 @@ def checkpoint_sequential(functions, input, segments=1):
         # non-commuting pair.
         chunk_size = max(1, (len(functions) + segments - 1) // segments)
         chunks = [
-            functions[start : start + chunk_size] for start in range(0, len(functions), chunk_size)
+            functions[start : start + chunk_size]
+            for start in range(0, len(functions), chunk_size)
         ]
         segments = len(chunks)
     else:
