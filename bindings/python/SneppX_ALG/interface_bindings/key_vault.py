@@ -6,6 +6,8 @@ Wraps C implementations in ``security/ui/`` with pure-Python fallback.
 import os
 import json
 import time
+import hashlib
+import hmac
 import threading
 from typing import Dict, List, Optional, Any
 
@@ -17,17 +19,37 @@ _LIB, _HAS_C = load_library("neural_security_c")
 class AuditLogger:
     """Security event audit logging with tamper-evident chain."""
 
-    def __init__(self, log_path: Optional[str] = None):
+    def __init__(self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None):
+        """Create an audit logger.
+
+        ``hmac_key`` (or ``SNEPPX_AUDIT_HMAC_KEY``) is a secret held outside
+        the log. When present, digests are HMAC-SHA256 so an attacker who can
+        rewrite the log cannot recompute them. Without a key, legacy unkeyed
+        SHA-256 digests are used for backwards compatibility.
+        """
         self._log_path = log_path or "audit.log"
         self._entries: List[dict] = []
         self._lock = threading.Lock()
         self._has_c = _HAS_C
+        if hmac_key is None:
+            configured = os.environ.get("SNEPPX_AUDIT_HMAC_KEY")
+            if configured:
+                try:
+                    hmac_key = bytes.fromhex(configured)
+                except ValueError:
+                    hmac_key = configured.encode("utf-8")
+        self._hmac_key = hmac_key
+
+    def _entry_digest(self, entry: dict) -> str:
+        payload = {k: v for k, v in entry.items() if k != "hash"}
+        data = json.dumps(payload, sort_keys=True, default=str).encode()
+        if self._hmac_key:
+            return hmac.new(self._hmac_key, data, hashlib.sha256).hexdigest()
+        return hashlib.sha256(data).hexdigest()
 
     def log(
         self, action: str, actor: str, resource: str, result: str, details: Optional[dict] = None
     ) -> None:
-        import hashlib
-
         entry = {
             "timestamp": time.time(),
             "action": action,
@@ -38,9 +60,7 @@ class AuditLogger:
         }
         prev_hash = self._entries[-1]["hash"] if self._entries else "0" * 64
         entry["prev_hash"] = prev_hash
-        entry["hash"] = hashlib.sha256(
-            json.dumps(entry, sort_keys=True, default=str).encode()
-        ).hexdigest()
+        entry["hash"] = self._entry_digest(entry)
         with self._lock:
             self._entries.append(entry)
         try:
@@ -66,9 +86,6 @@ class AuditLogger:
         Comparing only ``prev_hash`` linkage is not tamper-evidence: an
         attacker who can edit the log can recompute the linking field too.
         """
-        import hashlib
-        import hmac
-
         with self._lock:
             memory_entries = [dict(e) for e in self._entries]
             log_path = self._log_path
@@ -86,10 +103,7 @@ class AuditLogger:
         expected_prev = "0" * 64
         for entry in entries:
             stored_hash = entry.get("hash", "")
-            payload = {k: v for k, v in entry.items() if k != "hash"}
-            computed = hashlib.sha256(
-                json.dumps(payload, sort_keys=True, default=str).encode()
-            ).hexdigest()
+            computed = self._entry_digest(entry)
             if not hmac.compare_digest(computed, stored_hash):
                 return False
             if not hmac.compare_digest(entry.get("prev_hash", ""), expected_prev):

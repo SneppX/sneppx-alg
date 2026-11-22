@@ -1,5 +1,6 @@
 """Regression: key-vault audit chains must recompute and verify every digest."""
 
+import hashlib
 import json
 import os
 import sys
@@ -48,4 +49,50 @@ def test_chain_ends_at_expected_head(tmp_path):
     lines = path.read_text(encoding="utf-8").splitlines()
     path.write_text("\n".join(lines[:-1]) + "\n", encoding="utf-8")
     # In-memory and persisted views disagree.
+    assert logger.verify_chain() is False
+
+
+def _rechain_with_unkeyed_sha256(entries):
+    """Simulate an attacker who can rewrite the whole log file."""
+    expected_prev = "0" * 64
+    for entry in entries:
+        entry["prev_hash"] = expected_prev
+        payload = {k: v for k, v in entry.items() if k != "hash"}
+        entry["hash"] = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, default=str).encode()
+        ).hexdigest()
+        expected_prev = entry["hash"]
+    return entries
+
+
+def _hmac_logger(tmp_path, **kwargs):
+    path = tmp_path / "audit.log"
+    logger = kv.AuditLogger(str(path), **kwargs)
+    for i in range(3):
+        logger.log("encrypt", "alice", f"key-{i}", "success", {"n": i})
+    return logger, path
+
+
+def test_hmac_chain_resists_full_rewrite(tmp_path):
+    logger, path = _hmac_logger(tmp_path, hmac_key=b"outside-the-log-secret")
+    assert logger.verify_chain() is True
+
+    forged = _rechain_with_unkeyed_sha256([dict(e) for e in logger._entries])
+    forged[1]["details"] = {"n": 999}
+    _rechain_with_unkeyed_sha256(forged)
+    logger._entries[:] = forged
+    path.write_text("\n".join(json.dumps(e) for e in forged) + "\n", encoding="utf-8")
+
+    assert logger.verify_chain() is False
+
+
+def test_hmac_key_from_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("SNEPPX_AUDIT_HMAC_KEY", b"env-secret".hex())
+    logger, path = _hmac_logger(tmp_path)
+    assert logger.verify_chain() is True
+
+    forged = _rechain_with_unkeyed_sha256([dict(e) for e in logger._entries])
+    logger._entries[:] = forged
+    path.write_text("\n".join(json.dumps(e) for e in forged) + "\n", encoding="utf-8")
+
     assert logger.verify_chain() is False
