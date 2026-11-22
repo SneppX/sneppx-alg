@@ -61,10 +61,20 @@ class MemoryMappedTextDataset(Dataset):
     load into RAM. Tokenization is assumed precomputed into the file.
     """
 
+    _DTYPES = {
+        "int16": np.int16,
+        "int32": np.int32,
+        "int64": np.int64,
+        "float32": np.float32,
+    }
+
     def __init__(self, path: str, seq_len: int = 2048, dtype: str = "int32"):
+        if dtype not in self._DTYPES:
+            raise ValueError(f"Unsupported memory-mapped dtype: {dtype}")
         self.path = path
         self.seq_len = seq_len
-        self.itemsize = 4 if dtype == "int32" else 2
+        self._numpy_dtype = np.dtype(self._DTYPES[dtype])
+        self.itemsize = self._numpy_dtype.itemsize
         if not os.path.exists(path):
             raise FileNotFoundError(path)
         self._f = open(path, "rb")
@@ -81,7 +91,7 @@ class MemoryMappedTextDataset(Dataset):
             raise IndexError(idx)
         start = idx * self.itemsize
         buf = self._mm[start : start + self.seq_len * self.itemsize]
-        arr = np.frombuffer(buf, dtype=np.int32)
+        arr = np.frombuffer(buf, dtype=self._numpy_dtype)
         # input/target shift handled by the training loop
         return arr
 

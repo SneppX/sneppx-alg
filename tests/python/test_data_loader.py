@@ -7,9 +7,27 @@ from SneppX_ALG.interface_bindings.data_loader import (
     Dataset,
     TensorDataset,
     DataLoader,
+    MemoryMappedTextDataset,
     DistributedSampler,
     default_collate,
 )
+
+
+def test_memory_mapped_dataset_dtype():
+    tokens = np.arange(8, dtype=np.int16)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "tokens.bin"
+        path.write_bytes(tokens.tobytes())
+        ds = MemoryMappedTextDataset(str(path), seq_len=4, dtype="int16")
+        try:
+            assert ds.itemsize == 2
+            assert ds.num_tokens == 8
+            assert ds.num_samples == 4
+            sample = ds[0]
+            assert sample.dtype == np.int16
+            assert np.array_equal(sample, tokens[:4])
+        finally:
+            ds.close()
 
 
 def test_dataset_basic():
@@ -147,6 +165,6 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"  FAIL {name}: {e}")
                 failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)
