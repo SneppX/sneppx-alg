@@ -1589,7 +1589,7 @@ class LogSoftmax(Function):
         if create_graph:
             a = ctx.get_saved_tensor("a")
             sm = Softmax.apply(a, dim)
-            s = Sum.apply(grad_output, dim)
+            s = _sum_keepdim(grad_output, dim)
             ss = Mul.apply(sm, s)
             return [Sub.apply(grad_output, ss)]
         sm = ctx.get_attr("sm")
