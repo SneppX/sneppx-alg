@@ -43,6 +43,24 @@ def test_lamb():
     assert _run_step(LAMB, lr=0.01)
 
 
+def test_lamb_identical_params_get_identical_updates():
+    # The step counter must advance once per optimizer step. Previously it was
+    # called twice per parameter, so identical parameters received different
+    # bias-corrected updates.
+    def make():
+        p = Tensor(np.array([1.0, 2.0], dtype=np.float64))
+        p.grad = Tensor(np.array([0.1, 0.2], dtype=np.float64))
+        return p
+
+    a, b = make(), make()
+    opt = LAMB([a, b], lr=0.01)
+    opt.step()
+    assert np.allclose(a.data, b.data)
+    assert opt._step_count == 0  # first-step bias correction uses t + 1 == 1
+    opt.step()
+    assert opt._step_count == 1  # exactly one increment per optimizer step
+
+
 def test_lars():
     assert _run_step(LARS, lr=0.01)
 

@@ -82,12 +82,15 @@ class LAMB:
             self.v[i] = np.zeros_like(_as_array(p))
 
     def step(self):
+        # Advance the step counter once per optimizer step, not once per bias
+        # correction term (and never once per parameter).
+        t = self._t()
         for i, p in enumerate(self.params):
             g = _as_array(p.grad) if p.grad is not None else np.zeros_like(_as_array(p))
             m = self.beta1 * self.m[i] + (1 - self.beta1) * g
             v = self.beta2 * self.v[i] + (1 - self.beta2) * (g * g)
-            mhat = m / (1 - self.beta1 ** (self._t() + 1))
-            vhat = v / (1 - self.beta2 ** (self._t() + 1))
+            mhat = m / (1 - self.beta1 ** (t + 1))
+            vhat = v / (1 - self.beta2 ** (t + 1))
             update = mhat / (np.sqrt(vhat) + self.eps)
             if self.weight_decay > 0:
                 update = update + self.weight_decay * _as_array(p)
