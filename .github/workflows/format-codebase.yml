@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - name: Check out main
+      - name: Check out target branch
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           ref: ${{ github.ref_name }}
@@ -72,7 +72,7 @@ jobs:
               echo "base_sha=$BASE_SHA"
               echo "candidate_sha=$CANDIDATE_SHA"
             } >> "$GITHUB_OUTPUT"
-            echo "The repository already satisfies the configured formatters; validating the unchanged tree." 
+            echo "The repository already satisfies the configured formatters; validating the unchanged tree."
             exit 0
           fi
 
@@ -88,7 +88,7 @@ jobs:
             echo "branch=$BRANCH"
             echo "base_sha=$BASE_SHA"
             echo "candidate_sha=$CANDIDATE_SHA"
-          } >> "$GITHUB_OUTPUT" >> "$GITHUB_OUTPUT"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Dispatch required CI workflows for the formatted tree
         if: steps.format.outputs.changed == 'true'
@@ -125,7 +125,7 @@ jobs:
               exit 1
             fi
 
-            for attempt in $(seq 1 90); do
+            for _ in $(seq 1 90); do
               state="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status,conclusion --jq '[.status, (.conclusion // "")] | @tsv')"
               status="${state%%$'\t'*}"
               conclusion="${state#*$'\t'}"
@@ -144,7 +144,7 @@ jobs:
             fi
           done
 
-      - name: Fast-forward main only after all checks pass
+      - name: Fast-forward target branch only after all checks pass
         if: steps.format.outputs.changed == 'true'
         env:
           BRANCH: ${{ steps.format.outputs.branch }}

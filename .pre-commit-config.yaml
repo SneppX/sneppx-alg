@@ -7,7 +7,7 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-json
-        exclude: '(^benchmarks/baseline\\.json$|^tests/data/acvp/slhdsa_keygen_kat\\.json$)'
+        exclude: '^(benchmarks/baseline\.json|tests/data/acvp/slhdsa_keygen_kat\.json)$'
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: detect-private-key
@@ -34,14 +34,14 @@ repos:
       - id: ruff-format
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
-  # Prettier owns consistent formatting for web sources, JSON, YAML, and Markdown.
+  # Prettier formats web sources, JSON, YAML, and Markdown.
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: b40b4e02d5a0c977e64da51e8742e3240ef6372a
     hooks:
       - id: prettier
         types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen|conda-forge-recipe)/|(^benchmarks/baseline\\.json$|^tests/data/acvp/slhdsa_keygen_kat\\.json$|^\\.clang-tidy$)'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen|conda-forge-recipe)/|^(benchmarks/baseline\.json|tests/data/acvp/slhdsa_keygen_kat\.json|\.clang-tidy)$'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
@@ -68,7 +68,7 @@ repos:
     hooks:
       - id: actionlint
 
-  # Rust files are formatted directly because this repository contains nested Cargo workspaces.
+  # Format Rust files directly; the repository has nested Cargo workspaces.
   - repo: local
     hooks:
       - id: rustfmt
@@ -82,50 +82,7 @@ repos:
         language: system
         types: [go]
 
-  # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4).
-  - repo: local
-    hooks:
-      - id: sneppx-docs
-        name: sneppx-format --docs (Layer 1/4 doc coverage)
-        entry: sneppx-format --docs --no-color
-        language: system
-        files: '\.(c|h|cc|cpp|cxx|hpp|cu|cuh)$'
-        fail_fast: false  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.12
-    hooks:
-      - id: actionlint
-
-  # Notebook formatting changes code cells while preserving notebook outputs.
-  - repo: local
-    hooks:
-      - id: notebook-ruff-format
-        name: ruff format Jupyter notebooks
-        entry: nbqa ruff format
-        language: python
-        additional_dependencies: [nbqa==1.9.1, ruff==0.5.0]
-        files: '\.ipynb$'
-
-  # Canonical language formatters for the Rust and Go source trees.
-  - repo: local
-    hooks:
-      - id: rustfmt-workspace
-        name: rustfmt workspace
-        entry: cargo fmt --all
-        language: system
-        types: [rust]
-        pass_filenames: false
-      - id: rustfmt-security
-        name: rustfmt security crate
-        entry: rustfmt --edition 2021
-        language: system
-        files: '^security/rust/.*\.rs$'
-      - id: gofmt
-        name: gofmt
-        entry: gofmt -w
-        language: system
-        types: [go]
-
-  # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4).
+  # Separate documentation coverage validation; not a source formatter.
   - repo: local
     hooks:
       - id: sneppx-docs
