@@ -183,9 +183,8 @@ int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
     }
     if (!uv->has_trusted_key)
         return -1;
-    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey, SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0
-               ? 0
-               : -1;
+    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey, SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0 ? 0
+                                                                                                                   : -1;
 }
 
 /**
