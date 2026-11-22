@@ -21,9 +21,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Scan repository history for secrets with the open-source CLI
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.24.2 detect --source=/repo --no-banner --redact
       - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
           python-version: "3.11"
@@ -47,7 +47,7 @@ jobs:
       - uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.language == 'c-cpp' && 'autobuild' || 'none' }}
+          build-mode: ${{ matrix.language == 'python' && 'none' || 'autobuild' }}
       - uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
