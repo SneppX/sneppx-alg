@@ -5,8 +5,12 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        # conda-forge/meta.yaml is a Jinja recipe, not parseable YAML.
+        exclude: '^conda-forge-recipe/meta\.yaml$'
       - id: check-toml
       - id: check-json
+        # benchmarks/baseline.json is JSON Lines, one benchmark per line.
+        exclude: '^benchmarks/baseline\.json$'
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: detect-private-key
