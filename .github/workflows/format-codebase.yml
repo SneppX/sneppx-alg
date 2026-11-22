@@ -10,6 +10,9 @@ on:
 permissions:
   actions: write
   contents: write
+  # The formatter may rewrite YAML workflow files; without this, the bot's
+  # candidate commit is rejected by GitHub's workflow-file protection.
+  workflows: write
 
 concurrency:
   group: repository-formatting-main
