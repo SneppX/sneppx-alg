@@ -1,0 +1,154 @@
+name: Repository-wide formatting
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: repository-formatting-main
+  cancel-in-progress: false
+
+jobs:
+  format-and-promote:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[format-bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out main
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.11"
+
+      - name: Set up Go formatter
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Set up Rust formatter
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Install pre-commit
+        run: python -m pip install --disable-pip-version-check pre-commit==4.2.0
+
+      - name: Format every supported tracked source file
+        id: format
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="$(git rev-parse HEAD)"
+          BRANCH="automation/format-${GITHUB_RUN_ID}"
+          git switch --create "$BRANCH" "$BASE_SHA"
+
+          # The first pass may report files it just reformatted. A clean second
+          # pass proves that the formatter and validation hooks now agree.
+          if ! SKIP=sneppx-docs pre-commit run --all-files; then
+            SKIP=sneppx-docs pre-commit run --all-files
+          fi
+
+          git diff --check
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "The repository already satisfies the configured formatters."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "style: format repository [format-bot]"
+          CANDIDATE_SHA="$(git rev-parse HEAD)"
+          git push origin "$BRANCH"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch required CI workflows for the formatted tree
+        if: steps.format.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.format.outputs.branch }}
+        run: |
+          set -euo pipefail
+          for workflow in ci.yml lint-docs.yml package-validation.yml; do
+            gh workflow run ".github/workflows/$workflow" --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          done
+
+      - name: Wait for every required CI workflow
+        if: steps.format.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.format.outputs.branch }}
+          CANDIDATE_SHA: ${{ steps.format.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for workflow in ci.yml lint-docs.yml package-validation.yml; do
+            echo "Waiting for $workflow on $CANDIDATE_SHA"
+            run_id=""
+            for attempt in $(seq 1 90); do
+              run_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" --branch "$BRANCH" --limit 20 --json databaseId,headSha --jq ".[] | select(.headSha == \"$CANDIDATE_SHA\") | .databaseId" | head -n 1)"
+              if [ -n "$run_id" ]; then
+                break
+              fi
+              sleep 10
+            done
+            if [ -z "$run_id" ]; then
+              echo "No workflow run appeared for $workflow"
+              exit 1
+            fi
+
+            for attempt in $(seq 1 90); do
+              state="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status,conclusion --jq '[.status, (.conclusion // "")] | @tsv')"
+              status="${state%%$'\t'*}"
+              conclusion="${state#*$'\t'}"
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" != "success" ]; then
+                  echo "$workflow finished with conclusion: $conclusion"
+                  exit 1
+                fi
+                break
+              fi
+              sleep 20
+            done
+            if [ "$status" != "completed" ] || [ "$conclusion" != "success" ]; then
+              echo "Timed out waiting for $workflow"
+              exit 1
+            fi
+          done
+
+      - name: Fast-forward main only after all checks pass
+        if: steps.format.outputs.changed == 'true'
+        env:
+          BRANCH: ${{ steps.format.outputs.branch }}
+          BASE_SHA: ${{ steps.format.outputs.base_sha }}
+          CANDIDATE_SHA: ${{ steps.format.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          CURRENT_MAIN="$(git rev-parse origin/main)"
+          if [ "$CURRENT_MAIN" != "$BASE_SHA" ]; then
+            echo "main changed during formatting; refusing to overwrite newer work."
+            exit 1
+          fi
+          git push origin "$BRANCH:refs/heads/main"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$CANDIDATE_SHA"
+          git push origin --delete "$BRANCH"
