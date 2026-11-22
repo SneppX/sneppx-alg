@@ -97,6 +97,21 @@ def test_data_loader_len():
     assert len(loader) == 4
 
 
+def test_data_loader_num_workers_batches_full_and_ordered():
+    ds = Dataset(data=list(range(6)))
+    loader = DataLoader(ds, batch_size=3, num_workers=2)
+    batches = list(loader)
+    assert [len(b) for b in batches] == [3, 3]
+    assert [list(b) for b in batches] == [[0, 1, 2], [3, 4, 5]]
+
+
+def test_data_loader_num_workers_drop_last():
+    ds = Dataset(data=list(range(7)))
+    loader = DataLoader(ds, batch_size=3, num_workers=2, drop_last=True)
+    batches = list(loader)
+    assert [list(b) for b in batches] == [[0, 1, 2], [3, 4, 5]]
+
+
 def test_distributed_sampler():
     ds = Dataset(data=list(range(100)))
     sampler = DistributedSampler(ds, num_replicas=4, rank=0, shuffle=False)

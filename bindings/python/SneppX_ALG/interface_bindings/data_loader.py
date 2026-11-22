@@ -154,12 +154,12 @@ class _PrefetchWorker:
     def __init__(
         self,
         dataset: Dataset,
-        indices: List[int],
+        batches: List[List[int]],
         collate_fn: Optional[Callable],
         prefetch: int,
     ):
         self.dataset = dataset
-        self.indices = indices
+        self.batches = batches
         self.collate_fn = collate_fn
         self.prefetch = prefetch
         self.queue: "queue.Queue" = __import__("queue").Queue(maxsize=prefetch)
@@ -168,13 +168,12 @@ class _PrefetchWorker:
         self._dead = False
 
     def _run(self):
-        while self.pos < len(self.indices) and not self._dead:
-            idx = self.indices[self.pos]
+        while self.pos < len(self.batches) and not self._dead:
+            batch_idx = self.batches[self.pos]
             self.pos += 1
-            sample = self.dataset[idx]
-            if self.collate_fn:
-                sample = self.collate_fn([sample])
-            self.queue.put(sample)
+            samples = [self.dataset[j] for j in batch_idx]
+            batch = self.collate_fn(samples)
+            self.queue.put(batch)
         self.queue.put(None)  # sentinel
 
     def start(self):
@@ -257,15 +256,25 @@ class DataLoader:
             yield batch
 
     def _iter_workers(self, indices: List[int]):
-        # Split indices into per-worker chunks
-        chunks = [indices[p :: self.num_workers] for p in range(self.num_workers)]
+        # Batch indices before dispatch. The worker used to collate one sample
+        # at a time, so ``batch_size=3, num_workers=2`` produced six size-1
+        # batches instead of two size-3 batches.
+        batches = []
+        for i in range(0, len(indices), self.batch_size):
+            batch_idx = indices[i : i + self.batch_size]
+            if self.drop_last and len(batch_idx) < self.batch_size:
+                continue
+            batches.append(batch_idx)
+        if not batches:
+            return
+        # Split whole batches across workers. Round-robin chunks + round-robin
+        # merge preserves the original batch order.
+        chunks = [batches[p :: self.num_workers] for p in range(self.num_workers)]
         workers = []
         for c in chunks:
             w = _PrefetchWorker(self.dataset, c, self.collate_fn, self.prefetch_factor)
             w.start()
             workers.append(w)
-        # Round-robin merge of worker outputs
-        active = list(workers)
         buffers = [w.get() for w in workers]
         while any(b is not None for b in buffers):
             for wi, b in enumerate(buffers):
