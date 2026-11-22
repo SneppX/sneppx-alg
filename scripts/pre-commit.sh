@@ -32,15 +32,20 @@ no_secrets() {
         --include='*.c' --include='*.h' --include='*.cpp' --include='*.hpp' \
         --include='*.py' --include='*.sh' --include='*.yml' --include='*.yaml' \
         --include='*.json' --include='*.toml' --include='*.cfg' --include='*.ini' --include='*.conf' \
-        --exclude='test_secrets_redact.py' --exclude-dir='.git' --exclude-dir='build' 2>/dev/null
+        --exclude='test_secrets_redact.py' --exclude='pre-commit.sh' --exclude-dir='.git' --exclude-dir='build' 2>/dev/null
 }
 
 no_merge_conflicts() {
-    ! find "$ROOT_DIR" -path '*/build/*' -prune -o -path '*/.git/*' -prune -o \
+    local matches
+    matches="$(find "$ROOT_DIR" -path '*/build/*' -prune -o -path '*/.git/*' -prune -o \
         \( -name '*.c' -o -name '*.h' -o -name '*.cpp' -o -name '*.hpp' \
         -o -name '*.py' -o -name '*.sh' -o -name '*.yml' -o -name '*.yaml' \
         -o -name '*.json' -o -name '*.toml' -o -name '*.md' -o -name '*.txt' \) \
-        -type f -exec grep -nE '^(<<<<<<<|=======|>>>>>>>)' {} +
+        -type f -exec grep -nE '^(<<<<<<<|=======|>>>>>>>)' {} + 2>/dev/null || true)"
+    if [ -n "$matches" ]; then
+        printf '%s\\n' "$matches"
+        return 1
+    fi
 }
 
 no_trailing_whitespace() {

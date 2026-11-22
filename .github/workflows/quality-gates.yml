@@ -30,7 +30,7 @@ jobs:
       - name: Audit installed Python dependencies
         run: |
           python -m pip install --disable-pip-version-check .
-          python -m pip install --disable-pip-version-check pip-audit
+          python -m pip install --disable-pip-version-check --upgrade 'setuptools>=84.1.0' pip-audit
           pip-audit --local
 
   codeql:
@@ -85,7 +85,7 @@ jobs:
           persist-credentials: false
       - name: Compile CUDA-enabled project configuration
         run: |
-          docker run --rm -v "$PWD:/workspace" -w /workspace nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git cmake ninja-build build-essential && cmake -S . -B build/cuda-ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=OFF -DSNEPPX_BUILD_BENCHMARKS=OFF -DSNEPPX_BUILD_CUDA=ON && cmake --build build/cuda-ci --parallel 2'
+          docker run --rm -v "$PWD:/workspace" -w /workspace nvidia/cuda:12.6.3-devel-ubuntu22.04 bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git curl ninja-build build-essential && curl -fsSL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz | tar -xz -C /opt && export PATH=/opt/cmake-3.31.6-linux-x86_64/bin:$PATH && cmake --version && cmake -S . -B build/cuda-ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES='80;90' -DSNEPPX_BUILD_TESTS=OFF -DSNEPPX_BUILD_BENCHMARKS=OFF -DSNEPPX_BUILD_CUDA=ON && cmake --build build/cuda-ci --parallel 2'
 
   benchmark-smoke:
     name: Performance benchmark smoke tests
