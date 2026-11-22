@@ -144,7 +144,9 @@ def test_checkpoint_binary_format():
 
 def test_checkpoint_load_best():
     with tempfile.TemporaryDirectory() as tmp:
-        mgr = CheckpointManager(tmp, keep_last=5, keep_best=2, async_save=False, allow_unsafe=True)
+        mgr = CheckpointManager(
+            tmp, keep_last=5, keep_best=2, async_save=False, allow_unsafe=True
+        )
         trainer = _make_trainer(tmp)
         orig = trainer.model.weight.data.copy()
 
@@ -176,7 +178,9 @@ def test_pickle_checkpoint_requires_explicit_opt_in(capsys):
 def test_binary_checkpoint_requires_explicit_opt_in(capsys):
     with tempfile.TemporaryDirectory() as tmp:
         trainer = _make_trainer(tmp)
-        mgr = CheckpointManager(tmp, save_format="binary", async_save=False, allow_unsafe=True)
+        mgr = CheckpointManager(
+            tmp, save_format="binary", async_save=False, allow_unsafe=True
+        )
         mgr.save(trainer)
         path = mgr._latest_path()
 
