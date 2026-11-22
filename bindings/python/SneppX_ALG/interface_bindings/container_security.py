@@ -1,6 +1,7 @@
 """Container Security — S7: SBOM, CVE scanning, A/B partitions, signed updates."""
 
 import os
+import re
 import json
 import time
 import tempfile
@@ -30,6 +31,18 @@ def _resolve_update_dir(update_dir: Optional[str]) -> str:
     if update_dir is not None:
         return update_dir
     return os.path.join(_default_sneppx_dir(), "updates")
+
+
+_SAFE_COMPONENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+
+
+def _is_safe_component(value: object) -> bool:
+    """Return True when *value* is a single, traversal-free path component."""
+    return (
+        isinstance(value, str)
+        and bool(_SAFE_COMPONENT.fullmatch(value))
+        and value not in (".", "..")
+    )
 
 
 class ScanStatus(Enum):
@@ -689,23 +702,27 @@ class SignedUpdateManager:
         self._lock = threading.Lock()
 
     def verify_signature(self, update_path: str, signature_path: str) -> bool:
-        """Verify update package signature using Ed25519."""
+        """Verify update bytes against the configured raw Ed25519 public key.
+
+        ``cryptography`` is a declared runtime dependency. Any missing key,
+        malformed input, or invalid signature results in ``False`` so callers
+        can fail closed.
+        """
         if not self.public_key_path:
             return False
         try:
-            import nacl.signing
-            import nacl.encoding
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+                Ed25519PublicKey,
+            )
 
             with open(self.public_key_path, "rb") as f:
-                pk = f.read()
-            verify_key = nacl.signing.VerifyKey(pk, encoder=nacl.encoding.RawEncoder)
-
+                public_key = Ed25519PublicKey.from_public_bytes(f.read())
             with open(update_path, "rb") as f:
                 data = f.read()
             with open(signature_path, "rb") as f:
-                sig = f.read()
+                signature = f.read()
 
-            verify_key.verify(data, sig, encoder=nacl.encoding.RawEncoder)
+            public_key.verify(signature, data)
             return True
         except Exception:
             return False
@@ -716,40 +733,64 @@ class SignedUpdateManager:
         version: str,
         signature_path: Optional[str] = None,
     ) -> Tuple[bool, str]:
-        """Stage an update for installation."""
+        """Stage an update for installation. Signatures are mandatory."""
+        if not signature_path:
+            return False, "Signature is required to stage an update"
+        if not self.public_key_path:
+            return False, "Trusted public key is not configured"
+        if not _is_safe_component(version):
+            return False, "Invalid version identifier"
+
+        filename = Path(update_path).name
+        if not _is_safe_component(filename):
+            return False, "Invalid update filename"
+
         with self._lock:
+            # Verify before copying so unsigned bytes never enter staging.
+            if not self.verify_signature(update_path, signature_path):
+                return False, "Signature verification failed"
+
             update_id = f"update_{version}_{int(time.time())}"
             staged_dir = self.update_dir / "staged" / update_id
             staged_dir.mkdir(parents=True, exist_ok=True)
 
-            # Copy update
             import shutil
 
-            dest = staged_dir / Path(update_path).name
-            shutil.copy2(update_path, dest)
+            try:
+                dest = staged_dir / filename
+                sig_dest = staged_dir / "signature.sig"
+                shutil.copy2(update_path, dest)
+                shutil.copy2(signature_path, sig_dest)
 
-            # Verify signature if provided
-            if signature_path and not self.verify_signature(str(dest), signature_path):
-                shutil.rmtree(staged_dir)
-                return False, "Signature verification failed"
+                # Re-verify the staged bytes, not just the source path.
+                if not self.verify_signature(str(dest), str(sig_dest)):
+                    shutil.rmtree(staged_dir)
+                    return False, "Signature verification failed"
 
-            # Save metadata
-            meta = {
-                "update_id": update_id,
-                "version": version,
-                "path": str(dest),
-                "staged_at": datetime.utcnow().isoformat(),
-                "verified": signature_path is not None,
-            }
-            with open(staged_dir / "meta.json", "w") as f:
-                json.dump(meta, f)
+                meta = {
+                    "update_id": update_id,
+                    "version": version,
+                    "path": str(dest),
+                    "filename": filename,
+                    "signature": sig_dest.name,
+                    "staged_at": datetime.utcnow().isoformat(),
+                    "verified": True,
+                }
+                with open(staged_dir / "meta.json", "w") as f:
+                    json.dump(meta, f)
+            except Exception as e:
+                shutil.rmtree(staged_dir, ignore_errors=True)
+                return False, f"Staging failed: {e}"
 
             return True, update_id
 
     def install_update(
         self, update_id: str, partition: ABOOTPartition
     ) -> Tuple[bool, str]:
-        """Install staged update to inactive partition."""
+        """Install a verified staged update to the inactive partition."""
+        if not _is_safe_component(update_id):
+            return False, "Invalid update id"
+
         with self._lock:
             staged_dir = self.update_dir / "staged" / update_id
             meta_file = staged_dir / "meta.json"
@@ -760,9 +801,24 @@ class SignedUpdateManager:
             with open(meta_file, "r") as f:
                 meta = json.load(f)
 
-            update_file = staged_dir / meta["path"].split("/")[-1]
-            if not update_file.exists():
+            if meta.get("verified") is not True:
+                return False, "Update is not verified"
+
+            filename = meta.get("filename") or Path(meta.get("path", "")).name
+            signature_name = meta.get("signature")
+            if not _is_safe_component(filename) or not _is_safe_component(
+                signature_name
+            ):
+                return False, "Invalid update metadata"
+
+            update_file = staged_dir / filename
+            signature_file = staged_dir / signature_name
+            if not update_file.exists() or not signature_file.exists():
                 return False, "Update file missing"
+
+            # Verify again immediately before writing to the boot partition.
+            if not self.verify_signature(str(update_file), str(signature_file)):
+                return False, "Signature verification failed before install"
 
             # Apply update to inactive partition
             inactive = partition.inactive_slot
