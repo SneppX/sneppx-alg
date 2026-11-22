@@ -143,7 +143,8 @@ def test_model_inversion_defense():
     g = np.array([10.0, -10.0, 3.0])
     out = rlhf.model_inversion_defense(g, noise=0.01, clip=1.0)
     assert out.shape == g.shape
-    assert np.linalg.norm(out) <= 1.0 + 1e-6
+    # Clipping bounds the signal, then noise may add up to noise/2 per element.
+    assert np.linalg.norm(out) <= 1.0 + (0.01 / 2.0) * np.sqrt(g.size) + 1e-6
 
 
 def test_watermark_roundtrip():

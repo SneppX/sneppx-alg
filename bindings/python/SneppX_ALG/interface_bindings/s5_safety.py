@@ -194,17 +194,20 @@ def _py_model_inversion_apply(
     norm = float(np.sqrt(np.sum(g * g)))
     if clip_norm > 0 and norm > clip_norm:
         g = g / norm * clip_norm
-    rng = np.random.RandomState(0)
-    g = g + (rng.rand(*g.shape) - 0.5) * noise_scale
+    # Privacy noise must come from a fresh OS-seeded generator. A fixed seed
+    # makes the "noise" identical for every request, so repeated observations
+    # cancel it out and leak the original gradients.
+    rng = np.random.default_rng()
+    g = g + (rng.random(g.shape) - 0.5) * noise_scale
     return g
 
 
 def _py_membership_inference_defense(logits: np.ndarray, epsilon: float) -> np.ndarray:
     out = logits.astype(np.float64).copy()
     out = np.clip(out, -epsilon, epsilon)
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng()
     scale = 1.0 / epsilon if epsilon > 0 else 1.0
-    u = rng.rand(*out.shape)
+    u = rng.random(out.shape)
     lap = np.where(u < 0.5, scale * np.log(2 * u), -scale * np.log(2 * (1 - u)))
     return out + lap
 
@@ -643,6 +646,6 @@ class S5RLHFSafety:
     # --- Adversarial smoothing --------------------------------------------
     def adversarial_smooth(self, inp: np.ndarray, epsilon: float) -> np.ndarray:
         x = np.asarray(inp, dtype=np.float64).copy()
-        rng = np.random.RandomState(0)
-        x += (rng.rand(*x.shape) - 0.5) * 2.0 * epsilon
+        rng = np.random.default_rng()
+        x += (rng.random(x.shape) - 0.5) * 2.0 * epsilon
         return x
