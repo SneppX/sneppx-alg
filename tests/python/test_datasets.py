@@ -36,7 +36,9 @@ def test_batching_rejects_invalid_sizes_and_scalar_inputs():
         except ValueError:
             pass
         else:
-            raise AssertionError(f"batch_indices accepted invalid size: {invalid_size!r}")
+            raise AssertionError(
+                f"batch_indices accepted invalid size: {invalid_size!r}"
+            )
 
     for invalid_n in (-1, 1.5, True):
         try:

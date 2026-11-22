@@ -58,11 +58,16 @@ def test_embedding_pca():
         print("  test_embedding_pca SKIP (no C backend)")
         return
     vm = VizMon()
-    pts = np.array([
-        [1.0, 1.0, 0.0], [-1.0, -1.0, 0.0],
-        [1.0, 1.1, 0.0], [-1.0, -1.1, 0.0],
-        [1.1, 1.0, 0.0], [-0.9, -1.0, 0.0],
-    ])
+    pts = np.array(
+        [
+            [1.0, 1.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [1.0, 1.1, 0.0],
+            [-1.0, -1.1, 0.0],
+            [1.1, 1.0, 0.0],
+            [-0.9, -1.0, 0.0],
+        ]
+    )
     vm.push_embedding("h", pts)
     vm.project_pca()
     snap = vm.snapshot_json()
@@ -126,6 +131,7 @@ def test_server_start_stop():
         return
     import time
     import urllib.request
+
     vm = VizMon()
     vm.push_scalar("loss", 0.5, 1.0)
     assert vm.start_server(18300) is None  # void return

@@ -23,8 +23,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     uint32_t feature_index;
     char* feature_name;
     size_t feature_name_len;
@@ -42,7 +42,8 @@ typedef struct {
     uint8_t categorical : 1;
 } SNEPPXAIExplainFeature;
 
-typedef struct {
+typedef struct
+{
     uint64_t sample_id;
     double* feature_vector;
     uint32_t num_features;
@@ -57,7 +58,8 @@ typedef struct {
     uint8_t explained : 1;
 } SNEPPXAIExplainSample;
 
-typedef struct {
+typedef struct
+{
     double* background_data;
     uint32_t background_samples;
     uint32_t num_features;
@@ -75,14 +77,21 @@ typedef struct {
 } SNEPPXAIExplainProvider;
 
 int snepx_ai_shap_init(SNEPPXAIExplainProvider* provider, uint32_t num_features);
-int snepx_ai_shap_load_background(SNEPPXAIExplainProvider* provider, const double* data, uint32_t num_samples, uint32_t num_features);
-int snepx_ai_shap_explain(SNEPPXAIExplainProvider* provider, const double* sample_features, uint32_t num_features, SNEPPXAIExplainSample* result);
-int snepx_ai_shap_explain_batch(SNEPPXAIExplainProvider* provider, const double* samples, uint32_t num_samples, uint32_t num_features, SNEPPXAIExplainSample* results);
+int snepx_ai_shap_load_background(SNEPPXAIExplainProvider* provider, const double* data, uint32_t num_samples,
+                                  uint32_t num_features);
+int snepx_ai_shap_explain(SNEPPXAIExplainProvider* provider, const double* sample_features, uint32_t num_features,
+                          SNEPPXAIExplainSample* result);
+int snepx_ai_shap_explain_batch(SNEPPXAIExplainProvider* provider, const double* samples, uint32_t num_samples,
+                                uint32_t num_features, SNEPPXAIExplainSample* results);
 int snepx_ai_shap_kernel_shap(SNEPPXAIExplainProvider* provider, const double* sample, SNEPPXAIExplainSample* result);
-int snepx_ai_shap_compute_interactions(SNEPPXAIExplainProvider* provider, const SNEPPXAIExplainSample* sample, double* interaction_matrix, size_t* dim);
-int snepx_ai_shap_global_importance(const SNEPPXAIExplainProvider* provider, SNEPPXAIExplainSample* samples, uint32_t num_samples, double* global_importance_out, uint32_t* num_features_out);
-int snepx_ai_shap_summary_plot(const SNEPPXAIExplainProvider* provider, SNEPPXAIExplainSample* samples, uint32_t num_samples, uint8_t* plot_out, size_t* plot_len);
-int snepx_ai_shap_dependence_plot(const SNEPPXAIExplainProvider* provider, const SNEPPXAIExplainSample* samples, uint32_t num_samples, uint32_t feature_index, uint8_t* plot_out, size_t* plot_len);
+int snepx_ai_shap_compute_interactions(SNEPPXAIExplainProvider* provider, const SNEPPXAIExplainSample* sample,
+                                       double* interaction_matrix, size_t* dim);
+int snepx_ai_shap_global_importance(const SNEPPXAIExplainProvider* provider, SNEPPXAIExplainSample* samples,
+                                    uint32_t num_samples, double* global_importance_out, uint32_t* num_features_out);
+int snepx_ai_shap_summary_plot(const SNEPPXAIExplainProvider* provider, SNEPPXAIExplainSample* samples,
+                               uint32_t num_samples, uint8_t* plot_out, size_t* plot_len);
+int snepx_ai_shap_dependence_plot(const SNEPPXAIExplainProvider* provider, const SNEPPXAIExplainSample* samples,
+                                  uint32_t num_samples, uint32_t feature_index, uint8_t* plot_out, size_t* plot_len);
 int snepx_ai_shap_provider_destroy(SNEPPXAIExplainProvider* provider);
 int snepx_ai_shap_sample_destroy(SNEPPXAIExplainSample* sample);
 

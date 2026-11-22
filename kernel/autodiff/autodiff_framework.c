@@ -16,9 +16,8 @@
  *   None (internal kernel module).
  */
 
-
-
-typedef struct SNEPPXAutogradEngine {
+typedef struct SNEPPXAutogradEngine
+{
     int dummy;
 } SNEPPXAutogradEngine;
 
@@ -27,14 +26,16 @@ typedef struct SNEPPXAutogradEngine {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXAutogradEngine* SNEPPX_autograd_create(void) {
-    return (SNEPPXAutogradEngine*)calloc(1, sizeof(SNEPPXAutogradEngine));
+SNEPPXAutogradEngine* SNEPPX_autograd_create(void)
+{
+    return (SNEPPXAutogradEngine*) calloc(1, sizeof(SNEPPXAutogradEngine));
 }
 
 /**
  * @brief Destroy Autograd.
  */
-void SNEPPX_autograd_destroy(SNEPPXAutogradEngine* engine) {
+void SNEPPX_autograd_destroy(SNEPPXAutogradEngine* engine)
+{
     free(engine);
 }
 
@@ -46,8 +47,11 @@ void SNEPPX_autograd_destroy(SNEPPXAutogradEngine* engine) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_autograd_record(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor, const char* name) {
-    (void)engine; (void)tensor; (void)name;
+int SNEPPX_autograd_record(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor, const char* name)
+{
+    (void) engine;
+    (void) tensor;
+    (void) name;
     return 0;
 }
 
@@ -58,8 +62,10 @@ int SNEPPX_autograd_record(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor, c
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_autograd_backward(SNEPPXAutogradEngine* engine, SNEPPXTensor* loss) {
-    (void)engine; (void)loss;
+int SNEPPX_autograd_backward(SNEPPXAutogradEngine* engine, SNEPPXTensor* loss)
+{
+    (void) engine;
+    (void) loss;
     return 0;
 }
 
@@ -68,8 +74,9 @@ int SNEPPX_autograd_backward(SNEPPXAutogradEngine* engine, SNEPPXTensor* loss) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_autograd_zero_grad(SNEPPXAutogradEngine* engine) {
-    (void)engine;
+int SNEPPX_autograd_zero_grad(SNEPPXAutogradEngine* engine)
+{
+    (void) engine;
     return 0;
 }
 
@@ -81,8 +88,11 @@ int SNEPPX_autograd_zero_grad(SNEPPXAutogradEngine* engine) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_autograd_set_grad(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor, const SNEPPXTensor* grad) {
-    (void)engine; (void)tensor; (void)grad;
+int SNEPPX_autograd_set_grad(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor, const SNEPPXTensor* grad)
+{
+    (void) engine;
+    (void) tensor;
+    (void) grad;
     return 0;
 }
 
@@ -93,8 +103,10 @@ int SNEPPX_autograd_set_grad(SNEPPXAutogradEngine* engine, SNEPPXTensor* tensor,
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXTensor* SNEPPX_autograd_get_grad(const SNEPPXAutogradEngine* engine, const SNEPPXTensor* tensor) {
-    (void)engine; (void)tensor;
+SNEPPXTensor* SNEPPX_autograd_get_grad(const SNEPPXAutogradEngine* engine, const SNEPPXTensor* tensor)
+{
+    (void) engine;
+    (void) tensor;
     return NULL;
 }
 
@@ -103,7 +115,8 @@ SNEPPXTensor* SNEPPX_autograd_get_grad(const SNEPPXAutogradEngine* engine, const
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_autograd_num_ops(const SNEPPXAutogradEngine* engine) {
-    (void)engine;
+size_t SNEPPX_autograd_num_ops(const SNEPPXAutogradEngine* engine)
+{
+    (void) engine;
     return 0;
 }

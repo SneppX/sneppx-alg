@@ -64,8 +64,14 @@ class KVBlockPool:
     sequences can share blocks (copy-on-write).
     """
 
-    def __init__(self, num_blocks: int, block_size: int,
-                 num_kv_heads: int, head_dim: int, dtype: str = "float32"):
+    def __init__(
+        self,
+        num_blocks: int,
+        block_size: int,
+        num_kv_heads: int,
+        head_dim: int,
+        dtype: str = "float32",
+    ):
         self.block_size = int(block_size)
         self.num_kv_heads = int(num_kv_heads)
         self.head_dim = int(head_dim)
@@ -184,8 +190,14 @@ class PagedKVCache:
         while len(table) < needed:
             table.append(self.pool.allocate())
 
-    def _write_slot(self, table: BlockTable, block_index: int,
-                    slot: int, key: np.ndarray, value: np.ndarray) -> None:
+    def _write_slot(
+        self,
+        table: BlockTable,
+        block_index: int,
+        slot: int,
+        key: np.ndarray,
+        value: np.ndarray,
+    ) -> None:
         block_id = table[block_index]
         if self.pool.is_shared(block_id):
             old_id = block_id
@@ -197,8 +209,14 @@ class PagedKVCache:
         self.pool.values[block_id, slot] = value
 
     # ---- store / gather --------------------------------------------------
-    def store(self, table: BlockTable, layer: int,
-              positions: List[int], keys: np.ndarray, values: np.ndarray) -> None:
+    def store(
+        self,
+        table: BlockTable,
+        layer: int,
+        positions: List[int],
+        keys: np.ndarray,
+        values: np.ndarray,
+    ) -> None:
         """Store K/V at absolute token positions for a layer.
 
         ``keys``/``values`` may have shape ``[num_positions, num_kv_heads,
@@ -217,8 +235,9 @@ class PagedKVCache:
             slot = pos % self.pool.block_size
             self._write_slot(table, block_index, slot, keys[i], values[i])
 
-    def get_kv(self, table: BlockTable, layer: int,
-               seq_len: int) -> Tuple[np.ndarray, np.ndarray]:
+    def get_kv(
+        self, table: BlockTable, layer: int, seq_len: int
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Gather dense K/V ``[num_kv_heads, seq_len, head_dim]`` for a layer."""
         self._ensure_capacity(table, seq_len)
         nh = self.pool.num_kv_heads
@@ -259,10 +278,7 @@ class PrefixCache:
     @staticmethod
     def _chunks(tokens: List[int], block_size: int) -> List[Tuple[int, ...]]:
         stop = len(tokens) - (len(tokens) % block_size)
-        return [
-            tuple(tokens[i:i + block_size])
-            for i in range(0, stop, block_size)
-        ]
+        return [tuple(tokens[i : i + block_size]) for i in range(0, stop, block_size)]
 
     def insert(self, tokens: List[int], block_ids: List[int]) -> None:
         chunks = self._chunks(list(tokens), self.block_size)
@@ -337,9 +353,11 @@ def paged_attention_forward(
     elif q.ndim == 3 and q.shape[1] == 1:
         qq = q[:, 0, :]
     else:
-        raise ValueError("q must be [num_heads, head_dim], "
-                         "[1, num_heads, head_dim] or "
-                         "[seq_len, num_heads, head_dim]")
+        raise ValueError(
+            "q must be [num_heads, head_dim], "
+            "[1, num_heads, head_dim] or "
+            "[seq_len, num_heads, head_dim]"
+        )
     scores = np.einsum("hkd,hd->hk", k_exp, qq)
     probs = np.exp(scores - scores.max(axis=-1, keepdims=True))
     probs = probs / probs.sum(axis=-1, keepdims=True)
@@ -363,9 +381,7 @@ class IncrementalAttentionState:
         new_max = np.maximum(self.max, scores.max(axis=-1, keepdims=True))
         correction = np.exp(self.max - new_max)
         exp = np.exp(scores - new_max)
-        self.acc = self.acc * correction + np.einsum(
-            "hk,hkd->hd", exp, values
-        )
+        self.acc = self.acc * correction + np.einsum("hk,hkd->hd", exp, values)
         self.lse = self.lse * correction + exp.sum(axis=-1, keepdims=True)
         self.max = new_max
 

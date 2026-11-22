@@ -66,9 +66,7 @@ def test_csr_construction_and_fields():
     assert t._nnz == 5
     assert np.asarray(t.crow_indices().data).tolist() == [0, 2, 3, 5]
     dense = np.asarray(t.to_dense().data)
-    expected = np.array(
-        [[1, 0, 2], [0, 0, 3], [4, 5, 0]], dtype=float
-    )
+    expected = np.array([[1, 0, 2], [0, 0, 3], [4, 5, 0]], dtype=float)
     assert np.allclose(dense, expected)
 
 
@@ -80,9 +78,7 @@ def test_csc_construction_and_fields():
     assert t.layout == "sparse_csc"
     assert np.asarray(t.ccol_indices().data).tolist() == [0, 1, 2, 4]
     dense = np.asarray(t.to_dense().data)
-    expected = np.array(
-        [[1, 0, 3], [0, 2, 0], [0, 0, 4]], dtype=float
-    )
+    expected = np.array([[1, 0, 3], [0, 2, 0], [0, 0, 4]], dtype=float)
     assert np.allclose(dense, expected)
 
 
@@ -93,7 +89,10 @@ def test_bsr_construction():
     blk[1] = np.array([[0, 3], [4, 0]])
     blk[2] = np.array([[5, 0], [0, 6]])
     t = sparse_bsr_tensor(
-        np.array([0, 1, 3]), np.array([0, 0, 1]), blk, size=(4, 4),
+        np.array([0, 1, 3]),
+        np.array([0, 0, 1]),
+        blk,
+        size=(4, 4),
         blocksize=(2, 2),
     )
     assert t.layout == "sparse_bsr"
@@ -107,7 +106,8 @@ def test_bsr_construction():
 
 def test_sparse_mm_sparse_dense():
     sp = sparse_coo_tensor(
-        np.array([[0, 1, 2], [0, 2, 1]]), np.array([1.0, 2.0, 3.0]),
+        np.array([[0, 1, 2], [0, 2, 1]]),
+        np.array([1.0, 2.0, 3.0]),
         size=(3, 3),
     )
     b = Tensor(np.arange(9, dtype=np.float32).reshape(3, 3) + 1)
@@ -120,12 +120,8 @@ def test_sparse_mm_sparse_dense():
 
 
 def test_sparse_mm_sparse_sparse_and_dense_dense():
-    a = sparse_coo_tensor(
-        np.array([[0, 1], [1, 0]]), np.array([2.0, 3.0]), size=(2, 2)
-    )
-    c = sparse_coo_tensor(
-        np.array([[0, 1], [0, 1]]), np.array([5.0, 6.0]), size=(2, 2)
-    )
+    a = sparse_coo_tensor(np.array([[0, 1], [1, 0]]), np.array([2.0, 3.0]), size=(2, 2))
+    c = sparse_coo_tensor(np.array([[0, 1], [0, 1]]), np.array([5.0, 6.0]), size=(2, 2))
     out = a.mm(c)
     dense_a = np.asarray(a.to_dense().data)
     dense_c = np.asarray(c.to_dense().data)
@@ -164,8 +160,7 @@ def test_sparse_mul_scalar_and_dense():
         np.array([[0, 1], [1, 0]]), np.array([2.0, 3.0]), size=(2, 2)
     )
     sc = sp * 3.0
-    assert np.allclose(np.asarray(sc.to_dense().data),
-                       [[0, 6], [9, 0]])
+    assert np.allclose(np.asarray(sc.to_dense().data), [[0, 6], [9, 0]])
     d = Tensor(np.array([[1.0, 0.0], [0.0, 1.0]], dtype=np.float32))
     dm = sp.mul(d)
     assert np.allclose(np.asarray(dm.to_dense().data), [[0, 0], [0, 0]])
@@ -184,6 +179,7 @@ def test_layout_constants_and_wiring():
     assert Strided == 0 and SparseCOO == 1 and SparseCSR == 2
     assert SparseCSC == 3 and SparseBSR == 4
     import SneppX_ALG.interface_bindings as sx
+
     assert sx.SparseTensor is SparseTensor
     assert callable(sx.sparse_coo_tensor)
     assert sx.sparse.sparse_coo_tensor is sparse_coo_tensor
@@ -228,7 +224,9 @@ def test_sparse_adam_updates_only_nonzero_grad_indices():
     p = Tensor(np.array([[1.0, 1.0], [1.0, 1.0]], dtype=np.float32))
     p.requires_grad_(True)
     sp_grad = sparse_coo_tensor(
-        np.array([[0, 1], [0, 1]]), np.array([1.0, 2.0]), size=(2, 2),
+        np.array([[0, 1], [0, 1]]),
+        np.array([1.0, 2.0]),
+        size=(2, 2),
         dtype="float32",
     )
     p.grad = sp_grad
@@ -251,8 +249,9 @@ def test_sparse_adam_updates_only_nonzero_grad_indices():
 
 
 def _sp(size, inds, vals, dtype="float32"):
-    return sparse_coo_tensor(np.asarray(inds, dtype=np.int64),
-                             np.asarray(vals, dtype=dtype), size=size)
+    return sparse_coo_tensor(
+        np.asarray(inds, dtype=np.int64), np.asarray(vals, dtype=dtype), size=size
+    )
 
 
 def test_sparse_mm_backward_create_graph():

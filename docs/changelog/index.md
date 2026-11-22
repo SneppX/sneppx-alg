@@ -7,6 +7,7 @@ Auto-generated from git tags + commit history. Regenerate with `python docs/chan
 [TOC]
 
 ## v1.5.0
+
 **2026-10-17**
 
 ### Features
@@ -33,6 +34,7 @@ Auto-generated from git tags + commit history. Regenerate with `python docs/chan
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.5.0){ .md-button }
 
 ## Unreleased
+
 _unreleased_
 
 ### Features
@@ -182,6 +184,7 @@ _unreleased_
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.5.0...Unreleased){ .md-button }
 
 ## v1.2.0
+
 **2026-07-30**
 
 _No tagged changes; showing commits up to this tag._
@@ -189,6 +192,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.1...v1.2.0){ .md-button }
 
 ## v1.1.1
+
 **2026-08-01**
 
 ### Other
@@ -204,6 +208,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.1.0...v1.1.1){ .md-button }
 
 ## v1.1.0
+
 **2026-07-30**
 
 ### Features
@@ -234,7 +239,7 @@ _No tagged changes; showing commits up to this tag._
 - update PR template to tier-based system
 - chore: cleanup project structure
 - docs: add contribution framework with tiers, branching strategy, CI workflows
-- Fix test bugs found during regression suite: - test_crypto_asm.py: add missing import hashlib - test_eval_harness.py: update assertion for synthetic data fallback - test_key_vault.py: adapt to audit_logger.py API (FileAuditBackend, AuditAction enums) - test_s4_network.py: adapt to ddos_mitigation.py API (DDoSConfig, check_request) - test_trainer_v2.py: add missing import numpy as np - audit_logger.py: string-to-enum conversion in log(), hash computation fix in FileAuditBackend.write(), verify_chain sort order fix, add clear() - benchmarking.py: fix RNN/transformer weight shape mismatches - test_algo_wrappers.py: add __test__ = False to prevent pytest collection
+- Fix test bugs found during regression suite: - test_crypto_asm.py: add missing import hashlib - test_eval_harness.py: update assertion for synthetic data fallback - test_key_vault.py: adapt to audit_logger.py API (FileAuditBackend, AuditAction enums) - test_s4_network.py: adapt to ddos_mitigation.py API (DDoSConfig, check_request) - test_trainer_v2.py: add missing import numpy as np - audit_logger.py: string-to-enum conversion in log(), hash computation fix in FileAuditBackend.write(), verify_chain sort order fix, add clear() - benchmarking.py: fix RNN/transformer weight shape mismatches - test_algo_wrappers.py: add **test** = False to prevent pytest collection
 - docs: update AGENTS.md with v1.2-1.3 features and new safe test list
 - test: add tests for continuous batching, quantized serve, and CLI entry points
 - docs: add .nojekyll for GitHub Pages serving
@@ -248,6 +253,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v1.0.0...v1.1.0){ .md-button }
 
 ## v1.0.0
+
 **2026-07-26**
 
 ### Features
@@ -288,6 +294,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890e...v1.0.0){ .md-button }
 
 ## v0.9.7.890e
+
 **2026-07-19**
 
 ### Bug Fixes
@@ -304,6 +311,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890b...v0.9.7.890e){ .md-button }
 
 ## v0.9.7.890b
+
 **2026-07-18**
 
 ### Other
@@ -313,6 +321,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890a...v0.9.7.890b){ .md-button }
 
 ## v0.9.7.890a
+
 **2026-07-18**
 
 ### Other
@@ -324,6 +333,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.7.890...v0.9.7.890a){ .md-button }
 
 ## v0.9.7.890
+
 **2026-07-18**
 
 ### Features
@@ -374,6 +384,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.5.748...v0.9.7.890){ .md-button }
 
 ## v0.9.5.748
+
 **2026-07-15**
 
 ### Features
@@ -446,7 +457,7 @@ _No tagged changes; showing commits up to this tag._
 - refactor: update advanced_ops, quantization, C tests
 - refactor: update C source files (checkpoint_reader, dilithium)
 - refactor: update test files and CMakeLists
-- refactor: update __init__.py exports
+- refactor: update **init**.py exports
 - refactor: update benchmarks/export/distillation
 - refactor: update training/infra modules
 - refactor: update model/hf/vision modules
@@ -474,6 +485,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix4...v0.9.5.748){ .md-button }
 
 ## v0.9.0-fix4
+
 **2026-07-11**
 
 ### Bug Fixes
@@ -483,6 +495,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix3...v0.9.0-fix4){ .md-button }
 
 ## v0.9.0-fix3
+
 **2026-07-11**
 
 ### Bug Fixes
@@ -492,6 +505,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix2...v0.9.0-fix3){ .md-button }
 
 ## v0.9.0-fix2
+
 **2026-07-11**
 
 ### Bug Fixes
@@ -501,6 +515,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0-fix1...v0.9.0-fix2){ .md-button }
 
 ## v0.9.0-fix1
+
 **2026-07-11**
 
 _No tagged changes; showing commits up to this tag._
@@ -508,6 +523,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.9.0...v0.9.0-fix1){ .md-button }
 
 ## v0.9.0
+
 **2026-07-11**
 
 ### Features
@@ -604,7 +620,7 @@ _No tagged changes; showing commits up to this tag._
 - fix: rename arix_algo package to SneppX_ALG, fix Python relative imports
 - fix: sha3 finalize->finish, fm_forward 4 args, m.lib MSVC guard
 - fix: add csignal, time.h, link m for math in kernel lib
-- fix: move sys/prctl.h to __linux__ guard, ifdef s9_extensions _finddata for WIN32
+- fix: move sys/prctl.h to **linux** guard, ifdef s9_extensions_finddata for WIN32
 - fix: s9_extensions io.h guard, blake3 finalize->finish across 4 files
 - fix: use asm/unistd.h for __NR_* in seccomp filter
 - fix: memory_hardening sys/syscall.h, hmac.c sha512 func name
@@ -612,7 +628,7 @@ _No tagged changes; showing commits up to this tag._
 - fix: ed25519 _umul128 compat + point_is_on_curve ordering; fix cache.c aarch64 prfm syntax
 - fix: sign scheme S=r+h*a mod L with proper sc_reduce64
 - fix: fe_to_bytes final p-subtraction via limb comparison
-- fix: fe_mul rewrite with _umul128 128-bit arithmetic
+- fix: fe_mul rewrite with_umul128 128-bit arithmetic
 - fix: point_add formula (X3=EÂ·F, Y3=GÂ·H, T3=EÂ·H, Z3=FÂ·G)
 - fix: point_double formula (Y3=EÂ·G, T3=FÂ·G, Z3=DÂ·H) + identity guard
 - fix: fe_sub per-limb bias constants
@@ -698,7 +714,7 @@ _No tagged changes; showing commits up to this tag._
 - Fix pre-existing benchmark errors: add seed arg to hss_model_create, fix npe instruction initializers
 - Add backward gradient passes for sub, div, neg, pow and extend test coverage
 - Update all GitHub URLs to ammar49-cyber/arixalgo
-- Normalize all contact emails to algoarix@gmail.com
+- Normalize all contact emails to <algoarix@gmail.com>
 - Project infrastructure: git config, GitHub templates (no CI/CD), editorconfig, clang-format/tidy, Docker, pre-commit hooks, release scripts, security.txt, GOVERNANCE, DESIGN, STYLEGUIDE, AUTHORS, NEWS, INSTALL, COPYING; fix stale URLs
 - Remove GitHub CI/CD workflow
 - K0 foundation: extend NPE to 32 opcodes, expand autodiff tape/variable, optimizer factories, Python bindings (ARC/NPE/FM/SER), tensor/model/train Python API, checkpoint v2, API docs, benchmarks
@@ -715,6 +731,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/v0.1.0...v0.9.0){ .md-button }
 
 ## v0.1.0
+
 **2026-06-24**
 
 _No tagged changes; showing commits up to this tag._
@@ -722,6 +739,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.4.467...v0.1.0){ .md-button }
 
 ## algo0.9.4.467
+
 **2026-07-14**
 
 ### Bug Fixes
@@ -752,6 +770,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.2.094...algo0.9.4.467){ .md-button }
 
 ## algo0.9.2.094
+
 **2026-07-13**
 
 ### Features
@@ -819,7 +838,7 @@ _No tagged changes; showing commits up to this tag._
 - refactor: update advanced_ops, quantization, C tests
 - refactor: update C source files (checkpoint_reader, dilithium)
 - refactor: update test files and CMakeLists
-- refactor: update __init__.py exports
+- refactor: update **init**.py exports
 - refactor: update benchmarks/export/distillation
 - refactor: update training/infra modules
 - refactor: update model/hf/vision modules
@@ -834,6 +853,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.9.0...algo0.9.2.094){ .md-button }
 
 ## algo0.9.0
+
 **2026-07-11**
 
 ### Features
@@ -926,7 +946,7 @@ _No tagged changes; showing commits up to this tag._
 - fix: rename arix_algo package to SneppX_ALG, fix Python relative imports
 - fix: sha3 finalize->finish, fm_forward 4 args, m.lib MSVC guard
 - fix: add csignal, time.h, link m for math in kernel lib
-- fix: move sys/prctl.h to __linux__ guard, ifdef s9_extensions _finddata for WIN32
+- fix: move sys/prctl.h to **linux** guard, ifdef s9_extensions_finddata for WIN32
 - fix: s9_extensions io.h guard, blake3 finalize->finish across 4 files
 - fix: use asm/unistd.h for __NR_* in seccomp filter
 - fix: memory_hardening sys/syscall.h, hmac.c sha512 func name
@@ -958,6 +978,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.8.0...algo0.9.0){ .md-button }
 
 ## algo0.8.0
+
 **2026-07-08**
 
 ### Other
@@ -969,6 +990,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.7.8...algo0.8.0){ .md-button }
 
 ## algo0.7.8
+
 **2026-07-08**
 
 ### Other
@@ -985,6 +1007,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.7.5...algo0.7.8){ .md-button }
 
 ## algo0.7.5
+
 **2026-07-07**
 
 ### Other
@@ -1000,6 +1023,7 @@ _No tagged changes; showing commits up to this tag._
 [:material-git-compare: `View diff vs previous`](https://github.com/SneppX/sneppx-alg/compare/algo0.5...algo0.7.5){ .md-button }
 
 ## algo0.5
+
 **2026-07-01**
 
 ### Features
@@ -1013,7 +1037,7 @@ _No tagged changes; showing commits up to this tag._
 
 - fix: sign scheme S=r+h*a mod L with proper sc_reduce64
 - fix: fe_to_bytes final p-subtraction via limb comparison
-- fix: fe_mul rewrite with _umul128 128-bit arithmetic
+- fix: fe_mul rewrite with_umul128 128-bit arithmetic
 - fix: point_add formula (X3=EÂ·F, Y3=GÂ·H, T3=EÂ·H, Z3=FÂ·G)
 - fix: point_double formula (Y3=EÂ·G, T3=FÂ·G, Z3=DÂ·H) + identity guard
 - fix: fe_sub per-limb bias constants
@@ -1062,7 +1086,7 @@ _No tagged changes; showing commits up to this tag._
 - Fix pre-existing benchmark errors: add seed arg to hss_model_create, fix npe instruction initializers
 - Add backward gradient passes for sub, div, neg, pow and extend test coverage
 - Update all GitHub URLs to ammar49-cyber/arixalgo
-- Normalize all contact emails to algoarix@gmail.com
+- Normalize all contact emails to <algoarix@gmail.com>
 - Project infrastructure: git config, GitHub templates (no CI/CD), editorconfig, clang-format/tidy, Docker, pre-commit hooks, release scripts, security.txt, GOVERNANCE, DESIGN, STYLEGUIDE, AUTHORS, NEWS, INSTALL, COPYING; fix stale URLs
 - Remove GitHub CI/CD workflow
 - K0 foundation: extend NPE to 32 opcodes, expand autodiff tape/variable, optimizer factories, Python bindings (ARC/NPE/FM/SER), tensor/model/train Python API, checkpoint v2, API docs, benchmarks
@@ -1097,4 +1121,3 @@ _No tagged changes; showing commits up to this tag._
 ---
 
 Each release header links to a **GitHub compare view** (`{prev}...{tag}`) which renders a side-by-side **visual diff** of the source tree between releases. Tag the repo (`git tag v1.2.0`) and re-run `python docs/changelog/generate.py` to refresh.
-

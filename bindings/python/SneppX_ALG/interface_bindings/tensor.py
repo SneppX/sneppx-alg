@@ -183,7 +183,9 @@ class Tensor(NativeTensorOps):
         self.requires_grad = requires_grad
         self.grad = None
         self._grad_fn = None
-        if isinstance(data, (int, float, complex, np.integer, np.floating, np.complexfloating)):
+        if isinstance(
+            data, (int, float, complex, np.integer, np.floating, np.complexfloating)
+        ):
             shape = shape or (1,)
             self._data = _CTensorData(
                 shape, self.dtype, is_cuda=(device.startswith("cuda"))
@@ -292,7 +294,9 @@ class Tensor(NativeTensorOps):
         if not c_tensor_bridge.available():
             raise RuntimeError("native C tensor engine is not available")
         if self.device != "cpu":
-            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+            raise NotImplementedError(
+                "native tensor conversion currently supports CPU tensors only"
+            )
         if self.requires_grad:
             raise RuntimeError(
                 "native conversion does not transfer autograd history; call detach() first"
@@ -315,7 +319,9 @@ class Tensor(NativeTensorOps):
         if not c_tensor_bridge.available():
             raise RuntimeError("native C tensor engine is not available")
         if device != "cpu":
-            raise NotImplementedError("native tensor conversion currently supports CPU tensors only")
+            raise NotImplementedError(
+                "native tensor conversion currently supports CPU tensors only"
+            )
         dtype_name = native.dtype_name
         if dtype_name not in DTYPE_MAP:
             raise TypeError(f"unsupported native tensor dtype: {dtype_name}")
@@ -332,7 +338,9 @@ class Tensor(NativeTensorOps):
         if not isinstance(other, Tensor):
             raise TypeError("native tensor operations require another Tensor")
         if self.device != "cpu" or other.device != "cpu":
-            raise NotImplementedError("native tensor operations currently support CPU tensors only")
+            raise NotImplementedError(
+                "native tensor operations currently support CPU tensors only"
+            )
         if self.dtype != other.dtype:
             raise TypeError("native tensor operations require matching dtypes")
         native_left = self.to_native()
@@ -354,9 +362,9 @@ class Tensor(NativeTensorOps):
         A matching dtype returns a view backed by this tensor's byte buffer.
         A dtype conversion requires a copy; explicit copy=False rejects it.
         """
-        array = np.frombuffer(
-            self._data._data, dtype=_numpy_dtype(self.dtype)
-        ).reshape(self.shape)
+        array = np.frombuffer(self._data._data, dtype=_numpy_dtype(self.dtype)).reshape(
+            self.shape
+        )
         if dtype is not None:
             requested_dtype = np.dtype(dtype)
             if requested_dtype != array.dtype:

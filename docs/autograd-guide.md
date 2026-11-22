@@ -6,7 +6,6 @@ SNEPPX-Alg provides a full autograd engine with higher-order differentiation.
     New to autograd? Start with the [Autograd visualizer](autograd-visualizer.md) —
     type a scalar expression and watch gradients flow backwards through the graph.
 
-
 ## Basic usage
 
 ```python

@@ -16,7 +16,9 @@ _LIB, _HAS_C = load_library("neural_core_kernel")
 class TensorExpr:
     """A node in a tensor expression tree."""
 
-    def __init__(self, op: str, *inputs: "TensorExpr", value: Optional[np.ndarray] = None):
+    def __init__(
+        self, op: str, *inputs: "TensorExpr", value: Optional[np.ndarray] = None
+    ):
         self.op = op
         self.inputs = list(inputs)
         self.value = value

@@ -33,14 +33,18 @@ class SERRoute:
         self.k = k
         self._has_c = _HAS_C
 
-    def topk_gating(self, x: np.ndarray, router_weight: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def topk_gating(
+        self, x: np.ndarray, router_weight: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         scores = x @ router_weight.T
-        indices = np.argsort(-scores, axis=-1)[:, :self.k]
+        indices = np.argsort(-scores, axis=-1)[:, : self.k]
         weights = np.take_along_axis(scores, indices, axis=-1)
         weights = np.exp(weights) / np.sum(np.exp(weights), axis=-1, keepdims=True)
         return indices, weights
 
-    def load_balance_loss(self, gate_scores: np.ndarray, topk_indices: np.ndarray) -> float:
+    def load_balance_loss(
+        self, gate_scores: np.ndarray, topk_indices: np.ndarray
+    ) -> float:
         batch = gate_scores.shape[0]
         load = np.zeros(self.n_experts, dtype=np.float32)
         for i in range(batch):
@@ -63,8 +67,9 @@ class SERLayer:
         self._router = SERRoute(n_experts, k)
         self._has_c = _HAS_C
 
-    def forward(self, x: np.ndarray, router_weight: np.ndarray,
-                expert_outputs: List[np.ndarray]) -> np.ndarray:
+    def forward(
+        self, x: np.ndarray, router_weight: np.ndarray, expert_outputs: List[np.ndarray]
+    ) -> np.ndarray:
         *batch_shape, feat_dim = x.shape
         flat_x = x.reshape(-1, feat_dim)
         indices, weights = self._router.topk_gating(flat_x, router_weight)
@@ -82,8 +87,9 @@ class SERLoss:
         self._has_c = _HAS_C
 
     @staticmethod
-    def load_balancing(gate_scores: np.ndarray, topk_indices: np.ndarray,
-                       n_experts: int) -> float:
+    def load_balancing(
+        gate_scores: np.ndarray, topk_indices: np.ndarray, n_experts: int
+    ) -> float:
         route = SERRoute(n_experts)
         return route.load_balance_loss(gate_scores, topk_indices)
 
@@ -95,7 +101,9 @@ class SERLoss:
 class SERModel:
     """Full SER model with multiple MoE layers."""
 
-    def __init__(self, n_layers: int = 4, n_experts: int = 8, d_model: int = 64, k: int = 2):
+    def __init__(
+        self, n_layers: int = 4, n_experts: int = 8, d_model: int = 64, k: int = 2
+    ):
         self.n_layers = n_layers
         self.n_experts = n_experts
         self.d_model = d_model

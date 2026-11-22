@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_BC_CONSENSUS_POW,
     SNEPPX_BC_CONSENSUS_POS,
     SNEPPX_BC_CONSENSUS_DPOS,
@@ -38,7 +38,8 @@ typedef enum {
     SNEPPX_BC_CONSENSUS_HONEYBADGER
 } SNEPPXBCConsensusType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_BC_VALIDATOR_ACTIVE,
     SNEPPX_BC_VALIDATOR_SLASHED,
     SNEPPX_BC_VALIDATOR_JAILED,
@@ -46,7 +47,8 @@ typedef enum {
     SNEPPX_BC_VALIDATOR_UNBONDED
 } SNEPPXBCValidatorStatus;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_BC_TX_VALID,
     SNEPPX_BC_TX_INVALID,
     SNEPPX_BC_TX_PENDING,
@@ -55,7 +57,8 @@ typedef enum {
     SNEPPX_BC_TX_REVERTED
 } SNEPPXBCTxStatus;
 
-typedef struct {
+typedef struct
+{
     uint64_t validator_id;
     uint8_t* validator_pubkey;
     size_t pubkey_len;
@@ -72,7 +75,8 @@ typedef struct {
     uint8_t jailed : 1;
 } SNEPPXBCValidator;
 
-typedef struct {
+typedef struct
+{
     uint64_t block_height;
     uint8_t block_hash[SNEPPX_BC_BLOCK_HASH_SIZE];
     uint8_t previous_hash[SNEPPX_BC_BLOCK_HASH_SIZE];
@@ -95,7 +99,8 @@ typedef struct {
     uint8_t reverted : 1;
 } SNEPPXBCBlock;
 
-typedef struct {
+typedef struct
+{
     uint64_t tx_id;
     uint8_t* tx_hash;
     size_t hash_len;
@@ -120,24 +125,29 @@ typedef struct {
     size_t events_len;
 } SNEPPXBCTx;
 
-int snepx_bc_consensus_validate_block(SNEPPXBCBlock* block, SNEPPXBCValidator* validators, uint32_t num_validators, SNEPPXBCConsensusType type);
+int snepx_bc_consensus_validate_block(SNEPPXBCBlock* block, SNEPPXBCValidator* validators, uint32_t num_validators,
+                                      SNEPPXBCConsensusType type);
 int snepx_bc_consensus_verify_signatures(SNEPPXBCBlock* block, SNEPPXBCValidator* validators, uint32_t num_validators);
 int snepx_bc_consensus_verify_pow(SNEPPXBCBlock* block, uint32_t difficulty);
 int snepx_bc_consensus_verify_pos(SNEPPXBCBlock* block, SNEPPXBCValidator* proposer, uint64_t total_stake);
-int snepx_bc_consensus_verify_pbft(const SNEPPXBCBlock* block, const uint8_t** precommits, uint32_t num_precommits, uint32_t fault_tolerance);
+int snepx_bc_consensus_verify_pbft(const SNEPPXBCBlock* block, const uint8_t** precommits, uint32_t num_precommits,
+                                   uint32_t fault_tolerance);
 
 int snepx_bc_audit_tx(SNEPPXBCTx* tx);
 int snepx_bc_audit_tx_chain(SNEPPXBCTx* txs, uint32_t num_txs);
-int snepx_bc_audit_validator_behavior(SNEPPXBCValidator* validator, SNEPPXBCBlock* blocks, uint32_t num_blocks, uint8_t* report_out, size_t* report_len);
+int snepx_bc_audit_validator_behavior(SNEPPXBCValidator* validator, SNEPPXBCBlock* blocks, uint32_t num_blocks,
+                                      uint8_t* report_out, size_t* report_len);
 int snepx_bc_audit_slashing(SNEPPXBCValidator* validator, uint64_t slashing_condition);
-int snepx_bc_audit_governance(uint8_t* proposal, size_t proposal_len, uint8_t* votes, size_t votes_len, uint8_t* result_out, size_t* result_len);
+int snepx_bc_audit_governance(uint8_t* proposal, size_t proposal_len, uint8_t* votes, size_t votes_len,
+                              uint8_t* result_out, size_t* result_len);
 
 int snepx_bc_block_create(SNEPPXBCBlock* block, uint64_t height, const uint8_t* proposer, size_t proposer_len);
 int snepx_bc_block_add_tx(SNEPPXBCBlock* block, const SNEPPXBCTx* tx);
 int snepx_bc_block_finalize(SNEPPXBCBlock* block);
 int snepx_bc_block_destroy(SNEPPXBCBlock* block);
 
-int snepx_bc_validator_create(SNEPPXBCValidator* validator, uint64_t id, const uint8_t* pubkey, size_t pubkey_len, uint64_t stake);
+int snepx_bc_validator_create(SNEPPXBCValidator* validator, uint64_t id, const uint8_t* pubkey, size_t pubkey_len,
+                              uint64_t stake);
 int snepx_bc_validator_slash(SNEPPXBCValidator* validator, uint64_t amount);
 int snepx_bc_validator_jail(SNEPPXBCValidator* validator, uint64_t duration_ns);
 

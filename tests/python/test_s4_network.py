@@ -1,14 +1,26 @@
 """Tests for s4_network.py — S4 network security."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
-from SneppX_ALG.interface_bindings import DDoSMitigation, DDoSConfig, IdentityManager, TransportSecurity
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
+
+from SneppX_ALG.interface_bindings import (
+    DDoSMitigation,
+    DDoSConfig,
+    IdentityManager,
+    TransportSecurity,
+)
 
 
 def test_ddos_allow():
-    cfg = DDoSConfig(max_connections_per_ip=3, max_connections_total=10,
-                     token_bucket_capacity=1000, max_requests_per_minute=9999)
+    cfg = DDoSConfig(
+        max_connections_per_ip=3,
+        max_connections_total=10,
+        token_bucket_capacity=1000,
+        max_requests_per_minute=9999,
+    )
     d = DDoSMitigation(cfg)
     for _ in range(3):
         ok, _, _ = d.check_request("1.2.3.4")
@@ -18,8 +30,12 @@ def test_ddos_allow():
 
 
 def test_ddos_different_ips():
-    cfg = DDoSConfig(max_connections_per_ip=2, max_connections_total=10,
-                     token_bucket_capacity=1000, max_requests_per_minute=9999)
+    cfg = DDoSConfig(
+        max_connections_per_ip=2,
+        max_connections_total=10,
+        token_bucket_capacity=1000,
+        max_requests_per_minute=9999,
+    )
     d = DDoSMitigation(cfg)
     ok, _, _ = d.check_request("1.1.1.1")
     assert ok
@@ -34,8 +50,12 @@ def test_ddos_different_ips():
 
 
 def test_ddos_reset_ip():
-    cfg = DDoSConfig(max_connections_per_ip=1, max_connections_total=10,
-                     token_bucket_capacity=1000, max_requests_per_minute=9999)
+    cfg = DDoSConfig(
+        max_connections_per_ip=1,
+        max_connections_total=10,
+        token_bucket_capacity=1000,
+        max_requests_per_minute=9999,
+    )
     d = DDoSMitigation(cfg)
     d.check_request("1.2.3.4")
     ok, _, _ = d.check_request("1.2.3.4")
@@ -46,8 +66,12 @@ def test_ddos_reset_ip():
 
 
 def test_ddos_reset_all():
-    cfg = DDoSConfig(max_connections_per_ip=1, max_connections_total=10,
-                     token_bucket_capacity=1000, max_requests_per_minute=9999)
+    cfg = DDoSConfig(
+        max_connections_per_ip=1,
+        max_connections_total=10,
+        token_bucket_capacity=1000,
+        max_requests_per_minute=9999,
+    )
     d = DDoSMitigation(cfg)
     d.check_request("1.2.3.4")
     d.unban_ip("1.2.3.4")
@@ -57,8 +81,12 @@ def test_ddos_reset_all():
 
 
 def test_ddos_syn_flood():
-    cfg = DDoSConfig(syn_flood_threshold=5, syn_flood_window_seconds=60,
-                     token_bucket_capacity=1000, max_requests_per_minute=9999)
+    cfg = DDoSConfig(
+        syn_flood_threshold=5,
+        syn_flood_window_seconds=60,
+        token_bucket_capacity=1000,
+        max_requests_per_minute=9999,
+    )
     d = DDoSMitigation(cfg)
     # First 4 SYN packets should be allowed (< threshold)
     for _ in range(4):

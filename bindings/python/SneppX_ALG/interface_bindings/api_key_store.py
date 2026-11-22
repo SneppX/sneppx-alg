@@ -92,11 +92,22 @@ class ApiKeyStore:
             """INSERT INTO api_keys (id, key_hash, key_prefix, name, tier, rate_limit_rpm,
                                     is_active, created_at, expires_at, user_id)
                VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?)""",
-            (uuid.uuid4().hex, key_hash, key_prefix, name, tier,
-             rate_limit_rpm, now, expires_at, user_id),
+            (
+                uuid.uuid4().hex,
+                key_hash,
+                key_prefix,
+                name,
+                tier,
+                rate_limit_rpm,
+                now,
+                expires_at,
+                user_id,
+            ),
         )
         conn.commit()
-        logger.info("Created API key %s (tier=%s, rpm=%d)", key_prefix, tier, rate_limit_rpm)
+        logger.info(
+            "Created API key %s (tier=%s, rpm=%d)", key_prefix, tier, rate_limit_rpm
+        )
         return {
             "key": raw_key,
             "key_prefix": key_prefix,

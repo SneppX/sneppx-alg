@@ -27,6 +27,7 @@ try:
         softmax_kernel,
         dropout_kernel,
     )
+
     _HAS_CUDA_KERNELS = bool(_HAS_CUDA_BACKEND)
     _CUDA_DEVICE = "cuda_device"
     _CUDA_KERNELS = "cuda_kernels"

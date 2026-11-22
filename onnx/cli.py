@@ -37,7 +37,11 @@ __all__ = ["main"]
 def _resolve_paths(args) -> None:
     """Ensure --out defaults next to the input."""
     if not getattr(args, "out", None):
-        base = args.model.rsplit(".onnx", 1)[0] if args.model.endswith(".onnx") else args.model
+        base = (
+            args.model.rsplit(".onnx", 1)[0]
+            if args.model.endswith(".onnx")
+            else args.model
+        )
         args.out = f"{base}_out.onnx"
 
 
@@ -81,7 +85,13 @@ def cmd_check(args) -> int:
 def cmd_shapes(args) -> int:
     model = load_model(args.model)
     inferred = infer_shapes(model)
-    out = {k: {"shape": [repr(d) if isinstance(d, str) else d for d in v[0]], "dtype": v[1]} for k, v in inferred.items()}
+    out = {
+        k: {
+            "shape": [repr(d) if isinstance(d, str) else d for d in v[0]],
+            "dtype": v[1],
+        }
+        for k, v in inferred.items()
+    }
     if args.json:
         print(json.dumps(out, indent=2))
     else:
@@ -139,8 +149,10 @@ def cmd_run(args) -> int:
         name = session.output_names[idx]
         print(f"{name}: shape={list(arr.shape)} dtype={arr.dtype}")
         flat = arr.reshape(-1)
-        print(f"  min={float(flat.min()):.6g} max={float(flat.max()):.6g} "
-              f"mean={float(flat.mean()):.6g}")
+        print(
+            f"  min={float(flat.min()):.6g} max={float(flat.max()):.6g} "
+            f"mean={float(flat.mean()):.6g}"
+        )
         if args.verbose and flat.size <= 16:
             print(f"  values={arr.tolist()}")
     return 0
@@ -149,8 +161,9 @@ def cmd_run(args) -> int:
 def cmd_save_external(args) -> int:
     _resolve_paths(args)
     model = load_model(args.model)
-    save_external_data(model, args.dir, size_threshold=args.threshold,
-                       location=args.location)
+    save_external_data(
+        model, args.dir, size_threshold=args.threshold, location=args.location
+    )
     save_model(model, args.out)
     print(f"external-data -> {args.out} (payloads in {args.dir}/{args.location})")
     return 0
@@ -206,8 +219,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("run", help="run a model with the numpy executor")
     p.add_argument("model")
-    p.add_argument("--input", action="append", default=[],
-                   help="NAME:SHAPE:VALUES (e.g. x:1,3:0.1,0.2,0.3)")
+    p.add_argument(
+        "--input",
+        action="append",
+        default=[],
+        help="NAME:SHAPE:VALUES (e.g. x:1,3:0.1,0.2,0.3)",
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     p.set_defaults(func=cmd_run)
 

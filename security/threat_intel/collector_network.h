@@ -23,8 +23,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_SOURCE_BGP_DUMP,
     SNEPPX_TI_SOURCE_DNS_PASSIVE,
     SNEPPX_TI_SOURCE_NETFLOW,
@@ -43,7 +43,8 @@ typedef enum {
     SNEPPX_TI_SOURCE_MISP
 } SNEPPXTICollectorSource;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_FEED_FORMAT_JSON,
     SNEPPX_TI_FEED_FORMAT_CSV,
     SNEPPX_TI_FEED_FORMAT_STIX,
@@ -53,7 +54,8 @@ typedef enum {
     SNEPPX_TI_FEED_FORMAT_YARA_RULE
 } SNEPPXTIFeedFormat;
 
-typedef struct {
+typedef struct
+{
     SNEPPXTICollectorSource source;
     SNEPPXTIFeedFormat format;
     char* feed_url;
@@ -75,7 +77,8 @@ typedef struct {
     size_t client_key_len;
 } SNEPPXTICollectorConfig;
 
-typedef struct {
+typedef struct
+{
     uint8_t* raw_data;
     size_t raw_data_len;
     uint64_t collection_timestamp_ns;
@@ -92,7 +95,8 @@ typedef struct {
     uint8_t deduplicated : 1;
 } SNEPPXTICollectedData;
 
-typedef struct {
+typedef struct
+{
     uint8_t* collector_id;
     size_t collector_id_len;
     SNEPPXTICollectorConfig* configs;
@@ -108,7 +112,8 @@ int snepx_ti_collector_init(SNEPPXTICollectorEngine* engine);
 int snepx_ti_collector_add_source(SNEPPXTICollectorEngine* engine, const SNEPPXTICollectorConfig* config);
 int snepx_ti_collector_remove_source(SNEPPXTICollectorEngine* engine, uint32_t config_index);
 int snepx_ti_collector_poll(SNEPPXTICollectorEngine* engine, uint32_t config_index, SNEPPXTICollectedData* data);
-int snepx_ti_collector_poll_all(SNEPPXTICollectorEngine* engine, SNEPPXTICollectedData** data_array, uint32_t* data_count);
+int snepx_ti_collector_poll_all(SNEPPXTICollectorEngine* engine, SNEPPXTICollectedData** data_array,
+                                uint32_t* data_count);
 
 int snepx_ti_collector_parse_stix(SNEPPXTICollectedData* data);
 int snepx_ti_collector_parse_taxii(SNEPPXTICollectedData* data);

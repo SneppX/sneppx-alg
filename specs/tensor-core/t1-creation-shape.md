@@ -1,9 +1,11 @@
 # T1 — Tensor Core Creation & Shape Manipulation
 
 ## Objective
+
 Implement creation functions (empty, zeros, ones, full, arange, linspace, eye, randn) and shape manipulation functions (copy, clone, slice, reshape, permute, expand, squeeze, unsqueeze, concat, split, tile, repeat, gather, scatter, masked_select, masked_fill, where), with comprehensive tests.
 
 ## Critical Rules
+
 - Read existing code first. Edit, never duplicate.
 - If a function already has a real implementation, do NOT rewrite it — just add a test for it if none exists.
 - All new code must compile. Tests must pass.
@@ -18,7 +20,9 @@ Implement creation functions (empty, zeros, ones, full, arange, linspace, eye, r
 ## STEP 0 — Verify T0 Completion
 
 ### 0.1 Check Requirements
+
 Before starting T1, verify:
+
 1. `SNEPPX_tensor.h` has all 13 dtypes, 4 layouts, 6 devices, all 4 dtype macros (`SNEPPX_DTYPE_SIZE`, `SNEPPX_DTYPE_IS_FLOAT`, `SNEPPX_DTYPE_IS_INT`, `SNEPPX_DTYPE_IS_COMPLEX`)
 2. `SNEPPX_tensor.h` has declarations for all 80+ functions (creation, shape, math, comparison, reduction, linalg, nn, io, utility)
 3. `tensor.c` has `SNEPPX_tensor_save` and `SNEPPX_tensor_load` as stubs
@@ -29,9 +33,11 @@ Before starting T1, verify:
 If any of these fail, fix them before starting T1.
 
 ### 0.2 Read Existing Implementations
+
 Read `tensor.c` to see which creation and shape functions already have real implementations (not stubs). This is critical — the original codebase had real implementations for ALL 8 creation functions and ALL 17 shape functions. Do NOT rewrite them.
 
 For each function, determine:
+
 - Does it exist and have a real body?
 - Does it pass basic validation (null checks, bounds checks)?
 - Are there any obvious bugs?
@@ -58,6 +64,7 @@ SNEPPXTensor* SNEPPX_tensor_randn(const size_t* shape, size_t ndim, SNEPPXDtype 
 Add this static helper function to tensor.c. It fills an entire tensor with a given double value, handling all 13 dtypes by casting/writing the correct width.
 
 **Implementation requirements:**
+
 - Parameters: `SNEPPXTensor* t`, `double value`
 - Uses `unsigned char*` base pointer
 - For float types (FLOAT32, FLOAT64, FLOAT16, BFLOAT16, FLOAT8): write the cast value at the correct byte width
@@ -150,6 +157,7 @@ Note: The FLOAT8 and BFLOAT16 conversions above are simplified. The actual imple
 Read the existing implementations of each creation function. Fix any bugs found:
 
 #### `SNEPPX_tensor_create`
+
 - **Bug**: When `shape` is NULL and `ndim > 0`, dereferences NULL pointer.
 - **Fix**: Add null check: `if (ndim > 0 && !shape) return NULL;`
 - **Bug**: When `ndim == 0`, `malloc(0)` for shape/strides is implementation-defined.
@@ -157,33 +165,42 @@ Read the existing implementations of each creation function. Fix any bugs found:
 - **Memory**: Must allocate shape + strides arrays via `SNEPPX_malloc`. Must zero-initialize data via `memset(data, 0, total_bytes)`.
 
 #### `SNEPPX_tensor_empty`
+
 - Calls `SNEPPX_tensor_create`, then does NOT initialize data buffer (hence "empty" — data is uninitialized).
 - **Validation**: Should check `shape != NULL` and `ndim > 0`.
 
 #### `SNEPPX_tensor_zeros`
+
 - Calls `SNEPPX_tensor_create`, which already zeroes the data via `memset`. This is correct.
 
 #### `SNEPPX_tensor_ones`
+
 - Calls `SNEPPX_tensor_create`, then fills all elements with 1.0f via `SNEPPX_tensor_fill_f64` or manual loop. Verify dtype handling.
 
 #### `SNEPPX_tensor_full`
+
 - Calls `SNEPPX_tensor_create`, then fills all elements with the provided value pointer. The value pointer is cast to the appropriate dtype. Verify it handles all dtypes.
 
 #### `SNEPPX_tensor_arange`
+
 - **Bug**: The negative-step detection uses `(stop - start) / step < 0` which is wrong when both numerator and denominator are negative (result is positive from C's integer division).
 - **Fix**:
+
   ```c
   if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) return NULL;
   ```
+
 - **Validation**: If step is 0, return NULL. Support positive and negative steps.
 - The number of elements = `(size_t)((stop - start) / step)`, adjusted for floating-point precision (add small epsilon like `1e-12`).
 
 #### `SNEPPX_tensor_linspace`
+
 - Creates tensor with `steps` elements. Steps must be >= 2 (or handle steps=1 gracefully).
 - Fills linearly from start to stop inclusive.
 - **Validation**: `steps < 2` return NULL (or handle steps == 1 as a single-element tensor).
 
 #### `SNEPPX_tensor_eye`
+
 - **Bug**: Always writes `float*` regardless of dtype. For FLOAT64, writes 4 bytes instead of 8, corrupting the buffer.
 - **Fix**: Use `unsigned char*` base pointer. Write `(int32_t)1` for integer types, `(double)1.0` for FLOAT64, `(float)1.0f` for float types, etc.
 - For BOOL, write 1 byte with value 1.
@@ -191,6 +208,7 @@ Read the existing implementations of each creation function. Fix any bugs found:
 - For COMPLEX128, write 1.0 as real, 0.0 as imag.
 
 #### `SNEPPX_tensor_randn`
+
 - Uses a LCG (`uniform_01`) to generate uniform random numbers in [0,1), then applies Box-Muller transform for normal distribution.
 - **Validation**: shape == NULL or ndim == 0 returns NULL.
 - **Box-Muller**: `z0 = sqrt(-2 * ln(u1)) * cos(2 * pi * u2)`.
@@ -245,16 +263,19 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 ### 2.2 Implementation Details
 
 #### `SNEPPX_tensor_copy`
+
 - Creates a new tensor with same shape, dtype, device, layout as src.
 - Deep-copies data via `memcpy(dst->data, src->data, src->size * src->item_size)`.
 - Does NOT copy `owns_data` or `backend_handle`.
 - **Validation**: src != NULL, src->data != NULL.
 
 #### `SNEPPX_tensor_clone`
+
 - Same as copy, but additionally copies `owns_data = 1` and `backend_handle = NULL`.
 - Semantically: clone produces an independent tensor object.
 
 #### `SNEPPX_tensor_slice`
+
 - Extracts a contiguous sub-tensor along one dimension.
 - Creates new tensor with ndim == src->ndim (same rank).
 - New shape: same as src, but shape[dim] = (end - start).
@@ -262,35 +283,41 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 - **Validation**: dim < ndim, start < end, end <= shape[dim].
 
 #### `SNEPPX_tensor_reshape`
+
 - Returns a view (new tensor header) with different shape but shared data buffer.
 - The new tensor has the same data pointer as src (no copy).
 - `owns_data` is set to 0 on the new tensor so destroy doesn't free src's data.
 - **Validation**: total elements must match (`numel(new_shape) == src->size`). new_ndim > 0.
 
 #### `SNEPPX_tensor_permute`
+
 - Transposes dimensions according to axes array.
 - Creates new tensor with reordered shape AND data copied in the new order.
 - **Validation**: ndim of axes matches src->ndim. Each axis in [0, ndim). No duplicate axes.
 
 #### `SNEPPX_tensor_expand`
+
 - Broadcasts size-1 dimensions to larger sizes (like NumPy broadcasting).
 - Creates new tensor with expanded shape. Does NOT copy data (shares buffer).
 - `owns_data` = 0 on result.
 - **Validation**: new_ndim >= src->ndim. For each src dim, either src->shape[i] == new_shape[...] or src->shape[i] == 1.
 
 #### `SNEPPX_tensor_squeeze`
+
 - Removes a dimension of size 1.
 - Result ndim = src->ndim - 1 (or returns copy if dim != 1).
 - Shares data buffer (`owns_data` = 0).
 - **Validation**: dim < ndim.
 
 #### `SNEPPX_tensor_unsqueeze`
+
 - Adds a dimension of size 1 at position dim.
 - Result ndim = src->ndim + 1.
 - Shares data buffer (`owns_data` = 0).
 - **Validation**: dim <= ndim (can add at end: dim == ndim).
 
 #### `SNEPPX_tensor_concat`
+
 - Concatenates multiple tensors along one dimension.
 - Creates new tensor with sum of sizes along dim.
 - All tensors must have same ndim and same dtype AND same shape except along dim.
@@ -298,6 +325,7 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 - **Validation**: num_tensors >= 2, all tensors non-NULL, dtype matches, ndim matches, shapes match except at dim.
 
 #### `SNEPPX_tensor_split`
+
 - Split is the inverse of concat.
 - Returns an array of `num_splits` tensors.
 - If `src->shape[dim]` is not evenly divisible by `num_splits`, the last split gets the remainder.
@@ -305,6 +333,7 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 - **Validation**: num_splits > 0, num_splits <= shape[dim], dim < ndim.
 
 #### `SNEPPX_tensor_tile`
+
 - Repeats the entire tensor along multiple dimensions (like NumPy `tile`).
 - New shape = `src->shape[i] * reps[i]` for each dimension i.
 - The reps array can have fewer dimensions than src (prepend 1s).
@@ -312,12 +341,14 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 - **Validation**: reps != NULL, all reps > 0.
 
 #### `SNEPPX_tensor_repeat`
+
 - Repeats along a single dimension (like PyTorch `repeat_interleave`).
 - Each element along dim is repeated `repeats` times consecutively.
 - Creates new tensor with copied data.
 - **Validation**: repeats > 0, dim < ndim.
 
 #### `SNEPPX_tensor_gather`
+
 - Gathers values from src along dim using indices (like PyTorch `torch.gather`).
 - indices shape must match src shape in all dims except dim.
 - Result shape = indices shape.
@@ -325,22 +356,26 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 - **Validation**: indices->ndim == src->ndim. indices->shape == src->shape except at dim.
 
 #### `SNEPPX_tensor_scatter`
+
 - In-place scatter: `dest[indices[...]] = src[...]`.
 - dest is modified in place and returned.
 - Same shape rules as gather (indices shape matches dest shape except at dim).
 - **Validation**: same as gather.
 
 #### `SNEPPX_tensor_masked_select`
+
 - Returns a 1D tensor of values where mask is true (nonzero).
 - Creates new tensor. Result size = count of nonzero mask elements.
 - **Validation**: mask->shape == src->shape, same dtype for mask (must be BOOL or non-zero = true).
 
 #### `SNEPPX_tensor_masked_fill`
+
 - In-place: sets elements of src to value where mask is true.
 - Returns the src pointer (not a new tensor). IMPORTANT: the caller should NOT destroy both.
 - **Validation**: mask->shape == src->shape.
 
 #### `SNEPPX_tensor_where`
+
 - Element-wise select: where condition is true, take from x, else from y.
 - All three tensors must have the same shape.
 - Creates new tensor.
@@ -353,6 +388,7 @@ SNEPPXTensor* SNEPPX_tensor_where(const SNEPPXTensor* condition, const SNEPPXTen
 ### 3.1 File: `tests/unit/test_tensor_creation.c`
 
 Create a new test file. Must include:
+
 ```c
 #include "SNEPPX_tensor.h"
 #include <assert.h>
@@ -363,6 +399,7 @@ Create a new test file. Must include:
 ```
 
 Test framework conventions:
+
 - Each test is a `void test_xxx(void)` function.
 - `assert(condition)` for pass/fail.
 - Clean up: destroy all created tensors after each test.
@@ -407,6 +444,7 @@ static int check_f32(const SNEPPXTensor* t, size_t i, float expected, float tol)
 ```
 
 For ND tensors, compute indices manually:
+
 ```c
 static void flat_to_indices(size_t flat_idx, const size_t* shape, size_t ndim, size_t* indices) {
     for (size_t d = ndim; d > 0; d--) {
@@ -417,6 +455,7 @@ static void flat_to_indices(size_t flat_idx, const size_t* shape, size_t ndim, s
 ```
 
 ### 3.4 Edge Cases in Tests
+
 - `test_empty_null_shape`: ndim=0, shape=NULL should work.
 - `test_arange_invalid`: step in wrong direction returns NULL.
 - `test_arange_negative_step`: verify negative step works with F32.
@@ -465,6 +504,7 @@ Same framework as test_tensor_creation.c.
 | 29 | `test_concat_single` | Concatenate single tensor returns copy |
 
 ### 4.3 Test Data Patterns
+
 For tests that need specific tensor data, create helpers:
 
 ```c
@@ -481,6 +521,7 @@ static SNEPPXTensor* make_test_tensor_1d(size_t n) {
 ```
 
 ### 4.4 Edge Cases
+
 - `test_expand_invalid`: confirm NULL return
 - `test_split_uneven`: check last tensor gets remainder
 - `test_masked_fill_returns_src`: critical — prevents double-free
@@ -492,6 +533,7 @@ static SNEPPXTensor* make_test_tensor_1d(size_t n) {
 ## STEP 5 — Build and Verify
 
 ### 5.1 Build
+
 ```bash
 mkdir -p build && cd build
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON
@@ -499,29 +541,35 @@ cmake --build . -j8
 ```
 
 **Requirements:**
+
 - Zero compilation errors
 - Zero linker errors
 - All new files compiled and linked
 - No new warnings (pre-existing warnings acceptable)
 
 ### 5.2 Test
+
 ```bash
 ctest -C Release --output-on-failure
 ```
 
 **Requirements:**
+
 - All 48 new tests pass (19 creation + 29 shape)
 - All existing tests still pass (48 original after T0 + 2 pre-existing failures = 50/52)
 - Final result: 98/100 total tests passing
 - The 2 pre-existing crypto failures (test_argon2, test_ed25519) remain as known failures
 
 ### 5.3 Verify Specifics
+
 - Run the edge test file separately to confirm no regressions in existing 57 edge tests
 - Run the basic test file to confirm no regressions
 - Run benchmarks to confirm no crashes
 
 ### 5.4 Fix Any Failures
+
 If a test fails:
+
 1. Check the test logic first — is the expected value wrong?
 2. Check the implementation — is there a bug in the function?
 3. Fix bugs in the implementation (not in the test, unless test is wrong)
@@ -538,6 +586,7 @@ If a test fails:
 ```
 
 Checklist:
+
 - [x] All creation functions working (empty, zeros, ones, full, arange, linspace, eye, randn)
 - [x] All shape functions working (copy, clone, slice, reshape, permute, expand, squeeze, unsqueeze, concat, split, tile, repeat, gather, scatter, masked_select, masked_fill, where)
 - [x] 19 creation tests pass
@@ -549,6 +598,7 @@ Checklist:
 ### 6.2 Update README
 
 If the README lists test counts, update:
+
 - "48/50 tests pass" → "98/100 tests pass" (48 existing + 48 new, minus 2 pre-existing failures)
 - Update total ops count if any were added
 
@@ -557,26 +607,31 @@ If the README lists test counts, update:
 ## Known Bugs Fixed During T1
 
 ### Bug 1: `SNEPPX_tensor_create` NULL shape + ndim > 0
+
 The original code in `SNEPPX_tensor_create` didn't check if shape is NULL when ndim > 0. This caused a null-pointer dereference in the for-loop that copies shape values.
 
 **Fix**: Add `if (ndim > 0 && !shape) return NULL;` before the allocation.
 
 ### Bug 2: `SNEPPX_tensor_create` malloc(0) for ndim == 0
+
 When ndim == 0 (scalar), the code called `malloc(0)` for shape and strides arrays, which has implementation-defined behavior (may return NULL or a non-NULL pointer, but with zero usable size).
 
 **Fix**: Use `safe_ndim = (ndim == 0) ? 1 : ndim` for the allocation sizes, while storing the actual ndim as 0 in the struct. This ensures shape[0] and strides[0] are safe to access.
 
 ### Bug 3: `SNEPPX_tensor_eye` dtype width
+
 The original code always cast `tensor->data` to `float*` and wrote 1.0f. For FLOAT64, this wrote only 4 bytes instead of 8, partially corrupting adjacent values.
 
 **Fix**: Use `unsigned char*` base pointer and switch on dtype to write the correct width. Use `memset(dst, 0, item_size * n)` for off-diagonal zeros (handles all widths uniformly), then write 1.0 at the width of each dtype on the diagonal.
 
 ### Bug 4: `SNEPPX_tensor_arange` negative step detection
+
 The expression `(stop - start) / step < 0` fails when both numerator and denominator are negative, because C's integer division produces a positive result from two negative operands.
 
 **Fix**: Check sign explicitly: `if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) return NULL;`
 
 ### Bug 5: `SNEPPX_tensor_ones` / `SNEPPX_tensor_full` dtype width
+
 These functions called `SNEPPX_tensor_fill_f32` which always wrote float* regardless of dtype. This had the same width problem as eye for FLOAT64.
 
 **Fix**: The `SNEPPX_tensor_fill_scalar` helper handles all 13 dtypes by switching on dtype and writing at the correct byte width.

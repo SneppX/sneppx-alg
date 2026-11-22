@@ -23,8 +23,13 @@ class Logger:
 
     LEVELS = {"DEBUG": 0, "INFO": 1, "WARN": 2, "ERROR": 3, "FATAL": 4}
 
-    def __init__(self, name: str = "sneppx", level: str = "INFO",
-                 json_output: bool = False, rank: int = 0):
+    def __init__(
+        self,
+        name: str = "sneppx",
+        level: str = "INFO",
+        json_output: bool = False,
+        rank: int = 0,
+    ):
         self.name = name
         self.level = level
         self.json_output = json_output
@@ -82,4 +87,6 @@ class Logger:
             self.level = level
 
     def named(self, sub_name: str) -> "Logger":
-        return Logger(f"{self.name}.{sub_name}", self.level, self.json_output, self.rank)
+        return Logger(
+            f"{self.name}.{sub_name}", self.level, self.json_output, self.rank
+        )

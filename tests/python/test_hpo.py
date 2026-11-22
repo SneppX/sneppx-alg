@@ -47,10 +47,12 @@ class TestSearchSpace:
         assert max(vals) / min(vals) > 10
 
     def test_grid_enumerates_product(self):
-        space = SearchSpace({
-            "a": choice(["x", "y"]),
-            "b": int_(1, 3),
-        })
+        space = SearchSpace(
+            {
+                "a": choice(["x", "y"]),
+                "b": int_(1, 3),
+            }
+        )
         grid = space.grid()
         assert len(grid) == 2 * 3
         combos = {tuple(sorted(g.items())) for g in grid}
@@ -64,11 +66,13 @@ class TestSearchSpace:
         assert grid[-1]["lr"] == 1.0
 
     def test_encode_in_unit_box(self):
-        space = SearchSpace({
-            "a": choice(["lo", "hi"]),
-            "b": int_(0, 10),
-            "c": uniform(-2.0, 2.0),
-        })
+        space = SearchSpace(
+            {
+                "a": choice(["lo", "hi"]),
+                "b": int_(0, 10),
+                "c": uniform(-2.0, 2.0),
+            }
+        )
         p = space.sample(np.random.default_rng(4))
         enc = space.encode(p)
         assert enc.shape == (3,)
@@ -99,8 +103,13 @@ class TestStudyBasics:
         def objective(params):
             return -((params["x"] - 3.0) ** 2)
 
-        study = random_search({"x": uniform(-10.0, 10.0)}, objective,
-                              n_trials=60, direction="maximize", seed=1)
+        study = random_search(
+            {"x": uniform(-10.0, 10.0)},
+            objective,
+            n_trials=60,
+            direction="maximize",
+            seed=1,
+        )
         assert abs(study.best_params["x"] - 3.0) < 1.0
 
     def test_seeded_determinism(self):
@@ -136,8 +145,9 @@ class TestStudyBasics:
                 study.suggest()
 
     def test_streaming_ask_tell(self):
-        study = Study({"x": uniform(0.0, 1.0)},
-                      HPOConfig(n_trials=5, sampler="random", seed=0))
+        study = Study(
+            {"x": uniform(0.0, 1.0)}, HPOConfig(n_trials=5, sampler="random", seed=0)
+        )
         for i in range(5):
             params = study.suggest()
             study.tell(params, float(params["x"]) ** 2)
@@ -179,8 +189,9 @@ class TestHalving:
             return 1.0 + 1.0 / budget
 
         space = {"lr": choice([0.1, 0.5, 1.0])}
-        study = halving_search(space, objective, n_trials=12,
-                               budget_min=1, budget_max=9, eta=3, seed=0)
+        study = halving_search(
+            space, objective, n_trials=12, budget_min=1, budget_max=9, eta=3, seed=0
+        )
         assert study.best_params["lr"] == 0.1
         assert study.best_value < 0.5
         budgets = {t.metadata.get("budget") for t in study.trials}
@@ -190,8 +201,15 @@ class TestHalving:
         def objective(params, budget):
             return {"value": float(params["x"] * budget), "acc": 0.9}
 
-        study = halving_search({"x": uniform(0.0, 1.0)}, objective,
-                               n_trials=6, budget_min=1, budget_max=4, eta=2, seed=1)
+        study = halving_search(
+            {"x": uniform(0.0, 1.0)},
+            objective,
+            n_trials=6,
+            budget_min=1,
+            budget_max=4,
+            eta=2,
+            seed=1,
+        )
         assert all("budget" in t.metadata for t in study.trials)
         assert all(t.status == "complete" for t in study.trials)
 
@@ -221,8 +239,9 @@ class TestBayesian:
 
 class TestSerialization:
     def test_trial_roundtrip(self):
-        t = Trial(id=3, params={"lr": 0.01}, value=0.5, elapsed=1.2,
-                  metadata={"budget": 4})
+        t = Trial(
+            id=3, params={"lr": 0.01}, value=0.5, elapsed=1.2, metadata={"budget": 4}
+        )
         d = t.to_dict()
         t2 = Trial.from_dict(d)
         assert t2.id == 3
@@ -234,8 +253,7 @@ class TestSerialization:
         def objective(params):
             return params["x"] ** 2
 
-        study = random_search({"x": uniform(0.0, 1.0)}, objective,
-                              n_trials=5, seed=0)
+        study = random_search({"x": uniform(0.0, 1.0)}, objective, n_trials=5, seed=0)
         path = tmp_path / "study.json"
         study.to_json(str(path))
         payload = Study.from_json(str(path))

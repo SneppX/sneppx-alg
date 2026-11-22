@@ -129,7 +129,9 @@ def load_hf_model(model: Module, model_id: str, cache_dir: Optional[str] = None)
         f for f in os.listdir(snapshot) if f.endswith((".bin", ".safetensors"))
     ]
     if not bin_files:
-        raise FileNotFoundError(f"No weight files (.safetensors/.bin) found in {snapshot}")
+        raise FileNotFoundError(
+            f"No weight files (.safetensors/.bin) found in {snapshot}"
+        )
     state = {}
     for fname in bin_files:
         path = os.path.join(snapshot, fname)
@@ -307,7 +309,9 @@ def from_pretrained(
                 print(f"  Warning: could not load {fname}: {e}")
 
     if not state:
-        raise FileNotFoundError(f"[SNEPPX from_pretrained] no loadable weight files in {snapshot}")
+        raise FileNotFoundError(
+            f"[SNEPPX from_pretrained] no loadable weight files in {snapshot}"
+        )
 
     # Remap HF tensor names -> SneppX names and copy.
     named = dict(_named_parameters(model))

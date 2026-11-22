@@ -19,13 +19,16 @@ import SneppX_ALG as sx
 from SneppX_ALG import Tensor
 
 # Two tensors that track gradients
+
 a = Tensor([[1.0, 2.0], [3.0, 4.0]], requires_grad=True)
 b = Tensor([[5.0, 6.0], [7.0, 8.0]], requires_grad=True)
 
 # Forward: matrix product, then reduce to a scalar
+
 loss = (a @ b).sum()
 
 # Reverse-mode autodiff
+
 loss.backward()
 
 print("loss   =", loss.data.tolist())
@@ -33,6 +36,7 @@ print("grad a =", a.grad.data.tolist())
 print("grad b =", b.grad.data.tolist())
 
 # A tiny neural-net layer built from the nn namespace
+
 from SneppX_ALG.interface_bindings import nn
 layer = nn.Linear(2, 3)
 x = Tensor([[1.0, 0.0]])

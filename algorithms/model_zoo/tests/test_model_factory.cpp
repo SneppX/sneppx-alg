@@ -1,11 +1,11 @@
 #include "neural_core/model_zoo/model_factory.hpp"
 
-#include <cstdio>
 #include <cassert>
-#include <string>
-#include <iostream>
-#include <fstream>
+#include <cstdio>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 /*
  * SNEPPX - Test Model Factory
@@ -22,21 +22,24 @@
  *
  */
 
-
 using namespace sneppx;
 
 static int tests_passed = 0;
 static int tests_total = 0;
 
-#define SNEPPX_TEST(name) do { \
-    printf("test_%s... ", name); \
-    tests_total++; \
-} while(0)
+#define SNEPPX_TEST(name)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("test_%s... ", name);                                                                                   \
+        tests_total++;                                                                                                 \
+    } while (0)
 
-#define SNEPPX_PASS do { \
-    printf("PASS\n"); \
-    tests_passed++; \
-} while(0)
+#define SNEPPX_PASS                                                                                                    \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+        tests_passed++;                                                                                                \
+    } while (0)
 
 namespace fs = std::filesystem;
 
@@ -44,7 +47,8 @@ namespace fs = std::filesystem;
 // Tests
 // -------------------------------------------------------------------------
 
-void test_create_from_preset() {
+void test_create_from_preset()
+{
     SNEPPX_TEST("create_from_preset");
 
     auto model = ModelFactory::create_model("llama2", "7B");
@@ -60,7 +64,8 @@ void test_create_from_preset() {
     SNEPPX_PASS;
 }
 
-void test_create_from_preset_mistral() {
+void test_create_from_preset_mistral()
+{
     SNEPPX_TEST("create_from_preset_mistral");
 
     auto model = ModelFactory::create_model("mistral", "7B");
@@ -72,7 +77,8 @@ void test_create_from_preset_mistral() {
     SNEPPX_PASS;
 }
 
-void test_create_from_preset_qwen2() {
+void test_create_from_preset_qwen2()
+{
     SNEPPX_TEST("create_from_preset_qwen2");
 
     auto model = ModelFactory::create_model("qwen2", "7B");
@@ -83,7 +89,8 @@ void test_create_from_preset_qwen2() {
     SNEPPX_PASS;
 }
 
-void test_config_json_roundtrip() {
+void test_config_json_roundtrip()
+{
     SNEPPX_TEST("config_json_roundtrip");
 
     auto cfg = ModelConfigCpp::preset("llama3", "8B");
@@ -99,7 +106,8 @@ void test_config_json_roundtrip() {
     SNEPPX_PASS;
 }
 
-void test_config_save_load() {
+void test_config_save_load()
+{
     SNEPPX_TEST("config_save_load");
 
     auto cfg = ModelConfigCpp::preset("bert", "base");
@@ -116,7 +124,8 @@ void test_config_save_load() {
     SNEPPX_PASS;
 }
 
-void test_model_card_roundtrip() {
+void test_model_card_roundtrip()
+{
     SNEPPX_TEST("model_card_roundtrip");
 
     ModelCardCpp card;
@@ -137,7 +146,8 @@ void test_model_card_roundtrip() {
     SNEPPX_PASS;
 }
 
-void test_model_factory_save_load() {
+void test_model_factory_save_load()
+{
     SNEPPX_TEST("model_factory_save_load");
 
     auto model = ModelFactory::create_model("llama2", "7B");
@@ -153,7 +163,8 @@ void test_model_factory_save_load() {
     SNEPPX_PASS;
 }
 
-void test_model_registry_integration() {
+void test_model_registry_integration()
+{
     SNEPPX_TEST("model_registry_integration");
 
     auto model = ModelFactory::create_model("llama3", "8B");
@@ -165,7 +176,8 @@ void test_model_registry_integration() {
     SNEPPX_PASS;
 }
 
-void test_from_pretrained_stub() {
+void test_from_pretrained_stub()
+{
     SNEPPX_TEST("from_pretrained_stub");
 
     auto model = ModelFactory::from_pretrained("llama-2-7b");
@@ -175,7 +187,8 @@ void test_from_pretrained_stub() {
     SNEPPX_PASS;
 }
 
-void test_model_card_copy() {
+void test_model_card_copy()
+{
     SNEPPX_TEST("model_card_copy");
 
     ModelCardCpp card1;
@@ -188,7 +201,8 @@ void test_model_card_copy() {
     SNEPPX_PASS;
 }
 
-void test_weight_collection() {
+void test_weight_collection()
+{
     SNEPPX_TEST("weight_collection");
 
     WeightCollectionCpp wc;
@@ -204,7 +218,8 @@ void test_weight_collection() {
 // Main
 // -------------------------------------------------------------------------
 
-int main() {
+int main()
+{
     printf("Running C++ Model Factory tests...\n\n");
 
     test_create_from_preset();

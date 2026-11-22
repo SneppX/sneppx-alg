@@ -45,48 +45,40 @@
 #include <cstring>
 
 /* Fatal assertion (stops the current test body), matching legacy `return`. */
-#define SX_ASSERT(cond, msg) \
-    ASSERT_TRUE(cond) << (msg) << " [" #cond "]"
+#define SX_ASSERT(cond, msg) ASSERT_TRUE(cond) << (msg) << " [" #cond "]"
 
 /* Exact-equality compare, matching the legacy `(a) != (b)` semantics. */
-#define SX_ASSERT_EQ(a, b, msg) \
-    ASSERT_EQ((a), (b)) << (msg)
+#define SX_ASSERT_EQ(a, b, msg) ASSERT_EQ((a), (b)) << (msg)
 
 /* Tolerated difference, matching the legacy `fabsf((a)-(b)) > (eps)` test. */
-#define SX_ASSERT_NEAR(a, b, eps, msg) \
-    ASSERT_NEAR((a), (b), (eps)) << (msg)
+#define SX_ASSERT_NEAR(a, b, eps, msg) ASSERT_NEAR((a), (b), (eps)) << (msg)
 
-#define SX_ASSERT_STREQ(a, b, msg) \
-    ASSERT_STREQ((a), (b)) << (msg)
+#define SX_ASSERT_STREQ(a, b, msg) ASSERT_STREQ((a), (b)) << (msg)
 
-#define SX_ASSERT_STR_EQ(a, b, msg) \
-    ASSERT_STREQ((a), (b)) << (msg)
+#define SX_ASSERT_STR_EQ(a, b, msg) ASSERT_STREQ((a), (b)) << (msg)
 
-#define SX_ASSERT_NULL(p, msg) \
-    ASSERT_EQ((p), nullptr) << (msg)
+#define SX_ASSERT_NULL(p, msg) ASSERT_EQ((p), nullptr) << (msg)
 
-#define SX_ASSERT_NOT_NULL(p, msg) \
-    ASSERT_NE((p), nullptr) << (msg)
+#define SX_ASSERT_NOT_NULL(p, msg) ASSERT_NE((p), nullptr) << (msg)
 
 /* Element-wise near-compare; aborts on the first mismatching element. */
-#define SX_ASSERT_NEAR_ARR(a, b, n, eps, msg) do { \
-    for (size_t _sx_gi = 0; _sx_gi < (size_t)(n); _sx_gi++) { \
-        ASSERT_NEAR((a)[_sx_gi], (b)[_sx_gi], (eps)) \
-            << (msg) << " [element " << _sx_gi << "]"; \
-    } \
-} while (0)
+#define SX_ASSERT_NEAR_ARR(a, b, n, eps, msg)                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        for (size_t _sx_gi = 0; _sx_gi < (size_t) (n); _sx_gi++)                                                       \
+        {                                                                                                              \
+            ASSERT_NEAR((a)[_sx_gi], (b)[_sx_gi], (eps)) << (msg) << " [element " << _sx_gi << "]";                    \
+        }                                                                                                              \
+    } while (0)
 
 /* Per-file TEST(name, expr) macro (Pattern B files): non-fatal boolean check. */
-#define SX_TEST(name, expr) \
-    EXPECT_TRUE(expr) << (name)
+#define SX_TEST(name, expr) EXPECT_TRUE(expr) << (name)
 
 /* Program-style CHECK(c, m) macro (Pattern C files): non-fatal boolean check. */
-#define SX_CHECK(c, m) \
-    EXPECT_TRUE(c) << (m)
+#define SX_CHECK(c, m) EXPECT_TRUE(c) << (m)
 
 /* Legacy FLOAT_CLOSE(a, b) helper used by autodiff gradient checks. */
-#define SX_FLOAT_CLOSE(a, b) \
-    (::std::fabs((a) - (b)) < 5e-2f)
+#define SX_FLOAT_CLOSE(a, b) (::std::fabs((a) - (b)) < 5e-2f)
 
 /*
  * C99 compound literal replacement. `(size_t[]){1, 4}` (invalid C++)
@@ -94,7 +86,6 @@
  * .data() pointer is valid for the duration of the enclosing full
  * expression, i.e. while the callee consumes the argument.
  */
-#define SX_ARR_C(TYPE, COUNT, ...) \
-    (::std::array<TYPE, COUNT>{{__VA_ARGS__}}.data())
+#define SX_ARR_C(TYPE, COUNT, ...) (::std::array<TYPE, COUNT>{{__VA_ARGS__}}.data())
 
 #endif /* SNEPPX_TEST_GTEST_H */

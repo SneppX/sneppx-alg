@@ -1,7 +1,10 @@
 """Tests for algo_ser.py — SER algorithm bindings."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings import SERExpert, SERRoute, SERLayer, SERLoss

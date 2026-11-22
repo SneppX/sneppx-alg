@@ -23,8 +23,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_QRNG_SOURCE_QUANTUM,
     SNEPPX_QRNG_SOURCE_ATOMIC,
     SNEPPX_QRNG_SOURCE_PHOTONIC,
@@ -32,7 +32,8 @@ typedef enum {
     SNEPPX_QRNG_SOURCE_HYBRID
 } SNEPPXQRNGSourceType;
 
-typedef struct {
+typedef struct
+{
     uint8_t* entropy_buffer;
     size_t buffer_size;
     SNEPPXQRNGSourceType source_type;
@@ -42,7 +43,8 @@ typedef struct {
     uint8_t* health_test_state;
 } SNEPPXQRNGState;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_QKD_BB84,
     SNEPPX_QKD_E91,
     SNEPPX_QKD_SARG04,
@@ -52,7 +54,8 @@ typedef enum {
     SNEPPX_QKD_TWIN_FIELD
 } SNEPPXQKDProtocol;
 
-typedef struct {
+typedef struct
+{
     SNEPPXQKDProtocol protocol;
     uint64* basis_vector;
     uint64* measurement_results;
@@ -68,7 +71,8 @@ typedef struct {
     uint8_t authentication_tag[32];
 } SNEPPXQKDSession;
 
-typedef struct {
+typedef struct
+{
     uint64_t fock_state[SNEPPX_QUANTUM_MAX_QUBITS];
     uint64_t coherent_state_amplitude;
     uint64_t squeezing_parameter;
@@ -79,7 +83,8 @@ typedef struct {
     uint32_t num_qubits;
 } SNEPPXQuantumState;
 
-typedef struct {
+typedef struct
+{
     uint8_t* ciphertext;
     size_t ciphertext_len;
     double security_level;
@@ -89,7 +94,8 @@ typedef struct {
     size_t authentication_len;
 } SNEPPXQuantumEncryption;
 
-typedef struct {
+typedef struct
+{
     uint8_t* commitment;
     size_t commitment_len;
     uint64_t binding_security;
@@ -98,7 +104,8 @@ typedef struct {
     size_t opening_key_len;
 } SNEPPXQuantumCommitment;
 
-typedef struct {
+typedef struct
+{
     uint8_t* secret_shared;
     size_t secret_len;
     uint32_t num_parties;
@@ -121,16 +128,23 @@ int snepx_qkd_privacy_amplify(SNEPPXQKDSession* session, uint32_t output_bits);
 int snepx_qkd_authenticate(SNEPPXQKDSession* session, const uint8_t* key, size_t key_len);
 int snepx_qkd_estimate_qber(SNEPPXQKDSession* session, double* qber_out);
 
-int snepx_quantum_encrypt(SNEPPXQuantumState* state, const uint8_t* plaintext, size_t plaintext_len, SNEPPXQuantumEncryption* encrypted);
-int snepx_quantum_decrypt(SNEPPXQuantumState* state, const SNEPPXQuantumEncryption* encrypted, uint8_t* plaintext, size_t* plaintext_len);
-int snepx_quantum_commit(SNEPPXQuantumState* state, const uint8_t* secret, size_t secret_len, SNEPPXQuantumCommitment* commitment);
-int snepx_quantum_open(SNEPPXQuantumState* state, const SNEPPXQuantumCommitment* commitment, const uint8_t* opening, size_t opening_len);
+int snepx_quantum_encrypt(SNEPPXQuantumState* state, const uint8_t* plaintext, size_t plaintext_len,
+                          SNEPPXQuantumEncryption* encrypted);
+int snepx_quantum_decrypt(SNEPPXQuantumState* state, const SNEPPXQuantumEncryption* encrypted, uint8_t* plaintext,
+                          size_t* plaintext_len);
+int snepx_quantum_commit(SNEPPXQuantumState* state, const uint8_t* secret, size_t secret_len,
+                         SNEPPXQuantumCommitment* commitment);
+int snepx_quantum_open(SNEPPXQuantumState* state, const SNEPPXQuantumCommitment* commitment, const uint8_t* opening,
+                       size_t opening_len);
 
-int snepx_quantum_secret_share(SNEPPXQuantumState* state, const uint8_t* secret, size_t secret_len, uint32_t num_parties, uint32_t threshold, uint8_t** shares, size_t* share_lens);
-int snepx_quantum_secret_reconstruct(SNEPPXQuantumState* state, const uint8_t** shares, const size_t* share_lens, uint32_t num_shares, uint8_t* secret_out, size_t* secret_len);
+int snepx_quantum_secret_share(SNEPPXQuantumState* state, const uint8_t* secret, size_t secret_len,
+                               uint32_t num_parties, uint32_t threshold, uint8_t** shares, size_t* share_lens);
+int snepx_quantum_secret_reconstruct(SNEPPXQuantumState* state, const uint8_t** shares, const size_t* share_lens,
+                                     uint32_t num_shares, uint8_t* secret_out, size_t* secret_len);
 
 // Post-quantum cryptographic agility
-typedef struct {
+typedef struct
+{
     uint32_t algorithm_id;
     char algorithm_name[64];
     uint32_t security_level;
@@ -148,10 +162,14 @@ typedef struct {
 
 int snepx_pqc_suite_init(SNEPPXPqcSuite* suite, uint32_t algorithm_id);
 int snepx_pqc_suite_keygen(SNEPPXPqcSuite* suite);
-int snepx_pqc_suite_sign(SNEPPXPqcSuite* suite, const uint8_t* message, size_t message_len, uint8_t* signature, size_t* signature_len);
-int snepx_pqc_suite_verify(SNEPPXPqcSuite* suite, const uint8_t* message, size_t message_len, const uint8_t* signature, size_t signature_len);
-int snepx_pqc_suite_encapsulate(SNEPPXPqcSuite* suite, const uint8_t* public_key, size_t pk_len, uint8_t* ciphertext, size_t* ct_len, uint8_t* shared_secret, size_t* ss_len);
-int snepx_pqc_suite_decapsulate(SNEPPXPqcSuite* suite, const uint8_t* ciphertext, size_t ct_len, uint8_t* shared_secret, size_t* ss_len);
+int snepx_pqc_suite_sign(SNEPPXPqcSuite* suite, const uint8_t* message, size_t message_len, uint8_t* signature,
+                         size_t* signature_len);
+int snepx_pqc_suite_verify(SNEPPXPqcSuite* suite, const uint8_t* message, size_t message_len, const uint8_t* signature,
+                           size_t signature_len);
+int snepx_pqc_suite_encapsulate(SNEPPXPqcSuite* suite, const uint8_t* public_key, size_t pk_len, uint8_t* ciphertext,
+                                size_t* ct_len, uint8_t* shared_secret, size_t* ss_len);
+int snepx_pqc_suite_decapsulate(SNEPPXPqcSuite* suite, const uint8_t* ciphertext, size_t ct_len, uint8_t* shared_secret,
+                                size_t* ss_len);
 int snepx_pqc_suite_benchmark(SNEPPXPqcSuite* suite, double* keygen_ms, double* sign_ms, double* verify_ms);
 
 #endif

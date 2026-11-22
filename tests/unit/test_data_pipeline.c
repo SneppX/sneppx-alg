@@ -1,8 +1,8 @@
 #include "data_pipeline.h"
-#include "test_gtest.h"
 #include "multidimensional_tensor_engine.h"
-#include <stdio.h>
+#include "test_gtest.h"
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,18 +21,16 @@
  *
  */
 
-
-
-
-
-static void test_pipeline_create(void) {
+static void test_pipeline_create(void)
+{
     SNEPPXDataPipeline* pipe = SNEPPX_data_pipeline_create(256);
     SX_ASSERT(pipe != NULL, "pipeline created");
     SX_ASSERT(SNEPPX_data_pipeline_get_batch_size(pipe) == 256, "batch size set");
     SNEPPX_data_pipeline_destroy(pipe);
 }
 
-static void test_pipeline_load_csv(void) {
+static void test_pipeline_load_csv(void)
+{
     const char* csv_data = "1.0,2.0,3.0,0.0\n4.0,5.0,6.0,1.0\n7.0,8.0,9.0,0.0\n";
     const char* tmpfile = "test_data_pipeline_tmp.csv";
     FILE* f = fopen(tmpfile, "w");
@@ -61,7 +59,8 @@ static void test_pipeline_load_csv(void) {
     remove(tmpfile);
 }
 
-static void test_pipeline_get_batch(void) {
+static void test_pipeline_get_batch(void)
+{
     const char* csv_data = "1.0,2.0,0.0\n4.0,5.0,1.0\n7.0,8.0,0.0\n9.0,10.0,1.0\n";
     const char* tmpfile = "test_pipeline_batch_tmp.csv";
     FILE* f = fopen(tmpfile, "w");
@@ -86,15 +85,27 @@ static void test_pipeline_get_batch(void) {
     remove(tmpfile);
 }
 
-static void test_pipeline_shuffle(void) {
+static void test_pipeline_shuffle(void)
+{
     SNEPPXDataPipeline* pipe = SNEPPX_data_pipeline_create(64);
     SNEPPX_data_pipeline_shuffle(pipe);
     SX_ASSERT(pipe != NULL, "shuffle does not crash");
     SNEPPX_data_pipeline_destroy(pipe);
 }
 
-
-TEST(test_data_pipeline, pipeline_create) { test_pipeline_create(); }
-TEST(test_data_pipeline, pipeline_load_csv) { test_pipeline_load_csv(); }
-TEST(test_data_pipeline, pipeline_get_batch) { test_pipeline_get_batch(); }
-TEST(test_data_pipeline, pipeline_shuffle) { test_pipeline_shuffle(); }
+TEST(test_data_pipeline, pipeline_create)
+{
+    test_pipeline_create();
+}
+TEST(test_data_pipeline, pipeline_load_csv)
+{
+    test_pipeline_load_csv();
+}
+TEST(test_data_pipeline, pipeline_get_batch)
+{
+    test_pipeline_get_batch();
+}
+TEST(test_data_pipeline, pipeline_shuffle)
+{
+    test_pipeline_shuffle();
+}

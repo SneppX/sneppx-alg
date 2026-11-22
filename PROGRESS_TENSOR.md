@@ -17,6 +17,7 @@ Timeline: 6 phases, 6 days — **Completed**
 Total: 5,742 LOC
 
 ## T0 Deliverables
+
 - [x] Audit existing tensor files (2,484 LOC across header, source, tests, benchmarks)
 - [x] Add 4 dtype helper macros: `SNEPPX_DTYPE_SIZE`, `SNEPPX_DTYPE_IS_FLOAT`, `SNEPPX_DTYPE_IS_INT`, `SNEPPX_DTYPE_IS_COMPLEX`
 - [x] Extend `SNEPPXDevice`: +`SNEPPX_DEVICE_TPU`, +`SNEPPX_DEVICE_NPU`
@@ -27,6 +28,7 @@ Total: 5,742 LOC
 - [x] All existing tests pass
 
 ## T1 Deliverables
+
 - [x] All creation functions working (empty, zeros, ones, full, arange, linspace, eye, randn)
 - [x] All shape functions working (copy, clone, slice, reshape, permute, expand, squeeze, unsqueeze, concat, split, tile, repeat, gather, scatter, masked_select, masked_fill, where)
 - [x] 19 creation tests pass
@@ -35,6 +37,7 @@ Total: 5,742 LOC
 - [x] Build passes with zero errors
 
 ## T2 Deliverables (Element-wise Ops)
+
 - [x] Element-wise arithmetic (add, sub, mul, div, pow) implemented with basic broadcast
 - [x] Unary ops (neg, abs, sign, floor, ceil, round, trunc)
 - [x] Transcendental (exp, log, sqrt)
@@ -43,6 +46,7 @@ Total: 5,742 LOC
 - [x] 17 element-wise + comparison tests pass
 
 ## T3 Deliverables (Reduction & LA)
+
 - [x] Reduction ops (sum, mean, var, std, min, max, argmin, argmax, cumsum, cumprod)
 - [x] Linear algebra (dot, matmul, transpose, inverse, det)
 - [x] Inverse implemented via Gauss-Jordan elimination
@@ -50,6 +54,7 @@ Total: 5,742 LOC
 - [x] 14 reduction + LA tests pass
 
 ## T4 Deliverables (NN Ops)
+
 - [x] Activations (softmax, log_softmax, relu, gelu, silu, sigmoid)
 - [x] Dropout, normalization (layer_norm, batch_norm, group_norm, instance_norm)
 - [x] Embedding, loss functions (cross_entropy, mse, mae, nll, kl_div, bce)
@@ -58,6 +63,7 @@ Total: 5,742 LOC
 - [x] 14 NN tests pass
 
 ## T5 Deliverables (I/O & Conversion)
+
 - [x] save/load implemented (binary format with magic + version + metadata)
 - [x] cast implemented (f32/f64/i32 conversions)
 - [x] to_device, to_layout implemented

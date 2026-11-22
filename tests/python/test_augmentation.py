@@ -3,12 +3,25 @@
 import numpy as np
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.augmentation import (
-    random_resized_crop, random_horizontal_flip, random_vertical_flip,
-    random_rotation, color_jitter, random_grayscale,
-    gaussian_blur, solarize, posterize, equalize,
-    mixup, cutmix, cutout, random_erasing,
-    Compose, RandomApply, RandomChoice,
-    IMAGENET_TRAIN_TRANSFORMS, IMAGENET_EVAL_TRANSFORMS,
+    random_resized_crop,
+    random_horizontal_flip,
+    random_vertical_flip,
+    random_rotation,
+    color_jitter,
+    random_grayscale,
+    gaussian_blur,
+    solarize,
+    posterize,
+    equalize,
+    mixup,
+    cutmix,
+    cutout,
+    random_erasing,
+    Compose,
+    RandomApply,
+    RandomChoice,
+    IMAGENET_TRAIN_TRANSFORMS,
+    IMAGENET_EVAL_TRANSFORMS,
 )
 
 
@@ -124,6 +137,7 @@ def test_imagenet_transforms_exist():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

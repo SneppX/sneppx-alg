@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_GDPR_RIGHT_ACCESS,
     SNEPPX_GDPR_RIGHT_RECTIFICATION,
     SNEPPX_GDPR_RIGHT_ERASURE,
@@ -36,14 +36,16 @@ typedef enum {
     SNEPPX_GDPR_RIGHT_BREACH_NOTIFICATION
 } SNEPPXGDPRDataSubjectRight;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_GDPR_CONSENT_EXPLICIT,
     SNEPPX_GDPR_CONSENT_IMPLIED,
     SNEPPX_GDPR_CONSENT_OPT_OUT,
     SNEPPX_GDPR_CONSENT_NONE
 } SNEPPXGDPRConsentType;
 
-typedef struct {
+typedef struct
+{
     char data_subject_id[128];
     char personal_data_category[64];
     char processing_purpose[256];
@@ -64,7 +66,8 @@ typedef struct {
     char third_party_transfers[512];
 } SNEPPXGDPRDataRecord;
 
-typedef struct {
+typedef struct
+{
     char record_id[64];
     char controller_name[256];
     char controller_representative[256];
@@ -80,7 +83,8 @@ typedef struct {
     char security_measures[1024];
 } SNEPPXGDPRProcessingRecord;
 
-typedef struct {
+typedef struct
+{
     uint64_t request_id;
     SNEPPXGDPRDataSubjectRight right_type;
     char data_subject_id[128];
@@ -93,7 +97,8 @@ typedef struct {
     char rejection_reason[512];
 } SNEPPXGDPRSubjectRequest;
 
-typedef struct {
+typedef struct
+{
     uint32_t breach_id;
     uint64_t discovered_at;
     uint64_t notified_supervisory_at;

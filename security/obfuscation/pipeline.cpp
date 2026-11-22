@@ -1,12 +1,12 @@
 #include "code_obfuscation_interface.h"
-#include "instruction_obfuscation_engine.h"
 #include "control_flow_obfuscation.h"
+#include "instruction_obfuscation_engine.h"
+#include <algorithm>
 #include <chrono>
+#include <cstring>
 #include <iostream>
 #include <random>
-#include <algorithm>
 #include <vector>
-#include <cstring>
 
 /*
  * SNEPPX - Pipeline
@@ -23,33 +23,43 @@
  *
  */
 
-
-namespace SNEPPX {
+namespace SNEPPX
+{
 
 SNEPPXObfuscator::SNEPPXObfuscator()
-    : level_(SNEPPXObfuscationLevel::SNEPPX_OBF_NONE), transform_count_(0) {}
+    : level_(SNEPPXObfuscationLevel::SNEPPX_OBF_NONE),
+      transform_count_(0)
+{
+}
 
-SNEPPXObfuscator::~SNEPPXObfuscator() {}
+SNEPPXObfuscator::~SNEPPXObfuscator()
+{
+}
 
-void SNEPPXObfuscator::configure(SNEPPXObfuscationLevel level) {
+void SNEPPXObfuscator::configure(SNEPPXObfuscationLevel level)
+{
     level_ = level;
 }
 
-SNEPPXObfuscationLevel SNEPPXObfuscator::get_level() const {
+SNEPPXObfuscationLevel SNEPPXObfuscator::get_level() const
+{
     return level_;
 }
 
-void SNEPPXObfuscator::encrypt_string_pool_rotating() {
+void SNEPPXObfuscator::encrypt_string_pool_rotating()
+{
     uint8_t key = 0x37;
     auto& pool = string_pool_;
-    for (size_t i = 0; i < pool.count(); i++) {
-        key = (uint8_t)((key * 7 + 11) % 256);
+    for (size_t i = 0; i < pool.count(); i++)
+    {
+        key = (uint8_t) ((key * 7 + 11) % 256);
     }
     pool.pool_decrypt_all();
 }
 
-void SNEPPXObfuscator::apply_light(SNEPPXObfCFG& cfg) {
-    (void)cfg;
+void SNEPPXObfuscator::apply_light(SNEPPXObfCFG& cfg)
+{
+    (void) cfg;
     string_pool_.pool_register("SNEPPX-Algo S2 Obfuscation Engine");
     string_pool_.pool_register("Control Flow Flattening");
     string_pool_.pool_register("String Encryption");
@@ -60,32 +70,39 @@ void SNEPPXObfuscator::apply_light(SNEPPXObfCFG& cfg) {
 
     encrypt_string_pool_rotating();
 
-    for (size_t i = 0; i < string_pool_.count(); i++) {
+    for (size_t i = 0; i < string_pool_.count(); i++)
+    {
         uint8_t rotating_key = static_cast<uint8_t>(0x55 + i * 7);
-        (void)rotating_key;
+        (void) rotating_key;
     }
 
     string_pool_.pool_decrypt_all();
     transform_count_ += string_pool_.count();
 }
 
-void SNEPPXObfuscator::shuffle_blocks(SNEPPXObfCFG& cfg) {
-    if (cfg.blocks.size() < 3) return;
+void SNEPPXObfuscator::shuffle_blocks(SNEPPXObfCFG& cfg)
+{
+    if (cfg.blocks.size() < 3)
+        return;
     std::vector<uint64_t> ids;
-    for (auto& pair : cfg.blocks) ids.push_back(pair.first);
+    for (auto& pair : cfg.blocks)
+        ids.push_back(pair.first);
     std::vector<uint64_t> shuffled(ids);
     std::mt19937_64 shuffle_rng(std::random_device{}());
     std::shuffle(shuffled.begin(), shuffled.end(), shuffle_rng);
     std::unordered_map<uint64_t, std::shared_ptr<SNEPPXObfBlock>> reordered;
-    for (auto id : shuffled) {
-        if (cfg.blocks.count(id)) {
+    for (auto id : shuffled)
+    {
+        if (cfg.blocks.count(id))
+        {
             reordered[id] = cfg.blocks[id];
         }
     }
     cfg.blocks = reordered;
 }
 
-void SNEPPXObfuscator::apply_medium(SNEPPXObfCFG& cfg) {
+void SNEPPXObfuscator::apply_medium(SNEPPXObfCFG& cfg)
+{
     flattener_.flatten(cfg);
     transform_count_ += cfg.blocks.size();
     substituter_.substitute_all_blocks(cfg);
@@ -94,7 +111,8 @@ void SNEPPXObfuscator::apply_medium(SNEPPXObfCFG& cfg) {
     transform_count_ += cfg.blocks.size();
 }
 
-void SNEPPXObfuscator::apply_heavy(SNEPPXObfCFG& cfg) {
+void SNEPPXObfuscator::apply_heavy(SNEPPXObfCFG& cfg)
+{
     SNEPPXOpaqueEngine opaque;
     opaque.insert_predicates_to_cfg(cfg);
     transform_count_ += cfg.blocks.size() * 2;
@@ -105,7 +123,8 @@ void SNEPPXObfuscator::apply_heavy(SNEPPXObfCFG& cfg) {
     transform_count_ += cfg.blocks.size();
 }
 
-void SNEPPXObfuscator::apply_maximum(SNEPPXObfCFG& cfg) {
+void SNEPPXObfuscator::apply_maximum(SNEPPXObfCFG& cfg)
+{
     vm_.compile_to_bytecode(cfg);
     vm_.encrypt_handler_table();
     transform_count_++;
@@ -114,37 +133,46 @@ void SNEPPXObfuscator::apply_maximum(SNEPPXObfCFG& cfg) {
     transform_count_ += 2;
 }
 
-bool SNEPPXObfuscator::verify(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs) {
-    if (test_inputs.empty()) return true;
+bool SNEPPXObfuscator::verify(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs)
+{
+    if (test_inputs.empty())
+        return true;
     vm_.compile_to_bytecode(cfg);
     const auto& bc = vm_.bytecode();
-    if (bc.empty()) return false;
+    if (bc.empty())
+        return false;
     size_t match_count = 0;
     size_t total = test_inputs.size();
-    for (size_t t = 0; t < total; t++) {
+    for (size_t t = 0; t < total; t++)
+    {
         uint64_t input = test_inputs[t];
         uint64_t expected = input;
-        for (size_t i = 0; i < 3; i++) expected += (input * (uint64_t)(i + 1));
+        for (size_t i = 0; i < 3; i++)
+            expected += (input * (uint64_t) (i + 1));
         SNEPPXObfVMState saved_state;
         saved_state.regs[0] = input;
         saved_state.regs[1] = input + 1;
         saved_state.regs[2] = input + 2;
-        saved_state.fregs[0] = (double)input;
-        if (vm_.vm_execute(bc.data(), bc.size())) {
+        saved_state.fregs[0] = (double) input;
+        if (vm_.vm_execute(bc.data(), bc.size()))
+        {
             uint64_t result = vm_.state().regs[0];
-            if (result == expected || result > 0) match_count++;
+            if (result == expected || result > 0)
+                match_count++;
         }
     }
     bool cfg_ok = cfg.blocks.size() >= 2;
     return match_count >= (total / 2) && cfg_ok;
 }
 
-bool SNEPPXObfuscator::obfuscate_and_verify(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs) {
+bool SNEPPXObfuscator::obfuscate_and_verify(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs)
+{
     obfuscate(cfg);
     return verify(cfg, test_inputs);
 }
 
-SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
+SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg)
+{
     auto overall_start = std::chrono::high_resolution_clock::now();
     SNEPPXObfuscationReport report;
     report.level = level_;
@@ -162,8 +190,10 @@ SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
     report.phase_maximum_ms = 0.0;
     transform_count_ = 0;
 
-    switch (level_) {
-        case SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT: {
+    switch (level_)
+    {
+        case SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT:
+        {
             auto t1 = std::chrono::high_resolution_clock::now();
             apply_light(cfg);
             auto t2 = std::chrono::high_resolution_clock::now();
@@ -171,7 +201,8 @@ SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
             report.strings_encrypted = string_pool_.count();
             break;
         }
-        case SNEPPXObfuscationLevel::SNEPPX_OBF_MEDIUM: {
+        case SNEPPXObfuscationLevel::SNEPPX_OBF_MEDIUM:
+        {
             auto t1 = std::chrono::high_resolution_clock::now();
             apply_light(cfg);
             auto t2 = std::chrono::high_resolution_clock::now();
@@ -185,7 +216,8 @@ SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
             report.instructions_substituted = cfg.blocks.size() * 3;
             break;
         }
-        case SNEPPXObfuscationLevel::SNEPPX_OBF_HEAVY: {
+        case SNEPPXObfuscationLevel::SNEPPX_OBF_HEAVY:
+        {
             auto t1 = std::chrono::high_resolution_clock::now();
             apply_light(cfg);
             auto t2 = std::chrono::high_resolution_clock::now();
@@ -205,7 +237,8 @@ SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
             report.anti_debug_applied = true;
             break;
         }
-        case SNEPPXObfuscationLevel::SNEPPX_OBF_MAXIMUM: {
+        case SNEPPXObfuscationLevel::SNEPPX_OBF_MAXIMUM:
+        {
             auto t1 = std::chrono::high_resolution_clock::now();
             apply_light(cfg);
             auto t2 = std::chrono::high_resolution_clock::now();
@@ -242,7 +275,8 @@ SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate(SNEPPXObfCFG& cfg) {
     return report;
 }
 
-void SNEPPXObfuscator::reset() {
+void SNEPPXObfuscator::reset()
+{
     level_ = SNEPPXObfuscationLevel::SNEPPX_OBF_NONE;
     transform_count_ = 0;
     string_pool_ = SNEPPXObfStringPool();
@@ -252,15 +286,18 @@ void SNEPPXObfuscator::reset() {
     anti_debug_ = SNEPPXAntiDebug();
 }
 
-void SNEPPXObfuscator::clear_string_pool() {
+void SNEPPXObfuscator::clear_string_pool()
+{
     transform_count_ = 0;
 }
 
-size_t SNEPPXObfuscator::get_transform_count() const {
+size_t SNEPPXObfuscator::get_transform_count() const
+{
     return transform_count_;
 }
 
-void SNEPPXObfuscator::print_report(const SNEPPXObfuscationReport& report) {
+void SNEPPXObfuscator::print_report(const SNEPPXObfuscationReport& report)
+{
     std::cout << "=== SNEPPX Obfuscation Report ===" << std::endl;
     std::cout << "Level: " << static_cast<int>(report.level) << std::endl;
     std::cout << "Transformations: " << report.transformations_applied << std::endl;
@@ -279,30 +316,38 @@ void SNEPPXObfuscator::print_report(const SNEPPXObfuscationReport& report) {
     std::cout << "================================" << std::endl;
 }
 
-void SNEPPXObfuscator::seed_rng(uint64_t seed) {
+void SNEPPXObfuscator::seed_rng(uint64_t seed)
+{
     substituter_.set_seed(seed);
 }
 
-void SNEPPXObfuscator::apply_opaque_predicates_multi(SNEPPXObfCFG& cfg, int layers) {
-    for (int l = 0; l < layers; l++) {
+void SNEPPXObfuscator::apply_opaque_predicates_multi(SNEPPXObfCFG& cfg, int layers)
+{
+    for (int l = 0; l < layers; l++)
+    {
         SNEPPXOpaqueEngine opaque;
         opaque.insert_predicates_to_cfg(cfg);
         transform_count_ += cfg.blocks.size() * 2;
     }
 }
 
-void SNEPPXObfuscator::split_blocks(SNEPPXObfCFG& cfg) {
+void SNEPPXObfuscator::split_blocks(SNEPPXObfCFG& cfg)
+{
     std::vector<uint64_t> ids;
-    for (auto& pair : cfg.blocks) ids.push_back(pair.first);
-    for (auto id : ids) {
-        if (!cfg.blocks.count(id)) continue;
+    for (auto& pair : cfg.blocks)
+        ids.push_back(pair.first);
+    for (auto id : ids)
+    {
+        if (!cfg.blocks.count(id))
+            continue;
         auto& block = cfg.blocks[id];
-        if (block->instructions.size() < 4) continue;
+        if (block->instructions.size() < 4)
+            continue;
         size_t mid = block->instructions.size() / 2;
         uint64_t new_id = cfg.add_block();
         auto new_block = cfg.blocks[new_id];
-        new_block->instructions.insert(new_block->instructions.end(),
-            block->instructions.begin() + (int)mid, block->instructions.end());
+        new_block->instructions.insert(new_block->instructions.end(), block->instructions.begin() + (int) mid,
+                                       block->instructions.end());
         block->instructions.resize(mid);
         block->successors.push_back(new_id);
         new_block->predecessors.push_back(id);
@@ -310,7 +355,8 @@ void SNEPPXObfuscator::split_blocks(SNEPPXObfCFG& cfg) {
     }
 }
 
-void SNEPPXObfuscator::apply_anti_debug_all() {
+void SNEPPXObfuscator::apply_anti_debug_all()
+{
     anti_debug_.full_scan();
     anti_debug_.detect_debugger_present();
     anti_debug_.detect_breakpoint(nullptr, 0);
@@ -318,18 +364,29 @@ void SNEPPXObfuscator::apply_anti_debug_all() {
     transform_count_ += 4;
 }
 
-SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate_with_seed(SNEPPXObfCFG& cfg, uint64_t seed) {
+SNEPPXObfuscationReport SNEPPXObfuscator::obfuscate_with_seed(SNEPPXObfCFG& cfg, uint64_t seed)
+{
     seed_rng(seed);
     return obfuscate(cfg);
 }
 
-bool SNEPPXObfuscator::run_self_test() {
+bool SNEPPXObfuscator::run_self_test()
+{
     SNEPPXObfCFG test_cfg;
     auto b1 = test_cfg.add_block();
     auto b1p = test_cfg.blocks[b1];
     b1p->is_entry = true;
-    SNEPPXObfInstruction i1; i1.type = SNEPPXObfInstType::MOV; i1.result = "r0"; i1.operand1 = "10"; b1p->instructions.push_back(i1);
-    SNEPPXObfInstruction i2; i2.type = SNEPPXObfInstType::ADD; i2.result = "r0"; i2.operand1 = "r0"; i2.operand2 = "5"; b1p->instructions.push_back(i2);
+    SNEPPXObfInstruction i1;
+    i1.type = SNEPPXObfInstType::MOV;
+    i1.result = "r0";
+    i1.operand1 = "10";
+    b1p->instructions.push_back(i1);
+    SNEPPXObfInstruction i2;
+    i2.type = SNEPPXObfInstType::ADD;
+    i2.result = "r0";
+    i2.operand1 = "r0";
+    i2.operand2 = "5";
+    b1p->instructions.push_back(i2);
     test_cfg.entry_block = b1;
     auto b2 = test_cfg.add_block();
     auto b2p = test_cfg.blocks[b2];
@@ -340,50 +397,63 @@ bool SNEPPXObfuscator::run_self_test() {
     return r.transformations_applied > 0;
 }
 
-bool SNEPPXObfuscator::verify_extended(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs) {
-    if (test_inputs.empty()) return false;
+bool SNEPPXObfuscator::verify_extended(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs)
+{
+    if (test_inputs.empty())
+        return false;
     vm_.compile_to_bytecode(cfg);
     const auto& bc = vm_.bytecode();
-    if (bc.empty()) return false;
+    if (bc.empty())
+        return false;
     size_t pass_count = 0;
     size_t total = test_inputs.size() * 3;
-    for (size_t t = 0; t < test_inputs.size(); t++) {
+    for (size_t t = 0; t < test_inputs.size(); t++)
+    {
         uint64_t input = test_inputs[t];
         uint64_t expected_sum = input;
         uint64_t expected_xor = input;
-        for (size_t i = 0; i < 5; i++) {
-            expected_sum += (input * (uint64_t)(i + 1));
-            expected_xor ^= (input + (uint64_t)i);
+        for (size_t i = 0; i < 5; i++)
+        {
+            expected_sum += (input * (uint64_t) (i + 1));
+            expected_xor ^= (input + (uint64_t) i);
         }
         SNEPPXObfVMState s1;
         s1.regs[0] = input;
         s1.regs[1] = input + 1;
-        if (vm_.vm_execute(bc.data(), bc.size())) {
+        if (vm_.vm_execute(bc.data(), bc.size()))
+        {
             uint64_t r0 = vm_.state().regs[0];
-            if (r0 == expected_sum || r0 > 0) pass_count++;
+            if (r0 == expected_sum || r0 > 0)
+                pass_count++;
         }
         SNEPPXObfVMState s2;
         s2.regs[0] = input;
         s2.regs[2] = input * 2;
-        if (vm_.vm_execute(bc.data(), bc.size())) {
+        if (vm_.vm_execute(bc.data(), bc.size()))
+        {
             uint64_t r0 = vm_.state().regs[0];
-            if (r0 > 0) pass_count++;
+            if (r0 > 0)
+                pass_count++;
         }
         SNEPPXObfVMState s3;
         s3.regs[0] = input;
         s3.regs[1] = input;
-        s3.fregs[0] = (double)input;
-        if (vm_.vm_execute(bc.data(), bc.size())) {
+        s3.fregs[0] = (double) input;
+        if (vm_.vm_execute(bc.data(), bc.size()))
+        {
             uint64_t r0 = vm_.state().regs[0];
-            if (r0 > 0 || vm_.state().fregs[0] > 0.0) pass_count++;
+            if (r0 > 0 || vm_.state().fregs[0] > 0.0)
+                pass_count++;
         }
     }
     bool cfg_structural = cfg.blocks.size() >= 2 && cfg.entry_block < cfg.blocks.size();
     return pass_count >= (total * 2 / 3) && cfg_structural;
 }
 
-void SNEPPXObfuscator::apply_obfuscation_preset(SNEPPXObfCFG& cfg, int preset_id) {
-    switch (preset_id) {
+void SNEPPXObfuscator::apply_obfuscation_preset(SNEPPXObfCFG& cfg, int preset_id)
+{
+    switch (preset_id)
+    {
         case 0:
             apply_light(cfg);
             break;

@@ -5,7 +5,9 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import key_vault as kv
 
@@ -33,7 +35,9 @@ def test_persisted_log_tampering_detected(tmp_path):
     logger, path = _logger(tmp_path)
     lines = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
     lines[1]["details"] = {"n": 999}
-    path.write_text("\n".join(json.dumps(line) for line in lines) + "\n", encoding="utf-8")
+    path.write_text(
+        "\n".join(json.dumps(line) for line in lines) + "\n", encoding="utf-8"
+    )
     assert logger.verify_chain() is False
 
 

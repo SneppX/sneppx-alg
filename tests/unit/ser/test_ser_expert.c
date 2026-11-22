@@ -1,7 +1,7 @@
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Ser Expert
@@ -18,13 +18,12 @@
  *
  */
 
-
-
-
-
-static void test_expert_create(void) {
+static void test_expert_create(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.input_dim = 64; cfg.expert_dim = 128; cfg.output_dim = 64;
+    cfg.input_dim = 64;
+    cfg.expert_dim = 128;
+    cfg.output_dim = 64;
     SNEPPXExpert* e = SNEPPX_expert_create(&cfg, 42, SNEPPX_ACT_RELU);
     SX_ASSERT(e != NULL, "expert not null");
     SX_ASSERT(e->w1->shape[0] == 128 && e->w1->shape[1] == 64, "w1 shape");
@@ -34,9 +33,12 @@ static void test_expert_create(void) {
     SNEPPX_expert_destroy(e);
 }
 
-static void test_expert_forward(void) {
+static void test_expert_forward(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
-    cfg.input_dim = 16; cfg.expert_dim = 32; cfg.output_dim = 16;
+    cfg.input_dim = 16;
+    cfg.expert_dim = 32;
+    cfg.output_dim = 16;
     SNEPPXExpert* e = SNEPPX_expert_create(&cfg, 42, SNEPPX_ACT_RELU);
     SX_ASSERT(e != NULL, "expert not null");
 
@@ -49,10 +51,15 @@ static void test_expert_forward(void) {
     SX_ASSERT(output != NULL, "output not null");
 
     SNEPPX_ser_expert_forward(e, input, output);
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int ok = 1;
-    for (size_t i = 0; i < 4 * 16; i++) {
-        if (!isfinite(od[i])) { ok = 0; break; }
+    for (size_t i = 0; i < 4 * 16; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            ok = 0;
+            break;
+        }
     }
     SX_ASSERT(ok, "all finite");
 
@@ -61,6 +68,11 @@ static void test_expert_forward(void) {
     SNEPPX_expert_destroy(e);
 }
 
-
-TEST(test_ser_expert, test_expert_create) { test_expert_create(); }
-TEST(test_ser_expert, test_expert_forward) { test_expert_forward(); }
+TEST(test_ser_expert, test_expert_create)
+{
+    test_expert_create();
+}
+TEST(test_ser_expert, test_expert_forward)
+{
+    test_expert_forward();
+}

@@ -21,26 +21,33 @@ class AESNI:
         self.cpu = CPUFeatures()
         self._has_hardware = self.cpu.has("aes_ni")
 
-    def encrypt_block(self, plaintext: bytes, round_key: bytes, rounds: int = 14) -> bytes:
+    def encrypt_block(
+        self, plaintext: bytes, round_key: bytes, rounds: int = 14
+    ) -> bytes:
         if len(plaintext) != 16:
             raise ValueError("plaintext must be 16 bytes")
         from cryptography.hazmat.primitives.ciphers.algorithms import AES
         from cryptography.hazmat.primitives.ciphers import Cipher, modes
+
         key = round_key[:32]
         cipher = Cipher(AES(key), modes.ECB())
         encryptor = cipher.encryptor()
         return encryptor.update(plaintext) + encryptor.finalize()
 
-    def gcm_encrypt(self, plaintext: bytes, key: bytes, iv: bytes,
-                    aad: bytes = b"") -> Tuple[bytes, bytes]:
+    def gcm_encrypt(
+        self, plaintext: bytes, key: bytes, iv: bytes, aad: bytes = b""
+    ) -> Tuple[bytes, bytes]:
         from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
         aesgcm = AESGCM(key)
         ct = aesgcm.encrypt(iv, plaintext, aad)
         return ct[:-16], ct[-16:]
 
-    def gcm_decrypt(self, ciphertext: bytes, key: bytes, iv: bytes,
-                    tag: bytes, aad: bytes = b"") -> bytes:
+    def gcm_decrypt(
+        self, ciphertext: bytes, key: bytes, iv: bytes, tag: bytes, aad: bytes = b""
+    ) -> bytes:
         from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
         aesgcm = AESGCM(key)
         return aesgcm.decrypt(iv, ciphertext + tag, aad)
 
@@ -90,7 +97,7 @@ class ChaCha20AVX2:
         state[b] = ((state[b] << 7) | (state[b] >> 25)) & 0xFFFFFFFF
 
     def _block(self, key: List[int], nonce: List[int], counter: int) -> bytes:
-        sigma = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]
+        sigma = [0x61707865, 0x3320646E, 0x79622D32, 0x6B206574]
         state = sigma + list(key) + [counter] + list(nonce) + [0] * (16 - 4 - 8 - 1 - 3)
         state = state[:16]
         ws = list(state)
@@ -121,8 +128,8 @@ class ChaCha20AVX2:
         result = bytearray()
         for i in range(0, len(plaintext), 64):
             block = self._block(key_words, nonce_words, i // 64)
-            chunk = plaintext[i:i + 64]
-            result += bytes(a ^ b for a, b in zip(chunk, block[:len(chunk)]))
+            chunk = plaintext[i : i + 64]
+            result += bytes(a ^ b for a, b in zip(chunk, block[: len(chunk)]))
         return bytes(result)
 
 
@@ -136,10 +143,10 @@ class Poly1305ASM:
         s = int.from_bytes(key[16:32], "little")
         acc = 0
         for i in range(0, len(msg), 16):
-            block = msg[i:i + 16]
+            block = msg[i : i + 16]
             n = int.from_bytes(block, "little")
             n |= 1 << (8 * len(block))
-            acc = (acc + n) * r % (2 ** 130 - 5)
+            acc = (acc + n) * r % (2**130 - 5)
         acc = (acc + s) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         return acc.to_bytes(16, "little")
 
@@ -154,7 +161,7 @@ class MontgomeryMul:
 class Ed25519ASM:
     """Ed25519 operations with ASM fallback."""
 
-    P = 2 ** 255 - 19
+    P = 2**255 - 19
     D = -121665 * pow(121666, -1, P) % P
 
     def _point_add(self, p1, p2):
@@ -184,19 +191,24 @@ class Ed25519ASM:
 
     def sign(self, message: bytes, secret_key: bytes) -> bytes:
         import hashlib as _hashlib
+
         h = _hashlib.sha512(secret_key[:32]).digest()
         a = int.from_bytes(h[:32], "little")
         a &= (1 << 254) - 8
-        a |= (1 << 254)
+        a |= 1 << 254
         r = _hashlib.sha512(h[32:64] + message).digest()
-        r = int.from_bytes(r, "little") % (2 ** 252 + 27742317777372353535851937790883648493)
+        r = int.from_bytes(r, "little") % (
+            2**252 + 27742317777372353535851937790883648493
+        )
         B = (0, 1, 1, 0)
         R = self._point_mul(r, B)
         Ry = R[1]
         R_bytes = Ry.to_bytes(32, "little")
         hram = _hashlib.sha512(R_bytes + secret_key[32:64] + message).digest()
-        hram = int.from_bytes(hram, "little") % (2 ** 252 + 27742317777372353535851937790883648493)
-        s = (r + hram * a) % (2 ** 252 + 27742317777372353535851937790883648493)
+        hram = int.from_bytes(hram, "little") % (
+            2**252 + 27742317777372353535851937790883648493
+        )
+        s = (r + hram * a) % (2**252 + 27742317777372353535851937790883648493)
         return R_bytes + s.to_bytes(32, "little")
 
 
@@ -208,7 +220,7 @@ class ConstantTimeOps:
         result = 0
         for i, val in enumerate(table):
             mask = 0xFF if i == index else 0
-            result |= (val & mask)
+            result |= val & mask
         return result
 
     @staticmethod
@@ -225,6 +237,7 @@ class ConstantTimeOps:
 
 # Firewall ASM accelerators
 
+
 class FirewallASM:
     """Firewall ASM-accelerated operations."""
 
@@ -239,7 +252,9 @@ class FirewallASM:
         return h ^ 0xFFFFFFFF
 
     @staticmethod
-    def conn_track(ip: int, state_table: List[int], now_sec: int, timeout_sec: int) -> bool:
+    def conn_track(
+        ip: int, state_table: List[int], now_sec: int, timeout_sec: int
+    ) -> bool:
         idx = hash(ip) % len(state_table) if state_table else 0
         entry = state_table[idx] if idx < len(state_table) else 0
         return (entry > 0) and (now_sec - entry < timeout_sec)

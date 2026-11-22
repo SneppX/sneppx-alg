@@ -91,8 +91,10 @@ class EdgeDevice:
         return "neon_fp16" in self.isa or "fp16" in self.isa
 
     def __repr__(self) -> str:
-        return (f"EdgeDevice({self.architecture}, cores={self.cores}, "
-                f"isa={sorted(self.isa)})")
+        return (
+            f"EdgeDevice({self.architecture}, cores={self.cores}, "
+            f"isa={sorted(self.isa)})"
+        )
 
 
 def _read_cpuinfo_flags() -> Set[str]:
@@ -138,7 +140,11 @@ def detect_cpu() -> EdgeDevice:
         vw = 64
     elif arch == "x86_64" and "avx2" in isa:
         vw = 32
-    vendor = (platform.processor() or "unknown").split()[0] if platform.processor() else "unknown"
+    vendor = (
+        (platform.processor() or "unknown").split()[0]
+        if platform.processor()
+        else "unknown"
+    )
     return EdgeDevice(
         architecture=arch,
         isa=isa,
@@ -152,14 +158,15 @@ def detect_cpu() -> EdgeDevice:
 # config
 # --------------------------------------------------------------------------
 
+
 @dataclass
 class EdgeConfig:
     """Runtime configuration for a mobile/edge target."""
 
-    backend: str = "auto"          # "auto" | "cpu" | backend name
+    backend: str = "auto"  # "auto" | "cpu" | backend name
     threads: int = 1
-    quant_mode: str = "none"       # "none" | "int8" | "int4"
-    buffer_pool: bool = True       # reuse scratch buffers across calls
+    quant_mode: str = "none"  # "none" | "int8" | "int4"
+    buffer_pool: bool = True  # reuse scratch buffers across calls
     fp32_fallback: bool = True
     max_batch: int = 512
     int8_accumulator: str = "fp32"  # fp32 | int32 accumulation
@@ -169,6 +176,7 @@ class EdgeConfig:
 # --------------------------------------------------------------------------
 # backends
 # --------------------------------------------------------------------------
+
 
 class EdgeBackend:
     """Base class for edge execution backends.
@@ -182,8 +190,9 @@ class EdgeBackend:
     def supports(self, node: Any) -> bool:
         raise NotImplementedError
 
-    def run(self, node: Any, inputs: List[np.ndarray],
-            pool: "BufferPool", **kwargs: Any) -> np.ndarray:
+    def run(
+        self, node: Any, inputs: List[np.ndarray], pool: "BufferPool", **kwargs: Any
+    ) -> np.ndarray:
         raise NotImplementedError
 
     def __repr__(self) -> str:
@@ -239,8 +248,9 @@ class BufferPool:
         return sum(len(v) for v in self._free.values())
 
 
-def int8_matmul(a: np.ndarray, b: np.ndarray, scale_b: float,
-                accumulator: str = "fp32") -> np.ndarray:
+def int8_matmul(
+    a: np.ndarray, b: np.ndarray, scale_b: float, accumulator: str = "fp32"
+) -> np.ndarray:
     """INT8 symmetric matmul: A @ B with fp32 or int32 accumulation.
 
     ``b`` is the pre-quantized INT8 weight tensor (K, N); ``scale_b`` its
@@ -251,8 +261,11 @@ def int8_matmul(a: np.ndarray, b: np.ndarray, scale_b: float,
     b = np.asarray(b, dtype=np.int8)
     peak = float(np.abs(a).max()) if a.size else 0.0
     scale_a = peak / 127.0 if peak > 0.0 else 1.0
-    aq = np.round(a / scale_a).astype(np.int8) if peak > 0.0 else \
-        np.zeros(a.shape, dtype=np.int8)
+    aq = (
+        np.round(a / scale_a).astype(np.int8)
+        if peak > 0.0
+        else np.zeros(a.shape, dtype=np.int8)
+    )
     if accumulator == "int32":
         acc = aq.astype(np.int32) @ b.astype(np.int32)
         return acc.astype(np.float32) * (scale_a * scale_b)
@@ -265,9 +278,12 @@ class CPUBackend(EdgeBackend):
 
     name = "cpu"
 
-    def __init__(self, quant_mode: str = "none",
-                 quant_weights: Optional[Dict[int, Tuple[np.ndarray, float]]] = None,
-                 int8_accumulator: str = "fp32"):
+    def __init__(
+        self,
+        quant_mode: str = "none",
+        quant_weights: Optional[Dict[int, Tuple[np.ndarray, float]]] = None,
+        int8_accumulator: str = "fp32",
+    ):
         self.quant_mode = quant_mode
         self.quant_weights = quant_weights or {}
         self.int8_accumulator = int8_accumulator
@@ -275,8 +291,9 @@ class CPUBackend(EdgeBackend):
     def supports(self, node: Any) -> bool:
         return True
 
-    def run(self, node: Any, inputs: List[np.ndarray],
-            pool: BufferPool, **kwargs: Any) -> np.ndarray:
+    def run(
+        self, node: Any, inputs: List[np.ndarray], pool: BufferPool, **kwargs: Any
+    ) -> np.ndarray:
         if node.op == "matmul":
             a, b = inputs
             out_shape = a.shape[:-1] + b.shape[-1:]
@@ -298,6 +315,7 @@ class CPUBackend(EdgeBackend):
 # graph weight quantization
 # --------------------------------------------------------------------------
 
+
 def _int8_weight_scale(w: np.ndarray) -> Tuple[np.ndarray, float]:
     peak = float(np.abs(w).max()) if w.size else 0.0
     if peak == 0.0:
@@ -306,8 +324,9 @@ def _int8_weight_scale(w: np.ndarray) -> Tuple[np.ndarray, float]:
     return np.round(w / scale).astype(np.int8), scale
 
 
-def quantize_graph_weights(compiled: CompiledGraph,
-                           mode: str = "int8") -> Dict[int, Tuple[np.ndarray, float]]:
+def quantize_graph_weights(
+    compiled: CompiledGraph, mode: str = "int8"
+) -> Dict[int, Tuple[np.ndarray, float]]:
     """Quantize matmul weight tensors (const/param RHS) to INT8.
 
     Returns a mapping of node id -> (int8_array, scale) for every matmul whose
@@ -349,8 +368,13 @@ def register_backend(name: str, factory: Callable[..., EdgeBackend]) -> None:
 class EdgeRuntime:
     """Mobile/edge inference runtime over a compiled graph."""
 
-    def __init__(self, compiled: CompiledGraph, config: Optional[EdgeConfig] = None,
-                 device: Optional[EdgeDevice] = None, quant_weights: Optional[Dict] = None):
+    def __init__(
+        self,
+        compiled: CompiledGraph,
+        config: Optional[EdgeConfig] = None,
+        device: Optional[EdgeDevice] = None,
+        quant_weights: Optional[Dict] = None,
+    ):
         self.compiled = compiled
         self.config = config or EdgeConfig()
         self.device = device or detect_cpu()
@@ -359,11 +383,15 @@ class EdgeRuntime:
         if name == "auto":
             name = "cpu"
         if name not in _BACKEND_REGISTRY:
-            raise ValueError(f"unknown edge backend {name!r}; "
-                             f"registered: {sorted(_BACKEND_REGISTRY)}")
+            raise ValueError(
+                f"unknown edge backend {name!r}; "
+                f"registered: {sorted(_BACKEND_REGISTRY)}"
+            )
         self.quant_weights = quant_weights
         if self.quant_weights is None and self.config.quant_mode != "none":
-            self.quant_weights = quantize_graph_weights(self.compiled, self.config.quant_mode)
+            self.quant_weights = quantize_graph_weights(
+                self.compiled, self.config.quant_mode
+            )
         self.backend = _BACKEND_REGISTRY[name](
             quant_mode=self.config.quant_mode,
             quant_weights=self.quant_weights or {},
@@ -379,8 +407,9 @@ class EdgeRuntime:
     def __call__(self, inputs: Dict[str, np.ndarray]) -> np.ndarray:
         return self.forward(inputs)
 
-    def forward(self, inputs: Dict[str, np.ndarray],
-                tile_size: Optional[int] = None) -> np.ndarray:
+    def forward(
+        self, inputs: Dict[str, np.ndarray], tile_size: Optional[int] = None
+    ) -> np.ndarray:
         """Execute the compiled graph through the configured backend."""
         values: Dict[int, np.ndarray] = {}
         bindings = {k: np.asarray(v) for k, v in inputs.items()}
@@ -388,9 +417,7 @@ class EdgeRuntime:
         try:
             for node in self.compiled.nodes:
                 if node.op == "input":
-                    values[id(node)] = bindings.get(
-                        node.name, bindings.get(id(node))
-                    )
+                    values[id(node)] = bindings.get(node.name, bindings.get(id(node)))
                 elif node.op == "const":
                     values[id(node)] = node.params["value"]
                 elif node.op == "param":
@@ -401,8 +428,12 @@ class EdgeRuntime:
                     if isinstance(node, FusedNode):
                         args = [values[id(i)] for i in node.external_inputs]
                     else:
-                        args = [values[id(self.compiled._resolve(i))] for i in node.inputs]
-                    backend = self.backend if self.backend.supports(node) else self._fallback
+                        args = [
+                            values[id(self.compiled._resolve(i))] for i in node.inputs
+                        ]
+                    backend = (
+                        self.backend if self.backend.supports(node) else self._fallback
+                    )
                     values[id(node)] = backend.run(node, args, self.pool)
             result = values[id(self.compiled.entry)]
             if self.pool.owns(result):
@@ -414,8 +445,9 @@ class EdgeRuntime:
     def predict(self, inputs: Dict[str, np.ndarray]) -> np.ndarray:
         return self.forward(inputs)
 
-    def latency_ms(self, inputs: Dict[str, np.ndarray], iterations: int = 20,
-                   warmup: int = 3) -> float:
+    def latency_ms(
+        self, inputs: Dict[str, np.ndarray], iterations: int = 20, warmup: int = 3
+    ) -> float:
         if iterations < 1:
             raise ValueError("iterations must be >= 1")
         for _ in range(warmup):
@@ -463,8 +495,9 @@ class EdgeRuntime:
         self.pool.release()
 
 
-def benchmark(runtime: EdgeRuntime, inputs: Dict[str, np.ndarray],
-              iterations: int = 20) -> Dict[str, Any]:
+def benchmark(
+    runtime: EdgeRuntime, inputs: Dict[str, np.ndarray], iterations: int = 20
+) -> Dict[str, Any]:
     """Run a one-shot benchmark over the runtime."""
     return {
         "latency_ms": runtime.latency_ms(inputs, iterations=iterations),

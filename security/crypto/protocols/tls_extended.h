@@ -23,14 +23,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TLS_VERSION_1_2,
     SNEPPX_TLS_VERSION_1_3,
     SNEPPX_TLS_VERSION_DRAFT_1_4
 } SNEPPXTLSVersion;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TLS_CIPHER_AES_128_GCM_SHA256,
     SNEPPX_TLS_CIPHER_AES_256_GCM_SHA384,
     SNEPPX_TLS_CIPHER_CHACHA20_POLY1305_SHA256,
@@ -40,7 +41,8 @@ typedef enum {
     SNEPPX_TLS_CIPHER_AEGIS_128L_SHA256
 } SNEPPXTlsCipherSuite;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TLS_GROUP_SECP256R1,
     SNEPPX_TLS_GROUP_SECP384R1,
     SNEPPX_TLS_GROUP_SECP521R1,
@@ -55,7 +57,8 @@ typedef enum {
     SNEPPX_TLS_GROUP_HQC_192
 } SNEPPXTlsKeyExchangeGroup;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TLS_SIG_RSA_PSS_2048_SHA256,
     SNEPPX_TLS_SIG_RSA_PSS_4096_SHA512,
     SNEPPX_TLS_SIG_ECDSA_SECP256R1_SHA256,
@@ -69,7 +72,8 @@ typedef enum {
     SNEPPX_TLS_SIG_SPHINCS_PLUS_SHA256
 } SNEPPXTlsSignatureScheme;
 
-typedef struct {
+typedef struct
+{
     uint8_t* session_id;
     size_t session_id_len;
     uint8_t* master_secret;
@@ -106,7 +110,8 @@ typedef struct {
     uint32_t num_extensions;
 } SNEPPXTlsSession;
 
-typedef struct {
+typedef struct
+{
     uint8_t* certificate;
     size_t certificate_len;
     uint8_t* private_key;
@@ -129,10 +134,13 @@ int snepx_tls13_derive_secret(SNEPPXTlsSession* session, const uint8_t* psk, siz
 int snepx_tls13_derive_early_secret(SNEPPXTlsSession* session, const uint8_t* salt, size_t salt_len);
 int snepx_tls13_derive_handshake_secret(SNEPPXTlsSession* session, const uint8_t* ecdhe, size_t ecdhe_len);
 int snepx_tls13_derive_master_secret(SNEPPXTlsSession* session);
-int snepx_tls13_derive_application_traffic(SNEPPXTlsSession* session, uint8_t* key, size_t* key_len, uint8_t* iv, size_t* iv_len);
+int snepx_tls13_derive_application_traffic(SNEPPXTlsSession* session, uint8_t* key, size_t* key_len, uint8_t* iv,
+                                           size_t* iv_len);
 
-int snepx_tls_encrypt(SNEPPXTlsSession* session, const uint8_t* plaintext, size_t plaintext_len, uint8_t* ciphertext, size_t* ciphertext_len, uint64_t seq_num);
-int snepx_tls_decrypt(SNEPPXTlsSession* session, const uint8_t* ciphertext, size_t ciphertext_len, uint8_t* plaintext, size_t* plaintext_len, uint64_t seq_num);
+int snepx_tls_encrypt(SNEPPXTlsSession* session, const uint8_t* plaintext, size_t plaintext_len, uint8_t* ciphertext,
+                      size_t* ciphertext_len, uint64_t seq_num);
+int snepx_tls_decrypt(SNEPPXTlsSession* session, const uint8_t* ciphertext, size_t ciphertext_len, uint8_t* plaintext,
+                      size_t* plaintext_len, uint64_t seq_num);
 
 int snepx_tls_key_update(SNEPPXTlsSession* session);
 int snepx_tls_new_session_ticket(SNEPPXTlsSession* session, uint32_t ticket_lifetime);
@@ -144,7 +152,9 @@ int snepx_tls_cert_compress_brotli(SNEPPXTlsSession* session, uint8_t* compresse
 int snepx_tls_cert_decompress_brotli(SNEPPXTlsSession* session, const uint8_t* compressed, size_t compressed_len);
 
 // Encrypted ClientHello (ECH)
-int snepx_tls_ech_create(SNEPPXTlsSession* session, const uint8_t* client_hello, size_t ch_len, const uint8_t* config, size_t config_len, uint8_t* ech_out, size_t* ech_len);
-int snepx_tls_ech_decrypt(SNEPPXTlsSession* session, const uint8_t* ech, size_t ech_len, uint8_t* client_hello_out, size_t* ch_out_len);
+int snepx_tls_ech_create(SNEPPXTlsSession* session, const uint8_t* client_hello, size_t ch_len, const uint8_t* config,
+                         size_t config_len, uint8_t* ech_out, size_t* ech_len);
+int snepx_tls_ech_decrypt(SNEPPXTlsSession* session, const uint8_t* ech, size_t ech_len, uint8_t* client_hello_out,
+                          size_t* ch_out_len);
 
 #endif

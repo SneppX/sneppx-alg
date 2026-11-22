@@ -1,8 +1,8 @@
 #include "integrity_monitor.h"
 #include "test_gtest.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Integrity Monitor
@@ -19,23 +19,23 @@
  *
  */
 
-
 static int g_event_count = 0;
 
-
-
-static void event_callback(const SNEPPXMonitorEvent* event) {
-    (void)event;
+static void event_callback(const SNEPPXMonitorEvent* event)
+{
+    (void) event;
     g_event_count++;
 }
 
-static void test_init_shutdown(void) {
+static void test_init_shutdown(void)
+{
     int ret = SNEPPX_monitor_init();
     SX_ASSERT(ret == 0, "monitor init");
     SNEPPX_monitor_shutdown();
 }
 
-static void test_start_stop(void) {
+static void test_start_stop(void)
+{
     SNEPPX_monitor_init();
     int ret = SNEPPX_monitor_start(100);
     SX_ASSERT(ret == 0, "monitor start");
@@ -44,7 +44,8 @@ static void test_start_stop(void) {
     SNEPPX_monitor_shutdown();
 }
 
-static void test_region_registration(void) {
+static void test_region_registration(void)
+{
     SNEPPX_monitor_init();
     int data[] = {1, 2, 3, 4, 5};
     int ret = SNEPPX_monitor_register_region("test_data", data, sizeof(data));
@@ -61,7 +62,8 @@ static void test_region_registration(void) {
     SNEPPX_monitor_shutdown();
 }
 
-static void test_verify_all(void) {
+static void test_verify_all(void)
+{
     SNEPPX_monitor_init();
     int data[] = {10, 20, 30};
     SNEPPX_monitor_register_region("verify_data", data, sizeof(data));
@@ -71,7 +73,8 @@ static void test_verify_all(void) {
     SNEPPX_monitor_shutdown();
 }
 
-static void test_canary(void) {
+static void test_canary(void)
+{
     SNEPPX_monitor_init();
     int ok = SNEPPX_monitor_check_canary();
     SX_ASSERT(ok != 0, "canary check passes initially");
@@ -81,7 +84,8 @@ static void test_canary(void) {
     SNEPPX_monitor_shutdown();
 }
 
-static void test_callback(void) {
+static void test_callback(void)
+{
     SNEPPX_monitor_init();
     SNEPPX_monitor_set_callback(event_callback);
     g_event_count = 0;
@@ -100,10 +104,27 @@ static void test_callback(void) {
     SNEPPX_monitor_shutdown();
 }
 
-
-TEST(test_integrity_monitor, init_shutdown) { test_init_shutdown(); }
-TEST(test_integrity_monitor, start_stop) { test_start_stop(); }
-TEST(test_integrity_monitor, region_registration) { test_region_registration(); }
-TEST(test_integrity_monitor, verify_all) { test_verify_all(); }
-TEST(test_integrity_monitor, canary) { test_canary(); }
-TEST(test_integrity_monitor, callback) { test_callback(); }
+TEST(test_integrity_monitor, init_shutdown)
+{
+    test_init_shutdown();
+}
+TEST(test_integrity_monitor, start_stop)
+{
+    test_start_stop();
+}
+TEST(test_integrity_monitor, region_registration)
+{
+    test_region_registration();
+}
+TEST(test_integrity_monitor, verify_all)
+{
+    test_verify_all();
+}
+TEST(test_integrity_monitor, canary)
+{
+    test_canary();
+}
+TEST(test_integrity_monitor, callback)
+{
+    test_callback();
+}

@@ -15,7 +15,7 @@ training:
   max_epochs: 0
   seed: 42
   max_grad_norm: 1.0
-  device: cpu                     # 'cpu', 'cuda', 'cuda:0'
+  device: cpu # 'cpu', 'cuda', 'cuda:0'
   log_every: 10
   eval_every: 200
   save_every: 500
@@ -24,31 +24,31 @@ training:
   resume_from: null
 
 optimizer:
-  name: adamw                     # 'adamw', 'adam', 'sgd', 'lion'
+  name: adamw # 'adamw', 'adam', 'sgd', 'lion'
   lr: 0.0003
   weight_decay: 0.01
   betas: [0.9, 0.999]
   eps: 1.0e-8
 
 scheduler:
-  name: cosine                    # 'cosine', 'linear', 'constant_with_warmup'
+  name: cosine # 'cosine', 'linear', 'constant_with_warmup'
   warmup_steps: 100
   min_lr: 0.00001
 
 amp:
-  enabled: false                  # Automatic Mixed Precision
-  dtype: float16                  # 'float16' or 'bfloat16'
+  enabled: false # Automatic Mixed Precision
+  dtype: float16 # 'float16' or 'bfloat16'
 
 distributed:
-  backend: gloo                   # 'nccl' on Linux/GPU clusters, 'gloo' on CPU/Windows
-  zero_stage: 0                   # 0 = disabled, 1 = shard states, 2 = shard gradients, 3 = full shard
+  backend: gloo # 'nccl' on Linux/GPU clusters, 'gloo' on CPU/Windows
+  zero_stage: 0 # 0 = disabled, 1 = shard states, 2 = shard gradients, 3 = full shard
 
 logging:
   use_wandb: false
   project: sneppx-training
 
 privacy:
-  enabled: false                  # Differential Privacy (DP-SGD)
+  enabled: false # Differential Privacy (DP-SGD)
   noise_multiplier: 1.0
   max_per_sample_grad_norm: 1.0
   epsilon: 8.0

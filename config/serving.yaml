@@ -12,11 +12,11 @@
 
 serving.listen: 127.0.0.1
 serving.port: 8300
-serving.max_batch_size: 32           # Maximum sequence batch size for continuous batching
-serving.batch_timeout_ms: 5.0        # Max queue wait time before dispatching batch
-serving.n_workers: 4                 # Worker threads for concurrent request handling
-serving.warmup_iters: 8              # Warmup iterations before serving live traffic
-serving.quantization: int8           # 'none', 'int8', 'int4', 'fp8'
+serving.max_batch_size: 32 # Maximum sequence batch size for continuous batching
+serving.batch_timeout_ms: 5.0 # Max queue wait time before dispatching batch
+serving.n_workers: 4 # Worker threads for concurrent request handling
+serving.warmup_iters: 8 # Warmup iterations before serving live traffic
+serving.quantization: int8 # 'none', 'int8', 'int4', 'fp8'
 
 models:
   gpt2:

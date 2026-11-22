@@ -10,9 +10,9 @@ macro(SNEPPX_enable_lto target)
         target_link_options(${target} PRIVATE -flto)
     elseif(MSVC)
         target_compile_options(${target} PRIVATE /GL)
-        set_target_properties(${target} PROPERTIES
-            STATIC_LIBRARY_FLAGS /LTCG
-            INTERFACE_LINK_LIBRARIES ""
+        set_target_properties(
+            ${target}
+            PROPERTIES STATIC_LIBRARY_FLAGS /LTCG INTERFACE_LINK_LIBRARIES ""
         )
         if(NOT ${target} MATCHES ".*_static")
             target_link_options(${target} PRIVATE /LTCG)

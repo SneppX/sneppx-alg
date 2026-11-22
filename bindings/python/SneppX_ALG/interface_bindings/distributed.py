@@ -138,9 +138,13 @@ class DistributedSampler:
     ``drop_last=True`` to discard the incomplete tail instead.
     """
 
-    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False):
+    def __init__(
+        self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False
+    ):
         self.dataset = dataset
-        self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
+        self.num_replicas = (
+            get_world_size() if num_replicas is None else int(num_replicas)
+        )
         self.rank = get_rank() if rank is None else int(rank)
         if self.num_replicas < 1:
             raise ValueError("num_replicas must be >= 1")

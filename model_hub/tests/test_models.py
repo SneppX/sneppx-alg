@@ -1,10 +1,21 @@
 """Tests for core data models."""
+
 import os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 from model_hub.api.models import (
-    ModelCard, ModelFormat, ModelTask, SemVer, User, APIKey,
-    BenchmarkResult, ModelVisibility, License,
+    ModelCard,
+    ModelFormat,
+    ModelTask,
+    SemVer,
+    User,
+    APIKey,
+    BenchmarkResult,
+    ModelVisibility,
+    License,
 )
 from model_hub.utils import hash_password, verify_password
 
@@ -38,9 +49,14 @@ class TestSemVer:
 
 class TestModelCard:
     def _make(self, **kw):
-        d = dict(name="test-org/test-model", version="v1.0.0",
-                 architecture="Transformer", format=ModelFormat.SNEPPX_NATIVE,
-                 task=ModelTask.TEXT_GENERATION, description="Test model")
+        d = dict(
+            name="test-org/test-model",
+            version="v1.0.0",
+            architecture="Transformer",
+            format=ModelFormat.SNEPPX_NATIVE,
+            task=ModelTask.TEXT_GENERATION,
+            description="Test model",
+        )
         d.update(kw)
         return ModelCard(**d)
 

@@ -135,9 +135,7 @@ def test_backdoor_train_increases_match():
 
 def test_backdoor_untrained_low_match():
     m = _Model()
-    bw = BackdoorWatermark(
-        key="bk", input_shape=(8,), target_label=3, num_keys=40
-    )
+    bw = BackdoorWatermark(key="bk", input_shape=(8,), target_label=3, num_keys=40)
     ok, frac = bw.verify(m)
     assert not ok
     assert frac < 0.5

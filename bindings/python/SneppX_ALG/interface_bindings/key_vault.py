@@ -19,7 +19,9 @@ _LIB, _HAS_C = load_library("neural_security_c")
 class AuditLogger:
     """Security event audit logging with tamper-evident chain."""
 
-    def __init__(self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None):
+    def __init__(
+        self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None
+    ):
         """Create an audit logger.
 
         ``hmac_key`` (or ``SNEPPX_AUDIT_HMAC_KEY``) is a secret held outside
@@ -48,7 +50,12 @@ class AuditLogger:
         return hashlib.sha256(data).hexdigest()
 
     def log(
-        self, action: str, actor: str, resource: str, result: str, details: Optional[dict] = None
+        self,
+        action: str,
+        actor: str,
+        resource: str,
+        result: str,
+        details: Optional[dict] = None,
     ) -> None:
         entry = {
             "timestamp": time.time(),
@@ -70,7 +77,10 @@ class AuditLogger:
             pass
 
     def query(
-        self, actor: Optional[str] = None, action: Optional[str] = None, limit: int = 100
+        self,
+        actor: Optional[str] = None,
+        action: Optional[str] = None,
+        limit: int = 100,
     ) -> List[dict]:
         with self._lock:
             results = list(self._entries)
@@ -178,7 +188,8 @@ class KeyVault:
         if key is None:
             return None
         return bytes(
-            b ^ w for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key)))
+            b ^ w
+            for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key)))
         )
 
     def unwrap_key(self, wrapped: bytes, key_id: str) -> Optional[bytes]:

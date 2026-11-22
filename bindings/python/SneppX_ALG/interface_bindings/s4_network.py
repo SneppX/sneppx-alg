@@ -58,7 +58,9 @@ class IdentityManager:
         self._lock = threading.Lock()
         self._has_c = _HAS_C
 
-    def register(self, device_id: str, public_key: bytes, metadata: Optional[dict] = None) -> None:
+    def register(
+        self, device_id: str, public_key: bytes, metadata: Optional[dict] = None
+    ) -> None:
         with self._lock:
             self._identities[device_id] = {
                 "public_key": public_key,
@@ -74,7 +76,9 @@ class IdentityManager:
         with self._lock:
             return self._identities.pop(device_id, None) is not None
 
-    def verify_identity(self, device_id: str, challenge: bytes, signature: bytes) -> bool:
+    def verify_identity(
+        self, device_id: str, challenge: bytes, signature: bytes
+    ) -> bool:
         identity = self.lookup(device_id)
         if identity is None:
             return False

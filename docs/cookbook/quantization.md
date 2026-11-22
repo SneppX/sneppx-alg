@@ -165,4 +165,3 @@ sneppx-quantize --model-dir ./checkpoints/llama2-7b --mode int4 --group-size 128
 # Quantize to FP8 E4M3 for faster CPU inference
 sneppx-quantize --model-dir ./checkpoints/llama2-7b --mode fp8 --out ./quantized/llama2-7b-fp8
 ```
-

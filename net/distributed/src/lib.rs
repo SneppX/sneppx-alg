@@ -80,13 +80,36 @@ impl Default for DistConfig {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 enum ProtoMsg {
-    DiscoveryReq { node_id: u64, listen_port: u16 },
-    DiscoveryResp { peers: Vec<PeerAddr> },
-    GradientChunk { chunk_id: u32, total_chunks: u32, data: Vec<f32>, compressed: bool, indices: Vec<u32> },
-    ParamSync { name: String, data: Vec<f32>, version: u64, node_id: u64 },
-    Heartbeat { node_id: u64, timestamp: u64 },
-    HeartbeatAck { node_id: u64 },
-    PeerLeave { node_id: u64 },
+    DiscoveryReq {
+        node_id: u64,
+        listen_port: u16,
+    },
+    DiscoveryResp {
+        peers: Vec<PeerAddr>,
+    },
+    GradientChunk {
+        chunk_id: u32,
+        total_chunks: u32,
+        data: Vec<f32>,
+        compressed: bool,
+        indices: Vec<u32>,
+    },
+    ParamSync {
+        name: String,
+        data: Vec<f32>,
+        version: u64,
+        node_id: u64,
+    },
+    Heartbeat {
+        node_id: u64,
+        timestamp: u64,
+    },
+    HeartbeatAck {
+        node_id: u64,
+    },
+    PeerLeave {
+        node_id: u64,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -193,17 +216,29 @@ fn write_f32_slice(ptr: *mut f32, data: &[f32]) -> Result<(), DistError> {
 async fn send_msg(stream: &mut TcpStream, msg: &ProtoMsg) -> Result<(), DistError> {
     let payload = bincode::serialize(msg).map_err(|_| DistError::ERR_INTERNAL)?;
     let len = (payload.len() as u32).to_le_bytes();
-    stream.write_all(&len).await.map_err(|_| DistError::ERR_CONNECT)?;
-    stream.write_all(&payload).await.map_err(|_| DistError::ERR_CONNECT)?;
+    stream
+        .write_all(&len)
+        .await
+        .map_err(|_| DistError::ERR_CONNECT)?;
+    stream
+        .write_all(&payload)
+        .await
+        .map_err(|_| DistError::ERR_CONNECT)?;
     Ok(())
 }
 
 async fn recv_msg(stream: &mut TcpStream) -> Result<ProtoMsg, DistError> {
     let mut len_buf = [0u8; 4];
-    stream.read_exact(&mut len_buf).await.map_err(|_| DistError::ERR_CONNECT)?;
+    stream
+        .read_exact(&mut len_buf)
+        .await
+        .map_err(|_| DistError::ERR_CONNECT)?;
     let len = u32::from_le_bytes(len_buf) as usize;
     let mut payload = vec![0u8; len];
-    stream.read_exact(&mut payload).await.map_err(|_| DistError::ERR_CONNECT)?;
+    stream
+        .read_exact(&mut payload)
+        .await
+        .map_err(|_| DistError::ERR_CONNECT)?;
     bincode::deserialize(&payload).map_err(|_| DistError::ERR_INTERNAL)
 }
 
@@ -325,7 +360,10 @@ async fn discovery_server(state: Arc<SharedState>) {
         tokio::spawn(async move {
             if let Ok(msg) = recv_msg(&mut stream).await {
                 match msg {
-                    ProtoMsg::DiscoveryReq { node_id, listen_port } => {
+                    ProtoMsg::DiscoveryReq {
+                        node_id,
+                        listen_port,
+                    } => {
                         {
                             let mut peers = state_clone.peers.write().unwrap();
                             let exists = peers.iter().any(|p| p.node_id == node_id);
@@ -388,13 +426,20 @@ async fn heartbeat_loop(state: Arc<SharedState>) {
 
         let peers: Vec<Arc<PeerState>> = {
             let guard = state.peers.read().unwrap();
-            guard.iter().filter(|p| !p.failed.load(Ordering::Relaxed)).cloned().collect()
+            guard
+                .iter()
+                .filter(|p| !p.failed.load(Ordering::Relaxed))
+                .cloned()
+                .collect()
         };
 
         for peer in &peers {
             let mut stream_opt = peer.stream.lock().await;
             if let Some(stream) = stream_opt.as_mut() {
-                let msg = ProtoMsg::Heartbeat { node_id, timestamp: now_micros() };
+                let msg = ProtoMsg::Heartbeat {
+                    node_id,
+                    timestamp: now_micros(),
+                };
                 if send_msg(stream, &msg).await.is_err() {
                     *stream_opt = None;
                     peer.failed.store(true, Ordering::Relaxed);
@@ -421,7 +466,11 @@ async fn heartbeat_loop(state: Arc<SharedState>) {
         // Reconnect failed peers
         let failed_peers: Vec<Arc<PeerState>> = {
             let guard = state.peers.read().unwrap();
-            guard.iter().filter(|p| p.failed.load(Ordering::Relaxed)).cloned().collect()
+            guard
+                .iter()
+                .filter(|p| p.failed.load(Ordering::Relaxed))
+                .cloned()
+                .collect()
         };
 
         for peer in &failed_peers {
@@ -460,8 +509,9 @@ async fn heartbeat_listener(state: Arc<SharedState>) {
                 match recv_msg(stream).await {
                     Ok(ProtoMsg::Heartbeat { .. }) => {
                         *peer.last_heartbeat.lock().unwrap() = Instant::now();
-                        let ack =
-                            ProtoMsg::HeartbeatAck { node_id: state.node_id.load(Ordering::Relaxed) };
+                        let ack = ProtoMsg::HeartbeatAck {
+                            node_id: state.node_id.load(Ordering::Relaxed),
+                        };
                         let _ = send_msg(stream, &ack).await;
                         any_work = true;
                     }
@@ -514,10 +564,17 @@ fn compress_topk(data: &[f32], ratio: f32) -> (Vec<u32>, Vec<f32>) {
         .copied()
         .collect();
 
-    let sampled_vals: Vec<f32> = sampled.iter().map(|i| {
-        let scale = if !sampled.is_empty() { n as f32 / sampled.len() as f32 } else { 1.0 };
-        data[*i as usize] * scale
-    }).collect();
+    let sampled_vals: Vec<f32> = sampled
+        .iter()
+        .map(|i| {
+            let scale = if !sampled.is_empty() {
+                n as f32 / sampled.len() as f32
+            } else {
+                1.0
+            };
+            data[*i as usize] * scale
+        })
+        .collect();
 
     let mut out_idx = topk_idx;
     let mut out_vals = topk_vals;
@@ -539,10 +596,7 @@ fn decompress(data: &mut [f32], indices: &[u32], values: &[f32]) {
 // Ring all-reduce
 // ============================================================================
 
-async fn ring_all_reduce_impl(
-    state: Arc<SharedState>,
-    data: &mut [f32],
-) -> Result<(), DistError> {
+async fn ring_all_reduce_impl(state: Arc<SharedState>, data: &mut [f32]) -> Result<(), DistError> {
     let topology = {
         let topo = state.topology.read().unwrap();
         topo.clone().ok_or(DistError::ERR_RING_TOPO)?
@@ -614,7 +668,14 @@ async fn ring_all_reduce_impl(
             recv_msg(stream).await?
         };
 
-        if let ProtoMsg::GradientChunk { chunk_id: _, data: recv_data, compressed, indices, .. } = recv_msg {
+        if let ProtoMsg::GradientChunk {
+            chunk_id: _,
+            data: recv_data,
+            compressed,
+            indices,
+            ..
+        } = recv_msg
+        {
             let recv_start = (recv_chunk_idx * chunk_size).min(n);
             let recv_end = (recv_start + recv_data.len()).min(n);
             let dest = &mut data[recv_start..recv_end];
@@ -685,7 +746,14 @@ async fn ring_all_reduce_impl(
             recv_msg(stream).await?
         };
 
-        if let ProtoMsg::GradientChunk { chunk_id: _, data: recv_data, compressed, indices, .. } = recv_msg {
+        if let ProtoMsg::GradientChunk {
+            chunk_id: _,
+            data: recv_data,
+            compressed,
+            indices,
+            ..
+        } = recv_msg
+        {
             let recv_start = (recv_chunk_idx * chunk_size).min(n);
             let recv_end = (recv_start + recv_data.len()).min(n);
             let dest = &mut data[recv_start..recv_end];
@@ -714,8 +782,17 @@ async fn ring_all_reduce_impl(
     // Scatter-reduce phase
     for step in 0..world_size - 1 {
         scatter_reduce_step(
-            &peers, data, rank, world_size, chunk_size, n, step,
-            enable_compression, top_k_ratio, pred_addr, succ_addr,
+            &peers,
+            data,
+            rank,
+            world_size,
+            chunk_size,
+            n,
+            step,
+            enable_compression,
+            top_k_ratio,
+            pred_addr,
+            succ_addr,
         )
         .await?;
     }
@@ -723,8 +800,17 @@ async fn ring_all_reduce_impl(
     // All-gather phase
     for step in 0..world_size - 1 {
         all_gather_step(
-            &peers, data, rank, world_size, chunk_size, n, step,
-            enable_compression, top_k_ratio, pred_addr, succ_addr,
+            &peers,
+            data,
+            rank,
+            world_size,
+            chunk_size,
+            n,
+            step,
+            enable_compression,
+            top_k_ratio,
+            pred_addr,
+            succ_addr,
         )
         .await?;
     }
@@ -759,15 +845,20 @@ async fn sync_params_impl(
     let node_id = state.node_id.load(Ordering::Relaxed);
     let peers: Vec<Arc<PeerState>> = {
         let guard = state.peers.read().unwrap();
-        guard.iter().filter(|p| !p.failed.load(Ordering::Relaxed)).cloned().collect()
+        guard
+            .iter()
+            .filter(|p| !p.failed.load(Ordering::Relaxed))
+            .cloned()
+            .collect()
     };
 
     if peers.is_empty() {
         return Ok(());
     }
 
-    let param_names: Vec<String> =
-        (0..param_ptrs.len()).map(|i| format!("param_{}", i)).collect();
+    let param_names: Vec<String> = (0..param_ptrs.len())
+        .map(|i| format!("param_{}", i))
+        .collect();
 
     let param_snapshots: Vec<ProtoMsg> = param_ptrs
         .iter()
@@ -776,7 +867,11 @@ async fn sync_params_impl(
             let slice = unsafe { std::slice::from_raw_parts(*ptr, shapes[i]) };
             let version = {
                 let store = state.param_store.read().unwrap();
-                store.params.get(&param_names[i]).map(|p| p.version).unwrap_or(0)
+                store
+                    .params
+                    .get(&param_names[i])
+                    .map(|p| p.version)
+                    .unwrap_or(0)
             };
             ProtoMsg::ParamSync {
                 name: param_names[i].clone(),
@@ -806,7 +901,12 @@ async fn sync_params_impl(
         if let Some(stream) = guard.as_mut() {
             for (i, name) in param_names.iter().enumerate() {
                 match recv_msg(stream).await {
-                    Ok(ProtoMsg::ParamSync { name: n, data, version, node_id: nid }) => {
+                    Ok(ProtoMsg::ParamSync {
+                        name: n,
+                        data,
+                        version,
+                        node_id: nid,
+                    }) => {
                         if n != *name {
                             continue;
                         }
@@ -814,7 +914,9 @@ async fn sync_params_impl(
                         let current = store.params.get(&n);
                         let should_update = match current {
                             None => true,
-                            Some(p) => version > p.version || (version == p.version && nid > p.node_id),
+                            Some(p) => {
+                                version > p.version || (version == p.version && nid > p.node_id)
+                            }
                         };
                         if should_update {
                             store.params.insert(
@@ -829,7 +931,8 @@ async fn sync_params_impl(
                             let ptr = param_ptrs[i];
                             let len = shapes[i].min(data.len());
                             unsafe {
-                                std::slice::from_raw_parts_mut(ptr, len).copy_from_slice(&data[..len]);
+                                std::slice::from_raw_parts_mut(ptr, len)
+                                    .copy_from_slice(&data[..len]);
                             }
                         }
                     }
@@ -968,9 +1071,10 @@ pub unsafe extern "C" fn arix_dist_connect(addr: *const c_char, port: u16) -> i3
     };
 
     let state = runtime.state.clone();
-    if let Err(e) = runtime.rt.block_on(async move {
-        connect_to_peer_inner(state, &addr_str, port).await
-    }) {
+    if let Err(e) = runtime
+        .rt
+        .block_on(async move { connect_to_peer_inner(state, &addr_str, port).await })
+    {
         return e as i32;
     }
 
@@ -981,9 +1085,11 @@ pub unsafe extern "C" fn arix_dist_connect(addr: *const c_char, port: u16) -> i3
         let mut addrs: Vec<SocketAddr> = peers.iter().map(|p| p.addr).collect();
         let mut ids: Vec<u64> = peers.iter().map(|p| p.node_id).collect();
         let my_id = runtime.state.node_id.load(Ordering::Relaxed);
-        let self_addr: SocketAddr =
-            format!("127.0.0.1:{}", runtime.state.port).parse().unwrap();
-        let insert_pos = addrs.iter().position(|a| *a > self_addr).unwrap_or(addrs.len());
+        let self_addr: SocketAddr = format!("127.0.0.1:{}", runtime.state.port).parse().unwrap();
+        let insert_pos = addrs
+            .iter()
+            .position(|a| *a > self_addr)
+            .unwrap_or(addrs.len());
         addrs.insert(insert_pos, self_addr);
         ids.insert(insert_pos, my_id);
         let rank = ids.iter().position(|id| *id == my_id).unwrap_or(0);
@@ -1012,9 +1118,9 @@ pub unsafe extern "C" fn arix_dist_all_reduce(data: *mut f32, count: usize, op: 
     };
 
     let state = runtime.state.clone();
-    let result = runtime.rt.block_on(async {
-        all_reduce_impl(state, &mut buf, op).await
-    });
+    let result = runtime
+        .rt
+        .block_on(async { all_reduce_impl(state, &mut buf, op).await });
     if let Err(e) = result {
         return e as i32;
     }
@@ -1037,9 +1143,9 @@ pub unsafe extern "C" fn arix_dist_ring_all_reduce(data: *mut f32, count: usize)
     };
 
     let state = runtime.state.clone();
-    let result = runtime.rt.block_on(async {
-        ring_all_reduce_impl(state, &mut buf).await
-    });
+    let result = runtime
+        .rt
+        .block_on(async { ring_all_reduce_impl(state, &mut buf).await });
     if let Err(e) = result {
         return e as i32;
     }
@@ -1068,9 +1174,10 @@ pub unsafe extern "C" fn arix_dist_sync_params(
     let szs = unsafe { std::slice::from_raw_parts(shapes, n) };
 
     let state = runtime.state.clone();
-    if let Err(e) = runtime.rt.block_on(async move {
-        sync_params_impl(state, ptrs, szs).await
-    }) {
+    if let Err(e) = runtime
+        .rt
+        .block_on(async move { sync_params_impl(state, ptrs, szs).await })
+    {
         return e as i32;
     }
 

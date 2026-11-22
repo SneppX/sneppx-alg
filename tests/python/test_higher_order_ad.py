@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -31,9 +33,9 @@ def test_double_backward_mlp():
     assert gx.grad_fn is not None, "first grad must be graph-connected"
 
     # --- first-order sanity (must equal the analytic first gradients) ---
-    first_x = 2.0 * (h.data @ W.data)                 # (5,4)
-    first_W = 2.0 * (h.data.T @ x.data)               # (6,4)
-    first_b = 2.0 * h.data.sum(axis=0)                # (6,)
+    first_x = 2.0 * (h.data @ W.data)  # (5,4)
+    first_W = 2.0 * (h.data.T @ x.data)  # (6,4)
+    first_b = 2.0 * h.data.sum(axis=0)  # (6,)
     assert np.allclose(gx.data, first_x, atol=1e-4), "first grad x mismatch"
     assert np.allclose(gW.data, first_W, atol=1e-4), "first grad W mismatch"
     assert np.allclose(gb.data, first_b, atol=1e-4), "first grad b mismatch"
@@ -42,27 +44,27 @@ def test_double_backward_mlp():
     #     also depend on x, so their .backward() would write into x.grad too;
     #     we therefore check each leaf's .grad immediately after its own pass. ---
     gx.backward()
-    WTW = W.data.T @ W.data                            # (4,4)
-    expected_d2x = 2.0 * WTW.sum(axis=1)[None, :]      # (5,4): same per row
-    assert np.allclose(x.grad.data, expected_d2x, atol=1e-3), (
-        f"d2L/dx2 mismatch max|diff|={np.max(np.abs(x.grad.data - expected_d2x)):.3e}"
-    )
+    WTW = W.data.T @ W.data  # (4,4)
+    expected_d2x = 2.0 * WTW.sum(axis=1)[None, :]  # (5,4): same per row
+    assert np.allclose(
+        x.grad.data, expected_d2x, atol=1e-3
+    ), f"d2L/dx2 mismatch max|diff|={np.max(np.abs(x.grad.data - expected_d2x)):.3e}"
 
     W.grad = None
     b.grad = None
     gW.backward()
-    XTX = x.data.T @ x.data                            # (4,4)
-    expected_d2W = 2.0 * XTX.sum(axis=0)[None, :]      # (6,4)
-    assert np.allclose(W.grad.data, expected_d2W, atol=1e-3), (
-        f"d2L/dW2 mismatch max|diff|={np.max(np.abs(W.grad.data - expected_d2W)):.3e}"
-    )
+    XTX = x.data.T @ x.data  # (4,4)
+    expected_d2W = 2.0 * XTX.sum(axis=0)[None, :]  # (6,4)
+    assert np.allclose(
+        W.grad.data, expected_d2W, atol=1e-3
+    ), f"d2L/dW2 mismatch max|diff|={np.max(np.abs(W.grad.data - expected_d2W)):.3e}"
 
     b.grad = None
     gb.backward()
-    expected_d2b = 2.0 * np.float32(x.data.shape[0])   # (6,): 2*N constant
-    assert np.allclose(b.grad.data, expected_d2b, atol=1e-3), (
-        f"d2L/db2 mismatch max|diff|={np.max(np.abs(b.grad.data - expected_d2b)):.3e}"
-    )
+    expected_d2b = 2.0 * np.float32(x.data.shape[0])  # (6,): 2*N constant
+    assert np.allclose(
+        b.grad.data, expected_d2b, atol=1e-3
+    ), f"d2L/db2 mismatch max|diff|={np.max(np.abs(b.grad.data - expected_d2b)):.3e}"
 
 
 def test_grad_functional_matches_backward():

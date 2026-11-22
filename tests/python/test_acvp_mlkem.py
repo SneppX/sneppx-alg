@@ -26,6 +26,7 @@ import SneppX_ALG.interface_bindings.acvp_kat as kat
 
 try:
     from SneppX_ALG import _SNEPPX_c as _extension
+
     _HAS_TEST_RNG = hasattr(_extension.crypto, "random_set_seed")
 except ImportError:
     _HAS_TEST_RNG = False
@@ -115,6 +116,7 @@ def test_mlkem_interop_report(crypto):
 
 # ML-KEM encaps/decaps KAT vector coverage ---------------------------------------
 
+
 def _encaps_decaps_vectors():
     doc = kat.load_kat("mlkem_encaps_decaps_kat.json")
     vecs = doc["vectors"]
@@ -138,12 +140,13 @@ def test_mlkem_encaps_decaps_interop_report(crypto):
     report = kat.interop_report(crypto, vecs, kat.run_mlkem_encaps_decaps_roundtrip)
     assert report["skipped"] == 0
     assert report["total"] == len(vecs)
-    assert report["agreement"] == 1.0, (
-        f"encaps/decaps self-parity should be 1.0, got {report['agreement']}"
-    )
+    assert (
+        report["agreement"] == 1.0
+    ), f"encaps/decaps self-parity should be 1.0, got {report['agreement']}"
 
 
 # Aggregate PQC KAT runner -------------------------------------------------------
+
 
 def test_run_all_pqc_kats(crypto):
     report = kat.run_all_pqc_kats(crypto)

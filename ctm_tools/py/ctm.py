@@ -4,6 +4,7 @@
 This scanner reports filesystem metrics, not semantic source-code analysis.
 It deliberately skips binary files, generated directories, and symlinks.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -18,31 +19,104 @@ from pathlib import Path
 from typing import Any
 
 IGNORED_DIRS = {
-    ".git", ".hg", ".svn", "__pycache__", ".mypy_cache", ".pytest_cache",
-    ".ruff_cache", ".tox", ".venv", "venv", "node_modules", "build",
-    "build-deps", "build-deps2", "dist", "site", ".next", ".cache",
-    ".idea", ".vscode",
+    ".git",
+    ".hg",
+    ".svn",
+    "__pycache__",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "venv",
+    "node_modules",
+    "build",
+    "build-deps",
+    "build-deps2",
+    "dist",
+    "site",
+    ".next",
+    ".cache",
+    ".idea",
+    ".vscode",
 }
 IGNORED_SUFFIXES = {
-    ".pyc", ".pyo", ".o", ".obj", ".a", ".lib", ".so", ".dll", ".dylib",
-    ".exe", ".pyd", ".class", ".jar", ".zip", ".gz", ".7z", ".png",
-    ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".pdf", ".mp4", ".mp3",
-    ".wav", ".woff", ".woff2", ".ttf", ".otf",
+    ".pyc",
+    ".pyo",
+    ".o",
+    ".obj",
+    ".a",
+    ".lib",
+    ".so",
+    ".dll",
+    ".dylib",
+    ".exe",
+    ".pyd",
+    ".class",
+    ".jar",
+    ".zip",
+    ".gz",
+    ".7z",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".ico",
+    ".pdf",
+    ".mp4",
+    ".mp3",
+    ".wav",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
 }
 LANGUAGES = {
-    ".c": "C", ".h": "C headers", ".cc": "C++", ".cpp": "C++",
-    ".cxx": "C++", ".hpp": "C++ headers", ".hxx": "C++ headers",
-    ".py": "Python", ".pyi": "Python", ".js": "JavaScript",
-    ".jsx": "JavaScript", ".mjs": "JavaScript", ".cjs": "JavaScript",
-    ".ts": "TypeScript", ".tsx": "TypeScript", ".go": "Go",
-    ".rs": "Rust", ".java": "Java", ".kt": "Kotlin", ".swift": "Swift",
-    ".rb": "Ruby", ".php": "PHP", ".sh": "Shell", ".bash": "Shell",
-    ".ps1": "PowerShell", ".bat": "Batch", ".cmd": "Batch",
-    ".cu": "CUDA", ".cuh": "CUDA headers", ".asm": "Assembly",
-    ".s": "Assembly", ".sql": "SQL", ".html": "HTML", ".css": "CSS",
-    ".scss": "SCSS", ".json": "JSON", ".yaml": "YAML", ".yml": "YAML",
-    ".toml": "TOML", ".xml": "XML", ".md": "Markdown", ".rst": "reStructuredText",
-    ".cmake": "CMake", ".make": "Makefile",
+    ".c": "C",
+    ".h": "C headers",
+    ".cc": "C++",
+    ".cpp": "C++",
+    ".cxx": "C++",
+    ".hpp": "C++ headers",
+    ".hxx": "C++ headers",
+    ".py": "Python",
+    ".pyi": "Python",
+    ".js": "JavaScript",
+    ".jsx": "JavaScript",
+    ".mjs": "JavaScript",
+    ".cjs": "JavaScript",
+    ".ts": "TypeScript",
+    ".tsx": "TypeScript",
+    ".go": "Go",
+    ".rs": "Rust",
+    ".java": "Java",
+    ".kt": "Kotlin",
+    ".swift": "Swift",
+    ".rb": "Ruby",
+    ".php": "PHP",
+    ".sh": "Shell",
+    ".bash": "Shell",
+    ".ps1": "PowerShell",
+    ".bat": "Batch",
+    ".cmd": "Batch",
+    ".cu": "CUDA",
+    ".cuh": "CUDA headers",
+    ".asm": "Assembly",
+    ".s": "Assembly",
+    ".sql": "SQL",
+    ".html": "HTML",
+    ".css": "CSS",
+    ".scss": "SCSS",
+    ".json": "JSON",
+    ".yaml": "YAML",
+    ".yml": "YAML",
+    ".toml": "TOML",
+    ".xml": "XML",
+    ".md": "Markdown",
+    ".rst": "reStructuredText",
+    ".cmake": "CMake",
+    ".make": "Makefile",
 }
 
 
@@ -64,11 +138,25 @@ def _git_counts(root: Path) -> dict[str, int] | None:
     try:
         tracked = subprocess.run(
             ["git", "-C", str(root), "ls-files", "-z"],
-            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
         ).stdout
         untracked = subprocess.run(
-            ["git", "-C", str(root), "ls-files", "--others", "--exclude-standard", "-z"],
-            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5,
+            [
+                "git",
+                "-C",
+                str(root),
+                "ls-files",
+                "--others",
+                "--exclude-standard",
+                "-z",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
         ).stdout
         return {
             "tracked_files": len([item for item in tracked.split(b"\0") if item]),
@@ -85,7 +173,9 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
     if not base.is_dir():
         raise NotADirectoryError(f"scan root is not a directory: {base}")
 
-    languages: dict[str, dict[str, int]] = defaultdict(lambda: {"files": 0, "loc": 0, "bytes": 0})
+    languages: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"files": 0, "loc": 0, "bytes": 0}
+    )
     files = dirs = total_bytes = loc = skipped_binary = unreadable = 0
 
     for current, dirnames, filenames in os.walk(base, topdown=True, followlinks=False):
@@ -150,12 +240,15 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
 
 def render_csv(report: dict[str, Any]) -> str:
     from io import StringIO
+
     stream = StringIO()
     writer = csv.writer(stream, lineterminator="\n")
     writer.writerow(["language", "files", "loc", "bytes"])
     for language, metrics in report["languages"].items():
         writer.writerow([language, metrics["files"], metrics["loc"], metrics["bytes"]])
-    writer.writerow(["TOTAL", report["files"], report["lines_of_code"], report["bytes"]])
+    writer.writerow(
+        ["TOTAL", report["files"], report["lines_of_code"], report["bytes"]]
+    )
     return stream.getvalue()
 
 
@@ -165,15 +258,19 @@ def render_html(report: dict[str, Any]) -> str:
     rows = []
     for language, metrics in report["languages"].items():
         rows.append(
-            "<tr><th scope=\"row\">" + html.escape(language) + "</th>"
+            '<tr><th scope="row">' + html.escape(language) + "</th>"
             f"<td>{metrics['files']:,}</td><td>{metrics['loc']:,}</td>"
             f"<td>{metrics['bytes']:,}</td></tr>"
         )
-    table_rows = "\n".join(rows) or '<tr><td colspan="4">No supported text files found.</td></tr>'
+    table_rows = (
+        "\n".join(rows)
+        or '<tr><td colspan="4">No supported text files found.</td></tr>'
+    )
     git = report.get("git")
     git_summary = (
         f"<p>Tracked files: {git['tracked_files']:,} · Untracked files: {git['untracked_files']:,}</p>"
-        if git else "<p>Git metadata unavailable for this directory.</p>"
+        if git
+        else "<p>Git metadata unavailable for this directory.</p>"
     )
     return f"""<!doctype html>
 <html lang="en">
@@ -222,10 +319,21 @@ footer {{ margin-top: 2rem; font-size: .85rem; }}
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="CTM repository metrics scanner")
-    parser.add_argument("root", nargs="?", default=".", help="directory to scan (default: current directory)")
-    parser.add_argument("--format", choices=("text", "json", "csv", "html"), default="text")
+    parser.add_argument(
+        "root",
+        nargs="?",
+        default=".",
+        help="directory to scan (default: current directory)",
+    )
+    parser.add_argument(
+        "--format", choices=("text", "json", "csv", "html"), default="text"
+    )
     parser.add_argument("--output", help="write report to a file instead of stdout")
-    parser.add_argument("--include-other-text", action="store_true", help="also count UTF-8 text files with unknown extensions")
+    parser.add_argument(
+        "--include-other-text",
+        action="store_true",
+        help="also count UTF-8 text files with unknown extensions",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -249,7 +357,9 @@ def main(argv: list[str] | None = None) -> int:
             f"Unreadable: {report['unreadable_files']}\n"
         )
         for language, metrics in report["languages"].items():
-            rendered += f"  {language}: {metrics['files']} files, {metrics['loc']} LOC\n"
+            rendered += (
+                f"  {language}: {metrics['files']} files, {metrics['loc']} LOC\n"
+            )
         if "git" in report:
             rendered += (
                 f"Git tracked: {report['git']['tracked_files']}\n"
@@ -257,7 +367,9 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     if args.output:
-        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:
+        with Path(args.output).expanduser().open(
+            "w", encoding="utf-8", newline=""
+        ) as output_file:
             output_file.write(rendered)
     else:
         sys.stdout.write(rendered)

@@ -1,7 +1,7 @@
 #include "inference_engine.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Inference Engine
@@ -18,18 +18,15 @@
  *
  */
 
-
-
-
-
-
-static void test_inference_engine_create(void) {
+static void test_inference_engine_create(void)
+{
     SNEPPXInferenceEngine* engine = SNEPPX_inference_engine_create(42);
     SX_ASSERT(engine != NULL, "engine created");
     SNEPPX_inference_engine_destroy(engine);
 }
 
-static void test_inference_engine_run(void) {
+static void test_inference_engine_run(void)
+{
     SNEPPXInferenceEngine* engine = SNEPPX_inference_engine_create(42);
     size_t shape[] = {1, 8};
     SNEPPXTensor* input = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
@@ -41,14 +38,23 @@ static void test_inference_engine_run(void) {
     SNEPPX_inference_engine_destroy(engine);
 }
 
-static void test_inference_engine_reset(void) {
+static void test_inference_engine_reset(void)
+{
     SNEPPXInferenceEngine* engine = SNEPPX_inference_engine_create(42);
     SNEPPX_inference_engine_reset(engine);
     SX_ASSERT(engine != NULL, "reset does not crash");
     SNEPPX_inference_engine_destroy(engine);
 }
 
-
-TEST(test_inference_engine, inference_engine_create) { test_inference_engine_create(); }
-TEST(test_inference_engine, inference_engine_run) { test_inference_engine_run(); }
-TEST(test_inference_engine, inference_engine_reset) { test_inference_engine_reset(); }
+TEST(test_inference_engine, inference_engine_create)
+{
+    test_inference_engine_create();
+}
+TEST(test_inference_engine, inference_engine_run)
+{
+    test_inference_engine_run();
+}
+TEST(test_inference_engine, inference_engine_reset)
+{
+    test_inference_engine_reset();
+}

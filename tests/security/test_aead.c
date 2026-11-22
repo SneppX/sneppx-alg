@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include "test_gtest.h"
-#include <string.h>
-#include <stdlib.h>
 #include "authenticated_encryption_module.h"
+#include "test_gtest.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Aead
@@ -19,13 +19,12 @@
  *
  */
 
-
-
-
-void test_encrypt_decrypt(void) {
+void test_encrypt_decrypt(void)
+{
     printf("\n--- test_encrypt_decrypt ---\n");
     uint8_t key[32], nonce[12];
-    memset(key, 0x42, 32); memset(nonce, 0, 12);
+    memset(key, 0x42, 32);
+    memset(nonce, 0, 12);
     uint8_t plaintext[] = "Hello, SNEPPX-Algo AEAD!";
     size_t len = sizeof(plaintext);
     uint8_t ciphertext[256], decrypted[256];
@@ -39,10 +38,12 @@ void test_encrypt_decrypt(void) {
     SX_TEST("plaintext matches", memcmp(plaintext, decrypted, len) == 0);
 }
 
-void test_aad_integrity(void) {
+void test_aad_integrity(void)
+{
     printf("\n--- test_aad_integrity ---\n");
     uint8_t key[32], nonce[12];
-    memset(key, 0x42, 32); memset(nonce, 0, 12);
+    memset(key, 0x42, 32);
+    memset(nonce, 0, 12);
     uint8_t pt[] = "Test with AAD";
     uint8_t aad[] = "authenticated but unencrypted";
     uint8_t ct[256], dt[256], tag[16];
@@ -54,10 +55,12 @@ void test_aad_integrity(void) {
     SX_TEST("modified AAD fails", ret != 0);
 }
 
-void test_ciphertext_integrity(void) {
+void test_ciphertext_integrity(void)
+{
     printf("\n--- test_ciphertext_integrity ---\n");
     uint8_t key[32], nonce[12];
-    memset(key, 0x42, 32); memset(nonce, 0, 12);
+    memset(key, 0x42, 32);
+    memset(nonce, 0, 12);
     uint8_t pt[] = "Test ciphertext integrity";
     uint8_t ct[256], dt[256], tag[16];
 
@@ -67,10 +70,12 @@ void test_ciphertext_integrity(void) {
     SX_TEST("modified ciphertext fails", ret != 0);
 }
 
-void test_tag_integrity(void) {
+void test_tag_integrity(void)
+{
     printf("\n--- test_tag_integrity ---\n");
     uint8_t key[32], nonce[12];
-    memset(key, 0x42, 32); memset(nonce, 0, 12);
+    memset(key, 0x42, 32);
+    memset(nonce, 0, 12);
     uint8_t pt[] = "Test tag integrity";
     uint8_t ct[256], dt[256], tag[16];
 
@@ -80,8 +85,19 @@ void test_tag_integrity(void) {
     SX_TEST("modified tag fails", ret != 0);
 }
 
-
-TEST(test_aead, test_encrypt_decrypt) { test_encrypt_decrypt(); }
-TEST(test_aead, test_aad_integrity) { test_aad_integrity(); }
-TEST(test_aead, test_ciphertext_integrity) { test_ciphertext_integrity(); }
-TEST(test_aead, test_tag_integrity) { test_tag_integrity(); }
+TEST(test_aead, test_encrypt_decrypt)
+{
+    test_encrypt_decrypt();
+}
+TEST(test_aead, test_aad_integrity)
+{
+    test_aad_integrity();
+}
+TEST(test_aead, test_ciphertext_integrity)
+{
+    test_ciphertext_integrity();
+}
+TEST(test_aead, test_tag_integrity)
+{
+    test_tag_integrity();
+}

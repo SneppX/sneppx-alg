@@ -3,8 +3,9 @@
 from typing import Optional, Callable, Any
 
 
-def load_hf_dataset(dataset_id: str, split: Optional[str] = None,
-                    preprocess: Optional[Callable] = None):
+def load_hf_dataset(
+    dataset_id: str, split: Optional[str] = None, preprocess: Optional[Callable] = None
+):
     """Load a HuggingFace dataset and wrap it as a SNEPPX-compatible Dataset.
 
     Args:

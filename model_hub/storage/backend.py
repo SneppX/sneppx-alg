@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class StorageConfig:
     """Configuration for a storage backend."""
+
     backend: str = "local"  # "local", "s3", "minio", "gcs"
     base_path: str = ".sneppx/models"
 
@@ -43,6 +44,7 @@ class StorageConfig:
 @dataclass
 class StoredFile:
     """Metadata for a stored file."""
+
     key: str  # storage key / path
     size: int
     sha256: str
@@ -97,8 +99,7 @@ class StorageBackend(ABC):
 
     @property
     @abstractmethod
-    def backend_name(self) -> str:
-        ...
+    def backend_name(self) -> str: ...
 
     @property
     def lfs_threshold(self) -> int:
@@ -166,7 +167,7 @@ class LocalStorageBackend(StorageBackend):
     async def download_file(self, key: str, dest_path: str) -> str:
         src = self._full_path(key)
         if key.startswith("file://"):
-            src = key[len("file://"):]
+            src = key[len("file://") :]
         if not os.path.exists(src):
             raise FileNotFoundError(f"File not found: {key}")
         shutil.copy2(src, dest_path)
@@ -332,7 +333,9 @@ class S3StorageBackend(StorageBackend):
             ExpiresIn=expires_in,
         )
 
-    async def _multipart_upload(self, local_path: str, dest_key: str, part_size: int = 128 * 1024 * 1024):
+    async def _multipart_upload(
+        self, local_path: str, dest_key: str, part_size: int = 128 * 1024 * 1024
+    ):
         """Upload using S3 multipart upload for large files."""
         import concurrent.futures
 
@@ -375,12 +378,17 @@ class S3StorageBackend(StorageBackend):
             Bucket=self._bucket,
             Key=dest_key,
             UploadId=upload_id,
-            MultipartUpload={"Parts": [
-                {"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())
-            ]},
+            MultipartUpload={
+                "Parts": [
+                    {"ETag": etags[i]["ETag"], "PartNumber": i}
+                    for i in sorted(etags.keys())
+                ]
+            },
         )
 
-    async def _multipart_upload_bytes(self, data: bytes, dest_key: str, part_size: int = 128 * 1024 * 1024):
+    async def _multipart_upload_bytes(
+        self, data: bytes, dest_key: str, part_size: int = 128 * 1024 * 1024
+    ):
         """Upload bytes using S3 multipart upload."""
         import io
         import concurrent.futures
@@ -391,7 +399,7 @@ class S3StorageBackend(StorageBackend):
 
         parts = []
         for i in range(0, len(data), part_size):
-            parts.append(data[i:i + part_size])
+            parts.append(data[i : i + part_size])
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             futures = []
@@ -414,9 +422,12 @@ class S3StorageBackend(StorageBackend):
             Bucket=self._bucket,
             Key=dest_key,
             UploadId=upload_id,
-            MultipartUpload={"Parts": [
-                {"ETag": etags[i]["ETag"], "PartNumber": i} for i in sorted(etags.keys())
-            ]},
+            MultipartUpload={
+                "Parts": [
+                    {"ETag": etags[i]["ETag"], "PartNumber": i}
+                    for i in sorted(etags.keys())
+                ]
+            },
         )
 
 

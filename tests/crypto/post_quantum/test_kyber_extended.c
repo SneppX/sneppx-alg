@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_kyber_keygen(void) {
+static void test_kyber_keygen(void)
+{
     SNEPPXKyberKeypair kp;
     memset(&kp, 0, sizeof(kp));
     int ret = snepx_kyber_keygen(&kp, SNEPPX_KYBER_768);
@@ -28,7 +28,8 @@ static void test_kyber_keygen(void) {
     snepx_kyber_keypair_destroy(&kp);
 }
 
-static void test_kyber_encap_decap(void) {
+static void test_kyber_encap_decap(void)
+{
     SNEPPXKyberKeypair kp;
     snepx_kyber_keygen(&kp, SNEPPX_KYBER_768);
     SNEPPXKyberCiphertext ct;
@@ -47,7 +48,8 @@ static void test_kyber_encap_decap(void) {
     snepx_kyber_keypair_destroy(&kp);
 }
 
-int main(void) {
+int main(void)
+{
     test_kyber_keygen();
     test_kyber_encap_decap();
     return 0;

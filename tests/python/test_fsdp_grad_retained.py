@@ -5,7 +5,9 @@ import sys
 
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import fsdp as fsdp_mod
 from SneppX_ALG.interface_bindings.nn import Module
@@ -19,7 +21,9 @@ class _Toy(Module):
 
 
 def test_reduce_gradients_keeps_shard_grad():
-    wrapped = fsdp_mod.FullyShardedDataParallel(_Toy(), fsdp_mod.FSDPConfig(min_num_params=1))
+    wrapped = fsdp_mod.FullyShardedDataParallel(
+        _Toy(), fsdp_mod.FSDPConfig(min_num_params=1)
+    )
     wrapped._initialized = True
     wrapped._world_size = 2
     wrapped._rank = 0

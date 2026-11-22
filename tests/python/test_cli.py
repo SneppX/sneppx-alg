@@ -32,12 +32,14 @@ def _capture_help(module_main, args=None):
 
 def test_eval_cli_import():
     from SneppX_ALG.interface_bindings.eval_cli import main
+
     assert callable(main)
     print("  test_eval_cli_import PASS")
 
 
 def test_eval_cli_help():
     from SneppX_ALG.interface_bindings.eval_cli import main
+
     out, err, code = _capture_help(main)
     assert code == 0
     print("  test_eval_cli_help PASS")
@@ -45,12 +47,14 @@ def test_eval_cli_help():
 
 def test_quantize_cli_import():
     from SneppX_ALG.interface_bindings.quantize_cli import main
+
     assert callable(main)
     print("  test_quantize_cli_import PASS")
 
 
 def test_quantize_cli_help():
     from SneppX_ALG.interface_bindings.quantize_cli import main
+
     out, err, code = _capture_help(main)
     assert code == 0
     print("  test_quantize_cli_help PASS")
@@ -58,12 +62,14 @@ def test_quantize_cli_help():
 
 def test_rlhf_cli_import():
     from SneppX_ALG.interface_bindings.rlhf_cli import main
+
     assert callable(main)
     print("  test_rlhf_cli_import PASS")
 
 
 def test_rlhf_cli_help():
     from SneppX_ALG.interface_bindings.rlhf_cli import main
+
     out, err, code = _capture_help(main)
     assert code == 0
     print("  test_rlhf_cli_help PASS")

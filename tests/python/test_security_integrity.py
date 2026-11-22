@@ -3,11 +3,17 @@ import os
 import tempfile
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.crypto_sign import Ed25519
 from SneppX_ALG.interface_bindings.artifact_integrity import (
-    sign_artifact, verify_artifact, sign_file, verify_file, verify_or_quarantine,
+    sign_artifact,
+    verify_artifact,
+    sign_file,
+    verify_file,
+    verify_or_quarantine,
 )
 from SneppX_ALG.interface_bindings.secrets_redact import redact_secrets
 

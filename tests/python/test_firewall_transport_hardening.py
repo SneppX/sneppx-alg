@@ -33,7 +33,7 @@ def test_unknown_tls_version_is_rejected():
 def test_certificate_pins_are_normalized_and_verified():
     certificate = b"test certificate bytes"
     fingerprint = hashlib.sha256(certificate).hexdigest()
-    formatted = ":".join(fingerprint[index:index + 2] for index in range(0, 64, 2))
+    formatted = ":".join(fingerprint[index : index + 2] for index in range(0, 64, 2))
     firewall = FirewallTransport(
         tls_enabled=True,
         pinned_cert_fingerprints=[formatted.upper()],
@@ -56,7 +56,9 @@ def test_certificate_pinning_needs_tls():
 
 def test_malformed_fingerprint_is_rejected():
     with pytest.raises(ValueError):
-        FirewallTransport(tls_enabled=True, pinned_cert_fingerprints=["not-a-fingerprint"])
+        FirewallTransport(
+            tls_enabled=True, pinned_cert_fingerprints=["not-a-fingerprint"]
+        )
 
 
 def test_missing_peer_certificate_fails_when_client_cert_required():

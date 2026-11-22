@@ -62,7 +62,16 @@ def _lower(text: str) -> str:
 
 
 def _ml_jailbreak_patterns() -> List[str]:
-    return ["ignora", "ignorer", "忽略", "무시", "ignore", "jailbreak", "dan", "override"]
+    return [
+        "ignora",
+        "ignorer",
+        "忽略",
+        "무시",
+        "ignore",
+        "jailbreak",
+        "dan",
+        "override",
+    ]
 
 
 def _py_ml_jailbreak_detect(text: str) -> int:
@@ -314,7 +323,9 @@ def _py_factuality_score(statement: str, reference: str) -> float:
     return (2.0 * intersect) / (len(s_bi) + len(r_bi))
 
 
-def _py_bias_measure(predictions: List[float], sensitive: List[int]) -> Dict[str, float]:
+def _py_bias_measure(
+    predictions: List[float], sensitive: List[int]
+) -> Dict[str, float]:
     sum0 = sum1 = 0.0
     cnt0 = cnt1 = 0
     for p, s in zip(predictions, sensitive):
@@ -328,7 +339,9 @@ def _py_bias_measure(predictions: List[float], sensitive: List[int]) -> Dict[str
     mean1 = sum1 / cnt1 if cnt1 else 0.0
     return {
         "demographic_parity": mean1 - mean0,
-        "equalized_odds": (mean1 - mean0) / (mean0 + 1e-10) if (mean0 > 0 and mean1 > 0) else 0.0,
+        "equalized_odds": (mean1 - mean0) / (mean0 + 1e-10)
+        if (mean0 > 0 and mean1 > 0)
+        else 0.0,
     }
 
 
@@ -552,7 +565,9 @@ class S5RLHFSafety:
         return _py_factuality_score(statement, reference)
 
     # --- Bias -------------------------------------------------------------
-    def bias_measure(self, predictions: List[float], sensitive: List[int]) -> Dict[str, float]:
+    def bias_measure(
+        self, predictions: List[float], sensitive: List[int]
+    ) -> Dict[str, float]:
         return _py_bias_measure(predictions, sensitive)
 
     def bias_report(self, predictions: List[float], sensitive: List[int]) -> str:
@@ -571,7 +586,9 @@ class S5RLHFSafety:
 
     def semantic_injection_score(self, text: str) -> Tuple[int, float]:
         emb = _text_to_embedding(text)
-        return _py_semantic_injection_score(self._semantic_attacks, emb, self._semantic_threshold)
+        return _py_semantic_injection_score(
+            self._semantic_attacks, emb, self._semantic_threshold
+        )
 
     # --- Token anomaly ----------------------------------------------------
     def token_anomaly_score(self, probs: List[float]) -> float:
@@ -581,7 +598,9 @@ class S5RLHFSafety:
         self._token_anomaly_threshold = t
 
     def token_anomaly_check(self, probs: List[float]) -> int:
-        return 1 if self.token_anomaly_score(probs) > self._token_anomaly_threshold else 0
+        return (
+            1 if self.token_anomaly_score(probs) > self._token_anomaly_threshold else 0
+        )
 
     # --- Membership inference defense -------------------------------------
     def membership_inference_defense(
@@ -605,11 +624,16 @@ class S5RLHFSafety:
                 out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             )
             return out.reshape(np.asarray(logits).shape)
-        return _py_membership_inference_defense(np.asarray(logits, dtype=np.float64), eps)
+        return _py_membership_inference_defense(
+            np.asarray(logits, dtype=np.float64), eps
+        )
 
     # --- Model inversion defense ------------------------------------------
     def model_inversion_defense(
-        self, gradients: np.ndarray, noise: Optional[float] = None, clip: Optional[float] = None
+        self,
+        gradients: np.ndarray,
+        noise: Optional[float] = None,
+        clip: Optional[float] = None,
     ) -> np.ndarray:
         g = np.asarray(gradients, dtype=np.float64)
         noise = self._inv_noise if noise is None else noise
@@ -641,7 +665,9 @@ class S5RLHFSafety:
         return w
 
     def watermark_detect(self, weights: np.ndarray) -> int:
-        return _py_watermark_detect(np.asarray(weights, dtype=np.float64), self._watermark_key)
+        return _py_watermark_detect(
+            np.asarray(weights, dtype=np.float64), self._watermark_key
+        )
 
     # --- Adversarial smoothing --------------------------------------------
     def adversarial_smooth(self, inp: np.ndarray, epsilon: float) -> np.ndarray:

@@ -35,9 +35,9 @@ def test_rnn_forward_backward():
         out, h = m(x)
         assert out.data.shape == (T, B, H), f"{cls.__name__} out shape {out.data.shape}"
         n_param, n_grad = _grad_flow_ok(m, out)
-        assert n_param > 0 and n_grad == n_param, (
-            f"{cls.__name__}: only {n_grad}/{n_param} params received grad"
-        )
+        assert (
+            n_param > 0 and n_grad == n_param
+        ), f"{cls.__name__}: only {n_grad}/{n_param} params received grad"
 
 
 def test_modulelist_and_parameters():

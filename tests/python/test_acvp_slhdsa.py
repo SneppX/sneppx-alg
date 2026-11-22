@@ -68,8 +68,11 @@ def test_slhdsa_all_vectors_run_without_crash(crypto):
 def test_slhdsa_interop_report_shape_and_honest_agreement(crypto):
     vecs = _vectors()
     report = kat.interop_report(
-        crypto, vecs,
-        lambda c, v: kat.run_slhdsa_sigver(c, v, kat.slhdsa_variant_for_parameter_set(v["parameterSet"]))
+        crypto,
+        vecs,
+        lambda c, v: kat.run_slhdsa_sigver(
+            c, v, kat.slhdsa_variant_for_parameter_set(v["parameterSet"])
+        ),
     )
     assert report["skipped"] == 0
     assert report["total"] == 24
@@ -93,7 +96,9 @@ def test_slhdsa_c_roundtrip_and_tamper_rejection(crypto):
 
 def _require_test_rng(crypto):
     if not hasattr(crypto, "random_set_seed"):
-        pytest.skip("deterministic SLH-DSA keygen KATs require SNEPPX_ENABLE_TEST_RNG=ON")
+        pytest.skip(
+            "deterministic SLH-DSA keygen KATs require SNEPPX_ENABLE_TEST_RNG=ON"
+        )
 
 
 def test_slhdsa_seeded_deterministic_keygen(crypto):
@@ -109,6 +114,7 @@ def test_slhdsa_seeded_deterministic_keygen(crypto):
 
 
 # SLH-DSA keyGen KAT coverage ---------------------------------------------------
+
 
 def _slhdsa_keygen_vectors():
     vecs = kat.slhdsa_keygen_vectors()

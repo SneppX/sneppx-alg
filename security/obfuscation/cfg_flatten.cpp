@@ -1,8 +1,8 @@
 #include "control_flow_obfuscation.h"
 #include <algorithm>
 #include <cstring>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 /*
  * SNEPPX - Cfg Flatten
@@ -19,24 +19,32 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
+SNEPPXObfCFGFlattener::SNEPPXObfCFGFlattener()
+    : rng(std::random_device{}())
+{
+}
 
-SNEPPXObfCFGFlattener::SNEPPXObfCFGFlattener() : rng(std::random_device{}()) {}
-
-void SNEPPXObfCFGFlattener::set_seed(uint64_t seed) {
+void SNEPPXObfCFGFlattener::set_seed(uint64_t seed)
+{
     rng.seed(seed);
 }
 
-uint64_t SNEPPXObfCFGFlattener::assign_random_state() {
+uint64_t SNEPPXObfCFGFlattener::assign_random_state()
+{
     return rng();
 }
 
-void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg) {
-    if (cfg.blocks.empty()) return;
+void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg)
+{
+    if (cfg.blocks.empty())
+        return;
 
     std::unordered_map<uint64_t, uint64_t> state_map;
-    for (auto& pair : cfg.blocks) {
+    for (auto& pair : cfg.blocks)
+    {
         state_map[pair.first] = assign_random_state();
     }
 
@@ -44,9 +52,11 @@ void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg) {
     auto dispatcher = cfg.blocks[dispatcher_id];
     dispatcher->is_entry = true;
 
-    for (auto& pair : cfg.blocks) {
+    for (auto& pair : cfg.blocks)
+    {
         auto& block = pair.second;
-        if (block->id == dispatcher_id) continue;
+        if (block->id == dispatcher_id)
+            continue;
 
         SNEPPXObfInstruction switch_inst;
         switch_inst.type = SNEPPXObfInstType::JMP;
@@ -59,10 +69,14 @@ void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg) {
         block->successors.push_back(dispatcher_id);
     }
 
-    for (auto& pair : cfg.blocks) {
-        if (pair.second->id == dispatcher_id) continue;
-        for (auto& pred_id : pair.second->predecessors) {
-            if (cfg.blocks.count(pred_id) && cfg.blocks[pred_id]->id != dispatcher_id) {
+    for (auto& pair : cfg.blocks)
+    {
+        if (pair.second->id == dispatcher_id)
+            continue;
+        for (auto& pred_id : pair.second->predecessors)
+        {
+            if (cfg.blocks.count(pred_id) && cfg.blocks[pred_id]->id != dispatcher_id)
+            {
                 cfg.blocks[pred_id]->successors.push_back(dispatcher_id);
             }
         }
@@ -85,8 +99,10 @@ void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg) {
     exit_check.operand1 = "exit";
     dispatcher->instructions.push_back(exit_check);
 
-    for (auto& pair : cfg.blocks) {
-        if (pair.second->id == dispatcher_id || pair.second->id == cfg.exit_block) continue;
+    for (auto& pair : cfg.blocks)
+    {
+        if (pair.second->id == dispatcher_id || pair.second->id == cfg.exit_block)
+            continue;
         SNEPPXObfInstruction case_inst;
         case_inst.type = SNEPPXObfInstType::CMP;
         case_inst.operand1 = "state_var";
@@ -105,11 +121,14 @@ void SNEPPXObfCFGFlattener::flatten(SNEPPXObfCFG& cfg) {
     add_opaque_predicates(cfg, state_map);
 }
 
-void SNEPPXObfCFGFlattener::insert_junk_states(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map) {
+void SNEPPXObfCFGFlattener::insert_junk_states(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map)
+{
     uint64_t dispatcher_id = cfg.blocks.size() + 1;
-    for (auto& pair : cfg.blocks) {
-        (void)pair;
-        if (rng() % 3 == 0) {
+    for (auto& pair : cfg.blocks)
+    {
+        (void) pair;
+        if (rng() % 3 == 0)
+        {
             uint64_t junk_id = cfg.add_block();
             auto junk_block = cfg.blocks[junk_id];
             uint64_t junk_state = assign_random_state();
@@ -129,10 +148,13 @@ void SNEPPXObfCFGFlattener::insert_junk_states(SNEPPXObfCFG& cfg, std::unordered
     }
 }
 
-void SNEPPXObfCFGFlattener::add_opaque_predicates(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map) {
-    for (auto& pair : cfg.blocks) {
+void SNEPPXObfCFGFlattener::add_opaque_predicates(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map)
+{
+    for (auto& pair : cfg.blocks)
+    {
         auto& block = pair.second;
-        if (block->instructions.empty()) continue;
+        if (block->instructions.empty())
+            continue;
 
         SNEPPXObfInstruction opaque_cond;
         opaque_cond.type = SNEPPXObfInstType::CMP;
@@ -150,22 +172,31 @@ void SNEPPXObfCFGFlattener::add_opaque_predicates(SNEPPXObfCFG& cfg, std::unorde
     }
 }
 
-void SNEPPXObfCFGFlattener::unflatten(SNEPPXObfCFG& cfg) {
+void SNEPPXObfCFGFlattener::unflatten(SNEPPXObfCFG& cfg)
+{
     uint64_t dispatcher_id = 0;
-    for (auto& pair : cfg.blocks) {
-        if (pair.second->is_entry) {
+    for (auto& pair : cfg.blocks)
+    {
+        if (pair.second->is_entry)
+        {
             auto& insts = pair.second->instructions;
-            for (size_t i = 0; i < insts.size(); ) {
-                if (insts[i].type == SNEPPXObfInstType::CMP &&
-                    insts[i].operand1 == "state_var") {
+            for (size_t i = 0; i < insts.size();)
+            {
+                if (insts[i].type == SNEPPXObfInstType::CMP && insts[i].operand1 == "state_var")
+                {
                     insts.erase(insts.begin() + i);
-                } else if (insts[i].type == SNEPPXObfInstType::JZ &&
-                           insts[i].operand1.find("block_") != std::string::npos) {
+                }
+                else if (insts[i].type == SNEPPXObfInstType::JZ &&
+                         insts[i].operand1.find("block_") != std::string::npos)
+                {
                     insts.erase(insts.begin() + i);
-                } else if (insts[i].type == SNEPPXObfInstType::MOV &&
-                           insts[i].result == "state_var") {
+                }
+                else if (insts[i].type == SNEPPXObfInstType::MOV && insts[i].result == "state_var")
+                {
                     insts.erase(insts.begin() + i);
-                } else {
+                }
+                else
+                {
                     ++i;
                 }
             }
@@ -174,31 +205,36 @@ void SNEPPXObfCFGFlattener::unflatten(SNEPPXObfCFG& cfg) {
         }
     }
 
-    if (dispatcher_id != 0) {
+    if (dispatcher_id != 0)
+    {
         cfg.blocks.erase(dispatcher_id);
     }
 
     std::vector<uint64_t> junk_blocks;
-    for (auto& pair : cfg.blocks) {
-        for (auto& inst : pair.second->instructions) {
+    for (auto& pair : cfg.blocks)
+    {
+        for (auto& inst : pair.second->instructions)
+        {
             if (inst.operand1.find("junk_") != std::string::npos ||
                 inst.operand1.find("dead_end_") != std::string::npos ||
                 inst.operand1.find("opaque_next_") != std::string::npos ||
                 inst.operand1.find("always_true_") != std::string::npos ||
-                inst.operand1.find("state_") != std::string::npos) {
+                inst.operand1.find("state_") != std::string::npos)
+            {
                 inst.type = SNEPPXObfInstType::NOP;
                 inst.operand1.clear();
                 inst.operand2.clear();
                 inst.result.clear();
             }
         }
-        if (pair.second->successors.size() == 1 &&
-            pair.second->successors[0] == dispatcher_id) {
+        if (pair.second->successors.size() == 1 && pair.second->successors[0] == dispatcher_id)
+        {
             pair.second->successors.clear();
         }
     }
 
-    for (auto id : junk_blocks) {
+    for (auto id : junk_blocks)
+    {
         cfg.blocks.erase(id);
     }
 }

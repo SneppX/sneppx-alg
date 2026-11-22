@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_ATTACK_FGSM,
     SNEPPX_ATTACK_PGD,
     SNEPPX_ATTACK_CW,
@@ -40,7 +40,8 @@ typedef enum {
     SNEPPX_ATTACK_PIXEL
 } SNEPPXAdversarialAttackType;
 
-typedef struct {
+typedef struct
+{
     SNEPPXAdversarialAttackType attack_type;
     float epsilon;
     float epsilon_step;
@@ -55,7 +56,8 @@ typedef struct {
     size_t loss_history_len;
 } SNEPPXAdversarialAttackConfig;
 
-typedef struct {
+typedef struct
+{
     float* original_input;
     float* adversarial_input;
     size_t input_size;
@@ -69,7 +71,8 @@ typedef struct {
     double elapsed_ms;
 } SNEPPXAdversarialSample;
 
-typedef struct {
+typedef struct
+{
     uint32_t num_samples;
     SNEPPXAdversarialSample* samples;
     float mean_perturbation_l2;
@@ -79,7 +82,8 @@ typedef struct {
     uint32_t total_attacks;
 } SNEPPXAdversarialReport;
 
-typedef struct {
+typedef struct
+{
     uint8_t* model_weights;
     size_t weights_size;
     uint32_t num_clients;
@@ -93,7 +97,8 @@ typedef struct {
     uint64_t round_timeout_ms;
 } SNEPPXFederatedLearningConfig;
 
-typedef struct {
+typedef struct
+{
     float* client_gradients;
     size_t gradient_size;
     uint32_t client_id;
@@ -104,7 +109,8 @@ typedef struct {
     uint64_t round_number;
 } SNEPPXFederatedClientUpdate;
 
-typedef struct {
+typedef struct
+{
     float* global_model;
     size_t model_size;
     uint32_t num_clients_aggregated;
@@ -113,7 +119,8 @@ typedef struct {
     float remaining_budget;
 } SNEPPXFederatedRound;
 
-typedef struct {
+typedef struct
+{
     SNEPPXFederatedRound* rounds;
     uint32_t num_rounds;
     float total_epsilon_spent;
@@ -122,9 +129,12 @@ typedef struct {
 } SNEPPXFederatedTrainer;
 
 // Adversarial robustness
-int snepx_adversarial_generate(SNEPPXAdversarialAttackConfig* config, const float* input, size_t input_size, uint32_t label, float* adversarial_out);
-int snepx_adversarial_evaluate(SNEPPXAdversarialAttackConfig* config, const float* dataset, size_t dataset_size, const uint32_t* labels, size_t num_samples, SNEPPXAdversarialReport* report);
-int snepx_adversarial_defend(SNEPPXAdversarialAttackConfig* config, float* model_weights, size_t weights_size, float* certified_radius_out);
+int snepx_adversarial_generate(SNEPPXAdversarialAttackConfig* config, const float* input, size_t input_size,
+                               uint32_t label, float* adversarial_out);
+int snepx_adversarial_evaluate(SNEPPXAdversarialAttackConfig* config, const float* dataset, size_t dataset_size,
+                               const uint32_t* labels, size_t num_samples, SNEPPXAdversarialReport* report);
+int snepx_adversarial_defend(SNEPPXAdversarialAttackConfig* config, float* model_weights, size_t weights_size,
+                             float* certified_radius_out);
 
 // Federated learning
 int snepx_federated_init(SNEPPXFederatedLearningConfig* config);
@@ -132,10 +142,12 @@ int snepx_federated_round_begin(SNEPPXFederatedLearningConfig* config, SNEPPXFed
 int snepx_federated_client_submit(SNEPPXFederatedRound* round, const SNEPPXFederatedClientUpdate* update);
 int snepx_federated_aggregate(SNEPPXFederatedRound* round, float* global_model_out);
 int snepx_federated_privacy_account(SNEPPXFederatedTrainer* trainer, float epsilon, float delta);
-int snepx_federated_secure_aggregate(const SNEPPXFederatedClientUpdate* updates, uint32_t num_updates, float* aggregated, size_t aggregated_size, const uint8_t** masks);
+int snepx_federated_secure_aggregate(const SNEPPXFederatedClientUpdate* updates, uint32_t num_updates,
+                                     float* aggregated, size_t aggregated_size, const uint8_t** masks);
 
 // Model extraction defense
-typedef struct {
+typedef struct
+{
     uint32_t max_queries_per_ip;
     uint32_t query_window_seconds;
     uint32_t perturbation_threshold;
@@ -146,11 +158,13 @@ typedef struct {
 } SNEPPXModelExtractionDefense;
 
 int snepx_model_extraction_defense_init(SNEPPXModelExtractionDefense* defense);
-int snepx_model_extraction_check(SNEPPXModelExtractionDefense* defense, const uint8_t* ip, size_t ip_len, const float* query, size_t query_size);
+int snepx_model_extraction_check(SNEPPXModelExtractionDefense* defense, const uint8_t* ip, size_t ip_len,
+                                 const float* query, size_t query_size);
 int snepx_model_extraction_block_ip(SNEPPXModelExtractionDefense* defense, const uint8_t* ip, size_t ip_len);
 
 // Data poisoning defense
-typedef struct {
+typedef struct
+{
     float outlier_threshold;
     uint32_t min_cluster_size;
     uint32_t max_outlier_fraction;
@@ -162,13 +176,17 @@ typedef struct {
     size_t influence_count;
 } SNEPPXDataPoisoningDetector;
 
-int snepx_data_poisoning_init(SNEPPXDataPoisoningDetector* detector, const float* training_data, size_t data_size, size_t num_samples);
-int snepx_data_poisoning_detect(SNEPPXDataPoisoningDetector* detector, uint32_t* outlier_indices_out, size_t* outlier_count);
-int snepx_data_poisoning_influence(SNEPPXDataPoisoningDetector* detector, const float* sample, size_t sample_size, float* influence_score);
+int snepx_data_poisoning_init(SNEPPXDataPoisoningDetector* detector, const float* training_data, size_t data_size,
+                              size_t num_samples);
+int snepx_data_poisoning_detect(SNEPPXDataPoisoningDetector* detector, uint32_t* outlier_indices_out,
+                                size_t* outlier_count);
+int snepx_data_poisoning_influence(SNEPPXDataPoisoningDetector* detector, const float* sample, size_t sample_size,
+                                   float* influence_score);
 int snepx_data_poisoning_remove(SNEPPXDataPoisoningDetector* detector, const uint32_t* indices, size_t count);
 
 // Model watermarking
-typedef struct {
+typedef struct
+{
     uint8_t watermark_key[32];
     uint8_t watermark_signal[256];
     size_t signal_len;
@@ -179,7 +197,9 @@ typedef struct {
 } SNEPPXModelWatermark;
 
 int snepx_watermark_embed(SNEPPXModelWatermark* watermark, float* weights, size_t weights_size);
-int snepx_watermark_verify(SNEPPXModelWatermark* watermark, const float* weights, size_t weights_size, float* confidence);
-int snepx_watermark_extract(SNEPPXModelWatermark* watermark, const float* weights, size_t weights_size, uint8_t* signal_out);
+int snepx_watermark_verify(SNEPPXModelWatermark* watermark, const float* weights, size_t weights_size,
+                           float* confidence);
+int snepx_watermark_extract(SNEPPXModelWatermark* watermark, const float* weights, size_t weights_size,
+                            uint8_t* signal_out);
 
 #endif

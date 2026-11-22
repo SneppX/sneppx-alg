@@ -1,9 +1,9 @@
 # S2 Obfuscation Layer Security Audit
 
-**Original audit date:** 2026-08-16  
-**Remediation review:** 2026-11-13  
-**Scope:** `security/obfuscation/obfuscation_advanced.cpp`, `obfuscation_advanced.h`  
-**Classification:** S2 — Obfuscation (Code transformation, string encryption, anti-debug)  
+**Original audit date:** 2026-08-16
+**Remediation review:** 2026-11-13
+**Scope:** `security/obfuscation/obfuscation_advanced.cpp`, `obfuscation_advanced.h`
+**Classification:** S2 — Obfuscation (Code transformation, string encryption, anti-debug)
 **Auditor:** Automated review of S2 layer
 
 ---
@@ -68,6 +68,7 @@ int fake_idx=rand()%SNEPPX_bogus_int.count;  // line 285
 ```
 
 **CWE-338 (Use of Cryptographically Weak PRNG):** The entire S2 obfuscation layer uses `rand()` + `srand()` seeded with `std::chrono::steady_clock`. An attacker who can predict or brute-force the seed (1-second granularity via `time(NULL)` or ~1μs from steady_clock with ~2^32 range depending on implementation) can reproduce:
+
 - Which junk pattern is inserted (defeats anti-disassembly)
 - Which fake block is used for trampoline (defeats control flow obfuscation)
 - All pattern bytes for bogus CF blocks
@@ -99,6 +100,7 @@ for (size_t i=flen;i<code_len;i++) {
 ```
 
 **CWE-717 (Incorrect Code Transformation):** The function saves `real_entry` pointer but **immediately overwrites the start of the real code** with a trampoline (jump to fake block → jump back). The XOR loop encrypts the **rest** of the code. However:
+
 1. There is **no corresponding "restore" function** — the encrypted code (`code[i] ^= ...`) can only be decrypted if `fake_idx` is known, which is stored only in `SNEPPX_bogus_int.count` (a global). If `bogus_int.count` changes between encrypt and decrypt, the code is **permanently corrupted**.
 2. `flen` (fake block length) ranges from 2-12 bytes. The trampoline overwrite is `copy_len = min(tp, code_len)` where `tp` includes the fake block + 5-byte JMP. If `code_len < 5`, the trampoline is truncated and the JMP is incomplete → **corrupted executable code**.
 

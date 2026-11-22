@@ -1,12 +1,23 @@
 """Tests for Audit Logger (S6 Security)."""
 
 from SneppX_ALG.interface_bindings.audit_logger import (
-    AuditSeverity, AuditAction, AuditResult, AuditEvent,
-    AuditBackend, FileAuditBackend,
-    AuditLogger, get_audit_logger, set_audit_logger,
-    audit_log, audit_login, audit_data_access,
-    audit_config_change, audit_security_event,
-    query_audit_log, verify_audit_chain, export_audit_log,
+    AuditSeverity,
+    AuditAction,
+    AuditResult,
+    AuditEvent,
+    AuditBackend,
+    FileAuditBackend,
+    AuditLogger,
+    get_audit_logger,
+    set_audit_logger,
+    audit_log,
+    audit_login,
+    audit_data_access,
+    audit_config_change,
+    audit_security_event,
+    query_audit_log,
+    verify_audit_chain,
+    export_audit_log,
 )
 import tempfile
 import os
@@ -63,8 +74,9 @@ def test_audit_logger_init():
 
 def test_audit_logger_log():
     logger = AuditLogger()
-    event = logger.log(AuditAction.LOGIN, "user1",
-                       resource="/api/login", result=AuditResult.SUCCESS)
+    event = logger.log(
+        AuditAction.LOGIN, "user1", resource="/api/login", result=AuditResult.SUCCESS
+    )
     assert event is not None
 
 
@@ -85,6 +97,7 @@ def test_audit_logger_verify():
 def test_file_audit_backend():
     import tempfile as tf
     import os
+
     with tf.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
         path = f.name
     try:
@@ -135,9 +148,14 @@ def test_audit_login_failure():
 
 
 def test_audit_data_access():
-    audit_data_access("tester", AuditAction.DATA_READ,
-                      resource="/data/dataset", resource_type="dataset",
-                      resource_id="v1", success=True)
+    audit_data_access(
+        "tester",
+        AuditAction.DATA_READ,
+        resource="/data/dataset",
+        resource_type="dataset",
+        resource_id="v1",
+        success=True,
+    )
 
 
 def test_audit_config_change():
@@ -145,8 +163,12 @@ def test_audit_config_change():
 
 
 def test_audit_security_event():
-    audit_security_event(AuditAction.LOGIN_FAILED, "siem_bot",
-                         severity=AuditSeverity.WARNING, details={"reason": "test"})
+    audit_security_event(
+        AuditAction.LOGIN_FAILED,
+        "siem_bot",
+        severity=AuditSeverity.WARNING,
+        details={"reason": "test"},
+    )
 
 
 def test_query_audit_log():
@@ -166,6 +188,7 @@ def test_export_audit_log():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

@@ -103,8 +103,12 @@ def _insert_qdq(
 class Quantizer:
     """Insert QDQ pairs around float initializers."""
 
-    def __init__(self, num_bits: int = 8, per_channel: bool = False,
-                 skip_patterns: Optional[List[str]] = None):
+    def __init__(
+        self,
+        num_bits: int = 8,
+        per_channel: bool = False,
+        skip_patterns: Optional[List[str]] = None,
+    ):
         self.num_bits = num_bits
         self.per_channel = per_channel
         self.skip_patterns = skip_patterns or ["bias"]
@@ -137,5 +141,6 @@ def quantize_model(
     skip_patterns: Optional[List[str]] = None,
 ) -> Model:
     """Convenience wrapper: quantize a model in place and return it."""
-    return Quantizer(num_bits=num_bits, per_channel=per_channel,
-                     skip_patterns=skip_patterns).quantize(model)
+    return Quantizer(
+        num_bits=num_bits, per_channel=per_channel, skip_patterns=skip_patterns
+    ).quantize(model)

@@ -1,9 +1,9 @@
 #include "adversarial_robustness_certification.h"
-#include "test_gtest.h"
 #include "automatic_differentiation_framework.h"
 #include "polymorphic_memory_allocator.h"
-#include <stdio.h>
+#include "test_gtest.h"
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Arc Adversarial Training
@@ -20,12 +20,8 @@
  *
  */
 
-
-
-
-
-
-static void test_adversarial_training_graph(void) {
+static void test_adversarial_training_graph(void)
+{
     SNEPPXARCConfig cfg = SNEPPX_arc_config_default();
     cfg.attack_epsilon = 0.1f;
     cfg.attack_simulation_types = SNEPPX_ATTACK_FGSM;
@@ -40,18 +36,20 @@ static void test_adversarial_training_graph(void) {
 
     size_t shape_in[] = {2, input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = ((float)(i % 5) - 2.0f) * 0.1f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = ((float) (i % 5) - 2.0f) * 0.1f;
     SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
     SNEPPX_tape_record(tape, inv);
 
     size_t n_weights = 1 + 2 * layer->output_verifier->num_layers;
-    SNEPPXTensor** wt = (SNEPPXTensor**)SNEPPX_malloc(n_weights * sizeof(SNEPPXTensor*), 64);
+    SNEPPXTensor** wt = (SNEPPXTensor**) SNEPPX_malloc(n_weights * sizeof(SNEPPXTensor*), 64);
     SX_ASSERT(wt != NULL, "weight array");
     SNEPPX_arc_get_params(layer, wt, n_weights);
 
-    SNEPPXVariable** wv = (SNEPPXVariable**)SNEPPX_malloc(n_weights * sizeof(SNEPPXVariable*), 64);
-    for (size_t i = 0; i < n_weights; i++) {
+    SNEPPXVariable** wv = (SNEPPXVariable**) SNEPPX_malloc(n_weights * sizeof(SNEPPXVariable*), 64);
+    for (size_t i = 0; i < n_weights; i++)
+    {
         wv[i] = SNEPPX_variable_create(wt[i], 1);
         SNEPPX_tape_record(tape, wv[i]);
     }
@@ -75,26 +73,30 @@ static void test_adversarial_training_graph(void) {
     SNEPPXVariable* combined = SNEPPX_add(tape, clean_loss, adv_loss);
     SX_ASSERT(combined != NULL, "combined loss");
 
-    float loss_before = combined->data ? ((float*)combined->data->data)[0] : 0.0f;
+    float loss_before = combined->data ? ((float*) combined->data->data)[0] : 0.0f;
 
     size_t ones_shape[] = {1};
     SNEPPXTensor* ones = SNEPPX_tensor_ones(ones_shape, 1, SNEPPX_FLOAT32);
     SNEPPXVariable* loss_scalar = SNEPPX_sum(tape, combined, 0);
-    loss_before = ((float*)loss_scalar->data->data)[0];
+    loss_before = ((float*) loss_scalar->data->data)[0];
 
     SNEPPX_tape_backward(tape, loss_scalar);
 
-    for (size_t i = 0; i < n_weights; i++) {
-        if (wv[i]->grad && wv[i]->grad->data) {
-            float* gd = (float*)wv[i]->grad->data;
-            for (size_t j = 0; j < wv[i]->grad->size; j++) {
+    for (size_t i = 0; i < n_weights; i++)
+    {
+        if (wv[i]->grad && wv[i]->grad->data)
+        {
+            float* gd = (float*) wv[i]->grad->data;
+            for (size_t j = 0; j < wv[i]->grad->size; j++)
+            {
                 SX_ASSERT(!isnan(gd[j]), "grad not nan");
             }
         }
     }
 
     SNEPPXVariable** weights_to_zero = wv;
-    for (size_t i = 0; i < n_weights; i++) wv[i]->data = NULL;
+    for (size_t i = 0; i < n_weights; i++)
+        wv[i]->data = NULL;
     inv->data = NULL;
     tgv->data = NULL;
     SNEPPX_tape_destroy(tape);
@@ -107,5 +109,7 @@ static void test_adversarial_training_graph(void) {
     printf("  (clean+adv loss before: %f) ", loss_before);
 }
 
-
-TEST(test_arc_adversarial_training, ARC_adversarial_training_graph) { test_adversarial_training_graph(); }
+TEST(test_arc_adversarial_training, ARC_adversarial_training_graph)
+{
+    test_adversarial_training_graph();
+}

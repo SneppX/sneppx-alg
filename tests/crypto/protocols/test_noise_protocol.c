@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_noise_handshake_init(void) {
+static void test_noise_handshake_init(void)
+{
     SNEPPXNoiseHandshakeState hs;
     memset(&hs, 0, sizeof(hs));
     int ret = snepx_noise_handshake_init(&hs, SNEPPX_NOISE_PATTERN_NN, SNEPPX_NOISE_CIPHER_CHACHAPOLY, 1);
@@ -29,7 +29,8 @@ static void test_noise_handshake_init(void) {
     snepx_noise_handshake_destroy(&hs);
 }
 
-static void test_noise_transport(void) {
+static void test_noise_transport(void)
+{
     SNEPPXNoiseHandshakeState hs;
     snepx_noise_handshake_init(&hs, SNEPPX_NOISE_PATTERN_NN, SNEPPX_NOISE_CIPHER_CHACHAPOLY, 1);
     uint8_t prologue[] = "noise_protocol_test";
@@ -45,7 +46,8 @@ static void test_noise_transport(void) {
     snepx_noise_transport_destroy(&ts);
 }
 
-int main(void) {
+int main(void)
+{
     test_noise_handshake_init();
     test_noise_transport();
     return 0;

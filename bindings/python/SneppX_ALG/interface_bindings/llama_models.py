@@ -83,7 +83,11 @@ class LlamaRotaryEmbedding:
     """Rotary Position Embedding (RoPE)."""
 
     def __init__(
-        self, dim: int = None, max_position_embeddings: int = None, base: float = 10000.0, **kwargs
+        self,
+        dim: int = None,
+        max_position_embeddings: int = None,
+        base: float = 10000.0,
+        **kwargs,
     ):
         if dim is None:
             dim = kwargs.get("dim", 64)
@@ -95,7 +99,10 @@ class LlamaRotaryEmbedding:
         self.inv_freq = 1.0 / (base ** (np.arange(0, dim, 2, dtype=np.float32) / dim))
 
     def forward(
-        self, x: Tensor = None, position_ids: Optional[np.ndarray] = None, seq_len: int = None
+        self,
+        x: Tensor = None,
+        position_ids: Optional[np.ndarray] = None,
+        seq_len: int = None,
     ) -> Tuple[Tensor, Tensor]:
         # x: [B, num_heads, seq_len, head_dim]
         if x is not None and getattr(x, "shape", None) is not None:

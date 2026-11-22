@@ -1,13 +1,34 @@
 """Tests for BERT/GPT/T5 Model Implementations."""
 
 from SneppX_ALG.interface_bindings.model_implementations import (
-    BertConfig, BertEmbeddings, BertSelfAttention, BertLayer,
-    BertEncoder, BertPooler, BertModel, BertForMaskedLM,
-    GPTConfig, GPTAttention, GPTMLP, GPTBlock, GPTModel, GPTLMHeadModel,
-    T5Config, T5LayerNorm, T5DenseReluDense, T5LayerSelfAttention,
-    T5Block, T5Stack, T5Model, T5ForConditionalGeneration,
-    create_bert_model, create_gpt_model, create_t5_model,
-    get_model_config, get_model_size_mb, get_model_flops,
+    BertConfig,
+    BertEmbeddings,
+    BertSelfAttention,
+    BertLayer,
+    BertEncoder,
+    BertPooler,
+    BertModel,
+    BertForMaskedLM,
+    GPTConfig,
+    GPTAttention,
+    GPTMLP,
+    GPTBlock,
+    GPTModel,
+    GPTLMHeadModel,
+    T5Config,
+    T5LayerNorm,
+    T5DenseReluDense,
+    T5LayerSelfAttention,
+    T5Block,
+    T5Stack,
+    T5Model,
+    T5ForConditionalGeneration,
+    create_bert_model,
+    create_gpt_model,
+    create_t5_model,
+    get_model_config,
+    get_model_size_mb,
+    get_model_flops,
 )
 from SneppX_ALG.interface_bindings.tensor import Tensor
 import numpy as np
@@ -46,8 +67,9 @@ def test_bert_layer():
 
 
 def test_bert_encoder():
-    encoder = BertEncoder(hidden_size=32, num_attention_heads=4,
-                          num_hidden_layers=2, intermediate_size=64)
+    encoder = BertEncoder(
+        hidden_size=32, num_attention_heads=4, num_hidden_layers=2, intermediate_size=64
+    )
     x = Tensor.randn((2, 8, 32))
     out = encoder(x)
     assert out.shape == (2, 8, 32)
@@ -61,8 +83,14 @@ def test_bert_pooler():
 
 
 def test_bert_model():
-    config = BertConfig(vocab_size=100, hidden_size=32, num_attention_heads=4,
-                        num_hidden_layers=2, intermediate_size=64, max_position_embeddings=64)
+    config = BertConfig(
+        vocab_size=100,
+        hidden_size=32,
+        num_attention_heads=4,
+        num_hidden_layers=2,
+        intermediate_size=64,
+        max_position_embeddings=64,
+    )
     model = BertModel(config)
     x = Tensor.from_numpy(np.random.randint(0, 100, size=(2, 8)).astype(np.int64))
     out = model(x)
@@ -70,8 +98,14 @@ def test_bert_model():
 
 
 def test_bert_for_masked_lm():
-    config = BertConfig(vocab_size=100, hidden_size=32, num_attention_heads=4,
-                        num_hidden_layers=2, intermediate_size=64, max_position_embeddings=64)
+    config = BertConfig(
+        vocab_size=100,
+        hidden_size=32,
+        num_attention_heads=4,
+        num_hidden_layers=2,
+        intermediate_size=64,
+        max_position_embeddings=64,
+    )
     model = BertForMaskedLM(config)
     x = Tensor.from_numpy(np.random.randint(0, 100, size=(2, 8)).astype(np.int64))
     out = model(x)
@@ -158,8 +192,13 @@ def test_t5_block():
 
 
 def test_create_bert_model():
-    config = BertConfig(vocab_size=100, hidden_size=32, num_attention_heads=4,
-                        num_hidden_layers=2, intermediate_size=64)
+    config = BertConfig(
+        vocab_size=100,
+        hidden_size=32,
+        num_attention_heads=4,
+        num_hidden_layers=2,
+        intermediate_size=64,
+    )
     model = create_bert_model(config)
     assert model is not None
 
@@ -183,6 +222,7 @@ def test_get_model_config():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

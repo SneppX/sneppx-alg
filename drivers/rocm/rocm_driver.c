@@ -1,18 +1,18 @@
 #include "rocm_driver.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #ifdef _WIN32
-  #include <windows.h>
-  #define ROCM_DLOPEN(path) LoadLibraryA(path)
-  #define ROCM_DLSYM(handle, name) GetProcAddress((HMODULE)handle, name)
-  #define ROCM_DLCLOSE(handle) FreeLibrary((HMODULE)handle)
+#include <windows.h>
+#define ROCM_DLOPEN(path) LoadLibraryA(path)
+#define ROCM_DLSYM(handle, name) GetProcAddress((HMODULE) handle, name)
+#define ROCM_DLCLOSE(handle) FreeLibrary((HMODULE) handle)
 #else
-  #include <dlfcn.h>
-  #define ROCM_DLOPEN(path) dlopen(path, RTLD_LAZY | RTLD_LOCAL)
-  #define ROCM_DLSYM(handle, name) dlsym(handle, name)
-  #define ROCM_DLCLOSE(handle) dlclose(handle)
+#include <dlfcn.h>
+#define ROCM_DLOPEN(path) dlopen(path, RTLD_LAZY | RTLD_LOCAL)
+#define ROCM_DLSYM(handle, name) dlsym(handle, name)
+#define ROCM_DLCLOSE(handle) dlclose(handle)
 #endif
 
 /*
@@ -29,7 +29,6 @@
  *   four-layer commenting standard used across this codebase.
  *
  */
-
 
 static void* rocm_lib = NULL;
 static int rocm_loaded = 0;
@@ -51,7 +50,8 @@ typedef int (*hipFree_t)(void*);
 typedef int (*hipMemcpy_t)(void*, const void*, size_t, int);
 typedef int (*hipModuleLoad_t)(void**, const char*);
 typedef int (*hipModuleGetFunction_t)(void**, void*, const char*);
-typedef int (*hipModuleLaunchKernel_t)(void*, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, void*, void**, void**);
+typedef int (*hipModuleLaunchKernel_t)(void*, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int,
+                                       unsigned int, unsigned int, void*, void**, void**);
 
 static hipGetDeviceCount_t hipGetDeviceCount_fn = NULL;
 static hipGetDeviceProperties_t hipGetDeviceProperties_fn = NULL;
@@ -70,56 +70,64 @@ static hipModuleLoad_t hipModuleLoad_fn = NULL;
 static hipModuleGetFunction_t hipModuleGetFunction_fn = NULL;
 static hipModuleLaunchKernel_t hipModuleLaunchKernel_fn = NULL;
 
-static int try_load_rocm(void) {
-    if (rocm_loaded) return rocm_device_count > 0 ? 0 : -1;
-    const char* paths[] = {
-        "amdhip64.dll",
-        "libamdhip64.so",
-        "librocm-core.so.1",
-        NULL
-    };
-    for (int i = 0; paths[i]; i++) {
+static int try_load_rocm(void)
+{
+    if (rocm_loaded)
+        return rocm_device_count > 0 ? 0 : -1;
+    const char* paths[] = {"amdhip64.dll", "libamdhip64.so", "librocm-core.so.1", NULL};
+    for (int i = 0; paths[i]; i++)
+    {
         rocm_lib = ROCM_DLOPEN(paths[i]);
-        if (rocm_lib) break;
+        if (rocm_lib)
+            break;
     }
-    if (!rocm_lib) { rocm_loaded = 1; return -1; }
+    if (!rocm_lib)
+    {
+        rocm_loaded = 1;
+        return -1;
+    }
 
-    hipGetDeviceCount_fn = (hipGetDeviceCount_t)ROCM_DLSYM(rocm_lib, "hipGetDeviceCount");
-    hipGetDeviceProperties_fn = (hipGetDeviceProperties_t)ROCM_DLSYM(rocm_lib, "hipGetDeviceProperties");
-    hipSetDevice_fn = (hipSetDevice_t)ROCM_DLSYM(rocm_lib, "hipSetDevice");
-    hipStreamCreate_fn = (hipStreamCreate_t)ROCM_DLSYM(rocm_lib, "hipStreamCreate");
-    hipStreamDestroy_fn = (hipStreamDestroy_t)ROCM_DLSYM(rocm_lib, "hipStreamDestroy");
-    hipStreamSynchronize_fn = (hipStreamSynchronize_t)ROCM_DLSYM(rocm_lib, "hipStreamSynchronize");
-    hipEventCreate_fn = (hipEventCreate_t)ROCM_DLSYM(rocm_lib, "hipEventCreate");
-    hipEventDestroy_fn = (hipEventDestroy_t)ROCM_DLSYM(rocm_lib, "hipEventDestroy");
-    hipEventRecord_fn = (hipEventRecord_t)ROCM_DLSYM(rocm_lib, "hipEventRecord");
-    hipEventSynchronize_fn = (hipEventSynchronize_t)ROCM_DLSYM(rocm_lib, "hipEventSynchronize");
-    hipMalloc_fn = (hipMalloc_t)ROCM_DLSYM(rocm_lib, "hipMalloc");
-    hipFree_fn = (hipFree_t)ROCM_DLSYM(rocm_lib, "hipFree");
-    hipMemcpy_fn = (hipMemcpy_t)ROCM_DLSYM(rocm_lib, "hipMemcpy");
-    hipModuleLoad_fn = (hipModuleLoad_t)ROCM_DLSYM(rocm_lib, "hipModuleLoad");
-    hipModuleGetFunction_fn = (hipModuleGetFunction_t)ROCM_DLSYM(rocm_lib, "hipModuleGetFunction");
-    hipModuleLaunchKernel_fn = (hipModuleLaunchKernel_t)ROCM_DLSYM(rocm_lib, "hipModuleLaunchKernel");
+    hipGetDeviceCount_fn = (hipGetDeviceCount_t) ROCM_DLSYM(rocm_lib, "hipGetDeviceCount");
+    hipGetDeviceProperties_fn = (hipGetDeviceProperties_t) ROCM_DLSYM(rocm_lib, "hipGetDeviceProperties");
+    hipSetDevice_fn = (hipSetDevice_t) ROCM_DLSYM(rocm_lib, "hipSetDevice");
+    hipStreamCreate_fn = (hipStreamCreate_t) ROCM_DLSYM(rocm_lib, "hipStreamCreate");
+    hipStreamDestroy_fn = (hipStreamDestroy_t) ROCM_DLSYM(rocm_lib, "hipStreamDestroy");
+    hipStreamSynchronize_fn = (hipStreamSynchronize_t) ROCM_DLSYM(rocm_lib, "hipStreamSynchronize");
+    hipEventCreate_fn = (hipEventCreate_t) ROCM_DLSYM(rocm_lib, "hipEventCreate");
+    hipEventDestroy_fn = (hipEventDestroy_t) ROCM_DLSYM(rocm_lib, "hipEventDestroy");
+    hipEventRecord_fn = (hipEventRecord_t) ROCM_DLSYM(rocm_lib, "hipEventRecord");
+    hipEventSynchronize_fn = (hipEventSynchronize_t) ROCM_DLSYM(rocm_lib, "hipEventSynchronize");
+    hipMalloc_fn = (hipMalloc_t) ROCM_DLSYM(rocm_lib, "hipMalloc");
+    hipFree_fn = (hipFree_t) ROCM_DLSYM(rocm_lib, "hipFree");
+    hipMemcpy_fn = (hipMemcpy_t) ROCM_DLSYM(rocm_lib, "hipMemcpy");
+    hipModuleLoad_fn = (hipModuleLoad_t) ROCM_DLSYM(rocm_lib, "hipModuleLoad");
+    hipModuleGetFunction_fn = (hipModuleGetFunction_t) ROCM_DLSYM(rocm_lib, "hipModuleGetFunction");
+    hipModuleLaunchKernel_fn = (hipModuleLaunchKernel_t) ROCM_DLSYM(rocm_lib, "hipModuleLaunchKernel");
 
-    if (hipGetDeviceCount_fn) hipGetDeviceCount_fn(&rocm_device_count);
-    if (rocm_device_count < 0) rocm_device_count = 0;
+    if (hipGetDeviceCount_fn)
+        hipGetDeviceCount_fn(&rocm_device_count);
+    if (rocm_device_count < 0)
+        rocm_device_count = 0;
     rocm_loaded = 1;
     rocm_initialized = 1;
     return rocm_device_count > 0 ? 0 : -1;
 }
 
-static void* host_malloc(size_t bytes) {
+static void* host_malloc(size_t bytes)
+{
 #ifdef _WIN32
     return VirtualAlloc(NULL, bytes, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 #else
     void* p = NULL;
-    if (posix_memalign(&p, 64, bytes) != 0) return NULL;
+    if (posix_memalign(&p, 64, bytes) != 0)
+        return NULL;
     return p;
 #endif
 }
 
-static void host_free(void* ptr, size_t bytes) {
-    (void)bytes;
+static void host_free(void* ptr, size_t bytes)
+{
+    (void) bytes;
 #ifdef _WIN32
     VirtualFree(ptr, 0, MEM_RELEASE);
 #else
@@ -132,8 +140,10 @@ static void host_free(void* ptr, size_t bytes) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_register_driver(void) {
-    if (!rocm_loaded) try_load_rocm();
+int SNEPPX_rocm_register_driver(void)
+{
+    if (!rocm_loaded)
+        try_load_rocm();
     return rocm_device_count > 0 ? 0 : -1;
 }
 
@@ -142,10 +152,14 @@ int SNEPPX_rocm_register_driver(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_get_device_count(int* count) {
-    if (!count) return -1;
-    if (!rocm_initialized) try_load_rocm();
-    if (hipGetDeviceCount_fn && hipGetDeviceCount_fn(count) == 0) return 0;
+int SNEPPX_rocm_get_device_count(int* count)
+{
+    if (!count)
+        return -1;
+    if (!rocm_initialized)
+        try_load_rocm();
+    if (hipGetDeviceCount_fn && hipGetDeviceCount_fn(count) == 0)
+        return 0;
     *count = 0;
     return 0;
 }
@@ -157,11 +171,14 @@ int SNEPPX_rocm_get_device_count(int* count) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_get_device_props(int dev_id, SNEPPXROCmDeviceProps* props) {
-    if (!props) return -1;
+int SNEPPX_rocm_get_device_props(int dev_id, SNEPPXROCmDeviceProps* props)
+{
+    if (!props)
+        return -1;
     memset(props, 0, sizeof(*props));
-    if (!rocm_initialized) try_load_rocm();
-    (void)dev_id;
+    if (!rocm_initialized)
+        try_load_rocm();
+    (void) dev_id;
     snprintf(props->name, sizeof(props->name), "ROCm Device %d (emulated)", dev_id);
     props->global_mem_bytes = 8ULL * 1024 * 1024 * 1024;
     props->shared_mem_per_group = 64 * 1024;
@@ -182,9 +199,11 @@ int SNEPPX_rocm_get_device_props(int dev_id, SNEPPXROCmDeviceProps* props) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_set_device(int dev_id) {
-    (void)dev_id;
-    if (rocm_initialized && hipSetDevice_fn) return hipSetDevice_fn(dev_id);
+int SNEPPX_rocm_set_device(int dev_id)
+{
+    (void) dev_id;
+    if (rocm_initialized && hipSetDevice_fn)
+        return hipSetDevice_fn(dev_id);
     return 0;
 }
 
@@ -193,9 +212,11 @@ int SNEPPX_rocm_set_device(int dev_id) {
  *
  * @return Pointer on success, NULL on error.
  */
-SNEPPXROCmContext* SNEPPX_rocm_create_context(int device_id) {
-    SNEPPXROCmContext* ctx = (SNEPPXROCmContext*)calloc(1, sizeof(SNEPPXROCmContext));
-    if (!ctx) return NULL;
+SNEPPXROCmContext* SNEPPX_rocm_create_context(int device_id)
+{
+    SNEPPXROCmContext* ctx = (SNEPPXROCmContext*) calloc(1, sizeof(SNEPPXROCmContext));
+    if (!ctx)
+        return NULL;
     ctx->device_id = device_id;
     ctx->alloc_bytes = 0;
     ctx->peak_alloc_bytes = 0;
@@ -211,8 +232,10 @@ SNEPPXROCmContext* SNEPPX_rocm_create_context(int device_id) {
 /**
  * @brief Perform Rocm Destroy Context.
  */
-void SNEPPX_rocm_destroy_context(SNEPPXROCmContext* ctx) {
-    if (!ctx) return;
+void SNEPPX_rocm_destroy_context(SNEPPXROCmContext* ctx)
+{
+    if (!ctx)
+        return;
     for (int i = 0; i < ctx->num_streams; i++)
         SNEPPX_rocm_stream_destroy(ctx->streams[i]);
     free(ctx->streams);
@@ -224,13 +247,19 @@ void SNEPPX_rocm_destroy_context(SNEPPXROCmContext* ctx) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_stream_create(SNEPPXROCmStream** stream) {
-    if (!stream) return -1;
-    *stream = (SNEPPXROCmStream*)calloc(1, sizeof(SNEPPXROCmStream));
-    if (!*stream) return -1;
-    if (rocm_initialized && hipStreamCreate_fn) {
+int SNEPPX_rocm_stream_create(SNEPPXROCmStream** stream)
+{
+    if (!stream)
+        return -1;
+    *stream = (SNEPPXROCmStream*) calloc(1, sizeof(SNEPPXROCmStream));
+    if (!*stream)
+        return -1;
+    if (rocm_initialized && hipStreamCreate_fn)
+    {
         hipStreamCreate_fn(&(*stream)->handle);
-    } else {
+    }
+    else
+    {
         (*stream)->handle = NULL;
     }
     return 0;
@@ -239,8 +268,10 @@ int SNEPPX_rocm_stream_create(SNEPPXROCmStream** stream) {
 /**
  * @brief Destroy Rocm Stream.
  */
-void SNEPPX_rocm_stream_destroy(SNEPPXROCmStream* stream) {
-    if (!stream) return;
+void SNEPPX_rocm_stream_destroy(SNEPPXROCmStream* stream)
+{
+    if (!stream)
+        return;
     if (rocm_initialized && hipStreamDestroy_fn && stream->handle)
         hipStreamDestroy_fn(stream->handle);
     free(stream);
@@ -251,8 +282,10 @@ void SNEPPX_rocm_stream_destroy(SNEPPXROCmStream* stream) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_stream_synchronize(SNEPPXROCmStream* stream) {
-    if (!stream) return -1;
+int SNEPPX_rocm_stream_synchronize(SNEPPXROCmStream* stream)
+{
+    if (!stream)
+        return -1;
     if (rocm_initialized && hipStreamSynchronize_fn && stream->handle)
         return hipStreamSynchronize_fn(stream->handle);
     return 0;
@@ -263,10 +296,13 @@ int SNEPPX_rocm_stream_synchronize(SNEPPXROCmStream* stream) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_event_create(SNEPPXROCmEvent** event) {
-    if (!event) return -1;
-    *event = (SNEPPXROCmEvent*)calloc(1, sizeof(SNEPPXROCmEvent));
-    if (!*event) return -1;
+int SNEPPX_rocm_event_create(SNEPPXROCmEvent** event)
+{
+    if (!event)
+        return -1;
+    *event = (SNEPPXROCmEvent*) calloc(1, sizeof(SNEPPXROCmEvent));
+    if (!*event)
+        return -1;
     if (rocm_initialized && hipEventCreate_fn)
         hipEventCreate_fn(&(*event)->handle);
     else
@@ -277,8 +313,10 @@ int SNEPPX_rocm_event_create(SNEPPXROCmEvent** event) {
 /**
  * @brief Destroy Rocm Event.
  */
-void SNEPPX_rocm_event_destroy(SNEPPXROCmEvent* event) {
-    if (!event) return;
+void SNEPPX_rocm_event_destroy(SNEPPXROCmEvent* event)
+{
+    if (!event)
+        return;
     if (rocm_initialized && hipEventDestroy_fn && event->handle)
         hipEventDestroy_fn(event->handle);
     free(event);
@@ -291,8 +329,10 @@ void SNEPPX_rocm_event_destroy(SNEPPXROCmEvent* event) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_event_record(SNEPPXROCmEvent* event, SNEPPXROCmStream* stream) {
-    if (!event || !stream) return -1;
+int SNEPPX_rocm_event_record(SNEPPXROCmEvent* event, SNEPPXROCmStream* stream)
+{
+    if (!event || !stream)
+        return -1;
     if (rocm_initialized && hipEventRecord_fn && event->handle && stream->handle)
         return hipEventRecord_fn(event->handle, stream->handle);
     return 0;
@@ -303,8 +343,10 @@ int SNEPPX_rocm_event_record(SNEPPXROCmEvent* event, SNEPPXROCmStream* stream) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_event_synchronize(SNEPPXROCmEvent* event) {
-    if (!event) return -1;
+int SNEPPX_rocm_event_synchronize(SNEPPXROCmEvent* event)
+{
+    if (!event)
+        return -1;
     if (rocm_initialized && hipEventSynchronize_fn && event->handle)
         return hipEventSynchronize_fn(event->handle);
     return 0;
@@ -317,11 +359,15 @@ int SNEPPX_rocm_event_synchronize(SNEPPXROCmEvent* event) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_mem_alloc(void** dev_ptr, size_t bytes) {
-    if (!dev_ptr) return -1;
-    if (rocm_initialized && hipMalloc_fn && bytes > 0) {
+int SNEPPX_rocm_mem_alloc(void** dev_ptr, size_t bytes)
+{
+    if (!dev_ptr)
+        return -1;
+    if (rocm_initialized && hipMalloc_fn && bytes > 0)
+    {
         int ret = hipMalloc_fn(dev_ptr, bytes);
-        if (ret == 0) return 0;
+        if (ret == 0)
+            return 0;
     }
     *dev_ptr = host_malloc(bytes);
     return *dev_ptr ? 0 : -1;
@@ -332,11 +378,15 @@ int SNEPPX_rocm_mem_alloc(void** dev_ptr, size_t bytes) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_mem_free(void* dev_ptr) {
-    if (!dev_ptr) return -1;
-    if (rocm_initialized && hipFree_fn && dev_ptr) {
+int SNEPPX_rocm_mem_free(void* dev_ptr)
+{
+    if (!dev_ptr)
+        return -1;
+    if (rocm_initialized && hipFree_fn && dev_ptr)
+    {
         int ret = hipFree_fn(dev_ptr);
-        if (ret == 0) return 0;
+        if (ret == 0)
+            return 0;
     }
     host_free(dev_ptr, 0);
     return 0;
@@ -350,8 +400,10 @@ int SNEPPX_rocm_mem_free(void* dev_ptr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_mem_htod(void* dev_dst, const void* host_src, size_t bytes) {
-    if (!dev_dst || !host_src || bytes == 0) return -1;
+int SNEPPX_rocm_mem_htod(void* dev_dst, const void* host_src, size_t bytes)
+{
+    if (!dev_dst || !host_src || bytes == 0)
+        return -1;
     if (rocm_initialized && hipMemcpy_fn)
         return hipMemcpy_fn(dev_dst, host_src, bytes, 1);
     memcpy(dev_dst, host_src, bytes);
@@ -366,8 +418,10 @@ int SNEPPX_rocm_mem_htod(void* dev_dst, const void* host_src, size_t bytes) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_mem_dtoh(void* host_dst, const void* dev_src, size_t bytes) {
-    if (!host_dst || !dev_src || bytes == 0) return -1;
+int SNEPPX_rocm_mem_dtoh(void* host_dst, const void* dev_src, size_t bytes)
+{
+    if (!host_dst || !dev_src || bytes == 0)
+        return -1;
     if (rocm_initialized && hipMemcpy_fn)
         return hipMemcpy_fn(host_dst, dev_src, bytes, 2);
     memcpy(host_dst, dev_src, bytes);
@@ -382,8 +436,10 @@ int SNEPPX_rocm_mem_dtoh(void* host_dst, const void* dev_src, size_t bytes) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_mem_dtod(void* dev_dst, const void* dev_src, size_t bytes) {
-    if (!dev_dst || !dev_src || bytes == 0) return -1;
+int SNEPPX_rocm_mem_dtod(void* dev_dst, const void* dev_src, size_t bytes)
+{
+    if (!dev_dst || !dev_src || bytes == 0)
+        return -1;
     if (rocm_initialized && hipMemcpy_fn)
         return hipMemcpy_fn(dev_dst, dev_src, bytes, 3);
     memmove(dev_dst, dev_src, bytes);
@@ -395,16 +451,18 @@ int SNEPPX_rocm_mem_dtod(void* dev_dst, const void* dev_src, size_t bytes) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_launch_kernel(const SNEPPXROCmKernelLaunch* launch) {
-    if (!launch) return -1;
-    if (rocm_initialized && hipModuleLaunchKernel_fn && launch->kernel_func) {
+int SNEPPX_rocm_launch_kernel(const SNEPPXROCmKernelLaunch* launch)
+{
+    if (!launch)
+        return -1;
+    if (rocm_initialized && hipModuleLaunchKernel_fn && launch->kernel_func)
+    {
         void* kernel_params[1] = {NULL};
-        return hipModuleLaunchKernel_fn(launch->kernel_func,
-            (unsigned int)launch->grid_x, (unsigned int)launch->grid_y, (unsigned int)launch->grid_z,
-            (unsigned int)launch->group_x, (unsigned int)launch->group_y, (unsigned int)launch->group_z,
-            (unsigned int)launch->local_mem_bytes,
-            launch->stream ? launch->stream->handle : NULL,
-            kernel_params, NULL);
+        return hipModuleLaunchKernel_fn(launch->kernel_func, (unsigned int) launch->grid_x,
+                                        (unsigned int) launch->grid_y, (unsigned int) launch->grid_z,
+                                        (unsigned int) launch->group_x, (unsigned int) launch->group_y,
+                                        (unsigned int) launch->group_z, (unsigned int) launch->local_mem_bytes,
+                                        launch->stream ? launch->stream->handle : NULL, kernel_params, NULL);
     }
     return 0;
 }
@@ -414,6 +472,7 @@ int SNEPPX_rocm_launch_kernel(const SNEPPXROCmKernelLaunch* launch) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rocm_launch_kernel_async(const SNEPPXROCmKernelLaunch* launch) {
+int SNEPPX_rocm_launch_kernel_async(const SNEPPXROCmKernelLaunch* launch)
+{
     return SNEPPX_rocm_launch_kernel(launch);
 }

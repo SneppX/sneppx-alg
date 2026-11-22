@@ -42,7 +42,9 @@ class ARCFForward:
         self._has_c = _HAS_C
 
     @staticmethod
-    def forward(x: np.ndarray, weight: np.ndarray, bias: Optional[np.ndarray] = None) -> np.ndarray:
+    def forward(
+        x: np.ndarray, weight: np.ndarray, bias: Optional[np.ndarray] = None
+    ) -> np.ndarray:
         out = x @ weight.T
         if bias is not None:
             out = out + bias
@@ -118,7 +120,9 @@ class ARCAdversarialTrainGraph:
         self.attack_epsilon = attack_epsilon
         self._has_c = _HAS_C
 
-    def build(self, weights: List[np.ndarray], x_clean: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def build(
+        self, weights: List[np.ndarray], x_clean: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Build forward graph returns (clean_output, adv_output).
 
         Pure Python fallback: applies FGSM perturbation, then runs a simple

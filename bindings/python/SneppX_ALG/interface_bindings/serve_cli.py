@@ -8,7 +8,6 @@ import logging
 import ipaddress
 
 
-
 def _is_loopback_host(host):
     """Return whether a bind host is explicitly loopback-only."""
     normalized = host.strip().strip("[]").lower().split("%", 1)[0]
@@ -44,8 +43,8 @@ def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
             "or bind to 127.0.0.1/::1 for local-only access."
         )
     configured_keys = _parse_api_keys(api_keys)
-    has_environment_keys = (
-        auth_mode == "api_key" and bool(os.environ.get("SNEPPX_API_KEYS", "").strip())
+    has_environment_keys = auth_mode == "api_key" and bool(
+        os.environ.get("SNEPPX_API_KEYS", "").strip()
     )
     if auth_mode in {"bearer", "api_key"} and not (
         configured_keys or key_store_path or has_environment_keys
@@ -59,7 +58,10 @@ def _validate_auth_settings(host, auth_mode, api_keys, key_store_path):
 def main():
     parser = argparse.ArgumentParser(description="SneppX Inference Server")
     parser.add_argument(
-        "--host", type=str, default="127.0.0.1", help="Bind address (default: 127.0.0.1)"
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Bind address (default: 127.0.0.1)",
     )
     parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
     parser.add_argument(
@@ -129,56 +131,81 @@ def main():
         help="Disable output verification",
     )
     parser.add_argument(
-        "--firewall-config", type=str, default=None,
+        "--firewall-config",
+        type=str,
+        default=None,
         help="Path to firewall YAML config",
     )
     parser.add_argument(
-        "--firewall-enabled", type=str, default=None,
+        "--firewall-enabled",
+        type=str,
+        default=None,
         choices=["true", "false"],
         help="Enable/disable firewall (overrides config)",
     )
     parser.add_argument(
-        "--tls-enabled", action="store_true",
+        "--tls-enabled",
+        action="store_true",
         help="Enable TLS (requires --tls-certfile and --tls-keyfile)",
     )
     parser.add_argument(
-        "--tls-certfile", type=str, default=None,
+        "--tls-certfile",
+        type=str,
+        default=None,
         help="Path to TLS certificate file",
     )
     parser.add_argument(
-        "--tls-keyfile", type=str, default=None,
+        "--tls-keyfile",
+        type=str,
+        default=None,
         help="Path to TLS private key file",
     )
     parser.add_argument(
-        "--tls-cafile", type=str, default=None,
+        "--tls-cafile",
+        type=str,
+        default=None,
         help="Path to CA certificate file for mTLS",
     )
     parser.add_argument(
-        "--firewall-allowlist", type=str, default=None,
+        "--firewall-allowlist",
+        type=str,
+        default=None,
         help="Comma-separated CIDR allowlist",
     )
     parser.add_argument(
-        "--firewall-denylist", type=str, default=None,
+        "--firewall-denylist",
+        type=str,
+        default=None,
         help="Comma-separated CIDR denylist",
     )
     parser.add_argument(
-        "--firewall-rate-limit", type=int, default=None,
+        "--firewall-rate-limit",
+        type=int,
+        default=None,
         help="Max requests per IP per minute",
     )
     parser.add_argument(
-        "--firewall-knock-ports", type=str, default=None,
+        "--firewall-knock-ports",
+        type=str,
+        default=None,
         help="Comma-separated port knock sequence",
     )
     parser.add_argument(
-        "--key-store-path", type=str, default=None,
+        "--key-store-path",
+        type=str,
+        default=None,
         help="Path to SQLite database for persistent API key storage",
     )
     parser.add_argument(
-        "--admin-key", type=str, default=None,
+        "--admin-key",
+        type=str,
+        default=None,
         help="Admin API key for managing keys via /v1/admin/keys endpoints",
     )
     parser.add_argument(
-        "--usage-db-path", type=str, default=None,
+        "--usage-db-path",
+        type=str,
+        default=None,
         help="Path to SQLite database for usage tracking",
     )
     args = parser.parse_args()
@@ -225,19 +252,23 @@ def main():
     if args.tls_cafile:
         firewall_overrides["cafile"] = args.tls_cafile
     if args.firewall_allowlist:
-        firewall_overrides["allowlist"] = [x.strip() for x in args.firewall_allowlist.split(",")]
+        firewall_overrides["allowlist"] = [
+            x.strip() for x in args.firewall_allowlist.split(",")
+        ]
     if args.firewall_denylist:
-        firewall_overrides["denylist"] = [x.strip() for x in args.firewall_denylist.split(",")]
+        firewall_overrides["denylist"] = [
+            x.strip() for x in args.firewall_denylist.split(",")
+        ]
     if args.firewall_rate_limit:
         firewall_overrides["rate_limit_max"] = args.firewall_rate_limit
     if args.firewall_knock_ports:
-        firewall_overrides["knock_ports"] = [int(p.strip()) for p in args.firewall_knock_ports.split(",")]
+        firewall_overrides["knock_ports"] = [
+            int(p.strip()) for p in args.firewall_knock_ports.split(",")
+        ]
 
     auth = AuthConfig(
         mode=auth_mode,
-        api_keys=(
-            _parse_api_keys(args.api_keys)
-        ),
+        api_keys=(_parse_api_keys(args.api_keys)),
     )
     try:
         rate_limit_enabled, requests_per_minute = _resolve_rate_limit(
@@ -306,7 +337,9 @@ def _load_model(args):
     elif isinstance(config, dict):
         model = build_transformer_from_config(config)
     else:
-        raise ValueError(f"Invalid model config format in {args.model_config}: expected object/dict")
+        raise ValueError(
+            f"Invalid model config format in {args.model_config}: expected object/dict"
+        )
 
     if args.checkpoint:
         if not os.path.exists(args.checkpoint):
@@ -324,7 +357,9 @@ def _load_model(args):
         tokenizer = Tokenizer(args.tokenizer)
 
     gen_config = GenerationConfig(
-        max_new_tokens=config.get("max_new_tokens", 256) if isinstance(config, dict) else 256,
+        max_new_tokens=config.get("max_new_tokens", 256)
+        if isinstance(config, dict)
+        else 256,
         temperature=config.get("temperature", 1.0) if isinstance(config, dict) else 1.0,
         top_k=config.get("top_k", 0) if isinstance(config, dict) else 0,
         top_p=config.get("top_p", 1.0) if isinstance(config, dict) else 1.0,
@@ -337,7 +372,9 @@ def _load_model(args):
         default_config=gen_config,
         meta={"config": config, "checkpoint": args.checkpoint},
     )
-    logging.info(f"Model '{args.model_id}' loaded (config-initialized; tokenizer={'yes' if tokenizer else 'no'})")
+    logging.info(
+        f"Model '{args.model_id}' loaded (config-initialized; tokenizer={'yes' if tokenizer else 'no'})"
+    )
 
 
 def _run_server(args):

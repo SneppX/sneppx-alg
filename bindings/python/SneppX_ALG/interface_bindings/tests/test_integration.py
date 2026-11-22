@@ -6,9 +6,17 @@ import tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from SneppX_ALG.interface_bindings.model_zoo import (
-    ModelConfig, LlamaConfig, MistralConfig, Qwen2Config, DeepSeekV2Config,
-    get_model_config, get_model_config_obj, from_pretrained, build_model_from_config,
-    ModelHub, _HAS_C_BACKEND
+    ModelConfig,
+    LlamaConfig,
+    MistralConfig,
+    Qwen2Config,
+    DeepSeekV2Config,
+    get_model_config,
+    get_model_config_obj,
+    from_pretrained,
+    build_model_from_config,
+    ModelHub,
+    _HAS_C_BACKEND,
 )
 
 tests_passed = 0
@@ -30,6 +38,7 @@ def pass_():
 # ---------------------------------------------------------------------------
 # 1. ModelConfig → JSON → C config → ModelConfig roundtrip
 # ---------------------------------------------------------------------------
+
 
 def test_python_to_c_roundtrip():
     """Create Python ModelConfig, convert to C via registry, verify fields survive."""
@@ -75,8 +84,12 @@ def test_all_presets_accessible():
     ]
     for family, size, hs, layers, kv in presets:
         cfg = get_model_config(family, size)
-        assert cfg["hidden_size"] == hs, f"{family}/{size}: expected hs={hs}, got {cfg['hidden_size']}"
-        assert cfg["num_hidden_layers"] == layers, f"{family}/{size}: expected layers={layers}, got {cfg['num_hidden_layers']}"
+        assert (
+            cfg["hidden_size"] == hs
+        ), f"{family}/{size}: expected hs={hs}, got {cfg['hidden_size']}"
+        assert (
+            cfg["num_hidden_layers"] == layers
+        ), f"{family}/{size}: expected layers={layers}, got {cfg['num_hidden_layers']}"
 
 
 def test_model_config_dataclass_conversion():
@@ -111,6 +124,7 @@ def test_model_config_dataclass_conversion():
 # ---------------------------------------------------------------------------
 # 2. ModelHub from_pretrained / save_pretrained full pipeline
 # ---------------------------------------------------------------------------
+
 
 def test_hub_save_load_pipeline():
     """Create a model via ModelHub, save to temp dir, verify files."""
@@ -152,6 +166,7 @@ def test_hub_model_card_generation():
 # 3. from_pretrained standalone function
 # ---------------------------------------------------------------------------
 
+
 def test_from_pretrained_standalone():
     """Verify the standalone from_pretrained function works."""
     result = from_pretrained("qwen2-7b", verbose=False)
@@ -172,18 +187,28 @@ def test_from_pretrained_unknown_model():
 # 4. FrameworkConfig → ModelConfig conversions (all 4 framework types)
 # ---------------------------------------------------------------------------
 
+
 def test_mistral_config_conversion():
     """Test MistralConfig ↔ ModelConfig conversion."""
     mc = ModelConfig(
-        hidden_size=5120, intermediate_size=13824,
-        num_layers=40, num_attention_heads=40,
-        num_key_value_heads=8, vocab_size=32000,
-        max_seq_len=4096, rope_theta=10000.0,
-        sliding_window=4096, learning_rate=2e-4,
-        name="mistral-test", version="1.0",
-        architecture="transformer", model_type="causal-lm",
-        framework="sneppx", hidden_act="silu",
-        gated_ffn=True, use_rms_norm=True,
+        hidden_size=5120,
+        intermediate_size=13824,
+        num_layers=40,
+        num_attention_heads=40,
+        num_key_value_heads=8,
+        vocab_size=32000,
+        max_seq_len=4096,
+        rope_theta=10000.0,
+        sliding_window=4096,
+        learning_rate=2e-4,
+        name="mistral-test",
+        version="1.0",
+        architecture="transformer",
+        model_type="causal-lm",
+        framework="sneppx",
+        hidden_act="silu",
+        gated_ffn=True,
+        use_rms_norm=True,
     )
     mist = MistralConfig.from_model_config(mc)
     assert mist.hidden_size == 5120
@@ -194,14 +219,23 @@ def test_mistral_config_conversion():
 def test_qwen2_config_conversion():
     """Test Qwen2Config ↔ ModelConfig conversion."""
     mc = ModelConfig(
-        hidden_size=3584, intermediate_size=18944,
-        num_layers=28, num_attention_heads=28,
-        num_key_value_heads=4, vocab_size=152064,
-        max_seq_len=8192, rope_theta=1000000.0,
-        learning_rate=2e-4, name="qwen-test", version="1.0",
-        architecture="transformer", model_type="causal-lm",
-        framework="sneppx", hidden_act="silu",
-        gated_ffn=True, use_rms_norm=True,
+        hidden_size=3584,
+        intermediate_size=18944,
+        num_layers=28,
+        num_attention_heads=28,
+        num_key_value_heads=4,
+        vocab_size=152064,
+        max_seq_len=8192,
+        rope_theta=1000000.0,
+        learning_rate=2e-4,
+        name="qwen-test",
+        version="1.0",
+        architecture="transformer",
+        model_type="causal-lm",
+        framework="sneppx",
+        hidden_act="silu",
+        gated_ffn=True,
+        use_rms_norm=True,
     )
     qwen = Qwen2Config.from_model_config(mc)
     assert qwen.hidden_size == 3584
@@ -211,14 +245,23 @@ def test_qwen2_config_conversion():
 def test_deepseek_config_conversion():
     """Test DeepSeekV2Config ↔ ModelConfig conversion."""
     mc = ModelConfig(
-        hidden_size=4096, intermediate_size=11008,
-        num_layers=32, num_attention_heads=32,
-        num_key_value_heads=32, vocab_size=102400,
-        max_seq_len=4096, rope_theta=10000.0,
-        learning_rate=2e-4, name="deepseek-test", version="1.0",
-        architecture="transformer", model_type="causal-lm",
-        framework="sneppx", hidden_act="silu",
-        gated_ffn=True, use_rms_norm=True,
+        hidden_size=4096,
+        intermediate_size=11008,
+        num_layers=32,
+        num_attention_heads=32,
+        num_key_value_heads=32,
+        vocab_size=102400,
+        max_seq_len=4096,
+        rope_theta=10000.0,
+        learning_rate=2e-4,
+        name="deepseek-test",
+        version="1.0",
+        architecture="transformer",
+        model_type="causal-lm",
+        framework="sneppx",
+        hidden_act="silu",
+        gated_ffn=True,
+        use_rms_norm=True,
     )
     ds = DeepSeekV2Config.from_model_config(mc)
     assert ds.hidden_size == 4096
@@ -228,6 +271,7 @@ def test_deepseek_config_conversion():
 # ---------------------------------------------------------------------------
 # 5. build_model_from_config
 # ---------------------------------------------------------------------------
+
 
 def test_build_model_from_config():
     """Verify build_model_from_config returns expected structure."""
@@ -243,30 +287,55 @@ def test_build_model_from_config():
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("Running Phase 1.8 Integration Tests...\n")
 
     # ModelConfig → C roundtrip
-    test("python_to_c_roundtrip"); test_python_to_c_roundtrip(); pass_()
-    test("all_presets_accessible"); test_all_presets_accessible(); pass_()
-    test("model_config_dataclass_conversion"); test_model_config_dataclass_conversion(); pass_()
+    test("python_to_c_roundtrip")
+    test_python_to_c_roundtrip()
+    pass_()
+    test("all_presets_accessible")
+    test_all_presets_accessible()
+    pass_()
+    test("model_config_dataclass_conversion")
+    test_model_config_dataclass_conversion()
+    pass_()
 
     # ModelHub pipeline
-    test("hub_save_load_pipeline"); test_hub_save_load_pipeline(); pass_()
-    test("hub_cache_dir_creation"); test_hub_cache_dir_creation(); pass_()
-    test("hub_model_card_generation"); test_hub_model_card_generation(); pass_()
+    test("hub_save_load_pipeline")
+    test_hub_save_load_pipeline()
+    pass_()
+    test("hub_cache_dir_creation")
+    test_hub_cache_dir_creation()
+    pass_()
+    test("hub_model_card_generation")
+    test_hub_model_card_generation()
+    pass_()
 
     # from_pretrained
-    test("from_pretrained_standalone"); test_from_pretrained_standalone(); pass_()
-    test("from_pretrained_unknown_model"); test_from_pretrained_unknown_model(); pass_()
+    test("from_pretrained_standalone")
+    test_from_pretrained_standalone()
+    pass_()
+    test("from_pretrained_unknown_model")
+    test_from_pretrained_unknown_model()
+    pass_()
 
     # FrameworkConfig conversions
-    test("mistral_config_conversion"); test_mistral_config_conversion(); pass_()
-    test("qwen2_config_conversion"); test_qwen2_config_conversion(); pass_()
-    test("deepseek_config_conversion"); test_deepseek_config_conversion(); pass_()
+    test("mistral_config_conversion")
+    test_mistral_config_conversion()
+    pass_()
+    test("qwen2_config_conversion")
+    test_qwen2_config_conversion()
+    pass_()
+    test("deepseek_config_conversion")
+    test_deepseek_config_conversion()
+    pass_()
 
     # build_model_from_config
-    test("build_model_from_config"); test_build_model_from_config(); pass_()
+    test("build_model_from_config")
+    test_build_model_from_config()
+    pass_()
 
     print(f"\n{'-' * 40}")
     print(f"Results: {tests_passed}/{tests_total} tests passed!")

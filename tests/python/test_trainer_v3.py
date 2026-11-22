@@ -1,7 +1,10 @@
 """Tests for Trainer v3 (Autograd Training Loop)."""
 
 from SneppX_ALG.interface_bindings.trainer_v3 import (
-    TrainConfig, Trainer, clip_grad_norm_, estimate_flops,
+    TrainConfig,
+    Trainer,
+    clip_grad_norm_,
+    estimate_flops,
 )
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.nn import Linear, Sequential, Module
@@ -23,7 +26,9 @@ def test_train_config_defaults():
 
 
 def test_train_config_from_dict():
-    cfg = TrainConfig(config_dict={"learning_rate": 0.001, "batch_size": 8, "num_epochs": 2})
+    cfg = TrainConfig(
+        config_dict={"learning_rate": 0.001, "batch_size": 8, "num_epochs": 2}
+    )
     assert cfg is not None
 
 
@@ -53,6 +58,7 @@ def test_estimate_flops():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

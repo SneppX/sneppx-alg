@@ -18,8 +18,8 @@
  *
  */
 
-
-static void test_program_create(void) {
+static void test_program_create(void)
+{
     SNEPPXNPEProgram* p = SNEPPX_npe_program_create(64);
     SX_ASSERT(p != NULL, "program not null");
     SX_ASSERT(p->num_instructions == 0, "empty program");
@@ -30,10 +30,12 @@ static void test_program_create(void) {
     SNEPPX_npe_program_destroy(p);
 }
 
-static void test_program_append(void) {
+static void test_program_append(void)
+{
     SNEPPXNPEProgram* p = SNEPPX_npe_program_create(64);
     SX_ASSERT(p != NULL, "program not null");
-    SNEPPXNPEInstruction inst; memset(&inst, 0, sizeof(inst));
+    SNEPPXNPEInstruction inst;
+    memset(&inst, 0, sizeof(inst));
     inst.opcode = SNEPPX_NOP;
     SNEPPX_npe_program_append(p, inst);
     SNEPPX_npe_program_append(p, inst);
@@ -45,6 +47,11 @@ static void test_program_append(void) {
     SNEPPX_npe_program_destroy(p);
 }
 
-
-TEST(test_npe_program, test_program_create) { test_program_create(); }
-TEST(test_npe_program, test_program_append) { test_program_append(); }
+TEST(test_npe_program, test_program_create)
+{
+    test_program_create();
+}
+TEST(test_npe_program, test_program_append)
+{
+    test_program_append();
+}

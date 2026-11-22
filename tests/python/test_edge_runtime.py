@@ -87,7 +87,7 @@ class TestWeightQuantization:
         compiled, _ = _mlp_graph()
         q = quantize_graph_weights(compiled, mode="int8")
         assert len(q) == 2
-        for (wq, scale) in q.values():
+        for wq, scale in q.values():
             assert wq.dtype == np.int8
             assert scale > 0
 
@@ -98,8 +98,9 @@ class TestWeightQuantization:
         for node in weights:
             wq, scale = q[id(node)]
             orig = np.asarray(node.inputs[1].params["value"])
-            rel_err = np.abs(wq.astype(np.float32) * scale - orig).max() / \
-                max(1.0, np.abs(orig).max())
+            rel_err = np.abs(wq.astype(np.float32) * scale - orig).max() / max(
+                1.0, np.abs(orig).max()
+            )
             assert rel_err < 0.05
 
     def test_unsupported_mode_raises(self):
@@ -146,8 +147,15 @@ class TestEdgeRuntime:
         compiled, x = _mlp_graph()
         rt = EdgeRuntime(compiled, EdgeConfig(quant_mode="int8"))
         s = rt.summary()
-        for key in ("device", "isa", "cores", "backend", "quant_mode",
-                    "quantized_matmul_layers", "estimated_flops"):
+        for key in (
+            "device",
+            "isa",
+            "cores",
+            "backend",
+            "quant_mode",
+            "quantized_matmul_layers",
+            "estimated_flops",
+        ):
             assert key in s
         assert s["quantized_matmul_layers"] == 2
         assert s["estimated_flops"] > 0

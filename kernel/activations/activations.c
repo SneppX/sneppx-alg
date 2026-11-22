@@ -1,6 +1,6 @@
 #include "activations.h"
-#include <math.h>
 #include <float.h>
+#include <math.h>
 /*
  * SNEPPX - Activation Functions
  *
@@ -17,8 +17,6 @@
  *   None (internal kernel module).
  */
 
-
-
 /**
  * @brief Run the forward pass for Act.
  *
@@ -28,11 +26,15 @@
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_forward(const float* x, float* output, SNEPPXActivationType act, size_t n) {
-    if (!x || !output || n == 0) return -1;
-    switch (act) {
+int SNEPPX_act_forward(const float* x, float* output, SNEPPXActivationType act, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
+    switch (act)
+    {
         case SNEPPX_ACT_RELU:
-            for (size_t i = 0; i < n; i++) output[i] = x[i] > 0.0f ? x[i] : 0.0f;
+            for (size_t i = 0; i < n; i++)
+                output[i] = x[i] > 0.0f ? x[i] : 0.0f;
             return 0;
         case SNEPPX_ACT_LEAKY_RELU:
             return SNEPPX_act_leaky_relu(x, output, 0.01f, n);
@@ -47,13 +49,16 @@ int SNEPPX_act_forward(const float* x, float* output, SNEPPXActivationType act, 
         case SNEPPX_ACT_GELU_ERF:
             return SNEPPX_act_gelu_erf(x, output, n);
         case SNEPPX_ACT_SILU:
-            for (size_t i = 0; i < n; i++) output[i] = x[i] / (1.0f + expf(-x[i]));
+            for (size_t i = 0; i < n; i++)
+                output[i] = x[i] / (1.0f + expf(-x[i]));
             return 0;
         case SNEPPX_ACT_SIGMOID:
-            for (size_t i = 0; i < n; i++) output[i] = 1.0f / (1.0f + expf(-x[i]));
+            for (size_t i = 0; i < n; i++)
+                output[i] = 1.0f / (1.0f + expf(-x[i]));
             return 0;
         case SNEPPX_ACT_TANH:
-            for (size_t i = 0; i < n; i++) output[i] = tanhf(x[i]);
+            for (size_t i = 0; i < n; i++)
+                output[i] = tanhf(x[i]);
             return 0;
         case SNEPPX_ACT_SOFTMAX:
             return SNEPPX_act_softmax_stable(x, output, n);
@@ -74,18 +79,23 @@ int SNEPPX_act_forward(const float* x, float* output, SNEPPXActivationType act, 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_backward(const float* x, const float* grad_out, float* grad_in, SNEPPXActivationType act, size_t n) {
-    if (!x || !grad_out || !grad_in || n == 0) return -1;
-    for (size_t i = 0; i < n; i++) {
+int SNEPPX_act_backward(const float* x, const float* grad_out, float* grad_in, SNEPPXActivationType act, size_t n)
+{
+    if (!x || !grad_out || !grad_in || n == 0)
+        return -1;
+    for (size_t i = 0; i < n; i++)
+    {
         float xv = x[i], g = grad_out[i];
-        switch (act) {
+        switch (act)
+        {
             case SNEPPX_ACT_RELU:
                 grad_in[i] = xv > 0.0f ? g : 0.0f;
                 break;
             case SNEPPX_ACT_LEAKY_RELU:
                 grad_in[i] = xv > 0.0f ? g : g * 0.01f;
                 break;
-            case SNEPPX_ACT_GELU_TANH: {
+            case SNEPPX_ACT_GELU_TANH:
+            {
                 float c = 0.7978845608028654f;
                 float x3 = xv * xv * xv;
                 float t = tanhf(c * (xv + 0.044715f * x3));
@@ -94,17 +104,20 @@ int SNEPPX_act_backward(const float* x, const float* grad_out, float* grad_in, S
                 grad_in[i] = g * dg;
                 break;
             }
-            case SNEPPX_ACT_SILU: {
+            case SNEPPX_ACT_SILU:
+            {
                 float s = 1.0f / (1.0f + expf(-xv));
                 grad_in[i] = g * s * (1.0f + xv * (1.0f - s));
                 break;
             }
-            case SNEPPX_ACT_SIGMOID: {
+            case SNEPPX_ACT_SIGMOID:
+            {
                 float s = 1.0f / (1.0f + expf(-xv));
                 grad_in[i] = g * s * (1.0f - s);
                 break;
             }
-            case SNEPPX_ACT_TANH: {
+            case SNEPPX_ACT_TANH:
+            {
                 float t = tanhf(xv);
                 grad_in[i] = g * (1.0f - t * t);
                 break;
@@ -124,13 +137,24 @@ int SNEPPX_act_backward(const float* x, const float* grad_out, float* grad_in, S
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_softmax_stable(const float* x, float* output, size_t n) {
-    if (!x || !output || n == 0) return -1;
+int SNEPPX_act_softmax_stable(const float* x, float* output, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
     float maxv = -FLT_MAX;
-    for (size_t i = 0; i < n; i++) if (x[i] > maxv) maxv = x[i];
+    for (size_t i = 0; i < n; i++)
+        if (x[i] > maxv)
+            maxv = x[i];
     float sum = 0.0f;
-    for (size_t i = 0; i < n; i++) { float e = expf(x[i] - maxv); output[i] = e; sum += e; }
-    if (sum > 0.0f) for (size_t i = 0; i < n; i++) output[i] /= sum;
+    for (size_t i = 0; i < n; i++)
+    {
+        float e = expf(x[i] - maxv);
+        output[i] = e;
+        sum += e;
+    }
+    if (sum > 0.0f)
+        for (size_t i = 0; i < n; i++)
+            output[i] /= sum;
     return 0;
 }
 
@@ -142,10 +166,14 @@ int SNEPPX_act_softmax_stable(const float* x, float* output, size_t n) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_log_softmax(const float* x, float* output, size_t n) {
-    if (!x || !output || n == 0) return -1;
-    if (SNEPPX_act_softmax_stable(x, output, n) != 0) return -1;
-    for (size_t i = 0; i < n; i++) output[i] = logf(fmaxf(output[i], FLT_MIN));
+int SNEPPX_act_log_softmax(const float* x, float* output, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
+    if (SNEPPX_act_softmax_stable(x, output, n) != 0)
+        return -1;
+    for (size_t i = 0; i < n; i++)
+        output[i] = logf(fmaxf(output[i], FLT_MIN));
     return 0;
 }
 
@@ -158,9 +186,12 @@ int SNEPPX_act_log_softmax(const float* x, float* output, size_t n) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_leaky_relu(const float* x, float* output, float alpha, size_t n) {
-    if (!x || !output || n == 0) return -1;
-    for (size_t i = 0; i < n; i++) output[i] = x[i] > 0.0f ? x[i] : alpha * x[i];
+int SNEPPX_act_leaky_relu(const float* x, float* output, float alpha, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
+    for (size_t i = 0; i < n; i++)
+        output[i] = x[i] > 0.0f ? x[i] : alpha * x[i];
     return 0;
 }
 
@@ -173,9 +204,12 @@ int SNEPPX_act_leaky_relu(const float* x, float* output, float alpha, size_t n) 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_prelu(const float* x, float* output, const float* alpha, size_t n) {
-    if (!x || !output || !alpha || n == 0) return -1;
-    for (size_t i = 0; i < n; i++) output[i] = x[i] > 0.0f ? x[i] : alpha[i % n] * x[i];
+int SNEPPX_act_prelu(const float* x, float* output, const float* alpha, size_t n)
+{
+    if (!x || !output || !alpha || n == 0)
+        return -1;
+    for (size_t i = 0; i < n; i++)
+        output[i] = x[i] > 0.0f ? x[i] : alpha[i % n] * x[i];
     return 0;
 }
 
@@ -188,9 +222,12 @@ int SNEPPX_act_prelu(const float* x, float* output, const float* alpha, size_t n
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_elu(const float* x, float* output, float alpha, size_t n) {
-    if (!x || !output || n == 0) return -1;
-    for (size_t i = 0; i < n; i++) output[i] = x[i] > 0.0f ? x[i] : alpha * (expf(x[i]) - 1.0f);
+int SNEPPX_act_elu(const float* x, float* output, float alpha, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
+    for (size_t i = 0; i < n; i++)
+        output[i] = x[i] > 0.0f ? x[i] : alpha * (expf(x[i]) - 1.0f);
     return 0;
 }
 
@@ -202,8 +239,10 @@ int SNEPPX_act_elu(const float* x, float* output, float alpha, size_t n) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_selu(const float* x, float* output, size_t n) {
-    if (!x || !output || n == 0) return -1;
+int SNEPPX_act_selu(const float* x, float* output, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
     const float lambda = 1.0507009873554805f;
     const float alpha = 1.6732632423543778f;
     for (size_t i = 0; i < n; i++)
@@ -219,10 +258,13 @@ int SNEPPX_act_selu(const float* x, float* output, size_t n) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_gelu_tanh(const float* x, float* output, size_t n) {
-    if (!x || !output || n == 0) return -1;
+int SNEPPX_act_gelu_tanh(const float* x, float* output, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
     float c = 0.7978845608028654f;
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++)
+    {
         float xv = x[i];
         output[i] = 0.5f * xv * (1.0f + tanhf(c * (xv + 0.044715f * xv * xv * xv)));
     }
@@ -237,8 +279,10 @@ int SNEPPX_act_gelu_tanh(const float* x, float* output, size_t n) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_act_gelu_erf(const float* x, float* output, size_t n) {
-    if (!x || !output || n == 0) return -1;
+int SNEPPX_act_gelu_erf(const float* x, float* output, size_t n)
+{
+    if (!x || !output || n == 0)
+        return -1;
     float rsqrt2 = 0.7071067811865475f;
     for (size_t i = 0; i < n; i++)
         output[i] = 0.5f * x[i] * (1.0f + erff(x[i] * rsqrt2));

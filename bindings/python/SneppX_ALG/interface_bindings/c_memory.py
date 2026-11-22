@@ -38,7 +38,7 @@ class MemoryAllocator:
 
     def get_buffer(self, offset: int, size: int) -> Optional[memoryview]:
         if offset in self._allocations:
-            return memoryview(self._pool)[offset:offset + size]
+            return memoryview(self._pool)[offset : offset + size]
         return None
 
     @property
@@ -71,7 +71,7 @@ class MemoryPool:
     def get_block(self, block_idx: int) -> Optional[memoryview]:
         if 0 <= block_idx < len(self._pool) // self._block_size:
             start = block_idx * self._block_size
-            return memoryview(self._pool)[start:start + self._block_size]
+            return memoryview(self._pool)[start : start + self._block_size]
         return None
 
     @property

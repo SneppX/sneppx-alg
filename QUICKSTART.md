@@ -79,6 +79,7 @@ python -c "from SneppX_ALG import Tensor; print('ok')"
 ```
 
 Notes:
+
 - Use `gcc` (≥ 11) or `clang` (≥ 14). C11 is required.
 - For the HTTP backend, `SNEPPX_BUILD_HTTP=ON` needs no extra deps (BSD sockets are in libc).
 - For Vulkan/TPU/ZK backends, install the corresponding SDKs (`libvulkan-dev`, etc.) — see `docs/build.md`.
@@ -109,11 +110,11 @@ python -c "from SneppX_ALG import Tensor; print('ok')"
 ```
 
 Notes:
+
 - Use the system Clang (`/usr/bin/clang`, ≥ 14). C11 + C++20 (obfuscation layer only).
 - On Apple Silicon, Metal is the recommended accelerator backend (`SNEPPX_BUILD_METAL=ON`).
 - The HTTP backend (`SNEPPX_BUILD_HTTP=ON`) uses BSD sockets and works on macOS without extra deps.
 - If `ninja` is not found, install via `brew install ninja` or use the CMake default generator (`cmake -B build`).
-
 
 ---
 
@@ -281,7 +282,6 @@ Always execute tests **per-file** using `pytest` without cache provider. Recomme
 | `test_higher_order_ad.py` | Second-order differentiation and Hessian-vector products |
 
 > **Critical:** Do NOT execute LLM inference or GPU tests (`test_llama_models.py`, `test_cuda.py`, `test_inference_server.py`) on machines lacking dedicated CUDA hardware.
-
 
 ### Load a model from Hugging Face
 

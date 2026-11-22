@@ -19,6 +19,7 @@ CI/CD pipelines are configured in `.github/workflows/`. **Before every commit in
 4. Do not bypass failures with `--no-verify` unless the user explicitly requests it and the reason is documented.
 
 **Local checks (match CI where feasible):**
+
 ```powershell
 $env:PYTHONPATH = "bindings/python"
 # Safe per-file Python tests (never full suite; never LLM/CUDA/inference-server tests on constrained machines)
@@ -137,11 +138,13 @@ ctest -C Release -R test_kyber --output-on-failure
 - Before writing, read the current branch head and the exact files being changed. Never overwrite a newer remote update with a stale snapshot.
 - Preserve existing history. Do not force-push, rewrite shared history, or reset the default branch.
 - Keep commits focused and meaningful, with tests or documentation that demonstrate the change.
+
 ## C Build Reality
 
 - The CI workflow currently installs its native toolchain and runs the configured native build plus the complete CTest suite. Do not describe this job as best-effort or suppress its failures.
 - Local native build capability depends on the developer environment. Verify the available compiler, CMake, and Ninja rather than assuming they are missing based on an old machine snapshot.
 - Real C HTTP inference (`/v1/generate`, `/v1/completions`) remains an explicit reference scaffold (`mode:"reference_scaffold"`, `runtime:"c_reference_no_weights"`). Making it real requires a C tokenizer, safetensors/bin weight loader, C model forward/logits, and sampling; do not claim that it loads model weights.
+
 ## Critical Workflow: Lint → Typecheck → Test → Commit (GATE)
 
 Before **every** commit in any repo/work session:
@@ -150,6 +153,7 @@ Before **every** commit in any repo/work session:
 2. If work is performed through a remote GitHub API because no local checkout is available, do not claim local tests were run. Include regression coverage in the change, push the focused commit to the authorized branch, and immediately inspect the resulting GitHub Actions runs.
 3. Treat failed checks as blockers: diagnose the failure, fix it, push a corrective commit, and rerun the checks. Never hide failures with `continue-on-error`, `|| true`, or `--no-verify` without explicit justification.
 4. Preserve shared history. Never force-push or reset `main`; use the current branch head as the expected parent for direct updates.
+
 ## Python Execution
 
 ## Docs Site (Material 9.5.3 + mike)

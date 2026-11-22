@@ -2,11 +2,11 @@
 #ifndef SNEPPX_OBF_STRING_H
 #define SNEPPX_OBF_STRING_H
 
+#include <array>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
-#include <array>
-#include <memory>
 
 /*
  * SNEPPX - String Obfuscation Technique
@@ -23,18 +23,20 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
-
-struct SNEPPXObfString {
+struct SNEPPXObfString
+{
     std::vector<uint8_t> ciphertext;
     uint32_t key;
     size_t length;
     uint32_t iv;
 };
 
-class SNEPPXObfStringPool {
-public:
+class SNEPPXObfStringPool
+{
+  public:
     SNEPPXObfStringPool();
     ~SNEPPXObfStringPool();
     SNEPPXObfStringPool(SNEPPXObfStringPool&&) = default;
@@ -49,8 +51,9 @@ public:
     const char* get_string(size_t index) const;
     size_t count() const;
 
-private:
-    struct PoolEntry {
+  private:
+    struct PoolEntry
+    {
         SNEPPXObfString crypt;
         std::unique_ptr<char[]> decrypted;
         bool used;
@@ -70,19 +73,22 @@ private:
  *
  * @return 0 on success, -1 on error.
  */
-constexpr uint32_t SNEPPX_obf_compile_time_key(uint32_t base) {
+constexpr uint32_t SNEPPX_obf_compile_time_key(uint32_t base)
+{
     return base ^ 0xA71A75A7;
 }
 
-template<size_t N>
+template <size_t N>
 /**
  * @brief Perform Obf Encrypt Literal.
  *
  * @return 0 on success, -1 on error.
  */
-constexpr std::array<uint8_t, N> SNEPPX_obf_encrypt_literal(const char(&str)[N], uint32_t key) {
+constexpr std::array<uint8_t, N> SNEPPX_obf_encrypt_literal(const char (&str)[N], uint32_t key)
+{
     std::array<uint8_t, N> result{};
-    for (size_t i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i)
+    {
         result[i] = static_cast<uint8_t>(str[i]) ^ static_cast<uint8_t>((key >> ((i % 4) * 8)) & 0xFF);
     }
     return result;

@@ -23,8 +23,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_ANALYSIS_MEMORY,
     SNEPPX_IR_ANALYSIS_DISK,
     SNEPPX_IR_ANALYSIS_NETWORK,
@@ -37,7 +37,8 @@ typedef enum {
     SNEPPX_IR_ANALYSIS_INDICATOR
 } SNEPPXIRForensicsModule;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_IR_FINDING_CRITICAL,
     SNEPPX_IR_FINDING_HIGH,
     SNEPPX_IR_FINDING_MEDIUM,
@@ -45,7 +46,8 @@ typedef enum {
     SNEPPX_IR_FINDING_INFO
 } SNEPPXIRFindingSeverity;
 
-typedef struct {
+typedef struct
+{
     uint64_t finding_id;
     SNEPPXIRForensicsModule module;
     SNEPPXIRFindingSeverity severity;
@@ -70,7 +72,8 @@ typedef struct {
     uint8_t escalated : 1;
 } SNEPPXIRForensicFinding;
 
-typedef struct {
+typedef struct
+{
     uint8_t* output;
     size_t output_len;
     SNEPPXIRForensicFinding findings[SNEPPX_IR_FORENSICS_MAX_FINDINGS];
@@ -90,16 +93,22 @@ int snepx_ir_forensics_analyze_file(const uint8_t* file_data, size_t file_len, S
 int snepx_ir_forensics_analyze_process(const uint8_t* proc_dump, size_t dump_len, SNEPPXIRForensicResult* result);
 
 int snepx_ir_forensics_strings(const uint8_t* data, size_t data_len, uint32_t min_len, uint8_t* out, size_t* out_len);
-int snepx_ir_forensics_carve(const uint8_t* data, size_t data_len, const uint8_t* magic, size_t magic_len, uint8_t* out, size_t* out_len);
-int snepx_ir_forensics_timeline(SNEPPXIRForensicFinding* findings, uint32_t num_findings, uint8_t* timeline_out, size_t* timeline_len);
-int snepx_ir_forensics_super_timeline(SNEPPXIRForensicFinding* findings, uint32_t num_findings, uint8_t* st_out, size_t* st_len);
+int snepx_ir_forensics_carve(const uint8_t* data, size_t data_len, const uint8_t* magic, size_t magic_len, uint8_t* out,
+                             size_t* out_len);
+int snepx_ir_forensics_timeline(SNEPPXIRForensicFinding* findings, uint32_t num_findings, uint8_t* timeline_out,
+                                size_t* timeline_len);
+int snepx_ir_forensics_super_timeline(SNEPPXIRForensicFinding* findings, uint32_t num_findings, uint8_t* st_out,
+                                      size_t* st_len);
 
 // Volatility-like plugin system
-int snepx_ir_forensics_plugin_run(const char* plugin_name, const uint8_t* data, size_t data_len, SNEPPXIRForensicResult* result);
-int snepx_ir_forensics_plugin_scan_connections(const uint8_t* mem_dump, size_t dump_len, SNEPPXIRForensicResult* result);
+int snepx_ir_forensics_plugin_run(const char* plugin_name, const uint8_t* data, size_t data_len,
+                                  SNEPPXIRForensicResult* result);
+int snepx_ir_forensics_plugin_scan_connections(const uint8_t* mem_dump, size_t dump_len,
+                                               SNEPPXIRForensicResult* result);
 int snepx_ir_forensics_plugin_scan_processes(const uint8_t* mem_dump, size_t dump_len, SNEPPXIRForensicResult* result);
 int snepx_ir_forensics_plugin_scan_modules(const uint8_t* mem_dump, size_t dump_len, SNEPPXIRForensicResult* result);
-int snepx_ir_forensics_plugin_scan_malware(const uint8_t* mem_dump, size_t dump_len, const uint8_t* yara_rules, size_t rules_len, SNEPPXIRForensicResult* result);
+int snepx_ir_forensics_plugin_scan_malware(const uint8_t* mem_dump, size_t dump_len, const uint8_t* yara_rules,
+                                           size_t rules_len, SNEPPXIRForensicResult* result);
 
 int snepx_ir_forensics_result_destroy(SNEPPXIRForensicResult* result);
 

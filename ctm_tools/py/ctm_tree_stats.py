@@ -1,12 +1,38 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 import os
 import sys
 import json
 from pathlib import Path
 from collections import defaultdict
 
-IGNORE_DIRS = {'.git', '.svn', '.hg', '__pycache__', 'node_modules', '.venv', 'venv', 'build', 'dist', '.next', '.cache', '.pytest_cache', '.ruff_cache'}
-IGNORE_EXTS = {'.pyc', '.pyo', '.o', '.obj', '.exe', '.dll', '.so', '.dylib', '.class', '.jar'}
+IGNORE_DIRS = {
+    ".git",
+    ".svn",
+    ".hg",
+    "__pycache__",
+    "node_modules",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    ".next",
+    ".cache",
+    ".pytest_cache",
+    ".ruff_cache",
+}
+IGNORE_EXTS = {
+    ".pyc",
+    ".pyo",
+    ".o",
+    ".obj",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".class",
+    ".jar",
+}
+
 
 def should_ignore(path):
     parts = Path(path).parts
@@ -15,57 +41,69 @@ def should_ignore(path):
             return True
     return False
 
-def tree_stats(root='.'):
+
+def tree_stats(root="."):
     root = Path(root).resolve()
     depth_count = defaultdict(int)
     maxd = 0
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not (Path(dirpath) / d).is_symlink()]
+        dirnames[:] = [
+            d
+            for d in dirnames
+            if d not in IGNORE_DIRS and not (Path(dirpath) / d).is_symlink()
+        ]
         rel = Path(dirpath).relative_to(root)
-        d = len(rel.parts) if str(rel) != '.' else 0
-        if d > maxd: maxd = d
+        d = len(rel.parts) if str(rel) != "." else 0
+        if d > maxd:
+            maxd = d
         depth_count[d] += 1
     distribution = dict(sorted(depth_count.items()))
-    return {'max_depth': maxd, 'directories_by_depth': distribution, 'depth_distribution': distribution}
+    return {
+        "max_depth": maxd,
+        "directories_by_depth": distribution,
+        "depth_distribution": distribution,
+    }
+
 
 def main():
     args = sys.argv[1:]
-    fmt = 'text'
+    fmt = "text"
     output = None
-    root = '.'
+    root = "."
     i = 0
     while i < len(args):
-        if args[i] == '--format' and i+1 < len(args):
-            fmt = args[i+1]
+        if args[i] == "--format" and i + 1 < len(args):
+            fmt = args[i + 1]
             i += 2
             continue
-        if args[i] == '--output' and i+1 < len(args):
-            output = args[i+1]
+        if args[i] == "--output" and i + 1 < len(args):
+            output = args[i + 1]
             i += 2
             continue
-        if not args[i].startswith('-'):
+        if not args[i].startswith("-"):
             root = args[i]
         i += 1
-    
+
     stats = tree_stats(root)
-    result = {'tool': 'ctm_tree_stats', 'root': str(Path(root).resolve()), **stats}
-    
-    if fmt == 'json':
+    result = {"tool": "ctm_tree_stats", "root": str(Path(root).resolve()), **stats}
+
+    if fmt == "json":
         out = json.dumps(result, indent=2)
-    elif fmt == 'csv':
-        out = 'depth,count\n'
-        for k,v in sorted(stats['depth_distribution'].items()):
-            out += f'{k},{v}\n'
+    elif fmt == "csv":
+        out = "depth,count\n"
+        for k, v in sorted(stats["depth_distribution"].items()):
+            out += f"{k},{v}\n"
     else:
         out = f'Max depth: {stats["max_depth"]}\n'
-        for k,v in sorted(stats['depth_distribution'].items()):
-            out += f'Depth {k}: {v} directories\n'
-    
+        for k, v in sorted(stats["depth_distribution"].items()):
+            out += f"Depth {k}: {v} directories\n"
+
     if output:
-        with open(output, 'w', encoding='utf-8') as f:
+        with open(output, "w", encoding="utf-8") as f:
             f.write(out)
     else:
         print(out)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

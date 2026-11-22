@@ -45,8 +45,16 @@ def broadcast_shape(a: List[Any], b: List[Any]) -> List[Any]:
 
 def _promote_dtype(da: str, db: str) -> str:
     order = [
-        "bool", "int8", "int16", "int32", "int64",
-        "uint8", "uint16", "float16", "float32", "float64",
+        "bool",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "uint8",
+        "uint16",
+        "float16",
+        "float32",
+        "float64",
     ]
     ia = order.index(da) if da in order else order.index("float32")
     ib = order.index(db) if db in order else order.index("float32")
@@ -163,7 +171,9 @@ def _infer_conv(ctx: _InferenceContext, node: Node):
             spatial.append(size)
         else:
             spatial.append(
-                max(0, (int(size) + 2 * pad - dilation * (kernel - 1) - 1) // stride + 1)
+                max(
+                    0, (int(size) + 2 * pad - dilation * (kernel - 1) - 1) // stride + 1
+                )
             )
     dtype = ctx.get_dtype(node.inputs[0]) or "float32"
     return [[n, out_c] + spatial], [dtype]

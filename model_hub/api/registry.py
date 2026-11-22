@@ -74,6 +74,7 @@ class ModelRegistry:
             dest_key = f"{card.name}/{card.version}/{filename}"
 
             import asyncio
+
             loop = asyncio.new_event_loop()
             try:
                 stored = loop.run_until_complete(
@@ -82,29 +83,36 @@ class ModelRegistry:
             finally:
                 loop.close()
 
-            uploaded_files.append({
-                "filename": filename,
-                "size": stored.size,
-                "sha256": stored.sha256,
-                "is_lfs": stored.is_lfs,
-                "url": stored.url,
-            })
+            uploaded_files.append(
+                {
+                    "filename": filename,
+                    "size": stored.size,
+                    "sha256": stored.sha256,
+                    "is_lfs": stored.is_lfs,
+                    "url": stored.url,
+                }
+            )
 
         card.files = [
             ModelCard.model_fields["files"].__class__(**f) if False else _FileMeta(**f)
             for f in uploaded_files
         ]
-        card.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+        card.updated_at = __import__("datetime").datetime.now(
+            __import__("datetime").timezone.utc
+        )
 
         # Save model card
         import json
+
         card_path = os.path.join(model_dir, "model_card.json")
         with open(card_path, "w") as f:
             json.dump(card.model_dump(mode="json"), f, indent=2)
 
         return card
 
-    def get_model_local(self, name: str, version: str = "latest") -> Optional[ModelCard]:
+    def get_model_local(
+        self, name: str, version: str = "latest"
+    ) -> Optional[ModelCard]:
         """Get a model from local registry."""
         if version == "latest":
             versions = self.list_versions_local(name)
@@ -118,11 +126,13 @@ class ModelRegistry:
             return None
 
         import json
+
         with open(card_path) as f:
             data = json.load(f)
 
         # Convert file dicts to ModelFile objects
         from ..api.models import ModelFile
+
         if "files" in data:
             data["files"] = [ModelFile(**f) for f in data["files"]]
 
@@ -143,12 +153,15 @@ class ModelRegistry:
             card_path = os.path.join(ver_dir, "model_card.json")
             if os.path.exists(card_path):
                 import json
+
                 with open(card_path) as f:
                     data = json.load(f)
                 versions.append(ModelVersion(**data))
         return versions
 
-    def download_model(self, name: str, version: str = "latest", download_dir: Optional[str] = None) -> str:
+    def download_model(
+        self, name: str, version: str = "latest", download_dir: Optional[str] = None
+    ) -> str:
         """Download a model's files to a local directory."""
         card = None
         # Prefer the remote card when a client is available (fresh files list)
@@ -169,21 +182,28 @@ class ModelRegistry:
 
         if download_dir is None:
             from ..utils import get_cache_dir
-            download_dir = os.path.join(get_cache_dir(), "models", card.name.replace("/", "_"), card.version)
+
+            download_dir = os.path.join(
+                get_cache_dir(), "models", card.name.replace("/", "_"), card.version
+            )
 
         ensure_dir(download_dir)
 
         import asyncio
+
         for f in card.files:
             dest = os.path.join(download_dir, f.filename)
             asyncio.run(self._storage.download_file(f.url or f.filename, dest))
             # Verify SHA256
             sha = compute_sha256(dest)
             if sha != f.sha256:
-                raise ValueError(f"SHA256 mismatch for {f.filename}: expected {f.sha256}, got {sha}")
+                raise ValueError(
+                    f"SHA256 mismatch for {f.filename}: expected {f.sha256}, got {sha}"
+                )
 
         # Save the model card
         import json
+
         card_path = os.path.join(download_dir, "model_card.json")
         with open(card_path, "w") as f:
             json.dump(card.model_dump(mode="json"), f, indent=2)
@@ -195,6 +215,7 @@ class ModelRegistry:
         model_dir = self._model_dir(card.name, card.version)
         ensure_dir(model_dir)
         import json
+
         card_path = os.path.join(model_dir, "model_card.json")
         with open(card_path, "w") as f:
             json.dump(card.model_dump(mode="json"), f, indent=2)
@@ -236,8 +257,12 @@ class ModelRegistry:
             return self._filter_models(results, query, task, tags)
 
         return self._filter_models(
-            self._client.list_models(query=query, task=task, tag=tags[0] if tags else None, page_size=1000),
-            query, task, tags
+            self._client.list_models(
+                query=query, task=task, tag=tags[0] if tags else None, page_size=1000
+            ),
+            query,
+            task,
+            tags,
         )
 
     def _filter_models(
@@ -260,7 +285,10 @@ class ModelRegistry:
             if query:
                 name = _get(m, "name", "") or (_get(m, "full_name", ""))
                 desc = _get(m, "description", "")
-                if query.lower() not in str(name).lower() and query.lower() not in str(desc).lower():
+                if (
+                    query.lower() not in str(name).lower()
+                    and query.lower() not in str(desc).lower()
+                ):
                     return False
             if task:
                 m_task = _get(m, "task")
@@ -309,7 +337,14 @@ class ModelRegistry:
 class _FileMeta:
     """Lightweight file metadata."""
 
-    def __init__(self, filename: str, size: int, sha256: str = "", is_lfs: bool = False, url: str = ""):
+    def __init__(
+        self,
+        filename: str,
+        size: int,
+        sha256: str = "",
+        is_lfs: bool = False,
+        url: str = "",
+    ):
         self.filename = filename
         self.size = size
         self.sha256 = sha256

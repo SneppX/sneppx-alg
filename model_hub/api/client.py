@@ -31,13 +31,16 @@ from ..api.models import (
 
 class HubAPIError(Exception):
     """Raised when the hub API returns an error."""
+
     pass
 
 
 class HubAPIClient:
     """HTTP client for the SNEPPX Model Hub API."""
 
-    def __init__(self, base_url: str = "http://localhost:8000", api_key: Optional[str] = None):
+    def __init__(
+        self, base_url: str = "http://localhost:8000", api_key: Optional[str] = None
+    ):
         try:
             parsed_url = urlsplit(base_url)
             hostname = (parsed_url.hostname or "").lower()
@@ -49,7 +52,9 @@ class HubAPIClient:
         self._api_key = api_key or os.environ.get("SNEPPX_HUB_API_KEY")
         is_loopback = hostname in {"localhost", "127.0.0.1", "::1"}
         if self._api_key and parsed_url.scheme != "https" and not is_loopback:
-            raise ValueError("refusing to send a Hub API key over non-local HTTP; use HTTPS")
+            raise ValueError(
+                "refusing to send a Hub API key over non-local HTTP; use HTTPS"
+            )
 
         self._base = base_url.rstrip("/")
         self._session = requests.Session() if requests else None
@@ -103,23 +108,29 @@ class HubAPIClient:
         return [ModelCard(**item) for item in data.get("items", [])]
 
     def get_model(self, name: str, version: str = "latest") -> ModelCard:
-        data = self._request("GET", f"/api/v1/models/{self._model_segment(name)}/{version}")
+        data = self._request(
+            "GET", f"/api/v1/models/{self._model_segment(name)}/{version}"
+        )
         return ModelCard(**data)
 
     def get_model_versions(self, name: str) -> List[ModelVersion]:
-        data = self._request("GET", f"/api/v1/models/{self._model_segment(name)}/versions")
+        data = self._request(
+            "GET", f"/api/v1/models/{self._model_segment(name)}/versions"
+        )
         items = []
         for item in data.get("versions", []):
             version = item.get("version") if isinstance(item, dict) else item
             try:
                 items.append(ModelVersion(**item))
             except Exception:
-                items.append(ModelVersion(
-                    name=name,
-                    version=version,
-                    format=ModelFormat.SNEPPX_NATIVE,
-                    task=ModelTask.TEXT_GENERATION,
-                ))
+                items.append(
+                    ModelVersion(
+                        name=name,
+                        version=version,
+                        format=ModelFormat.SNEPPX_NATIVE,
+                        task=ModelTask.TEXT_GENERATION,
+                    )
+                )
         return items
 
     def get_model_card(self, name: str, version: str = "latest") -> ModelCard:
@@ -155,17 +166,21 @@ class HubAPIClient:
 
         for filename, local_path in files.items():
             size = os.path.getsize(local_path)
-            meta["files"].append({
-                "filename": filename,
-                "size": size,
-                "sha256": "",  # Will be computed server-side
-                "is_lfs": size >= 1024 * 1024 * 1024,  # 1GB threshold
-            })
+            meta["files"].append(
+                {
+                    "filename": filename,
+                    "size": size,
+                    "sha256": "",  # Will be computed server-side
+                    "is_lfs": size >= 1024 * 1024 * 1024,  # 1GB threshold
+                }
+            )
 
         resp = self._request("POST", "/api/v1/models/upload", json=meta)
         return ModelCard(**resp)
 
-    def upload_file(self, model_name: str, version: str, filename: str, local_path: str) -> str:
+    def upload_file(
+        self, model_name: str, version: str, filename: str, local_path: str
+    ) -> str:
         """Upload a single model file (for large files)."""
         import io
 
@@ -175,7 +190,11 @@ class HubAPIClient:
         with open(local_path, "rb") as f:
             # Use streaming upload
             files = {"file": (filename, f, "application/octet-stream")}
-            data = self._request("POST", f"/api/v1/models/{self._model_segment(model_name)}/{version}/files/{filename}", files=files)
+            data = self._request(
+                "POST",
+                f"/api/v1/models/{self._model_segment(model_name)}/{version}/files/{filename}",
+                files=files,
+            )
             if isinstance(data, dict):
                 return data.get("url", "")
             return str(data)
@@ -192,10 +211,14 @@ class HubAPIClient:
 
     def create_api_key(self, username: str, scopes: Optional[List[str]] = None) -> str:
         """Create a new API key (admin only)."""
-        data = self._request("POST", "/api/v1/keys", json={
-            "username": username,
-            "scopes": scopes or ["read", "write", "models"],
-        })
+        data = self._request(
+            "POST",
+            "/api/v1/keys",
+            json={
+                "username": username,
+                "scopes": scopes or ["read", "write", "models"],
+            },
+        )
         return data["api_key"]
 
     # ---- Leaderboard ----

@@ -24,7 +24,9 @@ router = APIRouter(prefix="/v1/auth", tags=["auth"])
 
 class RegisterRequest(BaseModel):
     email: str = Field(..., description="Email address")
-    password: str = Field(..., min_length=8, max_length=128, description="Password (min 8 chars)")
+    password: str = Field(
+        ..., min_length=8, max_length=128, description="Password (min 8 chars)"
+    )
 
 
 class RegisterResponse(BaseModel):
@@ -123,7 +125,9 @@ async def register(req: RegisterRequest):
 
 
 @router.post("/logout")
-async def logout(authorization: Optional[str] = Header(default=None, alias="Authorization")):
+async def logout(
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     if not authorization:
         raise HTTPException(401, "Authentication required")
     token = authorization.strip()
@@ -158,7 +162,9 @@ self_service_router = APIRouter(tags=["keys"])
 
 
 @self_service_router.get("/v1/keys", response_model=KeyListResponse)
-async def list_my_keys(authorization: Optional[str] = Header(default=None, alias="Authorization")):
+async def list_my_keys(
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+):
     user_id = _get_user_id_from_key(authorization)
     if not user_id:
         raise HTTPException(401, "Authentication required")
@@ -178,7 +184,9 @@ async def create_my_key(
         raise HTTPException(401, "Authentication required")
     km = get_key_manager()
     keys = km.list_keys()
-    my_key_count = sum(1 for k in keys if k.get("user_id") == user_id and k.get("is_active"))
+    my_key_count = sum(
+        1 for k in keys if k.get("user_id") == user_id and k.get("is_active")
+    )
     tier = "free"
     for k in keys:
         if k.get("user_id") == user_id and k.get("is_active"):
@@ -187,7 +195,9 @@ async def create_my_key(
     tier_cfg = km.get_tier_config(tier)
     max_keys = tier_cfg.get("max_keys", 2)
     if my_key_count >= max_keys:
-        raise HTTPException(429, f"Key limit reached for tier '{tier}' (max {max_keys})")
+        raise HTTPException(
+            429, f"Key limit reached for tier '{tier}' (max {max_keys})"
+        )
     result = km.create_key(
         name=req.name or f"Key {my_key_count + 1}",
         tier=tier,

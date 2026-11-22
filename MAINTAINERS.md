@@ -4,7 +4,7 @@
 
 | Name | Contact | Tier | Areas |
 |------|---------|------|-------|
-| Ammar [SNEPPX] | algoSNEPPX@gmail.com | BDFL | Architecture, Core Engine, Security, Build System |
+| Ammar [SNEPPX] | <algoSNEPPX@gmail.com> | BDFL | Architecture, Core Engine, Security, Build System |
 
 ## Core Maintainers (Tier 5)
 
