@@ -84,21 +84,29 @@ class HardwareProbe:
     @staticmethod
     def has_package(name: str) -> bool:
         import importlib.util
+
         return importlib.util.find_spec(name) is not None
 
     @classmethod
     def cpu(cls) -> DeviceInfo:
-        info = "AVX512" if cls._cpu_flag("avx512f") else (
-            "AVX2" if cls._cpu_flag("avx2") else "scalar")
-        return DeviceInfo(name="CPU", available=True, kind="cpu",
-                          detail=f"numpy/{info}", priority=20)
+        info = (
+            "AVX512"
+            if cls._cpu_flag("avx512f")
+            else ("AVX2" if cls._cpu_flag("avx2") else "scalar")
+        )
+        return DeviceInfo(
+            name="CPU", available=True, kind="cpu", detail=f"numpy/{info}", priority=20
+        )
 
     @staticmethod
     def _cpu_flag(name: str) -> bool:
         try:
             import cpuinfo as _ci  # optional
-            return bool(getattr(_ci.get_cpu_info().get("flags", []), "count", 0) and
-                        name in _ci.get_cpu_info().get("flags", []))
+
+            return bool(
+                getattr(_ci.get_cpu_info().get("flags", []), "count", 0)
+                and name in _ci.get_cpu_info().get("flags", [])
+            )
         except Exception:
             return False
 
@@ -109,12 +117,17 @@ class HardwareProbe:
         if ok:
             try:
                 import onnxruntime as ort
+
                 ver = ort.__version__
             except Exception:
                 ver = "?"
-        return DeviceInfo(name="ONNX", available=ok, kind="onnx",
-                          detail=f"onnxruntime {ver}" if ok else "package not installed",
-                          priority=30)
+        return DeviceInfo(
+            name="ONNX",
+            available=ok,
+            kind="onnx",
+            detail=f"onnxruntime {ver}" if ok else "package not installed",
+            priority=30,
+        )
 
     @classmethod
     def openvino(cls) -> DeviceInfo:
@@ -123,12 +136,18 @@ class HardwareProbe:
         if ok:
             try:
                 from openvino import Core
+
                 detail = ",".join(Core().available_devices)
             except Exception as exc:  # pragma: no cover - env dependent
                 ok = False
                 detail = str(exc)
-        return DeviceInfo(name="OPENVINO", available=ok, kind="openvino",
-                          detail=detail or "package not installed", priority=40)
+        return DeviceInfo(
+            name="OPENVINO",
+            available=ok,
+            kind="openvino",
+            detail=detail or "package not installed",
+            priority=40,
+        )
 
     @classmethod
     def npu(cls) -> DeviceInfo:
@@ -137,14 +156,20 @@ class HardwareProbe:
         if ok:
             try:
                 from openvino import Core
+
                 devices = Core().available_devices
                 ok = any(d.startswith("NPU") for d in devices)
                 detail = ",".join(devices)
             except Exception as exc:  # pragma: no cover - env dependent
                 ok = False
                 detail = str(exc)
-        return DeviceInfo(name="NPU", available=ok, kind="npu",
-                          detail=detail or "no NPU device", priority=50)
+        return DeviceInfo(
+            name="NPU",
+            available=ok,
+            kind="npu",
+            detail=detail or "no NPU device",
+            priority=50,
+        )
 
     @classmethod
     def gpu(cls) -> DeviceInfo:
@@ -153,14 +178,20 @@ class HardwareProbe:
         if ok:
             try:
                 from openvino import Core
+
                 devices = Core().available_devices
                 ok = any(d.startswith("GPU") for d in devices)
                 detail = ",".join(devices)
             except Exception as exc:  # pragma: no cover - env dependent
                 ok = False
                 detail = str(exc)
-        return DeviceInfo(name="GPU", available=ok, kind="gpu",
-                          detail=detail or "no GPU device", priority=45)
+        return DeviceInfo(
+            name="GPU",
+            available=ok,
+            kind="gpu",
+            detail=detail or "no GPU device",
+            priority=45,
+        )
 
     @classmethod
     def all(cls) -> List[DeviceInfo]:
@@ -202,7 +233,11 @@ class InferenceBackend:
         with self._lock:
             if not self._latency_ms:
                 return 0.0
-            return (sum(self._latency_ms) / len(self._latency_ms)) if average else self._latency_ms[-1]
+            return (
+                (sum(self._latency_ms) / len(self._latency_ms))
+                if average
+                else self._latency_ms[-1]
+            )
 
     def _record(self, ms: float) -> None:
         with self._lock:
@@ -257,7 +292,9 @@ class CPUFP16Backend(InferenceBackend):
         try:
             if self._model_fn is not None:
                 return self._model_fn(model_id, np.asarray(inputs, dtype=np.float16))
-            return self._fallback(model_id, np.asarray(inputs, dtype=np.float32).astype(np.float16)).astype(np.float32)
+            return self._fallback(
+                model_id, np.asarray(inputs, dtype=np.float32).astype(np.float16)
+            ).astype(np.float32)
         finally:
             self._record((time.perf_counter() - t0) * 1000.0)
 
@@ -274,6 +311,7 @@ class ONNXBackend(InferenceBackend):
         self._ort = None
         try:
             import onnxruntime as ort
+
             self._ort = ort
         except ImportError:  # pragma: no cover - dependency optional
             self._ort = None
@@ -306,6 +344,7 @@ class OpenVINOBackend(InferenceBackend):
         self._ov = None
         try:
             from openvino import Core
+
             self._ov = Core()
         except ImportError:  # pragma: no cover - dependency optional
             self._ov = None
@@ -338,6 +377,7 @@ class NPUBackend(InferenceBackend):
         self._npu_ok = False
         try:
             from openvino import Core
+
             core = Core()
             self._ov = core
             self._npu_ok = any(d.startswith("NPU") for d in core.available_devices)
@@ -415,7 +455,9 @@ class BackendRegistry:
     def available_backends(self) -> List[InferenceBackend]:
         return [b for b in self._backends if b.available]
 
-    def resolve(self, device: str = "auto", model_fn: Optional[Callable] = None) -> InferenceBackend:
+    def resolve(
+        self, device: str = "auto", model_fn: Optional[Callable] = None
+    ) -> InferenceBackend:
         """Pick a concrete backend for ``device`` (alias-aware), with fallback.
 
         - ``"auto"``       -> first available backend in priority order.
@@ -426,6 +468,7 @@ class BackendRegistry:
         When ``model_fn`` is given, a fresh backend is built with it so the
         custom executor is honoured regardless of the cached registry probes.
         """
+
         def fresh(cls: type) -> InferenceBackend:
             return cls(model_fn) if model_fn is not None else cls()
 
@@ -442,7 +485,9 @@ class BackendRegistry:
                 return fresh(type(b))
 
         if key in ("ONNX", "OPENVINO", "NPU", "GPU", "CPU_FP16"):
-            raise ValueError(f"unknown device {device!r}; use auto/cpu/cpu_fp16/onnx/openvino/npu")
+            raise ValueError(
+                f"unknown device {device!r}; use auto/cpu/cpu_fp16/onnx/openvino/npu"
+            )
         raise ValueError(f"unsupported device {device!r}")
 
     @classmethod
@@ -450,14 +495,16 @@ class BackendRegistry:
         return cls()
 
 
-def select_execution_provider(device: str = "auto",
-                              model_fn: Optional[Callable] = None) -> InferenceBackend:
+def select_execution_provider(
+    device: str = "auto", model_fn: Optional[Callable] = None
+) -> InferenceBackend:
     """Resolve an execution provider for ``device`` (OpenVINO-style names)."""
     return BackendRegistry.default().resolve(device, model_fn)
 
 
-def inference_session(device: str = "auto",
-                      model_fn: Optional[Callable] = None) -> InferenceBackend:
+def inference_session(
+    device: str = "auto", model_fn: Optional[Callable] = None
+) -> InferenceBackend:
     """Create an inference session for ``device`` (alias-aware, never raises
     on ``auto`` because the CPU backend is always available)."""
     return select_execution_provider(device, model_fn)

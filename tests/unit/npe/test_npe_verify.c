@@ -1,8 +1,8 @@
 #include "neural_programming_engine.h"
 #include "test_gtest.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Npe Verify
@@ -19,10 +19,11 @@
  *
  */
 
-
-static void test_verify_valid(void) {
+static void test_verify_valid(void)
+{
     SNEPPXNPEProgram* p = SNEPPX_npe_program_create(16);
-    SNEPPXNPEInstruction inst; memset(&inst, 0, sizeof(inst));
+    SNEPPXNPEInstruction inst;
+    memset(&inst, 0, sizeof(inst));
     inst.opcode = SNEPPX_NOP;
     SNEPPX_npe_program_append(p, inst);
     inst.opcode = SNEPPX_HALT;
@@ -36,12 +37,16 @@ static void test_verify_valid(void) {
     SNEPPX_npe_program_destroy(p);
 }
 
-static void test_verify_invalid_reg(void) {
+static void test_verify_invalid_reg(void)
+{
     SNEPPXNPEProgram* p = SNEPPX_npe_program_create(16);
-    SNEPPXNPEInstruction inst; memset(&inst, 0, sizeof(inst));
-    inst.opcode = SNEPPX_NOP; inst.dest_reg = 20;
+    SNEPPXNPEInstruction inst;
+    memset(&inst, 0, sizeof(inst));
+    inst.opcode = SNEPPX_NOP;
+    inst.dest_reg = 20;
     SNEPPX_npe_program_append(p, inst);
-    inst.opcode = SNEPPX_HALT; inst.dest_reg = -1;
+    inst.opcode = SNEPPX_HALT;
+    inst.dest_reg = -1;
     SNEPPX_npe_program_append(p, inst);
 
     char* err = NULL;
@@ -53,6 +58,11 @@ static void test_verify_invalid_reg(void) {
     SNEPPX_npe_program_destroy(p);
 }
 
-
-TEST(test_npe_verify, test_verify_valid) { test_verify_valid(); }
-TEST(test_npe_verify, test_verify_invalid_reg) { test_verify_invalid_reg(); }
+TEST(test_npe_verify, test_verify_valid)
+{
+    test_verify_valid();
+}
+TEST(test_npe_verify, test_verify_invalid_reg)
+{
+    test_verify_invalid_reg();
+}

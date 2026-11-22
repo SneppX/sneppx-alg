@@ -2,15 +2,15 @@
 #ifndef SNEPPX_OBF_H
 #define SNEPPX_OBF_H
 
+#include "anti_debugging_countermeasure.h"
 #include "control_flow_obfuscation.h"
-#include "string_obfuscation_technique.h"
 #include "instruction_obfuscation_engine.h"
 #include "opaque_predicate_generator.h"
+#include "string_obfuscation_technique.h"
 #include "virtualized_code_execution.h"
-#include "anti_debugging_countermeasure.h"
 #include <chrono>
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 /*
  * SNEPPX - Code Obfuscation Interface
@@ -27,10 +27,11 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
-
-enum class SNEPPXObfuscationLevel {
+enum class SNEPPXObfuscationLevel
+{
     SNEPPX_OBF_NONE,
     SNEPPX_OBF_LIGHT,
     SNEPPX_OBF_MEDIUM,
@@ -38,7 +39,8 @@ enum class SNEPPXObfuscationLevel {
     SNEPPX_OBF_MAXIMUM
 };
 
-struct SNEPPXObfuscationReport {
+struct SNEPPXObfuscationReport
+{
     SNEPPXObfuscationLevel level;
     size_t transformations_applied;
     size_t blocks_flattened;
@@ -55,8 +57,9 @@ struct SNEPPXObfuscationReport {
     double phase_maximum_ms;
 };
 
-class SNEPPXObfuscator {
-public:
+class SNEPPXObfuscator
+{
+  public:
     SNEPPXObfuscator();
     ~SNEPPXObfuscator();
 
@@ -75,13 +78,28 @@ public:
     bool verify_extended(SNEPPXObfCFG& cfg, const std::vector<uint64_t>& test_inputs);
     void apply_obfuscation_preset(SNEPPXObfCFG& cfg, int preset_id);
 
-    SNEPPXObfStringPool& string_pool() { return string_pool_; }
-    SNEPPXObfCFGFlattener& flattener() { return flattener_; }
-    SNEPPXObfSubst& substituter() { return substituter_; }
-    SNEPPXObfVM& vm() { return vm_; }
-    SNEPPXAntiDebug& anti_debug() { return anti_debug_; }
+    SNEPPXObfStringPool& string_pool()
+    {
+        return string_pool_;
+    }
+    SNEPPXObfCFGFlattener& flattener()
+    {
+        return flattener_;
+    }
+    SNEPPXObfSubst& substituter()
+    {
+        return substituter_;
+    }
+    SNEPPXObfVM& vm()
+    {
+        return vm_;
+    }
+    SNEPPXAntiDebug& anti_debug()
+    {
+        return anti_debug_;
+    }
 
-private:
+  private:
     SNEPPXObfuscationLevel level_;
     SNEPPXObfStringPool string_pool_;
     SNEPPXObfCFGFlattener flattener_;

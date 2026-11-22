@@ -45,8 +45,8 @@ sneppx> # completes → llama-2-7b mistral-7b qwen2-7b deepseek-v2-lite
 | Trigger | Completes |
 |---------|-----------|
 | `Ctrl-Space` or `TAB` at start of line | command name |
-| `TAB` after `from SneppX_ALG import ` | exported symbol names |
-| `TAB` after `--name ` on `load_model` | known model IDs |
+| `TAB` after `from SneppX_ALG import` | exported symbol names |
+| `TAB` after `--name` on `load_model` | known model IDs |
 | `TAB` after a function call `...` | nothing (use `dir()` instead) |
 
 ## Commands

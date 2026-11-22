@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -54,9 +56,9 @@ def test_higher_order_smoothl1():
     H_ref = _square_loss_hessian(dS, d2S, S)
 
     H_eng = _engine_hessian(build, p)
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"SmoothL1 Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"SmoothL1 Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 def test_higher_order_huber():
@@ -83,9 +85,9 @@ def test_higher_order_huber():
     H_ref = _square_loss_hessian(dS, d2S, S)
 
     H_eng = _engine_hessian(build, p)
-    assert np.allclose(H_eng, H_ref, atol=1e-3), (
-        f"Huber Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
-    )
+    assert np.allclose(
+        H_eng, H_ref, atol=1e-3
+    ), f"Huber Hessian mismatch max|err|={np.max(np.abs(H_eng - H_ref)):.3e}"
 
 
 def test_conv1d_double_backward_fallback():

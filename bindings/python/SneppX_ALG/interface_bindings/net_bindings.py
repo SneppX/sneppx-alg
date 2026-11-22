@@ -34,22 +34,29 @@ class Topology:
     def _build(self):
         if self.type == TopologyType.RING:
             for i in range(self.world_size):
-                self._nodes.append({
-                    "rank": i,
-                    "prev": (i - 1) % self.world_size,
-                    "next": (i + 1) % self.world_size,
-                    "parent": -1,
-                    "children": [],
-                })
+                self._nodes.append(
+                    {
+                        "rank": i,
+                        "prev": (i - 1) % self.world_size,
+                        "next": (i + 1) % self.world_size,
+                        "parent": -1,
+                        "children": [],
+                    }
+                )
         elif self.type == TopologyType.TREE:
             for i in range(self.world_size):
                 parent = (i - 1) // 2 if i > 0 else -1
                 children = [2 * i + 1, 2 * i + 2]
                 children = [c for c in children if c < self.world_size]
-                self._nodes.append({
-                    "rank": i, "prev": -1, "next": -1,
-                    "parent": parent, "children": children,
-                })
+                self._nodes.append(
+                    {
+                        "rank": i,
+                        "prev": -1,
+                        "next": -1,
+                        "parent": parent,
+                        "children": children,
+                    }
+                )
 
     def get_prev(self, rank: int) -> int:
         if 0 <= rank < len(self._nodes):
@@ -175,7 +182,9 @@ class SocketComm:
 
     def send_tensor(self, tensor: np.ndarray) -> int:
         data = tensor.tobytes()
-        header = struct.pack("!II", tensor.shape[0], tensor.shape[1] if tensor.ndim > 1 else 1)
+        header = struct.pack(
+            "!II", tensor.shape[0], tensor.shape[1] if tensor.ndim > 1 else 1
+        )
         return self.send(header + data)
 
     def recv_tensor(self) -> Optional[np.ndarray]:
@@ -187,7 +196,7 @@ class SocketComm:
         raw = self.recv()
         if raw is None or len(raw) < n * 4:
             return None
-        return np.frombuffer(raw[:n * 4], dtype=np.float32).reshape(rows, cols)
+        return np.frombuffer(raw[: n * 4], dtype=np.float32).reshape(rows, cols)
 
 
 class RDMA:
@@ -269,7 +278,9 @@ class NCCLComm:
         self._initialized = False
         return 0
 
-    def comm_init_rank(self, ndev: int, rank: int, devs: Optional[List[int]] = None) -> int:
+    def comm_init_rank(
+        self, ndev: int, rank: int, devs: Optional[List[int]] = None
+    ) -> int:
         self._rank = rank
         self._world_size = ndev
         return 0
@@ -285,21 +296,21 @@ class NCCLComm:
     def world_size(self) -> int:
         return self._world_size
 
-    def all_reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray,
-                   op: int = 0) -> int:
+    def all_reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0) -> int:
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0
 
     def all_gather(self, sendbuf: np.ndarray, recvbuf: np.ndarray) -> int:
-        np.copyto(recvbuf[:len(sendbuf)], sendbuf)
+        np.copyto(recvbuf[: len(sendbuf)], sendbuf)
         return 0
 
     def broadcast(self, buf: np.ndarray, root: int = 0) -> int:
         return 0
 
-    def reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray,
-               op: int = 0, root: int = 0) -> int:
+    def reduce(
+        self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0
+    ) -> int:
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0

@@ -3,6 +3,7 @@
 ## C Style
 
 ### Naming
+
 - **Functions**: `snake_case` with `SNEPPX_` prefix: `SNEPPX_tensor_create`
 - **Types**: `PascalCase` with `SNEPPX` prefix: `SNEPPXTensor`
 - **Macros**: `UPPER_SNAKE_CASE`: `SNEPPX_FLOAT32`
@@ -10,6 +11,7 @@
 - **File-scope statics**: `s_` prefix: `s_global_pool`
 
 ### Formatting
+
 - **Indentation**: 4 spaces, no tabs
 - **Line length**: 100 characters max
 - **Braces**: K&R style (opening brace on same line)
@@ -21,6 +23,7 @@
   - No space around unary operators
 
 ### Headers
+
 - Include guards: `#ifndef SNEPPX_MODULE_NAME_H` / `#define SNEPPX_MODULE_NAME_H`
 - Standard headers first, then project headers, alphabetically
 - Forward declarations preferred over includes when possible
@@ -47,12 +50,14 @@ void SNEPPX_tensor_destroy(SNEPPXTensor* t);
 ```
 
 ### Error Handling
+
 - Return `int` (0 = success, nonzero = error) for operations
 - Return `NULL` for failed allocations
 - Check all allocation returns
 - Never assert in production code paths
 
 ### Memory
+
 - Always use `SNEPPX_malloc` / `SNEPPX_free` with size tracking
 - Parameter order: output params before input params where possible
 - Document ownership transfer
@@ -138,6 +143,7 @@ Wrap at 72 characters.
 ## Commenting Standard
 
 See [COMMENTING.md](COMMENTING.md) for the four-layer commenting standard:
+
 - Layer 1: File header blocks (WHAT/CONCEPT/ROLE/REFERENCES)
 - Layer 2: Concept blocks before non-obvious algorithms
 - Layer 3: Inline "why" comments

@@ -19,6 +19,7 @@ HSSConfig {
 ```
 
 **Key files:**
+
 - `hss.h / hss.c` — Core HSS model: selective scan, S4 forward, HiPPO matrix init, SSM convolution
 - `hss_kernels.c` — Hierarchical softmax, sparse-dense matmul, top-k, Blelloch parallel prefix scan
 - `cuda/hss_cuda_kernels.cu` — CUDA selective scan, SSM convolution
@@ -43,6 +44,7 @@ SERConfig {
 ```
 
 **Key files:**
+
 - `ser.h / ser.c` — SER model: top-k gating (softmax + selection), MoE dispatch/combine
 - `ser_kernels.c` — Load balancing loss, auxiliary loss computation
 - `cuda/ser_cuda_kernels.cu` — Fused MoE forward, expert all-to-all
@@ -69,6 +71,7 @@ ARCConfig {
 ```
 
 **Key files:**
+
 - `arc.h / arc.c` — ARC layer: PGD/FGSM adversarial attacks, gradient obfuscation, randomized smoothing
 - `cuda/arc_cuda_kernels.cu` — PGD/FGSM CUDA attack kernels
 
@@ -93,6 +96,7 @@ LAYERNORM, ATTENTION, BRANCH, HALT, EXP, LOG, SQRT, POW, SIN, COS, TANH, SIGMOID
 GELU, SILU, DROPOUT, CONV2D, POOL2D, BATCHNORM, EMBEDDING, CROSSENTROPY, MSE, CONCAT, SPLIT.
 
 **Key files:**
+
 - `npe.h / npe.c` — NPE VM: instruction dispatch, program execution, program compiler
 - `cuda/npe_cuda_kernels.cu` — Instruction dispatch kernel
 
@@ -116,6 +120,7 @@ FMConfig {
 ```
 
 **Key files:**
+
 - `fm.h / fm.c` — FM controller: forward pass, sync methods (all-reduce, gossip, topology-based)
 - `cuda/fm_cuda_kernels.cu` — Ring/butterfly all-reduce, gradient quantization
 

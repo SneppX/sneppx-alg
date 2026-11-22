@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings.nn import BatchNorm1d, BatchNorm2d, GroupNorm
@@ -32,8 +34,9 @@ def check(name, inp, loss_fn, atol=1e-5):
     inp2.requires_grad_(True)
     loss_fn(inp2).backward()
     numeric = fd(inp, loss_fn)
-    assert np.allclose(inp2.grad.data, numeric, atol=atol), \
-        f"{name}: max|d|={np.abs(inp2.grad.data - numeric).max()}"
+    assert np.allclose(
+        inp2.grad.data, numeric, atol=atol
+    ), f"{name}: max|d|={np.abs(inp2.grad.data - numeric).max()}"
     print(f"{name}: OK")
 
 
@@ -44,6 +47,7 @@ def test_batchnorm1d():
         m = BatchNorm1d(3)
         m.train()
         return (m(i) * m(i)).mean()
+
     check("BatchNorm1d x grad", x, bn1_loss)
     w = Tensor(np.random.randn(3), dtype="float64")
     w.requires_grad_(True)
@@ -54,6 +58,7 @@ def test_batchnorm1d():
         m.bias = Tensor(np.zeros((3,)))
         m.train()
         return (m(x) * m(x)).mean()
+
     check("BatchNorm1d weight grad", w, bn1_w)
 
 
@@ -64,6 +69,7 @@ def test_batchnorm2d():
         m = BatchNorm2d(3)
         m.train()
         return (m(i) * m(i)).mean()
+
     check("BatchNorm2d x grad", x, bn2_loss)
 
 
@@ -74,6 +80,7 @@ def test_groupnorm():
         m = GroupNorm(3, 6)
         m.train()
         return (m(i) * m(i)).mean()
+
     check("GroupNorm x grad", x, gn_loss)
     wg = Tensor(np.random.randn(6), dtype="float64")
     wg.requires_grad_(True)
@@ -84,6 +91,7 @@ def test_groupnorm():
         m.bias = Tensor(np.zeros((6,)))
         m.train()
         return (m(x) * m(x)).mean()
+
     check("GroupNorm weight grad", wg, gn_w)
 
 
@@ -122,6 +130,7 @@ def test_functional_norm_grads():
         wf.requires_grad_(True)
         o = F.batch_norm(x, None, None, weight=wf, training=True, momentum=0.1)
         return (o * o).mean()
+
     check("F.batch_norm weight grad", w, bn_w)
 
     # F.group_norm input grad + weight grad
@@ -138,6 +147,7 @@ def test_functional_norm_grads():
     def gn_w(i):
         o = F.group_norm(xg, 3, weight=i)
         return (o * o).mean()
+
     check("F.group_norm weight grad", wg, gn_w)
 
     # F.instance_norm input grad (4D) — covers InstanceNorm backward

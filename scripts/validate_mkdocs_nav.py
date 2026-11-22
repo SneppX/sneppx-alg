@@ -27,7 +27,9 @@ def validate_group(
     for index, entry in enumerate(entries):
         location = f"{group_name}[{index}]"
         if not isinstance(entry, dict) or len(entry) != 1:
-            errors.append(f"{location}: each navigation item must contain exactly one label")
+            errors.append(
+                f"{location}: each navigation item must contain exactly one label"
+            )
             continue
 
         label, target = next(iter(entry.items()))
@@ -44,7 +46,9 @@ def validate_group(
             continue
 
         if not isinstance(target, str) or not target.strip():
-            errors.append(f"{location}: target must be a non-empty path or nested group")
+            errors.append(
+                f"{location}: target must be a non-empty path or nested group"
+            )
             continue
         if not target.endswith(".md"):
             errors.append(f"{location}: expected a Markdown target, got {target!r}")

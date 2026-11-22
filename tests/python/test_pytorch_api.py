@@ -2,7 +2,17 @@
 
 import numpy as np
 
-from SneppX_ALG.interface_bindings.pytorch_api import Tensor, Linear, Module, Dataset, DataLoader, TensorDataset, Subset, ConcatDataset, random_split
+from SneppX_ALG.interface_bindings.pytorch_api import (
+    Tensor,
+    Linear,
+    Module,
+    Dataset,
+    DataLoader,
+    TensorDataset,
+    Subset,
+    ConcatDataset,
+    random_split,
+)
 
 
 def test_tensor_shape():
@@ -34,7 +44,6 @@ def test_accuracy():
     assert 0 <= a <= 1
 
 
-
 class _ToyDataset(Dataset):
     def __len__(self):
         return 5
@@ -64,7 +73,9 @@ def test_dataloader_seeded_shuffle_and_custom_collate():
     assert np.array_equal(first_order, second_order)
 
     custom = DataLoader(
-        dataset, batch_size=2, collate_fn=lambda samples: [sample[1] for sample in samples]
+        dataset,
+        batch_size=2,
+        collate_fn=lambda samples: [sample[1] for sample in samples],
     )
     assert list(custom)[0] == [0, 1]
 
@@ -83,8 +94,9 @@ def test_dataloader_rejects_invalid_configuration():
         except ValueError:
             pass
         else:
-            raise AssertionError(f"invalid DataLoader configuration accepted: {kwargs!r}")
-
+            raise AssertionError(
+                f"invalid DataLoader configuration accepted: {kwargs!r}"
+            )
 
 
 def test_tensor_dataset_subset_and_concat_dataset():
@@ -124,7 +136,6 @@ def test_tensor_dataset_rejects_invalid_inputs():
             pass
         else:
             raise AssertionError(f"invalid TensorDataset inputs accepted: {args!r}")
-
 
 
 def test_random_split_integer_fractional_and_seeded():

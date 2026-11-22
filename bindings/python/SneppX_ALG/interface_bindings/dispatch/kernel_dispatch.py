@@ -51,7 +51,9 @@ class KernelBackend:
         q1, q2 = np.split(q, 2, axis=-1)
         k1, k2 = np.split(k, 2, axis=-1)
         scale = (k1.shape[-1]) ** 0.5
-        scores = (q1 @ k1.transpose(0, 1, -1, -2)) - lambd * (q2 @ k2.transpose(0, 1, -1, -2))
+        scores = (q1 @ k1.transpose(0, 1, -1, -2)) - lambd * (
+            q2 @ k2.transpose(0, 1, -1, -2)
+        )
         scores = scores / scale
         attn = np.exp(scores - np.max(scores, axis=-1, keepdims=True))
         attn = attn / np.sum(attn, axis=-1, keepdims=True)

@@ -1,6 +1,6 @@
+#include "../../mm/internal/vmem.c"
 #include "../../mm/internal/vmem.h"
 #include "test_gtest.h"
-#include "../../mm/internal/vmem.c"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,15 +19,13 @@
  *
  */
 
-
-
-
-
-static void test_vmem_reserve_commit(void) {
+static void test_vmem_reserve_commit(void)
+{
     SNEPPXVMemAllocator alloc;
     SNEPPX_vmem_init(&alloc);
     void* region = SNEPPX_vmem_reserve(&alloc, 65536, 4096, SNEPPX_VMEM_FLAG_WRITABLE);
-    if (region == NULL) {
+    if (region == NULL)
+    {
         printf("SKIP (stub returns NULL): ");
         SNEPPX_vmem_cleanup(&alloc);
         return;
@@ -39,11 +37,13 @@ static void test_vmem_reserve_commit(void) {
     SNEPPX_vmem_cleanup(&alloc);
 }
 
-static void test_vmem_large_region(void) {
+static void test_vmem_large_region(void)
+{
     SNEPPXVMemAllocator alloc;
     SNEPPX_vmem_init(&alloc);
     void* region = SNEPPX_vmem_reserve(&alloc, 1048576, 4096, SNEPPX_VMEM_FLAG_WRITABLE);
-    if (region == NULL) {
+    if (region == NULL)
+    {
         printf("SKIP (stub returns NULL): ");
         SNEPPX_vmem_cleanup(&alloc);
         return;
@@ -52,6 +52,11 @@ static void test_vmem_large_region(void) {
     SNEPPX_vmem_cleanup(&alloc);
 }
 
-
-TEST(test_vmem, vmem_reserve_commit) { test_vmem_reserve_commit(); }
-TEST(test_vmem, vmem_large_region) { test_vmem_large_region(); }
+TEST(test_vmem, vmem_reserve_commit)
+{
+    test_vmem_reserve_commit();
+}
+TEST(test_vmem, vmem_large_region)
+{
+    test_vmem_large_region();
+}

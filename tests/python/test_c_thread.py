@@ -1,7 +1,10 @@
 """Tests for c_thread.py — thread pool kernels."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import time
 from SneppX_ALG.interface_bindings import ThreadPool, WorkStealingPool
@@ -16,8 +19,10 @@ def test_thread_pool_start_stop():
 
 def test_thread_pool_submit():
     results = []
+
     def worker(x):
         results.append(x)
+
     pool = ThreadPool(n_threads=2)
     pool.start()
     for i in range(5):
@@ -29,9 +34,11 @@ def test_thread_pool_submit():
 
 def test_thread_pool_wait():
     results = []
+
     def slow_worker(x):
         time.sleep(0.05)
         results.append(x)
+
     pool = ThreadPool(n_threads=4)
     pool.start()
     for i in range(10):
@@ -55,8 +62,10 @@ def test_work_stealing_start_stop():
 
 def test_work_stealing_submit():
     results = []
+
     def worker(x):
         results.append(x)
+
     pool = WorkStealingPool(n_threads=2)
     pool.start()
     for i in range(5):
@@ -67,11 +76,13 @@ def test_work_stealing_submit():
 
 
 def test_work_stealing_concurrent():
-    results_lock = __import__('threading').Lock()
+    results_lock = __import__("threading").Lock()
     results = []
+
     def worker(x):
         with results_lock:
             results.append(x)
+
     pool = WorkStealingPool(n_threads=4)
     pool.start()
     for i in range(20):

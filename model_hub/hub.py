@@ -48,6 +48,7 @@ def _get_api_key() -> Optional[str]:
 
 # ---- Core API ----
 
+
 class Hub:
     """Main hub client — manages models, auth, and storage."""
 
@@ -62,8 +63,11 @@ class Hub:
         self._base_url = base_url or _get_default_url()
         self._api_key = api_key or _get_api_key()
         self._cache_dir = cache_dir or os.path.join(
-            os.environ.get("SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")),
-            "models"
+            os.environ.get(
+                "SNEPPX_HUB_CACHE",
+                os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"),
+            ),
+            "models",
         )
         os.makedirs(self._cache_dir, exist_ok=True)
 
@@ -86,22 +90,37 @@ class Hub:
     def cache_dir(self) -> str:
         return self._cache_dir
 
-    def list_models(self, query: Optional[str] = None, task: Optional[str] = None,
-                    tag: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+    def list_models(
+        self,
+        query: Optional[str] = None,
+        task: Optional[str] = None,
+        tag: Optional[str] = None,
+        limit: int = 50,
+    ) -> List[Dict[str, Any]]:
         """List available models with optional filtering."""
         params = {"page": 1, "page_size": limit, "sort_by": "downloads"}
-        if query: params["q"] = query
-        if task: params["task"] = task
-        if tag: params["tag"] = tag
+        if query:
+            params["q"] = query
+        if task:
+            params["task"] = task
+        if tag:
+            params["tag"] = tag
         result = self._client._request("GET", "/api/v1/models", params=params)
         return result.get("items", result)
 
-    def search(self, query: str, task: Optional[str] = None,
-               tags: Optional[List[str]] = None, limit: int = 50) -> List[Dict[str, Any]]:
+    def search(
+        self,
+        query: str,
+        task: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        limit: int = 50,
+    ) -> List[Dict[str, Any]]:
         """Search for models by query string."""
         params = {"q": query, "limit": limit}
-        if task: params["task"] = task
-        if tags: params["tags"] = ",".join(tags)
+        if task:
+            params["task"] = task
+        if tags:
+            params["tags"] = ",".join(tags)
         result = self._request("GET", "/api/v1/search", params=params)
         return result.get("results", [])
 
@@ -117,7 +136,9 @@ class Hub:
         versions = self._client.get_model_versions(name)
         return [v.version for v in versions]
 
-    def download(self, name: str, version: str = "latest", dest: Optional[str] = None) -> str:
+    def download(
+        self, name: str, version: str = "latest", dest: Optional[str] = None
+    ) -> str:
         """Download model files to local storage."""
         return self._registry.download_model(name, version, dest)
 
@@ -135,13 +156,16 @@ class Hub:
             card_data = json.load(f)
 
         # Upload metadata (server expects the card as a Form field)
-        resp = self._client._request("POST", "/api/v1/models/upload",
-                                     data={"card": json.dumps(card_data)})
+        resp = self._client._request(
+            "POST", "/api/v1/models/upload", data={"card": json.dumps(card_data)}
+        )
 
         # Upload files
         org = card_data.get("organization")
         card_name = card_data.get("name")
-        model_name = f"{org}/{card_name}" if org and org not in str(card_name) else card_name
+        model_name = (
+            f"{org}/{card_name}" if org and org not in str(card_name) else card_name
+        )
         version = card_data.get("version")
         for filename in os.listdir(model_dir):
             if filename == "model_card.json" or filename.endswith(".py"):
@@ -157,9 +181,16 @@ class Hub:
 
         return resp
 
-    def submit_benchmark(self, model_name: str, version: str, task: str,
-                         metric: str, score: float, dataset: str,
-                         higher_is_better: bool = True) -> bool:
+    def submit_benchmark(
+        self,
+        model_name: str,
+        version: str,
+        task: str,
+        metric: str,
+        score: float,
+        dataset: str,
+        higher_is_better: bool = True,
+    ) -> bool:
         """Submit a benchmark result to the leaderboard."""
         result = BenchmarkResult(
             model_name=model_name,
@@ -172,7 +203,9 @@ class Hub:
         )
         return self._client.submit_benchmark(result)
 
-    def leaderboard(self, task: Optional[str] = None, metric: Optional[str] = None) -> List[Dict]:
+    def leaderboard(
+        self, task: Optional[str] = None, metric: Optional[str] = None
+    ) -> List[Dict]:
         """Get leaderboard entries."""
         lb = self._client.get_leaderboard(task=task, metric=metric)
         return [e.model_dump(mode="json") for e in lb.entries]
@@ -191,8 +224,9 @@ class Hub:
         return cls._instance
 
 
-def load(model_name: str, version: str = "latest", task: Optional[str] = None,
-         **kwargs) -> Any:
+def load(
+    model_name: str, version: str = "latest", task: Optional[str] = None, **kwargs
+) -> Any:
     """Load a model from the hub.
 
     Parameters
@@ -222,6 +256,7 @@ def load(model_name: str, version: str = "latest", task: Optional[str] = None,
     if fmt == ModelFormat.SNEPPX_NATIVE and os.path.exists(config_path):
         try:
             from SneppX_ALG.model_zoo import build_model_from_config
+
             with open(config_path) as f:
                 config = json.load(f)
             return build_model_from_config(config)
@@ -256,7 +291,9 @@ def get_versions(model_name: str) -> List[str]:
     return hub.get_versions(model_name)
 
 
-def download(model_name: str, version: str = "latest", dest: Optional[str] = None) -> str:
+def download(
+    model_name: str, version: str = "latest", dest: Optional[str] = None
+) -> str:
     """Download model files."""
     hub = Hub.get_default()
     return hub.download(model_name, version, dest)

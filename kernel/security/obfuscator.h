@@ -19,36 +19,37 @@
 #define SNEPPX_KERNEL_OBFUSCATOR_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-#include <stddef.h>
 #include <stdarg.h>
+#include <stddef.h>
 
-/**
- * @brief Obfuscate a string via XOR with a per-process key.
- *
- * @param input [in] Plaintext string (null-terminated).
- * @param output [out] Output buffer for obfuscated bytes.
- * @param output_size [in] Size of output buffer.
- */
-void sneppx_obfuscate_string(const char* input, char* output, size_t output_size);
+    /**
+     * @brief Obfuscate a string via XOR with a per-process key.
+     *
+     * @param input [in] Plaintext string (null-terminated).
+     * @param output [out] Output buffer for obfuscated bytes.
+     * @param output_size [in] Size of output buffer.
+     */
+    void sneppx_obfuscate_string(const char* input, char* output, size_t output_size);
 
-/**
- * @brief Deobfuscate a previously obfuscated string (XOR is symmetric).
- *
- * @param input [in] Obfuscated string.
- * @param output [out] Output buffer for plaintext.
- * @param output_size [in] Size of output buffer.
- */
-void sneppx_deobfuscate_string(const char* input, char* output, size_t output_size);
+    /**
+     * @brief Deobfuscate a previously obfuscated string (XOR is symmetric).
+     *
+     * @param input [in] Obfuscated string.
+     * @param output [out] Output buffer for plaintext.
+     * @param output_size [in] Size of output buffer.
+     */
+    void sneppx_deobfuscate_string(const char* input, char* output, size_t output_size);
 
-/**
- * @brief Log a formatted message with obfuscated content.
- *
- * @param fmt [in] printf-style format string.
- */
-void log_obfuscated(const char* fmt, ...);
+    /**
+     * @brief Log a formatted message with obfuscated content.
+     *
+     * @param fmt [in] printf-style format string.
+     */
+    void log_obfuscated(const char* fmt, ...);
 
 #ifdef __cplusplus
 }

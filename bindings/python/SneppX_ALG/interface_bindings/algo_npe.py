@@ -59,7 +59,9 @@ class NPECompiler:
             prog.add(instr)
         return prog
 
-    def jit_optimize(self, program: NPEProgram, profile: Optional[dict] = None) -> NPEProgram:
+    def jit_optimize(
+        self, program: NPEProgram, profile: Optional[dict] = None
+    ) -> NPEProgram:
         """Run JIT optimization pipeline: DCE → constant fold → fuse → specialize.
 
         Pure Python fallback: removes NOPs and fuses consecutive matmul+relu pairs.
@@ -72,9 +74,12 @@ class NPECompiler:
             if inst.opcode == "nop":
                 i += 1
                 continue
-            if (inst.opcode == "matmul" and i + 1 < len(program) and
-                    program[i + 1].opcode == "relu" and
-                    program[i + 1].args[0] == inst.dest):
+            if (
+                inst.opcode == "matmul"
+                and i + 1 < len(program)
+                and program[i + 1].opcode == "relu"
+                and program[i + 1].args[0] == inst.dest
+            ):
                 fused = NPEInstruction("matmul_relu", inst.args, inst.dest)
                 opt.add(fused)
                 i += 2
@@ -92,7 +97,9 @@ class NPEVM:
         self._registers: Dict[str, np.ndarray] = {}
         self._has_c = _HAS_C
 
-    def execute(self, program: NPEProgram, inputs: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+    def execute(
+        self, program: NPEProgram, inputs: Dict[str, np.ndarray]
+    ) -> Dict[str, np.ndarray]:
         self._registers = dict(inputs)
         for instr in program.instructions:
             self._execute_instr(instr)

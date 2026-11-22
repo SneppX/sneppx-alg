@@ -1,11 +1,11 @@
+#include "automatic_differentiation_framework.h"
+#include "differentiable_training_pipeline.h"
 #include "system_architecture_definitions.h"
 #include "test_gtest.h"
-#include "differentiable_training_pipeline.h"
-#include "automatic_differentiation_framework.h"
-#include <stdio.h>
 #include <math.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Ser Train
@@ -22,8 +22,8 @@
  *
  */
 
-
-static void test_ser_train_step(void) {
+static void test_ser_train_step(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.input_dim = 4;
     cfg.output_dim = 4;
@@ -37,7 +37,7 @@ static void test_ser_train_step(void) {
     size_t nw = SNEPPX_ser_get_params(model, NULL, 0);
     SX_ASSERT(nw > 0, "has params");
 
-    SNEPPXTensor** params = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
+    SNEPPXTensor** params = (SNEPPXTensor**) malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_ser_get_params(model, params, nw);
 
     size_t sh[] = {4, 4};
@@ -46,8 +46,9 @@ static void test_ser_train_step(void) {
     SNEPPXTensor* target = SNEPPX_tensor_randn(tsh, 1, SNEPPX_FLOAT32);
 
     SNEPPXTape* tape = SNEPPX_tape_create();
-    SNEPPXVariable** wv = (SNEPPXVariable**)malloc(nw * sizeof(SNEPPXVariable*));
-    for (size_t i = 0; i < nw; i++) wv[i] = SNEPPX_variable_create(params[i], 1);
+    SNEPPXVariable** wv = (SNEPPXVariable**) malloc(nw * sizeof(SNEPPXVariable*));
+    for (size_t i = 0; i < nw; i++)
+        wv[i] = SNEPPX_variable_create(params[i], 1);
 
     SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
     SNEPPXVariable* outv = NULL;
@@ -58,22 +59,30 @@ static void test_ser_train_step(void) {
     SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
     SNEPPXVariable* loss_v = SNEPPX_mse_loss(tape, outv, tgv);
     SX_ASSERT(loss_v != NULL, "loss non-null");
-    float loss = ((float*)loss_v->data->data)[0];
+    float loss = ((float*) loss_v->data->data)[0];
     SX_ASSERT(isfinite(loss), "loss finite");
     SX_ASSERT(loss >= 0.0f, "loss non-negative");
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(target);
-    for (size_t i = 0; i < nw; i++) { wv[i]->data = NULL; wv[i]->grad = NULL; SNEPPX_variable_destroy(wv[i]); }
-    inv->data = NULL; SNEPPX_variable_destroy(inv);
-    tgv->data = NULL; SNEPPX_variable_destroy(tgv);
+    for (size_t i = 0; i < nw; i++)
+    {
+        wv[i]->data = NULL;
+        wv[i]->grad = NULL;
+        SNEPPX_variable_destroy(wv[i]);
+    }
+    inv->data = NULL;
+    SNEPPX_variable_destroy(inv);
+    tgv->data = NULL;
+    SNEPPX_variable_destroy(tgv);
     SNEPPX_tape_destroy(tape);
     free(wv);
     free(params);
     SNEPPX_ser_model_destroy(model);
 }
 
-static void test_ser_train_convergence(void) {
+static void test_ser_train_convergence(void)
+{
     SNEPPXArchConfig arch_cfg = SNEPPX_arch_config_default();
     arch_cfg.enable_attention = 0;
     arch_cfg.hss_config.num_layers = 0;
@@ -98,7 +107,7 @@ static void test_ser_train_convergence(void) {
     size_t nw = SNEPPX_ser_get_params(model->ser_model, NULL, 0);
     SX_ASSERT(nw > 0, "ser has params");
 
-    SNEPPXTensor** params = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
+    SNEPPXTensor** params = (SNEPPXTensor**) malloc(nw * sizeof(SNEPPXTensor*));
     SNEPPX_ser_get_params(model->ser_model, params, nw);
 
     size_t sh[] = {4, 4};
@@ -109,8 +118,9 @@ static void test_ser_train_convergence(void) {
     float init_loss = 0.0f;
     {
         SNEPPXTape* tape = SNEPPX_tape_create();
-        SNEPPXVariable** wv = (SNEPPXVariable**)malloc(nw * sizeof(SNEPPXVariable*));
-        for (size_t i = 0; i < nw; i++) wv[i] = SNEPPX_variable_create(params[i], 1);
+        SNEPPXVariable** wv = (SNEPPXVariable**) malloc(nw * sizeof(SNEPPXVariable*));
+        for (size_t i = 0; i < nw; i++)
+            wv[i] = SNEPPX_variable_create(params[i], 1);
 
         SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
         SNEPPXVariable* outv = NULL;
@@ -118,21 +128,32 @@ static void test_ser_train_convergence(void) {
 
         SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
         SNEPPXVariable* loss_v = SNEPPX_mse_loss(tape, outv, tgv);
-        if (loss_v) init_loss = ((float*)loss_v->data->data)[0];
-        printf("  init loss=%.6f\n", (double)init_loss); fflush(stdout);
+        if (loss_v)
+            init_loss = ((float*) loss_v->data->data)[0];
+        printf("  init loss=%.6f\n", (double) init_loss);
+        fflush(stdout);
 
-        for (size_t i = 0; i < nw; i++) { wv[i]->data = NULL; wv[i]->grad = NULL; SNEPPX_variable_destroy(wv[i]); }
-        inv->data = NULL; SNEPPX_variable_destroy(inv);
-        tgv->data = NULL; SNEPPX_variable_destroy(tgv);
+        for (size_t i = 0; i < nw; i++)
+        {
+            wv[i]->data = NULL;
+            wv[i]->grad = NULL;
+            SNEPPX_variable_destroy(wv[i]);
+        }
+        inv->data = NULL;
+        SNEPPX_variable_destroy(inv);
+        tgv->data = NULL;
+        SNEPPX_variable_destroy(tgv);
         SNEPPX_tape_destroy(tape);
         free(wv);
     }
 
     int steps = 30;
-    for (int s = 0; s < steps; s++) {
+    for (int s = 0; s < steps; s++)
+    {
         SNEPPXTape* tape = SNEPPX_tape_create();
-        SNEPPXVariable** wv = (SNEPPXVariable**)malloc(nw * sizeof(SNEPPXVariable*));
-        for (size_t i = 0; i < nw; i++) wv[i] = SNEPPX_variable_create(params[i], 1);
+        SNEPPXVariable** wv = (SNEPPXVariable**) malloc(nw * sizeof(SNEPPXVariable*));
+        for (size_t i = 0; i < nw; i++)
+            wv[i] = SNEPPX_variable_create(params[i], 1);
 
         SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
         SNEPPXVariable* outv = NULL;
@@ -141,25 +162,35 @@ static void test_ser_train_convergence(void) {
         SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
         SNEPPXVariable* loss_v = SNEPPX_mse_loss(tape, outv, tgv);
 
-        if (loss_v) {
+        if (loss_v)
+        {
             SNEPPX_tape_backward(tape, loss_v);
-            SNEPPXTensor** grads = (SNEPPXTensor**)malloc(nw * sizeof(SNEPPXTensor*));
-            for (size_t i = 0; i < nw; i++) grads[i] = wv[i]->grad;
+            SNEPPXTensor** grads = (SNEPPXTensor**) malloc(nw * sizeof(SNEPPXTensor*));
+            for (size_t i = 0; i < nw; i++)
+                grads[i] = wv[i]->grad;
             SNEPPX_optimizer_step(opt, params, grads, nw);
             free(grads);
         }
 
-        for (size_t i = 0; i < nw; i++) { wv[i]->data = NULL; wv[i]->grad = NULL; SNEPPX_variable_destroy(wv[i]); }
-        inv->data = NULL; SNEPPX_variable_destroy(inv);
-        tgv->data = NULL; SNEPPX_variable_destroy(tgv);
+        for (size_t i = 0; i < nw; i++)
+        {
+            wv[i]->data = NULL;
+            wv[i]->grad = NULL;
+            SNEPPX_variable_destroy(wv[i]);
+        }
+        inv->data = NULL;
+        SNEPPX_variable_destroy(inv);
+        tgv->data = NULL;
+        SNEPPX_variable_destroy(tgv);
         SNEPPX_tape_destroy(tape);
         free(wv);
     }
     float final_loss = 0.0f;
     {
         SNEPPXTape* tape = SNEPPX_tape_create();
-        SNEPPXVariable** wv = (SNEPPXVariable**)malloc(nw * sizeof(SNEPPXVariable*));
-        for (size_t i = 0; i < nw; i++) wv[i] = SNEPPX_variable_create(params[i], 1);
+        SNEPPXVariable** wv = (SNEPPXVariable**) malloc(nw * sizeof(SNEPPXVariable*));
+        for (size_t i = 0; i < nw; i++)
+            wv[i] = SNEPPX_variable_create(params[i], 1);
 
         SNEPPXVariable* inv = SNEPPX_variable_create(input, 0);
         SNEPPXVariable* outv = NULL;
@@ -168,12 +199,20 @@ static void test_ser_train_convergence(void) {
         SNEPPXVariable* tgv = SNEPPX_variable_create(target, 0);
         SNEPPXVariable* loss_v = SNEPPX_mse_loss(tape, outv, tgv);
 
-        if (loss_v) final_loss = ((float*)loss_v->data->data)[0];
-        printf("  final loss=%.6f ratio=%.4f\n", (double)final_loss, (double)(final_loss / (init_loss + 1e-10f)));
+        if (loss_v)
+            final_loss = ((float*) loss_v->data->data)[0];
+        printf("  final loss=%.6f ratio=%.4f\n", (double) final_loss, (double) (final_loss / (init_loss + 1e-10f)));
 
-        for (size_t i = 0; i < nw; i++) { wv[i]->data = NULL; wv[i]->grad = NULL; SNEPPX_variable_destroy(wv[i]); }
-        inv->data = NULL; SNEPPX_variable_destroy(inv);
-        tgv->data = NULL; SNEPPX_variable_destroy(tgv);
+        for (size_t i = 0; i < nw; i++)
+        {
+            wv[i]->data = NULL;
+            wv[i]->grad = NULL;
+            SNEPPX_variable_destroy(wv[i]);
+        }
+        inv->data = NULL;
+        SNEPPX_variable_destroy(inv);
+        tgv->data = NULL;
+        SNEPPX_variable_destroy(tgv);
         SNEPPX_tape_destroy(tape);
         free(wv);
     }
@@ -187,6 +226,11 @@ static void test_ser_train_convergence(void) {
     free(params);
 }
 
-
-TEST(test_ser_train, test_ser_train_step) { test_ser_train_step(); }
-TEST(test_ser_train, test_ser_train_convergence) { test_ser_train_convergence(); }
+TEST(test_ser_train, test_ser_train_step)
+{
+    test_ser_train_step();
+}
+TEST(test_ser_train, test_ser_train_convergence)
+{
+    test_ser_train_convergence();
+}

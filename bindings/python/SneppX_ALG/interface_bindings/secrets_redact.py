@@ -11,12 +11,12 @@ import json
 
 # High-signal value patterns (independent of key name).
 _VALUE_RES = [
-    re.compile(r"\bsk-[A-Za-z0-9]{16,}\b"),               # OpenAI-style keys
-    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),                  # AWS access key id
-    re.compile(r"\bayan-\w{20,}\b"),                       # generic token blobs
-    re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),        # GitHub tokens
-    re.compile(r"\b[a-f0-9]{32,}\b"),                      # long hex secrets
-    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),     # PEM private keys
+    re.compile(r"\bsk-[A-Za-z0-9]{16,}\b"),  # OpenAI-style keys
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),  # AWS access key id
+    re.compile(r"\bayan-\w{20,}\b"),  # generic token blobs
+    re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),  # GitHub tokens
+    re.compile(r"\b[a-f0-9]{32,}\b"),  # long hex secrets
+    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),  # PEM private keys
 ]
 
 # key = value / "key": "value" forms (case-insensitive).  Keys may be quoted

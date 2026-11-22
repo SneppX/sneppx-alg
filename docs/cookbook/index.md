@@ -6,6 +6,7 @@ uses the **verified** Python API (import paths confirmed against
 **snippet**, and **notes** (gotchas, C-backend requirements).
 
 > Set your path once per session:
+>
 > ```powershell
 > $env:PYTHONPATH = "bindings/python"
 > ```

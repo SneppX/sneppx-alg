@@ -42,11 +42,15 @@ def convert_pt_to_sneppx(pt_path: str, out_dir: str) -> str:
         numpy_tensors[name] = np.ascontiguousarray(arr)
 
     out_path = os.path.join(out_dir, "model.sneppx.bin")
-    save_sneppx_native(out_path, numpy_tensors, {
-        "source_format": "pytorch",
-        "num_tensors": len(numpy_tensors),
-        "original_path": pt_path,
-    })
+    save_sneppx_native(
+        out_path,
+        numpy_tensors,
+        {
+            "source_format": "pytorch",
+            "num_tensors": len(numpy_tensors),
+            "original_path": pt_path,
+        },
+    )
 
     if isinstance(checkpoint, dict) and "config" in checkpoint:
         with open(os.path.join(out_dir, "config.json"), "w") as f:
@@ -55,7 +59,9 @@ def convert_pt_to_sneppx(pt_path: str, out_dir: str) -> str:
     return out_path
 
 
-def convert_sneppx_to_pt(sneppx_path: str, out_path: str, metadata: Optional[Dict] = None) -> str:
+def convert_sneppx_to_pt(
+    sneppx_path: str, out_path: str, metadata: Optional[Dict] = None
+) -> str:
     """Convert a SNEPPX native model to PyTorch format."""
     import torch
     import numpy as np

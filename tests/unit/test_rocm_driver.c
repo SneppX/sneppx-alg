@@ -18,23 +18,22 @@
  *
  */
 
-
-
-
-
-static void test_rocm_register_driver(void) {
+static void test_rocm_register_driver(void)
+{
     int ret = SNEPPX_rocm_register_driver();
-    (void)ret;
+    (void) ret;
 }
 
-static void test_rocm_device_count(void) {
+static void test_rocm_device_count(void)
+{
     int count = -1;
     int ret = SNEPPX_rocm_get_device_count(&count);
     SX_ASSERT(ret == 0, "rocm_get_device_count returns 0");
     SX_ASSERT(count >= 0, "device count >= 0");
 }
 
-static void test_rocm_device_props(void) {
+static void test_rocm_device_props(void)
+{
     SNEPPXROCmDeviceProps props;
     memset(&props, 0, sizeof(props));
     int ret = SNEPPX_rocm_get_device_props(0, &props);
@@ -43,22 +42,26 @@ static void test_rocm_device_props(void) {
     SX_ASSERT(props.max_threads_per_workgroup > 0, "non-zero threads");
 }
 
-static void test_rocm_context(void) {
+static void test_rocm_context(void)
+{
     SNEPPXROCmContext* ctx = SNEPPX_rocm_create_context(0);
     SX_ASSERT(ctx != NULL, "context created");
     SX_ASSERT(ctx->device_id == 0, "device id matches");
     SNEPPX_rocm_destroy_context(ctx);
 }
 
-static void test_rocm_malloc_free(void) {
+static void test_rocm_malloc_free(void)
+{
     void* ptr = NULL;
     int ret = SNEPPX_rocm_mem_alloc(&ptr, 1024);
     SX_ASSERT(ret == 0, "rocm_mem_alloc returns 0");
     SX_ASSERT(ptr != NULL, "pointer allocated");
-    if (ptr) SNEPPX_rocm_mem_free(ptr);
+    if (ptr)
+        SNEPPX_rocm_mem_free(ptr);
 }
 
-static void test_rocm_memcpy(void) {
+static void test_rocm_memcpy(void)
+{
     float host_src[4] = {1.0f, 2.0f, 3.0f, 4.0f};
     float host_dst[4] = {0};
     void* device = NULL;
@@ -72,10 +75,12 @@ static void test_rocm_memcpy(void) {
     SX_ASSERT(ret == 0, "memcpy device to host");
     SX_ASSERT(host_dst[0] == 1.0f && host_dst[3] == 4.0f, "data integrity");
 
-    if (device) SNEPPX_rocm_mem_free(device);
+    if (device)
+        SNEPPX_rocm_mem_free(device);
 }
 
-static void test_rocm_stream_event(void) {
+static void test_rocm_stream_event(void)
+{
     SNEPPXROCmStream* stream = NULL;
     int ret = SNEPPX_rocm_stream_create(&stream);
     SX_ASSERT(ret == 0, "stream created");
@@ -98,11 +103,31 @@ static void test_rocm_stream_event(void) {
     SNEPPX_rocm_stream_destroy(stream);
 }
 
-
-TEST(test_rocm_driver, rocm_register_driver) { test_rocm_register_driver(); }
-TEST(test_rocm_driver, rocm_device_count) { test_rocm_device_count(); }
-TEST(test_rocm_driver, rocm_device_props) { test_rocm_device_props(); }
-TEST(test_rocm_driver, rocm_context) { test_rocm_context(); }
-TEST(test_rocm_driver, rocm_malloc_free) { test_rocm_malloc_free(); }
-TEST(test_rocm_driver, rocm_memcpy) { test_rocm_memcpy(); }
-TEST(test_rocm_driver, rocm_stream_event) { test_rocm_stream_event(); }
+TEST(test_rocm_driver, rocm_register_driver)
+{
+    test_rocm_register_driver();
+}
+TEST(test_rocm_driver, rocm_device_count)
+{
+    test_rocm_device_count();
+}
+TEST(test_rocm_driver, rocm_device_props)
+{
+    test_rocm_device_props();
+}
+TEST(test_rocm_driver, rocm_context)
+{
+    test_rocm_context();
+}
+TEST(test_rocm_driver, rocm_malloc_free)
+{
+    test_rocm_malloc_free();
+}
+TEST(test_rocm_driver, rocm_memcpy)
+{
+    test_rocm_memcpy();
+}
+TEST(test_rocm_driver, rocm_stream_event)
+{
+    test_rocm_stream_event();
+}

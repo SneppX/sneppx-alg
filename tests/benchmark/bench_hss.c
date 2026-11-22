@@ -16,14 +16,15 @@
  *
  */
 
-
-static void bench_hss_create(void) {
+static void bench_hss_create(void)
+{
     BENCH_INIT(bs);
     printf("  HSS create:\n");
 
     BENCH_START(bs, 10000, 100, {
         SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
-        cfg.state_dim = 16; cfg.num_layers = 2;
+        cfg.state_dim = 16;
+        cfg.num_layers = 2;
         SNEPPXHSSModel* m = SNEPPX_hss_model_create(&cfg, 42);
         SNEPPX_hss_model_destroy(m);
     });
@@ -31,18 +32,23 @@ static void bench_hss_create(void) {
 
     BENCH_START(bs, 5000, 50, {
         SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
-        cfg.state_dim = 128; cfg.num_layers = 4;
+        cfg.state_dim = 128;
+        cfg.num_layers = 4;
         SNEPPXHSSModel* m = SNEPPX_hss_model_create(&cfg, 42);
         SNEPPX_hss_model_destroy(m);
     });
     bench_print("model_create(state=128,layers=4)", &bs);
 }
 
-static void bench_hss_forward(void) {
+static void bench_hss_forward(void)
+{
     BENCH_INIT(bs);
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
-    cfg.state_dim = 64; cfg.input_dim = 32; cfg.output_dim = 16;
-    cfg.num_layers = 4; cfg.seq_len = 128;
+    cfg.state_dim = 64;
+    cfg.input_dim = 32;
+    cfg.output_dim = 16;
+    cfg.num_layers = 4;
+    cfg.seq_len = 128;
     SNEPPXHSSModel* model = SNEPPX_hss_model_create(&cfg, 42);
 
     size_t sh[] = {128, 32};
@@ -52,7 +58,8 @@ static void bench_hss_forward(void) {
     printf("  HSS forward:\n");
     BENCH_START(bs, 200, 20, {
         SNEPPX_hss_forward(model, input, &output);
-        if (output) SNEPPX_tensor_destroy(output);
+        if (output)
+            SNEPPX_tensor_destroy(output);
     });
     bench_print("forward seq=128,dim=32,state=64,layers=4", &bs);
 
@@ -60,11 +67,15 @@ static void bench_hss_forward(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-static void bench_hss_forward_large(void) {
+static void bench_hss_forward_large(void)
+{
     BENCH_INIT(bs);
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
-    cfg.state_dim = 256; cfg.input_dim = 128; cfg.output_dim = 64;
-    cfg.num_layers = 6; cfg.seq_len = 512;
+    cfg.state_dim = 256;
+    cfg.input_dim = 128;
+    cfg.output_dim = 64;
+    cfg.num_layers = 6;
+    cfg.seq_len = 512;
     SNEPPXHSSModel* model = SNEPPX_hss_model_create(&cfg, 42);
 
     size_t sh[] = {512, 128};
@@ -74,7 +85,8 @@ static void bench_hss_forward_large(void) {
     printf("  HSS forward large:\n");
     BENCH_START(bs, 20, 5, {
         SNEPPX_hss_forward(model, input, &output);
-        if (output) SNEPPX_tensor_destroy(output);
+        if (output)
+            SNEPPX_tensor_destroy(output);
     });
     bench_print("forward seq=512,dim=128,state=256,layers=6", &bs);
 
@@ -82,7 +94,8 @@ static void bench_hss_forward_large(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-int main(void) {
+int main(void)
+{
     printf("=== HSS Benchmarks ===\n");
     BENCH_RUN("Create", bench_hss_create);
     BENCH_RUN("Forward", bench_hss_forward);

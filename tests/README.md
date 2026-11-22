@@ -5,6 +5,7 @@ This directory contains the comprehensive test suite for the SNEPPX-Algo project
 ## Overview
 
 The test suite implements a multi-tiered testing strategy:
+
 - **Unit tests**: Individual components in isolation
 - **Integration tests**: Component interactions
 - **Security tests**: Cryptographic primitives and security measures
@@ -458,6 +459,7 @@ pytest tests/python/ -v --cov=SneppX_ALG
 The SNEPPX-Algo test suite provides comprehensive coverage of the system with both unit and integration tests. While the core components are well-tested (100% pass rate), the algorithms are still in development (71% pass rate for HSS/SER, 57% for ARC/NPE/FM).
 
 The testing approach emphasizes:
+
 - **Consistency**: Uniform test patterns across components
 - **Completeness**: Coverage of all public APIs and edge cases
 - **Reliability**: Automated testing with repeatable local runs

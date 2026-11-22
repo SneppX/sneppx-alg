@@ -1,9 +1,9 @@
 #include "fractal_memory_orchestrator.h"
 #include "test_gtest.h"
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Fm Controller
@@ -20,8 +20,8 @@
  *
  */
 
-
-static void test_controller_create(void) {
+static void test_controller_create(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.num_nodes = 4;
     cfg.memory_dim = 8;
@@ -31,7 +31,8 @@ static void test_controller_create(void) {
     SX_ASSERT(ctrl != NULL, "ctrl not null");
     SX_ASSERT(ctrl->nodes != NULL, "nodes not null");
     SX_ASSERT(ctrl->config.num_nodes == 4, "4 nodes");
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 4; i++)
+    {
         SX_ASSERT(ctrl->nodes[i] != NULL, "node allocated");
         SX_ASSERT(ctrl->nodes[i]->node_id == i, "node id");
         SX_ASSERT(ctrl->nodes[i]->is_online == 1, "online");
@@ -41,7 +42,8 @@ static void test_controller_create(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-static void test_controller_forward(void) {
+static void test_controller_forward(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.num_nodes = 2;
     cfg.memory_dim = 16;
@@ -62,10 +64,13 @@ static void test_controller_forward(void) {
     SX_ASSERT(output->shape[1] == 16, "output cols 16");
 
     int has_nan = 0, has_inf = 0;
-    float* od = (float*)output->data;
-    for (size_t i = 0; i < output->size; i++) {
-        if (isnan(od[i])) has_nan = 1;
-        if (isinf(od[i])) has_inf = 1;
+    float* od = (float*) output->data;
+    for (size_t i = 0; i < output->size; i++)
+    {
+        if (isnan(od[i]))
+            has_nan = 1;
+        if (isinf(od[i]))
+            has_inf = 1;
     }
     SX_ASSERT(!has_nan, "no nan");
     SX_ASSERT(!has_inf, "no inf");
@@ -75,6 +80,11 @@ static void test_controller_forward(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-
-TEST(test_fm_controller, test_controller_create) { test_controller_create(); }
-TEST(test_fm_controller, test_controller_forward) { test_controller_forward(); }
+TEST(test_fm_controller, test_controller_create)
+{
+    test_controller_create();
+}
+TEST(test_fm_controller, test_controller_forward)
+{
+    test_controller_forward();
+}

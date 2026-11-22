@@ -1,6 +1,6 @@
 #include "fractal_memory_orchestrator.h"
-#include "test_gtest.h"
 #include "polymorphic_memory_allocator.h"
+#include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,15 +19,14 @@
  *
  */
 
-
-
-
-static int dummy_allreduce(void* data, size_t count, void* ctx) {
-    (void)ctx;
+static int dummy_allreduce(void* data, size_t count, void* ctx)
+{
+    (void) ctx;
     return 0;
 }
 
-static void test_fm_nccl_sync_null_callback(void) {
+static void test_fm_nccl_sync_null_callback(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.num_nodes = 2;
     cfg.memory_dim = 4;
@@ -39,7 +38,8 @@ static void test_fm_nccl_sync_null_callback(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-static void test_fm_nccl_sync_with_callback(void) {
+static void test_fm_nccl_sync_with_callback(void)
+{
     SNEPPXFMConfig cfg = SNEPPX_fm_config_default();
     cfg.num_nodes = 2;
     cfg.memory_dim = 4;
@@ -50,7 +50,8 @@ static void test_fm_nccl_sync_with_callback(void) {
     size_t shape_k[] = {1, cfg.memory_dim};
     SNEPPXTensor* key = SNEPPX_tensor_ones(shape_k, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* val = SNEPPX_tensor_ones(shape_k, 2, SNEPPX_FLOAT32);
-    for (size_t n = 0; n < cfg.num_nodes; n++) {
+    for (size_t n = 0; n < cfg.num_nodes; n++)
+    {
         SNEPPX_fm_memory_bank_write(ctrl->nodes[n]->memory_bank, key, val);
     }
 
@@ -63,6 +64,11 @@ static void test_fm_nccl_sync_with_callback(void) {
     SNEPPX_fm_controller_destroy(ctrl);
 }
 
-
-TEST(test_fm_nccl_sync, FM_NCCL_sync_null_callback) { test_fm_nccl_sync_null_callback(); }
-TEST(test_fm_nccl_sync, FM_NCCL_sync_with_dummy_callback) { test_fm_nccl_sync_with_callback(); }
+TEST(test_fm_nccl_sync, FM_NCCL_sync_null_callback)
+{
+    test_fm_nccl_sync_null_callback();
+}
+TEST(test_fm_nccl_sync, FM_NCCL_sync_with_dummy_callback)
+{
+    test_fm_nccl_sync_with_callback();
+}

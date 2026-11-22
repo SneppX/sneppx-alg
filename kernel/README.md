@@ -6,6 +6,7 @@ automatic differentiation, optimization, training, CUDA kernels, attention mecha
 ## Directory Layout
 
 ### `tensor/` — Tensor Engine
+
 SIMD-optimized tensor library with AVX2/AVX-512 GEMM, element-wise ops, reductions,
 broadcasting, convolution, pooling, normalization, and tensor expression JIT compilation.
 
@@ -15,19 +16,23 @@ broadcasting, convolution, pooling, normalization, and tensor expression JIT com
 - `simd_gemm.c` — SIMD GEMM kernels (AVX2 fp32, AVX-512 fp32/bf16)
 
 ### `autodiff/` — Automatic Differentiation
+
 Reverse-mode autograd engine recording operations on a tape and computing gradients
 via backpropagation. Supports 100+ differentiable operations.
 
 ### `optimizer/` — Optimizer Suite
+
 14 optimizers: SGD, Adam(W), Lion, LAMB, LARS, AdaFactor, RAdam, Sophia, Adan,
 ScheduleFreeAdamW, SM3, Demeter, CaProp, SOAP, DistributedAdam, OrthoAdam.
 Each with fused CUDA kernel variants.
 
 ### `train/` — Training Pipeline
+
 Complete training loop: `SNEPPXTrainer` with train_step, evaluate, checkpoint save/load,
 gradient accumulation, gradient scaling, gradient clipping.
 
 ### `cuda/` — CUDA Kernels
+
 NVIDIA GPU acceleration (~6,900 lines):
 
 | File | Purpose |
@@ -41,21 +46,25 @@ NVIDIA GPU acceleration (~6,900 lines):
 | `rng_cuda.h/.cu` | Philox RNG, Xavier/Kaiming init, fused dropout, batch RNG |
 
 ### `attention/` — Attention Mechanisms
+
 - `differential_attention.c` — Differential Attention (λ-scaled QK pairs), Multi-head Latent Attention (DeepSeek MLA)
 - `flex_attention.c` — FlexAttention (block-sparse + mask modulation), multi-modal cross-attention, Mixture of Depth
 - `mamba2.c` — Mamba-2 selective SSM with HiPPO initialization, 1D convolution, discretized scan
 
 ### `arch/` — Advanced Architectures
+
 Unified header for DifferentialAttn, MLA, FlexAttn, Mamba2, MoD, gated activations (SwiGLU/GeGLU/ReGLU),
 position encodings (YaRN NTK-RoPE, ALiBi).
 
 ### `quantization/` — Model Compression
+
 - `quantize_int8.c` — INT8 symmetric/asymmetric, per-channel; INT4 packed
 - `quantize_fp8.c` — FP8 E4M3/E5M2 bit-level encode/decode
 - `awq.c` — AWQ optimal scale grid search
 - `gptq.c` — GPTQ Hessian-based quantization
 
 ### `distributed/` — Distributed Training
+
 - `zero.c` — ZeRO-1/2/3 optimizer state partitioning
 - `pipeline.c` — 1F1B schedule with microbatches
 - `tensor_parallel.c` — Row/column split linear
@@ -68,34 +77,44 @@ position encodings (YaRN NTK-RoPE, ALiBi).
 - `distributed_sampler.c` — Sharded data loading, Fisher-Yates shuffle
 
 ### `data/` — Data Pipeline
+
 Dataset, TensorDataset, DataLoader, DistributedSampler.
 
 ### `inference/` — Inference Engine
+
 Optimized inference with KV cache, continuous batching, prefix caching.
 
 ### `model_zoo/` — Model Zoo
+
 Config presets and weight name mappings for LLaMA 2/3, Mistral, Qwen2, DeepSeek V2.
 JSON serialize/parse, `from_pretrained()` workflow.
 
 ### `thread/` — Thread Management
+
 Work-stealing thread pool for parallel task dispatch.
 
 ### `memory/` — Memory Management
+
 Polymorphic memory allocator with pool, TLS cache, stats tracking.
 
 ### `tokenizer/` — Tokenizer
+
 Embedding lookup, tokenization utilities.
 
 ### `activations/` — Activation Functions
+
 GELU, SiLU, ReLU variants, Tanh, Sigmoid, SwiGLU.
 
 ### `position/` — Position Encodings
+
 RoPE, YaRN NTK-aware RoPE, ALiBi.
 
 ### `profiler.c` — Profiling Infrastructure
+
 Kernel timing, JSON export, NVTX markers, range stack.
 
 ### `logger.c` — Structured Logging
+
 6 severity levels, JSON/color stdout, per-rank logging.
 
 ## Build Targets

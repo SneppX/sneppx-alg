@@ -61,8 +61,18 @@ def _layout_to_str(layout) -> str:
 class SparseTensor:
     """COO-backed sparse tensor (canonical storage for all layouts)."""
 
-    def __init__(self, indices, values, size, layout=SparseCOO, dtype="float32",
-                 device="cpu", crow=None, col=None, _verified=False):
+    def __init__(
+        self,
+        indices,
+        values,
+        size,
+        layout=SparseCOO,
+        dtype="float32",
+        device="cpu",
+        crow=None,
+        col=None,
+        _verified=False,
+    ):
         super().__init__()
         self.device = device
         self.dtype = _resolve_dtype(dtype)
@@ -86,8 +96,9 @@ class SparseTensor:
                 f"nnz mismatch: indices {indices.shape[1]} != values {values.shape[0]}"
             )
         if self.ndim == 2:
-            if indices.shape[1] and (indices[0].max() >= self.size[0] or
-                                      indices[1].max() >= self.size[1]):
+            if indices.shape[1] and (
+                indices[0].max() >= self.size[0] or indices[1].max() >= self.size[1]
+            ):
                 raise ValueError("index out of bounds for sparse tensor size")
         elif indices.shape[1] and (indices.max() >= max(self.size)):
             raise ValueError("index out of bounds for sparse tensor size")
@@ -138,6 +149,7 @@ class SparseTensor:
 
     def backward(self, grad_output=None, create_graph=False):
         from .autograd import _wrap_tensor_backward
+
         _wrap_tensor_backward(self, grad_output, create_graph=create_graph)
 
     @property
@@ -159,8 +171,11 @@ class SparseTensor:
     def crow_indices(self):
         """Compressed row indices for CSR/BSR views (computed from COO)."""
         if self._crow is not None:
-            return Tensor(np.asarray(self._crow, dtype=np.int64).copy(),
-                          dtype="int64", device=self.device)
+            return Tensor(
+                np.asarray(self._crow, dtype=np.int64).copy(),
+                dtype="int64",
+                device=self.device,
+            )
         n, m = self.size
         crow = np.zeros(n + 1, dtype=np.int64)
         if self._nnz:
@@ -171,8 +186,11 @@ class SparseTensor:
     def col_indices(self):
         """Column indices within each row for CSR/BSR views (computed from COO)."""
         if self._col is not None:
-            return Tensor(np.asarray(self._col, dtype=np.int64).copy(),
-                          dtype="int64", device=self.device)
+            return Tensor(
+                np.asarray(self._col, dtype=np.int64).copy(),
+                dtype="int64",
+                device=self.device,
+            )
         if self._nnz:
             order = np.lexsort((self._indices[1], self._indices[0]))
             cols = self._indices[1, order]
@@ -226,14 +244,19 @@ class SparseTensor:
         else:
             inds = np.stack(nz, axis=0).astype(np.int64)
             vals = arr[tuple(inds)]
-        return cls(inds, vals, arr.shape, layout=layout, dtype=x.dtype_name,
-                   device=x.device)
+        return cls(
+            inds, vals, arr.shape, layout=layout, dtype=x.dtype_name, device=x.device
+        )
 
     # ---- conversions between register formats ----
     def coalesce(self):
         return SparseTensor(
-            self._indices.copy(), self._values.copy(), self.size,
-            layout=self._layout_const, dtype=self.dtype, device=self.device,
+            self._indices.copy(),
+            self._values.copy(),
+            self.size,
+            layout=self._layout_const,
+            dtype=self.dtype,
+            device=self.device,
         )
 
     def to_sparse_coo(self):
@@ -243,17 +266,29 @@ class SparseTensor:
         crow = self.crow_indices()
         col = self.col_indices()
         return SparseTensor(
-            self._indices.copy(), self._values.copy(), self.size,
-            layout=SparseCSR, dtype=self.dtype, device=self.device,
-            crow=np.asarray(crow.data), col=np.asarray(col.data))
+            self._indices.copy(),
+            self._values.copy(),
+            self.size,
+            layout=SparseCSR,
+            dtype=self.dtype,
+            device=self.device,
+            crow=np.asarray(crow.data),
+            col=np.asarray(col.data),
+        )
 
     def to_sparse_csc(self):
         ccol = self.ccol_indices()
         row = self.row_indices()
         return SparseTensor(
-            self._indices.copy(), self._values.copy(), self.size,
-            layout=SparseCSC, dtype=self.dtype, device=self.device,
-            crow=np.asarray(ccol.data), col=np.asarray(row.data))
+            self._indices.copy(),
+            self._values.copy(),
+            self.size,
+            layout=SparseCSC,
+            dtype=self.dtype,
+            device=self.device,
+            crow=np.asarray(ccol.data),
+            col=np.asarray(row.data),
+        )
 
     def to_sparse_bsr(self, blocksize=(1, 1)):
         if self.ndim != 2:
@@ -262,18 +297,31 @@ class SparseTensor:
         n, m = self.size
         if n % br or m % bc:
             raise ValueError(
-                f"tensor size {self.size} not divisible by blocksize {blocksize}")
+                f"tensor size {self.size} not divisible by blocksize {blocksize}"
+            )
         row = self._indices[0] // br
         crow = np.zeros(n // br + 1, dtype=np.int64)
         np.add.at(crow, row + 1, 1)
         crow = np.cumsum(crow)
-        order = np.lexsort((self._indices[1] % bc, self._indices[0] % br,
-                            self._indices[1], self._indices[0]))
+        order = np.lexsort(
+            (
+                self._indices[1] % bc,
+                self._indices[0] % br,
+                self._indices[1],
+                self._indices[0],
+            )
+        )
         col_b = np.asarray(self._indices[1][order] // bc, dtype=np.int64)
         return SparseTensor(
-            self._indices.copy(), self._values.copy(), self.size,
-            layout=SparseBSR, dtype=self.dtype, device=self.device,
-            crow=crow, col=col_b)
+            self._indices.copy(),
+            self._values.copy(),
+            self.size,
+            layout=SparseBSR,
+            dtype=self.dtype,
+            device=self.device,
+            crow=crow,
+            col=col_b,
+        )
 
     # ---- arithmetic ----
     def mm(self, other):
@@ -291,15 +339,20 @@ class SparseTensor:
         arr = np.asarray(other.data) if isinstance(other, Tensor) else np.asarray(other)
         if arr.ndim == 0 or arr.size == 1:
             return SparseTensor(
-                self._indices.copy(), self._values * arr.reshape(-1)[0],
-                self.size, layout=self._layout_const, dtype=self.dtype,
-                device=self.device)
+                self._indices.copy(),
+                self._values * arr.reshape(-1)[0],
+                self.size,
+                layout=self._layout_const,
+                dtype=self.dtype,
+                device=self.device,
+            )
         if isinstance(other, Tensor):
             arr = np.asarray(other.data, dtype=_numpy_dtype(other.dtype_name))
         dense = self.to_dense().data * arr
         return SparseTensor.from_tensor(
             Tensor(dense, dtype=self.dtype, device=self.device),
-            layout=self._layout_const)
+            layout=self._layout_const,
+        )
 
     def _mul_sparse(self, other):
         # elementwise sparse*sparse: keep intersection (sparse sparsity)
@@ -310,10 +363,24 @@ class SparseTensor:
             if key in a_idx:
                 idxs.append(key)
                 vals.append(self._values[a_idx[key]] * other._values[k])
-        inds = np.array(idxs, dtype=np.int64).T if idxs else np.zeros((self.ndim, 0), dtype=np.int64)
-        varr = np.array(vals, dtype=_numpy_dtype(self.dtype)) if vals else np.zeros(0, dtype=_numpy_dtype(self.dtype))
-        return SparseTensor(inds, varr, self.size, layout=SparseCOO,
-                            dtype=self.dtype, device=self.device)
+        inds = (
+            np.array(idxs, dtype=np.int64).T
+            if idxs
+            else np.zeros((self.ndim, 0), dtype=np.int64)
+        )
+        varr = (
+            np.array(vals, dtype=_numpy_dtype(self.dtype))
+            if vals
+            else np.zeros(0, dtype=_numpy_dtype(self.dtype))
+        )
+        return SparseTensor(
+            inds,
+            varr,
+            self.size,
+            layout=SparseCOO,
+            dtype=self.dtype,
+            device=self.device,
+        )
 
     def __mul__(self, other):
         return self.mul(other)
@@ -342,12 +409,14 @@ def sparse_coo_tensor(indices, values, size=None, dtype=None, device="cpu"):
         size = (int(indices[0].max()) + 1, int(indices[1].max()) + 1)
     if dtype is None:
         dtype = _resolve_dtype(str(values.dtype)) if values.size else "float32"
-    return SparseTensor(indices, values, size, layout=SparseCOO, dtype=dtype,
-                        device=device)
+    return SparseTensor(
+        indices, values, size, layout=SparseCOO, dtype=dtype, device=device
+    )
 
 
-def sparse_csr_tensor(crow_indices, col_indices, values, size=None, dtype=None,
-                      device="cpu"):
+def sparse_csr_tensor(
+    crow_indices, col_indices, values, size=None, dtype=None, device="cpu"
+):
     """Create a CSR sparse tensor from compressed-row arrays."""
     crow = np.asarray(crow_indices, dtype=np.int64)
     col = np.asarray(col_indices, dtype=np.int64)
@@ -364,12 +433,21 @@ def sparse_csr_tensor(crow_indices, col_indices, values, size=None, dtype=None,
     inds = np.stack([rows, col], axis=0)
     if dtype is None:
         dtype = _resolve_dtype(str(values.dtype)) if values.size else "float32"
-    return SparseTensor(inds, values, size, layout=SparseCSR, dtype=dtype,
-                        device=device, crow=crow, col=col)
+    return SparseTensor(
+        inds,
+        values,
+        size,
+        layout=SparseCSR,
+        dtype=dtype,
+        device=device,
+        crow=crow,
+        col=col,
+    )
 
 
-def sparse_csc_tensor(ccol_indices, row_indices, values, size=None, dtype=None,
-                      device="cpu"):
+def sparse_csc_tensor(
+    ccol_indices, row_indices, values, size=None, dtype=None, device="cpu"
+):
     """Create a CSC sparse tensor from compressed-column arrays."""
     ccol = np.asarray(ccol_indices, dtype=np.int64)
     row = np.asarray(row_indices, dtype=np.int64)
@@ -385,12 +463,21 @@ def sparse_csc_tensor(ccol_indices, row_indices, values, size=None, dtype=None,
     inds = np.stack([row, cols], axis=0)
     if dtype is None:
         dtype = _resolve_dtype(str(values.dtype)) if values.size else "float32"
-    return SparseTensor(inds, values, size, layout=SparseCSC, dtype=dtype,
-                        device=device, crow=ccol, col=row)
+    return SparseTensor(
+        inds,
+        values,
+        size,
+        layout=SparseCSC,
+        dtype=dtype,
+        device=device,
+        crow=ccol,
+        col=row,
+    )
 
 
-def sparse_bsr_tensor(crow_indices, col_indices, values, size, blocksize,
-                      dtype=None, device="cpu"):
+def sparse_bsr_tensor(
+    crow_indices, col_indices, values, size, blocksize, dtype=None, device="cpu"
+):
     """Create a BSR sparse tensor (block storage) from CSR block indices."""
     crow = np.asarray(crow_indices, dtype=np.int64)
     col = np.asarray(col_indices, dtype=np.int64)
@@ -404,8 +491,7 @@ def sparse_bsr_tensor(crow_indices, col_indices, values, size, blocksize,
     blk = np.asarray(values)
     req = crow[-1] * br * bc
     if blk.size != req:
-        raise ValueError(
-            f"BSR values must hold {req} elements; got {blk.size}")
+        raise ValueError(f"BSR values must hold {req} elements; got {blk.size}")
     blk = blk.reshape(crow[-1], br, bc)
     inds, vals = [], []
     for bi in range(nb):
@@ -413,15 +499,25 @@ def sparse_bsr_tensor(crow_indices, col_indices, values, size, blocksize,
             bj = col[start]
             bvals = blk[start]
             nz = np.nonzero(bvals)
-            for (r, c) in zip(*nz):
+            for r, c in zip(*nz):
                 inds.append([bi * br + r, bj * bc + c])
                 vals.append(bvals[r, c])
-    inds = np.array(inds, dtype=np.int64).T if inds else np.zeros((2, 0), dtype=np.int64)
+    inds = (
+        np.array(inds, dtype=np.int64).T if inds else np.zeros((2, 0), dtype=np.int64)
+    )
     varr = np.array(vals) if vals else np.zeros(0)
     if dtype is None:
         dtype = _resolve_dtype(str(varr.dtype)) if varr.size else "float32"
-    return SparseTensor(inds, varr, size, layout=SparseBSR, dtype=dtype,
-                        device=device, crow=crow, col=col)
+    return SparseTensor(
+        inds,
+        varr,
+        size,
+        layout=SparseBSR,
+        dtype=dtype,
+        device=device,
+        crow=crow,
+        col=col,
+    )
 
 
 # --------------------------------------------------------------------------
@@ -431,29 +527,32 @@ def sparse_bsr_tensor(crow_indices, col_indices, values, size, blocksize,
 def sparse_mm(mat1, mat2):
     """Matrix product. mat1 may be SparseTensor or Tensor; mat2 either."""
     from .autograd_ops import SparseMM
+
     return SparseMM.apply(mat1, mat2)
 
 
 def sparse_addmm(input, mat1, mat2, beta=1.0, alpha=1.0):
     """beta*input + alpha*(mat1 @ mat2); mat1 may be sparse."""
     from .autograd_ops import SparseAddMM
+
     return SparseAddMM.apply(input, mat1, mat2, beta=beta, alpha=alpha)
 
 
 def sparse_sum(input, dim=None, dtype=None):
     """Sum of a sparse tensor. Single dim -> dense Tensor; None -> scalar."""
     from .autograd_ops import SparseSum
+
     return SparseSum.apply(input, dim, dtype=dtype)
 
 
 def sparse_softmax(input, dim):
     """Softmax over one dimension of a sparse tensor (dense result)."""
     from .autograd_ops import SparseSoftmax
+
     return SparseSoftmax.apply(input, dim)
 
 
-def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
-                  groups=1):
+def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1, groups=1):
     """2D conv over a sparse 4-D input; densifies, convolves, re-sparsifies.
 
     Accepts either a ``SparseTensor`` (N,C,H,W layout; kept as a sparse output)
@@ -461,9 +560,17 @@ def sparse_conv2d(input, weight, bias=None, stride=1, padding=0, dilation=1,
     shape [C_out, C_in//groups, kH, kW].
     """
     from .autograd_ops import SparseConv2d
+
     was_sparse = isinstance(input, SparseTensor)
-    out = SparseConv2d.apply(input, weight, bias, stride=stride, padding=padding,
-                             dilation=dilation, groups=groups)
+    out = SparseConv2d.apply(
+        input,
+        weight,
+        bias,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=groups,
+    )
     if not was_sparse:
         return out
     sp_out = SparseTensor.from_tensor(out, layout=SparseCOO)

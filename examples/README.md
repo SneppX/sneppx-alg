@@ -11,55 +11,67 @@ The examples directory showcases different aspects of the SNEPPX-Alg system, fro
 ### Core Algorithms
 
 #### hss
+
 - **HSS Demo**: Demonstrates hierarchical state space model using HMM for sequence modeling with variable-length inputs
 - **Files**: `hss_demo.c` (main), `hss.h` (API)
 
 #### ser
+
 - **SER Demo**: Shows sparse expert routing with MoE architecture, load balancing, and expert dispatch
 - **Files**: `ser_demo.c` (main), `ser.h` (API)
 
 #### arc
+
 - **ARC Demo**: Adversarial Robustness Certification with input guarding, gradient obfuscation, and output verification
 - **Files**: `arc_demo.c` (main), `arc.h` (API)
 
 #### npe
+
 - **NPE Demo**: Neural Program Executor demonstrating VM execution with 16 registers and 14 opcodes
 - **Files**: `npe_demo.c` (main), `npe.h` (API)
 
 #### fm
+
 - **FM Demo**: Federated Memory with distributed memory banks, trust-weighted synchronization, and differential privacy
 - **Files**: `fm_demo.c` (main), `fm.h` (API)
 
 ### C/C++ Examples
 
 #### tensor_examples
+
 - **Basic Ops**: Tensor creation, manipulation, and operations
 - **Examples**: reshape, transpose, matmul, reduction operations
 
 #### autodiff_examples
+
 - **Gradients**: Automatic differentiation for simple neural networks
 - **Examples**: forward/backward passes, gradient computation
 
 #### optimizer_examples
+
 - **Training**: Different optimizers (SGD, Adam, etc.)
 - **Examples**: parameter updates, learning rate scheduling
 
 #### security_examples
+
 - **Crypto**: Post-quantum cryptographic operations
 - **Examples**: Ed25519 signing, AES-GCM encryption
 
 #### mixed_mode
+
 - **CPU+GPU**: Interleaved CPU and CUDA operations
 - **Examples**: Data transfer, kernel launches, async execution
 
 ### Python Examples
 
 #### basic_examples
+
 - **Tensor**: Basic tensor creation and operations
 - **Model**: Simple neural network construction
 - **Training**: Complete training loop example
 
 #### advanced_examples
+
 - **Distributed**: Multi-GPU/distributed training
 - **Quantization**: Model quantization and inference
 - **Security**: Secure inference with homomorphic operations
@@ -67,10 +79,12 @@ The examples directory showcases different aspects of the SNEPPX-Alg system, fro
 ### Experimental Examples
 
 #### arch_experiments
+
 - **Architecture Search**: Automated neural architecture design
 - **Hyperparameter Tuning**: Grid search and Bayesian optimization
 
 #### benchmark_examples
+
 - **Performance**: Core component benchmarks
 - **Scale**: Scaling studies with large datasets
 
@@ -110,7 +124,7 @@ for epoch in range(10):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
+
     print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
 ```
 
@@ -122,11 +136,11 @@ use neural_core_algo::Tensor;
 fn main() {
     // Create tensor
     let mut t = Tensor::zeros(&[4, 8]);
-    
+
     // Add one for demonstration
     let mut ones = Tensor::ones(&[4, 8]);
     t = t + ones;
-    
+
     println!("Tensor shape: {:?}", t.shape());
 }
 ```

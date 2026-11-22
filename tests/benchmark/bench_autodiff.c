@@ -1,5 +1,5 @@
-#include "bench_common.h"
 #include "automatic_differentiation_framework.h"
+#include "bench_common.h"
 
 /*
  * SNEPPX - Bench Autodiff
@@ -16,8 +16,8 @@
  *
  */
 
-
-static void bench_variable_ops(void) {
+static void bench_variable_ops(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* t = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -33,7 +33,8 @@ static void bench_variable_ops(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-static void bench_add_backward(void) {
+static void bench_add_backward(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* ta = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -46,17 +47,22 @@ static void bench_add_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_add(tape, a, b);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        b->data = NULL; b->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        b->data = NULL;
+        b->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("add + backward", &bs);
 
-    SNEPPX_tensor_destroy(ta); SNEPPX_tensor_destroy(tb);
+    SNEPPX_tensor_destroy(ta);
+    SNEPPX_tensor_destroy(tb);
 }
 
-static void bench_mul_backward(void) {
+static void bench_mul_backward(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* ta = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -69,17 +75,22 @@ static void bench_mul_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_mul(tape, a, b);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        b->data = NULL; b->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        b->data = NULL;
+        b->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("mul + backward", &bs);
 
-    SNEPPX_tensor_destroy(ta); SNEPPX_tensor_destroy(tb);
+    SNEPPX_tensor_destroy(ta);
+    SNEPPX_tensor_destroy(tb);
 }
 
-static void bench_matmul_backward(void) {
+static void bench_matmul_backward(void)
+{
     BENCH_INIT(bs);
     size_t sh1[] = {64, 128};
     size_t sh2[] = {128, 64};
@@ -93,17 +104,22 @@ static void bench_matmul_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_matmul(tape, a, b);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        b->data = NULL; b->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        b->data = NULL;
+        b->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("matmul + backward", &bs);
 
-    SNEPPX_tensor_destroy(ta); SNEPPX_tensor_destroy(tb);
+    SNEPPX_tensor_destroy(ta);
+    SNEPPX_tensor_destroy(tb);
 }
 
-static void bench_chain_rule(void) {
+static void bench_chain_rule(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {64, 64};
     SNEPPXTensor* ta = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -118,19 +134,26 @@ static void bench_chain_rule(void) {
         SNEPPXVariable* d = SNEPPX_mul(tape, c, a);
         SNEPPXVariable* e = SNEPPX_relu(tape, d);
         SNEPPX_tape_backward(tape, e);
-        a->data = NULL; a->grad = NULL;
-        b->data = NULL; b->grad = NULL;
-        c->data = NULL; c->grad = NULL;
-        d->data = NULL; d->grad = NULL;
-        e->data = NULL; e->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        b->data = NULL;
+        b->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
+        d->data = NULL;
+        d->grad = NULL;
+        e->data = NULL;
+        e->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("add->mul->relu + backward", &bs);
 
-    SNEPPX_tensor_destroy(ta); SNEPPX_tensor_destroy(tb);
+    SNEPPX_tensor_destroy(ta);
+    SNEPPX_tensor_destroy(tb);
 }
 
-static void bench_relu_sigmoid_backward(void) {
+static void bench_relu_sigmoid_backward(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* ta = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -141,8 +164,10 @@ static void bench_relu_sigmoid_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_relu(tape, a);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("relu + backward", &bs);
@@ -152,8 +177,10 @@ static void bench_relu_sigmoid_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_sigmoid(tape, a);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("sigmoid + backward", &bs);
@@ -161,7 +188,8 @@ static void bench_relu_sigmoid_backward(void) {
     SNEPPX_tensor_destroy(ta);
 }
 
-static void bench_mse_loss_backward(void) {
+static void bench_mse_loss_backward(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {64, 64};
     SNEPPXTensor* ta = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -174,16 +202,20 @@ static void bench_mse_loss_backward(void) {
         SNEPPXTape* tape = SNEPPX_tape_create();
         SNEPPXVariable* c = SNEPPX_mse_loss(tape, a, b);
         SNEPPX_tape_backward(tape, c);
-        a->data = NULL; a->grad = NULL;
-        c->data = NULL; c->grad = NULL;
+        a->data = NULL;
+        a->grad = NULL;
+        c->data = NULL;
+        c->grad = NULL;
         SNEPPX_tape_destroy(tape);
     });
     bench_print("mse_loss + backward", &bs);
 
-    SNEPPX_tensor_destroy(ta); SNEPPX_tensor_destroy(tb);
+    SNEPPX_tensor_destroy(ta);
+    SNEPPX_tensor_destroy(tb);
 }
 
-int main(void) {
+int main(void)
+{
     printf("=== Autodiff Benchmarks ===\n");
     BENCH_RUN("Variable ops", bench_variable_ops);
     BENCH_RUN("Add backward", bench_add_backward);

@@ -1,7 +1,7 @@
 #include "multi_head_attention_module.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Rope
@@ -18,12 +18,8 @@
  *
  */
 
-
-
-
-
-
-static void test_rope_precompute(void) {
+static void test_rope_precompute(void)
+{
     SNEPPXTensor* cos = SNEPPX_rope_precompute(8, 4, 10000.0f);
     SX_ASSERT(cos != NULL, "precomputed cos table");
     SX_ASSERT(cos->shape[0] == 8, "seq_len dim");
@@ -31,21 +27,31 @@ static void test_rope_precompute(void) {
     SNEPPX_tensor_destroy(cos);
 }
 
-static void test_rope_apply_changes_values(void) {
+static void test_rope_apply_changes_values(void)
+{
     size_t shape[] = {2, 4};
     SNEPPXTensor* q = SNEPPX_tensor_create(shape, 2, SNEPPX_FLOAT32);
     SNEPPXTensor* k = SNEPPX_tensor_create(shape, 2, SNEPPX_FLOAT32);
-    float* qd = (float*)q->data;
-    float* kd = (float*)k->data;
-    for (size_t i = 0; i < 8; i++) { qd[i] = 1.0f; kd[i] = 0.5f; }
+    float* qd = (float*) q->data;
+    float* kd = (float*) k->data;
+    for (size_t i = 0; i < 8; i++)
+    {
+        qd[i] = 1.0f;
+        kd[i] = 0.5f;
+    }
 
     SNEPPXTensor* cos = SNEPPX_rope_precompute(2, 4, 10000.0f);
     SNEPPXTensor* sin = NULL;
     SNEPPX_rope_apply(q, k, cos, sin, 0);
 
-    float* q_out = (float*)q->data;
+    float* q_out = (float*) q->data;
     int changed = 0;
-    for (size_t i = 0; i < 8; i++) if (q_out[i] != 1.0f) { changed = 1; break; }
+    for (size_t i = 0; i < 8; i++)
+        if (q_out[i] != 1.0f)
+        {
+            changed = 1;
+            break;
+        }
     SX_ASSERT(changed, "rope rotates q values");
 
     SNEPPX_tensor_destroy(sin);
@@ -54,7 +60,8 @@ static void test_rope_apply_changes_values(void) {
     SNEPPX_tensor_destroy(q);
 }
 
-static void test_attention_self_attention(void) {
+static void test_attention_self_attention(void)
+{
     SNEPPXAttentionConfig cfg;
     cfg.num_heads = 2;
     cfg.head_dim = 4;
@@ -79,7 +86,8 @@ static void test_attention_self_attention(void) {
     SNEPPX_attn_weights_destroy(attn);
 }
 
-static void test_attention_causal_mask(void) {
+static void test_attention_causal_mask(void)
+{
     SNEPPXAttentionConfig cfg;
     cfg.num_heads = 1;
     cfg.head_dim = 2;
@@ -101,8 +109,19 @@ static void test_attention_causal_mask(void) {
     SNEPPX_attn_weights_destroy(attn);
 }
 
-
-TEST(test_rope, rope_precompute) { test_rope_precompute(); }
-TEST(test_rope, rope_apply_changes_values) { test_rope_apply_changes_values(); }
-TEST(test_rope, attention_self_attention) { test_attention_self_attention(); }
-TEST(test_rope, attention_causal_mask) { test_attention_causal_mask(); }
+TEST(test_rope, rope_precompute)
+{
+    test_rope_precompute();
+}
+TEST(test_rope, rope_apply_changes_values)
+{
+    test_rope_apply_changes_values();
+}
+TEST(test_rope, attention_self_attention)
+{
+    test_attention_self_attention();
+}
+TEST(test_rope, attention_causal_mask)
+{
+    test_attention_causal_mask();
+}

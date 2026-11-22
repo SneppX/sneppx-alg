@@ -1,7 +1,7 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 /*
  * SNEPPX - Bindings
@@ -18,29 +18,29 @@
  *
  */
 
-
-extern "C" {
-#include "multidimensional_tensor_engine.h"
-#include "polymorphic_memory_allocator.h"
-#include "concurrent_workload_dispatch.h"
-#include "automatic_differentiation_framework.h"
-#include "gradient_optimization_suite.h"
-#include "system_architecture_definitions.h"
-#include "differentiable_training_pipeline.h"
-#include "hierarchical_state_space.h"
-#include "sparse_expert_routing.h"
+extern "C"
+{
 #include "adversarial_robustness_certification.h"
-#include "neural_programming_engine.h"
-#include "fractal_memory_orchestrator.h"
+#include "automatic_differentiation_framework.h"
+#include "concurrent_workload_dispatch.h"
 #include "cryptographic_primitives_bundle.h"
+#include "differentiable_training_pipeline.h"
+#include "fractal_memory_orchestrator.h"
+#include "gradient_optimization_suite.h"
+#include "hierarchical_state_space.h"
+#include "multidimensional_tensor_engine.h"
+#include "neural_programming_engine.h"
+#include "polymorphic_memory_allocator.h"
+#include "sparse_expert_routing.h"
+#include "system_architecture_definitions.h"
 }
 
 #include <cstring>
-#include <string>
-#include <vector>
 #include <limits>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace py = pybind11;
 
@@ -52,24 +52,40 @@ namespace py = pybind11;
  *
  * @return Pointer on success, NULL on error.
  */
-const char* SNEPPX_dtype_to_numpy(SNEPPXDtype d) {
-    switch (d) {
-        case SNEPPX_FLOAT32:   return "float32";
-        case SNEPPX_FLOAT64:   return "float64";
-        case SNEPPX_FLOAT16:   return "float16";
+const char* SNEPPX_dtype_to_numpy(SNEPPXDtype d)
+{
+    switch (d)
+    {
+        case SNEPPX_FLOAT32:
+            return "float32";
+        case SNEPPX_FLOAT64:
+            return "float64";
+        case SNEPPX_FLOAT16:
+            return "float16";
         // NumPy has no portable bfloat16/float8 dtype. Expose their raw
         // storage representations while dtype_name preserves semantic identity.
-        case SNEPPX_BFLOAT16:  return "uint16";
-        case SNEPPX_FLOAT8:    return "uint8";
-        case SNEPPX_INT32:     return "int32";
-        case SNEPPX_INT64:     return "int64";
-        case SNEPPX_INT16:     return "int16";
-        case SNEPPX_INT8:      return "int8";
-        case SNEPPX_UINT8:     return "uint8";
-        case SNEPPX_BOOL:      return "bool";
-        case SNEPPX_COMPLEX64:  return "complex64";
-        case SNEPPX_COMPLEX128: return "complex128";
-        default: throw std::runtime_error("unknown dtype");
+        case SNEPPX_BFLOAT16:
+            return "uint16";
+        case SNEPPX_FLOAT8:
+            return "uint8";
+        case SNEPPX_INT32:
+            return "int32";
+        case SNEPPX_INT64:
+            return "int64";
+        case SNEPPX_INT16:
+            return "int16";
+        case SNEPPX_INT8:
+            return "int8";
+        case SNEPPX_UINT8:
+            return "uint8";
+        case SNEPPX_BOOL:
+            return "bool";
+        case SNEPPX_COMPLEX64:
+            return "complex64";
+        case SNEPPX_COMPLEX128:
+            return "complex128";
+        default:
+            throw std::runtime_error("unknown dtype");
     }
 }
 
@@ -78,20 +94,34 @@ const char* SNEPPX_dtype_to_numpy(SNEPPXDtype d) {
  *
  * @return The result value, or 0 on error.
  */
-SNEPPXDtype numpy_to_SNEPPX_dtype(const std::string& dt) {
-    if (dt == "float32")   return SNEPPX_FLOAT32;
-    if (dt == "float64")   return SNEPPX_FLOAT64;
-    if (dt == "float16")   return SNEPPX_FLOAT16;
-    if (dt == "bfloat16")  return SNEPPX_BFLOAT16;
-    if (dt == "float8")    return SNEPPX_FLOAT8;
-    if (dt == "int32")     return SNEPPX_INT32;
-    if (dt == "int64")     return SNEPPX_INT64;
-    if (dt == "int16")     return SNEPPX_INT16;
-    if (dt == "int8")      return SNEPPX_INT8;
-    if (dt == "uint8")     return SNEPPX_UINT8;
-    if (dt == "bool")      return SNEPPX_BOOL;
-    if (dt == "complex64")  return SNEPPX_COMPLEX64;
-    if (dt == "complex128") return SNEPPX_COMPLEX128;
+SNEPPXDtype numpy_to_SNEPPX_dtype(const std::string& dt)
+{
+    if (dt == "float32")
+        return SNEPPX_FLOAT32;
+    if (dt == "float64")
+        return SNEPPX_FLOAT64;
+    if (dt == "float16")
+        return SNEPPX_FLOAT16;
+    if (dt == "bfloat16")
+        return SNEPPX_BFLOAT16;
+    if (dt == "float8")
+        return SNEPPX_FLOAT8;
+    if (dt == "int32")
+        return SNEPPX_INT32;
+    if (dt == "int64")
+        return SNEPPX_INT64;
+    if (dt == "int16")
+        return SNEPPX_INT16;
+    if (dt == "int8")
+        return SNEPPX_INT8;
+    if (dt == "uint8")
+        return SNEPPX_UINT8;
+    if (dt == "bool")
+        return SNEPPX_BOOL;
+    if (dt == "complex64")
+        return SNEPPX_COMPLEX64;
+    if (dt == "complex128")
+        return SNEPPX_COMPLEX128;
     throw std::runtime_error("unsupported numpy dtype: " + dt);
 }
 
@@ -100,12 +130,15 @@ SNEPPXDtype numpy_to_SNEPPX_dtype(const std::string& dt) {
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_dtype_itemsize(SNEPPXDtype d) {
+size_t SNEPPX_dtype_itemsize(SNEPPXDtype d)
+{
     return SNEPPX_tensor_dtype_size(d);
 }
 
-static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0) {
-    if (!a) throw std::invalid_argument("shape/repetitions array is required");
+static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0)
+{
+    if (!a)
+        throw std::invalid_argument("shape/repetitions array is required");
     py::buffer_info original = a.request();
     if (original.ndim != 1)
         throw std::invalid_argument("shape/repetitions must be a 1-D integer array");
@@ -115,14 +148,14 @@ static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0) 
     if (max_dims != 0 && static_cast<size_t>(original.size) > max_dims)
         throw std::invalid_argument("dimension count exceeds the operation limit");
 
-    using ShapeArray = py::array_t<py::ssize_t,
-        py::array::c_style | py::array::forcecast>;
+    using ShapeArray = py::array_t<py::ssize_t, py::array::c_style | py::array::forcecast>;
     ShapeArray converted(a);
     py::buffer_info buf = converted.request();
     const auto* values = static_cast<const py::ssize_t*>(buf.ptr);
     std::vector<size_t> result;
     result.reserve(static_cast<size_t>(buf.size));
-    for (py::ssize_t i = 0; i < buf.size; ++i) {
+    for (py::ssize_t i = 0; i < buf.size; ++i)
+    {
         if (values[i] < 0)
             throw std::invalid_argument("shape/repetitions cannot contain negative values");
         result.push_back(static_cast<size_t>(values[i]));
@@ -131,16 +164,17 @@ static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0) 
 }
 
 // ---- Include split module files ----
-#include "bindings/tensor_bindings.cpp"
 #include "bindings/autograd_bindings.cpp"
-#include "bindings/optim_model_bindings.cpp"
-#include "bindings/npe_extra_bindings.cpp"
 #include "bindings/crypto_bindings.cpp"
+#include "bindings/npe_extra_bindings.cpp"
+#include "bindings/optim_model_bindings.cpp"
+#include "bindings/tensor_bindings.cpp"
 
 // ---------------------------------------------------------------------------
 // Python module
 // ---------------------------------------------------------------------------
-PYBIND11_MODULE(_SNEPPX_c, m) {
+PYBIND11_MODULE(_SNEPPX_c, m)
+{
     m.doc() = "SNEPPX Algo - Python bindings";
 
     // ---- Enums ----

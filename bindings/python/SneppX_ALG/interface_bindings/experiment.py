@@ -91,8 +91,9 @@ class Run:
         self.params.update(params)
         return self
 
-    def log_metric(self, key: str, value: Any, step: Optional[int] = None,
-                   **extra: Any) -> "Run":
+    def log_metric(
+        self, key: str, value: Any, step: Optional[int] = None, **extra: Any
+    ) -> "Run":
         entry = {"metric": key, "value": value}
         if step is not None:
             entry["step"] = step
@@ -116,8 +117,11 @@ class Run:
         return [m for m in self.metrics if m.get("metric") == key]
 
     def best(self, key: str, mode: str = "max") -> Optional[float]:
-        vals = [m["value"] for m in self.metric_history(key)
-                if isinstance(m["value"], (int, float, np.floating))]
+        vals = [
+            m["value"]
+            for m in self.metric_history(key)
+            if isinstance(m["value"], (int, float, np.floating))
+        ]
         if not vals:
             return None
         return float(max(vals)) if mode == "max" else float(min(vals))
@@ -181,8 +185,9 @@ class Experiment:
         self.name = name
         self.runs: List[Run] = list(runs or [])
 
-    def run(self, params: Optional[Dict[str, Any]] = None,
-            run_id: Optional[str] = None) -> Run:
+    def run(
+        self, params: Optional[Dict[str, Any]] = None, run_id: Optional[str] = None
+    ) -> Run:
         run = Run(self.name, run_id=run_id, params=params)
         self.runs.append(run)
         return run
@@ -246,7 +251,8 @@ class ExperimentStore:
         if not os.path.isdir(self.root):
             return []
         return sorted(
-            e for e in os.listdir(self.root)
+            e
+            for e in os.listdir(self.root)
             if os.path.isdir(os.path.join(self.root, e))
         )
 

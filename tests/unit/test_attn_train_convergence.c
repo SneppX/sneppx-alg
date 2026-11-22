@@ -1,9 +1,9 @@
+#include "differentiable_training_pipeline.h"
 #include "system_architecture_definitions.h"
 #include "test_gtest.h"
-#include "differentiable_training_pipeline.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 
 /*
@@ -21,13 +21,13 @@
  *
  */
 
-
-
-
-static void test_attn_train_graph_builds(void) {
+static void test_attn_train_graph_builds(void)
+{
     SNEPPXArchConfig arch_cfg = SNEPPX_arch_config_default();
-    arch_cfg.input_dim = 8; arch_cfg.output_dim = 8;
-    arch_cfg.enable_hss = 0; arch_cfg.enable_ser = 0;
+    arch_cfg.input_dim = 8;
+    arch_cfg.output_dim = 8;
+    arch_cfg.enable_hss = 0;
+    arch_cfg.enable_ser = 0;
     arch_cfg.enable_attention = 1;
     arch_cfg.attention_config.d_model = 8;
     arch_cfg.attention_config.num_heads = 2;
@@ -47,11 +47,12 @@ static void test_attn_train_graph_builds(void) {
     size_t B = 1, S = 1;
     size_t in_shape[] = {B, S};
     SNEPPXTensor* input = SNEPPX_tensor_zeros(in_shape, 2, SNEPPX_FLOAT32);
-    ((float*)input->data)[0] = 0.0f;
+    ((float*) input->data)[0] = 0.0f;
 
     size_t tgt_shape[] = {B * S, arch_cfg.vocab_size};
     SNEPPXTensor* target = SNEPPX_tensor_zeros(tgt_shape, 2, SNEPPX_FLOAT32);
-    if (target) ((float*)target->data)[0] = 1.0f;
+    if (target)
+        ((float*) target->data)[0] = 1.0f;
     SX_ASSERT(input != NULL && target != NULL, "tensors created");
 
     /* Verify evaluate works */
@@ -66,10 +67,13 @@ static void test_attn_train_graph_builds(void) {
     size_t nw = SNEPPX_model_get_params(model, NULL, 0);
     SX_ASSERT(nw > 0, "has parameters");
 
-    SNEPPX_tensor_destroy(input); SNEPPX_tensor_destroy(target);
+    SNEPPX_tensor_destroy(input);
+    SNEPPX_tensor_destroy(target);
     SNEPPX_trainer_destroy(trainer);
     SNEPPX_model_destroy(model);
 }
 
-
-TEST(test_attn_train_convergence, test_attn_train_graph_builds) { test_attn_train_graph_builds(); }
+TEST(test_attn_train_convergence, test_attn_train_graph_builds)
+{
+    test_attn_train_graph_builds();
+}

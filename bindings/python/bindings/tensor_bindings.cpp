@@ -13,41 +13,60 @@
  *
  */
 
-
 // Tensor wrapper — extracted from bindings.cpp lines 86–498, 1252–1396
 #pragma once
 
-class PyTensor {
-public:
+class PyTensor
+{
+  public:
     SNEPPXTensor* ptr;
     bool owner;
 
-    PyTensor() : ptr(nullptr), owner(false) {}
-    explicit PyTensor(SNEPPXTensor* t, bool own = true) : ptr(t), owner(own) {
+    PyTensor()
+        : ptr(nullptr),
+          owner(false)
+    {
+    }
+    explicit PyTensor(SNEPPXTensor* t, bool own = true)
+        : ptr(t),
+          owner(own)
+    {
         // Ops return NULL for invalid inputs (shape/dtype mismatch,
         // unsupported cases) — fail fast with a python-visible error
         // instead of letting a NULL ptr segfault later lifetimes (issue #14).
         if (own && !t)
-            throw std::runtime_error(
-                "SNEPPX op returned NULL (invalid shape/dtype combination for "
-                "this op)");
+            throw std::runtime_error("SNEPPX op returned NULL (invalid shape/dtype combination for "
+                                     "this op)");
     }
-    ~PyTensor() { if (owner && ptr) SNEPPX_tensor_destroy(ptr); }
+    ~PyTensor()
+    {
+        if (owner && ptr)
+            SNEPPX_tensor_destroy(ptr);
+    }
 
     /* Relinquish python-side ownership: used by PyVariable::create because
      * SNEPPX_variable_create takes ownership of the tensor pointer. */
-    void release() { owner = false; }
+    void release()
+    {
+        owner = false;
+    }
 
     PyTensor(const PyTensor&) = delete;
     PyTensor& operator=(const PyTensor&) = delete;
 
-    PyTensor(PyTensor&& other) noexcept : ptr(other.ptr), owner(other.owner) {
+    PyTensor(PyTensor&& other) noexcept
+        : ptr(other.ptr),
+          owner(other.owner)
+    {
         other.ptr = nullptr;
         other.owner = false;
     }
-    PyTensor& operator=(PyTensor&& other) noexcept {
-        if (this != &other) {
-            if (owner && ptr) SNEPPX_tensor_destroy(ptr);
+    PyTensor& operator=(PyTensor&& other) noexcept
+    {
+        if (this != &other)
+        {
+            if (owner && ptr)
+                SNEPPX_tensor_destroy(ptr);
             ptr = other.ptr;
             owner = other.owner;
             other.ptr = nullptr;
@@ -57,87 +76,134 @@ public:
     }
 
     // ---- Factory methods ----
-    static PyTensor create(py::array shape, SNEPPXDtype dtype) {
+    static PyTensor create(py::array shape, SNEPPXDtype dtype)
+    {
         auto sv = pyarray_to_sizevec(shape);
         return PyTensor(SNEPPX_tensor_create(sv.data(), sv.size(), dtype));
     }
 
-    static PyTensor empty(py::array shape, SNEPPXDtype dtype) {
+    static PyTensor empty(py::array shape, SNEPPXDtype dtype)
+    {
         auto sv = pyarray_to_sizevec(shape);
         return PyTensor(SNEPPX_tensor_empty(sv.data(), sv.size(), dtype));
     }
 
-    static PyTensor zeros(py::array shape, SNEPPXDtype dtype) {
+    static PyTensor zeros(py::array shape, SNEPPXDtype dtype)
+    {
         auto sv = pyarray_to_sizevec(shape);
         return PyTensor(SNEPPX_tensor_zeros(sv.data(), sv.size(), dtype));
     }
 
-    static PyTensor ones(py::array shape, SNEPPXDtype dtype) {
+    static PyTensor ones(py::array shape, SNEPPXDtype dtype)
+    {
         auto sv = pyarray_to_sizevec(shape);
         return PyTensor(SNEPPX_tensor_ones(sv.data(), sv.size(), dtype));
     }
 
-    static PyTensor full(py::array shape, SNEPPXDtype dtype, py::object val_obj) {
+    static PyTensor full(py::array shape, SNEPPXDtype dtype, py::object val_obj)
+    {
         auto sv = pyarray_to_sizevec(shape);
         std::vector<uint8_t> buf(SNEPPX_dtype_itemsize(dtype));
-        if (dtype == SNEPPX_FLOAT32) {
+        if (dtype == SNEPPX_FLOAT32)
+        {
             float v = val_obj.cast<float>();
             std::memcpy(buf.data(), &v, sizeof(float));
-        } else if (dtype == SNEPPX_FLOAT64) {
+        }
+        else if (dtype == SNEPPX_FLOAT64)
+        {
             double v = val_obj.cast<double>();
             std::memcpy(buf.data(), &v, sizeof(double));
-        } else if (dtype == SNEPPX_INT32) {
+        }
+        else if (dtype == SNEPPX_INT32)
+        {
             int32_t v = val_obj.cast<int32_t>();
             std::memcpy(buf.data(), &v, sizeof(int32_t));
-        } else if (dtype == SNEPPX_INT64) {
+        }
+        else if (dtype == SNEPPX_INT64)
+        {
             int64_t v = val_obj.cast<int64_t>();
             std::memcpy(buf.data(), &v, sizeof(int64_t));
-        } else if (dtype == SNEPPX_UINT8 || dtype == SNEPPX_BOOL) {
+        }
+        else if (dtype == SNEPPX_UINT8 || dtype == SNEPPX_BOOL)
+        {
             uint8_t v = val_obj.cast<uint8_t>();
             std::memcpy(buf.data(), &v, sizeof(uint8_t));
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("full() unsupported dtype for value");
         }
         return PyTensor(SNEPPX_tensor_full(sv.data(), sv.size(), dtype, buf.data()));
     }
 
-    static PyTensor arange(float start, float stop, float step, SNEPPXDtype dtype) {
+    static PyTensor arange(float start, float stop, float step, SNEPPXDtype dtype)
+    {
         return PyTensor(SNEPPX_tensor_arange(start, stop, step, dtype));
     }
 
-    static PyTensor linspace(float start, float stop, size_t steps, SNEPPXDtype dtype) {
+    static PyTensor linspace(float start, float stop, size_t steps, SNEPPXDtype dtype)
+    {
         return PyTensor(SNEPPX_tensor_linspace(start, stop, steps, dtype));
     }
 
-    static PyTensor eye(size_t n, SNEPPXDtype dtype) {
+    static PyTensor eye(size_t n, SNEPPXDtype dtype)
+    {
         return PyTensor(SNEPPX_tensor_eye(n, dtype));
     }
 
-    static PyTensor randn(py::array shape, SNEPPXDtype dtype) {
+    static PyTensor randn(py::array shape, SNEPPXDtype dtype)
+    {
         auto sv = pyarray_to_sizevec(shape);
         return PyTensor(SNEPPX_tensor_randn(sv.data(), sv.size(), dtype));
     }
 
     // ---- Properties ----
-    py::tuple shape() const {
+    py::tuple shape() const
+    {
         py::tuple t(ptr->ndim);
         for (size_t i = 0; i < ptr->ndim; ++i)
             t[i] = py::int_(ptr->shape[i]);
         return t;
     }
 
-    size_t ndim() const { return ptr->ndim; }
-    size_t size() const { return ptr->size; }
-    SNEPPXDtype dtype() const { return ptr->dtype; }
-    SNEPPXDevice device() const { return ptr->device; }
-    SNEPPXLayout layout() const { return ptr->layout; }
-    std::string dtype_name() const { return SNEPPX_tensor_dtype_name(ptr->dtype); }
-    size_t numel() const { return SNEPPX_tensor_numel(ptr); }
-    int is_contiguous() const { return SNEPPX_tensor_is_contiguous(ptr); }
+    size_t ndim() const
+    {
+        return ptr->ndim;
+    }
+    size_t size() const
+    {
+        return ptr->size;
+    }
+    SNEPPXDtype dtype() const
+    {
+        return ptr->dtype;
+    }
+    SNEPPXDevice device() const
+    {
+        return ptr->device;
+    }
+    SNEPPXLayout layout() const
+    {
+        return ptr->layout;
+    }
+    std::string dtype_name() const
+    {
+        return SNEPPX_tensor_dtype_name(ptr->dtype);
+    }
+    size_t numel() const
+    {
+        return SNEPPX_tensor_numel(ptr);
+    }
+    int is_contiguous() const
+    {
+        return SNEPPX_tensor_is_contiguous(ptr);
+    }
 
     // ---- Data access (read/write via numpy) ----
-    py::array data() const {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
+    py::array data() const
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
         const size_t itemsize = SNEPPX_dtype_itemsize(ptr->dtype);
         if (itemsize == 0 || (ptr->ndim > 0 && (!ptr->shape || !ptr->strides)))
             throw std::runtime_error("tensor metadata is invalid");
@@ -146,7 +212,8 @@ public:
         std::vector<py::ssize_t> np_strides;
         np_shape.reserve(ptr->ndim);
         np_strides.reserve(ptr->ndim);
-        for (size_t i = 0; i < ptr->ndim; ++i) {
+        for (size_t i = 0; i < ptr->ndim; ++i)
+        {
             if (ptr->shape[i] > static_cast<size_t>(std::numeric_limits<py::ssize_t>::max()) ||
                 ptr->strides[i] > static_cast<size_t>(std::numeric_limits<py::ssize_t>::max()) / itemsize)
                 throw std::overflow_error("tensor shape or stride exceeds NumPy limits");
@@ -157,182 +224,396 @@ public:
         return py::array(py::dtype(np_dt), np_shape, np_strides, ptr->data, py::cast(*this));
     }
 
-    void set_data(py::array arr) {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
-        if (!arr) throw std::invalid_argument("source array is required");
+    void set_data(py::array arr)
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
+        if (!arr)
+            throw std::invalid_argument("source array is required");
         py::array contiguous = py::array::ensure(arr, py::array::c_style);
-        if (!contiguous) throw std::invalid_argument("source array cannot be made contiguous");
+        if (!contiguous)
+            throw std::invalid_argument("source array cannot be made contiguous");
         py::buffer_info buf = contiguous.request();
         const size_t itemsize = SNEPPX_dtype_itemsize(ptr->dtype);
         if (itemsize == 0 || ptr->size > std::numeric_limits<size_t>::max() / itemsize)
             throw std::overflow_error("tensor byte size is invalid");
         const size_t nbytes = ptr->size * itemsize;
         if (buf.size < 0 || buf.itemsize <= 0 ||
-            static_cast<size_t>(buf.size) > std::numeric_limits<size_t>::max() /
-                static_cast<size_t>(buf.itemsize) ||
+            static_cast<size_t>(buf.size) > std::numeric_limits<size_t>::max() / static_cast<size_t>(buf.itemsize) ||
             static_cast<size_t>(buf.size) * static_cast<size_t>(buf.itemsize) != nbytes)
             throw std::runtime_error("data size mismatch");
-        if (nbytes != 0) {
-            if (!ptr->data || !buf.ptr) throw std::runtime_error("tensor data buffer is unavailable");
+        if (nbytes != 0)
+        {
+            if (!ptr->data || !buf.ptr)
+                throw std::runtime_error("tensor data buffer is unavailable");
             std::memcpy(ptr->data, buf.ptr, nbytes);
         }
     }
 
     // ---- Element access ----
-    py::object get_item(py::args indices) const {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
+    py::object get_item(py::args indices) const
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
         if (indices.size() != ptr->ndim)
             throw py::index_error("the number of indices must match tensor dimensions");
         std::vector<size_t> idx(ptr->ndim, 0);
-        for (size_t i = 0; i < ptr->ndim; ++i) {
+        for (size_t i = 0; i < ptr->ndim; ++i)
+        {
             const py::ssize_t value = indices[i].cast<py::ssize_t>();
             if (value < 0 || static_cast<size_t>(value) >= ptr->shape[i])
                 throw py::index_error("tensor index is out of bounds");
             idx[i] = static_cast<size_t>(value);
         }
-        switch (ptr->dtype) {
-            case SNEPPX_FLOAT32: return py::float_(SNEPPX_tensor_get_f32(ptr, idx.data()));
-            case SNEPPX_FLOAT64: return py::float_(SNEPPX_tensor_get_f64(ptr, idx.data()));
-            case SNEPPX_INT32:   return py::int_(SNEPPX_tensor_get_i32(ptr, idx.data()));
-            case SNEPPX_INT64:   return py::int_(SNEPPX_tensor_get_i64(ptr, idx.data()));
-            case SNEPPX_BOOL:    return py::bool_(SNEPPX_tensor_get_bool(ptr, idx.data()));
-            default: throw std::runtime_error("get_item unsupported dtype");
+        switch (ptr->dtype)
+        {
+            case SNEPPX_FLOAT32:
+                return py::float_(SNEPPX_tensor_get_f32(ptr, idx.data()));
+            case SNEPPX_FLOAT64:
+                return py::float_(SNEPPX_tensor_get_f64(ptr, idx.data()));
+            case SNEPPX_INT32:
+                return py::int_(SNEPPX_tensor_get_i32(ptr, idx.data()));
+            case SNEPPX_INT64:
+                return py::int_(SNEPPX_tensor_get_i64(ptr, idx.data()));
+            case SNEPPX_BOOL:
+                return py::bool_(SNEPPX_tensor_get_bool(ptr, idx.data()));
+            default:
+                throw std::runtime_error("get_item unsupported dtype");
         }
     }
 
-    void set_item(py::args args) {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
+    void set_item(py::args args)
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
         if (args.size() != ptr->ndim + 1)
             throw py::index_error("setitem requires one index per dimension and a value");
         auto val = args[args.size() - 1];
         std::vector<size_t> idx(ptr->ndim, 0);
-        for (size_t i = 0; i < ptr->ndim; ++i) {
+        for (size_t i = 0; i < ptr->ndim; ++i)
+        {
             const py::ssize_t value = args[i].cast<py::ssize_t>();
             if (value < 0 || static_cast<size_t>(value) >= ptr->shape[i])
                 throw py::index_error("tensor index is out of bounds");
             idx[i] = static_cast<size_t>(value);
         }
-        switch (ptr->dtype) {
-            case SNEPPX_FLOAT32: SNEPPX_tensor_set_f32(ptr, idx.data(), val.cast<float>()); break;
-            case SNEPPX_FLOAT64: SNEPPX_tensor_set_f64(ptr, idx.data(), val.cast<double>()); break;
-            case SNEPPX_INT32:   SNEPPX_tensor_set_i32(ptr, idx.data(), val.cast<int32_t>()); break;
-            case SNEPPX_INT64:   SNEPPX_tensor_set_i64(ptr, idx.data(), val.cast<int64_t>()); break;
-            case SNEPPX_BOOL:    SNEPPX_tensor_set_bool(ptr, idx.data(), val.cast<uint8_t>()); break;
-            default: throw std::runtime_error("set_item unsupported dtype");
+        switch (ptr->dtype)
+        {
+            case SNEPPX_FLOAT32:
+                SNEPPX_tensor_set_f32(ptr, idx.data(), val.cast<float>());
+                break;
+            case SNEPPX_FLOAT64:
+                SNEPPX_tensor_set_f64(ptr, idx.data(), val.cast<double>());
+                break;
+            case SNEPPX_INT32:
+                SNEPPX_tensor_set_i32(ptr, idx.data(), val.cast<int32_t>());
+                break;
+            case SNEPPX_INT64:
+                SNEPPX_tensor_set_i64(ptr, idx.data(), val.cast<int64_t>());
+                break;
+            case SNEPPX_BOOL:
+                SNEPPX_tensor_set_bool(ptr, idx.data(), val.cast<uint8_t>());
+                break;
+            default:
+                throw std::runtime_error("set_item unsupported dtype");
         }
     }
 
     // ---- Fill ----
-    void fill_f32(float v) { SNEPPX_tensor_fill_f32(ptr, v); }
-    void fill_f64(double v) { SNEPPX_tensor_fill_f64(ptr, v); }
+    void fill_f32(float v)
+    {
+        SNEPPX_tensor_fill_f32(ptr, v);
+    }
+    void fill_f64(double v)
+    {
+        SNEPPX_tensor_fill_f64(ptr, v);
+    }
 
     // ---- Unary ops ----
-    PyTensor neg()    const { return PyTensor(SNEPPX_tensor_neg(ptr)); }
-    PyTensor abs_()   const { return PyTensor(SNEPPX_tensor_abs(ptr)); }
-    PyTensor sign()   const { return PyTensor(SNEPPX_tensor_sign(ptr)); }
-    PyTensor floor()  const { return PyTensor(SNEPPX_tensor_floor(ptr)); }
-    PyTensor ceil()   const { return PyTensor(SNEPPX_tensor_ceil(ptr)); }
-    PyTensor round()  const { return PyTensor(SNEPPX_tensor_round(ptr)); }
-    PyTensor trunc()  const { return PyTensor(SNEPPX_tensor_trunc(ptr)); }
-    PyTensor exp()    const { return PyTensor(SNEPPX_tensor_exp(ptr)); }
-    PyTensor log()    const { return PyTensor(SNEPPX_tensor_log(ptr)); }
-    PyTensor sqrt()   const { return PyTensor(SNEPPX_tensor_sqrt(ptr)); }
-    PyTensor sin()    const { return PyTensor(SNEPPX_tensor_sin(ptr)); }
-    PyTensor cos()    const { return PyTensor(SNEPPX_tensor_cos(ptr)); }
-    PyTensor tan()    const { return PyTensor(SNEPPX_tensor_tan(ptr)); }
-    PyTensor asin()   const { return PyTensor(SNEPPX_tensor_asin(ptr)); }
-    PyTensor acos()   const { return PyTensor(SNEPPX_tensor_acos(ptr)); }
-    PyTensor atan()   const { return PyTensor(SNEPPX_tensor_atan(ptr)); }
-    PyTensor sinh()   const { return PyTensor(SNEPPX_tensor_sinh(ptr)); }
-    PyTensor cosh()   const { return PyTensor(SNEPPX_tensor_cosh(ptr)); }
-    PyTensor tanh()   const { return PyTensor(SNEPPX_tensor_tanh(ptr)); }
+    PyTensor neg() const
+    {
+        return PyTensor(SNEPPX_tensor_neg(ptr));
+    }
+    PyTensor abs_() const
+    {
+        return PyTensor(SNEPPX_tensor_abs(ptr));
+    }
+    PyTensor sign() const
+    {
+        return PyTensor(SNEPPX_tensor_sign(ptr));
+    }
+    PyTensor floor() const
+    {
+        return PyTensor(SNEPPX_tensor_floor(ptr));
+    }
+    PyTensor ceil() const
+    {
+        return PyTensor(SNEPPX_tensor_ceil(ptr));
+    }
+    PyTensor round() const
+    {
+        return PyTensor(SNEPPX_tensor_round(ptr));
+    }
+    PyTensor trunc() const
+    {
+        return PyTensor(SNEPPX_tensor_trunc(ptr));
+    }
+    PyTensor exp() const
+    {
+        return PyTensor(SNEPPX_tensor_exp(ptr));
+    }
+    PyTensor log() const
+    {
+        return PyTensor(SNEPPX_tensor_log(ptr));
+    }
+    PyTensor sqrt() const
+    {
+        return PyTensor(SNEPPX_tensor_sqrt(ptr));
+    }
+    PyTensor sin() const
+    {
+        return PyTensor(SNEPPX_tensor_sin(ptr));
+    }
+    PyTensor cos() const
+    {
+        return PyTensor(SNEPPX_tensor_cos(ptr));
+    }
+    PyTensor tan() const
+    {
+        return PyTensor(SNEPPX_tensor_tan(ptr));
+    }
+    PyTensor asin() const
+    {
+        return PyTensor(SNEPPX_tensor_asin(ptr));
+    }
+    PyTensor acos() const
+    {
+        return PyTensor(SNEPPX_tensor_acos(ptr));
+    }
+    PyTensor atan() const
+    {
+        return PyTensor(SNEPPX_tensor_atan(ptr));
+    }
+    PyTensor sinh() const
+    {
+        return PyTensor(SNEPPX_tensor_sinh(ptr));
+    }
+    PyTensor cosh() const
+    {
+        return PyTensor(SNEPPX_tensor_cosh(ptr));
+    }
+    PyTensor tanh() const
+    {
+        return PyTensor(SNEPPX_tensor_tanh(ptr));
+    }
 
     // ---- Binary arithmetic ----
-    PyTensor add(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_add(ptr, b.ptr)); }
-    PyTensor sub(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_sub(ptr, b.ptr)); }
-    PyTensor mul(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_mul(ptr, b.ptr)); }
-    PyTensor div(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_div(ptr, b.ptr)); }
-    PyTensor pow_(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_pow(ptr, b.ptr)); }
+    PyTensor add(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_add(ptr, b.ptr));
+    }
+    PyTensor sub(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_sub(ptr, b.ptr));
+    }
+    PyTensor mul(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_mul(ptr, b.ptr));
+    }
+    PyTensor div(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_div(ptr, b.ptr));
+    }
+    PyTensor pow_(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_pow(ptr, b.ptr));
+    }
 
     // ---- Comparison ----
-    PyTensor eq(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_eq(ptr, b.ptr)); }
-    PyTensor ne(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_ne(ptr, b.ptr)); }
-    PyTensor lt(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_lt(ptr, b.ptr)); }
-    PyTensor le(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_le(ptr, b.ptr)); }
-    PyTensor gt(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_gt(ptr, b.ptr)); }
-    PyTensor ge(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_ge(ptr, b.ptr)); }
+    PyTensor eq(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_eq(ptr, b.ptr));
+    }
+    PyTensor ne(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_ne(ptr, b.ptr));
+    }
+    PyTensor lt(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_lt(ptr, b.ptr));
+    }
+    PyTensor le(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_le(ptr, b.ptr));
+    }
+    PyTensor gt(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_gt(ptr, b.ptr));
+    }
+    PyTensor ge(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_ge(ptr, b.ptr));
+    }
 
     // ---- Activations ----
-    PyTensor relu()     const { return PyTensor(SNEPPX_tensor_relu(ptr)); }
-    PyTensor gelu()     const { return PyTensor(SNEPPX_tensor_gelu(ptr)); }
-    PyTensor silu()     const { return PyTensor(SNEPPX_tensor_silu(ptr)); }
-    PyTensor sigmoid()  const { return PyTensor(SNEPPX_tensor_sigmoid(ptr)); }
-    PyTensor softmax(size_t dim) const { return PyTensor(SNEPPX_tensor_softmax(ptr, dim)); }
-    PyTensor log_softmax(size_t dim) const { return PyTensor(SNEPPX_tensor_log_softmax(ptr, dim)); }
-    PyTensor tanh_act() const { return PyTensor(SNEPPX_tensor_tanh(ptr)); }
+    PyTensor relu() const
+    {
+        return PyTensor(SNEPPX_tensor_relu(ptr));
+    }
+    PyTensor gelu() const
+    {
+        return PyTensor(SNEPPX_tensor_gelu(ptr));
+    }
+    PyTensor silu() const
+    {
+        return PyTensor(SNEPPX_tensor_silu(ptr));
+    }
+    PyTensor sigmoid() const
+    {
+        return PyTensor(SNEPPX_tensor_sigmoid(ptr));
+    }
+    PyTensor softmax(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_softmax(ptr, dim));
+    }
+    PyTensor log_softmax(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_log_softmax(ptr, dim));
+    }
+    PyTensor tanh_act() const
+    {
+        return PyTensor(SNEPPX_tensor_tanh(ptr));
+    }
 
     // ---- Reductions ----
-    PyTensor sum(size_t dim) const { return PyTensor(SNEPPX_tensor_sum(ptr, dim)); }
-    PyTensor mean(size_t dim) const { return PyTensor(SNEPPX_tensor_mean(ptr, dim)); }
-    PyTensor var(size_t dim) const { return PyTensor(SNEPPX_tensor_var(ptr, dim)); }
-    PyTensor std(size_t dim) const { return PyTensor(SNEPPX_tensor_std(ptr, dim)); }
-    float min() const { return SNEPPX_tensor_min(ptr); }
-    float max() const { return SNEPPX_tensor_max(ptr); }
-    size_t argmin() const { return SNEPPX_tensor_argmin(ptr); }
-    size_t argmax() const { return SNEPPX_tensor_argmax(ptr); }
-    PyTensor cumsum(size_t dim) const { return PyTensor(SNEPPX_tensor_cumsum(ptr, dim)); }
-    PyTensor cumprod(size_t dim) const { return PyTensor(SNEPPX_tensor_cumprod(ptr, dim)); }
+    PyTensor sum(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_sum(ptr, dim));
+    }
+    PyTensor mean(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_mean(ptr, dim));
+    }
+    PyTensor var(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_var(ptr, dim));
+    }
+    PyTensor std(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_std(ptr, dim));
+    }
+    float min() const
+    {
+        return SNEPPX_tensor_min(ptr);
+    }
+    float max() const
+    {
+        return SNEPPX_tensor_max(ptr);
+    }
+    size_t argmin() const
+    {
+        return SNEPPX_tensor_argmin(ptr);
+    }
+    size_t argmax() const
+    {
+        return SNEPPX_tensor_argmax(ptr);
+    }
+    PyTensor cumsum(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_cumsum(ptr, dim));
+    }
+    PyTensor cumprod(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_cumprod(ptr, dim));
+    }
 
     // ---- Linear algebra ----
-    float dot(const PyTensor& b) const { return SNEPPX_tensor_dot(ptr, b.ptr); }
-    PyTensor matmul(const PyTensor& b) const { return PyTensor(SNEPPX_tensor_matmul(ptr, b.ptr)); }
-    PyTensor transpose(size_t dim1, size_t dim2) const { return PyTensor(SNEPPX_tensor_transpose(ptr, dim1, dim2)); }
-    PyTensor inverse() const { return PyTensor(SNEPPX_tensor_inverse(ptr)); }
-    float det() const { return SNEPPX_tensor_det(ptr); }
+    float dot(const PyTensor& b) const
+    {
+        return SNEPPX_tensor_dot(ptr, b.ptr);
+    }
+    PyTensor matmul(const PyTensor& b) const
+    {
+        return PyTensor(SNEPPX_tensor_matmul(ptr, b.ptr));
+    }
+    PyTensor transpose(size_t dim1, size_t dim2) const
+    {
+        return PyTensor(SNEPPX_tensor_transpose(ptr, dim1, dim2));
+    }
+    PyTensor inverse() const
+    {
+        return PyTensor(SNEPPX_tensor_inverse(ptr));
+    }
+    float det() const
+    {
+        return SNEPPX_tensor_det(ptr);
+    }
 
     // ---- Shape ops ----
-    PyTensor reshape(py::array new_shape) const {
+    PyTensor reshape(py::array new_shape) const
+    {
         auto sv = pyarray_to_sizevec(new_shape);
         return PyTensor(SNEPPX_tensor_reshape(ptr, sv.data(), sv.size()));
     }
 
-    PyTensor permute(py::array axes) const {
+    PyTensor permute(py::array axes) const
+    {
         auto sv = pyarray_to_sizevec(axes);
         return PyTensor(SNEPPX_tensor_permute(ptr, sv.data()));
     }
 
-    PyTensor expand(py::array new_shape) const {
+    PyTensor expand(py::array new_shape) const
+    {
         auto sv = pyarray_to_sizevec(new_shape);
         return PyTensor(SNEPPX_tensor_expand(ptr, sv.data(), sv.size()));
     }
 
-    PyTensor squeeze(size_t dim) const { return PyTensor(SNEPPX_tensor_squeeze(ptr, dim)); }
-    PyTensor unsqueeze(size_t dim) const { return PyTensor(SNEPPX_tensor_unsqueeze(ptr, dim)); }
-    PyTensor slice(size_t dim, size_t start, size_t end) const { return PyTensor(SNEPPX_tensor_slice(ptr, dim, start, end)); }
+    PyTensor squeeze(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_squeeze(ptr, dim));
+    }
+    PyTensor unsqueeze(size_t dim) const
+    {
+        return PyTensor(SNEPPX_tensor_unsqueeze(ptr, dim));
+    }
+    PyTensor slice(size_t dim, size_t start, size_t end) const
+    {
+        return PyTensor(SNEPPX_tensor_slice(ptr, dim, start, end));
+    }
 
-    static PyTensor concat(py::list tensors, size_t dim) {
+    static PyTensor concat(py::list tensors, size_t dim)
+    {
         std::vector<const SNEPPXTensor*> raw(tensors.size());
         for (size_t i = 0; i < tensors.size(); ++i)
             raw[i] = tensors[i].cast<PyTensor*>()->ptr;
         return PyTensor(SNEPPX_tensor_concat(raw.data(), raw.size(), dim));
     }
 
-    std::vector<PyTensor> split(size_t num_splits, size_t dim) const {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
+    std::vector<PyTensor> split(size_t num_splits, size_t dim) const
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
         SNEPPXTensor** results = SNEPPX_tensor_split(ptr, num_splits, dim);
-        if (!results) throw std::runtime_error("tensor split failed: invalid dimension or split count");
+        if (!results)
+            throw std::runtime_error("tensor split failed: invalid dimension or split count");
 
         std::vector<PyTensor> out;
-        try {
+        try
+        {
             out.reserve(num_splits);
-            for (size_t i = 0; i < num_splits; ++i) {
-                if (!results[i]) throw std::runtime_error("tensor split returned an empty result");
+            for (size_t i = 0; i < num_splits; ++i)
+            {
+                if (!results[i])
+                    throw std::runtime_error("tensor split returned an empty result");
                 out.emplace_back(results[i]);
                 results[i] = nullptr; // Ownership transferred to PyTensor.
             }
-        } catch (...) {
+        }
+        catch (...)
+        {
             for (size_t i = 0; i < num_splits; ++i)
-                if (results[i]) SNEPPX_tensor_destroy(results[i]);
+                if (results[i])
+                    SNEPPX_tensor_destroy(results[i]);
             SNEPPX_free(results, num_splits * sizeof(SNEPPXTensor*));
             throw;
         }
@@ -340,130 +621,205 @@ public:
         return out;
     }
 
-    PyTensor tile(py::array reps) const {
-        if (!ptr) throw std::runtime_error("tensor is not initialized");
+    PyTensor tile(py::array reps) const
+    {
+        if (!ptr)
+            throw std::runtime_error("tensor is not initialized");
         if (ptr->ndim > 16)
             throw std::runtime_error("tile supports tensors with at most 16 dimensions");
         auto sv = pyarray_to_sizevec(reps, 16);
         return PyTensor(SNEPPX_tensor_tile(ptr, sv.data(), sv.size()));
     }
 
-    PyTensor repeat(size_t repeats, size_t dim) const {
+    PyTensor repeat(size_t repeats, size_t dim) const
+    {
         return PyTensor(SNEPPX_tensor_repeat(ptr, repeats, dim));
     }
 
-    PyTensor gather(size_t dim, const PyTensor& indices) const {
+    PyTensor gather(size_t dim, const PyTensor& indices) const
+    {
         return PyTensor(SNEPPX_tensor_gather(ptr, dim, indices.ptr));
     }
 
-    PyTensor scatter(size_t dim, const PyTensor& indices, const PyTensor& src) {
+    PyTensor scatter(size_t dim, const PyTensor& indices, const PyTensor& src)
+    {
         return PyTensor(SNEPPX_tensor_scatter(ptr, dim, indices.ptr, src.ptr));
     }
 
-    PyTensor masked_select(const PyTensor& mask) const {
+    PyTensor masked_select(const PyTensor& mask) const
+    {
         return PyTensor(SNEPPX_tensor_masked_select(ptr, mask.ptr));
     }
 
-    PyTensor masked_fill(const PyTensor& mask, py::object val_obj) {
+    PyTensor masked_fill(const PyTensor& mask, py::object val_obj)
+    {
         SNEPPXDtype dt = ptr->dtype;
         std::vector<uint8_t> buf(SNEPPX_dtype_itemsize(dt));
-        if (dt == SNEPPX_FLOAT32) {
-            float v = val_obj.cast<float>(); std::memcpy(buf.data(), &v, sizeof(float));
-        } else if (dt == SNEPPX_FLOAT64) {
-            double v = val_obj.cast<double>(); std::memcpy(buf.data(), &v, sizeof(double));
-        } else if (dt == SNEPPX_INT32) {
-            int32_t v = val_obj.cast<int32_t>(); std::memcpy(buf.data(), &v, sizeof(int32_t));
-        } else if (dt == SNEPPX_INT64) {
-            int64_t v = val_obj.cast<int64_t>(); std::memcpy(buf.data(), &v, sizeof(int64_t));
-        } else if (dt == SNEPPX_UINT8 || dt == SNEPPX_BOOL) {
-            uint8_t v = val_obj.cast<uint8_t>(); std::memcpy(buf.data(), &v, sizeof(uint8_t));
-        } else {
+        if (dt == SNEPPX_FLOAT32)
+        {
+            float v = val_obj.cast<float>();
+            std::memcpy(buf.data(), &v, sizeof(float));
+        }
+        else if (dt == SNEPPX_FLOAT64)
+        {
+            double v = val_obj.cast<double>();
+            std::memcpy(buf.data(), &v, sizeof(double));
+        }
+        else if (dt == SNEPPX_INT32)
+        {
+            int32_t v = val_obj.cast<int32_t>();
+            std::memcpy(buf.data(), &v, sizeof(int32_t));
+        }
+        else if (dt == SNEPPX_INT64)
+        {
+            int64_t v = val_obj.cast<int64_t>();
+            std::memcpy(buf.data(), &v, sizeof(int64_t));
+        }
+        else if (dt == SNEPPX_UINT8 || dt == SNEPPX_BOOL)
+        {
+            uint8_t v = val_obj.cast<uint8_t>();
+            std::memcpy(buf.data(), &v, sizeof(uint8_t));
+        }
+        else
+        {
             throw std::runtime_error("masked_fill unsupported dtype");
         }
         return PyTensor(SNEPPX_tensor_masked_fill(ptr, mask.ptr, buf.data()));
     }
 
-    static PyTensor where(const PyTensor& condition, const PyTensor& x, const PyTensor& y) {
+    static PyTensor where(const PyTensor& condition, const PyTensor& x, const PyTensor& y)
+    {
         return PyTensor(SNEPPX_tensor_where(condition.ptr, x.ptr, y.ptr));
     }
 
     // ---- Cast / Device / Layout ----
-    PyTensor cast(SNEPPXDtype dtype) const { return PyTensor(SNEPPX_tensor_cast(ptr, dtype)); }
-    PyTensor to_device(SNEPPXDevice device) const { return PyTensor(SNEPPX_tensor_to_device(ptr, device)); }
-    PyTensor to_layout(SNEPPXLayout layout) const { return PyTensor(SNEPPX_tensor_to_layout(ptr, layout)); }
+    PyTensor cast(SNEPPXDtype dtype) const
+    {
+        return PyTensor(SNEPPX_tensor_cast(ptr, dtype));
+    }
+    PyTensor to_device(SNEPPXDevice device) const
+    {
+        return PyTensor(SNEPPX_tensor_to_device(ptr, device));
+    }
+    PyTensor to_layout(SNEPPXLayout layout) const
+    {
+        return PyTensor(SNEPPX_tensor_to_layout(ptr, layout));
+    }
 
     // ---- I/O ----
-    void save(const std::string& path) const {
+    void save(const std::string& path) const
+    {
         if (SNEPPX_tensor_save(ptr, path.c_str()) != 0)
             throw std::runtime_error("failed to save tensor");
     }
 
-    static PyTensor load(const std::string& path) {
+    static PyTensor load(const std::string& path)
+    {
         SNEPPXTensor* t = SNEPPX_tensor_load(path.c_str());
-        if (!t) throw std::runtime_error("failed to load tensor");
+        if (!t)
+            throw std::runtime_error("failed to load tensor");
         return PyTensor(t);
     }
 
-    PyTensor copy() const { return PyTensor(SNEPPX_tensor_copy(ptr)); }
-    PyTensor clone() const { return PyTensor(SNEPPX_tensor_clone(ptr)); }
+    PyTensor copy() const
+    {
+        return PyTensor(SNEPPX_tensor_copy(ptr));
+    }
+    PyTensor clone() const
+    {
+        return PyTensor(SNEPPX_tensor_clone(ptr));
+    }
 
     // ---- NN ops ----
-    PyTensor conv1d(const PyTensor& kernel, size_t stride, size_t padding) const {
+    PyTensor conv1d(const PyTensor& kernel, size_t stride, size_t padding) const
+    {
         return PyTensor(SNEPPX_tensor_conv1d(ptr, kernel.ptr, stride, padding));
     }
 
-    PyTensor conv2d(const PyTensor& kernel, size_t stride_h, size_t stride_w, size_t pad_h, size_t pad_w) const {
+    PyTensor conv2d(const PyTensor& kernel, size_t stride_h, size_t stride_w, size_t pad_h, size_t pad_w) const
+    {
         return PyTensor(SNEPPX_tensor_conv2d(ptr, kernel.ptr, stride_h, stride_w, pad_h, pad_w));
     }
 
-    PyTensor pool1d(size_t kernel_size, size_t stride) const {
+    PyTensor pool1d(size_t kernel_size, size_t stride) const
+    {
         return PyTensor(SNEPPX_tensor_pool1d(ptr, kernel_size, stride));
     }
 
-    PyTensor pool2d(size_t kernel_h, size_t kernel_w, size_t stride_h, size_t stride_w) const {
+    PyTensor pool2d(size_t kernel_h, size_t kernel_w, size_t stride_h, size_t stride_w) const
+    {
         return PyTensor(SNEPPX_tensor_pool2d(ptr, kernel_h, kernel_w, stride_h, stride_w));
     }
 
-    PyTensor dropout(float rate, unsigned int seed) const {
+    PyTensor dropout(float rate, unsigned int seed) const
+    {
         return PyTensor(SNEPPX_tensor_dropout(ptr, rate, seed));
     }
 
-    PyTensor layer_norm(const PyTensor& gamma, const PyTensor& beta, float eps) const {
+    PyTensor layer_norm(const PyTensor& gamma, const PyTensor& beta, float eps) const
+    {
         return PyTensor(SNEPPX_tensor_layer_norm(ptr, gamma.ptr, beta.ptr, eps));
     }
 
-    PyTensor batch_norm(const PyTensor& gamma, const PyTensor& beta,
-                        const PyTensor& running_mean, const PyTensor& running_var, float eps) const {
-        return PyTensor(SNEPPX_tensor_batch_norm(ptr, gamma.ptr, beta.ptr,
-                                                running_mean.ptr, running_var.ptr, eps));
+    PyTensor batch_norm(const PyTensor& gamma, const PyTensor& beta, const PyTensor& running_mean,
+                        const PyTensor& running_var, float eps) const
+    {
+        return PyTensor(SNEPPX_tensor_batch_norm(ptr, gamma.ptr, beta.ptr, running_mean.ptr, running_var.ptr, eps));
     }
 
-    PyTensor group_norm(const PyTensor& gamma, const PyTensor& beta, size_t num_groups, float eps) const {
+    PyTensor group_norm(const PyTensor& gamma, const PyTensor& beta, size_t num_groups, float eps) const
+    {
         return PyTensor(SNEPPX_tensor_group_norm(ptr, gamma.ptr, beta.ptr, num_groups, eps));
     }
 
-    PyTensor instance_norm(const PyTensor& gamma, const PyTensor& beta, float eps) const {
+    PyTensor instance_norm(const PyTensor& gamma, const PyTensor& beta, float eps) const
+    {
         return PyTensor(SNEPPX_tensor_instance_norm(ptr, gamma.ptr, beta.ptr, eps));
     }
 
-    PyTensor embedding(const PyTensor& indices) const {
+    PyTensor embedding(const PyTensor& indices) const
+    {
         return PyTensor(SNEPPX_tensor_embedding(ptr, indices.ptr));
     }
 
     // ---- Loss ----
-    PyTensor mse_loss(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_mse_loss(ptr, target.ptr)); }
-    PyTensor cross_entropy(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_cross_entropy(ptr, target.ptr)); }
-    PyTensor mae_loss(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_mae_loss(ptr, target.ptr)); }
-    PyTensor nll_loss(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_nll_loss(ptr, target.ptr)); }
-    PyTensor kl_div(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_kl_div(ptr, target.ptr)); }
-    PyTensor binary_cross_entropy(const PyTensor& target) const { return PyTensor(SNEPPX_tensor_binary_cross_entropy(ptr, target.ptr)); }
+    PyTensor mse_loss(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_mse_loss(ptr, target.ptr));
+    }
+    PyTensor cross_entropy(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_cross_entropy(ptr, target.ptr));
+    }
+    PyTensor mae_loss(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_mae_loss(ptr, target.ptr));
+    }
+    PyTensor nll_loss(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_nll_loss(ptr, target.ptr));
+    }
+    PyTensor kl_div(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_kl_div(ptr, target.ptr));
+    }
+    PyTensor binary_cross_entropy(const PyTensor& target) const
+    {
+        return PyTensor(SNEPPX_tensor_binary_cross_entropy(ptr, target.ptr));
+    }
 
-    void print() const { SNEPPX_tensor_print(ptr); }
+    void print() const
+    {
+        SNEPPX_tensor_print(ptr);
+    }
 
-    std::string repr() const {
+    std::string repr() const
+    {
         std::string s = "Tensor(shape=[";
-        for (size_t i = 0; i < ptr->ndim; ++i) {
-            if (i) s += ", ";
+        for (size_t i = 0; i < ptr->ndim; ++i)
+        {
+            if (i)
+                s += ", ";
             s += std::to_string(ptr->shape[i]);
         }
         s += "], dtype=" + std::string(SNEPPX_tensor_dtype_name(ptr->dtype));
@@ -472,25 +828,65 @@ public:
     }
 
     // Python operators via trampolines
-    PyTensor __add__(const PyTensor& b) const { return add(b); }
-    PyTensor __sub__(const PyTensor& b) const { return sub(b); }
-    PyTensor __mul__(const PyTensor& b) const { return mul(b); }
-    PyTensor __truediv__(const PyTensor& b) const { return div(b); }
-    PyTensor __pow__(const PyTensor& b) const { return pow_(b); }
-    PyTensor __neg__() const { return neg(); }
+    PyTensor __add__(const PyTensor& b) const
+    {
+        return add(b);
+    }
+    PyTensor __sub__(const PyTensor& b) const
+    {
+        return sub(b);
+    }
+    PyTensor __mul__(const PyTensor& b) const
+    {
+        return mul(b);
+    }
+    PyTensor __truediv__(const PyTensor& b) const
+    {
+        return div(b);
+    }
+    PyTensor __pow__(const PyTensor& b) const
+    {
+        return pow_(b);
+    }
+    PyTensor __neg__() const
+    {
+        return neg();
+    }
 
-    PyTensor __eq__(const PyTensor& b) const { return eq(b); }
-    PyTensor __ne__(const PyTensor& b) const { return ne(b); }
-    PyTensor __lt__(const PyTensor& b) const { return lt(b); }
-    PyTensor __le__(const PyTensor& b) const { return le(b); }
-    PyTensor __gt__(const PyTensor& b) const { return gt(b); }
-    PyTensor __ge__(const PyTensor& b) const { return ge(b); }
+    PyTensor __eq__(const PyTensor& b) const
+    {
+        return eq(b);
+    }
+    PyTensor __ne__(const PyTensor& b) const
+    {
+        return ne(b);
+    }
+    PyTensor __lt__(const PyTensor& b) const
+    {
+        return lt(b);
+    }
+    PyTensor __le__(const PyTensor& b) const
+    {
+        return le(b);
+    }
+    PyTensor __gt__(const PyTensor& b) const
+    {
+        return gt(b);
+    }
+    PyTensor __ge__(const PyTensor& b) const
+    {
+        return ge(b);
+    }
 
     // Internal: expose raw pointer for C interop in Python
-    uintptr_t _to_tensor_ptr() const { return reinterpret_cast<uintptr_t>(ptr); }
+    uintptr_t _to_tensor_ptr() const
+    {
+        return reinterpret_cast<uintptr_t>(ptr);
+    }
 };
 
-static void init_tensor(py::module& m) {
+static void init_tensor(py::module& m)
+{
     py::class_<PyTensor>(m, "_Tensor")
         .def_static("create", &PyTensor::create)
         .def_static("empty", &PyTensor::empty)

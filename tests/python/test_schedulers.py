@@ -2,11 +2,20 @@
 
 import math
 from SneppX_ALG.interface_bindings.schedulers import (
-    LRScheduler, StepLR, ExponentialLR, CosineAnnealingLR,
-    CosineAnnealingWarmRestarts, ConstantLRWithWarmup,
-    LinearWarmupCosineDecay, PolynomialLR, OneCycleLR,
-    ReduceLROnPlateau, SequentialLR, ChainedScheduler,
-    TriStageLR, get_scheduler,
+    LRScheduler,
+    StepLR,
+    ExponentialLR,
+    CosineAnnealingLR,
+    CosineAnnealingWarmRestarts,
+    ConstantLRWithWarmup,
+    LinearWarmupCosineDecay,
+    PolynomialLR,
+    OneCycleLR,
+    ReduceLROnPlateau,
+    SequentialLR,
+    ChainedScheduler,
+    TriStageLR,
+    get_scheduler,
 )
 
 
@@ -80,7 +89,7 @@ def test_constant_lr_with_warmup():
     # Second: last_epoch=2 -> lr = 1.0 * (2+1)/3 = 1.0
     # Third: last_epoch=3 -> lr = 1.0 (constant)
     sched.step()
-    assert abs(opt.lr - 2.0/3) < 1e-6
+    assert abs(opt.lr - 2.0 / 3) < 1e-6
     sched.step()
     assert abs(opt.lr - 1.0) < 1e-6
     sched.step()
@@ -99,7 +108,7 @@ def test_polynomial_lr():
     opt = DummyOptimizer(1.0)
     sched = PolynomialLR(opt, power=2.0, total_steps=4)
     sched.step()
-    expected = 1.0 * (1 - 1/4) ** 2
+    expected = 1.0 * (1 - 1 / 4) ** 2
     assert abs(opt.lr - expected) < 1e-6
 
 
@@ -178,6 +187,7 @@ def test_get_scheduler_linear_warmup():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

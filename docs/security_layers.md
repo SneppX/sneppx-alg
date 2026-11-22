@@ -5,6 +5,7 @@
 **Purpose:** Experimental cryptographic primitives for signing, encryption, hashing, and key exchange. Presence of an implementation does not establish production readiness, constant-time behavior, certification, or independent review.
 
 **Components:**
+
 - Ed25519 (RFC 8032) signatures: historical documentation reports 304/306 vectors passing; current vector coverage must be reconciled before claiming full conformance
 - X25519 (RFC 7748) key exchange: Full DH exchange
 - ChaCha20-Poly1305 (RFC 8439) AEAD: encrypt/decrypt
@@ -36,6 +37,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Runtime memory protection against corruption, leakage, and exploitation.
 
 **Components:**
+
 - Guard pages: Inaccessible pages placed before/after heap allocations
 - Stack canaries: Random values on stack, checked before function return
 - ASLR: Random base addresses for heap/mmap allocations
@@ -55,6 +57,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Protect against reverse engineering and static analysis.
 
 **Components:**
+
 - Control flow flattening: switch-based dispatch replaces natural control flow
 - String encryption: XOR-based compile-time obfuscation with rotating keys
 - Instruction substitution: NAND-gate equivalent sequences
@@ -80,6 +83,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Runtime monitoring and anomaly detection for security events.
 
 **Components:**
+
 - Integrity monitoring: CRC32-based memory region verification
 - Container breakout detection: cgroup/namespace/mount inspection
 - Frequency analysis: unusual API call pattern detection
@@ -95,6 +99,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Protect network communication against attacks.
 
 **Components:**
+
 - DDoS mitigation: SYN flood detection, rate limiting, connection tracking, IP blacklisting
 - Transport security: TLS handshake padding, traffic analysis resistance
 - Identity management: certificate pinning, peer fingerprint verification
@@ -109,6 +114,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Protect model from adversarial inputs and data poisoning.
 
 **Components:**
+
 - Prompt injection detection: regex + embedded pattern scanning
 - Differential privacy: Laplace mechanism with configurable epsilon
 - Data poisoning defense: gradient outlier detection, loss spike monitoring
@@ -124,6 +130,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Secure key management and audit logging.
 
 **Components:**
+
 - Audit logging: structured JSON entries with severity, timestamps, source
 - Key vault: in-memory encrypted key store with PIN-protected access
 
@@ -136,6 +143,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Ensure software updates are authentic and tamper-proof.
 
 **Components:**
+
 - Container security: OCI layer verification, manifest integrity, image signing
 - Signed update bundles: Ed25519-signed payloads (signature over BLAKE3 update hash) with version rolling
 - Rollback protection: monotonic version/min-version checks preventing downgrade attacks
@@ -152,6 +160,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Mathematical guarantees of critical algorithm properties (bounded/pragmatic).
 
 **Components:**
+
 - Model checking: bounded state-space exploration for critical paths
 - Invariant verification: pre/post-condition checking on memory safety
 - LTL/safety checks: bounded safety-oriented handling (e.g., deadlock-oriented properties); unsupported/full LTL formulas are not claimed as verified
@@ -168,6 +177,7 @@ experimental until those gaps are closed and independently reviewed.
 **Purpose:** Proactive security assessment and vulnerability discovery.
 
 **Components:**
+
 - Network fuzzer: protocol-aware engine with mutation strategies
 - Self-audit: comprehensive internal consistency checks
 - Security report generation: structured output of audit findings
@@ -180,6 +190,7 @@ experimental until those gaps are closed and independently reviewed.
 ## Threat Model
 
 **Assumptions:**
+
 - Hardware is trusted (no side-channel attacks on CPU)
 - OS is trusted (no kernel-level compromise)
 - Network is untrusted
@@ -201,6 +212,6 @@ experimental until those gaps are closed and independently reviewed.
 | Gradient leakage | ARC gradient obfuscation |
 | Model inversion | ARC output verifier |
 
-**Reporting:** algoSNEPPX@gmail.com
+**Reporting:** <algoSNEPPX@gmail.com>
 
 See [security.md](security.md) for the security overview and [security/](https://github.com/SneppX/sneppx-alg/blob/main/security/) for threat modeling docs.

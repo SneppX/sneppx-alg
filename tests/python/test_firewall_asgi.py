@@ -17,7 +17,8 @@ def _scope(headers=None, client_ip="192.0.2.10", method="POST", path="/v1/data")
         "path": path,
         "raw_path": path.encode("ascii"),
         "query_string": b"",
-        "headers": headers or [(b"host", b"example.test"), (b"content-type", b"application/json")],
+        "headers": headers
+        or [(b"host", b"example.test"), (b"content-type", b"application/json")],
         "client": (client_ip, 12345),
         "server": ("example.test", 80),
     }
@@ -65,9 +66,7 @@ def test_asgi_middleware_allows_and_replays_request_body():
 
 def test_asgi_middleware_blocks_denylisted_source_before_handler():
     called = []
-    firewall = FirewallRunner(
-        FirewallConfig(network={"denylist": ["203.0.113.0/24"]})
-    )
+    firewall = FirewallRunner(FirewallConfig(network={"denylist": ["203.0.113.0/24"]}))
     security = SimpleNamespace(firewall=firewall, release_concurrent=lambda ip: None)
 
     async def downstream(scope, receive, send):
@@ -107,36 +106,48 @@ def test_asgi_middleware_rejects_oversized_stream_without_buffering_all_chunks()
 
 def test_asgi_middleware_rejects_conflicting_request_framing():
     called = []
-    security = SimpleNamespace(firewall=FirewallRunner(), release_concurrent=lambda ip: None)
+    security = SimpleNamespace(
+        firewall=FirewallRunner(), release_concurrent=lambda ip: None
+    )
 
     async def downstream(scope, receive, send):
         called.append(True)
 
     middleware = FirewallASGIMiddleware(downstream, lambda: security)
-    scope = _scope(headers=[
-        (b"host", b"example.test"),
-        (b"content-length", b"4"),
-        (b"transfer-encoding", b"chunked"),
-    ])
-    sent = _run(middleware, scope, [{"type": "http.request", "body": b"", "more_body": False}])
+    scope = _scope(
+        headers=[
+            (b"host", b"example.test"),
+            (b"content-length", b"4"),
+            (b"transfer-encoding", b"chunked"),
+        ]
+    )
+    sent = _run(
+        middleware, scope, [{"type": "http.request", "body": b"", "more_body": False}]
+    )
     assert not called
     assert sent[0]["status"] == 400
 
 
 def test_asgi_middleware_rejects_duplicate_content_length():
     called = []
-    security = SimpleNamespace(firewall=FirewallRunner(), release_concurrent=lambda ip: None)
+    security = SimpleNamespace(
+        firewall=FirewallRunner(), release_concurrent=lambda ip: None
+    )
 
     async def downstream(scope, receive, send):
         called.append(True)
 
     middleware = FirewallASGIMiddleware(downstream, lambda: security)
-    scope = _scope(headers=[
-        (b"host", b"example.test"),
-        (b"content-length", b"1"),
-        (b"content-length", b"2"),
-    ])
-    sent = _run(middleware, scope, [{"type": "http.request", "body": b"x", "more_body": False}])
+    scope = _scope(
+        headers=[
+            (b"host", b"example.test"),
+            (b"content-length", b"1"),
+            (b"content-length", b"2"),
+        ]
+    )
+    sent = _run(
+        middleware, scope, [{"type": "http.request", "body": b"x", "more_body": False}]
+    )
     assert not called
     assert sent[0]["status"] == 400
 
@@ -156,8 +167,10 @@ def test_asgi_middleware_releases_concurrency_when_handler_raises():
     async def invoke():
         async def receive():
             return {"type": "http.request", "body": b"", "more_body": False}
+
         async def send(message):
             pass
+
         await middleware(_scope(method="GET"), receive, send)
 
     try:
@@ -171,7 +184,9 @@ def test_asgi_middleware_releases_concurrency_when_handler_raises():
 
 def test_asgi_middleware_bypasses_non_http_scopes():
     called = []
-    security = SimpleNamespace(firewall=FirewallRunner(), release_concurrent=lambda ip: None)
+    security = SimpleNamespace(
+        firewall=FirewallRunner(), release_concurrent=lambda ip: None
+    )
 
     async def downstream(scope, receive, send):
         called.append(scope["type"])

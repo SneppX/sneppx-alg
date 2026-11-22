@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compatibility summary report built on the unified CTM scanner."""
+
 import argparse
 import json
 from pathlib import Path
@@ -62,7 +63,9 @@ def main():
         )
 
     if args.output:
-        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:
+        with Path(args.output).expanduser().open(
+            "w", encoding="utf-8", newline=""
+        ) as output_file:
             output_file.write(rendered)
     else:
         print(rendered, end="")

@@ -10,7 +10,9 @@ import sys
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import KyberKEM, X25519
 
@@ -30,7 +32,11 @@ def test_kyber_encaps_decaps_fails_closed():
 
 
 def test_kyber_modes_fail_closed():
-    for mode in [KyberKEM.MODE_ML_KEM_512, KyberKEM.MODE_ML_KEM_768, KyberKEM.MODE_ML_KEM_1024]:
+    for mode in [
+        KyberKEM.MODE_ML_KEM_512,
+        KyberKEM.MODE_ML_KEM_768,
+        KyberKEM.MODE_ML_KEM_1024,
+    ]:
         k = KyberKEM(mode)
         with pytest.raises(RuntimeError, match="ML-KEM"):
             k.keypair()
@@ -64,7 +70,9 @@ def test_x25519_scalar_mult():
 
 
 def test_x25519_fails_closed_without_backend(monkeypatch):
-    monkeypatch.setitem(sys.modules, "cryptography.hazmat.primitives.asymmetric.x25519", None)
+    monkeypatch.setitem(
+        sys.modules, "cryptography.hazmat.primitives.asymmetric.x25519", None
+    )
     with pytest.raises(RuntimeError, match="cryptography"):
         X25519.keypair()
     with pytest.raises(RuntimeError, match="cryptography"):

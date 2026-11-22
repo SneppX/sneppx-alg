@@ -17,9 +17,11 @@ Modern AI has a trust crisis:
 ## The Solution
 
 ### 1. Neuro-Symbolic Execution
+
 Combine neural network components (HSS, SER) with a symbolic program executor (NPE). The neural parts learn patterns; the symbolic parts verify logical correctness. The JIT pipeline optimizes hybrid programs at runtime.
 
 ### 2. Cryptographic Integrity
+
 Every inference produces a zero-knowledge proof that it was computed correctly. Users verify the proof without re-running the model. This is mathematically-guaranteed trust.
 
 - **Integrity proof**: "This output is the correct result of model M on input X"
@@ -27,6 +29,7 @@ Every inference produces a zero-knowledge proof that it was computed correctly. 
 - **Public verifiable**: Anyone can check the proof with open-source verifier code
 
 ### 3. Self-Protecting Execution
+
 The algorithm encrypts its own memory, obfuscates its control flow, detects debuggers, and virtualizes critical functions. Running SNEPPX on an untrusted host is safer than running any other model anywhere.
 
 - S0: All crypto primitives are constant-time, side-channel resistant
@@ -34,6 +37,7 @@ The algorithm encrypts its own memory, obfuscates its control flow, detects debu
 - S2: Control flow is flattened, strings are encrypted, handlers are scrambled
 
 ### 4. On-Device First
+
 The core algorithm is designed to run on phones and edge devices, not just datacenter GPUs.
 
 - Quantization-aware execution paths (INT8, FP8, AWQ, GPTQ)
@@ -42,6 +46,7 @@ The core algorithm is designed to run on phones and edge devices, not just datac
 - No cloud dependency for inference
 
 ### 5. Federated Contribution Protocol
+
 Open-source AI needs an incentive and verification model. SNEPPX lets contributors train shards locally and submit cryptographically signed gradient contributions via the NCCL sync bridge. The protocol verifies contributions without seeing private data, turning the community into a distributed training network.
 
 - Gradient contributions are signed with Ed25519 (S0)
@@ -49,6 +54,7 @@ Open-source AI needs an incentive and verification model. SNEPPX lets contributo
 - Contributors earn reputation scores based on verification
 
 ### 6. Formal Safety Guarantees
+
 The behavioral monitor (S3) enforces provable constraints at runtime -- not just "detect anomalies" but "prove the output satisfies safety bounds." Combined with the symbolic execution layer, every decision path is auditable.
 
 ## Design Principles

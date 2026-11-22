@@ -98,8 +98,8 @@ def _pack_tensor_record(r: TensorRecord) -> bytes:
 def _unpack_tensor_record(data: bytes, offset: int = 0) -> TensorRecord:
     vals = struct.unpack(TENSOR_RECORD_FMT, data[offset : offset + TENSOR_RECORD_SIZE])
     ndim = vals[8]
-    shape = tuple(vals[:min(ndim, 8)])
-    stride_values = tuple(vals[12:12 + min(ndim, 8)])
+    shape = tuple(vals[: min(ndim, 8)])
+    stride_values = tuple(vals[12 : 12 + min(ndim, 8)])
     strides = stride_values if any(stride_values) else ()
     return TensorRecord(
         shape=shape,
@@ -214,7 +214,9 @@ class CheckpointReader:
             if self.header.total_size != file_size:
                 raise ValueError("Checkpoint total_size does not match file size")
 
-            records_end = CHECKPOINT_HEADER_SIZE + self.header.num_tensors * TENSOR_RECORD_SIZE
+            records_end = (
+                CHECKPOINT_HEADER_SIZE + self.header.num_tensors * TENSOR_RECORD_SIZE
+            )
             if records_end > file_size:
                 raise ValueError("Checkpoint tensor record table exceeds file size")
 
@@ -222,8 +224,10 @@ class CheckpointReader:
                 if (
                     self.header.metadata_offset < records_end
                     or self.header.metadata_offset > file_size
-                    or self.header.metadata_size > file_size - self.header.metadata_offset
-                    or self.header.metadata_offset + self.header.metadata_size != file_size
+                    or self.header.metadata_size
+                    > file_size - self.header.metadata_offset
+                    or self.header.metadata_offset + self.header.metadata_size
+                    != file_size
                 ):
                     raise ValueError("Checkpoint metadata region is out of bounds")
                 data_limit = self.header.metadata_offset
@@ -302,7 +306,9 @@ class CheckpointReader:
         except Exception:
             signature = b""
         if not Ed25519.verify(self.trusted_public_key, body_digest, signature):
-            raise ValueError("Checkpoint signature verification failed; refusing to load")
+            raise ValueError(
+                "Checkpoint signature verification failed; refusing to load"
+            )
 
         self.verified = True
 

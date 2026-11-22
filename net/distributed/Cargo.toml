@@ -7,14 +7,27 @@ description = "Distributed training coordination for SNEPPX-ALG: node discovery,
 license = "MIT"
 repository = "https://github.com/SneppX/sneppx-alg"
 homepage = "https://github.com/SneppX/sneppx-alg"
-keywords = ["distributed-training", "all-reduce", "machine-learning", "neural-networks", "fault-tolerance"]
+keywords = [
+  "distributed-training",
+  "all-reduce",
+  "machine-learning",
+  "neural-networks",
+  "fault-tolerance",
+]
 categories = ["algorithms", "science::robotics", "network-programming"]
 
 [lib]
 crate-type = ["cdylib", "staticlib", "lib"]
 
 [dependencies]
-tokio = { version = "1", features = ["full", "rt-multi-thread", "sync", "net", "time", "io-util"] }
+tokio = { version = "1", features = [
+  "full",
+  "rt-multi-thread",
+  "sync",
+  "net",
+  "time",
+  "io-util",
+] }
 libc = "0.2"
 rand = "0.10"
 serde = { version = "1", features = ["derive"] }

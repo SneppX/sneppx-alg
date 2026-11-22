@@ -236,8 +236,22 @@ class TestFusion:
 
     def test_generator_version_number(self):
         assert isinstance(FUSABLE_OPS, set)
-        for op in ("add", "sub", "mul", "div", "relu", "sigmoid", "tanh",
-                   "gelu", "silu", "clip", "neg", "abs", "exp", "log"):
+        for op in (
+            "add",
+            "sub",
+            "mul",
+            "div",
+            "relu",
+            "sigmoid",
+            "tanh",
+            "gelu",
+            "silu",
+            "clip",
+            "neg",
+            "abs",
+            "exp",
+            "log",
+        ):
             assert op in FUSABLE_OPS
 
 
@@ -321,4 +335,7 @@ class TestCodegen:
         c = GraphNode.input_("c")
         out = (a * b + c).tanh()
         code = self._gen(out)
-        assert "const float* a, const float* b, const float* c, float* out, size_t n" in code
+        assert (
+            "const float* a, const float* b, const float* c, float* out, size_t n"
+            in code
+        )

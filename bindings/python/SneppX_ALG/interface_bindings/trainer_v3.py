@@ -455,7 +455,11 @@ class Trainer:
             per_sample = []
             for i in range(batch_size):
                 if targets is not None:
-                    if hasattr(targets, "shape") and len(targets.shape) > 0 and targets.shape[0] == batch_size:
+                    if (
+                        hasattr(targets, "shape")
+                        and len(targets.shape) > 0
+                        and targets.shape[0] == batch_size
+                    ):
                         t = targets[i : i + 1]
                     else:
                         t = targets

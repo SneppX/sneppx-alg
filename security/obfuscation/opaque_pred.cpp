@@ -1,6 +1,6 @@
 #include "opaque_predicate_generator.h"
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 
 /*
  * SNEPPX - Opaque Pred
@@ -17,16 +17,22 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
+SNEPPXOpaqueEngine::SNEPPXOpaqueEngine()
+    : rng(std::random_device{}()),
+      next_id(1)
+{
+}
 
-SNEPPXOpaqueEngine::SNEPPXOpaqueEngine() : rng(std::random_device{}()), next_id(1) {}
-
-void SNEPPXOpaqueEngine::set_seed(uint64_t seed) {
+void SNEPPXOpaqueEngine::set_seed(uint64_t seed)
+{
     rng.seed(seed);
 }
 
-SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_math_predicate() {
+SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_math_predicate()
+{
     SNEPPXOpaquePredicate pred;
     pred.id = next_id++;
     pred.always_true = true;
@@ -43,7 +49,8 @@ SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_math_predicate() {
     return pred;
 }
 
-SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_pointer_predicate() {
+SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_pointer_predicate()
+{
     SNEPPXOpaquePredicate pred;
     pred.id = next_id++;
     pred.always_true = true;
@@ -51,7 +58,8 @@ SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_pointer_predicate() {
     return pred;
 }
 
-SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_loop_predicate() {
+SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_loop_predicate()
+{
     SNEPPXOpaquePredicate pred;
     pred.id = next_id++;
     pred.always_true = true;
@@ -59,7 +67,8 @@ SNEPPXOpaquePredicate SNEPPXOpaqueEngine::generate_loop_predicate() {
     return pred;
 }
 
-void SNEPPXOpaqueEngine::insert_predicate(SNEPPXObfBlock& block, bool desired_outcome, SNEPPXOpaquePredicate& pred) {
+void SNEPPXOpaqueEngine::insert_predicate(SNEPPXObfBlock& block, bool desired_outcome, SNEPPXOpaquePredicate& pred)
+{
     SNEPPXObfInstruction cond_inst;
     cond_inst.type = SNEPPXObfInstType::CMP;
     cond_inst.result = "_opaque_" + std::to_string(pred.id);
@@ -79,15 +88,19 @@ void SNEPPXOpaqueEngine::insert_predicate(SNEPPXObfBlock& block, bool desired_ou
     block.instructions.push_back(opaque_marker);
 }
 
-void SNEPPXOpaqueEngine::insert_predicates_to_cfg(SNEPPXObfCFG& cfg) {
-    for (auto& pair : cfg.blocks) {
+void SNEPPXOpaqueEngine::insert_predicates_to_cfg(SNEPPXObfCFG& cfg)
+{
+    for (auto& pair : cfg.blocks)
+    {
         auto& block = pair.second;
-        if (block->is_entry || block->is_exit) continue;
+        if (block->is_entry || block->is_exit)
+            continue;
 
         auto pred = generate_math_predicate();
         insert_predicate(*block, true, pred);
 
-        if (rng() % 2 == 0) {
+        if (rng() % 2 == 0)
+        {
             auto pred2 = generate_pointer_predicate();
             insert_predicate(*block, true, pred2);
         }

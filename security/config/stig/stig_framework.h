@@ -24,14 +24,15 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_STIG_CATEGORY_I,
     SNEPPX_STIG_CATEGORY_II,
     SNEPPX_STIG_CATEGORY_III
 } SNEPPXSTIGCategory;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_STIG_STATUS_OPEN,
     SNEPPX_STIG_STATUS_NOT_A_FINDING,
     SNEPPX_STIG_STATUS_NOT_APPLICABLE,
@@ -39,7 +40,8 @@ typedef enum {
     SNEPPX_STIG_STATUS_ONGOING
 } SNEPPXSTIGStatus;
 
-typedef struct {
+typedef struct
+{
     uint8_t* vuln_id;
     size_t vuln_id_len;
     uint8_t* stig_id;
@@ -70,7 +72,8 @@ typedef struct {
     uint8_t automated_fix : 1;
 } SNEPPXSTIGVulnerability;
 
-typedef struct {
+typedef struct
+{
     uint8_t* benchmark_name;
     size_t benchmark_name_len;
     uint8_t* benchmark_version;
@@ -91,12 +94,14 @@ typedef struct {
     uint8_t imported : 1;
 } SNEPPXSTIGFramework;
 
-int snepx_stig_framework_init(SNEPPXSTIGFramework* stig, const uint8_t* name, size_t name_len, const uint8_t* version, size_t version_len);
+int snepx_stig_framework_init(SNEPPXSTIGFramework* stig, const uint8_t* name, size_t name_len, const uint8_t* version,
+                              size_t version_len);
 int snepx_stig_framework_add_vuln(SNEPPXSTIGFramework* stig, const SNEPPXSTIGVulnerability* vuln);
 int snepx_stig_framework_import_ckl(SNEPPXSTIGFramework* stig, const uint8_t* ckl_data, size_t ckl_len);
 int snepx_stig_framework_export_ckl(const SNEPPXSTIGFramework* stig, uint8_t* out, size_t* out_len);
 int snepx_stig_framework_audit(SNEPPXSTIGFramework* stig);
-int snepx_stig_framework_audit_vuln(SNEPPXSTIGFramework* stig, uint32_t vuln_index, uint8_t* finding_output, size_t finding_len);
+int snepx_stig_framework_audit_vuln(SNEPPXSTIGFramework* stig, uint32_t vuln_index, uint8_t* finding_output,
+                                    size_t finding_len);
 int snepx_stig_framework_apply_fix(SNEPPXSTIGFramework* stig, uint32_t vuln_index);
 int snepx_stig_framework_compute_stats(SNEPPXSTIGFramework* stig);
 int snepx_stig_framework_generate_poam(const SNEPPXSTIGFramework* stig, uint8_t* poam_out, size_t* poam_len);

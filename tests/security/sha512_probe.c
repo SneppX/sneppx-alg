@@ -1,30 +1,28 @@
+#include "cryptographic_random_generator.h"
+#include "ed25519_signature_verification.h"
+#include "sha512_hashing_implementation.h"
 #include <stdio.h>
 #include <string.h>
-#include "sha512_hashing_implementation.h"
-#include "ed25519_signature_verification.h"
-#include "cryptographic_random_generator.h"
 
-static const uint8_t RFC_SHA512_ABC[64] = {
-    0xdd,0xaf,0x35,0xa1,0x93,0x61,0x7a,0xba,
-    0xcc,0x41,0x73,0x49,0xae,0x20,0x41,0x31,
-    0x12,0xe6,0xfa,0x4e,0x89,0xa9,0x7e,0xa2,
-    0x0a,0x9e,0xee,0xe6,0x4b,0x55,0xd3,0x9a,
-    0x21,0x92,0x99,0x2a,0x27,0x4f,0xc1,0xa8,
-    0x36,0xba,0x3c,0x23,0xa3,0xfe,0xeb,0xbd,
-    0x45,0x4d,0x44,0x23,0x64,0x3c,0xe8,0x0e,
-    0x2a,0x9a,0xc9,0x4f,0xa5,0x4c,0xa4,0x9f
-};
+static const uint8_t RFC_SHA512_ABC[64] = {0xdd, 0xaf, 0x35, 0xa1, 0x93, 0x61, 0x7a, 0xba, 0xcc, 0x41, 0x73, 0x49, 0xae,
+                                           0x20, 0x41, 0x31, 0x12, 0xe6, 0xfa, 0x4e, 0x89, 0xa9, 0x7e, 0xa2, 0x0a, 0x9e,
+                                           0xee, 0xe6, 0x4b, 0x55, 0xd3, 0x9a, 0x21, 0x92, 0x99, 0x2a, 0x27, 0x4f, 0xc1,
+                                           0xa8, 0x36, 0xba, 0x3c, 0x23, 0xa3, 0xfe, 0xeb, 0xbd, 0x45, 0x4d, 0x44, 0x23,
+                                           0x64, 0x3c, 0xe8, 0x0e, 0x2a, 0x9a, 0xc9, 0x4f, 0xa5, 0x4c, 0xa4, 0x9f};
 
-static void print_hex(const char* label, const uint8_t* data, size_t len) {
+static void print_hex(const char* label, const uint8_t* data, size_t len)
+{
     printf("%s: ", label);
-    for (size_t i = 0; i < len; i++) printf("%02x", data[i]);
+    for (size_t i = 0; i < len; i++)
+        printf("%02x", data[i]);
     printf("\n");
 }
 
-int main(void) {
+int main(void)
+{
     /* Test 1: SHA-512("abc") == RFC 8032 vector */
     uint8_t digest[64];
-    SNEPPX_sha512((const uint8_t*)"abc", 3, digest);
+    SNEPPX_sha512((const uint8_t*) "abc", 3, digest);
     print_hex("SHA-512(abc)      ", digest, 64);
     print_hex("RFC SHA-512(abc)   ", RFC_SHA512_ABC, 64);
     int ok = memcmp(digest, RFC_SHA512_ABC, 64) == 0;
@@ -32,12 +30,12 @@ int main(void) {
 
     /* Test 2: Legacy SHA-512("abc") (the old buggy digest) */
     uint8_t legacy_digest[64];
-    SNEPPX_sha512((const uint8_t*)"abc", 3, legacy_digest);
+    SNEPPX_sha512((const uint8_t*) "abc", 3, legacy_digest);
     /* Use legacy finish to get the old buggy digest */
     {
         SNEPPXSHA512Context ctx;
         SNEPPX_sha512_init(&ctx);
-        SNEPPX_sha512_update(&ctx, (const uint8_t*)"abc", 3);
+        SNEPPX_sha512_update(&ctx, (const uint8_t*) "abc", 3);
         SNEPPX_sha512_legacy_finish(&ctx, legacy_digest);
     }
     print_hex("SHA-512 legacy(abc)", legacy_digest, 64);
@@ -46,7 +44,7 @@ int main(void) {
 
     /* Test 3: RFC SHA-512("hello") */
     uint8_t h2[64];
-    SNEPPX_sha512((const uint8_t*)"hello", 5, h2);
+    SNEPPX_sha512((const uint8_t*) "hello", 5, h2);
     print_hex("SHA-512(hello)     ", h2, 64);
 
     /* Test 4: Deterministic Ed25519 keypair from fixed seed */
@@ -59,7 +57,7 @@ int main(void) {
     /* Need base point init - use keypair_generate to get it */
     SNEPPXEd25519Keypair test_kp;
     SNEPPX_ed25519_keypair_generate(&test_kp);
-    (void)test_kp; /* just to trigger init_base_point */
+    (void) test_kp; /* just to trigger init_base_point */
 
     /* Use the sign/verify directly */
     /* We need to construct the keypair properly:
@@ -70,7 +68,8 @@ int main(void) {
      */
     /* For the probe, just generate a random keypair and sign */
     SNEPPXEd25519Keypair kp_gen;
-    if (SNEPPX_ed25519_keypair_generate(&kp_gen) != 0) {
+    if (SNEPPX_ed25519_keypair_generate(&kp_gen) != 0)
+    {
         printf("Keygen failed\n");
         return 1;
     }
@@ -80,7 +79,7 @@ int main(void) {
 
     /* Sign a message */
     const uint8_t msg[] = "SNEPPX Ed25519 RFC 8032 interop test";
-    size_t msglen = strlen((const char*)msg);
+    size_t msglen = strlen((const char*) msg);
     SNEPPXEd25519Signature sig;
     SNEPPX_ed25519_sign(&kp_gen, msg, msglen, &sig);
     print_hex("Signature (R)      ", sig.data, 32);

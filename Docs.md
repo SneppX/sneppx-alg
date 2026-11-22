@@ -77,13 +77,13 @@ hub.save_pretrained("llama-2-7b", "./my_model")
 int main() {
     // Create a tensor
     SNEPPX_Tensor* t = sneppx_tensor_create(2, 3);
-    
+
     // Fill with zeros
     sneppx_tensor_fill(t, 0.0f);
-    
+
     // Operations
     sneppx_tensor_print(t);
-    
+
     // Clean up
     sneppX_tensor_free(t);
     return 0;
@@ -138,12 +138,12 @@ use neural_core_algo::Tensor;
 fn main() {
     // Create a tensor
     let mut t = Tensor::new(vec![2, 3]);
-    
+
     // Use it
     let ones = Tensor::ones(vec![2, 3]);
-    
+
     println!("Shape: {:?}", ones.shape());
-    
+
     // Clean up happens automatically
 }
 ```
@@ -368,6 +368,7 @@ zero_optimizer = zero.ZeroOptimizer(model.parameters())
 ### Hardware Support
 
 #### Current
+
 - x86-64 (AVX2, AVX-512)
 - CUDA 12.x (NVIDIA GPUs, tensor-core GEMM, Flash Attention)
 - ROCm (AMD GPUs)
@@ -376,6 +377,7 @@ zero_optimizer = zero.ZeroOptimizer(model.parameters())
 - Metal, oneAPI — reference backends
 
 #### Planned
+
 - ARMv8-A (NEON)
 - NPU (Qualcomm, etc.)
 
@@ -451,10 +453,10 @@ fn main() {
     // Tensor operations
     let mut t = Tensor::zeros(vec![2, 3]);
     t.fill(1.0);
-    
+
     // Neural network
     let model = Linear::new(1024, 512);
-    
+
     // Training loop
     let mut trainer = TrainingLoop::new(model, 0.001);
     trainer.train(&t);
@@ -566,7 +568,7 @@ cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_CUDA=OFF
 
 If you run into issues:
 
-1. **Check the docs**: https://github.com/SneppX/sneppx-alg
+1. **Check the docs**: <https://github.com/SneppX/sneppx-alg>
 2. **Search issues**: Look for similar problems
 3. **Create a new issue**: Include:
    - Reproduction steps
@@ -615,7 +617,7 @@ MIT License
 
 ## Copyright
 
-© 2024-2026 Ammar [SNEPPX] - algosneppx@gmail.com
+© 2024-2026 Ammar [SNEPPX] - <algosneppx@gmail.com>
 
 ---
 

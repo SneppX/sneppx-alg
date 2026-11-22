@@ -69,7 +69,9 @@ def main() -> int:
         bindings_config.get("tool", {}).get("setuptools", {}).get("package-data")
     )
     if root_package_data != bindings_package_data:
-        errors.append("Setuptools package-data declarations differ between build roots.")
+        errors.append(
+            "Setuptools package-data declarations differ between build roots."
+        )
 
     root_where = (
         root_config.get("tool", {})

@@ -94,6 +94,7 @@ def test_mldsa_roundtrip_and_tamper_rejection(crypto):
 
 # ML-DSA keyGen KAT coverage -----------------------------------------------------
 
+
 def _keygen_vectors():
     vecs = kat.mldsa_keygen_vectors()
     assert len(vecs) == 3, "expected the vendored 3-vector ML-DSA keyGen set"
@@ -102,7 +103,9 @@ def _keygen_vectors():
 
 def _require_test_rng(crypto):
     if not hasattr(crypto, "random_set_seed"):
-        pytest.skip("deterministic ML-DSA keygen KATs require SNEPPX_ENABLE_TEST_RNG=ON")
+        pytest.skip(
+            "deterministic ML-DSA keygen KATs require SNEPPX_ENABLE_TEST_RNG=ON"
+        )
 
 
 def test_mldsa_keygen_all_vectors_run_without_crash(crypto):

@@ -1,8 +1,8 @@
 #include "automatic_differentiation_framework.h"
-#include "test_gtest.h"
 #include "polymorphic_memory_allocator.h"
-#include <stdio.h>
+#include "test_gtest.h"
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Autodiff Ops
@@ -19,18 +19,15 @@
  *
  */
 
-
-
-
-
-
-static void test_tape_create_destroy(void) {
+static void test_tape_create_destroy(void)
+{
     SNEPPXTape* tape = SNEPPX_tape_create();
     SX_ASSERT(tape != NULL, "tape created");
     SNEPPX_tape_destroy(tape);
 }
 
-static void test_variable_create(void) {
+static void test_variable_create(void)
+{
     size_t shape[] = {2, 3};
     SNEPPXTensor* t = SNEPPX_tensor_create(shape, 2, SNEPPX_FLOAT32);
     SX_ASSERT(t != NULL, "tensor created");
@@ -40,7 +37,8 @@ static void test_variable_create(void) {
     SNEPPX_variable_destroy(v);
 }
 
-static void test_tape_record_and_backward(void) {
+static void test_tape_record_and_backward(void)
+{
     SNEPPXTape* tape = SNEPPX_tape_create();
     size_t shape[] = {2, 2};
     SNEPPXTensor* a_t = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
@@ -65,7 +63,8 @@ static void test_tape_record_and_backward(void) {
     SNEPPX_tape_destroy(tape);
 }
 
-static void test_tape_ops(void) {
+static void test_tape_ops(void)
+{
     SNEPPXTape* tape = SNEPPX_tape_create();
     size_t shape[] = {3, 1};
     SNEPPXTensor* t = SNEPPX_tensor_ones(shape, 2, SNEPPX_FLOAT32);
@@ -90,8 +89,19 @@ static void test_tape_ops(void) {
     SNEPPX_tape_destroy(tape);
 }
 
-
-TEST(test_autodiff_ops, tape_create_destroy) { test_tape_create_destroy(); }
-TEST(test_autodiff_ops, variable_create) { test_variable_create(); }
-TEST(test_autodiff_ops, tape_record_and_backward) { test_tape_record_and_backward(); }
-TEST(test_autodiff_ops, tape_ops) { test_tape_ops(); }
+TEST(test_autodiff_ops, tape_create_destroy)
+{
+    test_tape_create_destroy();
+}
+TEST(test_autodiff_ops, variable_create)
+{
+    test_variable_create();
+}
+TEST(test_autodiff_ops, tape_record_and_backward)
+{
+    test_tape_record_and_backward();
+}
+TEST(test_autodiff_ops, tape_ops)
+{
+    test_tape_ops();
+}

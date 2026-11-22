@@ -51,14 +51,14 @@ class AuditAction(Enum):
     API_KEY_REVOKE = "api_key_revoke"
     SESSION_CREATE = "session_create"
     SESSION_REVOKE = "session_revoke"
-    
+
     # Authorization
     PERMISSION_GRANT = "permission_grant"
     PERMISSION_REVOKE = "permission_revoke"
     ROLE_ASSIGN = "role_assign"
     ROLE_REVOKE = "role_revoke"
     POLICY_CHANGE = "policy_change"
-    
+
     # Data access
     DATA_READ = "data_read"
     DATA_WRITE = "data_write"
@@ -67,13 +67,13 @@ class AuditAction(Enum):
     DATA_IMPORT = "data_import"
     BACKUP_CREATE = "backup_create"
     BACKUP_RESTORE = "backup_restore"
-    
+
     # Configuration
     CONFIG_CHANGE = "config_change"
     FEATURE_FLAG_CHANGE = "feature_flag_change"
     SECURITY_POLICY_CHANGE = "security_policy_change"
     FIREWALL_RULE_CHANGE = "firewall_rule_change"
-    
+
     # System
     SYSTEM_START = "system_start"
     SYSTEM_SHUTDOWN = "system_shutdown"
@@ -81,7 +81,7 @@ class AuditAction(Enum):
     SERVICE_START = "service_start"
     SERVICE_STOP = "service_stop"
     CRON_JOB_RUN = "cron_job_run"
-    
+
     # Security events
     INTRUSION_ATTEMPT = "intrusion_attempt"
     BRUTE_FORCE_DETECTED = "brute_force_detected"
@@ -89,14 +89,14 @@ class AuditAction(Enum):
     MALWARE_DETECTED = "malware_detected"
     VULNERABILITY_SCAN = "vulnerability_scan"
     PENETRATION_TEST = "penetration_test"
-    
+
     # Compliance
     AUDIT_LOG_ACCESS = "audit_log_access"
     COMPLIANCE_REPORT_GENERATED = "compliance_report_generated"
     DATA_RETENTION_APPLIED = "data_retention_applied"
     CONSENT_GRANTED = "consent_granted"
     CONSENT_REVOKED = "consent_revoked"
-    
+
     # Key management
     KEY_GENERATED = "key_generated"
     KEY_ROTATED = "key_rotated"
@@ -104,7 +104,7 @@ class AuditAction(Enum):
     KEY_ACCESSED = "key_accessed"
     CERTIFICATE_ISSUED = "certificate_issued"
     CERTIFICATE_REVOKED = "certificate_revoked"
-    
+
     # Container/Infrastructure
     CONTAINER_START = "container_start"
     CONTAINER_STOP = "container_stop"
@@ -113,7 +113,7 @@ class AuditAction(Enum):
     DEPLOYMENT_CREATE = "deployment_create"
     DEPLOYMENT_UPDATE = "deployment_update"
     DEPLOYMENT_DELETE = "deployment_delete"
-    
+
     # Custom
     CUSTOM = "custom"
 
@@ -129,6 +129,7 @@ class AuditResult(Enum):
 @dataclass
 class AuditEvent:
     """Structured audit event."""
+
     timestamp: float
     event_id: str
     action: AuditAction
@@ -150,11 +151,11 @@ class AuditEvent:
     # Tamper-evident fields
     prev_hash: str = ""
     hash: str = ""
-    
+
     def __post_init__(self):
         if not self.event_id:
             self.event_id = f"evt_{int(self.timestamp * 1000000)}_{hashlib.md5(str(self.timestamp).encode()).hexdigest()[:8]}"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "timestamp": self.timestamp,
@@ -178,7 +179,7 @@ class AuditEvent:
             "prev_hash": self.prev_hash,
             "hash": self.hash,
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AuditEvent":
         return cls(
@@ -207,11 +208,11 @@ class AuditEvent:
 
 class AuditBackend(ABC):
     """Abstract backend for audit log storage."""
-    
+
     @abstractmethod
     def write(self, event: AuditEvent) -> bool:
         pass
-    
+
     @abstractmethod
     def query(
         self,
@@ -223,7 +224,7 @@ class AuditBackend(ABC):
         limit: int = 1000,
     ) -> List[AuditEvent]:
         pass
-    
+
     @abstractmethod
     def close(self):
         pass
@@ -231,7 +232,7 @@ class AuditBackend(ABC):
 
 class FileAuditBackend(AuditBackend):
     """File-based audit log backend with rotation and compression."""
-    
+
     def __init__(
         self,
         log_dir: str = "/var/log/sneppx/audit",
@@ -253,55 +254,61 @@ class FileAuditBackend(AuditBackend):
         self._lock = threading.Lock()
         self._prev_hash = "0" * 64
         self._open_new_file()
-    
+
     def _open_new_file(self):
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         self._current_file = self.log_dir / f"audit_{timestamp}.log"
         if self._file_handle:
             self._file_handle.close()
         self._file_handle = open(self._current_file, "a", encoding="utf-8")
-        self._current_size = self._current_file.stat().st_size if self._current_file.exists() else 0
-    
+        self._current_size = (
+            self._current_file.stat().st_size if self._current_file.exists() else 0
+        )
+
     def _rotate_if_needed(self):
         if self._current_size >= self.max_file_size:
             self._rotate()
-    
+
     def _rotate(self):
         if self._file_handle:
             self._file_handle.close()
-        
+
         if self.compress and self._current_file and self._current_file.exists():
             compressed = self._current_file.with_suffix(".log.gz")
             with open(self._current_file, "rb") as f_in:
                 with gzip.open(compressed, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
             self._current_file.unlink()
-        
+
         # Clean old files
-        files = sorted(self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime)
+        files = sorted(
+            self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime
+        )
         while len(files) > self.max_files:
             files.pop(0).unlink()
-        
+
         self._open_new_file()
-    
+
     def write(self, event: AuditEvent) -> bool:
         with self._lock:
             event.prev_hash = self._prev_hash
             entry_data = event.to_dict()
             # Compute hash of entry without the hash field itself
             entry_data.pop("hash", None)
-            hash_input = json.dumps(entry_data, sort_keys=True, separators=(",", ":")).encode()
+            hash_input = json.dumps(
+                entry_data, sort_keys=True, separators=(",", ":")
+            ).encode()
             event.hash = hashlib.sha256(hash_input).hexdigest()
             self._prev_hash = event.hash
-            
+
             line = json.dumps(event.to_dict(), separators=(",", ":")) + "\n"
             self._file_handle.write(line)
             self._file_handle.flush()
             self._current_size += len(line)
-            
+
             self._rotate_if_needed()
             return True
-    
+
     def query(
         self,
         start_time: Optional[float] = None,
@@ -312,15 +319,19 @@ class FileAuditBackend(AuditBackend):
         limit: int = 1000,
     ) -> List[AuditEvent]:
         results = []
-        files = sorted(self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime, reverse=True)
-        
+        files = sorted(
+            self.log_dir.glob("audit_*.log*"),
+            key=lambda f: f.stat().st_mtime,
+            reverse=True,
+        )
+
         for file_path in files:
             if len(results) >= limit:
                 break
-            
+
             open_func = gzip.open if file_path.suffix == ".gz" else open
             mode = "rt" if file_path.suffix == ".gz" else "r"
-            
+
             try:
                 with open_func(file_path, mode, encoding="utf-8") as f:
                     for line in f:
@@ -329,7 +340,7 @@ class FileAuditBackend(AuditBackend):
                         try:
                             data = json.loads(line)
                             event = AuditEvent.from_dict(data)
-                            
+
                             # Filter
                             if start_time and event.timestamp < start_time:
                                 continue
@@ -341,15 +352,15 @@ class FileAuditBackend(AuditBackend):
                                 continue
                             if severity and event.severity != severity:
                                 continue
-                            
+
                             results.append(event)
                         except Exception:
                             continue
             except Exception:
                 continue
-        
+
         return results
-    
+
     def close(self):
         with self._lock:
             if self._file_handle:
@@ -359,9 +370,10 @@ class FileAuditBackend(AuditBackend):
 
 class SyslogAuditBackend(AuditBackend):
     """Syslog audit backend."""
-    
+
     def __init__(self, facility: int | None = None):
         import logging.handlers
+
         if facility is None:
             facility = logging.handlers.SysLogHandler.LOG_LOCAL0
         self.handler = logging.handlers.SysLogHandler(facility=facility)
@@ -370,26 +382,28 @@ class SyslogAuditBackend(AuditBackend):
         self.logger.addHandler(self.handler)
         self.logger.setLevel(logging.INFO)
         self._prev_hash = "0" * 64
-    
+
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(event.to_dict(), sort_keys=True, separators=(",", ":")).encode()
+        hash_input = json.dumps(
+            event.to_dict(), sort_keys=True, separators=(",", ":")
+        ).encode()
         event.hash = hashlib.sha256(hash_input).hexdigest()
         self._prev_hash = event.hash
-        
+
         self.logger.info(json.dumps(event.to_dict(), separators=(",", ":")))
         return True
-    
+
     def query(self, **kwargs) -> List[AuditEvent]:
         return []  # Syslog doesn't support query
-    
+
     def close(self):
         self.handler.close()
 
 
 class RemoteAPIAuditBackend(AuditBackend):
     """Remote API audit backend."""
-    
+
     def __init__(
         self,
         endpoint: str,
@@ -403,7 +417,7 @@ class RemoteAPIAuditBackend(AuditBackend):
         self.timeout = timeout
         self.batch_size = batch_size
         self.flush_interval = flush_interval
-        
+
         self._queue: queue.Queue = queue.Queue()
         self._buffer: List[AuditEvent] = []
         self._lock = threading.Lock()
@@ -411,24 +425,25 @@ class RemoteAPIAuditBackend(AuditBackend):
         self._running = True
         self._worker = threading.Thread(target=self._flush_worker, daemon=True)
         self._worker.start()
-    
+
     def _flush_worker(self):
         import urllib.request
         import urllib.error
-        
+
         while self._running:
             time.sleep(self.flush_interval)
             self._flush_batch()
-    
+
     def _flush_batch(self):
         with self._lock:
             if not self._buffer:
                 return
-            batch = self._buffer[:self.batch_size]
-            self._buffer = self._buffer[self.batch_size:]
-        
+            batch = self._buffer[: self.batch_size]
+            self._buffer = self._buffer[self.batch_size :]
+
         try:
             import urllib.request
+
             data = json.dumps([e.to_dict() for e in batch]).encode()
             req = urllib.request.Request(
                 self.endpoint,
@@ -443,22 +458,24 @@ class RemoteAPIAuditBackend(AuditBackend):
             # Re-queue on failure
             with self._lock:
                 self._buffer = batch + self._buffer
-    
+
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(event.to_dict(), sort_keys=True, separators=(",", ":")).encode()
+        hash_input = json.dumps(
+            event.to_dict(), sort_keys=True, separators=(",", ":")
+        ).encode()
         event.hash = hashlib.sha256(hash_input).hexdigest()
         self._prev_hash = event.hash
-        
+
         with self._lock:
             self._buffer.append(event)
             if len(self._buffer) >= self.batch_size:
                 self._flush_batch()
         return True
-    
+
     def query(self, **kwargs) -> List[AuditEvent]:
         return []
-    
+
     def close(self):
         self._running = False
         self._flush_batch()
@@ -466,7 +483,7 @@ class RemoteAPIAuditBackend(AuditBackend):
 
 class DatabaseAuditBackend(AuditBackend):
     """Database audit backend (SQLite/PostgreSQL/MySQL)."""
-    
+
     def __init__(
         self,
         connection_string: str,
@@ -477,9 +494,10 @@ class DatabaseAuditBackend(AuditBackend):
         self._conn = None
         self._prev_hash = "0" * 64
         self._init_db()
-    
+
     def _init_db(self):
         import sqlite3
+
         self._conn = sqlite3.connect(self.connection_string, check_same_thread=False)
         self._conn.execute(f"""
             CREATE TABLE IF NOT EXISTS {self.table_name} (
@@ -508,30 +526,33 @@ class DatabaseAuditBackend(AuditBackend):
             )
         """)
         self._conn.execute(f"""
-            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_timestamp 
+            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_timestamp
             ON {self.table_name}(timestamp)
         """)
         self._conn.execute(f"""
-            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_actor 
+            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_actor
             ON {self.table_name}(actor)
         """)
         self._conn.execute(f"""
-            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_action 
+            CREATE INDEX IF NOT EXISTS idx_{self.table_name}_action
             ON {self.table_name}(action)
         """)
         self._conn.commit()
-    
+
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(event.to_dict(), sort_keys=True, separators=(",", ":")).encode()
+        hash_input = json.dumps(
+            event.to_dict(), sort_keys=True, separators=(",", ":")
+        ).encode()
         event.hash = hashlib.sha256(hash_input).hexdigest()
         self._prev_hash = event.hash
-        
+
         import sqlite3
+
         try:
             self._conn.execute(
                 f"""
-                INSERT INTO {self.table_name} 
+                INSERT INTO {self.table_name}
                 (timestamp, event_id, action, severity, result, actor, actor_type,
                  resource, resource_type, resource_id, details, ip_address,
                  user_agent, session_id, trace_id, span_id, correlation_id,
@@ -559,7 +580,7 @@ class DatabaseAuditBackend(AuditBackend):
                     json.dumps(event.tags),
                     event.prev_hash,
                     event.hash,
-                )
+                ),
             )
             self._conn.commit()
             return True
@@ -567,12 +588,13 @@ class DatabaseAuditBackend(AuditBackend):
             return False
         except Exception:
             return False
-    
+
     def query(self, **kwargs) -> List[AuditEvent]:
         import sqlite3
+
         query = f"SELECT * FROM {self.table_name} WHERE 1=1"
         params = []
-        
+
         if kwargs.get("start_time"):
             query += " AND timestamp >= ?"
             params.append(kwargs["start_time"])
@@ -588,37 +610,39 @@ class DatabaseAuditBackend(AuditBackend):
         if kwargs.get("severity"):
             query += " AND severity = ?"
             params.append(kwargs["severity"].name)
-        
+
         query += " ORDER BY timestamp DESC LIMIT ?"
         params.append(kwargs.get("limit", 1000))
-        
+
         cursor = self._conn.execute(query, params)
         results = []
         for row in cursor.fetchall():
-            results.append(AuditEvent(
-                timestamp=row[1],
-                event_id=row[2],
-                action=AuditAction(row[3]),
-                severity=AuditSeverity[row[4]],
-                result=AuditResult[row[5]],
-                actor=row[6],
-                actor_type=row[7],
-                resource=row[8] or "",
-                resource_type=row[9] or "",
-                resource_id=row[10] or "",
-                details=json.loads(row[11]) if row[11] else {},
-                ip_address=row[12],
-                user_agent=row[13],
-                session_id=row[14],
-                trace_id=row[15],
-                span_id=row[16],
-                correlation_id=row[17],
-                tags=json.loads(row[18]) if row[18] else {},
-                prev_hash=row[19],
-                hash=row[20],
-            ))
+            results.append(
+                AuditEvent(
+                    timestamp=row[1],
+                    event_id=row[2],
+                    action=AuditAction(row[3]),
+                    severity=AuditSeverity[row[4]],
+                    result=AuditResult[row[5]],
+                    actor=row[6],
+                    actor_type=row[7],
+                    resource=row[8] or "",
+                    resource_type=row[9] or "",
+                    resource_id=row[10] or "",
+                    details=json.loads(row[11]) if row[11] else {},
+                    ip_address=row[12],
+                    user_agent=row[13],
+                    session_id=row[14],
+                    trace_id=row[15],
+                    span_id=row[16],
+                    correlation_id=row[17],
+                    tags=json.loads(row[18]) if row[18] else {},
+                    prev_hash=row[19],
+                    hash=row[20],
+                )
+            )
         return results
-    
+
     def close(self):
         if self._conn:
             self._conn.close()
@@ -626,7 +650,7 @@ class DatabaseAuditBackend(AuditBackend):
 
 class AuditLogger:
     """Main audit logger with multi-backend support."""
-    
+
     def __init__(
         self,
         backends: Optional[List[AuditBackend]] = None,
@@ -638,42 +662,42 @@ class AuditLogger:
         self.default_result = default_result
         self._lock = threading.RLock()
         self._event_counter = 0
-        
+
         # Event filters
         self._filters: List[Callable[[AuditEvent], bool]] = []
-        
+
         # Enrichment functions
         self._enrichers: List[Callable[[AuditEvent], None]] = []
-        
+
         # Context for implicit fields
         self._context: Dict[str, Any] = {}
-    
+
     def add_backend(self, backend: AuditBackend):
         with self._lock:
             self.backends.append(backend)
-    
+
     def remove_backend(self, backend: AuditBackend):
         with self._lock:
             if backend in self.backends:
                 self.backends.remove(backend)
-    
+
     def add_filter(self, filter_fn: Callable[[AuditEvent], bool]):
         """Add a filter function. Return False to drop event."""
         self._filters.append(filter_fn)
-    
+
     def add_enricher(self, enricher_fn: Callable[[AuditEvent], None]):
         """Add an enrichment function that modifies the event in-place."""
         self._enrichers.append(enricher_fn)
-    
+
     def set_context(self, **kwargs):
         """Set context fields that will be added to all events."""
         with self._lock:
             self._context.update(kwargs)
-    
+
     def clear_context(self):
         with self._lock:
             self._context.clear()
-    
+
     def log(
         self,
         action: AuditAction,
@@ -695,7 +719,7 @@ class AuditLogger:
     ) -> AuditEvent:
         """Log an audit event."""
         timestamp = time.time()
-        
+
         # Convert string action/result/severity to enums
         if isinstance(action, str):
             try:
@@ -712,11 +736,11 @@ class AuditLogger:
                 severity = AuditSeverity[severity.upper()]
             except (KeyError, AttributeError):
                 severity = AuditSeverity.INFO
-        
+
         with self._lock:
             self._event_counter += 1
             event_id = f"evt_{int(timestamp * 1000000)}_{self._event_counter:06d}"
-        
+
         event = AuditEvent(
             timestamp=timestamp,
             event_id=event_id,
@@ -737,20 +761,20 @@ class AuditLogger:
             correlation_id=correlation_id,
             tags=tags or {},
         )
-        
+
         # Apply context
         with self._lock:
             for key, value in self._context.items():
                 if key not in event.details:
                     event.details[key] = value
-        
+
         # Apply enrichers
         for enricher in self._enrichers:
             try:
                 enricher(event)
             except Exception:
                 pass
-        
+
         # Apply filters
         for filter_fn in self._filters:
             try:
@@ -758,16 +782,16 @@ class AuditLogger:
                     return event  # Dropped
             except Exception:
                 pass
-        
+
         # Write to all backends
         for backend in self.backends:
             try:
                 backend.write(event)
             except Exception:
                 pass  # Don't let backend failures block logging
-        
+
         return event
-    
+
     # Convenience methods
     def login(self, actor: str, success: bool, **kwargs) -> AuditEvent:
         return self.log(
@@ -777,7 +801,7 @@ class AuditLogger:
             severity=AuditSeverity.INFO if success else AuditSeverity.WARNING,
             **kwargs,
         )
-    
+
     def data_access(
         self,
         actor: str,
@@ -797,7 +821,7 @@ class AuditLogger:
             resource_id=resource_id,
             **kwargs,
         )
-    
+
     def config_change(
         self,
         actor: str,
@@ -818,7 +842,7 @@ class AuditLogger:
             },
             **kwargs,
         )
-    
+
     def security_event(
         self,
         action: AuditAction,
@@ -835,7 +859,7 @@ class AuditLogger:
             details=details,
             **kwargs,
         )
-    
+
     def query(
         self,
         start_time: Optional[float] = None,
@@ -860,7 +884,7 @@ class AuditLogger:
                 all_results.extend(results)
             except Exception:
                 pass
-        
+
         # Deduplicate and sort
         seen = set()
         unique = []
@@ -868,23 +892,23 @@ class AuditLogger:
             if event.event_id not in seen:
                 seen.add(event.event_id)
                 unique.append(event)
-        
+
         return unique[:limit]
-    
+
     def clear(self):
         """Clear all events from all backends."""
         for backend in self.backends:
             try:
-                if hasattr(backend, 'clear'):
+                if hasattr(backend, "clear"):
                     backend.clear()
             except Exception:
                 pass
-    
+
     def verify_chain(self) -> Tuple[bool, List[str]]:
         """Verify hash chain integrity across all backends."""
         errors = []
         all_events = self.query(limit=10000)
-        
+
         prev_hash = "0" * 64
         for event in sorted(all_events, key=lambda e: e.timestamp):  # Oldest first
             if event.prev_hash != prev_hash:
@@ -901,9 +925,9 @@ class AuditLogger:
             if computed != event.hash:
                 errors.append(f"Event hash mismatch for {event.event_id}")
             prev_hash = event.hash
-        
+
         return len(errors) == 0, errors
-    
+
     def export(
         self,
         format: str = "json",
@@ -912,26 +936,52 @@ class AuditLogger:
     ) -> str:
         """Export audit logs in specified format."""
         events = self.query(start_time=start_time, end_time=end_time, limit=100000)
-        
+
         if format == "json":
             return json.dumps([e.to_dict() for e in events], indent=2)
         elif format == "csv":
             import csv
             import io
+
             output = io.StringIO()
             writer = csv.writer(output)
-            writer.writerow([
-                "timestamp", "event_id", "action", "severity", "result",
-                "actor", "actor_type", "resource", "resource_type", "resource_id",
-                "ip_address", "session_id", "trace_id", "hash"
-            ])
+            writer.writerow(
+                [
+                    "timestamp",
+                    "event_id",
+                    "action",
+                    "severity",
+                    "result",
+                    "actor",
+                    "actor_type",
+                    "resource",
+                    "resource_type",
+                    "resource_id",
+                    "ip_address",
+                    "session_id",
+                    "trace_id",
+                    "hash",
+                ]
+            )
             for e in events:
-                writer.writerow([
-                    e.timestamp, e.event_id, e.action.value, e.severity.name,
-                    e.result.value, e.actor, e.actor_type, e.resource,
-                    e.resource_type, e.resource_id, e.ip_address or "",
-                    e.session_id or "", e.trace_id or "", e.hash
-                ])
+                writer.writerow(
+                    [
+                        e.timestamp,
+                        e.event_id,
+                        e.action.value,
+                        e.severity.name,
+                        e.result.value,
+                        e.actor,
+                        e.actor_type,
+                        e.resource,
+                        e.resource_type,
+                        e.resource_id,
+                        e.ip_address or "",
+                        e.session_id or "",
+                        e.trace_id or "",
+                        e.hash,
+                    ]
+                )
             return output.getvalue()
         elif format == "cef":  # Common Event Format
             lines = []
@@ -945,7 +995,7 @@ class AuditLogger:
             return "\n".join(lines)
         else:
             raise ValueError(f"Unknown format: {format}")
-    
+
     def close(self):
         for backend in self.backends:
             try:
@@ -982,7 +1032,7 @@ def get_audit_logger(
             backends.append(RemoteAPIAuditBackend(remote_endpoint, remote_api_key))
         if db_path:
             backends.append(DatabaseAuditBackend(db_path))
-        
+
         _global_audit_logger = AuditLogger(backends)
     return _global_audit_logger
 
@@ -1013,7 +1063,9 @@ def audit_data_access(
     success: bool,
     **kwargs,
 ) -> AuditEvent:
-    return get_audit_logger().data_access(actor, action, resource, resource_type, resource_id, success, **kwargs)
+    return get_audit_logger().data_access(
+        actor, action, resource, resource_type, resource_id, success, **kwargs
+    )
 
 
 def audit_config_change(
@@ -1024,7 +1076,9 @@ def audit_config_change(
     success: bool,
     **kwargs,
 ) -> AuditEvent:
-    return get_audit_logger().config_change(actor, resource, old_value, new_value, success, **kwargs)
+    return get_audit_logger().config_change(
+        actor, resource, old_value, new_value, success, **kwargs
+    )
 
 
 def audit_security_event(

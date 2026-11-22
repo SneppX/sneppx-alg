@@ -3,11 +3,11 @@
 #define SNEPPX_OBF_CFG_H
 
 #include <cstdint>
-#include <vector>
-#include <string>
-#include <unordered_map>
 #include <memory>
 #include <random>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 /*
  * SNEPPX - Control Flow Obfuscation
@@ -24,21 +24,47 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
-
-enum class SNEPPXObfInstType {
-    NOP, ADD, SUB, MUL, DIV, MOV, JMP, JZ, JNZ, CALL, RET, CMP, LEA, AND, OR, XOR, NEG, PUSH, POP, LOAD, STORE, NAND, NOT, SHL
+enum class SNEPPXObfInstType
+{
+    NOP,
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MOV,
+    JMP,
+    JZ,
+    JNZ,
+    CALL,
+    RET,
+    CMP,
+    LEA,
+    AND,
+    OR,
+    XOR,
+    NEG,
+    PUSH,
+    POP,
+    LOAD,
+    STORE,
+    NAND,
+    NOT,
+    SHL
 };
 
-struct SNEPPXObfInstruction {
+struct SNEPPXObfInstruction
+{
     SNEPPXObfInstType type;
     std::string operand1;
     std::string operand2;
     std::string result;
 };
 
-struct SNEPPXObfBlock {
+struct SNEPPXObfBlock
+{
     uint64_t id;
     std::vector<SNEPPXObfInstruction> instructions;
     std::vector<uint64_t> successors;
@@ -47,15 +73,22 @@ struct SNEPPXObfBlock {
     bool is_exit;
 };
 
-struct SNEPPXObfCFG {
+struct SNEPPXObfCFG
+{
     std::unordered_map<uint64_t, std::shared_ptr<SNEPPXObfBlock>> blocks;
     uint64_t entry_block;
     uint64_t exit_block;
     uint64_t next_id;
 
-    SNEPPXObfCFG() : entry_block(0), exit_block(0), next_id(1) {}
+    SNEPPXObfCFG()
+        : entry_block(0),
+          exit_block(0),
+          next_id(1)
+    {
+    }
 
-    uint64_t add_block() {
+    uint64_t add_block()
+    {
         uint64_t id = next_id++;
         auto block = std::make_shared<SNEPPXObfBlock>();
         block->id = id;
@@ -65,27 +98,31 @@ struct SNEPPXObfCFG {
         return id;
     }
 
-    void add_edge(uint64_t from, uint64_t to) {
-        if (blocks.count(from) && blocks.count(to)) {
+    void add_edge(uint64_t from, uint64_t to)
+    {
+        if (blocks.count(from) && blocks.count(to))
+        {
             blocks[from]->successors.push_back(to);
             blocks[to]->predecessors.push_back(from);
         }
     }
 };
 
-class SNEPPXObfCFGFlattener {
-public:
+class SNEPPXObfCFGFlattener
+{
+  public:
     SNEPPXObfCFGFlattener();
     void flatten(SNEPPXObfCFG& cfg);
     void unflatten(SNEPPXObfCFG& cfg);
     void set_seed(uint64_t seed);
 
-private:
+  private:
     std::mt19937_64 rng;
     uint64_t assign_random_state();
     void insert_junk_states(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map);
     void add_opaque_predicates(SNEPPXObfCFG& cfg, std::unordered_map<uint64_t, uint64_t>& state_map);
-    SNEPPXObfInstruction make_dispatcher_switch(uint64_t state_var, const std::unordered_map<uint64_t, uint64_t>& state_map);
+    SNEPPXObfInstruction make_dispatcher_switch(uint64_t state_var,
+                                                const std::unordered_map<uint64_t, uint64_t>& state_map);
 };
 
 } // namespace SNEPPX

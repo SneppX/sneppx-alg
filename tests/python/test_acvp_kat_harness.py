@@ -86,7 +86,6 @@ def test_mlkem_roundtrip_keygen_exception_is_not_a_skip():
     assert cleared == [True]
 
 
-
 def test_sha3_kat_runner_compares_expected_digest():
     vector = {"tcId": 7, "len": 8, "msg": "A5", "md": "010203"}
 

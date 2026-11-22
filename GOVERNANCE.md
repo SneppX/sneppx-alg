@@ -46,6 +46,7 @@ Core Maintainers (Tier 5) are trusted contributors who steward the project along
 ### Removal
 
 A Core Maintainer may be removed by:
+
 - BDFL decision (with explanation)
 - Voluntary resignation
 - Extended inactivity (≥ 12 months)

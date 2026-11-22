@@ -214,10 +214,13 @@ class DistributedSampler:
     ``drop_last=True`` to discard the incomplete tail instead.
     """
 
-    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True,
-                 drop_last=False):
+    def __init__(
+        self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False
+    ):
         self.dataset = dataset
-        self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
+        self.num_replicas = (
+            get_world_size() if num_replicas is None else int(num_replicas)
+        )
         self.rank = get_rank() if rank is None else int(rank)
         if self.num_replicas < 1:
             raise ValueError("num_replicas must be >= 1")
@@ -241,15 +244,16 @@ class DistributedSampler:
         if self.shuffle:
             np.random.RandomState(self.epoch).shuffle(indices)
         if self.drop_last:
-            indices = indices[:self.total_size]
+            indices = indices[: self.total_size]
         elif self.total_size > len(indices) and indices:
             padding = self.total_size - len(indices)
             repeats = (padding + len(indices) - 1) // len(indices)
             indices += (indices * repeats)[:padding]
-        return iter(indices[self.rank:self.total_size:self.num_replicas])
+        return iter(indices[self.rank : self.total_size : self.num_replicas])
 
     def __len__(self):
         return self.num_samples
+
 
 # ============================================================================
 # Distributed Data Parallel (DDP)

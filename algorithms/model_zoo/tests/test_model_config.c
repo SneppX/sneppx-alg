@@ -1,7 +1,7 @@
 #include "model_config.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 /*
  * SNEPPX - Test Model Config
@@ -18,18 +18,19 @@
  *
  */
 
-
-void test_create_destroy(void) {
+void test_create_destroy(void)
+{
     printf("test_create_destroy... ");
-    ModelConfig *cfg = model_config_create();
+    ModelConfig* cfg = model_config_create();
     assert(cfg != NULL);
     model_config_destroy(cfg);
     printf("PASS\n");
 }
 
-void test_llama2_7b(void) {
+void test_llama2_7b(void)
+{
     printf("test_llama2_7b... ");
-    ModelConfig *cfg = model_config_llama2_7b();
+    ModelConfig* cfg = model_config_llama2_7b();
     assert(cfg != NULL);
     assert(strcmp(cfg->name, "llama2-7b") == 0);
     assert(cfg->vocab_size == 32000);
@@ -44,9 +45,10 @@ void test_llama2_7b(void) {
     printf("PASS\n");
 }
 
-void test_mistral_7b(void) {
+void test_mistral_7b(void)
+{
     printf("test_mistral_7b... ");
-    ModelConfig *cfg = model_config_mistral_7b();
+    ModelConfig* cfg = model_config_mistral_7b();
     assert(cfg != NULL);
     assert(strcmp(cfg->name, "mistral-7b") == 0);
     assert(cfg->sliding_window == 4096);
@@ -55,15 +57,16 @@ void test_mistral_7b(void) {
     printf("PASS\n");
 }
 
-void test_json_roundtrip(void) {
+void test_json_roundtrip(void)
+{
     printf("test_json_roundtrip... ");
-    ModelConfig *cfg = model_config_llama2_7b();
-    char *json = model_config_to_json(cfg, 1);
+    ModelConfig* cfg = model_config_llama2_7b();
+    char* json = model_config_to_json(cfg, 1);
     assert(json != NULL);
     assert(strstr(json, "llama2-7b") != NULL);
     assert(strstr(json, "vocab_size") != NULL);
 
-    ModelConfig *cfg2 = model_config_from_json(json);
+    ModelConfig* cfg2 = model_config_from_json(json);
     assert(cfg2 != NULL);
     assert(strcmp(cfg2->name, "llama2-7b") == 0);
     assert(cfg2->vocab_size == 32000);
@@ -76,19 +79,20 @@ void test_json_roundtrip(void) {
     printf("PASS\n");
 }
 
-void test_file_io(void) {
+void test_file_io(void)
+{
     printf("test_file_io... ");
-    ModelConfig *cfg = model_config_llama2_7b();
+    ModelConfig* cfg = model_config_llama2_7b();
 #ifdef _WIN32
-    const char *path = "C:\\Temp\\test_model_config.json";
+    const char* path = "C:\\Temp\\test_model_config.json";
 #else
-    const char *path = "/tmp/test_model_config.json";
+    const char* path = "/tmp/test_model_config.json";
 #endif
 
     int rc = model_config_save(cfg, path);
     assert(rc == 0);
 
-    ModelConfig *cfg2 = model_config_load(path);
+    ModelConfig* cfg2 = model_config_load(path);
     assert(cfg2 != NULL);
     assert(strcmp(cfg2->name, "llama2-7b") == 0);
     assert(cfg2->vocab_size == 32000);
@@ -99,10 +103,11 @@ void test_file_io(void) {
     printf("PASS\n");
 }
 
-void test_validation(void) {
+void test_validation(void)
+{
     printf("test_validation... ");
-    ModelConfig *cfg = model_config_create();
-    char *error = NULL;
+    ModelConfig* cfg = model_config_create();
+    char* error = NULL;
 
     // Valid config
     cfg->name = strdup("test");
@@ -134,10 +139,11 @@ void test_validation(void) {
     printf("PASS\n");
 }
 
-void test_copy(void) {
+void test_copy(void)
+{
     printf("test_copy... ");
-    ModelConfig *cfg = model_config_llama2_7b();
-    ModelConfig *copy = model_config_copy(cfg);
+    ModelConfig* cfg = model_config_llama2_7b();
+    ModelConfig* copy = model_config_copy(cfg);
     assert(copy != NULL);
     assert(strcmp(copy->name, "llama2-7b") == 0);
     assert(copy->vocab_size == 32000);
@@ -153,10 +159,11 @@ void test_copy(void) {
     printf("PASS\n");
 }
 
-void test_merge(void) {
+void test_merge(void)
+{
     printf("test_merge... ");
-    ModelConfig *base = model_config_llama2_7b();
-    ModelConfig *override = model_config_create();
+    ModelConfig* base = model_config_llama2_7b();
+    ModelConfig* override = model_config_create();
     override->hidden_size = 5120;
     override->num_layers = 40;
 
@@ -171,7 +178,8 @@ void test_merge(void) {
     printf("PASS\n");
 }
 
-int main(void) {
+int main(void)
+{
     test_create_destroy();
     test_llama2_7b();
     test_mistral_7b();

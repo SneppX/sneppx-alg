@@ -90,12 +90,20 @@ class ModelChecker:
                 self._counterexamples[prop.name] = None
             return True
 
-        is_safety = ("always" in formula or "[]" in formula
-                     or formula.startswith("g ") or formula.startswith("g(")
-                     or formula == "g")
-        is_liveness = ("eventually" in formula or "<>" in formula
-                       or formula.startswith("f ") or formula.startswith("f(")
-                       or formula == "f")
+        is_safety = (
+            "always" in formula
+            or "[]" in formula
+            or formula.startswith("g ")
+            or formula.startswith("g(")
+            or formula == "g"
+        )
+        is_liveness = (
+            "eventually" in formula
+            or "<>" in formula
+            or formula.startswith("f ")
+            or formula.startswith("f(")
+            or formula == "f"
+        )
 
         visited: Set[str] = set()
         parent: Dict[str, Optional[str]] = {}
@@ -149,15 +157,19 @@ class ModelChecker:
         for keyword in ("eventually", "<>", "f "):
             idx = formula.find(keyword)
             if idx >= 0:
-                rest = formula[idx + len(keyword):].strip()
-                m = re.match(r'\(?\s*([a-zA-Z0-9_]+)', rest)
+                rest = formula[idx + len(keyword) :].strip()
+                m = re.match(r"\(?\s*([a-zA-Z0-9_]+)", rest)
                 if m:
                     return m.group(1)
         return None
 
     def check(self, property_name: Optional[str] = None) -> Dict[str, bool]:
         with self._lock:
-            props = [p for p in self._properties if property_name is None or p.name == property_name]
+            props = [
+                p
+                for p in self._properties
+                if property_name is None or p.name == property_name
+            ]
         for prop in props:
             result = self._check_property(prop)
             with self._lock:
@@ -171,7 +183,11 @@ class ModelChecker:
 
     def counterexample(self, property_name: str) -> Optional[List[str]]:
         with self._lock:
-            return list(self._counterexamples.get(property_name)) if self._counterexamples.get(property_name) is not None else None
+            return (
+                list(self._counterexamples.get(property_name))
+                if self._counterexamples.get(property_name) is not None
+                else None
+            )
 
 
 class StateGraph:

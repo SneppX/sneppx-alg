@@ -61,9 +61,7 @@ class ModelHasher:
         blob = b"".join(parts)
         if self.secret is None:
             return hashlib.sha256(blob).hexdigest()
-        return hmac.new(
-            self.secret.encode("utf-8"), blob, hashlib.sha256
-        ).hexdigest()
+        return hmac.new(self.secret.encode("utf-8"), blob, hashlib.sha256).hexdigest()
 
     def verify(self, model: Module, signature: str) -> bool:
         if self.secret is None:
@@ -187,9 +185,7 @@ class BackdoorWatermark:
     ) -> List[float]:
         """Train the model to map keys -> target_label. Returns loss history."""
         history: List[float] = []
-        labels = Tensor(
-            np.full(self.num_keys, self.target_label, dtype=np.int64)
-        )
+        labels = Tensor(np.full(self.num_keys, self.target_label, dtype=np.int64))
         for _ in range(epochs):
             optimizer.zero_grad()
             for p in model.parameters():

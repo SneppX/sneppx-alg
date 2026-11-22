@@ -25,8 +25,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_PHI_TYPE_DEMOGRAPHIC,
     SNEPPX_PHI_TYPE_MEDICAL_RECORD,
     SNEPPX_PHI_TYPE_LAB_RESULT,
@@ -37,7 +37,8 @@ typedef enum {
     SNEPPX_PHI_TYPE_GENETIC
 } SNEPPXPHIType;
 
-typedef struct {
+typedef struct
+{
     char phi_field_name[64];
     SNEPPXPHIType phi_type;
     uint8_t de_identified : 1;
@@ -50,7 +51,8 @@ typedef struct {
     char authorized_purpose[256];
 } SNEPPXPHIField;
 
-typedef struct {
+typedef struct
+{
     char patient_id[64];
     char provider_id[64];
     SNEPPXPHIField phi_fields[SNEPPX_HIPAA_MAX_PHI_FIELDS];
@@ -64,7 +66,8 @@ typedef struct {
     uint8_t accounting_disclosures : 1;
 } SNEPPXPHIRecord;
 
-typedef struct {
+typedef struct
+{
     uint8_t access_control_implemented : 1;
     uint8_t audit_controls_implemented : 1;
     uint8_t integrity_controls_implemented : 1;
@@ -79,7 +82,8 @@ typedef struct {
     uint8_t automatic_logoff_enforced : 1;
 } SNEPPXHIPAATechnicalSafeguards;
 
-typedef struct {
+typedef struct
+{
     uint8_t security_officer_assigned : 1;
     uint8_t workforce_trained : 1;
     uint8_t contingency_plan : 1;
@@ -94,7 +98,8 @@ typedef struct {
     char contingency_plan_path[256];
 } SNEPPXHIPAAAdminSafeguards;
 
-typedef struct {
+typedef struct
+{
     uint32_t breach_id;
     char patient_ids[1024];
     uint32_t affected_count;
@@ -126,7 +131,8 @@ int snepx_hipaa_breach_report(SNEPPXHIPAABreach* breach);
 int snepx_hipaa_breach_notify(SNEPPXHIPAABreach* breach, uint32_t days_delayed);
 int snepx_hipaa_breach_risk_assessment(SNEPPXHIPAABreach* breach, double* risk_score);
 
-int snepx_hipaa_baa_create(const char* business_associate, const char* covered_entity, uint8_t* baa_out, size_t* baa_len);
+int snepx_hipaa_baa_create(const char* business_associate, const char* covered_entity, uint8_t* baa_out,
+                           size_t* baa_len);
 int snepx_hipaa_baa_verify(const uint8_t* baa, size_t baa_len);
 int snepx_hipaa_audit_trail_export(uint64_t start_date, uint64_t end_date, uint8_t* audit_out, size_t* audit_len);
 

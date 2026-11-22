@@ -1,9 +1,9 @@
 #include "fractal_memory_orchestrator.h"
 #include "test_gtest.h"
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Fm Node
@@ -20,8 +20,8 @@
  *
  */
 
-
-static void test_node_create(void) {
+static void test_node_create(void)
+{
     SNEPPXFMNode* node = SNEPPX_fm_node_create(0, 16, 32);
     SX_ASSERT(node != NULL, "node not null");
     SX_ASSERT(node->node_id == 0, "id 0");
@@ -30,13 +30,19 @@ static void test_node_create(void) {
     SNEPPX_fm_node_destroy(node);
 }
 
-static void test_node_online(void) {
+static void test_node_online(void)
+{
     SNEPPXFMNode* node = SNEPPX_fm_node_create(1, 8, 16);
     SX_ASSERT(node->is_online == 1, "online true");
     SX_ASSERT(fabsf(node->trust_score - 1.0f) < 1e-5f, "trust 1.0");
     SNEPPX_fm_node_destroy(node);
 }
 
-
-TEST(test_fm_node, test_node_create) { test_node_create(); }
-TEST(test_fm_node, test_node_online) { test_node_online(); }
+TEST(test_fm_node, test_node_create)
+{
+    test_node_create();
+}
+TEST(test_fm_node, test_node_online)
+{
+    test_node_online();
+}

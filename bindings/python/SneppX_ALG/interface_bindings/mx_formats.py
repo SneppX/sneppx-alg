@@ -50,27 +50,21 @@ class MXFormatSpec:
     """Encoding parameters for one micro-scaling format."""
 
     name: str
-    bits: int          # bits per element
-    exp_bits: int      # element exponent bits
-    mant_bits: int     # element mantissa bits
-    bias: int          # exponent bias
-    block_size: int    # elements sharing one scale (0 = per-tensor)
-    max_exp: float     # max finite value with scale=1
+    bits: int  # bits per element
+    exp_bits: int  # element exponent bits
+    mant_bits: int  # element mantissa bits
+    bias: int  # exponent bias
+    block_size: int  # elements sharing one scale (0 = per-tensor)
+    max_exp: float  # max finite value with scale=1
 
 
 MX_FORMATS: dict = {
-    MXFormat.MXFP8_E4M3: MXFormatSpec(
-        "mxfp8_e4m3", 8, 4, 3, 7, 32, 448.0),
-    MXFormat.MXFP8_E5M2: MXFormatSpec(
-        "mxfp8_e5m2", 8, 5, 2, 15, 32, 57344.0),
-    MXFormat.MXFP6_E3M2: MXFormatSpec(
-        "mxfp6_e3m2", 6, 3, 2, 3, 32, 28.0),
-    MXFormat.MXFP6_E2M3: MXFormatSpec(
-        "mxfp6_e2m3", 6, 2, 3, 1, 32, 14.0),
-    MXFormat.MXFP4_E2M1: MXFormatSpec(
-        "mxfp4_e2m1", 4, 2, 1, 1, 32, 6.0),
-    MXFormat.NVFP4_E2M1: MXFormatSpec(
-        "nvfp4_e2m1", 4, 2, 1, 1, 0, 6.0),
+    MXFormat.MXFP8_E4M3: MXFormatSpec("mxfp8_e4m3", 8, 4, 3, 7, 32, 448.0),
+    MXFormat.MXFP8_E5M2: MXFormatSpec("mxfp8_e5m2", 8, 5, 2, 15, 32, 57344.0),
+    MXFormat.MXFP6_E3M2: MXFormatSpec("mxfp6_e3m2", 6, 3, 2, 3, 32, 28.0),
+    MXFormat.MXFP6_E2M3: MXFormatSpec("mxfp6_e2m3", 6, 2, 3, 1, 32, 14.0),
+    MXFormat.MXFP4_E2M1: MXFormatSpec("mxfp4_e2m1", 4, 2, 1, 1, 32, 6.0),
+    MXFormat.NVFP4_E2M1: MXFormatSpec("nvfp4_e2m1", 4, 2, 1, 1, 0, 6.0),
 }
 
 
@@ -84,7 +78,7 @@ def _decode_elements(raw: np.ndarray, spec: MXFormatSpec) -> np.ndarray:
     flat = np.unpackbits(raw, bitorder="little").astype(np.int32)[: n * bits]
     codes = np.zeros(n, dtype=np.int32)
     for b in range(bits):
-        codes |= (flat[b::bits] << b)
+        codes |= flat[b::bits] << b
     sign = (codes >> (bits - 1)) & 1
     exp = (codes >> spec.mant_bits) & ((1 << spec.exp_bits) - 1)
     mant = codes & ((1 << spec.mant_bits) - 1)
@@ -107,13 +101,20 @@ def _encode_elements(arr: np.ndarray, spec: MXFormatSpec) -> np.ndarray:
     exp = np.clip(exp, -spec.bias, (1 << spec.exp_bits) - 1 - spec.bias)
     subnormal = exp <= -spec.bias
     exp_field = np.where(
-        subnormal, 0, np.clip(exp + spec.bias, 1, (1 << spec.exp_bits) - 1))
+        subnormal, 0, np.clip(exp + spec.bias, 1, (1 << spec.exp_bits) - 1)
+    )
     mant = np.where(
         subnormal,
-        np.clip(np.round(mag * 2.0 ** (spec.mant_bits + spec.bias - 1)),
-                0, (1 << spec.mant_bits) - 1),
-        np.clip(np.round((mag / (2.0 ** exp) - 1.0) * (1 << spec.mant_bits)),
-                0, (1 << spec.mant_bits) - 1),
+        np.clip(
+            np.round(mag * 2.0 ** (spec.mant_bits + spec.bias - 1)),
+            0,
+            (1 << spec.mant_bits) - 1,
+        ),
+        np.clip(
+            np.round((mag / (2.0**exp) - 1.0) * (1 << spec.mant_bits)),
+            0,
+            (1 << spec.mant_bits) - 1,
+        ),
     ).astype(np.int64)
     codes = (sign << (bits - 1)) | (exp_field << spec.mant_bits) | mant
 
@@ -144,9 +145,12 @@ def _scale_exp(peak: float, spec: MXFormatSpec) -> int:
     return int(np.ceil(np.log2(peak) - np.log2(_max_element(spec))))
 
 
-def quantize_mx(arr, format: str = MXFormat.MXFP4_E2M1,
-                block_size: Optional[int] = None,
-                block_axis: int = -1) -> Tuple[np.ndarray, np.ndarray]:
+def quantize_mx(
+    arr,
+    format: str = MXFormat.MXFP4_E2M1,
+    block_size: Optional[int] = None,
+    block_axis: int = -1,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Quantize a tensor into a micro-scaling format.
 
     Args:
@@ -168,7 +172,7 @@ def quantize_mx(arr, format: str = MXFormat.MXFP4_E2M1,
         peak = float(np.abs(arr).max()) if arr.size else 1.0
         peak = peak if peak > 0 else 1.0
         scale_exp = _scale_exp(peak, spec)
-        scaled = arr / (2.0 ** scale_exp)
+        scaled = arr / (2.0**scale_exp)
         packed = _encode_elements(scaled.reshape(-1), spec)
         return packed, np.array([scale_exp], dtype=np.int8)
 
@@ -184,8 +188,7 @@ def quantize_mx(arr, format: str = MXFormat.MXFP4_E2M1,
     blocked = moved.reshape(moved.shape[:-1] + (nblocks, bs))
     peak = np.abs(blocked).max(axis=-1)
     peak = np.where(peak <= 0, 1.0, peak)
-    scale_exp = np.ceil(
-        np.log2(peak) - np.log2(_max_element(spec))).astype(np.int64)
+    scale_exp = np.ceil(np.log2(peak) - np.log2(_max_element(spec))).astype(np.int64)
     scaled = blocked / (2.0 ** scale_exp[..., None])
     packed = _encode_elements(scaled.reshape(-1), spec)
 
@@ -194,10 +197,14 @@ def quantize_mx(arr, format: str = MXFormat.MXFP4_E2M1,
     return packed, scales
 
 
-def dequantize_mx(packed: np.ndarray, scales: np.ndarray,
-                  shape, format: str = MXFormat.MXFP4_E2M1,
-                  block_size: Optional[int] = None,
-                  block_axis: int = -1) -> np.ndarray:
+def dequantize_mx(
+    packed: np.ndarray,
+    scales: np.ndarray,
+    shape,
+    format: str = MXFormat.MXFP4_E2M1,
+    block_size: Optional[int] = None,
+    block_axis: int = -1,
+) -> np.ndarray:
     """Dequantize a packed micro-scaling tensor back to float32."""
     spec = MX_FORMATS[format]
     bs = block_size or spec.block_size
@@ -230,7 +237,7 @@ def mx_error(original, reconstructed, metric: str = "mse") -> float:
     elif metric == "mae":
         return float(np.mean(np.abs(orig - recon)))
     elif metric == "snr":
-        signal = float(np.mean(orig ** 2))
+        signal = float(np.mean(orig**2))
         noise = float(np.mean((orig - recon) ** 2))
         return float(10 * np.log10(signal / noise)) if noise > 0 else float("inf")
     return 0.0

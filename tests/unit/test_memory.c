@@ -1,8 +1,8 @@
 #include "polymorphic_memory_allocator.h"
 #include "test_gtest.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Memory
@@ -19,13 +19,10 @@
  *
  */
 
-
-
-
-
 /* ── Pool init / destroy ───────────────────────────────────── */
 
-static void test_pool_init_destroy(void) {
+static void test_pool_init_destroy(void)
+{
     int ret = SNEPPX_mem_pool_init();
     SX_ASSERT(ret == 0, "pool init returns 0");
     /* idempotent: calling again should succeed */
@@ -36,7 +33,8 @@ static void test_pool_init_destroy(void) {
 
 /* ── TLS cache init / destroy ──────────────────────────────── */
 
-static void test_tls_cache_init_destroy(void) {
+static void test_tls_cache_init_destroy(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
     /* second call is a no-op */
@@ -47,18 +45,17 @@ static void test_tls_cache_init_destroy(void) {
 
 /* ── Basic alloc / free for every size class ──────────────── */
 
-static void test_alloc_free_each_class(void) {
+static void test_alloc_free_each_class(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
 
-    static const size_t sizes[] = {
-        1, 16, 17, 32, 48, 64, 96, 128, 192, 256,
-        384, 512, 768, 1024, 1536, 2048, 3072, 4096,
-        6144, 8192
-    };
+    static const size_t sizes[] = {1,   16,  17,  32,   48,   64,   96,   128,  192,  256,
+                                   384, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192};
     size_t nsizes = sizeof(sizes) / sizeof(sizes[0]);
 
-    for (size_t i = 0; i < nsizes; i++) {
+    for (size_t i = 0; i < nsizes; i++)
+    {
         void* p = SNEPPX_pool_alloc(sizes[i]);
         SX_ASSERT(p != NULL, "alloc returns non-NULL");
         memset(p, 0xAB, sizes[i]);
@@ -71,14 +68,16 @@ static void test_alloc_free_each_class(void) {
 
 /* ── Allocated memory is zeroed ────────────────────────────── */
 
-static void test_alloc_zeroed(void) {
+static void test_alloc_zeroed(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
 
     void* p = SNEPPX_pool_alloc(128);
     SX_ASSERT(p != NULL, "alloc succeeds");
-    unsigned char* bytes = (unsigned char*)p;
-    for (int i = 0; i < 128; i++) {
+    unsigned char* bytes = (unsigned char*) p;
+    for (int i = 0; i < 128; i++)
+    {
         SX_ASSERT(bytes[i] == 0, "all bytes zeroed");
     }
     SNEPPX_pool_free(p, 128);
@@ -89,22 +88,28 @@ static void test_alloc_zeroed(void) {
 
 /* ── Many iterations (stress) ──────────────────────────────── */
 
-static void test_stress_alloc_free(void) {
+static void test_stress_alloc_free(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
 
-    enum { N = 1000 };
-    void** ptrs = (void**)malloc(N * sizeof(void*));
+    enum
+    {
+        N = 1000
+    };
+    void** ptrs = (void**) malloc(N * sizeof(void*));
     SX_ASSERT(ptrs != NULL, "stress malloc");
 
-    for (int i = 0; i < N; i++) {
-        size_t sz = (size_t)(1 + (rand() % 4096));
+    for (int i = 0; i < N; i++)
+    {
+        size_t sz = (size_t) (1 + (rand() % 4096));
         ptrs[i] = SNEPPX_pool_alloc(sz);
         SX_ASSERT(ptrs[i] != NULL, "stress alloc");
-        memset(ptrs[i], (unsigned char)(i & 0xFF), sz);
+        memset(ptrs[i], (unsigned char) (i & 0xFF), sz);
     }
-    for (int i = 0; i < N; i++) {
-        SNEPPX_pool_free(ptrs[i], (size_t)(1 + (rand() % 4096)));
+    for (int i = 0; i < N; i++)
+    {
+        SNEPPX_pool_free(ptrs[i], (size_t) (1 + (rand() % 4096)));
     }
     free(ptrs);
 
@@ -114,11 +119,12 @@ static void test_stress_alloc_free(void) {
 
 /* ── Size class behavior tested through public API ─────────── */
 
-static void test_size_class_behavior(void) {
+static void test_size_class_behavior(void)
+{
     /* Allocate at each class boundary and verify success */
-    static const size_t sizes[] = {1, 16, 32, 48, 64, 128, 256, 512,
-                                   1024, 2048, 4096, 8192, 8193};
-    for (size_t i = 0; i < 13; i++) {
+    static const size_t sizes[] = {1, 16, 32, 48, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 8193};
+    for (size_t i = 0; i < 13; i++)
+    {
         void* p = SNEPPX_pool_alloc(sizes[i]);
         SX_ASSERT(p != NULL, "alloc at class boundary");
         SNEPPX_pool_free(p, sizes[i]);
@@ -127,7 +133,8 @@ static void test_size_class_behavior(void) {
 
 /* ── Large alloc falls back to SNEPPX_malloc ─────────────────── */
 
-static void test_large_alloc_fallback(void) {
+static void test_large_alloc_fallback(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
 
@@ -143,7 +150,8 @@ static void test_large_alloc_fallback(void) {
 
 /* ── Null safety for pool_free ─────────────────────────────── */
 
-static void test_null_free(void) {
+static void test_null_free(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_pool_free(NULL, 0);   /* must not crash */
     SNEPPX_pool_free(NULL, 128); /* must not crash */
@@ -152,7 +160,8 @@ static void test_null_free(void) {
 
 /* ── Stats sanity ──────────────────────────────────────────── */
 
-static void test_stats_sanity(void) {
+static void test_stats_sanity(void)
+{
     SNEPPX_mem_pool_init();
     SNEPPX_tls_cache_init();
 
@@ -176,7 +185,8 @@ static void test_stats_sanity(void) {
 
 /* ── Multiple pool allocs without TLS ──────────────────────── */
 
-static void test_alloc_without_tls(void) {
+static void test_alloc_without_tls(void)
+{
     SNEPPX_mem_pool_init();
     /* Do NOT init TLS cache — should still work via global stack */
 
@@ -194,8 +204,10 @@ static void test_alloc_without_tls(void) {
 
 /* ── Sequential destroy and re-init ────────────────────────── */
 
-static void test_reinit(void) {
-    for (int round = 0; round < 5; round++) {
+static void test_reinit(void)
+{
+    for (int round = 0; round < 5; round++)
+    {
         int ret = SNEPPX_mem_pool_init();
         SX_ASSERT(ret == 0, "re-init succeeds");
         SNEPPX_tls_cache_init();
@@ -209,7 +221,8 @@ static void test_reinit(void) {
 
 /* ── Mix of core and pool allocators ───────────────────────── */
 
-static void test_mixed_allocators(void) {
+static void test_mixed_allocators(void)
+{
     SNEPPX_mem_pool_init();
 
     void* a = SNEPPX_malloc(256, 64);
@@ -228,16 +241,51 @@ static void test_mixed_allocators(void) {
 
 /* ───────────────────────────────────────────────────────────── */
 
-
-TEST(test_memory, pool_init_destroy) { test_pool_init_destroy(); }
-TEST(test_memory, tls_cache_init_destroy) { test_tls_cache_init_destroy(); }
-TEST(test_memory, alloc_free_each_class) { test_alloc_free_each_class(); }
-TEST(test_memory, alloc_zeroed) { test_alloc_zeroed(); }
-TEST(test_memory, stress_alloc_free) { test_stress_alloc_free(); }
-TEST(test_memory, size_class_behavior) { test_size_class_behavior(); }
-TEST(test_memory, large_alloc_fallback) { test_large_alloc_fallback(); }
-TEST(test_memory, null_free) { test_null_free(); }
-TEST(test_memory, stats_sanity) { test_stats_sanity(); }
-TEST(test_memory, alloc_without_tls) { test_alloc_without_tls(); }
-TEST(test_memory, reinit) { test_reinit(); }
-TEST(test_memory, mixed_allocators) { test_mixed_allocators(); }
+TEST(test_memory, pool_init_destroy)
+{
+    test_pool_init_destroy();
+}
+TEST(test_memory, tls_cache_init_destroy)
+{
+    test_tls_cache_init_destroy();
+}
+TEST(test_memory, alloc_free_each_class)
+{
+    test_alloc_free_each_class();
+}
+TEST(test_memory, alloc_zeroed)
+{
+    test_alloc_zeroed();
+}
+TEST(test_memory, stress_alloc_free)
+{
+    test_stress_alloc_free();
+}
+TEST(test_memory, size_class_behavior)
+{
+    test_size_class_behavior();
+}
+TEST(test_memory, large_alloc_fallback)
+{
+    test_large_alloc_fallback();
+}
+TEST(test_memory, null_free)
+{
+    test_null_free();
+}
+TEST(test_memory, stats_sanity)
+{
+    test_stats_sanity();
+}
+TEST(test_memory, alloc_without_tls)
+{
+    test_alloc_without_tls();
+}
+TEST(test_memory, reinit)
+{
+    test_reinit();
+}
+TEST(test_memory, mixed_allocators)
+{
+    test_mixed_allocators();
+}

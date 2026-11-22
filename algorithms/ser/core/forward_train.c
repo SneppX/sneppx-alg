@@ -1,8 +1,8 @@
-#include "sparse_expert_routing.h"
 #include "automatic_differentiation_framework.h"
 #include "polymorphic_memory_allocator.h"
-#include <string.h>
+#include "sparse_expert_routing.h"
 #include <stdlib.h>
+#include <string.h>
 /*
  * SNEPPX - SER Layer Forward (Training)
  *
@@ -19,8 +19,6 @@
  *   None (internal algorithm).
  */
 
-
-
 /**
  * @brief Perform Ser Build Train Graph.
  *
@@ -32,11 +30,11 @@
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
-                               SNEPPXVariable* input_var,
-                               SNEPPXVariable** weight_vars, size_t num_weights,
-                               SNEPPXVariable** output_var) {
-    if (!model || !tape || !input_var || !output_var) return -1;
+int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape, SNEPPXVariable* input_var,
+                                 SNEPPXVariable** weight_vars, size_t num_weights, SNEPPXVariable** output_var)
+{
+    if (!model || !tape || !input_var || !output_var)
+        return -1;
 
     size_t B = input_var->data->shape[0];
     size_t D = model->config.input_dim;
@@ -47,29 +45,33 @@ int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
     size_t wp_layer = 2 + gater_extra + 4 * N;
     size_t total_layers = model->num_layers;
 
-    if (num_weights < total_layers * wp_layer) return -1;
+    if (num_weights < total_layers * wp_layer)
+        return -1;
 
     size_t wi = 0;
     SNEPPXVariable* cur_input = input_var;
     size_t cur_dim = D;
 
-    for (size_t l = 0; l < total_layers; l++) {
+    for (size_t l = 0; l < total_layers; l++)
+    {
         SNEPPXVariable* router = weight_vars[wi++];
         SNEPPXVariable* router_bias = weight_vars[wi++];
 
-        SNEPPXVariable* gw1 = NULL, *gb1 = NULL, *gw2 = NULL, *gb2 = NULL;
-        if (model->config.use_mlp_gater) {
+        SNEPPXVariable *gw1 = NULL, *gb1 = NULL, *gw2 = NULL, *gb2 = NULL;
+        if (model->config.use_mlp_gater)
+        {
             gw1 = weight_vars[wi++];
             gb1 = weight_vars[wi++];
             gw2 = weight_vars[wi++];
             gb2 = weight_vars[wi++];
         }
 
-        SNEPPXVariable** w1 = (SNEPPXVariable**)SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
-        SNEPPXVariable** b1 = (SNEPPXVariable**)SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
-        SNEPPXVariable** w2 = (SNEPPXVariable**)SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
-        SNEPPXVariable** b2 = (SNEPPXVariable**)SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
-        if (!w1 || !b1 || !w2 || !b2) {
+        SNEPPXVariable** w1 = (SNEPPXVariable**) SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
+        SNEPPXVariable** b1 = (SNEPPXVariable**) SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
+        SNEPPXVariable** w2 = (SNEPPXVariable**) SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
+        SNEPPXVariable** b2 = (SNEPPXVariable**) SNEPPX_malloc(N * sizeof(SNEPPXVariable*), 64);
+        if (!w1 || !b1 || !w2 || !b2)
+        {
             SNEPPX_free(w1, N * sizeof(SNEPPXVariable*));
             SNEPPX_free(b1, N * sizeof(SNEPPXVariable*));
             SNEPPX_free(w2, N * sizeof(SNEPPXVariable*));
@@ -77,7 +79,8 @@ int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
             return -1;
         }
 
-        for (size_t e = 0; e < N; e++) {
+        for (size_t e = 0; e < N; e++)
+        {
             w1[e] = weight_vars[wi++];
             b1[e] = weight_vars[wi++];
             w2[e] = weight_vars[wi++];
@@ -86,14 +89,17 @@ int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
 
         SNEPPXVariable* router_T = SNEPPX_transpose(tape, router, 0, 1);
         SNEPPXVariable* logits;
-        if (model->config.use_mlp_gater) {
+        if (model->config.use_mlp_gater)
+        {
             SNEPPXVariable* hidden = SNEPPX_matmul(tape, cur_input, gw1);
             hidden = SNEPPX_add(tape, hidden, gb1);
             hidden = SNEPPX_relu(tape, hidden);
             SNEPPXVariable* gater_T = SNEPPX_transpose(tape, gw2, 0, 1);
             logits = SNEPPX_matmul(tape, hidden, gater_T);
             logits = SNEPPX_add(tape, logits, gb2);
-        } else {
+        }
+        else
+        {
             logits = SNEPPX_matmul(tape, cur_input, router_T);
         }
         SNEPPXVariable* gate = SNEPPX_softmax(tape, logits, 1);
@@ -108,15 +114,27 @@ int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
         SNEPPXVariable* acc = SNEPPX_variable_create(acc_t, 0);
         SNEPPX_tape_record(tape, acc);
 
-        for (size_t e = 0; e < N; e++) {
-            float* hot_data = (float*)SNEPPX_malloc(N * sizeof(float), 64);
-            if (!hot_data) { SNEPPX_free(w1, N * sizeof(SNEPPXVariable*)); SNEPPX_free(b1, N * sizeof(SNEPPXVariable*)); SNEPPX_free(w2, N * sizeof(SNEPPXVariable*)); SNEPPX_free(b2, N * sizeof(SNEPPXVariable*)); return -1; }
+        for (size_t e = 0; e < N; e++)
+        {
+            float* hot_data = (float*) SNEPPX_malloc(N * sizeof(float), 64);
+            if (!hot_data)
+            {
+                SNEPPX_free(w1, N * sizeof(SNEPPXVariable*));
+                SNEPPX_free(b1, N * sizeof(SNEPPXVariable*));
+                SNEPPX_free(w2, N * sizeof(SNEPPXVariable*));
+                SNEPPX_free(b2, N * sizeof(SNEPPXVariable*));
+                return -1;
+            }
             memset(hot_data, 0, N * sizeof(float));
             hot_data[e] = 1.0f;
             size_t hot_shape[] = {1, N};
             SNEPPXTensor* hot_t = SNEPPX_tensor_create(hot_shape, 2, SNEPPX_FLOAT32);
-            if (!hot_t) { SNEPPX_free(hot_data, N * sizeof(float)); return -1; }
-            memcpy((float*)hot_t->data, hot_data, N * sizeof(float));
+            if (!hot_t)
+            {
+                SNEPPX_free(hot_data, N * sizeof(float));
+                return -1;
+            }
+            memcpy((float*) hot_t->data, hot_data, N * sizeof(float));
             SNEPPX_free(hot_data, N * sizeof(float));
 
             SNEPPXVariable* hot_v = SNEPPX_variable_create(hot_t, 0);
@@ -143,9 +161,12 @@ int SNEPPX_ser_build_train_graph(SNEPPXSERModel* model, SNEPPXTape* tape,
         SNEPPX_free(w2, N * sizeof(SNEPPXVariable*));
         SNEPPX_free(b2, N * sizeof(SNEPPXVariable*));
 
-        if (l == total_layers - 1) {
+        if (l == total_layers - 1)
+        {
             *output_var = SNEPPX_sum(tape, acc, 0);
-        } else {
+        }
+        else
+        {
             cur_input = acc;
             cur_dim = O;
         }

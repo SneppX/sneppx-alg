@@ -63,23 +63,44 @@ from .c_types import (
 from .crypto_sign import Ed25519, Dilithium, SphincsPlus
 from .crypto_kem import KyberKEM, X25519
 from .crypto_symmetric import AESGCM, ChaCha20, Poly1305, AEAD
-from .crypto_hash import sha256, sha512, sha3_256, sha3_512, shake_128, shake_256, Blake3, SipHash
+from .crypto_hash import (
+    sha256,
+    sha512,
+    sha3_256,
+    sha3_512,
+    shake_128,
+    shake_256,
+    Blake3,
+    SipHash,
+)
 from .crypto_kdf import HMAC as HMAC_, HKDF, PBKDF2, Argon2
 from .crypto_util import BigNum, DRBG, Random, ConstantTime, EntropyPool
 
 # Phase 3 — Security bindings (S1–S9)
 from .secure_memory import (
-    SecureAllocator, StackCanary, ASLR, MemoryHardening, MemoryLeakDetector,
+    SecureAllocator,
+    StackCanary,
+    ASLR,
+    MemoryHardening,
+    MemoryLeakDetector,
 )
 from .s4_network import DDoSMitigation, IdentityManager, TransportSecurity
-from .runtime_monitor import IntegrityMonitor, ContainerBreakoutDetector, AdvancedMonitor
+from .runtime_monitor import (
+    IntegrityMonitor,
+    ContainerBreakoutDetector,
+    AdvancedMonitor,
+)
 from .key_vault import KeyVault, AuditLogger
 from .secure_updates import SignedUpdate, ContainerSecurity
 from .formal_verify import LTLProperty, ModelChecker, StateGraph
 from .pen_testing import NetworkFuzzer, SelfAuditor
 from .obfuscation_bridge import (
-    ObfuscationConfig, CfgFlattening, InstructionSubstitution,
-    OpaquePredicate, StringEncryption, ObfuscationPipeline,
+    ObfuscationConfig,
+    CfgFlattening,
+    InstructionSubstitution,
+    OpaquePredicate,
+    StringEncryption,
+    ObfuscationPipeline,
 )
 from .ai_safety_ext import RLHFSafety, DataPoisoningDefense
 from .ai_safety_ext import PromptFilter as AIPromptFilter
@@ -151,7 +172,14 @@ from .audit_logger import (
 )
 
 # Phase 4 — Algorithm bindings (ARC/FM/HSS/NPE/SER)
-from .algo_arc import ARCAttackSim, ARCFForward, ARCGradientObfuscator, ARCInputGuard, ARCOutputVerifier, ARCAdversarialTrainGraph
+from .algo_arc import (
+    ARCAttackSim,
+    ARCFForward,
+    ARCGradientObfuscator,
+    ARCInputGuard,
+    ARCOutputVerifier,
+    ARCAdversarialTrainGraph,
+)
 from .algo_fm import FMController, FMMemoryBank, FMNode, FMSync, FMSyncNCCL
 from .algo_hss import HSSDiscretize, HSSScan, HSSStep
 from .algo_hss import HSSModel as AlgoHSSModel
@@ -949,6 +977,7 @@ from .llama_models import (
     load_hf_weights,
     convert_hf_llama_weights,
 )
+
 try:
     from .inference_server import (
         app as inference_app,
@@ -982,16 +1011,23 @@ except ImportError:
     HealthResponse = None
     ModelInfo = None
     ModelListResponse = None
+
     def register_model(*args, **kwargs):
         raise ImportError("Inference server requires: pip install 'sneppx-alg[serve]'")
+
     def get_model(*args, **kwargs):
         raise ImportError("Inference server requires: pip install 'sneppx-alg[serve]'")
+
     def list_models(*args, **kwargs):
         raise ImportError("Inference server requires: pip install 'sneppx-alg[serve]'")
+
     def set_security(*args, **kwargs):
         raise ImportError("Inference server requires: pip install 'sneppx-alg[serve]'")
+
     def get_security(*args, **kwargs):
         raise ImportError("Inference server requires: pip install 'sneppx-alg[serve]'")
+
+
 from .generation import (
     GenerationConfig,
     top_k_top_p_filtering,
@@ -2269,43 +2305,50 @@ __all__ = [
 # Lazy import helper — allows accessing submodules even if direct imports
 # failed due to circular dependency chains.
 _LAZY = {}
+
+
 def __getattr__(name):
     if name in _LAZY:
         return _LAZY[name]
-    if name.startswith('_'):
+    if name.startswith("_"):
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     # Try to lazily import common submodules
     _lazy_map = {
-        'tensor': '.tensor',
-        'nn': '.nn',
-        'optim': '.optim',
-        'train': '.train',
-        'functional': '.functional',
-        'Tensor': '.tensor',
-        'Parameter': '.tensor',
-        'Linear': '.nn',
-        'SGD': '.optim',
-        'Adam': '.optim',
-        'AdamW': '.optim',
-        'Module': '.nn',
-        'Dataset': '.data',
-        'DataLoader': '.data',
+        "tensor": ".tensor",
+        "nn": ".nn",
+        "optim": ".optim",
+        "train": ".train",
+        "functional": ".functional",
+        "Tensor": ".tensor",
+        "Parameter": ".tensor",
+        "Linear": ".nn",
+        "SGD": ".optim",
+        "Adam": ".optim",
+        "AdamW": ".optim",
+        "Module": ".nn",
+        "Dataset": ".data",
+        "DataLoader": ".data",
     }
-    if name == 'onnx':
+    if name == "onnx":
         # standalone numpy-only ONNX toolkit in the top-level onnx/ package
         import os as _os
         import sys as _sys
+
         _root = _os.path.dirname(
-            _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))))
+            _os.path.dirname(
+                _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__)))
+            )
         )
         if _root not in _sys.path:
             _sys.path.insert(0, _root)
         import importlib as _importlib
-        _mod = _importlib.import_module('onnx')
+
+        _mod = _importlib.import_module("onnx")
         _LAZY[name] = _mod
         return _mod
     if name in _lazy_map:
         import importlib
+
         mod = importlib.import_module(_lazy_map[name], __package__)
         attr = getattr(mod, name, None)
         if attr is not None:

@@ -4,7 +4,11 @@ import tempfile
 from pathlib import Path
 import numpy as np
 from SneppX_ALG.interface_bindings.data_loader import (
-    Dataset, TensorDataset, DataLoader, DistributedSampler, default_collate,
+    Dataset,
+    TensorDataset,
+    DataLoader,
+    DistributedSampler,
+    default_collate,
 )
 
 
@@ -130,6 +134,7 @@ def test_data_loader_set_epoch():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

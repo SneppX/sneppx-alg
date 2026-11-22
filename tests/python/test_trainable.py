@@ -34,9 +34,9 @@ def test_mlp_training_decreases_loss():
         opt.step()
         losses.append(_loss_scalar(loss))
 
-    assert losses[-1] < losses[0] * 0.5, (
-        f"loss did not decrease: first={losses[0]:.4f} last={losses[-1]:.4f}"
-    )
+    assert (
+        losses[-1] < losses[0] * 0.5
+    ), f"loss did not decrease: first={losses[0]:.4f} last={losses[-1]:.4f}"
 
 
 def test_conv_net_training_decreases_loss():
@@ -65,9 +65,9 @@ def test_conv_net_training_decreases_loss():
         opt.step()
         losses.append(_loss_scalar(loss))
 
-    assert losses[-1] < losses[0], (
-        f"loss did not decrease: first={losses[0]:.4f} last={losses[-1]:.4f}"
-    )
+    assert (
+        losses[-1] < losses[0]
+    ), f"loss did not decrease: first={losses[0]:.4f} last={losses[-1]:.4f}"
 
 
 def test_loss_is_finite_and_grads_flow_to_all_params():

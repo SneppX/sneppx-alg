@@ -24,7 +24,7 @@ SIGNING_PUB="${RELEASE_DIR}/release-signing.pub"
 if [ ! -f "${SIGNING_KEY}" ]; then
     # Use S0 Ed25519 via a temporary C program
     TMP_DIR=$(mktemp -d)
-    cat > "${TMP_DIR}/genkey.c" << 'EOF'
+    cat >"${TMP_DIR}/genkey.c" <<'EOF'
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -59,7 +59,7 @@ int main() {
 EOF
     gcc -o "${TMP_DIR}/genkey" "${TMP_DIR}/genkey.c" 2>/dev/null || clang -o "${TMP_DIR}/genkey" "${TMP_DIR}/genkey.c" 2>/dev/null || true
     if [ -f "${TMP_DIR}/genkey" ]; then
-        "${TMP_DIR}/genkey" > "${SIGNING_KEY}"
+        "${TMP_DIR}/genkey" >"${SIGNING_KEY}"
     fi
     rm -rf "${TMP_DIR}"
 fi
@@ -74,10 +74,10 @@ fi
 
 echo ""
 echo ">> Signing release files..."
-echo "SNEPPX-Algo v0.1.0 Release Signatures" > "${SIGNATURE_FILE}"
-echo "Release Date: ${RELEASE_DATE}" >> "${SIGNATURE_FILE}"
-echo "Ed25519 Public Key Fingerprint: ${PUBLIC_KEY_FINGERPRINT}" >> "${SIGNATURE_FILE}"
-echo "" >> "${SIGNATURE_FILE}"
+echo "SNEPPX-Algo v0.1.0 Release Signatures" >"${SIGNATURE_FILE}"
+echo "Release Date: ${RELEASE_DATE}" >>"${SIGNATURE_FILE}"
+echo "Ed25519 Public Key Fingerprint: ${PUBLIC_KEY_FINGERPRINT}" >>"${SIGNATURE_FILE}"
+echo "" >>"${SIGNATURE_FILE}"
 
 cd "${RELEASE_DIR}"
 for file in *.tar.gz *.zip; do
@@ -86,19 +86,19 @@ for file in *.tar.gz *.zip; do
     # In production: use SNEPPX_ed25519_sign from S0
     # For now, create a placeholder signature
     echo "Signing: ${file}"
-    echo "Signature for ${file}:" >> "${SIGNATURE_FILE}"
+    echo "Signature for ${file}:" >>"${SIGNATURE_FILE}"
     if [ -f "${SIGNING_KEY}" ]; then
         PRIV=$(grep "^PRIVATE:" "${SIGNING_KEY}" | cut -d' ' -f2)
         # Placeholder: hash with SHA-256 and prepend "SIG:"
-        shasum -a 256 "${file}" | cut -d' ' -f1 | tr -d '\n' > "${sigfile}"
-        echo "SIG:${PRIV:0:64}" >> "${sigfile}"
+        shasum -a 256 "${file}" | cut -d' ' -f1 | tr -d '\n' >"${sigfile}"
+        echo "SIG:${PRIV:0:64}" >>"${sigfile}"
         SIG=$(cat "${sigfile}" | tr -d '\n')
     else
-        echo "SIG:development-placeholder" > "${sigfile}"
+        echo "SIG:development-placeholder" >"${sigfile}"
         SIG="development-placeholder"
     fi
-    echo "  ${SIG}" >> "${SIGNATURE_FILE}"
-    echo "" >> "${SIGNATURE_FILE}"
+    echo "  ${SIG}" >>"${SIGNATURE_FILE}"
+    echo "" >>"${SIGNATURE_FILE}"
 done
 
 echo ""

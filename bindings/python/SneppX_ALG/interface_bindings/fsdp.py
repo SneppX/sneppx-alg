@@ -63,7 +63,15 @@ def _div_up(a: int, b: int) -> int:
 
 
 class _ShardedParam:
-    __slots__ = ("full_shape", "shard", "shard_size", "full", "dtype", "device", "grad_shard")
+    __slots__ = (
+        "full_shape",
+        "shard",
+        "shard_size",
+        "full",
+        "dtype",
+        "device",
+        "grad_shard",
+    )
 
     def __init__(self, full_shape: tuple, shard: Tensor, dtype, device):
         self.full_shape = full_shape

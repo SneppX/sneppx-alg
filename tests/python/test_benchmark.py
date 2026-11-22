@@ -1,8 +1,11 @@
 """Tests for Benchmarking Suite."""
 
 from SneppX_ALG.interface_bindings.benchmark import (
-    BenchmarkResult, BenchmarkConfig, BenchmarkTimer,
-    BenchmarkSuite, run_benchmark_cli,
+    BenchmarkResult,
+    BenchmarkConfig,
+    BenchmarkTimer,
+    BenchmarkSuite,
+    run_benchmark_cli,
 )
 from SneppX_ALG.interface_bindings.tensor import Tensor
 import numpy as np
@@ -28,8 +31,10 @@ def test_benchmark_timer():
 
 def test_benchmark_timer_stats():
     timer = BenchmarkTimer()
-    timer.start(); timer.stop()
-    timer.start(); timer.stop()
+    timer.start()
+    timer.stop()
+    timer.start()
+    timer.stop()
     mean, median, std, mn, mx = timer.stats()
     assert mean >= 0.0
 
@@ -40,14 +45,18 @@ def test_benchmark_suite_init():
 
 
 def test_benchmark_suite_benchmark_fn():
-    suite = BenchmarkSuite(config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False))
+    suite = BenchmarkSuite(
+        config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False)
+    )
     result = suite.benchmark("test_op", lambda: 1 + 1)
     assert result.name == "test_op"
     assert result.iterations > 0
 
 
 def test_benchmark_numpy_fn():
-    suite = BenchmarkSuite(config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False))
+    suite = BenchmarkSuite(
+        config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False)
+    )
     a = np.random.randn(16, 16).astype(np.float32)
     b = np.random.randn(16, 16).astype(np.float32)
     result = suite.benchmark("numpy_matmul", lambda: a @ b)
@@ -55,13 +64,17 @@ def test_benchmark_numpy_fn():
 
 
 def test_benchmark_suite_print_summary():
-    suite = BenchmarkSuite(config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False))
+    suite = BenchmarkSuite(
+        config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False)
+    )
     suite.benchmark("op", lambda: 1 + 1)
     suite.print_summary()
 
 
 def test_benchmark_suite_results():
-    suite = BenchmarkSuite(config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False))
+    suite = BenchmarkSuite(
+        config=BenchmarkConfig(measure_iters=2, warmup_iters=1, verbose=False)
+    )
     suite.benchmark("op", lambda: 1 + 1)
     assert len(suite.results) == 1
 
@@ -72,6 +85,7 @@ def test_run_benchmark_cli_callable():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

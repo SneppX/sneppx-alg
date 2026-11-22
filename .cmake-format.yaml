@@ -28,17 +28,17 @@ additional_commands:
       QUIET: 1
       MODULE: 1
       CONFIG: 1
-      COMPONENTS: '*'
-      OPTIONAL_COMPONENTS: '*'
+      COMPONENTS: "*"
+      OPTIONAL_COMPONENTS: "*"
   add_test:
     kwargs:
       NAME: 1
       COMMAND: 1
-      CONFIGURATIONS: '*'
+      CONFIGURATIONS: "*"
       WORKING_DIRECTORY: 1
   set_tests_properties:
     kwargs:
-      PROPERTIES: '*'
+      PROPERTIES: "*"
   file:
     kwargs:
       GLOB: 1
@@ -54,4 +54,4 @@ separate_fn_name_with_space: false
 dangle_parens: true
 enable_markup: false
 first_comment_is_literal: true
-literal_comment_pattern: '# File:'
+literal_comment_pattern: "# File:"

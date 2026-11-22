@@ -1,6 +1,6 @@
 # Multi-Head Attention Forward Pass
 
-**Introduced:** v1.0.0  
+**Introduced:** v1.0.0
 **Scope:** LLaMA 2, LLaMA 3, Mistral, Qwen 2, DeepSeek V2
 
 ## Overview
@@ -14,23 +14,27 @@ x → [Q/K/V projections] → [RoPE] → [Flash/SDPA] → [O projection] → out
 ```
 
 ### 1. Q/K/V projections
+
 - Weight matrices: Wq, Wk, Wv
 - Bias: optional (enabled by default)
 - GQA: K and V have `num_kv_heads` heads, Q has `num_heads` heads
 - MLA (DeepSeek V2): absorbed low-rank KV projections
 
 ### 2. RoPE (Rotary Position Embeddings)
+
 - Applies rotation to Q and K tensors
 - Base theta: architecture-specific (10000 for LLaMA 2, 500000 for LLaMA 3)
 - Scaled RoPE: LLaMA 3 variant with frequency scaling
 - NTK-aware scaling: used after `extend_context()`
 
 ### 3. Attention computation
+
 - Standard scaled dot-product: `softmax(Q·K^T / sqrt(d_k)) · V`
 - Flash Attention: memory-efficient kernel when `use_flash_attn` is set
 - Sliding window: attention restricted to `sliding_window` tokens
 
 ### 4. Output projection
+
 - Wo weight matrix projects concatenated heads back to hidden_size
 
 ## Key parameters
@@ -60,6 +64,7 @@ output = cfg.forward_mha(
 ## Verification
 
 See `tests/test_mha_forward.c` for comprehensive tests validating:
+
 - Output shape correctness for all architectures
 - GQA head count ratios
 - Flash Attention vs SDPA numerical equivalence

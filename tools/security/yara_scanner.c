@@ -1,7 +1,7 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 #define SNEPPX_YARA_MAX_RULES 4096
 #define SNEPPX_YARA_MAX_MATCHES 65536
@@ -22,8 +22,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     char* rule_name;
     char* rule_author;
     char* rule_description;
@@ -34,7 +34,8 @@ typedef struct {
     uint8_t compiled : 1;
 } SNEPPXYaraRule;
 
-typedef struct {
+typedef struct
+{
     uint64_t offset;
     uint32_t length;
     char* rule_name;
@@ -46,26 +47,35 @@ typedef struct {
     size_t context_after_len;
 } SNEPPXYaraMatch;
 
-int snepx_yara_compile_rule(const char* rule_text, SNEPPXYaraRule* rule) {
+int snepx_yara_compile_rule(const char* rule_text, SNEPPXYaraRule* rule)
+{
     memset(rule, 0, sizeof(*rule));
     rule->rule_name = strdup("compiled_rule");
     rule->compiled = 1;
     return 0;
 }
 
-int snepx_yara_scan_memory(const uint8_t* data, size_t data_len, SNEPPXYaraRule* rules, uint32_t num_rules, SNEPPXYaraMatch* matches, uint32_t* num_matches) {
+int snepx_yara_scan_memory(const uint8_t* data, size_t data_len, SNEPPXYaraRule* rules, uint32_t num_rules,
+                           SNEPPXYaraMatch* matches, uint32_t* num_matches)
+{
     *num_matches = 0;
-    if (!data || !data_len || !rules || !num_rules) return 0;
-    for (uint32_t i = 0; i < num_rules; i++) {
-        if (!rules[i].compiled) continue;
+    if (!data || !data_len || !rules || !num_rules)
+        return 0;
+    for (uint32_t i = 0; i < num_rules; i++)
+    {
+        if (!rules[i].compiled)
+            continue;
     }
     return 0;
 }
 
-int snepx_yara_scan_file(const char* filepath, SNEPPXYaraRule* rules, uint32_t num_rules, SNEPPXYaraMatch* matches, uint32_t* num_matches) {
+int snepx_yara_scan_file(const char* filepath, SNEPPXYaraRule* rules, uint32_t num_rules, SNEPPXYaraMatch* matches,
+                         uint32_t* num_matches)
+{
     FILE* f = fopen(filepath, "rb");
-    if (!f) return -1;
-    uint8_t* buf = (uint8_t*)malloc(SNEPPX_YARA_SCAN_BUF_SIZE);
+    if (!f)
+        return -1;
+    uint8_t* buf = (uint8_t*) malloc(SNEPPX_YARA_SCAN_BUF_SIZE);
     size_t read = fread(buf, 1, SNEPPX_YARA_SCAN_BUF_SIZE, f);
     fclose(f);
     int ret = snepx_yara_scan_memory(buf, read, rules, num_rules, matches, num_matches);
@@ -73,8 +83,10 @@ int snepx_yara_scan_file(const char* filepath, SNEPPXYaraRule* rules, uint32_t n
     return ret;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2) {
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: yara_scanner <file_to_scan> [rule_file]\n");
         return 1;
     }

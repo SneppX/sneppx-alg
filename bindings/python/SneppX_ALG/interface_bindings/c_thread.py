@@ -70,7 +70,9 @@ class WorkStealingPool:
 
     def __init__(self, n_threads: Optional[int] = None):
         self._n_threads = n_threads or (threading.cpu_count() or 4)
-        self._queues: List[queue.Queue] = [queue.Queue() for _ in range(self._n_threads)]
+        self._queues: List[queue.Queue] = [
+            queue.Queue() for _ in range(self._n_threads)
+        ]
         self._workers: List[threading.Thread] = []
         self._stop = threading.Event()
         self._has_c = _HAS_C

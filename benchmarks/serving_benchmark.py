@@ -48,7 +48,8 @@ def benchmark_continuous_batch(model, prompts, gen_config):
     scheduler = ContinuousBatchScheduler()
     for p in prompts:
         scheduler.submit(
-            prompt="", prompt_tokens=p,
+            prompt="",
+            prompt_tokens=p,
             max_new_tokens=gen_config.max_new_tokens,
             temperature=gen_config.temperature,
         )
@@ -68,7 +69,9 @@ def benchmark_continuous_batch(model, prompts, gen_config):
 
     start = time.perf_counter()
     for _ in continuous_generate_loop(
-        model_fn, scheduler, decode_fn,
+        model_fn,
+        scheduler,
+        decode_fn,
         max_steps=gen_config.max_new_tokens * len(prompts) * 2,
     ):
         pass
@@ -83,7 +86,9 @@ def main():
     batch_sizes = [1, 2, 4, 8]
     rng = np.random.RandomState(42)
 
-    print(f"{'Batch':>6} | {'Static (s)':>10} | {'Cont (s)':>10} | {'Speedup':>8} | {'Note':>20}")
+    print(
+        f"{'Batch':>6} | {'Static (s)':>10} | {'Cont (s)':>10} | {'Speedup':>8} | {'Note':>20}"
+    )
     print("-" * 62)
 
     for n in batch_sizes:
@@ -94,7 +99,9 @@ def main():
 
         speedup = t_static / t_cont if t_cont > 0 else float("inf")
         note = "scheduler overhead dominates" if speedup < 1 else "cont batching wins"
-        print(f"{n:>6} | {t_static:>10.4f} | {t_cont:>10.4f} | {speedup:>7.2f}x | {note:>20}")
+        print(
+            f"{n:>6} | {t_static:>10.4f} | {t_cont:>10.4f} | {speedup:>7.2f}x | {note:>20}"
+        )
 
     print()
     print("Note: Benchmarked with tiny dummy model. Continuous batching's real")

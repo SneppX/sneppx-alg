@@ -51,7 +51,9 @@ def load_library(
         script_dir = os.path.dirname(os.path.abspath(__file__))
         # Path: .../sneppx-alg/bindings/python/SneppX_ALG/interface_bindings/
         # Need to go up 4 levels to reach the sneppx-alg project root
-        project_root = os.path.normpath(os.path.join(script_dir, "..", "..", "..", ".."))
+        project_root = os.path.normpath(
+            os.path.join(script_dir, "..", "..", "..", "..")
+        )
         # Also check the SneppX root (one level up from project_root)
         sneppx_root = os.path.dirname(project_root)
         env_var_name = f"SNEPPX_{lib_name.upper()}_LIB"
@@ -71,7 +73,11 @@ def load_library(
         if not d:
             continue
         for name in candidates:
-            full = os.path.join(d, name) if not name.endswith((".dll", ".so", ".dylib")) else name
+            full = (
+                os.path.join(d, name)
+                if not name.endswith((".dll", ".so", ".dylib"))
+                else name
+            )
             try:
                 lib = ctypes.CDLL(full)
                 return lib, True
@@ -86,7 +92,9 @@ def load_library(
 
 def find_load(
     lib_name: str,
-    func_signatures: Optional[Dict[str, Tuple[Optional[List[type]], Optional[type]]]] = None,
+    func_signatures: Optional[
+        Dict[str, Tuple[Optional[List[type]], Optional[type]]]
+    ] = None,
     **kwargs,
 ) -> Tuple[Optional[ctypes.CDLL], bool]:
     """Convenience: call :func:`load_library` and optionally set up function signatures.
