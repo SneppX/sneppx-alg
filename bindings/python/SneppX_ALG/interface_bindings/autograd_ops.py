@@ -5601,8 +5601,7 @@ class Log1p(Function):
         if create_graph:
             from .autograd_ops import Add, Div, _as_const
 
-            x_t = Tensor(xd, dtype=grad_output.dtype)
-            den = Add.apply(x_t, _as_const(1.0, grad_output.dtype))
+            den = Add.apply(x, _as_const(1.0, grad_output.dtype))
             return [Div.apply(grad_output, den)]
         return [Tensor(grad, dtype=grad_output.dtype)]
 
