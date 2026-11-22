@@ -73,15 +73,26 @@ class DistributedContext:
     def all_reduce(self, tensor: Tensor, op="sum") -> Tensor:
         if self.world_size <= 1:
             return tensor
-        return tensor
+        raise RuntimeError(
+            "No validated multi-rank collective backend is available; "
+            "all_reduce must not silently return unreduced data"
+        )
 
     def all_gather(self, tensor: Tensor) -> List[Tensor]:
         if self.world_size <= 1:
             return [tensor]
-        return [tensor for _ in range(self.world_size)]
+        raise RuntimeError(
+            "No validated multi-rank collective backend is available; "
+            "all_gather must not fabricate copies of the local tensor"
+        )
 
     def reduce_scatter(self, tensor: Tensor) -> Tensor:
-        return tensor
+        if self.world_size <= 1:
+            return tensor
+        raise RuntimeError(
+            "No validated multi-rank collective backend is available; "
+            "reduce_scatter must not silently return unreduced data"
+        )
 
 
 _global_context = DistributedContext()
@@ -111,6 +122,14 @@ def all_reduce(tensor: Tensor, op="sum") -> Tensor:
     return _global_context.all_reduce(tensor, op)
 
 
+def all_gather(tensor: Tensor) -> List[Tensor]:
+    return _global_context.all_gather(tensor)
+
+
+def reduce_scatter(tensor: Tensor) -> Tensor:
+    return _global_context.reduce_scatter(tensor)
+
+
 class DistributedSampler:
     """Deterministic, evenly sized dataset shards for distributed ranks.
 
@@ -119,8 +138,7 @@ class DistributedSampler:
     ``drop_last=True`` to discard the incomplete tail instead.
     """
 
-    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True,
-                 drop_last=False):
+    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False):
         self.dataset = dataset
         self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
         self.rank = get_rank() if rank is None else int(rank)
@@ -146,12 +164,12 @@ class DistributedSampler:
         if self.shuffle:
             np.random.RandomState(self.epoch).shuffle(indices)
         if self.drop_last:
-            indices = indices[:self.total_size]
+            indices = indices[: self.total_size]
         elif self.total_size > len(indices) and indices:
             padding = self.total_size - len(indices)
             repeats = (padding + len(indices) - 1) // len(indices)
             indices += (indices * repeats)[:padding]
-        return iter(indices[self.rank:self.total_size:self.num_replicas])
+        return iter(indices[self.rank : self.total_size : self.num_replicas])
 
     def __len__(self):
         return self.num_samples
