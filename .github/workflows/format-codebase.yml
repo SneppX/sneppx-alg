@@ -54,7 +54,6 @@ jobs:
           set -euo pipefail
           BASE_SHA="$(git rev-parse HEAD)"
           BRANCH="automation/format-${GITHUB_RUN_ID}"
-          TARGET_BRANCH="$GITHUB_REF_NAME"
           git switch --create "$BRANCH" "$BASE_SHA"
 
           # The first pass may report files it just reformatted. A clean second
@@ -67,11 +66,12 @@ jobs:
           if git diff --quiet; then
             git push origin "$BRANCH"
             CANDIDATE_SHA="$BASE_SHA"
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
-            echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "target_branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+            {
+              echo "changed=true"
+              echo "branch=$BRANCH"
+              echo "base_sha=$BASE_SHA"
+              echo "candidate_sha=$CANDIDATE_SHA"
+            } >> "$GITHUB_OUTPUT"
             echo "The repository already satisfies the configured formatters; validating the unchanged tree." 
             exit 0
           fi
@@ -83,10 +83,12 @@ jobs:
           CANDIDATE_SHA="$(git rev-parse HEAD)"
           git push origin "$BRANCH"
 
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed=true"
+            echo "branch=$BRANCH"
+            echo "base_sha=$BASE_SHA"
+            echo "candidate_sha=$CANDIDATE_SHA"
+          } >> "$GITHUB_OUTPUT" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch required CI workflows for the formatted tree
         if: steps.format.outputs.changed == 'true'
@@ -111,7 +113,7 @@ jobs:
           for workflow in ci.yml lint-docs.yml package-validation.yml format-check.yml quality-gates.yml; do
             echo "Waiting for $workflow on $CANDIDATE_SHA"
             run_id=""
-            for attempt in $(seq 1 90); do
+            for _ in $(seq 1 90); do
               run_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" --branch "$BRANCH" --limit 20 --json databaseId,headSha --jq ".[] | select(.headSha == \"$CANDIDATE_SHA\") | .databaseId" | head -n 1)"
               if [ -n "$run_id" ]; then
                 break

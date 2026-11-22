@@ -42,7 +42,7 @@ jobs:
       - name: Generate checksums
         run: |
           cd dist
-          sha256sum * > SHA256SUMS
+          sha256sum ./* > SHA256SUMS
       - name: Generate SPDX SBOM
         uses: anchore/sbom-action@v0
         with:

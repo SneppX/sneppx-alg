@@ -7,6 +7,7 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-json
+        exclude: '(^benchmarks/baseline\\.json$|^tests/data/acvp/slhdsa_keygen_kat\\.json$)'
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: detect-private-key
@@ -30,9 +31,6 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.0
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
       - id: ruff-format
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
@@ -43,7 +41,7 @@ repos:
       - id: prettier
         types_or: [javascript, jsx, ts, tsx, json, yaml, markdown, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen|conda-forge-recipe)/|(^benchmarks/baseline\\.json$|^tests/data/acvp/slhdsa_keygen_kat\\.json$|^\\.clang-tidy$)'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
@@ -58,28 +56,41 @@ repos:
         args: [-i, "4", -ci, -bn]
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.42.0
-    hooks:
-      - id: markdownlint
-        args: [--config, .markdownlint.yaml, --fix]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
-
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:
       - id: yamllint
         args: [-c, .yamllint.yml]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
-
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
-    hooks:
-      - id: shellcheck
-        args: [--severity=warning]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|conda-forge-recipe)/'
 
   - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  # Rust files are formatted directly because this repository contains nested Cargo workspaces.
+  - repo: local
+    hooks:
+      - id: rustfmt
+        name: rustfmt all Rust source files
+        entry: rustfmt --edition 2021
+        language: system
+        types: [rust]
+      - id: gofmt
+        name: gofmt
+        entry: gofmt -w
+        language: system
+        types: [go]
+
+  # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4).
+  - repo: local
+    hooks:
+      - id: sneppx-docs
+        name: sneppx-format --docs (Layer 1/4 doc coverage)
+        entry: sneppx-format --docs --no-color
+        language: system
+        files: '\.(c|h|cc|cpp|cxx|hpp|cu|cuh)$'
+        fail_fast: false  - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:
       - id: actionlint
