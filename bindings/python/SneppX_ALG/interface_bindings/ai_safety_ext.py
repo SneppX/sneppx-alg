@@ -21,6 +21,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- RLHF Safety extensions ---------------------------------------------
 
+
 class RLHFSafety:
     """RLHF-based safety — factuality, bias, semantic injection, membership inference."""
 
@@ -52,7 +53,9 @@ class RLHFSafety:
             self._bias_scores = scores
         return scores
 
-    def detect_semantic_injection(self, text: str, base_embedding: List[float]) -> float:
+    def detect_semantic_injection(
+        self, text: str, base_embedding: List[float]
+    ) -> float:
         return 0.0
 
     def detect_membership_inference(self, sample: bytes, model_output: bytes) -> float:
@@ -71,6 +74,7 @@ class RLHFSafety:
 
 
 # ---- Prompt Filter extensions -------------------------------------------
+
 
 class PromptFilter:
     """Extended prompt filtering — jailbreak, encoded attack, policy enforcement.
@@ -112,13 +116,13 @@ class PromptFilter:
     def _is_base64(s: str) -> bool:
         if len(s) < 8:
             return False
-        return bool(re.match(r'^[A-Za-z0-9+/]*={0,2}$', s))
+        return bool(re.match(r"^[A-Za-z0-9+/]*={0,2}$", s))
 
     @staticmethod
     def _is_hex(s: str) -> bool:
         if len(s) < 8:
             return False
-        return bool(re.match(r'^[0-9a-fA-F]+$', s))
+        return bool(re.match(r"^[0-9a-fA-F]+$", s))
 
     def add_pattern(self, pattern: str) -> None:
         with self._lock:
@@ -131,6 +135,7 @@ class PromptFilter:
 
 # ---- Output Verifier extensions -----------------------------------------
 
+
 class OutputVerifier:
     """Extended output verification — PII/secret leak prevention.
 
@@ -138,11 +143,11 @@ class OutputVerifier:
     """
 
     _PII_PATTERNS = {
-        "email": r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}',
-        "phone": r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b',
-        "ssn": r'\b\d{3}-\d{2}-\d{4}\b',
-        "ip": r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
-        "credit_card": r'\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b',
+        "email": r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",
+        "phone": r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+        "ssn": r"\b\d{3}-\d{2}-\d{4}\b",
+        "ip": r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
+        "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
     }
 
     def __init__(self):
@@ -161,7 +166,9 @@ class OutputVerifier:
 
     def detect_secrets(self, text: str) -> List[Tuple[str, str]]:
         secrets = []
-        api_key = r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
+        api_key = (
+            r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
+        )
         for match in re.finditer(api_key, text, re.IGNORECASE):
             secrets.append(("api_key", match.group(1)))
         return secrets
@@ -182,6 +189,7 @@ class OutputVerifier:
 
 # ---- Data Poisoning Defense ---------------------------------------------
 
+
 class DataPoisoningDefense:
     """Detection and mitigation of data poisoning attacks."""
 
@@ -196,8 +204,9 @@ class DataPoisoningDefense:
         return np.any(z_scores > threshold, axis=1)
 
     @staticmethod
-    def detect_label_flipping(labels: np.ndarray, predictions: np.ndarray,
-                              window: int = 100) -> np.ndarray:
+    def detect_label_flipping(
+        labels: np.ndarray, predictions: np.ndarray, window: int = 100
+    ) -> np.ndarray:
         if len(labels) < window:
             return np.zeros(len(labels), dtype=bool)
         disagreement = (labels != predictions).astype(np.float32)
@@ -205,11 +214,14 @@ class DataPoisoningDefense:
         return cumulative > 0.5
 
     @staticmethod
-    def sanitize_batch(data: np.ndarray, labels: np.ndarray,
-                       max_deviation: float = 3.0) -> Tuple[np.ndarray, np.ndarray]:
+    def sanitize_batch(
+        data: np.ndarray, labels: np.ndarray, max_deviation: float = 3.0
+    ) -> Tuple[np.ndarray, np.ndarray]:
         outliers = DataPoisoningDefense.detect_outliers(data, max_deviation)
         return data[~outliers], labels[~outliers]
 
     @staticmethod
-    def gradient_norm_detection(gradients: List[np.ndarray], threshold: float = 10.0) -> List[bool]:
+    def gradient_norm_detection(
+        gradients: List[np.ndarray], threshold: float = 10.0
+    ) -> List[bool]:
         return [float(np.linalg.norm(g)) > threshold for g in gradients]

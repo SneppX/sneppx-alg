@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_NOISE_PATTERN_N,
     SNEPPX_NOISE_PATTERN_K,
     SNEPPX_NOISE_PATTERN_X,
@@ -58,14 +58,16 @@ typedef enum {
     SNEPPX_NOISE_PATTERN_FALLBACK
 } SNEPPXNoiseHandshakePattern;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_NOISE_CIPHER_AES256GCM,
     SNEPPX_NOISE_CIPHER_CHACHAPOLY,
     SNEPPX_NOISE_CIPHER_AEGIS256,
     SNEPPX_NOISE_CIPHER_DEONIS_256
 } SNEPPXNoiseCipherSuite;
 
-typedef struct {
+typedef struct
+{
     SNEPPXNoiseHandshakePattern pattern;
     SNEPPXNoiseCipherSuite cipher;
     uint8_t prologue[1024];
@@ -92,7 +94,8 @@ typedef struct {
     uint8_t transport_phase : 1;
 } SNEPPXNoiseHandshakeState;
 
-typedef struct {
+typedef struct
+{
     uint8_t* sending_key;
     size_t sending_key_len;
     uint8_t* receiving_key;
@@ -105,18 +108,26 @@ typedef struct {
     size_t handshake_hash_len;
 } SNEPPXNoiseTransportState;
 
-int snepx_noise_handshake_init(SNEPPXNoiseHandshakeState* hs, SNEPPXNoiseHandshakePattern pattern, SNEPPXNoiseCipherSuite cipher, uint8_t initiator);
+int snepx_noise_handshake_init(SNEPPXNoiseHandshakeState* hs, SNEPPXNoiseHandshakePattern pattern,
+                               SNEPPXNoiseCipherSuite cipher, uint8_t initiator);
 int snepx_noise_handshake_set_prologue(SNEPPXNoiseHandshakeState* hs, const uint8_t* prologue, size_t len);
-int snepx_noise_handshake_set_keypair(SNEPPXNoiseHandshakeState* hs, const uint8_t* static_priv, size_t s_priv_len, const uint8_t* static_pub, size_t s_pub_len);
-int snepx_noise_handshake_set_ephemeral(SNEPPXNoiseHandshakeState* hs, const uint8_t* ephemeral_priv, size_t e_priv_len, const uint8_t* ephemeral_pub, size_t e_pub_len);
+int snepx_noise_handshake_set_keypair(SNEPPXNoiseHandshakeState* hs, const uint8_t* static_priv, size_t s_priv_len,
+                                      const uint8_t* static_pub, size_t s_pub_len);
+int snepx_noise_handshake_set_ephemeral(SNEPPXNoiseHandshakeState* hs, const uint8_t* ephemeral_priv, size_t e_priv_len,
+                                        const uint8_t* ephemeral_pub, size_t e_pub_len);
 int snepx_noise_handshake_add_psk(SNEPPXNoiseHandshakeState* hs, const uint8_t* psk, size_t psk_len);
-int snepx_noise_handshake_write_message(SNEPPXNoiseHandshakeState* hs, const uint8_t* payload, size_t payload_len, uint8_t* message_out, size_t* message_len, SNEPPXNoiseTransportState* transport);
-int snepx_noise_handshake_read_message(SNEPPXNoiseHandshakeState* hs, const uint8_t* message, size_t message_len, uint8_t* payload_out, size_t* payload_len, SNEPPXNoiseTransportState* transport);
+int snepx_noise_handshake_write_message(SNEPPXNoiseHandshakeState* hs, const uint8_t* payload, size_t payload_len,
+                                        uint8_t* message_out, size_t* message_len,
+                                        SNEPPXNoiseTransportState* transport);
+int snepx_noise_handshake_read_message(SNEPPXNoiseHandshakeState* hs, const uint8_t* message, size_t message_len,
+                                       uint8_t* payload_out, size_t* payload_len, SNEPPXNoiseTransportState* transport);
 int snepx_noise_handshake_get_hash(SNEPPXNoiseHandshakeState* hs, uint8_t* hash_out, size_t* hash_len);
 int snepx_noise_handshake_destroy(SNEPPXNoiseHandshakeState* hs);
 
-int snepx_noise_transport_encrypt(SNEPPXNoiseTransportState* ts, const uint8_t* plaintext, size_t plaintext_len, uint8_t* ciphertext, size_t* ciphertext_len);
-int snepx_noise_transport_decrypt(SNEPPXNoiseTransportState* ts, const uint8_t* ciphertext, size_t ciphertext_len, uint8_t* plaintext, size_t* plaintext_len);
+int snepx_noise_transport_encrypt(SNEPPXNoiseTransportState* ts, const uint8_t* plaintext, size_t plaintext_len,
+                                  uint8_t* ciphertext, size_t* ciphertext_len);
+int snepx_noise_transport_decrypt(SNEPPXNoiseTransportState* ts, const uint8_t* ciphertext, size_t ciphertext_len,
+                                  uint8_t* plaintext, size_t* plaintext_len);
 int snepx_noise_transport_rekey(SNEPPXNoiseTransportState* ts);
 int snepx_noise_transport_destroy(SNEPPXNoiseTransportState* ts);
 

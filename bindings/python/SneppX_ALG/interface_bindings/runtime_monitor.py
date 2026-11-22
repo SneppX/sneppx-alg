@@ -73,11 +73,13 @@ class ContainerBreakoutDetector:
 
     def record_event(self, event_type: str, details: dict) -> None:
         with self._lock:
-            self._suspicious_events.append({
-                "type": event_type,
-                "details": details,
-                "timestamp": time.time(),
-            })
+            self._suspicious_events.append(
+                {
+                    "type": event_type,
+                    "details": details,
+                    "timestamp": time.time(),
+                }
+            )
 
     def recent_events(self, n: int = 10) -> List[dict]:
         with self._lock:

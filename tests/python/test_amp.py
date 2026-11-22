@@ -1,7 +1,12 @@
 """Tests for Automatic Mixed Precision (AMP)."""
 
 import numpy as np
-from SneppX_ALG.interface_bindings.amp import autocast, GradScaler, is_autocast_enabled, get_autocast_dtype
+from SneppX_ALG.interface_bindings.amp import (
+    autocast,
+    GradScaler,
+    is_autocast_enabled,
+    get_autocast_dtype,
+)
 from SneppX_ALG.interface_bindings.tensor import Tensor
 
 
@@ -27,13 +32,14 @@ def test_autocast_restores_prev_state():
 class DummyOptimizer:
     def __init__(self):
         self.step_called = False
+
     def step(self):
         self.step_called = True
 
 
 def test_grad_scaler_defaults():
     scaler = GradScaler()
-    assert scaler.scale == 2.0 ** 16
+    assert scaler.scale == 2.0**16
     assert scaler.is_enabled() is True
 
 
@@ -109,6 +115,7 @@ def test_grad_scaler_disabled_step():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

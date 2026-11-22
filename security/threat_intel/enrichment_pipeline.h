@@ -23,8 +23,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_ENRICHMENT_STAGE_GEOIP,
     SNEPPX_TI_ENRICHMENT_STAGE_ASN_LOOKUP,
     SNEPPX_TI_ENRICHMENT_STAGE_RDNS,
@@ -43,7 +43,8 @@ typedef enum {
     SNEPPX_TI_ENRICHMENT_STAGE_CAMPAIGN_ANALYSIS
 } SNEPPXIEnrichmentStage;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_ENRICHMENT_RESULT_SUCCESS,
     SNEPPX_TI_ENRICHMENT_RESULT_CACHE_HIT,
     SNEPPX_TI_ENRICHMENT_RESULT_RATE_LIMITED,
@@ -52,7 +53,8 @@ typedef enum {
     SNEPPX_TI_ENRICHMENT_RESULT_ERROR
 } SNEPPXTEnrichmentResult;
 
-typedef struct {
+typedef struct
+{
     SNEPPXIEnrichmentStage stage;
     SNEPPXTEnrichmentResult result;
     uint64_t stage_duration_ns;
@@ -66,7 +68,8 @@ typedef struct {
     uint8_t cached : 1;
 } SNEPPXTEnrichmentStageResult;
 
-typedef struct {
+typedef struct
+{
     uint8_t* cache_key;
     size_t cache_key_len;
     uint8_t* cached_data;
@@ -75,7 +78,8 @@ typedef struct {
     uint64_t ttl_ns;
 } SNEPPXTEnrichmentCacheEntry;
 
-typedef struct {
+typedef struct
+{
     SNEPPXTEnrichmentStage stage_order[SNEPPX_TI_ENRICHMENT_MAX_STAGES];
     uint32_t num_stages;
     uint32_t parallelism;
@@ -95,13 +99,21 @@ typedef struct {
 int snepx_ti_enrichment_pipeline_init(SNEPPXTEnrichmentPipeline* pipeline);
 int snepx_ti_enrichment_pipeline_add_stage(SNEPPXTEnrichmentPipeline* pipeline, SNEPPXIEnrichmentStage stage);
 int snepx_ti_enrichment_pipeline_remove_stage(SNEPPXTEnrichmentPipeline* pipeline, uint32_t stage_index);
-int snepx_ti_enrichment_pipeline_set_api_key(SNEPPXTEnrichmentPipeline* pipeline, SNEPPXIEnrichmentStage stage, const uint8_t* key, size_t key_len);
-int snepx_ti_enrichment_pipeline_run(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* indicator, size_t indicator_len, SNEPPXIEnrichmentStageResult* results, uint32_t* num_results);
-int snepx_ti_enrichment_pipeline_run_parallel(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* indicators, size_t total_len, uint32_t num_indicators, SNEPPXIEnrichmentStageResult* results, uint32_t max_results);
+int snepx_ti_enrichment_pipeline_set_api_key(SNEPPXTEnrichmentPipeline* pipeline, SNEPPXIEnrichmentStage stage,
+                                             const uint8_t* key, size_t key_len);
+int snepx_ti_enrichment_pipeline_run(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* indicator,
+                                     size_t indicator_len, SNEPPXIEnrichmentStageResult* results,
+                                     uint32_t* num_results);
+int snepx_ti_enrichment_pipeline_run_parallel(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* indicators,
+                                              size_t total_len, uint32_t num_indicators,
+                                              SNEPPXIEnrichmentStageResult* results, uint32_t max_results);
 
-int snepx_ti_enrichment_pipeline_cache_get(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key, size_t key_len, uint8_t** data, size_t* data_len);
-int snepx_ti_enrichment_pipeline_cache_put(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key, size_t key_len, const uint8_t* data, size_t data_len);
-int snepx_ti_enrichment_pipeline_cache_invalidate(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key, size_t key_len);
+int snepx_ti_enrichment_pipeline_cache_get(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key, size_t key_len,
+                                           uint8_t** data, size_t* data_len);
+int snepx_ti_enrichment_pipeline_cache_put(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key, size_t key_len,
+                                           const uint8_t* data, size_t data_len);
+int snepx_ti_enrichment_pipeline_cache_invalidate(SNEPPXTEnrichmentPipeline* pipeline, const uint8_t* key,
+                                                  size_t key_len);
 int snepx_ti_enrichment_pipeline_cache_clear(SNEPPXTEnrichmentPipeline* pipeline);
 
 int snepx_ti_enrichment_geoip(const char* ip, SNEPPXTEnrichmentStageResult* result);
@@ -110,7 +122,8 @@ int snepx_ti_enrichment_rdns(const char* ip, SNEPPXTEnrichmentStageResult* resul
 int snepx_ti_enrichment_whois(const char* domain, SNEPPXTEnrichmentStageResult* result);
 int snepx_ti_enrichment_ssl_certificate(const char* host, uint16_t port, SNEPPXTEnrichmentStageResult* result);
 int snepx_ti_enrichment_ja3_hash(const uint8_t* client_hello, size_t ch_len, uint8_t* ja3_out, size_t* ja3_len);
-int snepx_ti_enrichment_yara_scan(const uint8_t* data, size_t data_len, const uint8_t* yara_rules, size_t rules_len, uint8_t** matches, uint32_t* num_matches);
+int snepx_ti_enrichment_yara_scan(const uint8_t* data, size_t data_len, const uint8_t* yara_rules, size_t rules_len,
+                                  uint8_t** matches, uint32_t* num_matches);
 
 int snepx_ti_enrichment_pipeline_destroy(SNEPPXTEnrichmentPipeline* pipeline);
 

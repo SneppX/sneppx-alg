@@ -25,9 +25,14 @@ class SimdGemm:
         self.tile_k = tile_k
         self._has_c = _HAS_C
 
-    def gemm(self, a: np.ndarray, b: np.ndarray,
-             alpha: float = 1.0, beta: float = 0.0,
-             c: Optional[np.ndarray] = None) -> np.ndarray:
+    def gemm(
+        self,
+        a: np.ndarray,
+        b: np.ndarray,
+        alpha: float = 1.0,
+        beta: float = 0.0,
+        c: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
         m, k_a = a.shape
         k_b, n = b.shape
         if k_a != k_b:
@@ -82,8 +87,14 @@ class SimdGemm:
 class GemmConfig:
     """GEMM configuration — tile sizes, algorithm selection."""
 
-    def __init__(self, tile_m: int = 64, tile_n: int = 64, tile_k: int = 64,
-                 use_strassen: bool = False, strassen_threshold: int = 128):
+    def __init__(
+        self,
+        tile_m: int = 64,
+        tile_n: int = 64,
+        tile_k: int = 64,
+        use_strassen: bool = False,
+        strassen_threshold: int = 128,
+    ):
         self.tile_m = tile_m
         self.tile_n = tile_n
         self.tile_k = tile_k

@@ -30,7 +30,9 @@ class FirewallRunner:
         self._cfg = cfg
         self._transport = _Transport(**cfg.transport) if cfg.transport else _Transport()
         self._network = _Network(**cfg.network) if cfg.network else _Network()
-        self._application = _Application(**cfg.application) if cfg.application else _Application()
+        self._application = (
+            _Application(**cfg.application) if cfg.application else _Application()
+        )
         self._allowed_count = 0
         self._denied_count = 0
         self._by_ring = {1: 0, 2: 0, 3: 0}
@@ -74,14 +76,18 @@ class FirewallRunner:
             self._deny(result)
             return result
 
-        if self._cfg.block_all_by_default and not self._application.is_path_allowed(path):
+        if self._cfg.block_all_by_default and not self._application.is_path_allowed(
+            path
+        ):
             result = self._make_result(
                 False, 403, "blocked by default: path is not allowlisted", 3
             )
             self._deny(result)
             return result
 
-        result = self._application.check_request(method, path, headers, body, query, client_ip)
+        result = self._application.check_request(
+            method, path, headers, body, query, client_ip
+        )
         if not result.allowed:
             self._deny(result)
             return result
@@ -100,17 +106,24 @@ class FirewallRunner:
             self._by_ring[ring] = self._by_ring.get(ring, 0) + 1
 
     @staticmethod
-    def _make_result(allowed: bool, status_code: int = 200, reason: str = "", ring: int = 2) -> Any:
+    def _make_result(
+        allowed: bool, status_code: int = 200, reason: str = "", ring: int = 2
+    ) -> Any:
         try:
             from .firewall_network import FirewallResult as FR
-            return FR(allowed=allowed, status_code=status_code, reason=reason, ring=ring)
+
+            return FR(
+                allowed=allowed, status_code=status_code, reason=reason, ring=ring
+            )
         except ImportError:
+
             class FR:
                 def __init__(self, allowed, status_code, reason, ring):
                     self.allowed = allowed
                     self.status_code = status_code
                     self.reason = reason
                     self.ring = ring
+
             return FR(allowed, status_code, reason, ring)
 
     @property
@@ -135,7 +148,16 @@ def _load_config(path: str = "") -> dict:
     if not path:
         candidates = [
             os.environ.get("FIREWALL_CONFIG", ""),
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "security", "firewall", "firewall.yaml"),
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "..",
+                "..",
+                "..",
+                "..",
+                "security",
+                "firewall",
+                "firewall.yaml",
+            ),
         ]
     else:
         candidates = [path]
@@ -158,7 +180,9 @@ def create_firewall(
     cfg = FirewallConfig()
 
     cfg.enabled = fw_cfg.get("enabled", cfg.enabled)
-    cfg.block_all_by_default = fw_cfg.get("block_all_by_default", cfg.block_all_by_default)
+    cfg.block_all_by_default = fw_cfg.get(
+        "block_all_by_default", cfg.block_all_by_default
+    )
     cfg.transport = fw_cfg.get("transport", cfg.transport)
     cfg.network = fw_cfg.get("network", cfg.network)
     cfg.application = fw_cfg.get("application", cfg.application)
@@ -176,7 +200,11 @@ def _apply_env_overrides(cfg: FirewallConfig):
     if "FIREWALL_ENABLED" in env:
         cfg.enabled = env["FIREWALL_ENABLED"].lower() in ("1", "true", "yes")
     if "TLS_ENABLED" in env:
-        cfg.transport["tls_enabled"] = env["TLS_ENABLED"].lower() in ("1", "true", "yes")
+        cfg.transport["tls_enabled"] = env["TLS_ENABLED"].lower() in (
+            "1",
+            "true",
+            "yes",
+        )
     if "TLS_CERTFILE" in env:
         cfg.transport["certfile"] = env["TLS_CERTFILE"]
     if "TLS_KEYFILE" in env:
@@ -184,17 +212,25 @@ def _apply_env_overrides(cfg: FirewallConfig):
     if "TLS_CAFILE" in env:
         cfg.transport["cafile"] = env["TLS_CAFILE"]
     if "FIREWALL_ALLOWLIST" in env:
-        cfg.network["allowlist"] = [x.strip() for x in env["FIREWALL_ALLOWLIST"].split(",") if x.strip()]
+        cfg.network["allowlist"] = [
+            x.strip() for x in env["FIREWALL_ALLOWLIST"].split(",") if x.strip()
+        ]
     if "FIREWALL_DENYLIST" in env:
-        cfg.network["denylist"] = [x.strip() for x in env["FIREWALL_DENYLIST"].split(",") if x.strip()]
+        cfg.network["denylist"] = [
+            x.strip() for x in env["FIREWALL_DENYLIST"].split(",") if x.strip()
+        ]
     if "FIREWALL_RATE_LIMIT" in env:
-        cfg.network.setdefault("rate_limit", {})["max_requests"] = int(env["FIREWALL_RATE_LIMIT"])
+        cfg.network.setdefault("rate_limit", {})["max_requests"] = int(
+            env["FIREWALL_RATE_LIMIT"]
+        )
     if "FIREWALL_MAX_BLOCKED_IPS" in env:
         cfg.network["max_blocked_ips"] = int(env["FIREWALL_MAX_BLOCKED_IPS"])
     if "FIREWALL_BODY_SIZE" in env:
         cfg.application["max_body_size"] = int(env["FIREWALL_BODY_SIZE"])
     if "FIREWALL_ALLOWED_PATHS" in env:
-        cfg.application["allowed_paths"] = [x.strip() for x in env["FIREWALL_ALLOWED_PATHS"].split(",") if x.strip()]
+        cfg.application["allowed_paths"] = [
+            x.strip() for x in env["FIREWALL_ALLOWED_PATHS"].split(",") if x.strip()
+        ]
 
 
 def _apply_cli_overrides(cfg: FirewallConfig, overrides: dict):
@@ -205,9 +241,38 @@ def _apply_cli_overrides(cfg: FirewallConfig, overrides: dict):
             cfg.enabled = value
         elif key == "block_all_by_default":
             cfg.block_all_by_default = value
-        elif key in ("tls_enabled", "certfile", "keyfile", "cafile", "require_client_cert", "min_version", "ciphers", "alpn_protocols"):
+        elif key in (
+            "tls_enabled",
+            "certfile",
+            "keyfile",
+            "cafile",
+            "require_client_cert",
+            "min_version",
+            "ciphers",
+            "alpn_protocols",
+        ):
             cfg.transport[key] = value
-        elif key in ("max_connections", "rate_limit_max", "rate_window_seconds", "block_duration_seconds", "max_blocked_ips", "knock_ports", "knock_window_ms", "geoip_enabled", "geoip_db_path", "allowlist", "denylist", "allowlist_enabled", "denylist_enabled"):
+        elif key in (
+            "max_connections",
+            "rate_limit_max",
+            "rate_window_seconds",
+            "block_duration_seconds",
+            "max_blocked_ips",
+            "knock_ports",
+            "knock_window_ms",
+            "geoip_enabled",
+            "geoip_db_path",
+            "allowlist",
+            "denylist",
+            "allowlist_enabled",
+            "denylist_enabled",
+        ):
             cfg.network[key] = value
-        elif key in ("max_body_size", "allowed_methods", "max_concurrent_per_ip", "enable_injection_filter", "allowed_paths"):
+        elif key in (
+            "max_body_size",
+            "allowed_methods",
+            "max_concurrent_per_ip",
+            "enable_injection_filter",
+            "allowed_paths",
+        ):
             cfg.application[key] = value

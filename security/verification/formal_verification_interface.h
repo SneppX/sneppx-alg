@@ -21,8 +21,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     uint32_t state_id;
     uint32_t next_count;
     uint32_t next_states[8];
@@ -30,7 +30,8 @@ typedef struct {
     int is_accepting;
 } SNEPPXFVState;
 
-typedef struct {
+typedef struct
+{
     SNEPPXFVState states[SNEPPX_FV_MAX_STATES];
     int state_count;
     uint32_t initial_state;

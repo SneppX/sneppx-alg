@@ -1,17 +1,17 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
 #else
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #define SOCKET int
 #define INVALID_SOCKET -1
@@ -37,8 +37,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     char host[256];
     uint16_t port;
     char* tls_version;
@@ -54,29 +54,35 @@ typedef struct {
     uint8_t cert_expired : 1;
 } SNEPPXTLSResult;
 
-static int resolve_host(const char* host, struct sockaddr_in* addr) {
+static int resolve_host(const char* host, struct sockaddr_in* addr)
+{
     struct hostent* he = gethostbyname(host);
-    if (!he) return -1;
+    if (!he)
+        return -1;
     addr->sin_family = AF_INET;
-    addr->sin_addr = *(struct in_addr*)he->h_addr_list[0];
+    addr->sin_addr = *(struct in_addr*) he->h_addr_list[0];
     return 0;
 }
 
-int snepx_tls_scan_host(const char* host, uint16_t port, SNEPPXTLSResult* result) {
+int snepx_tls_scan_host(const char* host, uint16_t port, SNEPPXTLSResult* result)
+{
     memset(result, 0, sizeof(*result));
     strncpy(result->host, host, sizeof(result->host) - 1);
     result->port = port ? port : DEFAULT_PORT;
     return 0;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2) {
+int main(int argc, char** argv)
+{
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: ssl_scanner <hostname> [port]\n");
         return 1;
     }
     SNEPPXTLSResult result;
-    uint16_t port = (argc > 2) ? (uint16_t)atoi(argv[2]) : DEFAULT_PORT;
-    if (snepx_tls_scan_host(argv[1], port, &result) == 0) {
+    uint16_t port = (argc > 2) ? (uint16_t) atoi(argv[2]) : DEFAULT_PORT;
+    if (snepx_tls_scan_host(argv[1], port, &result) == 0)
+    {
         printf("Host: %s:%d\n", result.host, result.port);
         printf("TLS 1.3: %s\n", result.supports_tls13 ? "Yes" : "No");
         printf("TLS 1.2: %s\n", result.supports_tls12 ? "Yes" : "No");

@@ -16,7 +16,7 @@
 
 /**
  * SNEPPX CUDA Quantization Kernels
- * 
+ *
  * GPU-accelerated INT8, FP8, AWQ, and GPTQ operations.
  */
 #include "quantization.h"

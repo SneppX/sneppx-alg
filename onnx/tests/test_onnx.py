@@ -45,7 +45,11 @@ class TestSerializeParse:
         assert parsed.opset_version == 18
         assert len(parsed.graph.nodes) == 5
         assert [n.op_type for n in parsed.graph.nodes] == [
-            "MatMul", "Add", "Relu", "MatMul", "Add"
+            "MatMul",
+            "Add",
+            "Relu",
+            "MatMul",
+            "Add",
         ]
 
     def test_save_load_file(self):
@@ -258,7 +262,9 @@ class TestRuntime:
             inputs=[onnx.ValueInfo("x", "float32", [1, 1, 4, 4])],
             outputs=[onnx.ValueInfo("y", "float32", [1, 2, 2, 2])],
             initializers={"W": w},
-            nodes=[onnx.Node("Conv", ["x", "W"], ["y"], attributes={"pads": [0, 0, 0, 0]})],
+            nodes=[
+                onnx.Node("Conv", ["x", "W"], ["y"], attributes={"pads": [0, 0, 0, 0]})
+            ],
         )
         model = onnx.Model(graph, producer_name="SNEPPX", model_version=1)
         sess = onnx.Session(model)

@@ -3,8 +3,8 @@
 #define SNEPPX_OBF_ANTI_H
 
 #include <cstdint>
-#include <string>
 #include <functional>
+#include <string>
 
 /*
  * SNEPPX - Anti Debugging Countermeasure
@@ -21,10 +21,11 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
-
-enum class SNEPPXAntiDebugAction {
+enum class SNEPPXAntiDebugAction
+{
     CRASH,
     FAKE_DATA,
     DELAY,
@@ -32,8 +33,9 @@ enum class SNEPPXAntiDebugAction {
     WIPE_AND_EXIT
 };
 
-class SNEPPXAntiDebug {
-public:
+class SNEPPXAntiDebug
+{
+  public:
     SNEPPXAntiDebug();
     ~SNEPPXAntiDebug();
 
@@ -49,9 +51,12 @@ public:
     void react();
     void full_scan();
 
-    bool is_debugger_attached() const { return debugger_detected; }
+    bool is_debugger_attached() const
+    {
+        return debugger_detected;
+    }
 
-private:
+  private:
     SNEPPXAntiDebugAction action;
     bool debugger_detected;
 

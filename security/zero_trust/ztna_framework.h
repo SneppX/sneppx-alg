@@ -25,8 +25,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_ZT_ACCESS_DENY,
     SNEPPX_ZT_ACCESS_ALLOW,
     SNEPPX_ZT_ACCESS_ALLOW_WITH_MFA,
@@ -35,7 +35,8 @@ typedef enum {
     SNEPPX_ZT_ACCESS_ALLOW_RESTRICTED
 } SNEPPXZTDecision;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_ZT_CONDITION_USER_ROLE,
     SNEPPX_ZT_CONDITION_USER_CLEARANCE,
     SNEPPX_ZT_CONDITION_DEVICE_POSTURE,
@@ -52,7 +53,8 @@ typedef enum {
     SNEPPX_ZT_CONDITION_NETWORK_TELEMETRY
 } SNEPPXZTConditionType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_ZT_DEVICE_POSTURE_UNKNOWN,
     SNEPPX_ZT_DEVICE_POSTURE_NON_COMPLIANT,
     SNEPPX_ZT_DEVICE_POSTURE_COMPLIANT,
@@ -60,7 +62,8 @@ typedef enum {
     SNEPPX_ZT_DEVICE_POSTURE_COMPROMISED
 } SNEPPXZTDevicePosture;
 
-typedef struct {
+typedef struct
+{
     uint8_t* subject_id;
     size_t subject_id_len;
     uint8_t* subject_roles[16];
@@ -84,7 +87,8 @@ typedef struct {
     uint64_t last_reauth_ns;
 } SNEPPXZTSubject;
 
-typedef struct {
+typedef struct
+{
     uint8_t* resource_id;
     size_t resource_id_len;
     uint8_t* resource_type;
@@ -100,7 +104,8 @@ typedef struct {
     uint8_t requires_audit : 1;
 } SNEPPXZTResource;
 
-typedef struct {
+typedef struct
+{
     char* condition_name;
     size_t condition_name_len;
     SNEPPXZTConditionType condition_type;
@@ -112,7 +117,8 @@ typedef struct {
     uint8_t required : 1;
 } SNEPPXZTCondition;
 
-typedef struct {
+typedef struct
+{
     uint8_t* policy_id;
     size_t policy_id_len;
     SNEPPXZTCondition conditions[SNEPPX_ZT_POLICY_MAX_CONDITIONS];
@@ -125,7 +131,8 @@ typedef struct {
     uint8_t log_all_requests : 1;
 } SNEPPXZTPolicy;
 
-typedef struct {
+typedef struct
+{
     SNEPPXZTSubject subject;
     SNEPPXZTResource resource;
     SNEPPXZTDecision decision;
@@ -145,7 +152,8 @@ int snepx_zt_create_subject(SNEPPXZTSubject* subject, const uint8_t* id, size_t 
 int snepx_zt_create_resource(SNEPPXZTResource* resource, const uint8_t* id, size_t id_len);
 int snepx_zt_create_policy(SNEPPXZTPolicy* policy, const uint8_t* id, size_t id_len, SNEPPXZTDecision default_decision);
 int snepx_zt_policy_add_condition(SNEPPXZTPolicy* policy, const SNEPPXZTCondition* condition);
-int snepx_zt_evaluate(const SNEPPXZTPolicy* policy, const SNEPPXZTSubject* subject, const SNEPPXZTResource* resource, SNEPPXZTRequest* request);
+int snepx_zt_evaluate(const SNEPPXZTPolicy* policy, const SNEPPXZTSubject* subject, const SNEPPXZTResource* resource,
+                      SNEPPXZTRequest* request);
 int snepx_zt_compute_trust_score(const SNEPPXZTSubject* subject, float* score);
 int snepx_zt_compute_risk_score(const SNEPPXZTSubject* subject, const SNEPPXZTResource* resource, float* score);
 int snepx_zt_session_create(SNEPPXZTRequest* request, uint8_t* session_token, size_t* token_len);

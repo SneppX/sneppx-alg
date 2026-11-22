@@ -158,29 +158,38 @@ class ModelRegistry:
         data = self._store.get("models", name)
         if data is None:
             return None
-        model = RegisteredModel(name=name, tags=data.get("tags", {}),
-                                description=data.get("description", ""),
-                                created_at=data.get("created_at", 0.0))
+        model = RegisteredModel(
+            name=name,
+            tags=data.get("tags", {}),
+            description=data.get("description", ""),
+            created_at=data.get("created_at", 0.0),
+        )
         model.versions = [ModelVersion.from_dict(v) for v in data.get("versions", [])]
         return model
 
     def _save(self, model: RegisteredModel) -> None:
-        self._store.put("models", model.name, {
-            "name": model.name,
-            "tags": model.tags,
-            "description": model.description,
-            "created_at": model.created_at,
-            "versions": [v.to_dict() for v in model.versions],
-        })
+        self._store.put(
+            "models",
+            model.name,
+            {
+                "name": model.name,
+                "tags": model.tags,
+                "description": model.description,
+                "created_at": model.created_at,
+                "versions": [v.to_dict() for v in model.versions],
+            },
+        )
 
     # -- public API ----------------------------------------------------------
 
-    def create_registered_model(self, name: str, tags: Optional[Dict[str, str]] = None,
-                                description: str = "") -> RegisteredModel:
+    def create_registered_model(
+        self, name: str, tags: Optional[Dict[str, str]] = None, description: str = ""
+    ) -> RegisteredModel:
         if self._model(name) is not None:
             raise ValueError(f"registered model {name!r} already exists")
-        model = RegisteredModel(name=name, tags=tags or {}, description=description,
-                                created_at=_now())
+        model = RegisteredModel(
+            name=name, tags=tags or {}, description=description, created_at=_now()
+        )
         self._save(model)
         return model
 
@@ -193,8 +202,14 @@ class ModelRegistry:
     def delete_registered_model(self, name: str) -> bool:
         return self._store.delete("models", name)
 
-    def register_model(self, name: str, run_id: str = "", params: Optional[Dict[str, Any]] = None,
-                       metrics: Optional[Dict[str, float]] = None, source: str = "") -> ModelVersion:
+    def register_model(
+        self,
+        name: str,
+        run_id: str = "",
+        params: Optional[Dict[str, Any]] = None,
+        metrics: Optional[Dict[str, float]] = None,
+        source: str = "",
+    ) -> ModelVersion:
         model = self._model(name)
         if model is None:
             model = self.create_registered_model(name)
@@ -211,7 +226,9 @@ class ModelRegistry:
         self._save(model)
         return version
 
-    def get_model_version(self, name: str, version: Union[int, str]) -> Optional[ModelVersion]:
+    def get_model_version(
+        self, name: str, version: Union[int, str]
+    ) -> Optional[ModelVersion]:
         model = self._model(name)
         if model is None:
             return None
@@ -231,10 +248,13 @@ class ModelRegistry:
                 model.versions[i] = version
                 self._save(model)
                 return
-        raise ValueError(f"version {version.version} not found for {version.model_name!r}")
+        raise ValueError(
+            f"version {version.version} not found for {version.model_name!r}"
+        )
 
-    def transition_model_version_stage(self, name: str, version: Union[int, str],
-                                       stage: str) -> ModelVersion:
+    def transition_model_version_stage(
+        self, name: str, version: Union[int, str], stage: str
+    ) -> ModelVersion:
         if stage not in STAGES:
             raise ValueError(f"invalid stage {stage!r}, expected one of {STAGES}")
         v = self.get_model_version(name, version)
@@ -242,13 +262,16 @@ class ModelRegistry:
             raise ValueError(f"version {version} not found for model {name!r}")
         old = v.stage
         if old in ("Production", "Archived") and stage in ("Production", "Archived"):
-            raise ValueError(f"cannot transition {name}@{v.version} from {old!r} to {stage!r}")
+            raise ValueError(
+                f"cannot transition {name}@{v.version} from {old!r} to {stage!r}"
+            )
         v.stage = stage
         self.update_model_version(v)
         return v
 
-    def set_registered_model_alias(self, name: str, alias: str,
-                                   version: Union[int, str]) -> None:
+    def set_registered_model_alias(
+        self, name: str, alias: str, version: Union[int, str]
+    ) -> None:
         v = self.get_model_version(name, version)
         if v is None:
             raise ValueError(f"version {version} not found for model {name!r}")
@@ -258,7 +281,9 @@ class ModelRegistry:
         v.aliases.append(alias)
         self.update_model_version(v)
 
-    def get_model_version_by_alias(self, name: str, alias: str) -> Optional[ModelVersion]:
+    def get_model_version_by_alias(
+        self, name: str, alias: str
+    ) -> Optional[ModelVersion]:
         model = self._model(name)
         if model is None:
             return None
@@ -267,7 +292,9 @@ class ModelRegistry:
                 return v
         return None
 
-    def get_latest_versions(self, name: str, stages: Optional[List[str]] = None) -> List[ModelVersion]:
+    def get_latest_versions(
+        self, name: str, stages: Optional[List[str]] = None
+    ) -> List[ModelVersion]:
         model = self._model(name)
         if model is None:
             return []
@@ -312,16 +339,28 @@ class LineageStore:
         data = self._store.get("lineage", run_id)
         return LineageRecord.from_dict(data) if data else None
 
-    def create_run(self, run_id: str, experiment_name: str = "default",
-                   parent_run_id: str = "", source_uri: str = "",
-                   code_version: str = "", dataset_hash: str = "",
-                   tags: Optional[Dict[str, str]] = None) -> LineageRecord:
+    def create_run(
+        self,
+        run_id: str,
+        experiment_name: str = "default",
+        parent_run_id: str = "",
+        source_uri: str = "",
+        code_version: str = "",
+        dataset_hash: str = "",
+        tags: Optional[Dict[str, str]] = None,
+    ) -> LineageRecord:
         if self._record(run_id) is not None:
             raise ValueError(f"lineage record for run {run_id!r} already exists")
-        rec = LineageRecord(run_id=run_id, experiment_name=experiment_name,
-                            parent_run_id=parent_run_id, source_uri=source_uri,
-                            code_version=code_version, dataset_hash=dataset_hash,
-                            tags=tags or {}, created_at=_now())
+        rec = LineageRecord(
+            run_id=run_id,
+            experiment_name=experiment_name,
+            parent_run_id=parent_run_id,
+            source_uri=source_uri,
+            code_version=code_version,
+            dataset_hash=dataset_hash,
+            tags=tags or {},
+            created_at=_now(),
+        )
         self._store.put("lineage", run_id, rec.to_dict())
         if parent_run_id and self._record(parent_run_id) is not None:
             parent = self._record(parent_run_id)
@@ -416,21 +455,38 @@ class PromptRegistry:
 
     def _versions(self, name: str) -> List[PromptVersion]:
         data = self._store.get("prompts", name)
-        return [PromptVersion.from_dict(p) for p in data.get("versions", [])] if data else []
+        return (
+            [PromptVersion.from_dict(p) for p in data.get("versions", [])]
+            if data
+            else []
+        )
 
-    def register_prompt(self, name: str, template: str, description: str = "",
-                        tags: Optional[Dict[str, str]] = None) -> PromptVersion:
+    def register_prompt(
+        self,
+        name: str,
+        template: str,
+        description: str = "",
+        tags: Optional[Dict[str, str]] = None,
+    ) -> PromptVersion:
         versions = self._versions(name)
         version = len(versions) + 1
         variables = sorted(set(self._vars_re.findall(template)))
-        prompt = PromptVersion(name=name, version=version, template=template,
-                               variables=variables, description=description,
-                               tags=tags or {}, created_at=_now())
+        prompt = PromptVersion(
+            name=name,
+            version=version,
+            template=template,
+            variables=variables,
+            description=description,
+            tags=tags or {},
+            created_at=_now(),
+        )
         versions.append(prompt)
         self._store.put("prompts", name, {"versions": [p.to_dict() for p in versions]})
         return prompt
 
-    def get_prompt(self, name: str, version: Union[int, str] = "latest") -> Optional[PromptVersion]:
+    def get_prompt(
+        self, name: str, version: Union[int, str] = "latest"
+    ) -> Optional[PromptVersion]:
         versions = self._versions(name)
         if not versions:
             return None
@@ -444,7 +500,9 @@ class PromptRegistry:
     def list_prompts(self) -> List[str]:
         return [p["versions"][-1]["name"] for p in self._store.list("prompts")]
 
-    def render(self, name: str, version: Union[int, str] = "latest", **values: Any) -> str:
+    def render(
+        self, name: str, version: Union[int, str] = "latest", **values: Any
+    ) -> str:
         prompt = self.get_prompt(name, version)
         if prompt is None:
             raise ValueError(f"prompt {name!r} not found")
@@ -464,7 +522,9 @@ class GatewayRoute:
     api_key: str = ""
     priority: int = 0
     enabled: bool = True
-    usage: Dict[str, float] = field(default_factory=lambda: {"calls": 0.0, "latency": 0.0})
+    usage: Dict[str, float] = field(
+        default_factory=lambda: {"calls": 0.0, "latency": 0.0}
+    )
 
 
 class AIGateway:
@@ -475,8 +535,12 @@ class AIGateway:
     stays testable without an LLM.
     """
 
-    def __init__(self, backend: Optional[Callable] = None, store: Optional[JSONStore] = None,
-                 root: str = "mlflow"):
+    def __init__(
+        self,
+        backend: Optional[Callable] = None,
+        store: Optional[JSONStore] = None,
+        root: str = "mlflow",
+    ):
         self._backend = backend
         self._store = store or JSONStore(root)
         self._routes: Dict[str, GatewayRoute] = {}
@@ -485,10 +549,21 @@ class AIGateway:
             r = GatewayRoute(**{k: v for k, v in data.items()})
             self._routes[r.name] = r
 
-    def add_route(self, name: str, model: str, provider: str = "local",
-                  api_key: str = "", priority: int = 0) -> GatewayRoute:
-        route = GatewayRoute(name=name, model=model, provider=provider,
-                             api_key=api_key, priority=priority)
+    def add_route(
+        self,
+        name: str,
+        model: str,
+        provider: str = "local",
+        api_key: str = "",
+        priority: int = 0,
+    ) -> GatewayRoute:
+        route = GatewayRoute(
+            name=name,
+            model=model,
+            provider=provider,
+            api_key=api_key,
+            priority=priority,
+        )
         with self._lock:
             self._routes[name] = route
             self._store.put("routes", name, asdict(route))
@@ -534,6 +609,7 @@ class AIGateway:
             target = candidates[0]
 
         import time as _t
+
         t0 = _t.perf_counter()
         try:
             if self._backend is not None:
@@ -581,16 +657,32 @@ class EvalMonitor:
     def __init__(self, store: Optional[JSONStore] = None, root: str = "mlflow"):
         self._store = store or JSONStore(root)
 
-    def log_eval(self, run_id: str, metric: str, value: float, model_name: str = "",
-                 dataset: str = "", extra: Optional[Dict[str, float]] = None) -> EvalSummary:
-        summary = EvalSummary(run_id=run_id, model_name=model_name, metric=metric,
-                              value=value, dataset=dataset, extra=extra or {},
-                              created_at=_now())
-        self._store.put("evals", f"{run_id}_{metric}_{int(_now() * 1000)}",
-                        summary.to_dict())
+    def log_eval(
+        self,
+        run_id: str,
+        metric: str,
+        value: float,
+        model_name: str = "",
+        dataset: str = "",
+        extra: Optional[Dict[str, float]] = None,
+    ) -> EvalSummary:
+        summary = EvalSummary(
+            run_id=run_id,
+            model_name=model_name,
+            metric=metric,
+            value=value,
+            dataset=dataset,
+            extra=extra or {},
+            created_at=_now(),
+        )
+        self._store.put(
+            "evals", f"{run_id}_{metric}_{int(_now() * 1000)}", summary.to_dict()
+        )
         return summary
 
-    def history(self, model_name: Optional[str] = None, metric: Optional[str] = None) -> List[EvalSummary]:
+    def history(
+        self, model_name: Optional[str] = None, metric: Optional[str] = None
+    ) -> List[EvalSummary]:
         out = []
         for data in self._store.list("evals"):
             s = EvalSummary.from_dict(data)
@@ -601,11 +693,16 @@ class EvalMonitor:
             out.append(s)
         return sorted(out, key=lambda s: s.created_at)
 
-    def deltas(self, model_name: str, metric: str = "accuracy") -> Dict[str, Optional[float]]:
+    def deltas(
+        self, model_name: str, metric: str = "accuracy"
+    ) -> Dict[str, Optional[float]]:
         hist = self.history(model_name, metric)
         if len(hist) < 2:
-            return {"latest": hist[-1].value if hist else None,
-                    "delta": None, "trend": "flat"}
+            return {
+                "latest": hist[-1].value if hist else None,
+                "delta": None,
+                "trend": "flat",
+            }
         latest = hist[-1].value
         prev = hist[-2].value
         delta = latest - prev
@@ -618,7 +715,10 @@ class EvalMonitor:
         alerts = []
         for s in self.history():
             key = f"{s.model_name}:{s.metric}"
-            if s.value < best.get(key, s.value) + threshold and best.get(key) is not None:
+            if (
+                s.value < best.get(key, s.value) + threshold
+                and best.get(key) is not None
+            ):
                 alerts.append(s)
             best[key] = max(best.get(key, -float("inf")), s.value)
         return alerts
@@ -649,7 +749,9 @@ class SneppxTrackingClient:
         self._root = root
 
     # registry passthroughs
-    def create_registered_model(self, name: str, tags=None, description: str = "") -> RegisteredModel:
+    def create_registered_model(
+        self, name: str, tags=None, description: str = ""
+    ) -> RegisteredModel:
         return self.registry.create_registered_model(name, tags, description)
 
     def get_registered_model(self, name: str) -> Optional[RegisteredModel]:
@@ -658,31 +760,50 @@ class SneppxTrackingClient:
     def list_registered_models(self) -> List[str]:
         return self.registry.list_registered_models()
 
-    def register_model(self, name: str, run_id: str = "", params=None, metrics=None,
-                       source: str = "") -> ModelVersion:
+    def register_model(
+        self, name: str, run_id: str = "", params=None, metrics=None, source: str = ""
+    ) -> ModelVersion:
         return self.registry.register_model(name, run_id, params, metrics, source)
 
     def get_model_version(self, name: str, version) -> Optional[ModelVersion]:
         return self.registry.get_model_version(name, version)
 
-    def transition_model_version_stage(self, name: str, version, stage: str) -> ModelVersion:
+    def transition_model_version_stage(
+        self, name: str, version, stage: str
+    ) -> ModelVersion:
         return self.registry.transition_model_version_stage(name, version, stage)
 
     def set_registered_model_alias(self, name: str, alias: str, version) -> None:
         self.registry.set_registered_model_alias(name, alias, version)
 
-    def get_model_version_by_alias(self, name: str, alias: str) -> Optional[ModelVersion]:
+    def get_model_version_by_alias(
+        self, name: str, alias: str
+    ) -> Optional[ModelVersion]:
         return self.registry.get_model_version_by_alias(name, alias)
 
     def get_latest_versions(self, name: str, stages=None) -> List[ModelVersion]:
         return self.registry.get_latest_versions(name, stages)
 
     # lineage passthroughs
-    def create_run(self, run_id: str, experiment_name: str = "default",
-                   parent_run_id: str = "", source_uri: str = "", code_version: str = "",
-                   dataset_hash: str = "", tags=None) -> LineageRecord:
-        return self.lineage.create_run(run_id, experiment_name, parent_run_id,
-                                       source_uri, code_version, dataset_hash, tags)
+    def create_run(
+        self,
+        run_id: str,
+        experiment_name: str = "default",
+        parent_run_id: str = "",
+        source_uri: str = "",
+        code_version: str = "",
+        dataset_hash: str = "",
+        tags=None,
+    ) -> LineageRecord:
+        return self.lineage.create_run(
+            run_id,
+            experiment_name,
+            parent_run_id,
+            source_uri,
+            code_version,
+            dataset_hash,
+            tags,
+        )
 
     def get_run(self, run_id: str) -> Optional[LineageRecord]:
         return self.lineage.get_run(run_id)
@@ -700,7 +821,9 @@ class SneppxTrackingClient:
         return self.lineage.descendants_of(run_id)
 
     # prompt passthroughs
-    def register_prompt(self, name: str, template: str, description: str = "", tags=None) -> PromptVersion:
+    def register_prompt(
+        self, name: str, template: str, description: str = "", tags=None
+    ) -> PromptVersion:
         return self.prompts.register_prompt(name, template, description, tags)
 
     def get_prompt(self, name: str, version="latest") -> Optional[PromptVersion]:
@@ -710,8 +833,14 @@ class SneppxTrackingClient:
         return self.prompts.render(name, version, **values)
 
     # gateway passthroughs
-    def add_route(self, name: str, model: str, provider: str = "local",
-                  api_key: str = "", priority: int = 0) -> GatewayRoute:
+    def add_route(
+        self,
+        name: str,
+        model: str,
+        provider: str = "local",
+        api_key: str = "",
+        priority: int = 0,
+    ) -> GatewayRoute:
         return self.gateway.add_route(name, model, provider, api_key, priority)
 
     def set_api_key(self, name: str, api_key: str) -> None:
@@ -727,11 +856,20 @@ class SneppxTrackingClient:
         return self.gateway.usage_report()
 
     # eval passthroughs
-    def log_eval(self, run_id: str, metric: str, value: float, model_name: str = "",
-                 dataset: str = "", extra=None) -> EvalSummary:
+    def log_eval(
+        self,
+        run_id: str,
+        metric: str,
+        value: float,
+        model_name: str = "",
+        dataset: str = "",
+        extra=None,
+    ) -> EvalSummary:
         return self.evals.log_eval(run_id, metric, value, model_name, dataset, extra)
 
-    def eval_deltas(self, model_name: str, metric: str = "accuracy") -> Dict[str, Optional[float]]:
+    def eval_deltas(
+        self, model_name: str, metric: str = "accuracy"
+    ) -> Dict[str, Optional[float]]:
         return self.evals.deltas(model_name, metric)
 
     def eval_regressions(self, threshold: float = -0.01) -> List[EvalSummary]:

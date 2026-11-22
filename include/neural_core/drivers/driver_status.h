@@ -19,22 +19,23 @@
  *
  */
 
-
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Unified status codes returned by accelerator driver entry points.
- * Stub backends (Vulkan, Metal, NPU, OneAPI, Qualcomm, Intel, AMD, SGX,
- * shim, TPU) return SNEPPX_DRIVER_UNSUPPORTED so callers can fall back
- * to CUDA/ROCm or the CPU reference path instead of silently doing nothing. */
-typedef enum {
-    SNEPPX_DRIVER_OK = 0,
-    SNEPPX_DRIVER_UNSUPPORTED = -1,
-    SNEPPX_DRIVER_ERROR = -2
-} sneppx_driver_status_t;
+    /* Unified status codes returned by accelerator driver entry points.
+     * Stub backends (Vulkan, Metal, NPU, OneAPI, Qualcomm, Intel, AMD, SGX,
+     * shim, TPU) return SNEPPX_DRIVER_UNSUPPORTED so callers can fall back
+     * to CUDA/ROCm or the CPU reference path instead of silently doing nothing. */
+    typedef enum
+    {
+        SNEPPX_DRIVER_OK = 0,
+        SNEPPX_DRIVER_UNSUPPORTED = -1,
+        SNEPPX_DRIVER_ERROR = -2
+    } sneppx_driver_status_t;
 
-/* Returns a short, human-readable reason a backend is unavailable. */
-const char* sneppx_driver_status_string(sneppx_driver_status_t status);
+    /* Returns a short, human-readable reason a backend is unavailable. */
+    const char* sneppx_driver_status_string(sneppx_driver_status_t status);
 
 #ifdef __cplusplus
 }

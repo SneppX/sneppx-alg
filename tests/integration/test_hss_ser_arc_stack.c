@@ -1,11 +1,11 @@
-#include "hierarchical_state_space.h"
-#include "test_gtest.h"
-#include "sparse_expert_routing.h"
 #include "adversarial_robustness_certification.h"
-#include <stdio.h>
+#include "hierarchical_state_space.h"
+#include "sparse_expert_routing.h"
+#include "test_gtest.h"
 #include <math.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Hss Ser Arc Stack
@@ -22,17 +22,23 @@
  *
  */
 
-
-static void test_hss_ser_arc_stack(void) {
+static void test_hss_ser_arc_stack(void)
+{
     SNEPPXHSSConfig hss_cfg = SNEPPX_hss_config_default();
-    hss_cfg.state_dim = 8; hss_cfg.input_dim = 16; hss_cfg.output_dim = 16;
-    hss_cfg.num_layers = 1; hss_cfg.use_hierarchical = 0;
+    hss_cfg.state_dim = 8;
+    hss_cfg.input_dim = 16;
+    hss_cfg.output_dim = 16;
+    hss_cfg.num_layers = 1;
+    hss_cfg.use_hierarchical = 0;
     SNEPPXHSSModel* hss = SNEPPX_hss_model_create(&hss_cfg, 42);
     SX_ASSERT(hss != NULL, "hss model");
 
     SNEPPXSERConfig ser_cfg = SNEPPX_ser_config_default();
-    ser_cfg.num_experts = 4; ser_cfg.num_active = 2; ser_cfg.input_dim = 16;
-    ser_cfg.expert_dim = 32; ser_cfg.output_dim = 16;
+    ser_cfg.num_experts = 4;
+    ser_cfg.num_active = 2;
+    ser_cfg.input_dim = 16;
+    ser_cfg.expert_dim = 32;
+    ser_cfg.output_dim = 16;
     SNEPPXSERModel* ser = SNEPPX_ser_model_create(&ser_cfg, 99, 1);
     SX_ASSERT(ser != NULL, "ser model");
 
@@ -53,9 +59,12 @@ static void test_hss_ser_arc_stack(void) {
     SNEPPXTensor flat;
     size_t flat_shape[] = {merged, 16};
     flat.data = hss_out->data;
-    flat.shape = flat_shape; flat.ndim = 2;
-    flat.size = merged * 16; flat.item_size = sizeof(float);
-    flat.dtype = SNEPPX_FLOAT32; flat.strides = NULL;
+    flat.shape = flat_shape;
+    flat.ndim = 2;
+    flat.size = merged * 16;
+    flat.item_size = sizeof(float);
+    flat.dtype = SNEPPX_FLOAT32;
+    flat.strides = NULL;
 
     SNEPPXTensor* ser_out = NULL;
     SNEPPX_ser_forward(ser->layers[0], &flat, &ser_out);
@@ -68,25 +77,34 @@ static void test_hss_ser_arc_stack(void) {
     SX_ASSERT(arc_out != NULL, "arc output");
     SX_ASSERT(arc_out->shape[0] == merged && arc_out->shape[1] == 16, "arc shape");
 
-    float* od = (float*)arc_out->data;
+    float* od = (float*) arc_out->data;
     int ok = 1;
-    for (size_t i = 0; i < arc_out->size; i++) {
-        if (!isfinite(od[i])) { ok = 0; break; }
+    for (size_t i = 0; i < arc_out->size; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            ok = 0;
+            break;
+        }
     }
     SX_ASSERT(ok, "all finite");
-    for (int i = 0; i < 4; i++) SX_ASSERT(isfinite(metrics[i]), "all metrics finite");
+    for (int i = 0; i < 4; i++)
+        SX_ASSERT(isfinite(metrics[i]), "all metrics finite");
 
-    printf("  Security metrics: anomaly=%.4f conf=%.4f clamp=%.4f norm=%.4f\n",
-           metrics[0], metrics[1], metrics[2], metrics[3]);
+    printf("  Security metrics: anomaly=%.4f conf=%.4f clamp=%.4f norm=%.4f\n", metrics[0], metrics[1], metrics[2],
+           metrics[3]);
 
     SNEPPX_tensor_destroy(input);
     SNEPPX_tensor_destroy(hss_out);
     SNEPPX_tensor_destroy(ser_out);
-    if (arc_out) SNEPPX_tensor_destroy(arc_out);
+    if (arc_out)
+        SNEPPX_tensor_destroy(arc_out);
     SNEPPX_hss_model_destroy(hss);
     SNEPPX_ser_model_destroy(ser);
     SNEPPX_arc_layer_destroy(arc);
 }
 
-
-TEST(test_hss_ser_arc_stack, test_hss_ser_arc_stack) { test_hss_ser_arc_stack(); }
+TEST(test_hss_ser_arc_stack, test_hss_ser_arc_stack)
+{
+    test_hss_ser_arc_stack();
+}

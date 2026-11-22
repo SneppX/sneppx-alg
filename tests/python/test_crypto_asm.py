@@ -1,11 +1,20 @@
 """Tests for crypto_asm.py — ASM-accelerated crypto operations."""
 
 import sys, os, hashlib
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.crypto_asm import (
-    AESNI, SHANI, ChaCha20AVX2, Poly1305ASM, MontgomeryMul,
-    Ed25519ASM, ConstantTimeOps, FirewallASM
+    AESNI,
+    SHANI,
+    ChaCha20AVX2,
+    Poly1305ASM,
+    MontgomeryMul,
+    Ed25519ASM,
+    ConstantTimeOps,
+    FirewallASM,
 )
 
 
@@ -72,7 +81,7 @@ def test_poly1305_mac():
 def test_montgomery_mul():
     mm = MontgomeryMul()
     a, b, mod = 7, 8, 13
-    inv = pow(-mod, -1, 2 ** 64) & ((1 << 64) - 1)
+    inv = pow(-mod, -1, 2**64) & ((1 << 64) - 1)
     result = mm.mul(a, b, mod, inv)
     assert result == (a * b * inv) % mod
 
@@ -128,6 +137,7 @@ def test_firewall_ip_match():
 
 if __name__ == "__main__":
     import hashlib
+
     test_aes_encrypt_block()
     test_aes_gcm_roundtrip()
     test_sha256()

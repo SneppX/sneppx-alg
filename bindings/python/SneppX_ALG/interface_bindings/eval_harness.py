@@ -42,21 +42,22 @@ class Task:
 
 def extract_answer_gsm8k(text: str) -> Optional[str]:
     text = text.strip()
-    m = re.search(r'####\s*(-?\d+(?:\.\d+)?)', text)
+    m = re.search(r"####\s*(-?\d+(?:\.\d+)?)", text)
     if m:
         return m.group(1)
-    numbers = re.findall(r'-?\d+(?:\.\d+)?', text)
+    numbers = re.findall(r"-?\d+(?:\.\d+)?", text)
     return numbers[-1] if numbers else None
 
 
 def extract_answer_math(text: str) -> Optional[str]:
     text = text.strip()
-    m = re.search(r'\\boxed\{([^}]+)\}', text)
+    m = re.search(r"\\boxed\{([^}]+)\}", text)
     return m.group(1) if m else text
 
 
 def _synthetic_gsm8k(n: int = 16) -> List[Dict]:
     import random
+
     random.seed(42)
     samples = []
     for _ in range(n):
@@ -67,31 +68,43 @@ def _synthetic_gsm8k(n: int = 16) -> List[Dict]:
 
 def _synthetic_mmlu(n: int = 16) -> List[Dict]:
     import random
+
     random.seed(42)
     categories = ["college_biology", "machine_learning", "astronomy", "philosophy"]
     samples = []
     for i in range(n):
         cat = categories[i % len(categories)]
         answer = "ABCD"[i % 4]
-        samples.append({
-            "question": f"Synthetic MMLU question {i}? (A) foo (B) bar (C) baz (D) qux",
-            "answer": answer, "category": cat,
-        })
+        samples.append(
+            {
+                "question": f"Synthetic MMLU question {i}? (A) foo (B) bar (C) baz (D) qux",
+                "answer": answer,
+                "category": cat,
+            }
+        )
     return samples
 
 
 def _synthetic_humaneval(n: int = 8) -> List[Dict]:
     samples = []
     for i in range(n):
-        samples.append({
-            "prompt": f"def solution_{i}(x):\n    return x + {i}\n",
-            "answer": f"def solution_{i}(x):\n    return x + {i}\n",
-        })
+        samples.append(
+            {
+                "prompt": f"def solution_{i}(x):\n    return x + {i}\n",
+                "answer": f"def solution_{i}(x):\n    return x + {i}\n",
+            }
+        )
     return samples
 
 
 class ExactMatchTask(Task):
-    def __init__(self, name: str, extract_fn: Callable, fewshot: int = 0, data_path: Optional[str] = None):
+    def __init__(
+        self,
+        name: str,
+        extract_fn: Callable,
+        fewshot: int = 0,
+        data_path: Optional[str] = None,
+    ):
         super().__init__(name, fewshot)
         self.extract_fn = extract_fn
         self.data_path = data_path
@@ -119,26 +132,63 @@ class ExactMatchTask(Task):
 
 
 MMLU_CATEGORIES = [
-    "abstract_algebra", "anatomy", "astronomy", "business_ethics",
-    "clinical_knowledge", "college_biology", "college_chemistry",
-    "college_computer_science", "college_mathematics", "college_medicine",
-    "college_physics", "computer_security", "conceptual_physics",
-    "econometrics", "electrical_engineering", "elementary_mathematics",
-    "formal_logic", "global_facts", "high_school_biology",
-    "high_school_chemistry", "high_school_computer_science",
-    "high_school_european_history", "high_school_geography",
-    "high_school_government_and_politics", "high_school_macroeconomics",
-    "high_school_mathematics", "high_school_microeconomics",
-    "high_school_physics", "high_school_psychology",
-    "high_school_statistics", "high_school_us_history",
-    "high_school_world_history", "human_aging", "human_sexuality",
-    "international_law", "jurisprudence", "logical_fallacies",
-    "machine_learning", "management", "marketing", "medical_genetics",
-    "miscellaneous", "moral_disputes", "moral_scenarios",
-    "nutrition", "philosophy", "prehistory", "professional_accounting",
-    "professional_law", "professional_medicine", "professional_psychology",
-    "public_relations", "security_studies", "sociology",
-    "us_foreign_policy", "virology", "world_religions",
+    "abstract_algebra",
+    "anatomy",
+    "astronomy",
+    "business_ethics",
+    "clinical_knowledge",
+    "college_biology",
+    "college_chemistry",
+    "college_computer_science",
+    "college_mathematics",
+    "college_medicine",
+    "college_physics",
+    "computer_security",
+    "conceptual_physics",
+    "econometrics",
+    "electrical_engineering",
+    "elementary_mathematics",
+    "formal_logic",
+    "global_facts",
+    "high_school_biology",
+    "high_school_chemistry",
+    "high_school_computer_science",
+    "high_school_european_history",
+    "high_school_geography",
+    "high_school_government_and_politics",
+    "high_school_macroeconomics",
+    "high_school_mathematics",
+    "high_school_microeconomics",
+    "high_school_physics",
+    "high_school_psychology",
+    "high_school_statistics",
+    "high_school_us_history",
+    "high_school_world_history",
+    "human_aging",
+    "human_sexuality",
+    "international_law",
+    "jurisprudence",
+    "logical_fallacies",
+    "machine_learning",
+    "management",
+    "marketing",
+    "medical_genetics",
+    "miscellaneous",
+    "moral_disputes",
+    "moral_scenarios",
+    "nutrition",
+    "philosophy",
+    "prehistory",
+    "professional_accounting",
+    "professional_law",
+    "professional_medicine",
+    "professional_psychology",
+    "public_relations",
+    "security_studies",
+    "sociology",
+    "us_foreign_policy",
+    "virology",
+    "world_religions",
 ]
 
 
@@ -151,7 +201,13 @@ def extract_answer_mmlu(text: str, choices: List[str]) -> Optional[str]:
 
 
 class MultipleChoiceTask(Task):
-    def __init__(self, name: str, categories: Optional[List[str]] = None, fewshot: int = 5, data_path: Optional[str] = None):
+    def __init__(
+        self,
+        name: str,
+        categories: Optional[List[str]] = None,
+        fewshot: int = 5,
+        data_path: Optional[str] = None,
+    ):
         super().__init__(name, fewshot)
         self.categories = categories or MMLU_CATEGORIES
         self.data_path = data_path
@@ -190,7 +246,7 @@ def estimate_pass_at_k(num_samples: int, num_correct: int, k: int) -> float:
 
 
 def extract_code(text: str) -> str:
-    m = re.search(r'```(?:python)?\n(.*?)```', text, re.DOTALL)
+    m = re.search(r"```(?:python)?\n(.*?)```", text, re.DOTALL)
     return m.group(1).strip() if m else text.strip()
 
 
@@ -255,7 +311,11 @@ class EvalHarness:
         self.register_task(ExactMatchTask("gsm8k", extract_answer_gsm8k, fewshot=8))
         self.register_task(ExactMatchTask("math", extract_answer_math, fewshot=4))
         self.register_task(MultipleChoiceTask("mmlu", fewshot=5))
-        self.register_task(MultipleChoiceTask("mmlu_reduced", categories=MMLU_CATEGORIES[:4], fewshot=5))
+        self.register_task(
+            MultipleChoiceTask(
+                "mmlu_reduced", categories=MMLU_CATEGORIES[:4], fewshot=5
+            )
+        )
         self.register_task(CodingTask("humaneval", fewshot=0))
         self.register_task(CodingTask("mbpp", fewshot=0))
 
@@ -286,14 +346,20 @@ class EvalHarness:
     def summary(self) -> str:
         lines = ["=" * 60, "  LM Evaluation Harness Results", "=" * 60]
         for name, result in self.results.items():
-            lines.append(f"  {name:<20} {result.metric:<12} {result.value:>8.2f}  (n={result.num_samples})")
+            lines.append(
+                f"  {name:<20} {result.metric:<12} {result.value:>8.2f}  (n={result.num_samples})"
+            )
         lines.append("=" * 60)
         return "\n".join(lines)
 
     def export_json(self, path: Optional[str] = None) -> str:
         data = {}
         for name, result in self.results.items():
-            data[name] = {"metric": result.metric, "value": result.value, "num_samples": result.num_samples}
+            data[name] = {
+                "metric": result.metric,
+                "value": result.value,
+                "num_samples": result.num_samples,
+            }
         output = json.dumps(data, indent=2)
         out_path = path or self.config.output_path
         if out_path:

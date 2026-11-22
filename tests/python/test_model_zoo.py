@@ -223,17 +223,17 @@ def test_safetensors_reader_invalid():
 def test_extend_context():
     """Test 128K context extension via NTK-aware RoPE scaling."""
     config = get_model_config("llama2", "7B")
-    assert config["max_position_embeddings"] == 4096, (
-        f"Expected 4096, got {config['max_position_embeddings']}"
-    )
+    assert (
+        config["max_position_embeddings"] == 4096
+    ), f"Expected 4096, got {config['max_position_embeddings']}"
 
     extended = extend_context(config, target_len=131072)
-    assert extended["max_position_embeddings"] == 131072, (
-        f"Expected 131072, got {extended['max_position_embeddings']}"
-    )
-    assert extended["rope_theta"] > config["rope_theta"], (
-        "NTK scaling should increase rope_theta"
-    )
+    assert (
+        extended["max_position_embeddings"] == 131072
+    ), f"Expected 131072, got {extended['max_position_embeddings']}"
+    assert (
+        extended["rope_theta"] > config["rope_theta"]
+    ), "NTK scaling should increase rope_theta"
     assert extended["rope_scaling"] == 2
     assert abs(extended["rope_scaling_factor"] - 32.0) < 0.1
 
@@ -256,12 +256,12 @@ def test_context_extension_all_models():
         config = get_model_config(family, size)
         orig = config["max_position_embeddings"]
         extended = extend_context(config, target_len=131072)
-        assert extended["max_position_embeddings"] == 131072, (
-            f"{family} {size} failed 128K"
-        )
-        assert extended["rope_theta"] >= config["rope_theta"], (
-            f"{family} {size}: rope_theta should not decrease"
-        )
+        assert (
+            extended["max_position_embeddings"] == 131072
+        ), f"{family} {size} failed 128K"
+        assert (
+            extended["rope_theta"] >= config["rope_theta"]
+        ), f"{family} {size}: rope_theta should not decrease"
         print(f"  [PASS] extend_context({family}, {size}): {orig} -> 131072")
     print("  [PASS] context_extension_all_models")
 
@@ -280,7 +280,6 @@ def test_mha_forward_not_null():
         return
     print("  [SKIP] MHA forward test requires C extension")
     print("  [PASS] mha_forward_not_null")
-
 
 
 def test_model_config_c_round_trip():
@@ -330,7 +329,6 @@ def test_model_config_c_round_trip():
     restored_distinct = ModelConfig.from_c_config(distinct_c)
     assert restored_distinct.max_position_embeddings == 4096
     assert restored_distinct.max_seq_len == 16384
-
 
 
 def test_model_config_json_round_trip_preserves_false_and_zero():

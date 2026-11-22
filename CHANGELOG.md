@@ -5,6 +5,7 @@ All notable changes to SNEPPX-Algo.
 ## [v1.5.2] - 2026-10-23
 
 ### Packaging, Site UX, Playground & Documentation
+
 - **PyPI packaging discovery**: fixed setuptools find specification in `pyproject.toml` pointing explicitly to `bindings/python`, ensured `README.md` metadata is included on PyPI package builds.
 - **Site UX enhancements**:
   - Added smooth dark/light theme transition CSS.
@@ -21,6 +22,7 @@ All notable changes to SNEPPX-Algo.
 ## [v1.5.1] - 2026-10-19
 
 ### GitHub credibility, community health & docs polish
+
 - **Social preview card**: new 1280×640 PNG at `docs/assets/social-preview.png` (dark palette, WCAG AA contrast), verified by a programmatic layout QA (margins, overlaps, contrast ratios).
 - **Open Graph / Twitter cards**: `overrides/main.html` now emits `og:*` and `twitter:*` meta tags — previously absent because Material's social-card plugin is disabled (cairosvg cannot load `libcairo-2.dll`). Deployed live via mike; `og:image` resolves.
 - **README**: verified-runnable Python quickstart (loss 7.4 → 0.04 in 200 steps), honest "Why SNEPPX-Alg" comparison table vs PyTorch/JAX, and a "By the numbers" proof section.
@@ -47,7 +49,6 @@ All notable changes to SNEPPX-Algo.
   This is a release candidate only; no PyPI upload or GitHub release has
   been performed.
 
-
 - **P0 version alignment:** CMake, Python bindings `__version__`, inference server health/app version, ONNX, README/bindings badges aligned to 1.5.2.
 - **P1 Python inference:** `inference_server` requires a registered tokenizer for text encode/decode (HTTP 422 with clear message); removed silent `ord/chr` char-code fallbacks. `serve_cli` validates local config/tokenizer/checkpoint paths and reports checkpoint-loading status clearly.
 - **P2 HF/model zoo (local-only):** `hf_integration` loaders no longer call `huggingface_hub.snapshot_download` and raise clear `FileNotFoundError` for missing local snapshots (`cache_dir=<local .safetensors/.bin dir>`). `model_zoo.from_pretrained` documented as config/skeleton metadata only (no weights download/network).
@@ -57,6 +58,7 @@ All notable changes to SNEPPX-Algo.
 - **Validation (CPU-safe):** `test_readme_integrity`, `test_hf_safetensors`, `test_hf_integration`, `test_model_zoo`, `test_data_loader` passed in-session; ACVP/crypto KAT suites skip-safe without built `_SNEPPX_c` extension. LLM/CUDA/inference-server tests not run (AGENTS constraints).
 
 ### Build
+
 - Standardized on the **Ninja** generator across all CMake presets
   (`CMakePresets.json`): `debug`, `release`, `asan`, `cuda`, `python`,
   `minimal`, each writing to a per-config `build/<name>` directory.
@@ -68,6 +70,7 @@ All notable changes to SNEPPX-Algo.
   updated to the Ninja preset workflow.
 
 ### ONNX import/export toolkit
+
 - New standalone, numpy-only `onnx/` package (`import onnx`, exposed as
   `SneppX_ALG.onnx`): canonical protobuf wire-format reader/writer
   (`wire.py`), data model (`model.py`), `parse_model`/`load_model`/
@@ -90,6 +93,7 @@ All notable changes to SNEPPX-Algo.
 - Tests: `onnx/tests/test_onnx.py` (25 tests, all numpy-only, all pass).
 
 ### Security
+
 - Fixed `dilithium_zetas[256]` in `security/crypto/c/dilithium.c`: one
   corrupted twiddle factor (`…568` → `…596`) cascaded through the 8-layer
   negacyclic NTT and broke `poly_mul`, invalidating Dilithium (ML-DSA)
@@ -104,6 +108,7 @@ All notable changes to SNEPPX-Algo.
   now pass.
 
 ### Profiling
+
 - Added `[BENCH]` `fprintf(stderr,...)` start/end markers to HSS forward
   pass (`algorithms/hss/core/forward.c`) and SER layer forward
   (`algorithms/ser/core/forward_layer.c`) for integration with
@@ -112,6 +117,7 @@ All notable changes to SNEPPX-Algo.
   `bench_pq_crypto`. HSS/SER timeout at 300s (no CUDA toolchain available).
 
 ### S2 Obfuscation Audit
+
 - Audit report published in `docs/security/obf_audit.md` (7 findings,
   3 critical). Key issues: `rand()` used for obfuscation decisions (CWE-338),
   whitebox AES timing side-channel (CWE-208), no restore path in bogus CF
@@ -120,12 +126,14 @@ All notable changes to SNEPPX-Algo.
 ## [1.1.1] — 2026-08-01
 
 ### Security
+
 - Replaced unsafe C functions with safe alternatives across 8 files (`37ba14d`):
   `gets`/`scanf`/`strcpy`/`sprintf`/`alloca` eliminated in `model_factory.cpp`,
   `vit.c`, `numpy_format.c`, `onnx_format.c`, `pth_format.c`, `safetensors.c`,
   `http_auth.c`, and `s9_extensions.c` (49 insertions, 22 deletions).
 
 ### C HTTP Server (real serving endpoints)
+
 - New `net/http/http_api.{h,c}` module registering `GET /v1/health`,
   `GET /v1/models`, `GET /v1/models/{id}`, and `POST /v1/generate` — mirroring the
   Python `inference_server.py` response shapes (`GenerateResponse` JSON with
@@ -141,6 +149,7 @@ All notable changes to SNEPPX-Algo.
   auth middleware — public health/models, Bearer-protected generate.
 
 ### Packaging
+
 - Wheel metadata (`bindings/python/pyproject.toml`) + wheel-tagging `setup.py`
   (`cp311-cp311-win_amd64`) with optional fastapi imports so the base package
   installs without serving dependencies.
@@ -148,12 +157,14 @@ All notable changes to SNEPPX-Algo.
   manifest, and extended `scripts/pre-commit.sh` with sneppx-analyze/format/deps.
 
 ### Docs
+
 - Corrected endpoint count (24 → 21), documented the C HTTP API + demo, and
   added the dev-tools chain to `docs/DEVELOPMENT.md` / `scripts/README.md`.
 
 ## [1.1.0] — 2026-07-27
 
 ### Major
+
 - Contribution framework (five-tier merit system, track-based Git Flow, tiered
   code review), CI/CD removed — manual-only workflow.
 - Version promoted to **1.1.0**; C HTTP server framework with middleware +
@@ -163,11 +174,13 @@ All notable changes to SNEPPX-Algo.
 ## [1.0.0] — 2026-07-25
 
 ### Major — Stable Release
+
 - Version promoted to **1.0.0** — all 8 development phases complete, API frozen for stability
 - Full regression suite: C (43/43), C++ (11/11), Python (20/20) — all pass
 - Pre-existing bugs fixed: `test_model_card.c` crash (missing `stdlib.h` + raw `strdup` → AV), Qwen2Config/DeepSeekV2Config `max_seq_len` property/dataclass conflict
 
 ### Phase 1 — Model Zoo (new)
+
 - **1.1 Model Config Schema**: C config API with JSON serialize/parse, presets for LLaMA 2/3, Mistral, Qwen 2, BERT, ViT, SDXL; 13 unit tests
 - **1.2 Model Registry**: Registration, discovery, search, save/load, deprecation; C API with 8 tests
 - **1.3 Pretrained Weights**: `WeightCollection` API, dtype conversion (f32/f16), INT8 quantization, safetensors/gguf/npz loaders; 8 tests
@@ -178,12 +191,14 @@ All notable changes to SNEPPX-Algo.
 - **1.8 Integration Tests**: C (5 tests: config↔registry↔weights↔card↔pipeline) + Python (12 tests: roundtrip, presets, hub pipeline, cache, model card gen, `from_pretrained`, framework config conversions, `build_model_from_config`)
 
 ### Bugfixes
+
 - `model_card.c:219`: Fixed infinite realloc loop in `model_card_to_json` tag serialization (`&buf_len` → `&buf_size`)
 - `weights.c:125`: Fixed `memcpy` buffer overrun (`t->data_size` → `data_size`)
 - `test_model_card.c`: Added missing `#include <stdlib.h>` (caused `malloc`/`free` assumed `extern int`, 64-bit pointer truncation → AV); replaced raw `strdup` into struct fields with proper setters
 - `model_zoo.py`: Removed conflicting `max_seq_len` dataclass field from `Qwen2Config` and `DeepSeekV2Config` (duplicated as `@property` with no setter → `AttributeError` on construction)
 
 ### Advanced Architectures
+
 - **HSS**: Blelloch parallel prefix scan enabled by default; Mamba-2 selective SSM with HiPPO A_log initialization, 1D convolution, discretized selective scan
 - **SER**: Learned MLP gater (config flag, 2-layer MLP forward, autodiff subgraph, bindings, tests)
 - **ARC**: Adversarial training (FGSM/PGD/CW attack injection in training graph, config epsilon, tests)
@@ -191,6 +206,7 @@ All notable changes to SNEPPX-Algo.
 - **NPE**: JIT pipeline with fusion passes, auto-JIT in VM
 
 ### Distributed Training (Phase 2)
+
 - ZeRO-1/2/3 optimizer state partitioning with AdamW fused kernel
 - 1F1B pipeline schedule with microbatches, non-blocking inter-stage send/recv
 - Row/column split tensor parallelism with partial GEMM + all-reduce
@@ -201,6 +217,7 @@ All notable changes to SNEPPX-Algo.
 - Elastic training with heartbeat, join/leave, reconfiguration
 
 ### Quantization & Compression (Phase 5)
+
 - INT8 sym/asym per-channel quant/dequant, INT4 packed
 - FP8 E4M3/E5M2 bit-level encode/decode with special value handling
 - AWQ optimal scale grid search, weight scaling, quantize
@@ -209,6 +226,7 @@ All notable changes to SNEPPX-Algo.
 - Python 17-test suite (all pass)
 
 ### Async Checkpointing & Fault Tolerance (Phase 6)
+
 - Double-buffered async save (D2D→D2H overlap), background I/O thread
 - UDP heartbeat with SUSPECT→DEAD state machine
 - Elastic training: node join/leave, failure handling, topology reconfiguration
@@ -216,6 +234,7 @@ All notable changes to SNEPPX-Algo.
 - Python 23-test suite (all pass)
 
 ### Profiling & Debugging (Phase 7)
+
 - `SNEPPX_Profiler` with named entry aggregation, kernel timer, range push/pop, JSON export
 - `SNEPPX_Logger` with 6 severity levels, JSON/color stdout, per-rank
 - NVTX stubs with real `SNEPPX_USE_NVTX` path + software fallback
@@ -224,18 +243,21 @@ All notable changes to SNEPPX-Algo.
 - 13 Python tests (all pass)
 
 ### Documentation
+
 - Full documentation overhaul (ARCHITECTURE.md, API.md, DESIGN.md, VISION.md, ROADMAP.md)
 - Migration guide: `docs/migration/v0.9.x-to-v1.0.0.md`
 - Release signing scripts, SHA256SUMS/SHA512SUMS
 - Doxygen config updated to v1.0.0
 
 ### Packaging
+
 - All version manifests bumped to 1.0.0 (CMake, Python, Cargo, Docker, Doxygen)
 - Conda-forge recipe updated to v1.0.0
 - Docker image labels updated
 - Arix-Site web frontend synced to v1.0.0
 
 ### Patch — HSS backward corruption fix
+
 - Fixed `backward_layer_norm` in `kernel/autodiff/ops.c`: `c->gamma->data` (a tensor)
   was cast to `float*` instead of `c->gamma->data->data`, yielding garbage layer-norm
   gains and exploding gradients downstream. Same fix applied to the beta gradient path.
@@ -247,6 +269,7 @@ All notable changes to SNEPPX-Algo.
   (loss ↓ >90% over 10 Adam steps); verified 15/15 Release runs.
 
 ### Phase B — Populate 4 kernel directories
+
 - **`kernel/activations/`**: `activations.c` (ReLU, LeakyReLU, PReLU, ELU, SELU, GELU
   tanh+erf, SiLU, Sigmoid, Tanh, Softmax, LogSoftmax + backward); `gated_activations.c`
   (SwiGLU, GeGLU, ReGLU with backward + gated FFN).
@@ -260,6 +283,7 @@ All notable changes to SNEPPX-Algo.
 - Build green — no new warnings or errors beyond 4 pre-existing linker failures.
 
 ### Phase A — Eliminate last C stubs
+
 - **`mm/internal/vmem.c`**: `SNEPPX_vmem_register_evict_strategy` now stores the strategy
   in the allocator (new field `evict_strategy`); `evict_page` delegates to the strategy's
   `select_victim` callback when available.
@@ -269,6 +293,7 @@ All notable changes to SNEPPX-Algo.
 - Build green (0 errors), 7/7 tests pass (test_vmem + 6 FM tests).
 
 ### Phase 1 — Format layer realisation & build hygiene
+
 - **Version bump to 0.9.7.890e** across `VERSION`, `CMakeLists.txt`, `pyproject.toml`,
   `bindings/python/setup.py`, `Cargo.toml` (workspace), `net/distributed/Cargo.toml`,
   and `lib/rust/Cargo.toml`.
@@ -298,6 +323,7 @@ All notable changes to SNEPPX-Algo.
   (warnings only).
 
 ### Fixed (kernel correctness)
+
 - **Resolved stub-shadowing bug.** `tensor_engine.c` redefined the entire
   `SNEPPXTensor` API as no-op stubs that were linked *before* the real
   implementation in `tensor.c`, silently discarding the real engine. The stub
@@ -310,6 +336,7 @@ All notable changes to SNEPPX-Algo.
   (the real versions live in `optimizer.c`).
 
 ### Added (tensor engine)
+
 - `SNEPPX_tensor_matmul` upgraded from 2-D-only to a real **batched,
   broadcast N-D matmul** with numpy-style 1-D/2-D/ND semantics and leading-dim
   broadcasting.
@@ -318,6 +345,7 @@ All notable changes to SNEPPX-Algo.
   weight decay, gradient-norm and gradient-value clipping.
 
 ### Phase 3 — Seven classic neural architectures (real implementations)
+
 - **Re-included the 7 deferred cores** in the architecture-layer build glob
   (`algorithms/{transformer,vit,rnn,diffusion,gan,rl,gcn}/core/*.c`) and added
   their public headers under `include/neural_core/architecture/`.
@@ -346,6 +374,7 @@ All notable changes to SNEPPX-Algo.
   all 7 new cores.
 
 ### Phase 4 — Security audit & hardening
+
 - **Security-layer audit.** Reviewed `security/crypto/c` and `security/memory` for
   the classic weaknesses. Findings: constant-time secret comparison (`ct.c`:
   `SNEPPX_ct_equal`/`SNEPPX_ct_select`/`SNEPPX_ct_compare_32`) is used for MAC/tag
@@ -372,6 +401,7 @@ All notable changes to SNEPPX-Algo.
   `raw_len` at creation and releases exactly that region.
 
 ### Phase 5 — Infrastructure backends (real, opt-in)
+
 - Made the four opt-in backends (gated by `SNEPPX_BUILD_VULKAN/TPU/HTTP/ZK` from P1.2)
   **real reference implementations** instead of silent no-op stubs, mirroring the
   established Metal/oneAPI pattern (`neural_core/drivers/reference_compute.h`).
@@ -402,6 +432,7 @@ All notable changes to SNEPPX-Algo.
   the existing `test_tpu_driver` now passes (7/7) in the default build.
 
 ### Phase 6 — test coverage for opt-in backends
+
 - The real backend implementations are exercised by the `test_backend_full` suite
   (12/12) with `-DSNEPPX_BUILD_VULKAN=ON -DSNEPPX_BUILD_TPU=ON -DSNEPPX_BUILD_HTTP=ON
   -DSNEPPX_BUILD_ZK=ON`. No external SDKs are required — the backends use the in-tree
@@ -410,6 +441,7 @@ All notable changes to SNEPPX-Algo.
 ## [0.9.6.789] — 2026-07-18
 
 ### Added
+
 - **Apple Metal backend** (`drivers/metal`): real reference-compute implementation
   gated behind `SNEPPX_BUILD_METAL` (OFF by default). When enabled the driver
   reports `SNEPPX_DRIVER_OK` and executes genuine tensor math via the shared
@@ -433,6 +465,7 @@ All notable changes to SNEPPX-Algo.
 - CMake options `SNEPPX_BUILD_METAL` / `SNEPPX_BUILD_ONEAPI`.
 
 ### Changed
+
 - Bumped project, Python (`pyproject.toml`, `setup.py`), `VERSION` and Rust
   crate versions (`neural-core-distributed`, `neural-core-algo`) to 0.9.6.789.
 - Driver stubs (Vulkan, Metal, NPU, oneAPI, Qualcomm, Intel, AMD, SGX, shim,
@@ -443,6 +476,7 @@ All notable changes to SNEPPX-Algo.
 - Root README: fixed `pip install -e "bindings/python[serve,hf,dev]"` quoting.
 
 ### Fixed
+
 - `CMakeLists.txt`: added `include/` to `neural_core_kernel` include paths and
   bumped version to 0.9.6.789.
 - `concurrent_workload_dispatch.h` / `workload_dispatch.c`, `attention_module.c`,
@@ -454,11 +488,13 @@ All notable changes to SNEPPX-Algo.
 ### Added
 
 **Phase 1 — Foundation Layer**
+
 - `c_loader.py`: Unified ctypes library loader with `load_library()` and `find_load()` — auto-detects C extension (`.pyd`/`.so`) with pure-Python fallback
 - `c_types.py`: Shared ctypes declarations (int8_t..uint64_t, float_t, double_t, const_char_p, void_p, DataBuffer, make_struct)
 - `dispatch/` subpackage: Factory `get_backend(device)` with CPU/CUDA dispatch + domain-specific backends (`get_security_backend`, `get_algo_backend`, `get_kernel_backend`, `get_infra_backend`)
 
 **Phase 2 — Crypto Bindings (6 files, 85+ tests)**
+
 - `crypto_sign.py`: Ed25519, Dilithium2/3/5, SPHINCS+ (SHAKE/SHA2) signatures
 - `crypto_kem.py`: Kyber512/768/1024 KEM, X25519 ECDH
 - `crypto_symmetric.py`: AES-GCM, ChaCha20-Poly1305, AEAD unified interface
@@ -467,6 +503,7 @@ All notable changes to SNEPPX-Algo.
 - `crypto_util.py`: BigNum (Montgomery), DRBG (CTR/HMAC/Hash), SecureRandom, ConstantTime, EntropyPool
 
 **Phase 3 — Security Bindings S1–S9 (10 files, 100+ tests)**
+
 - `secure_memory.py`: SecureAllocator, StackCanary, ASLR, MemoryHardening, MemoryLeakDetector
 - `s4_network.py`: DDoSMitigation, IdentityManager, TransportSecurity (TLS 1.3, Noise, QUIC)
 - `runtime_monitor.py`: IntegrityMonitor, ContainerBreakoutDetector, AdvancedMonitor
@@ -479,6 +516,7 @@ All notable changes to SNEPPX-Algo.
 - `security_middleware.py`: AuthConfig, RateLimitConfig, PromptFilterConfig, OutputVerifierConfig, SecurityConfig, SecurityMiddleware, Authenticator, PromptFilter, OutputVerifier
 
 **Phase 4 — Algorithm Bindings (5 files, 47+ tests)**
+
 - `algo_arc.py`: ARCAttackSim, ARCFForward, ARCGradientObfuscator, ARCInputGuard, ARCOutputVerifier
 - `algo_fm.py`: FMController, FMMemoryBank, FMNode, FMSync
 - `algo_hss.py`: HSSDiscretize, HSSScan, HSSStep, HSSModel (as AlgoHSSModel)
@@ -486,6 +524,7 @@ All notable changes to SNEPPX-Algo.
 - `algo_ser.py`: SERExpert, SERRoute, SERLayer, SERLoss, SERModel (as AlgoSERModel)
 
 **Phase 5 — Kernel Bindings (7 files, 70+ tests)**
+
 - `c_attention.py`: Attention, DifferentialAttention, FlexAttention
 - `c_arch.py`: ArchOps, Mamba2 (GELU, SiLU, layer norm, RMSNorm, softmax)
 - `c_memory.py`: MemoryAllocator, MemoryPool
@@ -495,20 +534,24 @@ All notable changes to SNEPPX-Algo.
 - `c_logger.py`: Logger
 
 **Phase 6 — Infrastructure Bindings (4 files, 26 tests)**
+
 - `net_bindings.py`: Topology, SocketComm, RDMA, GRPCService, NCCLComm, ProcessGroup
 - `driver_bindings.py`: CUDADriver, CUDADeviceProps, ROCmDriver, TPUDriver
 
 **Phase 7 — ASM Integration (5 files, 23 tests)**
+
 - `asm_bridge.py`: CPUFeatures, AsmLibrary, AsmFunction, ConstantTime, SecureMemory
 - `crypto_asm.py`: AESNI, SHANI, ChaCha20AVX2, Poly1305ASM, MontgomeryMul, Ed25519ASM, ConstantTimeOps, FirewallASM
 - `security/crypto/asm/build.ps1`: MASM x64 build script
 
 **CLI Entry Points (installed with `pip install sneppx-alg`)**
+
 - `sneppx-train` → `SneppX_ALG.interface_bindings.train_cli:main`
 - `sneppx-serve` → `SneppX_ALG.interface_bindings.serve_cli:main`
 - `sneppx-experiment` → `SneppX_ALG.interface_bindings.experiment_cli:main`
 
 **snepp-cli Dispatcher**
+
 - Created `snepp-cli/index.js` — `snepp <command>` wrapper for train/serve/experiment
 
 ### Fixed
@@ -528,28 +571,33 @@ All notable changes to SNEPPX-Algo.
 ### Added
 
 **4-Ring Firewall Architecture**
+
 - **Transport Ring**: TLS 1.3/mTLS with cert pinning, ALPN, Noise NK/XX/IK
 - **Network Ring**: CIDR allow/deny, rate limiting (token bucket), connection tracking, port knocking
 - **Application Ring**: Injection filter (SQLi/XSS/command injection), path traversal detection, concurrent request limiter
 - **Security Middleware Integration**: `set_security()` accepts firewall overrides, `check_firewall()` in request pipeline
 
 **MASM x64 Hot-Path Routines** (`security/firewall/asm/`)
+
 - `ip_match.asm`: CIDR IPv4/IPv6 matching with SIMD
 - `rate_counter.asm`: Token bucket rate limiting
 - `conn_track.asm`: Connection state tracking
 - `port_knock.asm`: Port knock sequence verification
 
 **YAML Configuration with Env/CLI Overrides**
+
 - `security/firewall/firewall.yaml`: All rings configurable
 - Environment variable overrides (`FIREWALL_*`)
 - CLI flags in `serve_cli.py` (`--firewall-config`, `--firewall-enabled`, `--tls-enabled`, etc.)
 
 **Firewall Tests** (24 new tests)
+
 - `test_firewall_network.py`: CIDR, rate limit, port knock
 - `test_firewall_application.py`: Injection filter, path traversal, concurrent limiter
 - `test_firewall_transport.py`: TLS/mTLS, cert pinning
 
 ### Fixed
+
 - Path traversal detection edge cases
 - Lazy SSL context building (avoid startup cost)
 - kwargs safety in firewall constructors
@@ -557,6 +605,7 @@ All notable changes to SNEPPX-Algo.
 ## [0.9.2.094] — 2026-07-10
 
 ### Added
+
 - Complete refactor of `__init__.py` exports (753 insertions, 161 deletions)
 - `benchmark.py`, `benchmarking.py`, `benchmarks.py` — unified benchmarking suite
 - `distillation.py` — knowledge distillation losses (KD, AT, FM, CRD, multi-teacher)
@@ -565,18 +614,21 @@ All notable changes to SNEPPX-Algo.
 - `quantization.py` — INT8/INT4/FP8 (E4M3/E5M2), AWQ, GPTQ, QuantizedLinear
 
 ### Fixed
+
 - `amp.py`: Autocast proper context manager, duplicate import removed
 - `train.py`: `Trainer.train()` method added, optimizer saves LR
 - `benchmarking.py`: Tensor import fixed, matmul shape fixed
 - `SimpleTokenizer` shadowing resolved (`.data` over `.tokenizer`)
 
 ### Improved
+
 - C source updates: `checkpoint_reader.c`, `dilithium.c`
 - Test suite updates across `test_benchmarking.py`, `test_checkpoint.py`, `test_data.py`, `test_distributed.py`, `test_hf_integration.py`, `test_model.py`, `test_model_zoo.py`, `test_nn.py`, `test_optim.py`, `test_profiler.py`, `test_quantization.py`, `test_tensor.py`, `test_train.py`, `test_trainer_v2.py`, `test_ultra_trainer.py`
 
 ## [0.9.0] — 2026-06-30
 
 ### Added
+
 - Core tensor operations: multi-dimensional arrays, float32/64/int32/64/bool, 50+ ops
 - Secure memory allocator: aligned allocation, guard pages, canaries, secure wipe
 - Thread pool: single-threaded fallback (parallel in v0.5)
@@ -595,6 +647,7 @@ All notable changes to SNEPPX-Algo.
 - Documentation: architecture overview, API reference stubs
 
 ### Known Limitations
+
 - Autodiff is stub: backward pass does nothing
 - No GPU acceleration: CUDA stubs only
 - No distributed training: stubs only
@@ -602,11 +655,13 @@ All notable changes to SNEPPX-Algo.
 - Security S2–S3: partial implementations
 
 ### Security
+
 - All releases signed with Ed25519
 - Checksums: SHA-256, SHA-512
 - BDFL governance, commit signing practiced
 
 ### Build Requirements
+
 ```
 CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 14+
 ```
@@ -614,23 +669,27 @@ CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 
 ## [0.1.1] — 2026-06-30
 
 ### Added
+
 - Multi-head attention module with RoPE, causal mask, batched matmul 3D
 - Inference engine: autoregressive generation with top-k/top-p/temperature sampling
 - Data pipeline: TextDataset with BPE tokenization and batching
 - Infrastructure: 20+ config files (CI, linting, workflows, docs)
 
 ### Changed
+
 - Model architecture: modular pipeline with per-module enable/disable flags
 - Tensor rename: comprehensive project-wide nomenclature restructuring
 - arch.c: attention + embedding/lm_head wired into forward/get_params/create/destroy
 - README fully updated for v0.1.1 features
 
 ### Fixed
+
 - SNEPPX_sample_from_logits: rand() == RAND_MAX edge case
 - data_pipeline.c: buffer overflow in offsets allocation, line_by_line tokenization
 - test_inference.c: duplicate tests_failed macro conflict with test_common.h
 
 ### Tests
+
 - 6 new tests: attention forward, RoPE, causal mask, KV-cache, batched matmul
 - 6 new tests: data pipeline (dataset create, batch) + inference (argmax, sample, generate)
 - 64 registered tests (62 pass, 2 pre-existing crypto edge cases)
@@ -638,6 +697,7 @@ CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 
 ## [0.1.0] — 2026-06-24
 
 ### Added
+
 - Core tensor operations: multi-dimensional arrays, float32/64/int32/64/bool, 50+ ops
 - Secure memory allocator: aligned allocation, guard pages, canaries, secure wipe
 - Thread pool: single-threaded fallback (parallel in v0.5)
@@ -656,6 +716,7 @@ CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 
 - Documentation: architecture overview, API reference stubs
 
 ### Known Limitations
+
 - Autodiff is stub: backward pass does nothing
 - No GPU acceleration: CUDA stubs only
 - No distributed training: stubs only
@@ -663,11 +724,13 @@ CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 
 - Security S2–S3: partial implementations
 
 ### Security
+
 - All releases signed with Ed25519
 - Checksums: SHA-256, SHA-512
 - BDFL governance, commit signing practiced
 
 ### Build Requirements
+
 ```
 CMake 3.16+ | C11/C++20 | Python 3.11+ (optional) | MSVC 2022 / GCC 11+ / Clang 14+
 ```

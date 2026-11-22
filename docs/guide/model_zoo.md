@@ -74,6 +74,7 @@ int count = SNEPPX_llm_num_weight_tensors(SNEPPX_MODEL_LLAMA_3, 32);
 ## Verification
 
 See `tests/test_model_zoo.c` for tests covering:
+
 - All named preset sizes resolve successfully
 - JSON round-trip (serialize → parse → verify fields)
 - All weight name prefixes match expected values

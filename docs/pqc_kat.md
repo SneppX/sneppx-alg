@@ -57,6 +57,7 @@ decisions against NIST's `testPassed` flags.
   wire formats. These implementations remain experimental.
 
 Keygen coverage:
+
 - **ML-KEM keyGen**: `run_mlkem_keygen()` seeds the C test RNG with each
   vector's `d` value and compares `ek`/`dk` byte-for-byte against FIPS 203
   expected values.

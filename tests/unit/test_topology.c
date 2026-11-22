@@ -1,6 +1,6 @@
+#include "../../net/topology.c"
 #include "../../net/topology.h"
 #include "test_gtest.h"
-#include "../../net/topology.c"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,32 +19,32 @@
  *
  */
 
-
-
-
-
-static void test_topology_create_destroy(void) {
+static void test_topology_create_destroy(void)
+{
     SNEPPXTopology* topo = SNEPPX_topology_create_ring(4);
     SX_ASSERT(topo != NULL, "topology created");
     SX_ASSERT(topo->type == SNEPPX_TOPOLOGY_RING, "ring type");
     SNEPPX_topology_destroy(topo);
 }
 
-static void test_topology_ring(void) {
+static void test_topology_ring(void)
+{
     SNEPPXTopology* topo = SNEPPX_topology_create_ring(8);
     SX_ASSERT(topo != NULL, "ring topology");
     SX_ASSERT(topo->type == SNEPPX_TOPOLOGY_RING, "ring type");
     SNEPPX_topology_destroy(topo);
 }
 
-static void test_topology_tree(void) {
+static void test_topology_tree(void)
+{
     SNEPPXTopology* topo = SNEPPX_topology_create_tree(8, 2);
     SX_ASSERT(topo != NULL, "tree topology");
     SX_ASSERT(topo->type == SNEPPX_TOPOLOGY_TREE, "tree type");
     SNEPPX_topology_destroy(topo);
 }
 
-static void test_topology_graph(void) {
+static void test_topology_graph(void)
+{
     int adj[9 * 9];
     memset(adj, 0, sizeof(adj));
     adj[0 * 9 + 1] = 1;
@@ -56,8 +56,19 @@ static void test_topology_graph(void) {
     SNEPPX_topology_destroy(topo);
 }
 
-
-TEST(test_topology, topology_create_destroy) { test_topology_create_destroy(); }
-TEST(test_topology, topology_ring) { test_topology_ring(); }
-TEST(test_topology, topology_tree) { test_topology_tree(); }
-TEST(test_topology, topology_graph) { test_topology_graph(); }
+TEST(test_topology, topology_create_destroy)
+{
+    test_topology_create_destroy();
+}
+TEST(test_topology, topology_ring)
+{
+    test_topology_ring();
+}
+TEST(test_topology, topology_tree)
+{
+    test_topology_tree();
+}
+TEST(test_topology, topology_graph)
+{
+    test_topology_graph();
+}

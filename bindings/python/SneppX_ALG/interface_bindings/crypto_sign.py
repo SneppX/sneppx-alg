@@ -48,6 +48,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- Ed25519 (RFC 8032) -------------------------------------------------
 
+
 class Ed25519:
     """Ed25519 signature scheme — sign / verify / keypair."""
 
@@ -60,11 +61,17 @@ class Ed25519:
             if seed is None:
                 seed = os.urandom(32)
             from cryptography.hazmat.primitives.asymmetric import ed25519 as _ed
-            pk = _ed.Ed25519PrivateKey.from_private_bytes(seed).public_key().public_bytes_raw()
+
+            pk = (
+                _ed.Ed25519PrivateKey.from_private_bytes(seed)
+                .public_key()
+                .public_bytes_raw()
+            )
             sk = bytes(seed[:32]) + pk
             return sk, pk
         try:
             from cryptography.hazmat.primitives.asymmetric import ed25519
+
             if seed:
                 sk = ed25519.Ed25519PrivateKey.from_private_bytes(seed)
             else:
@@ -83,6 +90,7 @@ class Ed25519:
             return _C.ed25519_sign(msg, bytes(sk[:64]))
         try:
             from cryptography.hazmat.primitives.asymmetric import ed25519
+
             priv = ed25519.Ed25519PrivateKey.from_private_bytes(sk)
             return priv.sign(msg)
         except ImportError as exc:
@@ -97,6 +105,7 @@ class Ed25519:
             return bool(_C.ed25519_verify(sig, msg, pk))
         try:
             from cryptography.hazmat.primitives.asymmetric import ed25519
+
             pub = ed25519.Ed25519PublicKey.from_public_bytes(pk)
             pub.verify(sig, msg)
             return True
@@ -105,6 +114,7 @@ class Ed25519:
 
 
 # ---- Dilithium (ML-DSA, FIPS 204) ---------------------------------------
+
 
 class Dilithium:
     """CRYSTALS-Dilithium post-quantum signature scheme.
@@ -149,6 +159,7 @@ class Dilithium:
 
 # ---- SPHINCS+ (SLH-DSA, FIPS 205) ---------------------------------------
 
+
 class SphincsPlus:
     """SPHINCS+ stateless-hash post-quantum signature scheme.
 
@@ -181,7 +192,9 @@ class SphincsPlus:
     def sign(self, sk: bytes, msg: bytes) -> bytes:
         if _C is not None:
             return _C.sphincs_sign(sk, msg, 0)
-        raise RuntimeError("SLH-DSA signing requires the native SneppX crypto extension")
+        raise RuntimeError(
+            "SLH-DSA signing requires the native SneppX crypto extension"
+        )
 
     def verify(self, pk: bytes, msg: bytes, sig: bytes) -> bool:
         if _C is not None:

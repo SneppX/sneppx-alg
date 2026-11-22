@@ -2,24 +2,37 @@
 
 NOTE: Run directly with `python test_algo_wrappers.py`, not via pytest.
 """
+
 __test__ = False
 
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'bindings', 'python'))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 
 from SneppX_ALG.interface_bindings.algo_arc import (
-    ARCAttackSim, ARCFForward, ARCGradientObfuscator, ARCInputGuard,
-    ARCOutputVerifier, ARCAdversarialTrainGraph,
+    ARCAttackSim,
+    ARCFForward,
+    ARCGradientObfuscator,
+    ARCInputGuard,
+    ARCOutputVerifier,
+    ARCAdversarialTrainGraph,
 )
-from SneppX_ALG.interface_bindings.algo_npe import NPECompiler, NPEInstruction, NPEProgram
+from SneppX_ALG.interface_bindings.algo_npe import (
+    NPECompiler,
+    NPEInstruction,
+    NPEProgram,
+)
 from SneppX_ALG.interface_bindings.algo_fm import FMSync, FMSyncNCCL
 from SneppX_ALG.interface_bindings.train import TrainConfig
 
 tests_passed = 0
 tests_failed = 0
+
 
 def test(name, fn):
     global tests_passed, tests_failed
@@ -34,8 +47,10 @@ def test(name, fn):
 
 def test_arc_adversarial_train_graph():
     builder = ARCAdversarialTrainGraph(attack_epsilon=0.01)
-    weights = [np.random.randn(4, 8).astype(np.float32),
-               np.random.randn(8, 2).astype(np.float32)]
+    weights = [
+        np.random.randn(4, 8).astype(np.float32),
+        np.random.randn(8, 2).astype(np.float32),
+    ]
     x = np.random.randn(3, 4).astype(np.float32)
     clean, adv = builder.build(weights, x)
     assert clean.shape == (3, 2), f"clean shape {clean.shape}"
@@ -45,14 +60,18 @@ def test_arc_adversarial_train_graph():
 
 def test_npe_jit_optimize():
     compiler = NPECompiler()
-    prog = compiler.compile([
-        {"type": "nop", "dest": "", "args": []},
-        {"type": "matmul", "dest": "r1", "args": ["r0", "w1"]},
-        {"type": "relu", "dest": "r2", "args": ["r1"]},
-        {"type": "add", "dest": "r3", "args": ["r2", "b1"]},
-    ])
+    prog = compiler.compile(
+        [
+            {"type": "nop", "dest": "", "args": []},
+            {"type": "matmul", "dest": "r1", "args": ["r0", "w1"]},
+            {"type": "relu", "dest": "r2", "args": ["r1"]},
+            {"type": "add", "dest": "r3", "args": ["r2", "b1"]},
+        ]
+    )
     opt = compiler.jit_optimize(prog)
-    assert len(opt) == 2, f"expected 2 instructions after optimize (matmul_relu, add), got {len(opt)}"
+    assert (
+        len(opt) == 2
+    ), f"expected 2 instructions after optimize (matmul_relu, add), got {len(opt)}"
     assert opt[0].opcode == "matmul_relu", f"expected matmul_relu, got {opt[0].opcode}"
     assert opt[1].opcode == "add", f"expected add, got {opt[1].opcode}"
 
@@ -64,8 +83,10 @@ def test_fm_sync_nccl():
     assert np.allclose(result, data), "sync preserves data"
 
     calls = []
+
     def cb(x):
         calls.append(x.copy())
+
     result2 = sync.sync(data, callback=cb)
     assert len(calls) == 1, "callback invoked"
     assert np.allclose(calls[0], data), "callback gets data"
@@ -100,10 +121,12 @@ def test_arc_output_verifier():
 
 def test_npe_compiler_basic():
     compiler = NPECompiler()
-    prog = compiler.compile([
-        {"type": "add", "dest": "r0", "args": ["a", "b"]},
-        {"type": "mul", "dest": "r1", "args": ["r0", "c"]},
-    ])
+    prog = compiler.compile(
+        [
+            {"type": "add", "dest": "r0", "args": ["a", "b"]},
+            {"type": "mul", "dest": "r1", "args": ["r0", "c"]},
+        ]
+    )
     assert len(prog) == 2
     assert prog[0].opcode == "add"
     assert prog[0].dest == "r0"

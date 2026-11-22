@@ -3,11 +3,13 @@
 ## 1. Prerequisites
 
 **Required:**
+
 - CMake 3.16+
 - C11/C++20 compiler (MSVC 19.44+, GCC 11+, Clang 14+)
 - Python 3.9+ (for bindings)
 
 **Optional:**
+
 - CUDA 12.0+ (GPU optimizer acceleration, `SNEPPX_BUILD_CUDA=ON`)
 - Doxygen (API docs)
 
@@ -17,6 +19,7 @@ This project is Ninja-based. Use the CMake presets (see `CMakePresets.json`),
 which select the Ninja generator and write to per-config binary directories.
 
 **Windows (MSVC):**
+
 ```powershell
 git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
@@ -25,6 +28,7 @@ cmake --build --preset release
 ```
 
 **Linux/Mac (GCC/Clang):**
+
 ```bash
 git clone https://github.com/SneppX/sneppx-alg.git
 cd sneppx-alg
@@ -118,6 +122,7 @@ powershell -File scripts/run_sanitizers.ps1
 ```
 
 For Python-only tests (no build required):
+
 ```powershell
 $env:PYTHONPATH = "bindings/python"
 python -m pytest tests/python/ -v

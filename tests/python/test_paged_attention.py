@@ -44,8 +44,9 @@ def test_block_table_basics():
 
 
 def test_paged_kv_store_get():
-    config = PagedAttentionConfig(num_layers=1, num_kv_heads=4, head_dim=16,
-                                  block_size=8, num_blocks=16)
+    config = PagedAttentionConfig(
+        num_layers=1, num_kv_heads=4, head_dim=16, block_size=8, num_blocks=16
+    )
     cache = PagedKVCache(config)
     tok = [1, 2, 3, 4, 5]
     k = _kv(len(tok), 4, 16)
@@ -65,8 +66,9 @@ def test_paged_kv_store_get():
 
 
 def test_paged_kv_fork_cow():
-    config = PagedAttentionConfig(num_layers=1, num_kv_heads=2, head_dim=8,
-                                  block_size=4, num_blocks=32)
+    config = PagedAttentionConfig(
+        num_layers=1, num_kv_heads=2, head_dim=8, block_size=4, num_blocks=32
+    )
     cache = PagedKVCache(config)
     tok = list(range(6))
     k = _kv(6, 2, 8)
@@ -104,16 +106,18 @@ def test_prefix_cache():
 
 def test_paged_attention_forward_math():
     heads, kv_heads, dim, seq = 3, 1, 8, 6
-    config = PagedAttentionConfig(num_layers=1, num_kv_heads=kv_heads,
-                                  head_dim=dim, block_size=4, num_blocks=16)
+    config = PagedAttentionConfig(
+        num_layers=1, num_kv_heads=kv_heads, head_dim=dim, block_size=4, num_blocks=16
+    )
     cache = PagedKVCache(config)
     k = _kv(seq, kv_heads, dim)
     v = _kv(seq, kv_heads, dim)
     table = cache.allocate()
     cache.store(table, layer=0, positions=list(range(seq)), keys=k, values=v)
     q = RNG.normal(size=(heads, dim)).astype(np.float32)
-    out = paged_attention_forward(q, cache, table, layer=0, seq_len=seq,
-                                  num_heads=heads, num_kv_heads=kv_heads)
+    out = paged_attention_forward(
+        q, cache, table, layer=0, seq_len=seq, num_heads=heads, num_kv_heads=kv_heads
+    )
     assert out.shape == (heads, dim)
     rk, rv = cache.get_kv(table, layer=0, seq_len=seq)
     k_exp = np.repeat(rk, heads // kv_heads, axis=0)
@@ -128,16 +132,18 @@ def test_paged_attention_forward_math():
 
 def test_paged_attention_causal():
     heads, dim, seq = 2, 8, 5
-    config = PagedAttentionConfig(num_layers=1, num_kv_heads=1, head_dim=dim,
-                                  block_size=4, num_blocks=8)
+    config = PagedAttentionConfig(
+        num_layers=1, num_kv_heads=1, head_dim=dim, block_size=4, num_blocks=8
+    )
     cache = PagedKVCache(config)
     k = _kv(seq, 1, dim)
     v = _kv(seq, 1, dim)
     table = cache.allocate()
     cache.store(table, layer=0, positions=list(range(seq)), keys=k, values=v)
     q = RNG.normal(size=(seq, heads, dim)).astype(np.float32)
-    out = paged_attention_forward(q, cache, table, layer=0, seq_len=seq,
-                                  num_heads=heads, causal=True)
+    out = paged_attention_forward(
+        q, cache, table, layer=0, seq_len=seq, num_heads=heads, causal=True
+    )
     assert out.shape == (seq, heads, dim)
     rk, rv = cache.get_kv(table, layer=0, seq_len=seq)
     k_exp = np.repeat(rk, heads // 1, axis=0)
@@ -151,8 +157,9 @@ def test_paged_attention_causal():
     assert np.allclose(out, ref, atol=1e-5)
     # causal row 0 attends only to token 0 == decode against a single-key cache.
     q0 = q[0]
-    out0 = paged_attention_forward(q0, cache, table, layer=0, seq_len=1,
-                                   num_heads=heads, causal=True)
+    out0 = paged_attention_forward(
+        q0, cache, table, layer=0, seq_len=1, num_heads=heads, causal=True
+    )
     assert np.allclose(out[0], out0, atol=1e-5)
     print("  test_paged_attention_causal PASS")
 
@@ -165,7 +172,8 @@ def test_incremental_attention():
     state = IncrementalAttentionState(heads, dim)
     for i in range(seq):
         out, state = incremental_attention_forward(
-            q, k[:, i:i + 1], v[:, i:i + 1], state)
+            q, k[:, i : i + 1], v[:, i : i + 1], state
+        )
         scores = np.einsum("hd,hkd->hk", q, k[:, : i + 1])
         p = np.exp(scores - scores.max(axis=-1, keepdims=True))
         p = p / p.sum(axis=-1, keepdims=True)
@@ -180,8 +188,8 @@ def test_chunked_prefill():
     k = RNG.normal(size=(heads, seq, dim)).astype(np.float32)
     v = RNG.normal(size=(heads, seq, dim)).astype(np.float32)
     chunks = range(0, seq, chunk)
-    keys = [k[:, i:i + chunk] for i in chunks]
-    values = [v[:, i:i + chunk] for i in chunks]
+    keys = [k[:, i : i + chunk] for i in chunks]
+    values = [v[:, i : i + chunk] for i in chunks]
     out = chunked_prefill_forward(q, keys, values)
     scores = np.einsum("hd,hkd->hk", q, k)
     p = np.exp(scores - scores.max(axis=-1, keepdims=True))

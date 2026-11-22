@@ -15,13 +15,13 @@ footer = "---\n\n_Release timestamp: {{ timestamp }}_"
 [git]
 conventional_commits = true
 commit_parsers = [
-    { message = "^feat", group = "Features" },
-    { message = "^fix", group = "Bug Fixes" },
-    { message = "^docs", group = "Documentation" },
-    { message = "^refactor", group = "Refactoring" },
-    { message = "^test", group = "Testing" },
-    { message = "^perf", group = "Performance" },
-    { message = "^style", group = "Style" },
-    { message = "^chore", group = "Chores" },
-    { message = ".*", group = "Other" },
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^docs", group = "Documentation" },
+  { message = "^refactor", group = "Refactoring" },
+  { message = "^test", group = "Testing" },
+  { message = "^perf", group = "Performance" },
+  { message = "^style", group = "Style" },
+  { message = "^chore", group = "Chores" },
+  { message = ".*", group = "Other" },
 ]

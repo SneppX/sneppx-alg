@@ -1,6 +1,6 @@
+#include "audit_logger.h"
 #include "key_vault.h"
 #include "test_gtest.h"
-#include "audit_logger.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,18 +19,16 @@
  *
  */
 
-
-
-
-
-static void test_key_vault_init(void) {
+static void test_key_vault_init(void)
+{
     SNEPPXKeyVault vault;
     SX_ASSERT(SNEPPX_key_vault_init(&vault) == 0, "init");
     SX_ASSERT(vault.is_locked == 1, "locked by default");
     SNEPPX_key_vault_destroy(&vault);
 }
 
-static void test_key_vault_generate_get(void) {
+static void test_key_vault_generate_get(void)
+{
     SNEPPXKeyVault vault;
     SNEPPX_key_vault_init(&vault);
     SNEPPX_key_vault_unlock(&vault, NULL);
@@ -41,7 +39,8 @@ static void test_key_vault_generate_get(void) {
     SNEPPX_key_vault_destroy(&vault);
 }
 
-static void test_key_vault_rotate_revoke(void) {
+static void test_key_vault_rotate_revoke(void)
+{
     SNEPPXKeyVault vault;
     SNEPPX_key_vault_init(&vault);
     SNEPPX_key_vault_unlock(&vault, NULL);
@@ -53,14 +52,17 @@ static void test_key_vault_rotate_revoke(void) {
     uint8_t new_key[32];
     SNEPPX_key_vault_get_key(&vault, key_id, new_key);
     int diff = 0;
-    for (int i = 0; i < 32; i++) if (old_key[i] != new_key[i]) diff = 1;
+    for (int i = 0; i < 32; i++)
+        if (old_key[i] != new_key[i])
+            diff = 1;
     SX_ASSERT(diff, "key changed");
     SX_ASSERT(SNEPPX_key_vault_revoke_key(&vault, key_id) == 0, "revoke");
     SX_ASSERT(SNEPPX_key_vault_get_key(&vault, key_id, new_key) != 0, "revoked key fails");
     SNEPPX_key_vault_destroy(&vault);
 }
 
-static void test_audit_logger(void) {
+static void test_audit_logger(void)
+{
     SNEPPXAuditLogger audit;
     SX_ASSERT(SNEPPX_audit_init(&audit, NULL) == 0, "audit init");
     SX_ASSERT(SNEPPX_audit_log(&audit, 1, "test event", 0x42) == 0, "log entry");
@@ -69,7 +71,8 @@ static void test_audit_logger(void) {
     SNEPPX_audit_shutdown(&audit);
 }
 
-static void test_audit_search(void) {
+static void test_audit_search(void)
+{
     SNEPPXAuditLogger audit;
     SNEPPX_audit_init(&audit, NULL);
     SNEPPX_audit_log(&audit, 1, "first event", 0);
@@ -81,9 +84,23 @@ static void test_audit_search(void) {
     SNEPPX_audit_shutdown(&audit);
 }
 
-
-TEST(test_s6_ui, key_vault_init) { test_key_vault_init(); }
-TEST(test_s6_ui, key_vault_generate_get) { test_key_vault_generate_get(); }
-TEST(test_s6_ui, key_vault_rotate_revoke) { test_key_vault_rotate_revoke(); }
-TEST(test_s6_ui, audit_logger) { test_audit_logger(); }
-TEST(test_s6_ui, audit_search) { test_audit_search(); }
+TEST(test_s6_ui, key_vault_init)
+{
+    test_key_vault_init();
+}
+TEST(test_s6_ui, key_vault_generate_get)
+{
+    test_key_vault_generate_get();
+}
+TEST(test_s6_ui, key_vault_rotate_revoke)
+{
+    test_key_vault_rotate_revoke();
+}
+TEST(test_s6_ui, audit_logger)
+{
+    test_audit_logger();
+}
+TEST(test_s6_ui, audit_search)
+{
+    test_audit_search();
+}

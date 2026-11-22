@@ -36,7 +36,12 @@ def test_session_token_expiration_is_enforced(tmp_path):
     user = store.create_user("expiry@example.com", "correct-horse-123")
     token = store.create_session_token(user["id"], expires_in_seconds=60)
     assert store.validate_session_token(token) is not None
-    assert store.validate_session_token(token, now=store.validate_session_token(token)["expires_at"]) is None
+    assert (
+        store.validate_session_token(
+            token, now=store.validate_session_token(token)["expires_at"]
+        )
+        is None
+    )
 
 
 def test_session_token_revocation_is_immediate(tmp_path):

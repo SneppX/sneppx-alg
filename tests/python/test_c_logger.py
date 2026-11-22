@@ -1,7 +1,10 @@
 """Tests for c_logger.py — structured logger."""
 
 import sys, os, io
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import Logger
 
@@ -34,6 +37,7 @@ def test_logger_json():
     log = Logger("json", level="INFO", json_output=True)
     msg = log._format("WARN", "test", {"extra": 42})
     import json
+
     parsed = json.loads(msg)
     assert parsed["level"] == "WARN"
     assert parsed["message"] == "test"

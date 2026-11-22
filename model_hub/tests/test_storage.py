@@ -1,16 +1,25 @@
 """Tests for storage backend and model serialization."""
+
 import os, sys, json
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 import tempfile
 import pytest
 
 from model_hub.storage.backend import (
-    StorageConfig, LocalStorageBackend, get_storage_backend,
+    StorageConfig,
+    LocalStorageBackend,
+    get_storage_backend,
 )
 from model_hub.converters import (
-    save_sneppx_native, load_sneppx_native, detect_format,
-    convert_pt_to_sneppx, convert_sneppx_to_hf,
+    save_sneppx_native,
+    load_sneppx_native,
+    detect_format,
+    convert_pt_to_sneppx,
+    convert_sneppx_to_hf,
 )
 from model_hub.utils import compute_sha256
 
@@ -30,6 +39,7 @@ class TestStorageBackend:
 
     def test_local_upload_download(self):
         import asyncio
+
         backend, tmpdir = self._get_backend()
 
         with tempfile.NamedTemporaryFile(delete=False, mode="wb", suffix=".bin") as f:
@@ -102,7 +112,9 @@ class TestSNEPPXFormat:
             assert "model.weight" in loaded
 
             # Verify data
-            loaded_arr = np.frombuffer(loaded["model.weight"], dtype=np.float32).reshape(10, 10)
+            loaded_arr = np.frombuffer(
+                loaded["model.weight"], dtype=np.float32
+            ).reshape(10, 10)
             np.testing.assert_array_equal(loaded_arr, tensors["model.weight"])
 
 

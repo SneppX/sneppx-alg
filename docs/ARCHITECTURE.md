@@ -114,11 +114,13 @@ y = Sum_{i=1}^{k} weights_i * E_{indices_i}(x)
 ```
 
 **Learned MLP Gater** (opt-in, `use_mlp_gater=1`): replaces the linear router with a 2-layer MLP:
+
 ```
 r(x) = Softmax(W2 * ReLU(W1 * x + b1) + b2)
 ```
 
 Load-balancing loss:
+
 ```
 L_balance = alpha * n * Sum_{i=1}^{n} f_i * P_i
 
@@ -187,6 +189,7 @@ y_smooth = beta * y_prev + (1 - beta) * y_hat     // with beta in [0.7, 0.99]
 #### Attack Simulation
 
 ARC includes simulation for:
+
 - **FGSM** (Fast Gradient Sign Method): `x_adv = x + eps * sign(grad_x L(x, y))`
 - **PGD** (Projected Gradient Descent): Multi-step FGSM with projection
 - **C&W** (Carlini-Wagner): Optimization-based attack: `min ||delta|| + c * f(x + delta)`
@@ -194,6 +197,7 @@ ARC includes simulation for:
 #### Adversarial Training Graph
 
 `SNEPPX_arc_build_adversarial_train_graph` constructs a shared-weight dual forward graph:
+
 1. Clean forward on original input (requires_grad=1)
 2. FGSM perturbation generated from clean loss gradients
 3. Adversarial forward on perturbed input (adversarial variable requires_grad=0)
@@ -327,6 +331,7 @@ FM provides distributed memory with per-node memory banks, trust-weighted synchr
 #### Memory Bank
 
 Each node maintains a fixed-size memory bank with:
+
 - **Euclidean similarity** for nearest-neighbor retrieval
 - **LRU eviction** when the bank is full
 - **Learnable read/write** operations
@@ -539,6 +544,7 @@ typedef enum {
 ```
 
 **Supported ops (50+):**
+
 - Creation: zeros, ones, full, randn, arange, identity, from_buffer, copy
 - Shape: reshape, transpose, permute, expand, squeeze, unsqueeze, slice, pad
 - Arithmetic: add, sub, mul, div, pow, sqrt, neg, abs

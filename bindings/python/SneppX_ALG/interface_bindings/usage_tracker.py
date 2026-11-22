@@ -90,15 +90,21 @@ class UsageTracker:
             conn.execute(
                 "INSERT INTO request_log (key_hash, timestamp, tokens_in, tokens_out, endpoint, response_ms, status_code) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (key_hash, time.time(), tokens_in, tokens_out, endpoint, response_ms, status_code),
+                (
+                    key_hash,
+                    time.time(),
+                    tokens_in,
+                    tokens_out,
+                    endpoint,
+                    response_ms,
+                    status_code,
+                ),
             )
             conn.commit()
         except Exception as e:
             logger.warning("Failed to record usage: %s", e)
 
-    def get_stats(
-        self, key_hash: str, since: Optional[float] = None
-    ) -> Dict:
+    def get_stats(self, key_hash: str, since: Optional[float] = None) -> Dict:
         """Get aggregate stats for a key."""
         conn = self._get_conn()
         if since:

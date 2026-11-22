@@ -13,17 +13,16 @@
  *
  */
 
-
 /**
  * SNEPPX Quantization C Test Suite
  * Tests INT8, FP8, AWQ, GPTQ host-side implementations.
  */
 #include "quantization.h"
-#include <stdio.h>
+#include <assert.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 static int test_int8_sym_roundtrip(void)
 {
@@ -36,9 +35,11 @@ static int test_int8_sym_roundtrip(void)
     ret = SNEPPX_dequantize_int8_sym(quantized, output, 4, scale);
     assert(ret == 0);
     float max_err = 0.0f;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         float e = fabsf(output[i] - input[i]);
-        if (e > max_err) max_err = e;
+        if (e > max_err)
+            max_err = e;
     }
     printf("  INT8 sym roundtrip max error: %.6f (scale=%f)\n", max_err, scale);
     assert(max_err < 0.02f);
@@ -53,7 +54,8 @@ static int test_int8_sym_zero(void)
     float scale;
     SNEPPX_quantize_int8_sym(input, quantized, 4, &scale);
     SNEPPX_dequantize_int8_sym(quantized, output, 4, scale);
-    for (int i = 0; i < 4; i++) assert(output[i] == 0.0f);
+    for (int i = 0; i < 4; i++)
+        assert(output[i] == 0.0f);
     printf("  INT8 sym zero PASS\n");
     return 0;
 }
@@ -70,11 +72,13 @@ static int test_int8_asym_roundtrip(void)
     ret = SNEPPX_dequantize_int8_asym(quantized, output, 5, scale, zp);
     assert(ret == 0);
     float max_err = 0.0f;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         float e = fabsf(output[i] - input[i]);
-        if (e > max_err) max_err = e;
+        if (e > max_err)
+            max_err = e;
     }
-    printf("  INT8 asym roundtrip max error: %.6f (scale=%f, zp=%d)\n", max_err, scale, (int)zp);
+    printf("  INT8 asym roundtrip max error: %.6f (scale=%f, zp=%d)\n", max_err, scale, (int) zp);
     assert(max_err < 0.05f);
     return 0;
 }
@@ -98,9 +102,11 @@ static int test_int4_roundtrip(void)
     SNEPPX_quantize_int4_sym(input, packed, 6, &scale);
     SNEPPX_dequantize_int4_sym(packed, output, 6, scale);
     float max_err = 0.0f;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++)
+    {
         float e = fabsf(output[i] - input[i]);
-        if (e > max_err) max_err = e;
+        if (e > max_err)
+            max_err = e;
     }
     printf("  INT4 sym roundtrip max error: %.6f (scale=%f)\n", max_err, scale);
     assert(max_err < 1.0f);
@@ -110,7 +116,8 @@ static int test_int4_roundtrip(void)
 static int test_fp8_e4m3_encdec(void)
 {
     float test_vals[] = {0.0f, 1.0f, -1.0f, 2.5f, 127.0f, -64.0f, 0.125f};
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 7; i++)
+    {
         uint8_t fp8 = SNEPPX_float_to_fp8_e4m3(test_vals[i]);
         float dec = SNEPPX_fp8_e4m3_to_float(fp8);
         printf("  E4M3: %.4f -> 0x%02X -> %.4f\n", test_vals[i], fp8, dec);
@@ -121,7 +128,8 @@ static int test_fp8_e4m3_encdec(void)
 static int test_fp8_e5m2_encdec(void)
 {
     float test_vals[] = {0.0f, 1.0f, -1.0f, 256.0f, -128.0f, 0.25f};
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++)
+    {
         uint8_t fp8 = SNEPPX_float_to_fp8_e5m2(test_vals[i]);
         float dec = SNEPPX_fp8_e5m2_to_float(fp8);
         printf("  E5M2: %.4f -> 0x%02X -> %.4f\n", test_vals[i], fp8, dec);
@@ -143,12 +151,12 @@ static int test_awq_quantize(void)
 
 static int test_gptq_hessian(void)
 {
-    float acts[12] = {1,0, 2,0, 3,0, 4,0, 5,0, 6,0, 7,0, 8,0, 9,0, 10,0, 11,0, 12,0};
+    float acts[12] = {1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11, 0, 12, 0};
     float H[9];
     int ret = SNEPPX_gptq_compute_hessian(H, acts, 4, 3);
     assert(ret == 0);
-    printf("  GPTQ Hessian: %.2f %.2f %.2f / %.2f %.2f %.2f / %.2f %.2f %.2f\n",
-           H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8]);
+    printf("  GPTQ Hessian: %.2f %.2f %.2f / %.2f %.2f %.2f / %.2f %.2f %.2f\n", H[0], H[1], H[2], H[3], H[4], H[5],
+           H[6], H[7], H[8]);
     return 0;
 }
 

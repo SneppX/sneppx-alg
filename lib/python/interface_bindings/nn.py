@@ -57,11 +57,15 @@ class Module:
 
 
 class Linear(Module):
-    def __init__(self, in_features: int, out_features: int, bias: bool = True, dtype="float32"):
+    def __init__(
+        self, in_features: int, out_features: int, bias: bool = True, dtype="float32"
+    ):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.weight = Tensor.randn((out_features, in_features), dtype=dtype) / math.sqrt(in_features)
+        self.weight = Tensor.randn(
+            (out_features, in_features), dtype=dtype
+        ) / math.sqrt(in_features)
         self.bias = Tensor.zeros((out_features,), dtype=dtype) if bias else None
 
     def forward(self, x: Tensor) -> Tensor:
@@ -91,12 +95,17 @@ class Dropout(Module):
         if not self._training or self.p == 0:
             return x
         mask = np.random.binomial(1, 1.0 - self.p, x.shape).astype(np.float32)
-        mask /= (1.0 - self.p)
+        mask /= 1.0 - self.p
         return Tensor(x.numpy() * mask, dtype=x.dtype)
 
 
 class LayerNorm(Module):
-    def __init__(self, normalized_shape: Union[int, Tuple[int, ...]], eps: float = 1e-5, dtype="float32"):
+    def __init__(
+        self,
+        normalized_shape: Union[int, Tuple[int, ...]],
+        eps: float = 1e-5,
+        dtype="float32",
+    ):
         super().__init__()
         if isinstance(normalized_shape, int):
             normalized_shape = (normalized_shape,)
@@ -124,7 +133,7 @@ class RMSNorm(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         arr = x.numpy()
-        rms = np.sqrt((arr ** 2).mean(axis=-1, keepdims=True) + self.eps)
+        rms = np.sqrt((arr**2).mean(axis=-1, keepdims=True) + self.eps)
         return Tensor(arr / rms * self.weight.numpy(), dtype=x.dtype)
 
 
@@ -166,7 +175,9 @@ class Sequential(Module):
 
 
 class MultiheadAttention(Module):
-    def __init__(self, embed_dim: int, num_heads: int, dropout: float = 0.0, dtype="float32"):
+    def __init__(
+        self, embed_dim: int, num_heads: int, dropout: float = 0.0, dtype="float32"
+    ):
         super().__init__()
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -177,9 +188,13 @@ class MultiheadAttention(Module):
         self.o_proj = Linear(embed_dim, embed_dim, dtype=dtype)
         self.dropout = Dropout(dropout)
 
-    def forward(self, q: Tensor, k: Tensor = None, v: Tensor = None, mask: Tensor = None) -> Tensor:
-        if k is None: k = q
-        if v is None: v = q
+    def forward(
+        self, q: Tensor, k: Tensor = None, v: Tensor = None, mask: Tensor = None
+    ) -> Tensor:
+        if k is None:
+            k = q
+        if v is None:
+            v = q
         B, T, C = q.shape
         H = self.num_heads
         D = self.head_dim
@@ -197,7 +212,14 @@ class MultiheadAttention(Module):
 
 
 class TransformerBlock(Module):
-    def __init__(self, dim: int, num_heads: int, ffn_dim: int, dropout: float = 0.0, dtype="float32"):
+    def __init__(
+        self,
+        dim: int,
+        num_heads: int,
+        ffn_dim: int,
+        dropout: float = 0.0,
+        dtype="float32",
+    ):
         super().__init__()
         self.attention = MultiheadAttention(dim, num_heads, dropout, dtype)
         self.norm1 = LayerNorm(dim, dtype=dtype)
@@ -216,15 +238,26 @@ class TransformerBlock(Module):
 
 
 class Transformer(Module):
-    def __init__(self, vocab_size: int, dim: int, num_heads: int, num_layers: int,
-                 ffn_dim: int, max_seq_len: int = 2048, dropout: float = 0.0, dtype="float32"):
+    def __init__(
+        self,
+        vocab_size: int,
+        dim: int,
+        num_heads: int,
+        num_layers: int,
+        ffn_dim: int,
+        max_seq_len: int = 2048,
+        dropout: float = 0.0,
+        dtype="float32",
+    ):
         super().__init__()
         self.token_embedding = Embedding(vocab_size, dim, dtype)
         self.pos_embedding = Embedding(max_seq_len, dim, dtype)
-        self.blocks = Sequential(*[
-            TransformerBlock(dim, num_heads, ffn_dim, dropout, dtype)
-            for _ in range(num_layers)
-        ])
+        self.blocks = Sequential(
+            *[
+                TransformerBlock(dim, num_heads, ffn_dim, dropout, dtype)
+                for _ in range(num_layers)
+            ]
+        )
         self.norm = LayerNorm(dim, dtype=dtype)
         self.lm_head = Linear(dim, vocab_size, dtype=dtype)
 

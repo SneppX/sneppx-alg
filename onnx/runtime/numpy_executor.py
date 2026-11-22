@@ -63,8 +63,8 @@ def _conv(x, w, node):
     xp = np.pad(x, ((0, 0), (0, 0), (pad_t, pad_b), (pad_l, pad_r)))
 
     group = max(1, group)
-    cpg = cin // group          # input channels per group
-    opg = cout // group         # output channels per group
+    cpg = cin // group  # input channels per group
+    opg = cout // group  # output channels per group
     oh = (hp - (kh - 1) * dh - 1) // sh + 1
     ow = (wp - (kw - 1) * dw - 1) // sw + 1
     out = np.zeros((n, cout, oh, ow), dtype=np.float32)
@@ -166,8 +166,12 @@ def _execute_node(node: Node, tensors: Dict[str, np.ndarray]) -> List[np.ndarray
     if op == "Identity":
         return [_unary(node, tensors, lambda x: x)]
     if op == "Gelu":
+
         def _gelu(x):
-            return 0.5 * x * (1.0 + np.tanh(np.sqrt(2.0 / np.pi) * (x + 0.044715 * x**3)))
+            return (
+                0.5 * x * (1.0 + np.tanh(np.sqrt(2.0 / np.pi) * (x + 0.044715 * x**3)))
+            )
+
         return [_unary(node, tensors, _gelu)]
     if op == "Softmax":
         x = tensors[node.inputs[0]]
@@ -262,8 +266,14 @@ def _execute_node(node: Node, tensors: Dict[str, np.ndarray]) -> List[np.ndarray
         x = tensors[node.inputs[0]]
         to = _attr_int(node, "to", 1)
         nptype = {
-            1: np.float32, 10: np.float16, 11: np.float64, 3: np.int8,
-            2: np.uint8, 6: np.int32, 7: np.int64, 9: np.bool_,
+            1: np.float32,
+            10: np.float16,
+            11: np.float64,
+            3: np.int8,
+            2: np.uint8,
+            6: np.int32,
+            7: np.int64,
+            9: np.bool_,
         }.get(to, np.float32)
         return [x.astype(nptype)]
     if op == "Shape":

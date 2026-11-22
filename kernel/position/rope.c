@@ -17,8 +17,6 @@
  *   None (internal kernel module).
  */
 
-
-
 /**
  * @brief Perform Rope Precompute Freqs.
  *
@@ -29,12 +27,16 @@
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rope_precompute_freqs(float* cos, float* sin, int max_seq, int dim, float base) {
-    if (!cos || !sin || max_seq <= 0 || dim <= 0) return -1;
+int SNEPPX_rope_precompute_freqs(float* cos, float* sin, int max_seq, int dim, float base)
+{
+    if (!cos || !sin || max_seq <= 0 || dim <= 0)
+        return -1;
     int half_dim = dim / 2;
-    for (int pos = 0; pos < max_seq; pos++) {
-        for (int d = 0; d < half_dim; d++) {
-            float theta = (float)pos / powf(base, 2.0f * d / (float)dim);
+    for (int pos = 0; pos < max_seq; pos++)
+    {
+        for (int d = 0; d < half_dim; d++)
+        {
+            float theta = (float) pos / powf(base, 2.0f * d / (float) dim);
             cos[pos * half_dim + d] = cosf(theta);
             sin[pos * half_dim + d] = sinf(theta);
         }
@@ -55,14 +57,21 @@ int SNEPPX_rope_precompute_freqs(float* cos, float* sin, int max_seq, int dim, f
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rope_apply_freqs(const float* x, float* output, const float* cos, const float* sin, int batch, int seq, int heads, int dim) {
-    if (!x || !output || !cos || !sin || batch <= 0 || seq <= 0 || heads <= 0 || dim <= 0) return -1;
+int SNEPPX_rope_apply_freqs(const float* x, float* output, const float* cos, const float* sin, int batch, int seq,
+                            int heads, int dim)
+{
+    if (!x || !output || !cos || !sin || batch <= 0 || seq <= 0 || heads <= 0 || dim <= 0)
+        return -1;
     int half_dim = dim / 2;
-    for (int b = 0; b < batch; b++) {
-        for (int s = 0; s < seq; s++) {
-            for (int h = 0; h < heads; h++) {
+    for (int b = 0; b < batch; b++)
+    {
+        for (int s = 0; s < seq; s++)
+        {
+            for (int h = 0; h < heads; h++)
+            {
                 int base = ((b * heads + h) * seq + s) * dim;
-                for (int d = 0; d < half_dim; d++) {
+                for (int d = 0; d < half_dim; d++)
+                {
                     float x0 = x[base + 2 * d];
                     float x1 = x[base + 2 * d + 1];
                     float c = cos[s * half_dim + d];
@@ -88,7 +97,9 @@ int SNEPPX_rope_apply_freqs(const float* x, float* output, const float* cos, con
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_rope_apply_freqs_inplace(float* x, const float* cos, const float* sin, int batch, int seq, int heads, int dim) {
+int SNEPPX_rope_apply_freqs_inplace(float* x, const float* cos, const float* sin, int batch, int seq, int heads,
+                                    int dim)
+{
     return SNEPPX_rope_apply_freqs(x, x, cos, sin, batch, seq, heads, dim);
 }
 
@@ -100,13 +111,16 @@ int SNEPPX_rope_apply_freqs_inplace(float* x, const float* cos, const float* sin
  *
  * @return Pointer on success, NULL on error.
  */
-float* SNEPPX_rope_precompute_tensor(int max_seq, int dim, float base) {
+float* SNEPPX_rope_precompute_tensor(int max_seq, int dim, float base)
+{
     int half_dim = dim / 2;
-    float* cache = (float*)malloc((size_t)max_seq * half_dim * 2 * sizeof(float));
-    if (!cache) return NULL;
+    float* cache = (float*) malloc((size_t) max_seq * half_dim * 2 * sizeof(float));
+    if (!cache)
+        return NULL;
     float* cos = cache;
-    float* sin = cache + (size_t)max_seq * half_dim;
-    if (SNEPPX_rope_precompute_freqs(cos, sin, max_seq, dim, base) != 0) {
+    float* sin = cache + (size_t) max_seq * half_dim;
+    if (SNEPPX_rope_precompute_freqs(cos, sin, max_seq, dim, base) != 0)
+    {
         free(cache);
         return NULL;
     }

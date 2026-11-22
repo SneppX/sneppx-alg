@@ -91,6 +91,7 @@ initializer byte-exact round-trip, symbolic `[batch, …]` shapes, and the seman
 ground truth `hidden = X·Wᵀ + B` then `Y = Relu(hidden)`.
 
 ### Known limitation of the existing C reader (NOT introduced here)
+
 The in-tree reader (`SNEPPX_onnx_load` / `parse_graph` in `onnx_format.c`) was written
 against a **non-standard** field layout (`GraphProto.node` treated as field 11,
 `input` as field 1, `output` as field 10, `initializer` as field 13,
@@ -134,13 +135,13 @@ with a descriptive error.
    `SNEPPX_fake_quant` autograd op register the canonical QAT recipe: symmetric
    affine fake-quantize forward (INT8/INT4/FP8 bit widths) with a
    straight-through-estimator backward, verified by `test_fake_quant` (3/3).
- 4. ~~**Experiment / run tracking.**~~ **Done** — `Run` (context manager, params,
+4. ~~**Experiment / run tracking.**~~ **Done** — `Run` (context manager, params,
     metrics with step/extra, artifacts, tags, `best`/`last`/`metric_history`),
     `Experiment` (run aggregation + `best_run`), and `ExperimentStore` (root
     directory manager), persisted as structured `metadata.json` + `metrics.jsonl`
     under `runs/<experiment>/<run_id>/` and reloadable via `load_experiment`;
     8 Python tests in `tests/python/test_experiment.py` pass.
- 5. ~~**Keras-style layer API.**~~ **Done** — `keras_api.Sequential`/`Model`
+5. ~~**Keras-style layer API.**~~ **Done** — `keras_api.Sequential`/`Model`
     with `add`/`compile`/`fit`/`evaluate`/`predict`/`summary`/`count_params`/
     `get`+`set`+`save`+`load` weights, layer factories (`Dense`, `Conv2D`,
     `MaxPool2D`, `AveragePool2D`, `Flatten`, `Dropout`, `BatchNormalization`,
@@ -150,7 +151,7 @@ with a descriptive error.
     `backward` did not reduce gradients over broadcast axes, corrupting bias
     tensors during training); 15 Python tests in
     `tests/python/test_keras_api.py` pass, 119 across the core regression.
- 6. ~~**Graph compiler.**~~ **Done** — `GraphCompiler` builds a `GraphNode` compute
+6. ~~**Graph compiler.**~~ **Done** — `GraphCompiler` builds a `GraphNode` compute
     DAG (arithmetic/unary sugar, `clip`, `matmul`, `evaluate`), fuses maximal
     chains of element-wise ops (add/sub/mul/div/neg/abs/exp/log/relu/sigmoid/
     tanh/gelu/silu/clip) into single `FusedNode` kernels via union-find with
@@ -162,7 +163,7 @@ with a descriptive error.
     `tests/python/test_graph_compiler.py` pass (fusion parity vs unfused
     evaluate, broadcast shapes, matmul boundaries, multiple clusters, codegen
     structural checks).
- 7. ~~**Mobile / edge runtime.**~~ **Done** — `EdgeRuntime` (Python) detects the
+7. ~~**Mobile / edge runtime.**~~ **Done** — `EdgeRuntime` (Python) detects the
     host as an `EdgeDevice` (x86 SSE/AVX/AVX-512, ARM NEON/FP16, RISC-V via
     ISA flags + vector width), executes compiled graphs through pluggable
     `EdgeBackend` implementations (registered via `register_backend`, default
@@ -172,7 +173,7 @@ with a descriptive error.
     (`BufferPool`, safe within a graph), and reports `latency_ms`/
     `throughput`/`flops`/`summary`/`benchmark`. 24 Python tests in
     `tests/python/test_edge_runtime.py` pass.
-  8. ~~**Hyperparameter-search orchestrator.**~~ **Done** — `hpo.py` provides a
+8. ~~**Hyperparameter-search orchestrator.**~~ **Done** — `hpo.py` provides a
      `Study` controller (Optuna-style `suggest`/`tell` plus a one-shot `run`
      driver) over a `SearchSpace` of `choice`/`int_`/`uniform`/`log_uniform`
      specs with four samplers: random search, exhaustive grid search, successive
@@ -182,7 +183,7 @@ with a descriptive error.
      to JSON (`to_json`/`from_json`). Convenience drivers
      `random_search`/`grid_search`/`halving_search`/`bayesian_search` are
      exported top-level. 24 Python tests in `tests/python/test_hpo.py` pass.
-  9. ~~**Paged attention / KV caching.**~~ **Done** — `paged_attention.py`
+9. ~~**Paged attention / KV caching.**~~ **Done** — `paged_attention.py`
      implements a `Tracer` (LIFO page reuse) + `PrefixCache` (token-hash-deduped
      prefix re-use) and `paged_attention_forward` for GQA with causal-masked
      prefill (`[0, t]` rows) and non-causal decode; paged `incremental`/
@@ -190,7 +191,7 @@ with a descriptive error.
      `q @ k.T` was over-expanding to `(heads, kv, seq)` (now a `np.einsum`),
      causal mask axis, and per-position prefill scoring. 16 Python tests in
      `tests/python/test_paged_attention.py` pass.
-  10. ~~**MX deployment formats (MXFP4/6/8).**~~ **Done** — `mx_formats.py`
+10. ~~**MX deployment formats (MXFP4/6/8).**~~ **Done** — `mx_formats.py`
       implements an MXFloat codec (block shared exponents, 1/2-bit exponent +
       2/3/4/6-bit mantissa, scaling of block exponents by `E8M0`-style
       exponents) and micro-scaled dot products (MXFP4/MXFP6/MXFP8_E4M3/BNB6).
@@ -198,7 +199,7 @@ with a descriptive error.
       formats → `ceil(log2(peak) - log2(max))`) and added IEEE subnormal
       encode/decode, lifting MXFP4 SNR 2.2→16.2 dB and MXFP6_E2M3 2.3→30.5 dB.
       7 Python tests in `tests/python/test_mx_formats.py` pass.
-  11. ~~**JIT / trace → executable graph.**~~ **Done** — `jit.py` provides
+11. ~~**JIT / trace → executable graph.**~~ **Done** — `jit.py` provides
       symbolic tracing (op graph + `tuple` nodes), `jit` (cache by input
       shapes), first/second-order `grad` (multi-`argnum`, `value_and_grad`,
       `jacobian`, `hessian` incl. mixed partials), and `vmap` (batched
@@ -206,7 +207,7 @@ with a descriptive error.
       gradient (now builds a `tuple` node), transposed-1-D matmul VJPs
       (`matmul_grad_a/b`), and `sum_to_shape` robustness to extra/fewer dims.
       24 Python tests in `tests/python/test_jit.py` pass.
-  12. ~~**MLflow-class observability.**~~ **Done** — `mlflow_like.py` provides
+12. ~~**MLflow-class observability.**~~ **Done** — `mlflow_like.py` provides
       `JSONStore` persistence, `ModelRegistry` (version lifecycle, stages with
       Production↔Archived guard, aliases, lineage), `LineageStore` (run DAG:
       chain/descendants/tags/models), `PromptRegistry` (versions + template
@@ -214,7 +215,7 @@ with a descriptive error.
       usage), `EvalMonitor` (delta/regression detection), and the
       `SneppxTrackingClient` facade. 9 Python tests in
       `tests/python/test_observability.py` pass.
-  13. ~~**Hardware inference backends.**~~ **Done** — `hw_backends.py` probes
+13. ~~**Hardware inference backends.**~~ **Done** — `hw_backends.py` probes
       CPU/ONNX/OpenVINO/NPU/GPU devices without importing heavy packages,
       routes through `BackendRegistry`/`select_execution_provider`/
       `inference_session` with an alias-aware `auto` priority chain

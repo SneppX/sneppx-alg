@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * Library Unit Tests — SKELETON
  * VERSION: v0.5
@@ -22,10 +21,11 @@
  * red-black trees, hash tables, priority queues, string utilities.
  */
 
-#include <stdio.h>
 #include "test_gtest.h"
+#include <stdio.h>
 
-TEST(test_lib_common, suite) {
+TEST(test_lib_common, suite)
+{
     printf("test_lib: skeleton — no library unit tests implemented\n");
     return;
 }

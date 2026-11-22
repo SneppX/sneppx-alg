@@ -1,10 +1,10 @@
 #include "hierarchical_state_space.h"
-#include "test_gtest.h"
 #include "sparse_expert_routing.h"
-#include <stdio.h>
+#include "test_gtest.h"
 #include <math.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Hss Ser Stack
@@ -21,20 +21,24 @@
  *
  */
 
-
-
-
-static void test_hss_ser_stack(void) {
+static void test_hss_ser_stack(void)
+{
     SNEPPXHSSConfig hss_cfg = SNEPPX_hss_config_default();
-    hss_cfg.state_dim = 16; hss_cfg.input_dim = 32; hss_cfg.output_dim = 32;
-    hss_cfg.num_layers = 1; hss_cfg.use_hierarchical = 0;
+    hss_cfg.state_dim = 16;
+    hss_cfg.input_dim = 32;
+    hss_cfg.output_dim = 32;
+    hss_cfg.num_layers = 1;
+    hss_cfg.use_hierarchical = 0;
 
     SNEPPXHSSModel* hss = SNEPPX_hss_model_create(&hss_cfg, 42);
     SX_ASSERT(hss != NULL, "hss model not null");
 
     SNEPPXSERConfig ser_cfg = SNEPPX_ser_config_default();
-    ser_cfg.num_experts = 4; ser_cfg.num_active = 2; ser_cfg.input_dim = 32;
-    ser_cfg.expert_dim = 64; ser_cfg.output_dim = 32;
+    ser_cfg.num_experts = 4;
+    ser_cfg.num_active = 2;
+    ser_cfg.input_dim = 32;
+    ser_cfg.expert_dim = 64;
+    ser_cfg.output_dim = 32;
 
     SNEPPXSERModel* ser = SNEPPX_ser_model_create(&ser_cfg, 99, 1);
     SX_ASSERT(ser != NULL, "ser model not null");
@@ -66,10 +70,15 @@ static void test_hss_ser_stack(void) {
     SX_ASSERT(ser_out->shape[0] == merged, "ser output tokens");
     SX_ASSERT(ser_out->shape[1] == 32, "ser output dim");
 
-    float* od = (float*)ser_out->data;
+    float* od = (float*) ser_out->data;
     int ok = 1;
-    for (size_t i = 0; i < ser_out->size; i++) {
-        if (!isfinite(od[i])) { ok = 0; break; }
+    for (size_t i = 0; i < ser_out->size; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            ok = 0;
+            break;
+        }
     }
     SX_ASSERT(ok, "all finite in ser output");
 
@@ -80,5 +89,7 @@ static void test_hss_ser_stack(void) {
     SNEPPX_ser_model_destroy(ser);
 }
 
-
-TEST(test_hss_ser_stack, test_hss_ser_stack) { test_hss_ser_stack(); }
+TEST(test_hss_ser_stack, test_hss_ser_stack)
+{
+    test_hss_ser_stack();
+}

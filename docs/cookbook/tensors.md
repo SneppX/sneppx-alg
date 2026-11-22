@@ -203,4 +203,3 @@ first_grad = x.grad
 first_grad.backward()
 print("second grad:", x.grad.data) # [27.0 + 18.0]
 ```
-

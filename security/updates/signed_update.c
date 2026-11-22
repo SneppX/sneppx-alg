@@ -1,10 +1,10 @@
 #include "../../include/neural_core/security/signed_update.h"
-#include "../../include/neural_core/security/cryptographic_hashing_blake3.h"
 #include "../../include/neural_core/security/constant_time_operations.h"
+#include "../../include/neural_core/security/cryptographic_hashing_blake3.h"
 #include "../../include/neural_core/security/ed25519_signature_verification.h"
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #define SNEPPX_UPDATE_HISTORY_MAX 10
@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     uint32_t major;
     uint32_t minor;
     uint32_t patch;
@@ -38,28 +38,35 @@ static int rollback_protection_global = 1;
 
 static int canary_percentage = 100;
 
-static void update_hash_u32(SNEPPXBlake3State* ctx, uint32_t value) {
-    uint8_t bytes[4] = {(uint8_t)value, (uint8_t)(value >> 8), (uint8_t)(value >> 16), (uint8_t)(value >> 24)};
+static void update_hash_u32(SNEPPXBlake3State* ctx, uint32_t value)
+{
+    uint8_t bytes[4] = {(uint8_t) value, (uint8_t) (value >> 8), (uint8_t) (value >> 16), (uint8_t) (value >> 24)};
     SNEPPX_blake3_update(ctx, bytes, sizeof(bytes));
 }
-static void update_hash_u64(SNEPPXBlake3State* ctx, uint64_t value) {
+static void update_hash_u64(SNEPPXBlake3State* ctx, uint64_t value)
+{
     uint8_t bytes[8];
-    for (int i = 0; i < 8; i++) bytes[i] = (uint8_t)(value >> (i * 8));
+    for (int i = 0; i < 8; i++)
+        bytes[i] = (uint8_t) (value >> (i * 8));
     SNEPPX_blake3_update(ctx, bytes, sizeof(bytes));
 }
-static int update_compute_digest(const SNEPPXSignedUpdate* update, uint8_t digest[SNEPPX_UPDATE_HASH_LEN]) {
+static int update_compute_digest(const SNEPPXSignedUpdate* update, uint8_t digest[SNEPPX_UPDATE_HASH_LEN])
+{
     static const uint8_t domain[] = "SNEPPX-S7-SIGNED-UPDATE-v2";
-    if (!update || !digest || update->chunk_count <= 0 ||
-        update->chunk_count > SNEPPX_MAX_UPDATE_CHUNKS ||
-        update->timestamp == 0 || (update->is_delta != 0 && update->is_delta != 1)) return -1;
+    if (!update || !digest || update->chunk_count <= 0 || update->chunk_count > SNEPPX_MAX_UPDATE_CHUNKS ||
+        update->timestamp == 0 || (update->is_delta != 0 && update->is_delta != 1))
+        return -1;
     size_t total_size = 0;
-    for (int i = 0; i < update->chunk_count; i++) {
+    for (int i = 0; i < update->chunk_count; i++)
+    {
         const SNEPPXUpdateChunk* chunk = &update->chunks[i];
-        if (chunk->chunk_index != (uint32_t)i || chunk->chunk_size == 0 ||
-            (size_t)chunk->chunk_size > SIZE_MAX - total_size) return -1;
-        total_size += (size_t)chunk->chunk_size;
+        if (chunk->chunk_index != (uint32_t) i || chunk->chunk_size == 0 ||
+            (size_t) chunk->chunk_size > SIZE_MAX - total_size)
+            return -1;
+        total_size += (size_t) chunk->chunk_size;
     }
-    if (total_size == 0) return -1;
+    if (total_size == 0)
+        return -1;
     SNEPPXBlake3State ctx;
     SNEPPX_blake3_init(&ctx);
     SNEPPX_blake3_update(&ctx, domain, sizeof(domain));
@@ -67,9 +74,10 @@ static int update_compute_digest(const SNEPPXSignedUpdate* update, uint8_t diges
     update_hash_u32(&ctx, update->version_minor);
     update_hash_u32(&ctx, update->version_patch);
     update_hash_u64(&ctx, update->timestamp);
-    update_hash_u32(&ctx, (uint32_t)update->is_delta);
-    update_hash_u32(&ctx, (uint32_t)update->chunk_count);
-    for (int i = 0; i < update->chunk_count; i++) {
+    update_hash_u32(&ctx, (uint32_t) update->is_delta);
+    update_hash_u32(&ctx, (uint32_t) update->chunk_count);
+    for (int i = 0; i < update->chunk_count; i++)
+    {
         const SNEPPXUpdateChunk* chunk = &update->chunks[i];
         update_hash_u32(&ctx, chunk->chunk_index);
         update_hash_u32(&ctx, chunk->chunk_size);
@@ -78,14 +86,17 @@ static int update_compute_digest(const SNEPPXSignedUpdate* update, uint8_t diges
     SNEPPX_blake3_finish(&ctx, digest);
     return 0;
 }
-static int update_payload_matches(const SNEPPXSignedUpdate* update, const uint8_t* data, size_t data_len) {
-    if (!update || !data || data_len == 0 || update->chunk_count <= 0 ||
-        update->chunk_count > SNEPPX_MAX_UPDATE_CHUNKS) return -1;
+static int update_payload_matches(const SNEPPXSignedUpdate* update, const uint8_t* data, size_t data_len)
+{
+    if (!update || !data || data_len == 0 || update->chunk_count <= 0 || update->chunk_count > SNEPPX_MAX_UPDATE_CHUNKS)
+        return -1;
     size_t offset = 0;
-    for (int i = 0; i < update->chunk_count; i++) {
-        size_t chunk_size = (size_t)update->chunks[i].chunk_size;
-        if (update->chunks[i].chunk_index != (uint32_t)i || chunk_size == 0 ||
-            offset > data_len || chunk_size > data_len - offset) return -1;
+    for (int i = 0; i < update->chunk_count; i++)
+    {
+        size_t chunk_size = (size_t) update->chunks[i].chunk_size;
+        if (update->chunks[i].chunk_index != (uint32_t) i || chunk_size == 0 || offset > data_len ||
+            chunk_size > data_len - offset)
+            return -1;
         SNEPPXBlake3State ctx;
         uint8_t actual_hash[SNEPPX_UPDATE_HASH_LEN];
         SNEPPX_blake3_init(&ctx);
@@ -93,7 +104,8 @@ static int update_payload_matches(const SNEPPXSignedUpdate* update, const uint8_
         SNEPPX_blake3_finish(&ctx, actual_hash);
         int matches = SNEPPX_ct_equal(actual_hash, update->chunks[i].chunk_hash, SNEPPX_UPDATE_HASH_LEN);
         memset(actual_hash, 0, sizeof(actual_hash));
-        if (!matches) return -1;
+        if (!matches)
+            return -1;
         offset += chunk_size;
     }
     return offset == data_len ? 0 : -1;
@@ -104,8 +116,10 @@ static int update_payload_matches(const SNEPPXSignedUpdate* update, const uint8_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_init(SNEPPXUpdateVerifier* uv) {
-    if (!uv) return -1;
+int SNEPPX_update_verifier_init(SNEPPXUpdateVerifier* uv)
+{
+    if (!uv)
+        return -1;
     memset(uv, 0, sizeof(*uv));
     uv->current_version[0] = 1;
     uv->current_version[1] = 0;
@@ -125,8 +139,10 @@ int SNEPPX_update_verifier_init(SNEPPXUpdateVerifier* uv) {
 /**
  * @brief Destroy Update Verifier.
  */
-void SNEPPX_update_verifier_destroy(SNEPPXUpdateVerifier* uv) {
-    if (uv) memset(uv, 0, sizeof(*uv));
+void SNEPPX_update_verifier_destroy(SNEPPXUpdateVerifier* uv)
+{
+    if (uv)
+        memset(uv, 0, sizeof(*uv));
 }
 
 /**
@@ -138,9 +154,10 @@ void SNEPPX_update_verifier_destroy(SNEPPXUpdateVerifier* uv) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_min_version(SNEPPXUpdateVerifier* uv,
-                                           uint32_t major, uint32_t minor, uint32_t patch) {
-    if (!uv) return -1;
+int SNEPPX_update_verifier_set_min_version(SNEPPXUpdateVerifier* uv, uint32_t major, uint32_t minor, uint32_t patch)
+{
+    if (!uv)
+        return -1;
     uv->min_allowed_version[0] = major;
     uv->min_allowed_version[1] = minor;
     uv->min_allowed_version[2] = patch;
@@ -154,15 +171,20 @@ int SNEPPX_update_verifier_set_min_version(SNEPPXUpdateVerifier* uv,
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update) {
-    if (!uv || !update || !uv->verification_enabled) return 0;
-    if (uv->rollback_protection_enabled) {
+int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update)
+{
+    if (!uv || !update || !uv->verification_enabled)
+        return 0;
+    if (uv->rollback_protection_enabled)
+    {
         uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
-        if (SNEPPX_update_verifier_rollback_check(uv, target) != 0) return 0;
+        if (SNEPPX_update_verifier_rollback_check(uv, target) != 0)
+            return 0;
     }
-    if (!uv->has_trusted_key) return 0;
-    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey,
-        SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0 ? 1 : 0;
+    if (!uv->has_trusted_key)
+        return 0;
+    return SNEPPX_update_verifier_verify_signature(update, uv->trusted_pubkey, SNEPPX_ED25519_PUBLIC_KEY_LEN) == 0 ? 1
+                                                                                                                   : 0;
 }
 
 /**
@@ -174,25 +196,31 @@ int SNEPPX_update_verifier_check(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update,
-                                 const uint8_t* update_data, size_t data_len) {
-    if (!uv || !update || !update_data || data_len == 0) return -1;
+int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update, const uint8_t* update_data,
+                                 size_t data_len)
+{
+    if (!uv || !update || !update_data || data_len == 0)
+        return -1;
     /* A valid signature does not make an already-applied version applicable again. */
-    if (update->version_major == uv->current_version[0] &&
-        update->version_minor == uv->current_version[1] &&
-        update->version_patch == uv->current_version[2]) return -1;
-    if (!uv->verification_enabled || SNEPPX_update_verifier_check(uv, update) != 1) return -1;
-    if (update_payload_matches(update, update_data, data_len) != 0) return -1;
+    if (update->version_major == uv->current_version[0] && update->version_minor == uv->current_version[1] &&
+        update->version_patch == uv->current_version[2])
+        return -1;
+    if (!uv->verification_enabled || SNEPPX_update_verifier_check(uv, update) != 1)
+        return -1;
+    if (update_payload_matches(update, update_data, data_len) != 0)
+        return -1;
     uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
-    if (SNEPPX_update_verifier_rollback_check(uv, target) != 0) return -1;
+    if (SNEPPX_update_verifier_rollback_check(uv, target) != 0)
+        return -1;
     uv->current_version[0] = update->version_major;
     uv->current_version[1] = update->version_minor;
     uv->current_version[2] = update->version_patch;
-    if (update_history_count < SNEPPX_UPDATE_HISTORY_MAX) {
+    if (update_history_count < SNEPPX_UPDATE_HISTORY_MAX)
+    {
         update_history[update_history_count].major = update->version_major;
         update_history[update_history_count].minor = update->version_minor;
         update_history[update_history_count].patch = update->version_patch;
-        update_history[update_history_count].timestamp = (uint64_t)time(NULL);
+        update_history[update_history_count].timestamp = (uint64_t) time(NULL);
         update_history_count++;
     }
     return 0;
@@ -205,15 +233,26 @@ int SNEPPX_update_verifier_apply(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpd
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_rollback_check(SNEPPXUpdateVerifier* uv, uint32_t target_version[3]) {
-    if (!uv || !target_version) return -1;
-    if (!uv->rollback_protection_enabled) return 0;
-    if (target_version[0] < uv->current_version[0]) return 1;
-    if (target_version[0] == uv->current_version[0] && target_version[1] < uv->current_version[1]) return 1;
-    if (target_version[0] == uv->current_version[0] && target_version[1] == uv->current_version[1] && target_version[2] < uv->current_version[2]) return 1;
-    if (target_version[0] < uv->min_allowed_version[0]) return 1;
-    if (target_version[0] == uv->min_allowed_version[0] && target_version[1] < uv->min_allowed_version[1]) return 1;
-    if (target_version[0] == uv->min_allowed_version[0] && target_version[1] == uv->min_allowed_version[1] && target_version[2] < uv->min_allowed_version[2]) return 1;
+int SNEPPX_update_verifier_rollback_check(SNEPPXUpdateVerifier* uv, uint32_t target_version[3])
+{
+    if (!uv || !target_version)
+        return -1;
+    if (!uv->rollback_protection_enabled)
+        return 0;
+    if (target_version[0] < uv->current_version[0])
+        return 1;
+    if (target_version[0] == uv->current_version[0] && target_version[1] < uv->current_version[1])
+        return 1;
+    if (target_version[0] == uv->current_version[0] && target_version[1] == uv->current_version[1] &&
+        target_version[2] < uv->current_version[2])
+        return 1;
+    if (target_version[0] < uv->min_allowed_version[0])
+        return 1;
+    if (target_version[0] == uv->min_allowed_version[0] && target_version[1] < uv->min_allowed_version[1])
+        return 1;
+    if (target_version[0] == uv->min_allowed_version[0] && target_version[1] == uv->min_allowed_version[1] &&
+        target_version[2] < uv->min_allowed_version[2])
+        return 1;
     return 0;
 }
 
@@ -226,8 +265,11 @@ int SNEPPX_update_verifier_rollback_check(SNEPPXUpdateVerifier* uv, uint32_t tar
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_current_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor, uint32_t* patch) {
-    if (!uv || !major || !minor || !patch) return -1;
+int SNEPPX_update_verifier_get_current_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor,
+                                               uint32_t* patch)
+{
+    if (!uv || !major || !minor || !patch)
+        return -1;
     *major = uv->current_version[0];
     *minor = uv->current_version[1];
     *patch = uv->current_version[2];
@@ -243,8 +285,10 @@ int SNEPPX_update_verifier_get_current_version(SNEPPXUpdateVerifier* uv, uint32_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_min_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor, uint32_t* patch) {
-    if (!uv || !major || !minor || !patch) return -1;
+int SNEPPX_update_verifier_get_min_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor, uint32_t* patch)
+{
+    if (!uv || !major || !minor || !patch)
+        return -1;
     *major = uv->min_allowed_version[0];
     *minor = uv->min_allowed_version[1];
     *patch = uv->min_allowed_version[2];
@@ -256,7 +300,8 @@ int SNEPPX_update_verifier_get_min_version(SNEPPXUpdateVerifier* uv, uint32_t* m
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_rollback_protection(int enabled) {
+int SNEPPX_update_verifier_set_rollback_protection(int enabled)
+{
     rollback_protection_global = enabled;
     return 0;
 }
@@ -269,10 +314,13 @@ int SNEPPX_update_verifier_set_rollback_protection(int enabled) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_update_history(SNEPPXUpdateVerifier* uv, uint32_t* history, int max) {
-    if (!uv || !history || max <= 0) return -1;
+int SNEPPX_update_verifier_get_update_history(SNEPPXUpdateVerifier* uv, uint32_t* history, int max)
+{
+    if (!uv || !history || max <= 0)
+        return -1;
     int written = 0;
-    for (int i = 0; i < update_history_count && written < max; i++) {
+    for (int i = 0; i < update_history_count && written < max; i++)
+    {
         history[written * 3 + 0] = update_history[i].major;
         history[written * 3 + 1] = update_history[i].minor;
         history[written * 3 + 2] = update_history[i].patch;
@@ -289,18 +337,24 @@ int SNEPPX_update_verifier_get_update_history(SNEPPXUpdateVerifier* uv, uint32_t
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t* signing_key, size_t key_len) {
-    if (!update || !signing_key || key_len != SNEPPX_ED25519_SEED_LEN) return -1;
+int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t* signing_key, size_t key_len)
+{
+    if (!update || !signing_key || key_len != SNEPPX_ED25519_SEED_LEN)
+        return -1;
     uint8_t digest[SNEPPX_UPDATE_HASH_LEN];
-    if (update_compute_digest(update, digest) != 0) return -1;
+    if (update_compute_digest(update, digest) != 0)
+        return -1;
     SNEPPXEd25519Keypair kp;
     SNEPPXEd25519Signature sig;
     memset(&kp, 0, sizeof(kp));
     memset(&sig, 0, sizeof(sig));
     int rc = SNEPPX_ed25519_secret_key_expand(kp.private_key, signing_key);
-    if (rc == 0) rc = SNEPPX_ed25519_publickey_from_seed(signing_key, kp.public_key);
-    if (rc == 0) rc = SNEPPX_ed25519_sign(&kp, digest, sizeof(digest), &sig);
-    if (rc == 0) {
+    if (rc == 0)
+        rc = SNEPPX_ed25519_publickey_from_seed(signing_key, kp.public_key);
+    if (rc == 0)
+        rc = SNEPPX_ed25519_sign(&kp, digest, sizeof(digest), &sig);
+    if (rc == 0)
+    {
         memcpy(update->update_hash, digest, sizeof(digest));
         memcpy(update->signature, sig.data, sizeof(sig.data));
     }
@@ -318,18 +372,24 @@ int SNEPPX_update_verifier_sign_update(SNEPPXSignedUpdate* update, const uint8_t
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_trusted_pubkey(SNEPPXUpdateVerifier* uv, const uint8_t* public_key) {
-    if (!uv || !public_key) return -1;
+int SNEPPX_update_verifier_set_trusted_pubkey(SNEPPXUpdateVerifier* uv, const uint8_t* public_key)
+{
+    if (!uv || !public_key)
+        return -1;
     memcpy(uv->trusted_pubkey, public_key, SNEPPX_ED25519_PUBLIC_KEY_LEN);
     uv->has_trusted_key = 1;
     return 0;
 }
 
-int SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len) {
-    if (!update || !public_key || key_len != SNEPPX_ED25519_PUBLIC_KEY_LEN) return -1;
+int SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, const uint8_t* public_key, size_t key_len)
+{
+    if (!update || !public_key || key_len != SNEPPX_ED25519_PUBLIC_KEY_LEN)
+        return -1;
     uint8_t digest[SNEPPX_UPDATE_HASH_LEN];
-    if (update_compute_digest(update, digest) != 0) return -1;
-    if (!SNEPPX_ct_equal(digest, update->update_hash, sizeof(digest))) {
+    if (update_compute_digest(update, digest) != 0)
+        return -1;
+    if (!SNEPPX_ct_equal(digest, update->update_hash, sizeof(digest)))
+    {
         memset(digest, 0, sizeof(digest));
         return -1;
     }
@@ -348,9 +408,11 @@ int SNEPPX_update_verifier_verify_signature(const SNEPPXSignedUpdate* update, co
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_version_string(char* buf, size_t size) {
-    if (!buf || size == 0) return -1;
-    snprintf(buf, size, "1.0.%d", (int)time(NULL) % 100);
+int SNEPPX_update_verifier_get_version_string(char* buf, size_t size)
+{
+    if (!buf || size == 0)
+        return -1;
+    snprintf(buf, size, "1.0.%d", (int) time(NULL) % 100);
     return 0;
 }
 
@@ -359,7 +421,8 @@ int SNEPPX_update_verifier_get_version_string(char* buf, size_t size) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_percentage(void) {
+int SNEPPX_update_verifier_get_percentage(void)
+{
     return canary_percentage;
 }
 
@@ -368,16 +431,19 @@ int SNEPPX_update_verifier_get_percentage(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_record_history(const SNEPPXSignedUpdate* update) {
-    if (!update) return -1;
-    if (update_history_count >= SNEPPX_UPDATE_HISTORY_MAX) {
+int SNEPPX_update_verifier_record_history(const SNEPPXSignedUpdate* update)
+{
+    if (!update)
+        return -1;
+    if (update_history_count >= SNEPPX_UPDATE_HISTORY_MAX)
+    {
         memmove(update_history, update_history + 1, (SNEPPX_UPDATE_HISTORY_MAX - 1) * sizeof(SNEPPXUpdateHistoryEntry));
         update_history_count--;
     }
     update_history[update_history_count].major = update->version_major;
     update_history[update_history_count].minor = update->version_minor;
     update_history[update_history_count].patch = update->version_patch;
-    update_history[update_history_count].timestamp = (uint64_t)time(NULL);
+    update_history[update_history_count].timestamp = (uint64_t) time(NULL);
     update_history_count++;
     return 0;
 }
@@ -389,26 +455,34 @@ int SNEPPX_update_verifier_record_history(const SNEPPXSignedUpdate* update) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_history(uint32_t* entries, int max) {
-    if (!entries || max <= 0) return -1;
+int SNEPPX_update_verifier_get_history(uint32_t* entries, int max)
+{
+    if (!entries || max <= 0)
+        return -1;
     int written = 0;
-    for (int i = 0; i < update_history_count && written < max; i++) {
+    for (int i = 0; i < update_history_count && written < max; i++)
+    {
         entries[written * 4 + 0] = update_history[i].major;
         entries[written * 4 + 1] = update_history[i].minor;
         entries[written * 4 + 2] = update_history[i].patch;
-        entries[written * 4 + 3] = (uint32_t)update_history[i].timestamp;
+        entries[written * 4 + 3] = (uint32_t) update_history[i].timestamp;
         written++;
     }
     return written;
 }
-static int compare_versions(uint32_t a[3], uint32_t b[3]) {
-    if (a[0] != b[0]) return (a[0] < b[0]) ? -1 : 1;
-    if (a[1] != b[1]) return (a[1] < b[1]) ? -1 : 1;
-    if (a[2] != b[2]) return (a[2] < b[2]) ? -1 : 1;
+static int compare_versions(uint32_t a[3], uint32_t b[3])
+{
+    if (a[0] != b[0])
+        return (a[0] < b[0]) ? -1 : 1;
+    if (a[1] != b[1])
+        return (a[1] < b[1]) ? -1 : 1;
+    if (a[2] != b[2])
+        return (a[2] < b[2]) ? -1 : 1;
     return 0;
 }
 
-static void version_from_update(uint32_t* out, const SNEPPXSignedUpdate* update) {
+static void version_from_update(uint32_t* out, const SNEPPXSignedUpdate* update)
+{
     out[0] = update->version_major;
     out[1] = update->version_minor;
     out[2] = update->version_patch;
@@ -421,11 +495,15 @@ static void version_from_update(uint32_t* out, const SNEPPXSignedUpdate* update)
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_is_update_applicable(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update) {
-    if (!uv || !update) return 0;
+int SNEPPX_update_verifier_is_update_applicable(SNEPPXUpdateVerifier* uv, const SNEPPXSignedUpdate* update)
+{
+    if (!uv || !update)
+        return 0;
     uint32_t target[3] = {update->version_major, update->version_minor, update->version_patch};
-    if (compare_versions(target, uv->current_version) <= 0) return 0;
-    if (compare_versions(target, uv->min_allowed_version) < 0) return 0;
+    if (compare_versions(target, uv->current_version) <= 0)
+        return 0;
+    if (compare_versions(target, uv->min_allowed_version) < 0)
+        return 0;
     return 1;
 }
 
@@ -438,8 +516,10 @@ int SNEPPX_update_verifier_is_update_applicable(SNEPPXUpdateVerifier* uv, const 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_current_version(SNEPPXUpdateVerifier* uv, uint32_t major, uint32_t minor, uint32_t patch) {
-    if (!uv) return -1;
+int SNEPPX_update_verifier_set_current_version(SNEPPXUpdateVerifier* uv, uint32_t major, uint32_t minor, uint32_t patch)
+{
+    if (!uv)
+        return -1;
     uv->current_version[0] = major;
     uv->current_version[1] = minor;
     uv->current_version[2] = patch;
@@ -453,8 +533,10 @@ int SNEPPX_update_verifier_set_current_version(SNEPPXUpdateVerifier* uv, uint32_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_enable_verification(SNEPPXUpdateVerifier* uv, int enable) {
-    if (!uv) return -1;
+int SNEPPX_update_verifier_enable_verification(SNEPPXUpdateVerifier* uv, int enable)
+{
+    if (!uv)
+        return -1;
     uv->verification_enabled = (enable != 0);
     return 0;
 }
@@ -464,7 +546,8 @@ int SNEPPX_update_verifier_enable_verification(SNEPPXUpdateVerifier* uv, int ena
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_is_verification_enabled(SNEPPXUpdateVerifier* uv) {
+int SNEPPX_update_verifier_is_verification_enabled(SNEPPXUpdateVerifier* uv)
+{
     return uv ? uv->verification_enabled : 0;
 }
 
@@ -473,8 +556,10 @@ int SNEPPX_update_verifier_is_verification_enabled(SNEPPXUpdateVerifier* uv) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_is_rollback_protection_enabled(SNEPPXUpdateVerifier* uv) {
-    if (!uv) return rollback_protection_global;
+int SNEPPX_update_verifier_is_rollback_protection_enabled(SNEPPXUpdateVerifier* uv)
+{
+    if (!uv)
+        return rollback_protection_global;
     return uv->rollback_protection_enabled;
 }
 
@@ -483,14 +568,16 @@ int SNEPPX_update_verifier_is_rollback_protection_enabled(SNEPPXUpdateVerifier* 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_history_count(void) {
+int SNEPPX_update_verifier_get_history_count(void)
+{
     return update_history_count;
 }
 
 /**
  * @brief Perform Update Verifier Clear History.
  */
-void SNEPPX_update_verifier_clear_history(void) {
+void SNEPPX_update_verifier_clear_history(void)
+{
     memset(update_history, 0, sizeof(update_history));
     update_history_count = 0;
 }
@@ -500,8 +587,10 @@ void SNEPPX_update_verifier_clear_history(void) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_update_verifier_get_history_timestamp(int index) {
-    if (index < 0 || index >= update_history_count) return 0;
+uint64_t SNEPPX_update_verifier_get_history_timestamp(int index)
+{
+    if (index < 0 || index >= update_history_count)
+        return 0;
     return update_history[index].timestamp;
 }
 
@@ -510,8 +599,10 @@ uint64_t SNEPPX_update_verifier_get_history_timestamp(int index) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_canary_percentage(int pct) {
-    if (pct < 0 || pct > 100) return -1;
+int SNEPPX_update_verifier_set_canary_percentage(int pct)
+{
+    if (pct < 0 || pct > 100)
+        return -1;
     canary_percentage = pct;
     return 0;
 }
@@ -522,8 +613,10 @@ int SNEPPX_update_verifier_set_canary_percentage(int pct) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_check_version_major(SNEPPXUpdateVerifier* uv, uint32_t major) {
-    if (!uv) return 0;
+int SNEPPX_update_verifier_check_version_major(SNEPPXUpdateVerifier* uv, uint32_t major)
+{
+    if (!uv)
+        return 0;
     return (major >= uv->min_allowed_version[0] && major <= uv->current_version[0] + 1) ? 1 : 0;
 }
 
@@ -534,8 +627,10 @@ int SNEPPX_update_verifier_check_version_major(SNEPPXUpdateVerifier* uv, uint32_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_check_version_minor(SNEPPXUpdateVerifier* uv, uint32_t minor) {
-    if (!uv) return 0;
+int SNEPPX_update_verifier_check_version_minor(SNEPPXUpdateVerifier* uv, uint32_t minor)
+{
+    if (!uv)
+        return 0;
     return (minor >= uv->current_version[1]) ? 1 : 0;
 }
 
@@ -546,8 +641,10 @@ int SNEPPX_update_verifier_check_version_minor(SNEPPXUpdateVerifier* uv, uint32_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_check_version_patch(SNEPPXUpdateVerifier* uv, uint32_t patch) {
-    if (!uv) return 0;
+int SNEPPX_update_verifier_check_version_patch(SNEPPXUpdateVerifier* uv, uint32_t patch)
+{
+    if (!uv)
+        return 0;
     return (patch >= uv->current_version[2]) ? 1 : 0;
 }
 
@@ -561,8 +658,11 @@ int SNEPPX_update_verifier_check_version_patch(SNEPPXUpdateVerifier* uv, uint32_
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_history_entry(uint32_t index, uint32_t* major, uint32_t* minor, uint32_t* patch, uint64_t* timestamp) {
-    if (index >= (uint32_t)update_history_count || !major || !minor || !patch || !timestamp) return -1;
+int SNEPPX_update_verifier_get_history_entry(uint32_t index, uint32_t* major, uint32_t* minor, uint32_t* patch,
+                                             uint64_t* timestamp)
+{
+    if (index >= (uint32_t) update_history_count || !major || !minor || !patch || !timestamp)
+        return -1;
     *major = update_history[index].major;
     *minor = update_history[index].minor;
     *patch = update_history[index].patch;
@@ -581,10 +681,15 @@ int SNEPPX_update_verifier_get_history_entry(uint32_t index, uint32_t* major, ui
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_compare_versions(uint32_t a_major, uint32_t a_minor, uint32_t a_patch, uint32_t b_major, uint32_t b_minor, uint32_t b_patch) {
-    if (a_major != b_major) return (a_major < b_major) ? -1 : 1;
-    if (a_minor != b_minor) return (a_minor < b_minor) ? -1 : 1;
-    if (a_patch != b_patch) return (a_patch < b_patch) ? -1 : 1;
+int SNEPPX_update_verifier_compare_versions(uint32_t a_major, uint32_t a_minor, uint32_t a_patch, uint32_t b_major,
+                                            uint32_t b_minor, uint32_t b_patch)
+{
+    if (a_major != b_major)
+        return (a_major < b_major) ? -1 : 1;
+    if (a_minor != b_minor)
+        return (a_minor < b_minor) ? -1 : 1;
+    if (a_patch != b_patch)
+        return (a_patch < b_patch) ? -1 : 1;
     return 0;
 }
 
@@ -593,7 +698,8 @@ int SNEPPX_update_verifier_compare_versions(uint32_t a_major, uint32_t a_minor, 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_is_delta_update(const SNEPPXSignedUpdate* update) {
+int SNEPPX_update_verifier_is_delta_update(const SNEPPXSignedUpdate* update)
+{
     return update ? update->is_delta : 0;
 }
 
@@ -602,7 +708,8 @@ int SNEPPX_update_verifier_is_delta_update(const SNEPPXSignedUpdate* update) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_update_verifier_get_update_timestamp(const SNEPPXSignedUpdate* update) {
+uint64_t SNEPPX_update_verifier_get_update_timestamp(const SNEPPXSignedUpdate* update)
+{
     return update ? update->timestamp : 0;
 }
 
@@ -611,7 +718,8 @@ uint64_t SNEPPX_update_verifier_get_update_timestamp(const SNEPPXSignedUpdate* u
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_chunk_count(const SNEPPXSignedUpdate* update) {
+int SNEPPX_update_verifier_get_chunk_count(const SNEPPXSignedUpdate* update)
+{
     return update ? update->chunk_count : 0;
 }
 /**
@@ -619,12 +727,17 @@ int SNEPPX_update_verifier_get_chunk_count(const SNEPPXSignedUpdate* update) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_rollback_protection(void) { return rollback_protection_global; }
+int SNEPPX_update_verifier_get_rollback_protection(void)
+{
+    return rollback_protection_global;
+}
 /**
  * @brief Perform Update Verifier Set History Count.
  */
-void SNEPPX_update_verifier_set_history_count(int c) {
-    if (c < 0 || c > SNEPPX_UPDATE_HISTORY_MAX) return;
+void SNEPPX_update_verifier_set_history_count(int c)
+{
+    if (c < 0 || c > SNEPPX_UPDATE_HISTORY_MAX)
+        return;
     update_history_count = c;
 }
 
@@ -636,9 +749,12 @@ void SNEPPX_update_verifier_set_history_count(int c) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* key_out, size_t key_len) {
+int SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* key_out, size_t key_len)
+{
     /* The verifier stores only a trusted public key, never a signing private key. */
-    (void)uv; (void)key_out; (void)key_len;
+    (void) uv;
+    (void) key_out;
+    (void) key_len;
     return -1;
 }
 
@@ -650,9 +766,12 @@ int SNEPPX_update_verifier_get_signing_key(SNEPPXUpdateVerifier* uv, uint8_t* ke
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_set_signing_key(SNEPPXUpdateVerifier* uv, const uint8_t* key, size_t key_len) {
+int SNEPPX_update_verifier_set_signing_key(SNEPPXUpdateVerifier* uv, const uint8_t* key, size_t key_len)
+{
     /* Private signing keys are not stored in the update verifier. */
-    (void)uv; (void)key; (void)key_len;
+    (void) uv;
+    (void) key;
+    (void) key_len;
     return -1;
 }
 
@@ -664,8 +783,10 @@ int SNEPPX_update_verifier_set_signing_key(SNEPPXUpdateVerifier* uv, const uint8
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_compute_hash(const uint8_t* data, size_t len, uint8_t* hash_out) {
-    if (!data || !hash_out) return -1;
+int SNEPPX_update_verifier_compute_hash(const uint8_t* data, size_t len, uint8_t* hash_out)
+{
+    if (!data || !hash_out)
+        return -1;
     SNEPPXBlake3State ctx;
     SNEPPX_blake3_init(&ctx);
     SNEPPX_blake3_update(&ctx, data, len);
@@ -683,13 +804,17 @@ int SNEPPX_update_verifier_compute_hash(const uint8_t* data, size_t len, uint8_t
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint8_t* data, size_t len, const uint8_t* signature, size_t sig_len, const uint8_t* public_key, size_t key_len) {
-    (void)uv;
-    if (!data || !signature || !public_key ||
-        sig_len != SNEPPX_ED25519_SIGNATURE_LEN ||
-        key_len != SNEPPX_ED25519_PUBLIC_KEY_LEN) return -1;
+int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint8_t* data, size_t len,
+                                            const uint8_t* signature, size_t sig_len, const uint8_t* public_key,
+                                            size_t key_len)
+{
+    (void) uv;
+    if (!data || !signature || !public_key || sig_len != SNEPPX_ED25519_SIGNATURE_LEN ||
+        key_len != SNEPPX_ED25519_PUBLIC_KEY_LEN)
+        return -1;
     uint8_t hash[SNEPPX_UPDATE_HASH_LEN];
-    if (SNEPPX_update_verifier_compute_hash(data, len, hash) != 0) return -1;
+    if (SNEPPX_update_verifier_compute_hash(data, len, hash) != 0)
+        return -1;
     SNEPPXEd25519Signature sig;
     memcpy(sig.data, signature, sizeof(sig.data));
     int rc = SNEPPX_ed25519_verify(public_key, hash, sizeof(hash), &sig);
@@ -707,7 +832,8 @@ int SNEPPX_update_verifier_verify_integrity(SNEPPXUpdateVerifier* uv, const uint
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_get_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor, uint32_t* patch) {
+int SNEPPX_update_verifier_get_version(SNEPPXUpdateVerifier* uv, uint32_t* major, uint32_t* minor, uint32_t* patch)
+{
     return SNEPPX_update_verifier_get_current_version(uv, major, minor, patch);
 }
 
@@ -720,10 +846,15 @@ int SNEPPX_update_verifier_get_version(SNEPPXUpdateVerifier* uv, uint32_t* major
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_update_verifier_is_update_available(SNEPPXUpdateVerifier* uv, uint32_t candidate_major, uint32_t candidate_minor, uint32_t candidate_patch) {
-    if (!uv) return 0;
+int SNEPPX_update_verifier_is_update_available(SNEPPXUpdateVerifier* uv, uint32_t candidate_major,
+                                               uint32_t candidate_minor, uint32_t candidate_patch)
+{
+    if (!uv)
+        return 0;
     uint32_t cm[3] = {candidate_major, candidate_minor, candidate_patch};
-    if (compare_versions(cm, uv->current_version) <= 0) return 0;
-    if (compare_versions(cm, uv->min_allowed_version) < 0) return 0;
+    if (compare_versions(cm, uv->current_version) <= 0)
+        return 0;
+    if (compare_versions(cm, uv->min_allowed_version) < 0)
+        return 0;
     return 1;
 }

@@ -46,6 +46,7 @@ __all__ = [
 # parameter factories
 # --------------------------------------------------------------------------
 
+
 def choice(values: List[Any]) -> Dict[str, Any]:
     return {"type": "choice", "values": list(values)}
 
@@ -66,6 +67,7 @@ def log_uniform(low: float, high: float) -> Dict[str, Any]:
 # search space
 # --------------------------------------------------------------------------
 
+
 class SearchSpace:
     """A dict of parameter definitions with sampling / grid / encoding."""
 
@@ -76,7 +78,8 @@ class SearchSpace:
             if not isinstance(spec, dict) or "type" not in spec:
                 raise ValueError(
                     f"parameter {name!r} must be a spec dict from "
-                    "choice/int_/uniform/log_uniform")
+                    "choice/int_/uniform/log_uniform"
+                )
         self.space = dict(space)
 
     # ---- sampling --------------------------------------------------------
@@ -113,8 +116,15 @@ class SearchSpace:
                 lo, hi = spec["low"], spec["high"]
                 n = max(1, int(spec.get("steps", float_steps)))
                 if spec.get("log"):
-                    vals = [float(np.exp(math.log(lo) + (math.log(hi) - math.log(lo))
-                                         * i / max(1, n - 1))) for i in range(n)]
+                    vals = [
+                        float(
+                            np.exp(
+                                math.log(lo)
+                                + (math.log(hi) - math.log(lo)) * i / max(1, n - 1)
+                            )
+                        )
+                        for i in range(n)
+                    ]
                 else:
                     vals = [float(lo + (hi - lo) * i / max(1, n - 1)) for i in range(n)]
             else:
@@ -136,7 +146,9 @@ class SearchSpace:
             elif kind == "float":
                 lo, hi = spec["low"], spec["high"]
                 if spec.get("log"):
-                    t = (math.log(v) - math.log(lo)) / max(1e-9, math.log(hi) - math.log(lo))
+                    t = (math.log(v) - math.log(lo)) / max(
+                        1e-9, math.log(hi) - math.log(lo)
+                    )
                 else:
                     t = (v - lo) / max(1e-9, hi - lo)
                 row[i] = float(np.clip(t, 0.0, 1.0))
@@ -153,6 +165,7 @@ class SearchSpace:
 # trial + config
 # --------------------------------------------------------------------------
 
+
 @dataclass
 class Trial:
     """A single objective evaluation."""
@@ -161,7 +174,7 @@ class Trial:
     params: Dict[str, Any]
     value: Optional[float] = None
     elapsed: float = 0.0
-    status: str = "pending"   # pending | complete | failed
+    status: str = "pending"  # pending | complete | failed
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -194,15 +207,15 @@ class HPOConfig:
     """Search configuration for a Study."""
 
     n_trials: int = 20
-    sampler: str = "random"        # random | grid | halving | bayes
-    direction: str = "minimize"    # minimize | maximize
+    sampler: str = "random"  # random | grid | halving | bayes
+    direction: str = "minimize"  # minimize | maximize
     seed: int = 0
     budget_min: int = 1
     budget_max: int = 10
     eta: int = 3
-    kappa: float = 2.5             # GP-UCB exploration constant
-    initial_random: int = 4        # bayes warm-up trials
-    float_steps: int = 5           # grid resolution for float params
+    kappa: float = 2.5  # GP-UCB exploration constant
+    initial_random: int = 4  # bayes warm-up trials
+    float_steps: int = 5  # grid resolution for float params
 
     def __post_init__(self) -> None:
         if self.n_trials < 1:
@@ -210,7 +223,8 @@ class HPOConfig:
         if self.sampler not in ("random", "grid", "halving", "bayes"):
             raise ValueError(
                 f"unknown sampler {self.sampler!r}; "
-                "expected random|grid|halving|bayes")
+                "expected random|grid|halving|bayes"
+            )
         if self.direction not in ("minimize", "maximize"):
             raise ValueError("direction must be 'minimize' or 'maximize'")
         if self.eta < 2:
@@ -220,6 +234,7 @@ class HPOConfig:
 # --------------------------------------------------------------------------
 # samplers
 # --------------------------------------------------------------------------
+
 
 class _BaseSampler:
     name = "base"
@@ -269,8 +284,10 @@ class _HalvingSampler(_BaseSampler):
 
     def suggest(self, budget: Optional[int] = None) -> Dict[str, Any]:
         if not self._pool:
-            self._pool = [self.study.space.sample(self.study._rng)
-                          for _ in range(self.study.config.n_trials)]
+            self._pool = [
+                self.study.space.sample(self.study._rng)
+                for _ in range(self.study.config.n_trials)
+            ]
         return self._pool.pop()
 
 
@@ -300,34 +317,40 @@ class _BayesSampler(_BaseSampler):
             y = -y
         if y.std() > 1e-9:
             y = (y - y.mean()) / y.std()
-        candidates = [self.study.space.sample(self.study._rng)
-                      for _ in range(64)]
+        candidates = [self.study.space.sample(self.study._rng) for _ in range(64)]
         Xc = np.asarray([self.study.space.encode(p) for p in candidates])
         mu, sd = _gp_predict(X, y, Xc)
         score = mu + self.study.config.kappa * sd
         return candidates[int(np.argmax(score))]
 
 
-def _rbf(X: np.ndarray, Y: np.ndarray, sigma_f: float,
-         length_scale: float) -> np.ndarray:
-    Xs = np.sum(X ** 2, axis=1, keepdims=True)
-    Ys = np.sum(Y ** 2, axis=1, keepdims=True)
+def _rbf(
+    X: np.ndarray, Y: np.ndarray, sigma_f: float, length_scale: float
+) -> np.ndarray:
+    Xs = np.sum(X**2, axis=1, keepdims=True)
+    Ys = np.sum(Y**2, axis=1, keepdims=True)
     d2 = Xs + Ys.T - 2.0 * (X @ Y.T)
-    return sigma_f ** 2 * np.exp(-0.5 * d2 / (length_scale ** 2))
+    return sigma_f**2 * np.exp(-0.5 * d2 / (length_scale**2))
 
 
-def _gp_predict(X: np.ndarray, y: np.ndarray, Xstar: np.ndarray,
-                sigma_f: float = 1.0, length_scale: float = 1.0,
-                sigma_n: float = 1e-4) -> Tuple[np.ndarray, np.ndarray]:
+def _gp_predict(
+    X: np.ndarray,
+    y: np.ndarray,
+    Xstar: np.ndarray,
+    sigma_f: float = 1.0,
+    length_scale: float = 1.0,
+    sigma_n: float = 1e-4,
+) -> Tuple[np.ndarray, np.ndarray]:
     n = X.shape[0]
-    K = _rbf(X, X, sigma_f, length_scale) + sigma_n ** 2 * np.eye(n)
+    K = _rbf(X, X, sigma_f, length_scale) + sigma_n**2 * np.eye(n)
     L = np.linalg.cholesky(K)
     alpha = np.linalg.solve(L.T, np.linalg.solve(L, y))
     Ks = _rbf(X, Xstar, sigma_f, length_scale)
     mu = Ks.T @ alpha
     v = np.linalg.solve(L, Ks)
     var = np.diag(_rbf(Xstar, Xstar, sigma_f, length_scale)) - np.einsum(
-        "ij,ij->j", v, v)
+        "ij,ij->j", v, v
+    )
     return mu, np.sqrt(np.maximum(var, 0.0))
 
 
@@ -335,11 +358,15 @@ def _gp_predict(X: np.ndarray, y: np.ndarray, Xstar: np.ndarray,
 # study
 # --------------------------------------------------------------------------
 
+
 class Study:
     """Hyperparameter-search orchestrator with ask/tell and run drivers."""
 
-    def __init__(self, space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
-                 config: Optional[HPOConfig] = None):
+    def __init__(
+        self,
+        space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
+        config: Optional[HPOConfig] = None,
+    ):
         self.space = space if isinstance(space, SearchSpace) else SearchSpace(space)
         self.config = config or HPOConfig()
         self.trials: List[Trial] = []
@@ -360,9 +387,14 @@ class Study:
     def suggest(self, budget: Optional[int] = None) -> Dict[str, Any]:
         return self._sampler.suggest(budget)
 
-    def tell(self, params: Dict[str, Any], value: float, elapsed: float = 0.0,
-             metadata: Optional[Dict[str, Any]] = None,
-             status: str = "complete") -> Trial:
+    def tell(
+        self,
+        params: Dict[str, Any],
+        value: float,
+        elapsed: float = 0.0,
+        metadata: Optional[Dict[str, Any]] = None,
+        status: str = "complete",
+    ) -> Trial:
         trial = Trial(
             id=len(self.trials),
             params=dict(params),
@@ -391,7 +423,11 @@ class Study:
             total = self.config.n_trials
         for _ in range(total):
             params = self.suggest(budget)
-            res = objective(params, budget=budget) if budget is not None else objective(params)
+            res = (
+                objective(params, budget=budget)
+                if budget is not None
+                else objective(params)
+            )
             self._absorb(res, params)
         return self
 
@@ -407,8 +443,7 @@ class Study:
                 value, meta = self._split_result(res)
                 self.tell(params, value, metadata={**meta, "budget": budget})
                 results.append((value, params, meta))
-            results.sort(key=lambda t: t[0],
-                         reverse=(cfg.direction == "maximize"))
+            results.sort(key=lambda t: t[0], reverse=(cfg.direction == "maximize"))
             keep = max(1, len(results) // cfg.eta)
             pool = [r[1] for r in results[:keep]]
             budget = min(budget * cfg.eta, cfg.budget_max)
@@ -489,44 +524,74 @@ class Study:
             return json.load(f)
 
     def __repr__(self) -> str:
-        return (f"Study({self.config.sampler}, {self.completed} trials, "
-                f"best={self._best_trial.value if self._best_trial else None})")
+        return (
+            f"Study({self.config.sampler}, {self.completed} trials, "
+            f"best={self._best_trial.value if self._best_trial else None})"
+        )
 
 
 # --------------------------------------------------------------------------
 # convenience drivers
 # --------------------------------------------------------------------------
 
-def random_search(space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
-                  objective: Callable[..., Any], n_trials: int = 20,
-                  direction: str = "minimize", seed: int = 0) -> Study:
-    return Study(space, HPOConfig(n_trials=n_trials, sampler="random",
-                                  direction=direction, seed=seed)).run(objective)
+
+def random_search(
+    space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
+    objective: Callable[..., Any],
+    n_trials: int = 20,
+    direction: str = "minimize",
+    seed: int = 0,
+) -> Study:
+    return Study(
+        space,
+        HPOConfig(n_trials=n_trials, sampler="random", direction=direction, seed=seed),
+    ).run(objective)
 
 
-def grid_search(space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
-                objective: Callable[..., Any], n_trials: Optional[int] = None,
-                direction: str = "minimize", float_steps: int = 5) -> Study:
+def grid_search(
+    space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
+    objective: Callable[..., Any],
+    n_trials: Optional[int] = None,
+    direction: str = "minimize",
+    float_steps: int = 5,
+) -> Study:
     cfg = HPOConfig(sampler="grid", direction=direction, float_steps=float_steps)
     if n_trials is not None:
         cfg.n_trials = n_trials
     return Study(space, cfg).run(objective)
 
 
-def halving_search(space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
-                   objective: Callable[..., Any], n_trials: int = 20,
-                   direction: str = "minimize", budget_min: int = 1,
-                   budget_max: int = 10, eta: int = 3, seed: int = 0) -> Study:
-    cfg = HPOConfig(n_trials=n_trials, sampler="halving", direction=direction,
-                    budget_min=budget_min, budget_max=budget_max, eta=eta,
-                    seed=seed)
+def halving_search(
+    space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
+    objective: Callable[..., Any],
+    n_trials: int = 20,
+    direction: str = "minimize",
+    budget_min: int = 1,
+    budget_max: int = 10,
+    eta: int = 3,
+    seed: int = 0,
+) -> Study:
+    cfg = HPOConfig(
+        n_trials=n_trials,
+        sampler="halving",
+        direction=direction,
+        budget_min=budget_min,
+        budget_max=budget_max,
+        eta=eta,
+        seed=seed,
+    )
     return Study(space, cfg).run(objective)
 
 
-def bayesian_search(space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
-                    objective: Callable[..., Any], n_trials: int = 20,
-                    direction: str = "minimize", seed: int = 0,
-                    kappa: float = 2.5) -> Study:
-    cfg = HPOConfig(n_trials=n_trials, sampler="bayes", direction=direction,
-                    seed=seed, kappa=kappa)
+def bayesian_search(
+    space: Union[SearchSpace, Dict[str, Dict[str, Any]]],
+    objective: Callable[..., Any],
+    n_trials: int = 20,
+    direction: str = "minimize",
+    seed: int = 0,
+    kappa: float = 2.5,
+) -> Study:
+    cfg = HPOConfig(
+        n_trials=n_trials, sampler="bayes", direction=direction, seed=seed, kappa=kappa
+    )
     return Study(space, cfg).run(objective)

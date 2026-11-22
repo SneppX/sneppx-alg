@@ -37,7 +37,9 @@ class FirewallTransport:
         self.ciphers = ciphers
         self.pinned_fingerprints = self._normalize_pins(pinned_cert_fingerprints or [])
         if self.require_client_cert and not self.tls_enabled:
-            raise ValueError("client-certificate verification requires TLS to be enabled")
+            raise ValueError(
+                "client-certificate verification requires TLS to be enabled"
+            )
         if self.pinned_fingerprints and not self.tls_enabled:
             raise ValueError("certificate pinning requires TLS to be enabled")
         self.alpn_protocols = alpn_protocols or ["h2", "http/1.1"]
@@ -86,7 +88,9 @@ class FirewallTransport:
                 raise ValueError("certificate fingerprints must be hexadecimal strings")
             value = fingerprint.replace(":", "").strip().lower()
             if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
-                raise ValueError("certificate fingerprints must be 64 hexadecimal characters")
+                raise ValueError(
+                    "certificate fingerprints must be 64 hexadecimal characters"
+                )
             normalized.append(value)
         return normalized
 
@@ -127,7 +131,9 @@ class FirewallTransport:
             )
         fp = self._pinned_fingerprint(cert_der)
         if self.pinned_fingerprints:
-            if not any(hmac.compare_digest(fp, pinned) for pinned in self.pinned_fingerprints):
+            if not any(
+                hmac.compare_digest(fp, pinned) for pinned in self.pinned_fingerprints
+            ):
                 return FirewallResult(
                     allowed=False,
                     status_code=403,
@@ -136,11 +142,15 @@ class FirewallTransport:
                 )
         return FirewallResult(allowed=True, ring=1)
 
-    def check_request(self, ssl_object: Optional[ssl.SSLObject] = None) -> FirewallResult:
+    def check_request(
+        self, ssl_object: Optional[ssl.SSLObject] = None
+    ) -> FirewallResult:
         if not self.tls_enabled:
             return FirewallResult(allowed=True, ring=1)
         if ssl_object is None:
-            return FirewallResult(allowed=False, status_code=426, reason="TLS required", ring=1)
+            return FirewallResult(
+                allowed=False, status_code=426, reason="TLS required", ring=1
+            )
         try:
             cert_der = ssl_object.getpeercert(binary_form=True)
         except Exception:

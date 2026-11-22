@@ -65,6 +65,7 @@ class BertEmbeddings:
         self.dropout = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         """Initialize all embedding weights."""
         self.word_embeddings = Tensor.from_numpy(
@@ -142,6 +143,7 @@ class BertSelfAttention:
         self.dropout = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.hidden_size
         self.query = {
@@ -220,6 +222,7 @@ class BertIntermediate:
         self.dense = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.dense = {
             "weight": Tensor.from_numpy(
@@ -256,6 +259,7 @@ class BertOutput:
         self.layer_norm = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.hidden_size
         inter = self.intermediate_size
@@ -290,6 +294,7 @@ class BertLayer:
         self.output = BertOutput(config)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.attention.initialize_weights()
         self.intermediate.initialize_weights()
@@ -319,6 +324,7 @@ class BertEncoder:
         self.layers = [BertLayer(config) for _ in range(self.num_hidden_layers)]
 
         self.initialize_weights()
+
     def initialize_weights(self):
         for layer in self.layers:
             layer.initialize_weights()
@@ -354,6 +360,7 @@ class BertPooler:
         self.dense = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.config.get("hidden_size", 768)
         self.dense = {
@@ -382,6 +389,7 @@ class BertModel:
         self.pooler = BertPooler(config)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.embeddings.initialize_weights()
         self.encoder.initialize_weights()
@@ -442,6 +450,7 @@ class BertForMaskedLM:
         self.cls = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.bert.initialize_weights()
         hidden = self.config.get("hidden_size", 768)
@@ -605,6 +614,7 @@ class GPTAttention:
         self.resid_dropout = config.get("resid_pdrop", 0.1)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.hidden_size
         self.c_attn = {
@@ -619,7 +629,8 @@ class GPTAttention:
             "weight": Tensor.from_numpy(
                 np.random.normal(
                     0,
-                    self.config.get("initializer_range", 0.02) / np.sqrt(2 * self.config.get("n_layer", 12)),
+                    self.config.get("initializer_range", 0.02)
+                    / np.sqrt(2 * self.config.get("n_layer", 12)),
                     (hidden, hidden),
                 ).astype(np.float32)
             ),
@@ -683,6 +694,7 @@ class GPTMLP:
         self.act = config.get("activation_function", "gelu")
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.config.get("n_embd")
         inner = self.config.get("n_inner", 4 * self.config.get("n_embd", 768))
@@ -698,7 +710,8 @@ class GPTMLP:
             "weight": Tensor.from_numpy(
                 np.random.normal(
                     0,
-                    self.config.get("initializer_range", 0.02) / np.sqrt(2 * self.config.get("n_layer", 12)),
+                    self.config.get("initializer_range", 0.02)
+                    / np.sqrt(2 * self.config.get("n_layer", 12)),
                     (hidden, inner),
                 ).astype(np.float32)
             ),
@@ -716,7 +729,9 @@ class GPTMLP:
         hidden_states = linear(
             hidden_states, self.c_proj["weight"], self.c_proj["bias"]
         )
-        hidden_states = dropout(hidden_states, self.config.get("resid_pdrop", 0.1), training=True)
+        hidden_states = dropout(
+            hidden_states, self.config.get("resid_pdrop", 0.1), training=True
+        )
         return hidden_states
 
 
@@ -732,6 +747,7 @@ class GPTBlock:
         self.mlp = GPTMLP(config)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.config.get("n_embd")
         self.ln_1 = {
@@ -789,15 +805,16 @@ class GPTModel:
         self.ln_f = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         hidden = self.config.get("n_embd")
         vocab = self.config.get("vocab_size", 50257)
         max_pos = self.config.get("n_positions", 1024)
 
         self.wte = Tensor.from_numpy(
-            np.random.normal(0, self.config.get("initializer_range", 0.02), (vocab, hidden)).astype(
-                np.float32
-            )
+            np.random.normal(
+                0, self.config.get("initializer_range", 0.02), (vocab, hidden)
+            ).astype(np.float32)
         )
         self.wpe = Tensor.from_numpy(
             np.random.normal(
@@ -880,6 +897,7 @@ class GPTLMHeadModel:
         self.lm_head = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.transformer.initialize_weights()
         hidden = self.config.get("n_embd")
@@ -977,13 +995,17 @@ class T5LayerNorm:
         self.weight = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         d_model = self.config.get("d_model", self.config.get("hidden_size", 512))
         self.weight = Tensor.from_numpy(np.ones(d_model, dtype=np.float32))
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         return layernorm_fn(
-            hidden_states, self.weight, None, eps=self.config.get("layer_norm_epsilon", 1e-6)
+            hidden_states,
+            self.weight,
+            None,
+            eps=self.config.get("layer_norm_epsilon", 1e-6),
         )
 
 
@@ -998,26 +1020,33 @@ class T5DenseReluDense:
         self.dropout = config.get("dropout_rate", 0.1)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.wi = {
             "weight": Tensor.from_numpy(
                 np.random.normal(
                     0,
-                    self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                    self.config.get("initializer_factor", 1.0)
+                    * (self.config.get("d_model") ** -0.5),
                     (self.config.get("d_ff"), self.config.get("d_model")),
                 ).astype(np.float32)
             ),
-            "bias": Tensor.from_numpy(np.zeros(self.config.get("d_ff"), dtype=np.float32)),
+            "bias": Tensor.from_numpy(
+                np.zeros(self.config.get("d_ff"), dtype=np.float32)
+            ),
         }
         self.wo = {
             "weight": Tensor.from_numpy(
                 np.random.normal(
                     0,
-                    self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                    self.config.get("initializer_factor", 1.0)
+                    * (self.config.get("d_model") ** -0.5),
                     (self.config.get("d_model"), self.config.get("d_ff")),
                 ).astype(np.float32)
             ),
-            "bias": Tensor.from_numpy(np.zeros(self.config.get("d_model"), dtype=np.float32)),
+            "bias": Tensor.from_numpy(
+                np.zeros(self.config.get("d_model"), dtype=np.float32)
+            ),
         }
 
     def forward(self, hidden_states: Tensor) -> Tensor:
@@ -1035,12 +1064,15 @@ class T5LayerSelfAttention:
     def __init__(self, config=None, **kwargs):
         config = _as_config(config, kwargs)
         self.config = config
-        self.has_relative_attention_bias = config.get("has_relative_attention_bias", True)
+        self.has_relative_attention_bias = config.get(
+            "has_relative_attention_bias", True
+        )
         self.self = None
         self.layer_norm = T5LayerNorm(config)
         self.dropout = config.get("dropout_rate", 0.1)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.layer_norm.initialize_weights()
         hidden = self.config.get("d_model")
@@ -1049,7 +1081,8 @@ class T5LayerSelfAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1058,7 +1091,8 @@ class T5LayerSelfAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1067,7 +1101,8 @@ class T5LayerSelfAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1076,7 +1111,8 @@ class T5LayerSelfAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1087,7 +1123,10 @@ class T5LayerSelfAttention:
                 np.random.normal(
                     0,
                     self.config.get("initializer_factor", 1.0),
-                    (self.config.get("relative_attention_num_buckets", 32), self.config.get("num_heads")),
+                    (
+                        self.config.get("relative_attention_num_buckets", 32),
+                        self.config.get("num_heads"),
+                    ),
                 ).astype(np.float32)
             )
 
@@ -1142,7 +1181,9 @@ class T5LayerSelfAttention:
         out = attn @ v
         out = out.transpose(0, 2, 1, 3).reshape(batch, -1, hidden)
 
-        out = linear(Tensor.from_numpy(out.astype(np.float32)), self.self["o"]["weight"])
+        out = linear(
+            Tensor.from_numpy(out.astype(np.float32)), self.self["o"]["weight"]
+        )
         out = dropout(out, self.dropout, training=True)
         out = out + hidden_states  # Residual
 
@@ -1160,6 +1201,7 @@ class T5LayerCrossAttention:
         self.dropout = config.get("dropout_rate", 0.1)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.layer_norm.initialize_weights()
         hidden = self.config.get("d_model")
@@ -1168,7 +1210,8 @@ class T5LayerCrossAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1177,7 +1220,8 @@ class T5LayerCrossAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1186,7 +1230,8 @@ class T5LayerCrossAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1195,7 +1240,8 @@ class T5LayerCrossAttention:
                 "weight": Tensor.from_numpy(
                     np.random.normal(
                         0,
-                        self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                        self.config.get("initializer_factor", 1.0)
+                        * (self.config.get("d_model") ** -0.5),
                         (hidden, hidden),
                     ).astype(np.float32)
                 )
@@ -1237,6 +1283,7 @@ class T5Block:
         self.layer.append(T5DenseReluDense(config))
 
         self.initialize_weights()
+
     def initialize_weights(self):
         for layer in self.layer:
             layer.initialize_weights()
@@ -1295,12 +1342,14 @@ class T5Stack:
         self.dropout = config.get("dropout_rate", 0.1)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         if self.embed_tokens is None:
             self.embed_tokens = Tensor.from_numpy(
                 np.random.normal(
                     0,
-                    self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                    self.config.get("initializer_factor", 1.0)
+                    * (self.config.get("d_model") ** -0.5),
                     (self.config.get("vocab_size", 50257), self.config.get("d_model")),
                 ).astype(np.float32)
             )
@@ -1369,11 +1418,13 @@ class T5Model:
         self.decoder = T5Stack(config)
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.shared = Tensor.from_numpy(
             np.random.normal(
                 0,
-                self.config.get("initializer_factor", 1.0) * (self.config.get("d_model")**-0.5),
+                self.config.get("initializer_factor", 1.0)
+                * (self.config.get("d_model") ** -0.5),
                 (self.config.get("vocab_size", 50257), self.config.get("d_model")),
             ).astype(np.float32)
         )
@@ -1428,6 +1479,7 @@ class T5ForConditionalGeneration:
         self.lm_head = None
 
         self.initialize_weights()
+
     def initialize_weights(self):
         self.model.initialize_weights()
         self.lm_head = {
@@ -1659,11 +1711,28 @@ def get_model_flops(model: Any, input_shape: Tuple[int, ...]) -> float:
 # =========================================================================
 
 for _cls in (
-    BertEmbeddings, BertSelfAttention, BertIntermediate, BertOutput,
-    BertLayer, BertEncoder, BertPooler, BertModel, BertForMaskedLM,
-    GPTAttention, GPTMLP, GPTBlock, GPTModel, GPTLMHeadModel,
-    T5LayerNorm, T5DenseReluDense, T5LayerSelfAttention,
-    T5LayerCrossAttention, T5Block, T5Stack, T5Model, T5ForConditionalGeneration,
+    BertEmbeddings,
+    BertSelfAttention,
+    BertIntermediate,
+    BertOutput,
+    BertLayer,
+    BertEncoder,
+    BertPooler,
+    BertModel,
+    BertForMaskedLM,
+    GPTAttention,
+    GPTMLP,
+    GPTBlock,
+    GPTModel,
+    GPTLMHeadModel,
+    T5LayerNorm,
+    T5DenseReluDense,
+    T5LayerSelfAttention,
+    T5LayerCrossAttention,
+    T5Block,
+    T5Stack,
+    T5Model,
+    T5ForConditionalGeneration,
 ):
     if hasattr(_cls, "forward"):
         _cls.__call__ = _cls.forward

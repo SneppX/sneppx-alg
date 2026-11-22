@@ -44,6 +44,7 @@ include/neural_core/
 ## Include Convention
 
 Headers use short-form paths relative to the project root:
+
 ```c
 #include "multidimensional_tensor_engine.h"        // from include/neural_core/kernel/
 #include "cryptographic_primitives_bundle.h"        // from include/neural_core/security/

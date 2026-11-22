@@ -41,8 +41,16 @@ def build_graph(
     if initializers:
         for k, v in initializers.items():
             arr = np.asarray(v)
-            if arr.dtype not in (np.float32, np.float64, np.int32, np.int64,
-                                 np.int8, np.uint8, np.int16, np.float16):
+            if arr.dtype not in (
+                np.float32,
+                np.float64,
+                np.int32,
+                np.int64,
+                np.int8,
+                np.uint8,
+                np.int16,
+                np.float16,
+            ):
                 arr = arr.astype(np.float32)
             inits.append(
                 Tensor(
@@ -64,12 +72,18 @@ def build_graph(
 
 def _np_to_onnx_dtype(dtype: np.dtype) -> str:
     return {
-        np.dtype("float32"): "float32", np.dtype("float64"): "float64",
-        np.dtype("float16"): "float16", np.dtype("int8"): "int8",
-        np.dtype("uint8"): "uint8", np.dtype("int16"): "int16",
-        np.dtype("uint16"): "uint16", np.dtype("int32"): "int32",
-        np.dtype("uint32"): "uint32", np.dtype("int64"): "int64",
-        np.dtype("uint64"): "uint64", np.dtype("bool"): "bool",
+        np.dtype("float32"): "float32",
+        np.dtype("float64"): "float64",
+        np.dtype("float16"): "float16",
+        np.dtype("int8"): "int8",
+        np.dtype("uint8"): "uint8",
+        np.dtype("int16"): "int16",
+        np.dtype("uint16"): "uint16",
+        np.dtype("int32"): "int32",
+        np.dtype("uint32"): "uint32",
+        np.dtype("int64"): "int64",
+        np.dtype("uint64"): "uint64",
+        np.dtype("bool"): "bool",
     }.get(np.dtype(dtype), "float32")
 
 
@@ -147,7 +161,9 @@ def to_sneppx_graph(model: Model) -> Dict[str, Any]:
     ``interface_bindings.OnnxImporter.load`` result schema."""
     graph = model.graph
     return {
-        "initializers": {i.name: i.data for i in graph.initializers if i.data is not None},
+        "initializers": {
+            i.name: i.data for i in graph.initializers if i.data is not None
+        },
         "value_info": {
             v.name: {"dtype": v.dtype, "shape": v.shape} for v in graph.value_info
         },

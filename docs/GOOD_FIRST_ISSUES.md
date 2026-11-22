@@ -15,20 +15,24 @@ on GitHub.
 ## Beginner-friendly areas
 
 ### Python bindings (`bindings/python/SneppX_ALG/`)
+
 - Add unit tests for an untested module (see `tests/python/` for the pattern).
 - Add a new `nn` module or `optim` optimizer following the existing wrappers.
 - Improve docstrings / type hints.
 
 ### Documentation (`docs/`)
+
 - Fix typos, clarify build instructions, add examples.
 - Add a tutorial (see `docs/tutorials/` for the format).
 - Improve the API reference (`docs/api/python.md`).
 
 ### Tests (`tests/python/`)
+
 - Add edge-case tests for existing ops.
 - Add regression tests for fixed bugs.
 
 ### Benchmarks (`benchmarks/`, `tests/benchmark/`)
+
 - Add a new benchmark for an op not yet covered.
 - Update `docs/benchmarks.md` with fresh numbers.
 
@@ -36,10 +40,12 @@ on GitHub.
 
 - Read [`CONTRIBUTING.md`](https://github.com/SneppX/sneppx-alg/blob/main/CONTRIBUTING.md) and [`CODE_OF_CONDUCT.md`](https://github.com/SneppX/sneppx-alg/blob/main/CODE_OF_CONDUCT.md).
 - Build and run one test to confirm your environment works:
+
   ```powershell
   $env:PYTHONPATH = "bindings/python"
   python -m pytest tests/python/test_tensor.py -q -p no:cacheprovider
   ```
+
 - Follow the commit-message convention: `<area>: <description>` (e.g. `optim: add load_state_dict to SparseAdam`).
 
 ## Getting help

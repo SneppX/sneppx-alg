@@ -105,11 +105,24 @@ def _get_nf4_table() -> np.ndarray:
     global _NF4
     if _NF4 is not None:
         return _NF4
-    v = [-1.0, -0.6961928009986877, -0.5250730514526367, -0.39491748809814453,
-         -0.28444138169288635, -0.18477343022823334, -0.09105003625154495, 0.0,
-         0.07958029955625534, 0.16093020141124725, 0.24611230194568634,
-         0.33791524171829224, 0.44070982933044434, 0.5626170039176941,
-         0.7229568362236023, 1.0]
+    v = [
+        -1.0,
+        -0.6961928009986877,
+        -0.5250730514526367,
+        -0.39491748809814453,
+        -0.28444138169288635,
+        -0.18477343022823334,
+        -0.09105003625154495,
+        0.0,
+        0.07958029955625534,
+        0.16093020141124725,
+        0.24611230194568634,
+        0.33791524171829224,
+        0.44070982933044434,
+        0.5626170039176941,
+        0.7229568362236023,
+        1.0,
+    ]
     _NF4 = np.array(v, dtype=np.float32)
     return _NF4
 
@@ -274,7 +287,9 @@ def dpo_loss(
     losses = -np.log(np.clip(sig, 1e-7, 1))
     if label_smoothing > 0:
         sig_neg = 1 / (1 + np.exp(-np.clip(-beta * logits, -100, 100)))
-        losses = (1 - label_smoothing) * losses - label_smoothing * np.log(np.clip(sig_neg, 1e-7, 1))
+        losses = (1 - label_smoothing) * losses - label_smoothing * np.log(
+            np.clip(sig_neg, 1e-7, 1)
+        )
     return losses.mean(), losses
 
 
@@ -343,8 +358,12 @@ class DPOTrainer:
         if logits_data.ndim < 2:
             return float(logits_data)
         log_probs = logits_data - np.max(logits_data, axis=-1, keepdims=True)
-        log_probs = log_probs - np.log(np.sum(np.exp(log_probs), axis=-1, keepdims=True))
-        input_ids_np = np.asarray(input_ids.data if hasattr(input_ids, "data") else input_ids)
+        log_probs = log_probs - np.log(
+            np.sum(np.exp(log_probs), axis=-1, keepdims=True)
+        )
+        input_ids_np = np.asarray(
+            input_ids.data if hasattr(input_ids, "data") else input_ids
+        )
         token_logps = log_probs[np.arange(len(input_ids_np)), input_ids_np]
         return token_logps.mean()
 
@@ -408,9 +427,7 @@ class GRPOTrainer:
             old_probs.append(lp)
         rewards = reward_fn(responses)
         old_probs = np.array(old_probs)
-        log_probs = np.array([
-            self._compute_logprob(prompts, r) for r in responses
-        ])
+        log_probs = np.array([self._compute_logprob(prompts, r) for r in responses])
         loss_val = grpo_loss(
             log_probs,
             old_probs,
@@ -426,14 +443,18 @@ class GRPOTrainer:
 
     def _generate_and_logprob(self, prompts) -> tuple:
         if isinstance(prompts, list) and len(prompts) > 0:
-            prompt_tensor = prompts[0] if hasattr(prompts[0], "shape") else np.array(prompts)
+            prompt_tensor = (
+                prompts[0] if hasattr(prompts[0], "shape") else np.array(prompts)
+            )
         else:
             prompt_tensor = np.asarray(prompts)
         out = self.model(prompt_tensor)
         out_data = out.data if hasattr(out, "data") else np.asarray(out)
         if out_data.ndim >= 2:
             log_probs = out_data - np.max(out_data, axis=-1, keepdims=True)
-            log_probs = log_probs - np.log(np.sum(np.exp(log_probs), axis=-1, keepdims=True))
+            log_probs = log_probs - np.log(
+                np.sum(np.exp(log_probs), axis=-1, keepdims=True)
+            )
             tokens = np.argmax(log_probs, axis=-1)
             chosen_lp = log_probs[np.arange(len(tokens)), tokens].mean()
         else:
@@ -442,14 +463,18 @@ class GRPOTrainer:
         return tokens, chosen_lp
 
     def _compute_logprob(self, prompts, response) -> float:
-        response_np = np.asarray(response.data if hasattr(response, "data") else response)
+        response_np = np.asarray(
+            response.data if hasattr(response, "data") else response
+        )
         prompt_np = np.asarray(prompts.data if hasattr(prompts, "data") else prompts)
         joint = np.concatenate([prompt_np.ravel(), response_np.ravel()])
         out = self.model(joint)
         out_data = out.data if hasattr(out, "data") else np.asarray(out)
         if out_data.ndim >= 2:
             log_probs = out_data - np.max(out_data, axis=-1, keepdims=True)
-            log_probs = log_probs - np.log(np.sum(np.exp(log_probs), axis=-1, keepdims=True))
+            log_probs = log_probs - np.log(
+                np.sum(np.exp(log_probs), axis=-1, keepdims=True)
+            )
             tok_idx = len(prompt_np) - 1 if len(prompt_np) < len(joint) else -1
             return float(log_probs[tok_idx, int(joint[tok_idx])])
         return float(np.max(out_data))
@@ -463,5 +488,6 @@ class GRPOTrainer:
 class _no_grad:
     def __enter__(self):
         pass
+
     def __exit__(self, *args):
         pass

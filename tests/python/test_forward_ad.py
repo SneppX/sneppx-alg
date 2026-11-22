@@ -83,9 +83,9 @@ def test_forward_jvp_composite():
     assert np.allclose(
         jv_f.data.astype(np.float64), jv_e.data.astype(np.float64), atol=1e-6
     ), "fwd vs exact"
-    assert np.allclose(jv_f.data.astype(np.float64), jv_ref, atol=1e-3), (
-        "fwd vs analytic"
-    )
+    assert np.allclose(
+        jv_f.data.astype(np.float64), jv_ref, atol=1e-3
+    ), "fwd vs analytic"
     print("  PASS forward_jvp_composite")
 
 
@@ -199,9 +199,9 @@ def test_forward_jvp_operators_scalar():
         jv_f.data.astype(np.float64), jv_e.data.astype(np.float64), atol=1e-6
     ), "scalar fwd vs exact"
     ref = x.data.astype(np.float64) * v.data.astype(np.float64)
-    assert np.allclose(jv_f.data.astype(np.float64), ref, atol=1e-6), (
-        "scalar fwd vs analytic"
-    )
+    assert np.allclose(
+        jv_f.data.astype(np.float64), ref, atol=1e-6
+    ), "scalar fwd vs analytic"
     print("  PASS forward_jvp_operators_scalar")
 
 

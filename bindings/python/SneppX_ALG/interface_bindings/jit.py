@@ -47,6 +47,7 @@ __all__ = [
 # op table (self-contained so graph_compiler stays untouched)
 # --------------------------------------------------------------------------
 
+
 def _erf(x):
     return np.vectorize(math.erf)(x)
 
@@ -114,15 +115,20 @@ def _apply(node, values: Dict[int, np.ndarray]) -> np.ndarray:
     if op == "clip":
         return np.clip(
             values[id(node.inputs[0])],
-            node.params["min"], node.params["max"],
+            node.params["min"],
+            node.params["max"],
         )
     if op == "transpose":
         return np.transpose(values[id(node.inputs[0])], node.params.get("axes"))
     if op == "transpose_inv":
         axes = node.params.get("axes")
-        return np.transpose(values[id(node.inputs[0])], np.argsort(axes) if axes is not None else None)
+        return np.transpose(
+            values[id(node.inputs[0])], np.argsort(axes) if axes is not None else None
+        )
     if op == "broadcast_to_shape":
-        return np.broadcast_to(values[id(node.inputs[0])], values[id(node.inputs[1])].shape).copy()
+        return np.broadcast_to(
+            values[id(node.inputs[0])], values[id(node.inputs[1])].shape
+        ).copy()
     if op == "mean_adjoint":
         a = values[id(node.inputs[1])]
         g = values[id(node.inputs[0])]
@@ -138,9 +144,17 @@ def _apply(node, values: Dict[int, np.ndarray]) -> np.ndarray:
     if op == "matmul":
         return values[id(node.inputs[0])] @ values[id(node.inputs[1])]
     if op == "reduce":
-        return np.sum(values[id(node.inputs[0])], axis=node.params.get("axis"), keepdims=bool(node.params.get("keepdims")))
+        return np.sum(
+            values[id(node.inputs[0])],
+            axis=node.params.get("axis"),
+            keepdims=bool(node.params.get("keepdims")),
+        )
     if op == "mean":
-        return np.mean(values[id(node.inputs[0])], axis=node.params.get("axis"), keepdims=bool(node.params.get("keepdims")))
+        return np.mean(
+            values[id(node.inputs[0])],
+            axis=node.params.get("axis"),
+            keepdims=bool(node.params.get("keepdims")),
+        )
     if op == "reshape":
         return np.reshape(values[id(node.inputs[0])], node.params["shape"])
     if op == "getitem":
@@ -204,6 +218,7 @@ def _apply(node, values: Dict[int, np.ndarray]) -> np.ndarray:
 # Tracer — proxy that builds the GraphNode DAG
 # --------------------------------------------------------------------------
 
+
 class Tracer:
     """Symbolic proxy that records ops into a GraphNode DAG."""
 
@@ -213,30 +228,81 @@ class Tracer:
     def _bin(self, other, op: str):
         return Tracer(_node_op(op, [self.node, _tracer_node(other)]))
 
-    def __add__(self, other): return self._bin(other, "add")
-    def __radd__(self, other): return self._bin(other, "add")
-    def __sub__(self, other): return self._bin(other, "sub")
-    def __rsub__(self, other): return Tracer(_node_op("sub", [_tracer_node(other), self.node]))
-    def __mul__(self, other): return self._bin(other, "mul")
-    def __rmul__(self, other): return self._bin(other, "mul")
-    def __truediv__(self, other): return self._bin(other, "div")
-    def __rtruediv__(self, other): return Tracer(_node_op("div", [_tracer_node(other), self.node]))
-    def __neg__(self): return Tracer(_node_op("neg", [self.node]))
-    def __abs__(self): return Tracer(_node_op("abs", [self.node]))
-    def __matmul__(self, other): return Tracer(_node_op("matmul", [self.node, _tracer_node(other)]))
-    def __getitem__(self, idx): return Tracer(_node_op("getitem", [self.node], {"index": idx}))
+    def __add__(self, other):
+        return self._bin(other, "add")
 
-    def relu(self): return Tracer(_node_op("relu", [self.node]))
-    def sigmoid(self): return Tracer(_node_op("sigmoid", [self.node]))
-    def tanh(self): return Tracer(_node_op("tanh", [self.node]))
-    def gelu(self): return Tracer(_node_op("gelu", [self.node]))
-    def silu(self): return Tracer(_node_op("silu", [self.node]))
-    def exp(self): return Tracer(_node_op("exp", [self.node]))
-    def log(self): return Tracer(_node_op("log", [self.node]))
-    def clip(self, lo, hi): return Tracer(_node_op("clip", [self.node], {"min": float(lo), "max": float(hi)}))
-    def transpose(self, axes=None): return Tracer(_node_op("transpose", [self.node], {"axes": axes}))
-    def sum(self, axis=None, keepdims=False): return Tracer(_node_op("reduce", [self.node], {"axis": axis, "keepdims": bool(keepdims)}))
-    def mean(self, axis=None, keepdims=False): return Tracer(_node_op("mean", [self.node], {"axis": axis, "keepdims": bool(keepdims)}))
+    def __radd__(self, other):
+        return self._bin(other, "add")
+
+    def __sub__(self, other):
+        return self._bin(other, "sub")
+
+    def __rsub__(self, other):
+        return Tracer(_node_op("sub", [_tracer_node(other), self.node]))
+
+    def __mul__(self, other):
+        return self._bin(other, "mul")
+
+    def __rmul__(self, other):
+        return self._bin(other, "mul")
+
+    def __truediv__(self, other):
+        return self._bin(other, "div")
+
+    def __rtruediv__(self, other):
+        return Tracer(_node_op("div", [_tracer_node(other), self.node]))
+
+    def __neg__(self):
+        return Tracer(_node_op("neg", [self.node]))
+
+    def __abs__(self):
+        return Tracer(_node_op("abs", [self.node]))
+
+    def __matmul__(self, other):
+        return Tracer(_node_op("matmul", [self.node, _tracer_node(other)]))
+
+    def __getitem__(self, idx):
+        return Tracer(_node_op("getitem", [self.node], {"index": idx}))
+
+    def relu(self):
+        return Tracer(_node_op("relu", [self.node]))
+
+    def sigmoid(self):
+        return Tracer(_node_op("sigmoid", [self.node]))
+
+    def tanh(self):
+        return Tracer(_node_op("tanh", [self.node]))
+
+    def gelu(self):
+        return Tracer(_node_op("gelu", [self.node]))
+
+    def silu(self):
+        return Tracer(_node_op("silu", [self.node]))
+
+    def exp(self):
+        return Tracer(_node_op("exp", [self.node]))
+
+    def log(self):
+        return Tracer(_node_op("log", [self.node]))
+
+    def clip(self, lo, hi):
+        return Tracer(
+            _node_op("clip", [self.node], {"min": float(lo), "max": float(hi)})
+        )
+
+    def transpose(self, axes=None):
+        return Tracer(_node_op("transpose", [self.node], {"axes": axes}))
+
+    def sum(self, axis=None, keepdims=False):
+        return Tracer(
+            _node_op("reduce", [self.node], {"axis": axis, "keepdims": bool(keepdims)})
+        )
+
+    def mean(self, axis=None, keepdims=False):
+        return Tracer(
+            _node_op("mean", [self.node], {"axis": axis, "keepdims": bool(keepdims)})
+        )
+
     def reshape(self, *shape):
         if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
             shape = tuple(shape[0])
@@ -248,11 +314,13 @@ class Tracer:
 
 def _node_input(name: str):
     from .graph_compiler import GraphNode
+
     return GraphNode("input", name=name)
 
 
 def _node_op(op: str, inputs, params=None):
     from .graph_compiler import GraphNode
+
     return GraphNode(op, inputs, params=params)
 
 
@@ -265,6 +333,7 @@ def _tracer_node(other) -> Any:
 # --------------------------------------------------------------------------
 # DAG helpers
 # --------------------------------------------------------------------------
+
 
 def _all_nodes(entry) -> List[Any]:
     nodes: List[Any] = []
@@ -306,6 +375,7 @@ def _eval_nodes(nodes: List[Any], entry, bindings: Dict[int, np.ndarray]) -> np.
 # Reverse-mode symbolic differentiation over the DAG
 # --------------------------------------------------------------------------
 
+
 def _vjp(node, g: Any) -> List[Any]:
     """Return per-input gradient GraphNodes for one node."""
     op = node.op
@@ -320,7 +390,10 @@ def _vjp(node, g: Any) -> List[Any]:
     if op == "sub":
         return [to_shape(g, a), to_shape(_node_op("neg", [g]), b)]
     if op == "mul":
-        return [to_shape(_node_op("mul", [g, b]), a), to_shape(_node_op("mul", [g, a]), b)]
+        return [
+            to_shape(_node_op("mul", [g, b]), a),
+            to_shape(_node_op("mul", [g, a]), b),
+        ]
     if op == "div":
         inv_b = _node_op("div", [_const(1.0), b])
         ga = to_shape(_node_op("mul", [g, inv_b]), a)
@@ -345,8 +418,24 @@ def _vjp(node, g: Any) -> List[Any]:
         return [_node_op("mul", [g, _node_op("sub", [_const(1.0), sq])])]
     if op == "gelu":
         s = a / _const(math.sqrt(2.0))
-        cdf = _node_op("mul", [_const(0.5), _node_op("add", [_const(1.0), _node_op("erf", [s])])])
-        pdf = _node_op("div", [_node_op("exp", [_node_op("neg", [_node_op("mul", [_node_op("mul", [s, s]), _const(0.5)])])]), _const(math.sqrt(2.0 * math.pi))])
+        cdf = _node_op(
+            "mul", [_const(0.5), _node_op("add", [_const(1.0), _node_op("erf", [s])])]
+        )
+        pdf = _node_op(
+            "div",
+            [
+                _node_op(
+                    "exp",
+                    [
+                        _node_op(
+                            "neg",
+                            [_node_op("mul", [_node_op("mul", [s, s]), _const(0.5)])],
+                        )
+                    ],
+                ),
+                _const(math.sqrt(2.0 * math.pi)),
+            ],
+        )
         return [_node_op("mul", [g, _node_op("add", [cdf, pdf])])]
     if op == "silu":
         sig = _node_op("sigmoid", [a])
@@ -358,9 +447,16 @@ def _vjp(node, g: Any) -> List[Any]:
     if op == "erf":
         two_over_sqrt_pi = _const(2.0 / math.sqrt(math.pi))
         exp_arg = _node_op("neg", [_node_op("mul", [a, a])])
-        return [_node_op("mul", [g, _node_op("mul", [two_over_sqrt_pi, _node_op("exp", [exp_arg])])])]
+        return [
+            _node_op(
+                "mul",
+                [g, _node_op("mul", [two_over_sqrt_pi, _node_op("exp", [exp_arg])])],
+            )
+        ]
     if op == "clip":
-        inside = _node_op("step", [a - _const(node.params["min"])]) * _node_op("step", [_const(node.params["max"]) - a])
+        inside = _node_op("step", [a - _const(node.params["min"])]) * _node_op(
+            "step", [_const(node.params["max"]) - a]
+        )
         return [_node_op("mul", [g, inside])]
     if op == "transpose":
         return [_node_op("transpose_inv", [g], {"axes": node.params.get("axes")})]
@@ -369,15 +465,53 @@ def _vjp(node, g: Any) -> List[Any]:
     if op == "getitem":
         return [_node_op("scatter_like", [g, a], {"index": node.params["index"]})]
     if op == "reduce":
-        return [_node_op("reduce_grad", [g, a], {"axis": node.params.get("axis"), "keepdims": node.params.get("keepdims")})]
+        return [
+            _node_op(
+                "reduce_grad",
+                [g, a],
+                {
+                    "axis": node.params.get("axis"),
+                    "keepdims": node.params.get("keepdims"),
+                },
+            )
+        ]
     if op == "mean":
-        return [_node_op("mean_grad", [g, a], {"axis": node.params.get("axis"), "keepdims": node.params.get("keepdims")})]
+        return [
+            _node_op(
+                "mean_grad",
+                [g, a],
+                {
+                    "axis": node.params.get("axis"),
+                    "keepdims": node.params.get("keepdims"),
+                },
+            )
+        ]
     if op == "sum_to_shape":
         return [_node_op("broadcast_to_shape", [g, node.inputs[0]]), _const(0.0)]
     if op == "reduce_grad":
-        return [_node_op("reduce", [g], {"axis": node.params.get("axis"), "keepdims": node.params.get("keepdims")}), _const(0.0)]
+        return [
+            _node_op(
+                "reduce",
+                [g],
+                {
+                    "axis": node.params.get("axis"),
+                    "keepdims": node.params.get("keepdims"),
+                },
+            ),
+            _const(0.0),
+        ]
     if op == "mean_grad":
-        return [_node_op("mean_adjoint", [g, a], {"axis": node.params.get("axis"), "keepdims": node.params.get("keepdims")}), _const(0.0)]
+        return [
+            _node_op(
+                "mean_adjoint",
+                [g, a],
+                {
+                    "axis": node.params.get("axis"),
+                    "keepdims": node.params.get("keepdims"),
+                },
+            ),
+            _const(0.0),
+        ]
     if op == "reshape_grad":
         return [_node_op("reshape_grad", [g, a]), _const(0.0)]
     if op == "scatter_like":
@@ -393,8 +527,9 @@ def _const(value):
     return _node_op("const", [], {"value": np.asarray(value, dtype=np.float32)})
 
 
-def _reverse_grads(nodes: List[Any], entry, wrt_ids: List[int],
-                   seed: Any) -> Dict[int, Any]:
+def _reverse_grads(
+    nodes: List[Any], entry, wrt_ids: List[int], seed: Any
+) -> Dict[int, Any]:
     children = _build_children_map(nodes)
     grads: Dict[int, Any] = {id(entry): seed}
 
@@ -422,19 +557,20 @@ def _reverse_grads(nodes: List[Any], entry, wrt_ids: List[int],
 # Trace — one differentiated DAG
 # --------------------------------------------------------------------------
 
+
 class Trace:
     """A traced DAG: ``nodes`` + ``entry`` + ordered input leaves."""
 
-    def __init__(self, nodes: List[Any], entry: Any,
-                 inputs: Optional[List[Any]] = None):
+    def __init__(
+        self, nodes: List[Any], entry: Any, inputs: Optional[List[Any]] = None
+    ):
         self.nodes = nodes
         self.entry = entry
         self.inputs = inputs if inputs is not None else _topo_inputs(nodes)
 
     def execute(self, *args) -> Any:
         if len(args) != len(self.inputs):
-            raise ValueError(
-                f"expected {len(self.inputs)} inputs, got {len(args)}")
+            raise ValueError(f"expected {len(self.inputs)} inputs, got {len(args)}")
         bind = {id(n): np.asarray(a) for n, a in zip(self.inputs, args)}
         return _eval_nodes(self.nodes, self.entry, bind)
 
@@ -468,6 +604,7 @@ def _argnum_list(argnums, n_inputs) -> List[int]:
 # --------------------------------------------------------------------------
 # public transforms
 # --------------------------------------------------------------------------
+
 
 def trace_function(fn: Callable, *args) -> Trace:
     """Trace ``fn`` over symbolic inputs matching ``args`` shapes."""
@@ -551,8 +688,9 @@ def jacobian(fn: Callable, argnums: Any = 0) -> Callable:
             for i in range(n_out):
                 seed = np.zeros_like(np.asarray(y), dtype=np.float32)
                 seed.reshape(-1)[i] = 1.0
-                grad_map = _reverse_grads(trace.nodes, trace.entry, wrt_ids,
-                                          _const(seed))
+                grad_map = _reverse_grads(
+                    trace.nodes, trace.entry, wrt_ids, _const(seed)
+                )
                 bind = {id(n): np.asarray(a) for n, a in zip(trace.inputs, args)}
                 grads = [
                     _eval_nodes(_all_nodes(grad_map[w]), grad_map[w], bind)
@@ -569,8 +707,12 @@ def jacobian(fn: Callable, argnums: Any = 0) -> Callable:
         J = J[:, :total_in]
         if len(argnum_list) == 1:
             return J.reshape(out_shape + in_shapes[0])
-        return [J[:, start:start + int(np.prod(s))].reshape(out_shape + s)
-                for s, start in zip(in_shapes, np.cumsum([0] + [int(np.prod(s)) for s in in_shapes[:-1]]))]
+        return [
+            J[:, start : start + int(np.prod(s))].reshape(out_shape + s)
+            for s, start in zip(
+                in_shapes, np.cumsum([0] + [int(np.prod(s)) for s in in_shapes[:-1]])
+            )
+        ]
 
     wrapper.__name__ = f"jacobian_{getattr(fn, '__name__', 'fn')}"
     return wrapper
@@ -595,7 +737,9 @@ def hessian(fn: Callable, argnums: Any = 0) -> Callable:
             for i in range(n_out):
                 seed = np.zeros_like(g, dtype=np.float32)
                 seed.reshape(-1)[i] = 1.0
-                grad_map = _reverse_grads(g_trace.nodes, g_trace.entry, wrt_ids, _const(seed))
+                grad_map = _reverse_grads(
+                    g_trace.nodes, g_trace.entry, wrt_ids, _const(seed)
+                )
                 grads = [
                     _eval_nodes(_all_nodes(grad_map[w]), grad_map[w], bind)
                     for w in wrt_ids
@@ -611,8 +755,12 @@ def hessian(fn: Callable, argnums: Any = 0) -> Callable:
         H = H[:, :total_in]
         if len(argnum_list) == 1:
             return H.reshape(g_shape + in_shapes[0])
-        return [H[:, start:start + int(np.prod(s))].reshape(g_shape + s)
-                for s, start in zip(in_shapes, np.cumsum([0] + [int(np.prod(s)) for s in in_shapes[:-1]]))]
+        return [
+            H[:, start : start + int(np.prod(s))].reshape(g_shape + s)
+            for s, start in zip(
+                in_shapes, np.cumsum([0] + [int(np.prod(s)) for s in in_shapes[:-1]])
+            )
+        ]
 
     wrapper.__name__ = f"hessian_{getattr(fn, '__name__', 'fn')}"
     return wrapper
@@ -642,8 +790,12 @@ def vmap(fn: Callable, in_axes: Any = 0) -> Callable:
             return trace.execute(*args)
         bsize = int(np.asarray(args[batch_info[0]]).shape[0])
         out = [
-            trace.execute(*[np.asarray(args[j])[k] if j in batch_info else np.asarray(args[j])
-                            for j in range(len(args))])
+            trace.execute(
+                *[
+                    np.asarray(args[j])[k] if j in batch_info else np.asarray(args[j])
+                    for j in range(len(args))
+                ]
+            )
             for k in range(bsize)
         ]
         return np.stack(out)

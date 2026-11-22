@@ -27,14 +27,14 @@ repos:
     rev: 0.16.0
     hooks:
       - id: gersemi
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
       - id: clang-format
         args: [-style=file, -i]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.0
@@ -42,7 +42,7 @@ repos:
       # Formatting is enforced here; legacy lint diagnostics are tracked in
       # AUDIT-2026-11-22.md and must not block the formatter promotion bot.
       - id: ruff-format
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   # Prettier owns consistent formatting for web sources, JSON, and YAML.
   - repo: https://github.com/rbubley/mirrors-prettier
@@ -59,7 +59,7 @@ repos:
     rev: v0.9.3
     hooks:
       - id: taplo-format
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: 479be5958357ba5ab65ce47172117348516860e9
@@ -74,7 +74,7 @@ repos:
     hooks:
       - id: markdownlint
         args: [--config, .markdownlint.yaml, --fix]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1

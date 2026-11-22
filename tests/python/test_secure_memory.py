@@ -1,9 +1,18 @@
 """Tests for secure_memory.py — S1 memory hardening."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
-from SneppX_ALG.interface_bindings import SecureAllocator, StackCanary, ASLR, MemoryHardening, MemoryLeakDetector
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
+
+from SneppX_ALG.interface_bindings import (
+    SecureAllocator,
+    StackCanary,
+    ASLR,
+    MemoryHardening,
+    MemoryLeakDetector,
+)
 
 
 def test_allocator_malloc_free():
@@ -40,8 +49,8 @@ def test_canary_value():
 def test_canary_check():
     c = StackCanary()
     assert c.check(c.value)
-    assert not c.check(b'\x00' * 8)
-    assert not c.check(b'\xff' * 8)
+    assert not c.check(b"\x00" * 8)
+    assert not c.check(b"\xff" * 8)
 
 
 def test_canary_refresh():

@@ -21,6 +21,7 @@ doxygen Doxyfile
 The generated site is written to **`docs/api/doxygen/html/index.html`**.
 
 > If you get `doxygen: command not found`, install it:
+>
 > - **Windows (vcpkg):** `vcpkg install doxygen` then run from the vcpkg
 >   toolchain prompt.
 > - **Linux (apt):** `sudo apt-get install doxygen graphviz`

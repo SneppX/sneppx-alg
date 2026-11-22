@@ -341,7 +341,9 @@ class BenchmarkSuite:
 
             if cfg["type"] == "lstm":
                 fn = lambda: lstm_cell(
-                    x[:, 0, :], h0, c0,
+                    x[:, 0, :],
+                    h0,
+                    c0,
                     Tensor.from_numpy(np.random.randn(4 * H, I).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(4 * H, H).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(4 * H).astype(np.float32)),
@@ -349,7 +351,8 @@ class BenchmarkSuite:
                 )
             elif cfg["type"] == "gru":
                 fn = lambda: gru_cell(
-                    x[:, 0, :], h0,
+                    x[:, 0, :],
+                    h0,
                     Tensor.from_numpy(np.random.randn(3 * H, I).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(3 * H, H).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(3 * H).astype(np.float32)),
@@ -357,7 +360,8 @@ class BenchmarkSuite:
                 )
             else:
                 fn = lambda: rnn_cell(
-                    x[:, 0, :], h0,
+                    x[:, 0, :],
+                    h0,
                     Tensor.from_numpy(np.random.randn(H, I).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(H, H).astype(np.float32)),
                     Tensor.from_numpy(np.random.randn(H).astype(np.float32)),
@@ -422,17 +426,27 @@ class BenchmarkSuite:
             ln2_w = Tensor.from_numpy(np.ones(D, dtype=np.float32))
             ln2_b = Tensor.from_numpy(np.zeros(D, dtype=np.float32))
 
-            mem_mb = (
-                B * L * D * 4 + B * L * L * 4 + B * L * ff_dim * 4
-            ) / (1024 * 1024)
+            mem_mb = (B * L * D * 4 + B * L * L * 4 + B * L * ff_dim * 4) / (
+                1024 * 1024
+            )
 
             result = self.benchmark(
                 f"transformer_B{B}_L{L}_D{D}_H{H}",
                 "transformer",
                 lambda: _tf_block(
-                    x, attn_w, attn_b, ff1_w, ff1_b, ff2_w, ff2_b,
-                    ln1_w, ln1_b, ln2_w, ln2_b,
-                    num_heads=H, dropout=cfg.get("dropout", 0.1),
+                    x,
+                    attn_w,
+                    attn_b,
+                    ff1_w,
+                    ff1_b,
+                    ff2_w,
+                    ff2_b,
+                    ln1_w,
+                    ln1_b,
+                    ln2_w,
+                    ln2_b,
+                    num_heads=H,
+                    dropout=cfg.get("dropout", 0.1),
                 ),
                 memory_mb=mem_mb,
             )

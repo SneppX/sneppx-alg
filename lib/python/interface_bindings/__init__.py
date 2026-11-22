@@ -6,6 +6,7 @@ This path is deprecated. Use bindings/python/ instead:
 """
 
 import warnings
+
 warnings.warn(
     "lib/python/ is deprecated. Use 'from SneppX_ALG import _SNEPPX_c' from bindings/python/.",
     DeprecationWarning,

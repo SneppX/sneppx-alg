@@ -39,7 +39,9 @@ def vjp(f, primals, v):
     seed = _as_tensor(v) if not isinstance(v, Tensor) else v
     _zeros_grad(primals)
     _wrap_tensor_backward(out, seed)
-    cotangents = [p.grad if p.grad is not None else Tensor(np.zeros_like(p.data)) for p in primals]
+    cotangents = [
+        p.grad if p.grad is not None else Tensor(np.zeros_like(p.data)) for p in primals
+    ]
     return out, cotangents
 
 
@@ -55,14 +57,14 @@ def jvp(f, primals, tangents):
     jvp_out = np.zeros_like(out_data)
     n = out.numel
     if n == 1:
-            _zeros_grad(primals)
-            _wrap_tensor_backward(out, Tensor(np.ones_like(out_data)))
-            acc = 0.0
-            for p, t in zip(primals, tangents):
-                if p.grad is None:
-                    continue
-                acc = acc + float(np.sum(p.grad.data * t.data))
-            jvp_out = np.array(acc)
+        _zeros_grad(primals)
+        _wrap_tensor_backward(out, Tensor(np.ones_like(out_data)))
+        acc = 0.0
+        for p, t in zip(primals, tangents):
+            if p.grad is None:
+                continue
+            acc = acc + float(np.sum(p.grad.data * t.data))
+        jvp_out = np.array(acc)
     else:
         flat = jvp_out.reshape(-1)
         for k in range(n):
@@ -92,7 +94,14 @@ def jacrev(f, primals):
         seed.reshape(-1)[k] = 1.0
         _zeros_grad(primals)
         _wrap_tensor_backward(out, Tensor(seed))
-        rows.append([p.grad.data.reshape(-1).copy() if p.grad is not None else np.zeros(p.numel) for p in primals])
+        rows.append(
+            [
+                p.grad.data.reshape(-1).copy()
+                if p.grad is not None
+                else np.zeros(p.numel)
+                for p in primals
+            ]
+        )
     # rows[k][i] = d out_k / d primal_i  (already flattened)
     jacs = []
     for i in range(len(primals)):
@@ -126,6 +135,7 @@ def grad(f):
     """Returns a function that computes the gradient of scalar-valued ``f``
     w.r.t. its (tensor) arguments. Higher-order ``grad(grad(f))`` is supported
     because each call builds a fresh tape."""
+
     def _g(*primals):
         ps = [_as_tensor(p) for p in primals]
         for p in ps:
@@ -133,7 +143,10 @@ def grad(f):
         out = f(*ps)
         _zeros_grad(ps)
         out.backward(create_graph=True)
-        return [p.grad if p.grad is not None else Tensor(np.zeros_like(p.data)) for p in ps]
+        return [
+            p.grad if p.grad is not None else Tensor(np.zeros_like(p.data)) for p in ps
+        ]
+
     return _g
 
 

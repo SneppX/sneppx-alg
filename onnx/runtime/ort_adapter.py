@@ -51,9 +51,7 @@ class OnnxRuntimeSession:
             self._session = ort.InferenceSession(serialize_model(model))
         else:
             if require_ort:
-                raise ImportError(
-                    "onnxruntime is required: pip install onnxruntime"
-                )
+                raise ImportError("onnxruntime is required: pip install onnxruntime")
             from .numpy_executor import Session as NumpySession
 
             self._session = NumpySession(model)
@@ -64,10 +62,14 @@ class OnnxRuntimeSession:
     def get_outputs(self):
         return self._session.get_outputs()
 
-    def run(self, inputs: Dict[str, np.ndarray], output_names: Optional[List[str]] = None):
+    def run(
+        self, inputs: Dict[str, np.ndarray], output_names: Optional[List[str]] = None
+    ):
         if self._ort is not None:
-            names = output_names if output_names is not None else [
-                o.name for o in self._session.get_outputs()
-            ]
+            names = (
+                output_names
+                if output_names is not None
+                else [o.name for o in self._session.get_outputs()]
+            )
             return self._session.run(names, inputs)
         return self._session.run(inputs)

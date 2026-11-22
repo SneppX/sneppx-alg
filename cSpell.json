@@ -69,14 +69,5 @@
     "bigram",
     "bigrams"
   ],
-  "ignorePaths": [
-    "build/**",
-    "target/**",
-    "releases/**",
-    ".git/**",
-    "*.exe",
-    "*.dll",
-    "*.lib",
-    "*.pdb"
-  ]
+  "ignorePaths": ["build/**", "target/**", "releases/**", ".git/**", "*.exe", "*.dll", "*.lib", "*.pdb"]
 }

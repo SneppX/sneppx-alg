@@ -23,7 +23,10 @@ def test_documented_top_level_api_imports() -> None:
 def test_documented_algorithm_and_utility_imports() -> None:
     from SneppX_ALG import agents, observability, rag, speculative, structured_output
     from SneppX_ALG.interface_bindings import HSSModel, SERModel
-    from SneppX_ALG.interface_bindings.checkpoint import CheckpointReader, CheckpointWriter
+    from SneppX_ALG.interface_bindings.checkpoint import (
+        CheckpointReader,
+        CheckpointWriter,
+    )
     from SneppX_ALG.interface_bindings.profiler import Profiler, timeit
     from SneppX_ALG.interface_bindings.quantization import QuantMode, QuantizedLinear
 

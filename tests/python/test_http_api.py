@@ -85,7 +85,6 @@ def server():
         proc.kill()
 
 
-
 def _raw_http_request(port, payload, shutdown_write=False):
     client = socket.create_connection(("127.0.0.1", port), timeout=2)
     try:
@@ -126,6 +125,7 @@ def test_slow_client_receives_timeout_response_and_is_closed(server):
     finally:
         client.close()
 
+
 def test_connection_limit_returns_service_unavailable(server):
     port, _ = server
     blockers = []
@@ -149,25 +149,37 @@ def test_connection_limit_returns_service_unavailable(server):
 
 def test_duplicate_content_length_is_rejected(server):
     port, _ = server
-    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n")
+    response = _raw_http_request(
+        port,
+        b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n",
+    )
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
 
 def test_transfer_encoding_is_rejected(server):
     port, _ = server
-    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n")
+    response = _raw_http_request(
+        port,
+        b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n",
+    )
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
 
 def test_invalid_content_length_is_rejected(server):
     port, _ = server
-    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: -1\r\n\r\n")
+    response = _raw_http_request(
+        port,
+        b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: -1\r\n\r\n",
+    )
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
 
 def test_oversized_content_length_is_rejected(server):
     port, _ = server
-    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 32769\r\n\r\n")
+    response = _raw_http_request(
+        port,
+        b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 32769\r\n\r\n",
+    )
     assert response.startswith(b"HTTP/1.1 413 Payload Too Large")
 
 
@@ -175,6 +187,7 @@ def test_malformed_request_line_is_rejected(server):
     port, _ = server
     response = _raw_http_request(port, b"GET /v1/health\r\nHost: localhost\r\n\r\n")
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
+
 
 def test_header_name_rejects_non_token_backslash(server):
     port, _ = server
@@ -187,7 +200,11 @@ def test_header_name_rejects_non_token_backslash(server):
 
 def test_incomplete_declared_body_is_rejected(server):
     port, _ = server
-    response = _raw_http_request(port, b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 3\r\n\r\na", shutdown_write=True)
+    response = _raw_http_request(
+        port,
+        b"POST /v1/generate HTTP/1.1\r\nHost: localhost\r\nContent-Length: 3\r\n\r\na",
+        shutdown_write=True,
+    )
     assert response.startswith(b"HTTP/1.1 400 Bad Request")
 
 
@@ -212,7 +229,9 @@ def static_server(tmp_path):
     deadline = time.time() + 10
     while time.time() < deadline:
         try:
-            request = urllib.request.Request(url, headers={"Authorization": "Bearer sk-sneppx-test-token-2026"})
+            request = urllib.request.Request(
+                url, headers={"Authorization": "Bearer sk-sneppx-test-token-2026"}
+            )
             with urllib.request.urlopen(request, timeout=1) as response:
                 if response.status == 200:
                     break
@@ -232,7 +251,8 @@ def static_server(tmp_path):
 def test_static_file_inside_root_is_served(static_server):
     port, _, _ = static_server
     response = _raw_http_request(
-        port, b"GET /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+        port,
+        b"GET /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
     )
     assert response.startswith(b"HTTP/1.1 200")
     assert b"safe static content" in response
@@ -241,7 +261,8 @@ def test_static_file_inside_root_is_served(static_server):
 def test_static_file_parent_traversal_is_blocked(static_server):
     port, _, outside = static_server
     response = _raw_http_request(
-        port, b"GET /static/../secret.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+        port,
+        b"GET /static/../secret.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
     )
     assert not response.startswith(b"HTTP/1.1 200")
     assert outside.read_text(encoding="utf-8").encode() not in response
@@ -255,17 +276,18 @@ def test_static_file_symlink_escape_is_blocked(static_server):
     except (OSError, NotImplementedError):
         pytest.skip("symlink creation is unavailable on this platform")
     response = _raw_http_request(
-        port, b"GET /static/outside.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+        port,
+        b"GET /static/outside.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
     )
     assert not response.startswith(b"HTTP/1.1 200")
     assert outside.read_text(encoding="utf-8").encode() not in response
 
 
-
 def test_static_file_empty_file_is_served(static_server):
     port, _, _ = static_server
     response = _raw_http_request(
-        port, b"GET /static/empty.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+        port,
+        b"GET /static/empty.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
     )
     assert response.startswith(b"HTTP/1.1 200")
     assert b"Content-Length: 0\r\n" in response
@@ -274,7 +296,8 @@ def test_static_file_empty_file_is_served(static_server):
 def test_static_file_prefix_collision_is_not_served(static_server):
     port, _, _ = static_server
     response = _raw_http_request(
-        port, b"GET /staticity/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n"
+        port,
+        b"GET /staticity/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
     )
     assert response.startswith(b"HTTP/1.1 404")
 
@@ -282,7 +305,8 @@ def test_static_file_prefix_collision_is_not_served(static_server):
 def test_static_file_rejects_non_get_method(static_server):
     port, _, _ = static_server
     response = _raw_http_request(
-        port, b"POST /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\nContent-Length: 0\r\n\r\n"
+        port,
+        b"POST /static/hello.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\nContent-Length: 0\r\n\r\n",
     )
     assert response.startswith(b"HTTP/1.1 405 Method Not Allowed")
     assert b"Allow: GET\r\n" in response
@@ -320,9 +344,11 @@ def test_model_info_not_found(server):
 def test_generate_requires_auth(server):
     port, _ = server
     import json as _json
+
     body = _json.dumps({"model": "llama3-8B", "prompt": "hi"}).encode()
     req = urllib.request.Request(
-        "http://127.0.0.1:%d/v1/generate" % port, data=body,
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=body,
         headers={"Content-Type": "application/json"},
     )
     try:
@@ -331,8 +357,6 @@ def test_generate_requires_auth(server):
         assert e.code in (401, 403)
     except Exception:
         pytest.skip("auth behaviour not deterministic")
-
-
 
 
 def test_generate_rejects_unregistered_prefixed_key(server):
@@ -362,9 +386,12 @@ def test_public_path_prefix_collision_is_not_public(server):
 def test_generate_empty_body(server):
     port, _ = server
     req = urllib.request.Request(
-        "http://127.0.0.1:%d/v1/generate" % port, data=b"",
-        headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=b"",
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-sneppx-test-token-2026",
+        },
     )
     try:
         urllib.request.urlopen(req)
@@ -377,11 +404,15 @@ def test_generate_empty_body(server):
 def test_generate_unknown_model(server):
     port, _ = server
     import json as _json
+
     body = _json.dumps({"model": "__nope__", "prompt": "hi"}).encode()
     req = urllib.request.Request(
-        "http://127.0.0.1:%d/v1/generate" % port, data=body,
-        headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-sneppx-test-token-2026",
+        },
     )
     try:
         urllib.request.urlopen(req)
@@ -406,12 +437,14 @@ def _generate_request(port, body):
 def test_generate_json_uses_top_level_fields_and_decodes_escapes(server):
     port, _ = server
     prompt = 'quoted "model":"__fake__" and escaped\\slash'
-    body = json.dumps({
-        "metadata": {"model": "__nested_fake__"},
-        "model": "llama3-8B",
-        "prompt": prompt,
-        "max_new_tokens": 2,
-    }).encode()
+    body = json.dumps(
+        {
+            "metadata": {"model": "__nested_fake__"},
+            "model": "llama3-8B",
+            "prompt": prompt,
+            "max_new_tokens": 2,
+        }
+    ).encode()
     with _generate_request(port, body) as response:
         data = json.loads(response.read().decode())
         assert response.status == 200
@@ -474,11 +507,17 @@ def test_generate_rejects_overlong_prompt_instead_of_truncating(server):
 def test_generate_with_auth(server):
     port, _ = server
     import json as _json
-    body = _json.dumps({"model": "llama3-8B", "prompt": "hi", "max_new_tokens": 4}).encode()
+
+    body = _json.dumps(
+        {"model": "llama3-8B", "prompt": "hi", "max_new_tokens": 4}
+    ).encode()
     req = urllib.request.Request(
-        "http://127.0.0.1:%d/v1/generate" % port, data=body,
-        headers={"Content-Type": "application/json",
-                 "Authorization": "Bearer sk-sneppx-test-token-2026"},
+        "http://127.0.0.1:%d/v1/generate" % port,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer sk-sneppx-test-token-2026",
+        },
     )
     try:
         with urllib.request.urlopen(req) as r:
@@ -497,7 +536,9 @@ def test_generate_with_auth(server):
 def test_model_info_known(server):
     port, _ = server
     try:
-        with urllib.request.urlopen("http://127.0.0.1:%d/v1/models/llama3-8B" % port) as r:
+        with urllib.request.urlopen(
+            "http://127.0.0.1:%d/v1/models/llama3-8B" % port
+        ) as r:
             assert r.status == 200
             data = json.loads(r.read().decode())
             assert data is not None

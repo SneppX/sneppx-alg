@@ -23,5 +23,3 @@
  * REFERENCES
  *   None (internal kernel module).
  */
-
-

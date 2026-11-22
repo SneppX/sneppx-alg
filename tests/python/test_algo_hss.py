@@ -1,7 +1,10 @@
 """Tests for algo_hss.py — HSS algorithm bindings."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings import HSSDiscretize, HSSScan, HSSStep

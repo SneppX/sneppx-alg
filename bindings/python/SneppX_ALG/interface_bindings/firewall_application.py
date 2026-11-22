@@ -27,7 +27,9 @@ _INJECTION_PATTERNS = (
     re.compile(r"(?i)\b(?:exec|execute)\s*(?:\(|\b)|\bxp_cmdshell\b|\bsp_executesql\b"),
     re.compile(r"(?i)\b(?:or|and)\s+['\"\w]+\s*=\s*['\"\w]+"),
     re.compile(r"(?is)<\s*script\b|</\s*script\s*>|javascript\s*:"),
-    re.compile(r"(?i)(?:;|&&|\|\|)\s*(?:/bin/(?:sh|bash)|powershell(?:\.exe)?|cmd(?:\.exe)?\s+/c)\b"),
+    re.compile(
+        r"(?i)(?:;|&&|\|\|)\s*(?:/bin/(?:sh|bash)|powershell(?:\.exe)?|cmd(?:\.exe)?\s+/c)\b"
+    ),
 )
 
 
@@ -87,7 +89,15 @@ class FirewallApplication:
     ):
         if max_body_size < 0:
             raise ValueError("max_body_size cannot be negative")
-        if min(max_path_length, max_query_length, max_header_count, max_header_value_length) < 1:
+        if (
+            min(
+                max_path_length,
+                max_query_length,
+                max_header_count,
+                max_header_value_length,
+            )
+            < 1
+        ):
             raise ValueError("request limits must be positive")
         self.max_body_size = int(max_body_size)
         self.allowed_methods = {m.upper() for m in (allowed_methods or {"GET", "POST"})}
@@ -171,7 +181,9 @@ class FirewallApplication:
             return None
         base_type = content_type.split(";", 1)[0].strip().lower()
         if base_type not in self.allowed_content_types:
-            return FirewallResult(False, 415, f"content type {base_type} not allowed", 3)
+            return FirewallResult(
+                False, 415, f"content type {base_type} not allowed", 3
+            )
         return None
 
     def _check_headers(self, headers: dict) -> Optional[FirewallResult]:
@@ -181,11 +193,17 @@ class FirewallApplication:
             if len(value) > self.max_header_value_length:
                 return FirewallResult(False, 431, f"header {name} is too large", 3)
             if name in self._suspicious_headers:
-                return FirewallResult(False, 400, f"untrusted forwarding header {name}", 3)
+                return FirewallResult(
+                    False, 400, f"untrusted forwarding header {name}", 3
+                )
             if any(ord(ch) < 32 and ch != "\t" for ch in value):
-                return FirewallResult(False, 400, "control character in request header", 3)
+                return FirewallResult(
+                    False, 400, "control character in request header", 3
+                )
         host = headers.get("host", "")
-        if host and (any(ch.isspace() for ch in host) or any(ch in host for ch in "#<>\\/@")):
+        if host and (
+            any(ch.isspace() for ch in host) or any(ch in host for ch in "#<>\\/@")
+        ):
             return FirewallResult(False, 400, "malformed host header", 3)
         content_length = headers.get("content-length")
         if content_length is not None:
@@ -231,7 +249,11 @@ class FirewallApplication:
         if normalized in self._allowed_exact:
             return True
         for prefix in self._allowed_prefixes:
-            if prefix == "/" or normalized == prefix or normalized.startswith(prefix + "/"):
+            if (
+                prefix == "/"
+                or normalized == prefix
+                or normalized.startswith(prefix + "/")
+            ):
                 return True
         return False
 
@@ -241,7 +263,9 @@ class FirewallApplication:
             return FirewallResult(False, 400, "invalid or unsafe request path", 3)
         return None
 
-    def _check_injection(self, body: Optional[bytes], query: str) -> Optional[FirewallResult]:
+    def _check_injection(
+        self, body: Optional[bytes], query: str
+    ) -> Optional[FirewallResult]:
         if not self.enable_injection_filter:
             return None
         targets = []
@@ -262,7 +286,9 @@ class FirewallApplication:
         for target in targets:
             for pattern in _INJECTION_PATTERNS:
                 if pattern.search(target):
-                    return FirewallResult(False, 400, "suspicious injection pattern detected", 3)
+                    return FirewallResult(
+                        False, 400, "suspicious injection pattern detected", 3
+                    )
         return None
 
     def check_request(
@@ -279,7 +305,9 @@ class FirewallApplication:
             return result
         normalized_headers = self._normalize_headers(headers or {})
         if normalized_headers is None:
-            return FirewallResult(False, 400, "malformed or duplicate request header", 3)
+            return FirewallResult(
+                False, 400, "malformed or duplicate request header", 3
+            )
         result = self._check_path(path)
         if result is not None:
             return result
@@ -297,7 +325,9 @@ class FirewallApplication:
                 return result
             declared_length = normalized_headers.get("content-length")
             if declared_length is not None and int(declared_length) != len(body):
-                return FirewallResult(False, 400, "content-length does not match request body", 3)
+                return FirewallResult(
+                    False, 400, "content-length does not match request body", 3
+                )
         result = self._check_injection(body, query)
         if result is not None:
             return result

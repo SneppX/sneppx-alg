@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_tls_session_init(void) {
+static void test_tls_session_init(void)
+{
     SNEPPXTlsSession session;
     memset(&session, 0, sizeof(session));
     int ret = snepx_tls_client_hello(&session);
@@ -27,7 +27,8 @@ static void test_tls_session_init(void) {
     snepx_tls_new_session_ticket(&session, 3600);
 }
 
-static void test_tls_derive(void) {
+static void test_tls_derive(void)
+{
     SNEPPXTlsSession session;
     memset(&session, 0, sizeof(session));
     int ret = snepx_tls13_derive_early_secret(&session, NULL, 0);
@@ -38,7 +39,8 @@ static void test_tls_derive(void) {
     assert(ret == 0);
 }
 
-int main(void) {
+int main(void)
+{
     test_tls_session_init();
     test_tls_derive();
     return 0;

@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Create Tiered.
  *
@@ -26,11 +25,20 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_tiered_create(const size_t* tier_sizes, int num_tiers, const char** tier_names) { (void)tier_sizes; (void)num_tiers; (void)tier_names; return calloc(1, 64); }
+void* SNEPPX_tiered_create(const size_t* tier_sizes, int num_tiers, const char** tier_names)
+{
+    (void) tier_sizes;
+    (void) num_tiers;
+    (void) tier_names;
+    return calloc(1, 64);
+}
 /**
  * @brief Destroy Tiered.
  */
-void SNEPPX_tiered_destroy(void* tm) { free(tm); }
+void SNEPPX_tiered_destroy(void* tm)
+{
+    free(tm);
+}
 /**
  * @brief Perform Tiered Alloc.
  *
@@ -39,7 +47,13 @@ void SNEPPX_tiered_destroy(void* tm) { free(tm); }
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_tiered_alloc(void* tm, size_t size, int preferred_tier) { (void)tm; (void)size; (void)preferred_tier; return NULL; }
+void* SNEPPX_tiered_alloc(void* tm, size_t size, int preferred_tier)
+{
+    (void) tm;
+    (void) size;
+    (void) preferred_tier;
+    return NULL;
+}
 /**
  * @brief Free Tiered.
  *
@@ -47,7 +61,12 @@ void* SNEPPX_tiered_alloc(void* tm, size_t size, int preferred_tier) { (void)tm;
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_tiered_free(void* tm, void* ptr) { (void)tm; (void)ptr; return 0; }
+int SNEPPX_tiered_free(void* tm, void* ptr)
+{
+    (void) tm;
+    (void) ptr;
+    return 0;
+}
 /**
  * @brief Perform Tiered Migrate.
  *
@@ -56,7 +75,13 @@ int SNEPPX_tiered_free(void* tm, void* ptr) { (void)tm; (void)ptr; return 0; }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_tiered_migrate(void* tm, void* ptr, int target_tier) { (void)tm; (void)ptr; (void)target_tier; return 0; }
+int SNEPPX_tiered_migrate(void* tm, void* ptr, int target_tier)
+{
+    (void) tm;
+    (void) ptr;
+    (void) target_tier;
+    return 0;
+}
 /**
  * @brief Perform Tiered Get Tier.
  *
@@ -64,7 +89,12 @@ int SNEPPX_tiered_migrate(void* tm, void* ptr, int target_tier) { (void)tm; (voi
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_tiered_get_tier(void* tm, const void* ptr) { (void)tm; (void)ptr; return 0; }
+int SNEPPX_tiered_get_tier(void* tm, const void* ptr)
+{
+    (void) tm;
+    (void) ptr;
+    return 0;
+}
 /**
  * @brief Perform Tiered Used.
  *
@@ -72,7 +102,12 @@ int SNEPPX_tiered_get_tier(void* tm, const void* ptr) { (void)tm; (void)ptr; ret
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_tiered_used(void* tm, int tier) { (void)tm; (void)tier; return 0; }
+size_t SNEPPX_tiered_used(void* tm, int tier)
+{
+    (void) tm;
+    (void) tier;
+    return 0;
+}
 /**
  * @brief Perform Tiered Capacity.
  *
@@ -80,4 +115,9 @@ size_t SNEPPX_tiered_used(void* tm, int tier) { (void)tm; (void)tier; return 0; 
  *
  * @return The computed size/count, or 0 on error.
  */
-size_t SNEPPX_tiered_capacity(void* tm, int tier) { (void)tm; (void)tier; return 0; }
+size_t SNEPPX_tiered_capacity(void* tm, int tier)
+{
+    (void) tm;
+    (void) tier;
+    return 0;
+}

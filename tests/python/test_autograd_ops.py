@@ -1,7 +1,15 @@
 """Tests for Autograd Ops."""
 
 import numpy as np
-from SneppX_ALG.interface_bindings.autograd_ops import Add, Sub, Mul, Div, MatMul, Neg, Pow
+from SneppX_ALG.interface_bindings.autograd_ops import (
+    Add,
+    Sub,
+    Mul,
+    Div,
+    MatMul,
+    Neg,
+    Pow,
+)
 from SneppX_ALG.interface_bindings.autograd import Context
 from SneppX_ALG.interface_bindings.tensor import Tensor
 
@@ -98,6 +106,7 @@ def test_pow_forward():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

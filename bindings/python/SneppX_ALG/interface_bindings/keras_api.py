@@ -209,8 +209,10 @@ class Dropout(_nn.Module):
 class LayerNorm(_nn.Module):
     def __init__(self, normalized_shape: Union[int, Sequence[int]], eps: float = 1e-5):
         super().__init__()
-        size = int(normalized_shape) if isinstance(normalized_shape, int) else int(
-            normalized_shape[0]
+        size = (
+            int(normalized_shape)
+            if isinstance(normalized_shape, int)
+            else int(normalized_shape[0])
         )
         self._ln = _nn.LayerNorm(size, eps=eps)
 
@@ -220,8 +222,12 @@ class LayerNorm(_nn.Module):
 
 class BatchNormalization(_nn.Module):
     def __init__(
-        self, num_features: int, momentum: float = 0.9, eps: float = 1e-5,
-        axis: int = -1, dtype: str = "float32",
+        self,
+        num_features: int,
+        momentum: float = 0.9,
+        eps: float = 1e-5,
+        axis: int = -1,
+        dtype: str = "float32",
     ):
         super().__init__()
         self.num_features = num_features
@@ -239,10 +245,12 @@ class BatchNormalization(_nn.Module):
             axes = tuple(i for i in range(x.ndim) if i != axis)
             mean = x.mean(dim=axes)
             var = (x * x).mean(dim=axes) - mean * mean
-            self.running_mean = (1 - self.momentum) * self.running_mean + \
-                self.momentum * mean
-            self.running_var = (1 - self.momentum) * self.running_var + \
-                self.momentum * var
+            self.running_mean = (
+                1 - self.momentum
+            ) * self.running_mean + self.momentum * mean
+            self.running_var = (
+                1 - self.momentum
+            ) * self.running_var + self.momentum * var
         else:
             mean = self.running_mean
             var = self.running_var
@@ -306,9 +314,12 @@ class Conv2D(_nn.Module):
 
 
 class MaxPool2D(_nn.Module):
-    def __init__(self, pool_size: Union[int, Tuple[int, int]] = 2,
-                 strides: Optional[Union[int, Tuple[int, int]]] = None,
-                 padding: Union[int, Tuple[int, int]] = 0):
+    def __init__(
+        self,
+        pool_size: Union[int, Tuple[int, int]] = 2,
+        strides: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+    ):
         super().__init__()
         self.pool_size = pool_size
         self.strides = strides
@@ -321,9 +332,12 @@ class MaxPool2D(_nn.Module):
 
 
 class AveragePool2D(_nn.Module):
-    def __init__(self, pool_size: Union[int, Tuple[int, int]] = 2,
-                 strides: Optional[Union[int, Tuple[int, int]]] = None,
-                 padding: Union[int, Tuple[int, int]] = 0):
+    def __init__(
+        self,
+        pool_size: Union[int, Tuple[int, int]] = 2,
+        strides: Optional[Union[int, Tuple[int, int]]] = None,
+        padding: Union[int, Tuple[int, int]] = 0,
+    ):
         super().__init__()
         self.pool_size = pool_size
         self.strides = strides
@@ -428,8 +442,8 @@ class _Adam(_OptimizerBase):
                 g = g + self.weight_decay * p.data
             self.m[i] = self.b0 * self.m[i] + (1 - self.b0) * g
             self.v[i] = self.b1 * self.v[i] + (1 - self.b1) * (g * g)
-            mh = self.m[i] / (1 - self.b0 ** self.t)
-            vh = self.v[i] / (1 - self.b1 ** self.t)
+            mh = self.m[i] / (1 - self.b0**self.t)
+            vh = self.v[i] / (1 - self.b1**self.t)
             p.data = p.data - self.lr * mh / (np.sqrt(vh) + self.eps)
 
 
@@ -446,8 +460,8 @@ class _AdamW(_Adam):
             p.data = p.data - self.lr * self.weight_decay * p.data
             self.m[i] = self.b0 * self.m[i] + (1 - self.b0) * g
             self.v[i] = self.b1 * self.v[i] + (1 - self.b1) * (g * g)
-            mh = self.m[i] / (1 - self.b0 ** self.t)
-            vh = self.v[i] / (1 - self.b1 ** self.t)
+            mh = self.m[i] / (1 - self.b0**self.t)
+            vh = self.v[i] / (1 - self.b1**self.t)
             p.data = p.data - self.lr * mh / (np.sqrt(vh) + self.eps)
 
 
@@ -475,9 +489,9 @@ class Sequential:
         else:
             for layer in layers:
                 self.add(layer)
-        self._input_shape: Optional[Tuple[Optional[int], ...]] = tuple(
-            input_shape
-        ) if input_shape else None
+        self._input_shape: Optional[Tuple[Optional[int], ...]] = (
+            tuple(input_shape) if input_shape else None
+        )
         self._optimizer: Optional[_train.Optimizer] = None
         self._loss_fn: Optional[Callable] = None
         self._metrics: List[Tuple[str, Callable]] = []
@@ -555,9 +569,9 @@ class Sequential:
         if self._input_shape is None:
             return
         try:
-            x = Tensor.zeros((1,) + tuple(
-                int(d) if d is not None else 1 for d in self._input_shape
-            ))
+            x = Tensor.zeros(
+                (1,) + tuple(int(d) if d is not None else 1 for d in self._input_shape)
+            )
             for layer in self.layers:
                 x = layer(x)
         except (TypeError, ValueError):
@@ -654,7 +668,9 @@ class Sequential:
         x_np = x.numpy() if isinstance(x, Tensor) else np.asarray(x, dtype=np.float32)
         y_np = None
         if y is not None:
-            y_np = y.numpy() if isinstance(y, Tensor) else np.asarray(y, dtype=np.float32)
+            y_np = (
+                y.numpy() if isinstance(y, Tensor) else np.asarray(y, dtype=np.float32)
+            )
         self._set_input_shape(x_np.shape)
 
         callbacks = list(callbacks or [])
@@ -683,12 +699,8 @@ class Sequential:
                 if y_np is not None:
                     pred_np = pred.numpy()
                     for name, fn in self._metrics:
-                        epoch_metrics[name].append(
-                            float(fn(pred_np, y_np[idx]))
-                        )
-            self.history.setdefault("loss", []).append(
-                float(np.mean(epoch_losses))
-            )
+                        epoch_metrics[name].append(float(fn(pred_np, y_np[idx])))
+            self.history.setdefault("loss", []).append(float(np.mean(epoch_losses)))
             for name, _ in self._metrics:
                 self.history.setdefault(name, []).append(
                     float(np.mean(epoch_metrics[name]))
@@ -717,7 +729,9 @@ class Sequential:
         x_np = x.numpy() if isinstance(x, Tensor) else np.asarray(x, dtype=np.float32)
         y_np = None
         if y is not None:
-            y_np = y.numpy() if isinstance(y, Tensor) else np.asarray(y, dtype=np.float32)
+            y_np = (
+                y.numpy() if isinstance(y, Tensor) else np.asarray(y, dtype=np.float32)
+            )
         self._set_input_shape(x_np.shape)
         pred = self(_as_tensor(x_np)).numpy()
         results: List[float] = []
@@ -738,9 +752,10 @@ class Sequential:
         x: Optional[Tensor] = None
         if self._input_shape:
             try:
-                x = Tensor.zeros((1,) + tuple(
-                    int(d) if d is not None else 1 for d in self._input_shape
-                ))
+                x = Tensor.zeros(
+                    (1,)
+                    + tuple(int(d) if d is not None else 1 for d in self._input_shape)
+                )
             except (TypeError, ValueError):
                 x = None
         total = 0
@@ -760,9 +775,7 @@ class Sequential:
                     n *= d
                 pc += n
             total += pc
-            lines.append(
-                f"{type(layer).__name__:<28}{', '.join(out):<20}{pc:>10}"
-            )
+            lines.append(f"{type(layer).__name__:<28}{', '.join(out):<20}{pc:>10}")
         lines.append("=" * 60)
         lines.append(f"Total params: {total}")
         return "\n".join(lines)

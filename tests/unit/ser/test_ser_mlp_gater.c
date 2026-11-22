@@ -1,8 +1,8 @@
+#include "polymorphic_memory_allocator.h"
 #include "sparse_expert_routing.h"
 #include "test_gtest.h"
-#include "polymorphic_memory_allocator.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Ser Mlp Gater
@@ -19,17 +19,15 @@
  *
  */
 
-
-
-
-
-static void test_mlp_gater_config_default(void) {
+static void test_mlp_gater_config_default(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     SX_ASSERT(cfg.use_mlp_gater == 0, "default is linear gater");
     SX_ASSERT(cfg.gater_hidden_dim == 64, "default gater hidden dim 64");
 }
 
-static void test_mlp_gater_route(void) {
+static void test_mlp_gater_route(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.use_mlp_gater = 1;
     cfg.gater_hidden_dim = 16;
@@ -47,8 +45,9 @@ static void test_mlp_gater_route(void) {
 
     size_t shape_in[] = {4, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = ((float)(i % 5) - 2.0f) * 0.1f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = ((float) (i % 5) - 2.0f) * 0.1f;
 
     SNEPPXTensor* gate_weights = NULL;
     int* expert_indices = NULL;
@@ -59,7 +58,7 @@ static void test_mlp_gater_route(void) {
     SX_ASSERT(gate_weights->shape[1] == 2, "active dim correct");
     SX_ASSERT(expert_indices[0] >= 0 && expert_indices[0] < 4, "valid expert index");
 
-    float* gw = (float*)gate_weights->data;
+    float* gw = (float*) gate_weights->data;
     float row_sum = gw[0] + gw[1];
     SX_ASSERT_NEAR(row_sum, 1.0f, 1e-5f, "gate weights sum to 1");
 
@@ -69,7 +68,8 @@ static void test_mlp_gater_route(void) {
     SNEPPX_ser_layer_destroy(layer);
 }
 
-static void test_mlp_gater_linear_vs_mlp_interface(void) {
+static void test_mlp_gater_linear_vs_mlp_interface(void)
+{
     SNEPPXSERConfig cfg = SNEPPX_ser_config_default();
     cfg.use_mlp_gater = 0;
     cfg.num_experts = 4;
@@ -87,14 +87,17 @@ static void test_mlp_gater_linear_vs_mlp_interface(void) {
 
     size_t shape_in[] = {2, cfg.input_dim};
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 2, SNEPPX_FLOAT32);
-    float* d = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) d[i] = 0.1f;
+    float* d = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        d[i] = 0.1f;
 
-    SNEPPXTensor* gw1 = NULL; int* ei1 = NULL;
+    SNEPPXTensor* gw1 = NULL;
+    int* ei1 = NULL;
     SNEPPX_ser_route(linear_layer, input, &gw1, &ei1);
     SX_ASSERT(gw1 != NULL, "linear route works");
 
-    SNEPPXTensor* gw2 = NULL; int* ei2 = NULL;
+    SNEPPXTensor* gw2 = NULL;
+    int* ei2 = NULL;
     SNEPPX_ser_route_mlp_gated(mlp_layer, input, &gw2, &ei2);
     SX_ASSERT(gw2 != NULL, "mlp gated route works");
 
@@ -107,7 +110,15 @@ static void test_mlp_gater_linear_vs_mlp_interface(void) {
     SNEPPX_ser_layer_destroy(mlp_layer);
 }
 
-
-TEST(test_ser_mlp_gater, MLP_gater_config_defaults) { test_mlp_gater_config_default(); }
-TEST(test_ser_mlp_gater, MLP_gater_route_output) { test_mlp_gater_route(); }
-TEST(test_ser_mlp_gater, MLP_gater_vs_linear_interface) { test_mlp_gater_linear_vs_mlp_interface(); }
+TEST(test_ser_mlp_gater, MLP_gater_config_defaults)
+{
+    test_mlp_gater_config_default();
+}
+TEST(test_ser_mlp_gater, MLP_gater_route_output)
+{
+    test_mlp_gater_route();
+}
+TEST(test_ser_mlp_gater, MLP_gater_vs_linear_interface)
+{
+    test_mlp_gater_linear_vs_mlp_interface();
+}

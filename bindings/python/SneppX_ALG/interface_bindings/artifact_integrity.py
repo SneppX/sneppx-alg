@@ -65,8 +65,9 @@ def verify_file(path: str, pk: bytes, sig_path: str = None) -> bool:
     return verify_artifact(_read_bytes(path), pk, bundle)
 
 
-def verify_or_quarantine(path: str, pk: bytes, quarantine_dir: str,
-                         sig_path: str = None) -> bool:
+def verify_or_quarantine(
+    path: str, pk: bytes, quarantine_dir: str, sig_path: str = None
+) -> bool:
     """Verify ``path``; on failure move it (and its sidecar) into
     ``quarantine_dir`` and return ``False``.  Returns ``True`` if valid."""
     sig_path = sig_path or (path + ".sig")

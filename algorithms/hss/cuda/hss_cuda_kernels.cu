@@ -30,11 +30,11 @@ __global__ void hss_softmax_kernel(
 ) {
     int batch = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     // Load tree probabilities for this batch
     __shared__ float path_probs[32];  // max tree depth
     int num_nodes = (1 << tree_depth) - 1;
-    
+
     for (int d = 0; d < tree_depth; d++) {
         int node = tree_indices[d];
         if (node >= 0 && node < num_nodes) {
@@ -45,7 +45,7 @@ __global__ void hss_softmax_kernel(
         }
     }
     __syncthreads();
-    
+
     // Compute class probabilities (product along path)
     if (tid < num_classes) {
         float prob = 1.0f;
@@ -82,13 +82,13 @@ __global__ void hss_sparse_matmul_kernel(
 ) {
     int batch = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     extern __shared__ float smem[];
-    
+
     if (tid < k) {
         int expert_idx = indices[batch * k + tid];
         const float* w = &sparse_weights[expert_idx * expert_size];
-        
+
         float sum = 0.0f;
         for (int i = 0; i < expert_size; i += blockDim.x) {
             int idx = i + tid;
@@ -96,16 +96,16 @@ __global__ void hss_sparse_matmul_kernel(
                 sum += w[idx] * dense_input[idx];
             }
         }
-        
+
         for (int offset = 16; offset > 0; offset >>= 1) {
             sum += __shfl_down_sync(0xFFFFFFFF, sum, offset);
         }
-        
+
         if (tid == 0) {
             smem[blockIdx.x * k] = smem[blockIdx.x * k];
         }
     }
-    
+
     output[batch] = 0.0f;
 }
 
@@ -130,23 +130,23 @@ __global__ void hss_topk_kernel(
 ) {
     int batch = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     // Each thread handles one class for this batch
     int class_idx = batch * num_classes + tid;
     if (tid >= num_classes) return;
-    
+
     float score = scores[class_idx];
-    
+
     // Simple selection: track top-k in shared memory
     __shared__ float top_vals[32];
     __shared__ int top_idxs[32];
-    
+
     if (tid < k) {
         top_vals[tid] = -INFINITY;
         top_idxs[tid] = -1;
     }
     __syncthreads();
-    
+
     // Insert into sorted top-k
     for (int i = 0; i < k; i++) {
         if (score > top_vals[i]) {
@@ -161,7 +161,7 @@ __global__ void hss_topk_kernel(
         }
     }
     __syncthreads();
-    
+
     if (tid < k) {
         indices[batch * k + tid] = top_idxs[tid];
         values[batch * k + tid] = top_vals[tid];
@@ -189,26 +189,26 @@ __global__ void hss_parallel_scan_kernel(
 ) {
     int tid = threadIdx.x;
     int s = tid; // state dimension index
-    
+
     if (s >= s_dim) return;
-    
+
     extern __shared__ float smem[];
     float* scan_vals = smem;
-    
+
     // Blelloch scan: h[t] = A_bar * h[t-1] + B_bar * x[t]
     // Parallel prefix sum using tree-based reduction
-    
+
     // Initialize
     for (int t = 0; t < seq_len; t++) {
         float a_val = A_bar[t * s_dim + s];
         float b_val = B_bar[t * s_dim * i_dim + s * i_dim + (s % i_dim)]; // simplified
         float x_val = x_seq[t * i_dim + (s % i_dim)];
-        
+
         // h[t] = A_bar * h[t-1] + B_bar * x[t]
         float h_prev = (t == 0) ? 0.0f : h_seq[(t-1) * s_dim + s];
         h_seq[t * s_dim + s] = a_val * h_prev + b_val * x_val;
     }
-    
+
     // Compute output: y[t] = C * h[t] + D * x[t]
     if (tid == 0) {
         for (int t = 0; t < seq_len; t++) {
@@ -249,7 +249,7 @@ __global__ void hss_ssm_step_kernel(
 ) {
     int s = threadIdx.x;
     if (s >= s_dim) return;
-    
+
     // h_new = A * h + B * x
     float h_new = A[s] * h[s];
     for (int i = 0; i < i_dim; i++) {
@@ -257,7 +257,7 @@ __global__ void hss_ssm_step_kernel(
     }
     h[s] = h_new;
     __syncthreads();
-    
+
     // y = C * h + D * x (simplified, single output)
     if (s == 0) {
         float y_val = 0.0f;
@@ -275,7 +275,7 @@ __global__ void hss_ssm_conv_kernel(
 ) {
     int t = blockIdx.x * blockDim.x + threadIdx.x;
     if (t >= seq_len) return;
-    
+
     float sum = 0.0f;
     for (int k = 0; k <= t; k++) {
         sum += K[k] * x[(t - k) * dim];
@@ -292,24 +292,24 @@ __global__ void hss_selective_scan_kernel(
 ) {
     int d = blockIdx.x;
     int tid = threadIdx.x;
-    
+
     if (d >= dim) return;
-    
+
     extern __shared__ float h_smem[];
     float* h = h_smem + d_state * tid;
-    
+
     for (int s = 0; s < d_state; s++) {
         h[s] = 0.0f;
     }
-    
+
     for (int t = 0; t < seq_len; t++) {
         float dt = delta[t * dim + d];
         float x_t = x[t * dim + d];
-        
+
         // discretize: A_bar = exp(dt * A)
         // discretize: B_bar = (exp(dt * A) - I) * A^{-1} * (dt * B)
         float a_val = A[t * dim * d_state + d * d_state + (tid % d_state)];
-        
+
         // h_new = A_bar * h + B_bar * x
         for (int s = tid; s < d_state; s += blockDim.x) {
             float a_bar = expf(dt * a_val);
@@ -317,7 +317,7 @@ __global__ void hss_selective_scan_kernel(
             h[s] = a_bar * h[s] + b_bar * x_t;
         }
         __syncthreads();
-        
+
         // y = C * h
         if (tid == 0) {
             float y_t = 0.0f;
@@ -327,7 +327,7 @@ __global__ void hss_selective_scan_kernel(
             y[t * dim + d] = y_t;
         }
     }
-    
+
     if (tid == 0) {
         for (int s = 0; s < d_state; s++) {
             h_final[d * d_state + s] = h[s];

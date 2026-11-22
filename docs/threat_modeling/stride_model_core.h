@@ -22,8 +22,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TM_SPOOFING,
     SNEPPX_TM_TAMPERING,
     SNEPPX_TM_REPUDIATION,
@@ -32,21 +32,24 @@ typedef enum {
     SNEPPX_TM_ELEVATION_PRIVILEGE
 } SNEPPXTmStrideCategory;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TM_RISK_CRITICAL,
     SNEPPX_TM_RISK_HIGH,
     SNEPPX_TM_RISK_MEDIUM,
     SNEPPX_TM_RISK_LOW
 } SNEPPXTmRiskRating;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TM_MITIGATED,
     SNEPPX_TM_ACCEPTED,
     SNEPPX_TM_TRANSFERRED,
     SNEPPX_TM_OPEN
 } SNEPPXTmMitigationStatus;
 
-typedef struct {
+typedef struct
+{
     uint64_t threat_id;
     SNEPPXTmStrideCategory category;
     uint8_t* threat_name;
@@ -72,7 +75,8 @@ typedef struct {
     size_t evidence_len;
 } SNEPPXTmThreat;
 
-typedef struct {
+typedef struct
+{
     uint8_t* model_name;
     size_t name_len;
     uint8_t* model_version;
@@ -90,7 +94,8 @@ typedef struct {
     uint8_t approved : 1;
 } SNEPPXTmModel;
 
-int snepx_tm_model_create(SNEPPXTmModel* model, const uint8_t* name, size_t name_len, const uint8_t* version, size_t version_len);
+int snepx_tm_model_create(SNEPPXTmModel* model, const uint8_t* name, size_t name_len, const uint8_t* version,
+                          size_t version_len);
 int snepx_tm_model_add_threat(SNEPPXTmModel* model, const SNEPPXTmThreat* threat);
 int snepx_tm_model_compute_risk(SNEPPXTmModel* model);
 int snepx_tm_model_compute_dread(SNEPPXTmThreat* threat);

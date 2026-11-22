@@ -568,8 +568,8 @@ class Adam8bit:
             v = _dequantize_int8(*self.v[i])
             m = self.beta1 * m + (1 - self.beta1) * g
             v = self.beta2 * v + (1 - self.beta2) * (g * g)
-            mhat = m / (1 - self.beta1 ** self.t)
-            vhat = v / (1 - self.beta2 ** self.t)
+            mhat = m / (1 - self.beta1**self.t)
+            vhat = v / (1 - self.beta2**self.t)
             denom = np.sqrt(vhat) + self.eps
             upd = mhat / denom
             pdata = _as_array(p)
@@ -634,5 +634,7 @@ def _build_8bit_optimizer(name, params, **kwargs):
         "sgd8bit": SGD8bit,
     }
     if name not in registry:
-        raise ValueError(f"Unknown 8-bit optimizer '{name}'. Available: {list(registry)}")
+        raise ValueError(
+            f"Unknown 8-bit optimizer '{name}'. Available: {list(registry)}"
+        )
     return registry[name](params, **kwargs)

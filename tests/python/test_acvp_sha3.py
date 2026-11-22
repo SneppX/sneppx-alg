@@ -39,16 +39,16 @@ def crypto():
 def test_sha3_256_official_known_answers(crypto):
     vectors = kat.sha3_256_vectors()
     assert vectors, "no SHA3-256 vectors loaded"
-    assert all(v["len"] % 8 == 0 for v in vectors), (
-        "vendored set must be byte-aligned only"
-    )
+    assert all(
+        v["len"] % 8 == 0 for v in vectors
+    ), "vendored set must be byte-aligned only"
     for v in vectors:
         msg = kat.acvp_msg_bytes(v["msg"], v["len"])
         assert len(msg) == v["len"] // 8
         got = kat.run_sha3_256(crypto, msg)
-        assert kat.b2h(got).upper() == v["md"].upper(), (
-            f"tcId={v['tcId']} msgLen(bits)={v['len']}"
-        )
+        assert (
+            kat.b2h(got).upper() == v["md"].upper()
+        ), f"tcId={v['tcId']} msgLen(bits)={v['len']}"
 
 
 def test_sha3_256_c_matches_hashlib_on_official_vectors(crypto):

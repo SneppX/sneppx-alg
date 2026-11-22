@@ -30,10 +30,14 @@ class _FoldError(Exception):
 
 def _np_dtype_name(dtype: np.dtype) -> str:
     return {
-        np.dtype("float32"): "float32", np.dtype("float64"): "float64",
-        np.dtype("float16"): "float16", np.dtype("int8"): "int8",
-        np.dtype("uint8"): "uint8", np.dtype("int16"): "int16",
-        np.dtype("int32"): "int32", np.dtype("int64"): "int64",
+        np.dtype("float32"): "float32",
+        np.dtype("float64"): "float64",
+        np.dtype("float16"): "float16",
+        np.dtype("int8"): "int8",
+        np.dtype("uint8"): "uint8",
+        np.dtype("int16"): "int16",
+        np.dtype("int32"): "int32",
+        np.dtype("int64"): "int64",
         np.dtype("bool"): "bool",
     }.get(np.dtype(dtype), "float32")
 
@@ -138,17 +142,37 @@ class _NumpyOps:
 
 
 _FOLDABLE_UNARY = {
-    "Relu": "relu", "Sigmoid": "sigmoid", "Tanh": "tanh", "Gelu": "gelu",
-    "Exp": "exp", "Log": "log", "Sqrt": "sqrt", "Abs": "abs_", "Neg": "neg",
+    "Relu": "relu",
+    "Sigmoid": "sigmoid",
+    "Tanh": "tanh",
+    "Gelu": "gelu",
+    "Exp": "exp",
+    "Log": "log",
+    "Sqrt": "sqrt",
+    "Abs": "abs_",
+    "Neg": "neg",
     "Identity": "identity",
 }
 _FOLDABLE_BINARY = {
-    "Add": "add", "Sub": "sub", "Mul": "mul", "Div": "div", "Pow": "pow",
+    "Add": "add",
+    "Sub": "sub",
+    "Mul": "mul",
+    "Div": "div",
+    "Pow": "pow",
 }
-_FOLDABLE_SPECIAL = {"MatMul", "Transpose", "Reshape", "Squeeze", "Unsqueeze", "Softmax"}
+_FOLDABLE_SPECIAL = {
+    "MatMul",
+    "Transpose",
+    "Reshape",
+    "Squeeze",
+    "Unsqueeze",
+    "Softmax",
+}
 
 
-def _try_fold_node(node: Node, constants: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+def _try_fold_node(
+    node: Node, constants: Dict[str, np.ndarray]
+) -> Dict[str, np.ndarray]:
     """Fold ``node`` if all inputs are constant; returns new name->array map."""
     if node.op_type in _FOLDABLE_UNARY:
         if len(node.inputs) != 1 or len(node.outputs) != 1:
@@ -233,8 +257,10 @@ def constant_fold(model: Model) -> Model:
     frontier = list(graph.nodes)
     while frontier:
         node = frontier.pop(0)
-        if node.op_type in _FOLDABLE_UNARY or node.op_type in _FOLDABLE_BINARY or (
-            node.op_type in _FOLDABLE_SPECIAL
+        if (
+            node.op_type in _FOLDABLE_UNARY
+            or node.op_type in _FOLDABLE_BINARY
+            or (node.op_type in _FOLDABLE_SPECIAL)
         ):
             try:
                 folded = _try_fold_node(node, constants)
@@ -268,8 +294,16 @@ def constant_fold(model: Model) -> Model:
             Tensor(name, _np_dtype_name(arr.dtype), list(arr.shape), arr)
         )
     for i in graph.initializers:
-        if i.data is not None and i.name in constants and constants[i.name] is not i.data:
-            new_graph.initializers.append(Tensor(i.name, i.dtype, list(constants[i.name].shape), constants[i.name]))
+        if (
+            i.data is not None
+            and i.name in constants
+            and constants[i.name] is not i.data
+        ):
+            new_graph.initializers.append(
+                Tensor(
+                    i.name, i.dtype, list(constants[i.name].shape), constants[i.name]
+                )
+            )
         else:
             new_graph.initializers.append(copy.deepcopy(i))
 
@@ -304,7 +338,9 @@ def eliminate_dead_code(model: Model) -> Model:
     kept: List[Node] = []
     removed = 0
     for node in reversed(graph.nodes):
-        if any(o in live for o in node.outputs) or any(o in output_names for o in node.outputs):
+        if any(o in live for o in node.outputs) or any(
+            o in output_names for o in node.outputs
+        ):
             kept.insert(0, node)
         else:
             removed += 1
@@ -339,7 +375,11 @@ def eliminate_identity(model: Model) -> Model:
     graph = model.graph
     replace: Dict[str, str] = {}
     for node in graph.nodes:
-        if node.op_type == "Identity" and len(node.inputs) == 1 and len(node.outputs) == 1:
+        if (
+            node.op_type == "Identity"
+            and len(node.inputs) == 1
+            and len(node.outputs) == 1
+        ):
             replace[node.outputs[0]] = replace.get(node.inputs[0], node.inputs[0])
 
     if not replace:
@@ -356,7 +396,11 @@ def eliminate_identity(model: Model) -> Model:
         out.name = _resolve(out.name)
     kept: List[Node] = []
     for node in graph.nodes:
-        if node.op_type == "Identity" and len(node.inputs) == 1 and len(node.outputs) == 1:
+        if (
+            node.op_type == "Identity"
+            and len(node.inputs) == 1
+            and len(node.outputs) == 1
+        ):
             if node.outputs[0] in replace:
                 continue
         node.inputs = [_resolve(i) for i in node.inputs]

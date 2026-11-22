@@ -244,7 +244,9 @@ class AdversarialTrainer:
         )
 
         if use_adv:
-            adv_inputs = self.attacker.generate(self.model, inputs, labels, self.loss_fn)
+            adv_inputs = self.attacker.generate(
+                self.model, inputs, labels, self.loss_fn
+            )
             # Detach input grad state from the attack: train on adv examples.
             train_inputs = adv_inputs
             inputs_for_loss = adv_inputs
@@ -264,7 +266,9 @@ class AdversarialTrainer:
 
         metrics = {
             "step": self._step,
-            "loss": float(loss.data.item()) if hasattr(loss.data, "item") else float(loss.data),
+            "loss": float(loss.data.item())
+            if hasattr(loss.data, "item")
+            else float(loss.data),
             "adversarial": use_adv,
         }
         self._step += 1
@@ -281,9 +285,7 @@ class AdversarialTrainer:
 
     # -- robustness evaluation ---------------------------------------------
 
-    def evaluate_robustness(
-        self, data, attacker: Optional[Attack] = None
-    ) -> dict:
+    def evaluate_robustness(self, data, attacker: Optional[Attack] = None) -> dict:
         """Measure clean and robust accuracy on ``data``.
 
         Returns a dict with ``clean_acc`` and ``robust_acc`` (fraction of

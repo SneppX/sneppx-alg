@@ -94,6 +94,7 @@ def test_tokenizer_apply_chat_template():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

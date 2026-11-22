@@ -5,33 +5,43 @@
 The SNEPPX-ALG security architecture implements a defense-in-depth strategy:
 
 ### S0 - Cryptographic Core
+
 Provides all cryptographic primitives: signatures (Ed25519, Dilithium 2/3/5, SPHINCS+), encryption (ChaCha20-Poly1305), hashing (SHA-3, BLAKE3), KDF (Argon2id), and PQ key encapsulation (Kyber-512/768/1024). All primitives implement constant-time operations.
 
 ### S1 - Secure Memory
+
 Guard pages, stack canaries, ASLR, locked memory, secure wipe, constant-time comparison, and memory leak detection. Protected memory for sensitive data (keys, gradients, model weights).
 
 ### S2 - Obfuscation Engine
+
 Control flow flattening, string encryption, instruction substitution, code virtualization, anti-debug, opaque predicates, anti-dump, multi-VM diversity, IAT protection.
 
 ### S3 - Behavioral Monitor
+
 Runtime integrity monitoring (CRC32), container breakout detection, frequency and timing analysis, statistical anomaly detection.
 
 ### S4 - Network Security
+
 DDoS mitigation (SYN flood detection, rate limiting), transport security, identity management, certificate pinning.
 
 ### S5 - AI Sanitizer
+
 Prompt injection detection, differential privacy (Laplace mechanism), data poisoning defense, RLHF safety, harmful output filtering.
 
 ### S6 - Security UI / Key Vault
+
 Audit logging (structured JSON), encrypted key store with PIN-protected access.
 
 ### S7 - Secure Updates
+
 Container image verification (OCI), signed update bundles (Ed25519), rollback protection, staged rollout.
 
 ### S8 - Formal Verification
+
 Model checking, invariant verification, symbolic execution for NPE bytecode, container breakout state-machine rules.
 
 ### S9 - Penetration Testing
+
 Network fuzzing, self-audit (internal consistency checks), security report generation, CTF utilities.
 
 ## Trust Model

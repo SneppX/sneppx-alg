@@ -1,8 +1,8 @@
 #include "identity_management.h"
 #include "cryptographic_hashing_blake3.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 /*
@@ -20,8 +20,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     uint64_t current_count;
     uint64_t limit;
     uint64_t window_ms;
@@ -32,7 +32,8 @@ typedef struct {
 #define SNEPPX_OCSP_CACHE_MAX 32
 #define SNEPPX_MAX_CRL_ENTRIES 64
 
-typedef struct {
+typedef struct
+{
     uint8_t fingerprint[SNEPPX_CERT_FINGERPRINT_LEN];
     int is_revoked;
     uint64_t checked_at;
@@ -58,13 +59,15 @@ static int g_identity_initialized = 0;
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_init(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return -1;
+int SNEPPX_identity_init(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return -1;
     memset(mgr, 0, sizeof(*mgr));
     mgr->ddos_protection_enabled = 1;
     mgr->ddos_request_limit = 1000;
     mgr->ddos_window_ms = 1000;
-    mgr->ddos_window_start = (uint64_t)time(NULL) * 1000;
+    mgr->ddos_window_start = (uint64_t) time(NULL) * 1000;
     ocsp_cache_count = 0;
     memset(ocsp_cache, 0, sizeof(ocsp_cache));
     revocation_list_count = 0;
@@ -83,8 +86,10 @@ int SNEPPX_identity_init(SNEPPXIdentityManager* mgr) {
 /**
  * @brief Perform Identity Shutdown.
  */
-void SNEPPX_identity_shutdown(SNEPPXIdentityManager* mgr) {
-    if (mgr) memset(mgr, 0, sizeof(*mgr));
+void SNEPPX_identity_shutdown(SNEPPXIdentityManager* mgr)
+{
+    if (mgr)
+        memset(mgr, 0, sizeof(*mgr));
 }
 
 /**
@@ -96,9 +101,11 @@ void SNEPPX_identity_shutdown(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_pin_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint,
-                            const char* subject, uint64_t expiry) {
-    if (!mgr || !fingerprint || !subject || mgr->cert_count >= SNEPPX_MAX_PINNED_CERTS) return -1;
+int SNEPPX_identity_pin_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint, const char* subject,
+                             uint64_t expiry)
+{
+    if (!mgr || !fingerprint || !subject || mgr->cert_count >= SNEPPX_MAX_PINNED_CERTS)
+        return -1;
     SNEPPXPinnedCert* c = &mgr->certs[mgr->cert_count];
     memcpy(c->fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
     strncpy(c->subject, subject, sizeof(c->subject) - 1);
@@ -114,12 +121,15 @@ int SNEPPX_identity_pin_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerpr
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_verify_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint) {
-    if (!mgr || !fingerprint) return 0;
-    for (int i = 0; i < mgr->cert_count; i++) {
-        if (mgr->certs[i].is_active &&
-            memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0) {
-            if (mgr->certs[i].expiry > 0 && (uint64_t)time(NULL) > mgr->certs[i].expiry)
+int SNEPPX_identity_verify_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint)
+{
+    if (!mgr || !fingerprint)
+        return 0;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
+        if (mgr->certs[i].is_active && memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
+        {
+            if (mgr->certs[i].expiry > 0 && (uint64_t) time(NULL) > mgr->certs[i].expiry)
                 return 0;
             return 1;
         }
@@ -134,10 +144,14 @@ int SNEPPX_identity_verify_cert(SNEPPXIdentityManager* mgr, const uint8_t* finge
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_unpin_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint) {
-    if (!mgr || !fingerprint) return -1;
-    for (int i = 0; i < mgr->cert_count; i++) {
-        if (memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0) {
+int SNEPPX_identity_unpin_cert(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint)
+{
+    if (!mgr || !fingerprint)
+        return -1;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
+        if (memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
+        {
             mgr->certs[i].is_active = 0;
             return 0;
         }
@@ -150,25 +164,31 @@ int SNEPPX_identity_unpin_cert(SNEPPXIdentityManager* mgr, const uint8_t* finger
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ddos_check(SNEPPXIdentityManager* mgr) {
-    if (!mgr || !mgr->ddos_protection_enabled) return 0;
-    uint64_t now = (uint64_t)time(NULL) * 1000;
-    if (now - mgr->ddos_window_start > mgr->ddos_window_ms) {
+int SNEPPX_identity_ddos_check(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr || !mgr->ddos_protection_enabled)
+        return 0;
+    uint64_t now = (uint64_t) time(NULL) * 1000;
+    if (now - mgr->ddos_window_start > mgr->ddos_window_ms)
+    {
         mgr->ddos_current_count = 0;
         mgr->ddos_window_start = now;
     }
     mgr->ddos_current_count++;
-    if (mgr->ddos_current_count > g_ddos_peak) g_ddos_peak = mgr->ddos_current_count;
+    if (mgr->ddos_current_count > g_ddos_peak)
+        g_ddos_peak = mgr->ddos_current_count;
     return (mgr->ddos_current_count > mgr->ddos_request_limit) ? 1 : 0;
 }
 
 /**
  * @brief Reset Identity Ddos.
  */
-void SNEPPX_identity_ddos_reset(SNEPPXIdentityManager* mgr) {
-    if (mgr) {
+void SNEPPX_identity_ddos_reset(SNEPPXIdentityManager* mgr)
+{
+    if (mgr)
+    {
         mgr->ddos_current_count = 0;
-        mgr->ddos_window_start = (uint64_t)time(NULL) * 1000;
+        mgr->ddos_window_start = (uint64_t) time(NULL) * 1000;
     }
 }
 
@@ -180,9 +200,11 @@ void SNEPPX_identity_ddos_reset(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_tls_verify(const char* hostname, const uint8_t* cert_der, size_t cert_len) {
-    (void)hostname;
-    if (!cert_der || cert_len == 0) return 0;
+int SNEPPX_identity_tls_verify(const char* hostname, const uint8_t* cert_der, size_t cert_len)
+{
+    (void) hostname;
+    if (!cert_der || cert_len == 0)
+        return 0;
     uint8_t hash[SNEPPX_CERT_FINGERPRINT_LEN];
     SNEPPXBlake3State ctx;
     SNEPPX_blake3_init(&ctx);
@@ -190,7 +212,8 @@ int SNEPPX_identity_tls_verify(const char* hostname, const uint8_t* cert_der, si
     SNEPPX_blake3_finish(&ctx, hash);
     int non_zero = 0;
     for (size_t i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
-        if (hash[i]) non_zero = 1;
+        if (hash[i])
+            non_zero = 1;
     return non_zero;
 }
 
@@ -199,8 +222,10 @@ int SNEPPX_identity_tls_verify(const char* hostname, const uint8_t* cert_der, si
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_chain_depth(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return -1;
+int SNEPPX_identity_get_chain_depth(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return -1;
     return mgr->cert_count;
 }
 
@@ -211,11 +236,15 @@ int SNEPPX_identity_get_chain_depth(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_revoke_cert_by_subject(SNEPPXIdentityManager* mgr, const char* subject) {
-    if (!mgr || !subject) return -1;
+int SNEPPX_identity_revoke_cert_by_subject(SNEPPXIdentityManager* mgr, const char* subject)
+{
+    if (!mgr || !subject)
+        return -1;
     int revoked = 0;
-    for (int i = 0; i < mgr->cert_count; i++) {
-        if (mgr->certs[i].is_active && strcmp(mgr->certs[i].subject, subject) == 0) {
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
+        if (mgr->certs[i].is_active && strcmp(mgr->certs[i].subject, subject) == 0)
+        {
             mgr->certs[i].is_active = 0;
             revoked++;
         }
@@ -231,13 +260,18 @@ int SNEPPX_identity_revoke_cert_by_subject(SNEPPXIdentityManager* mgr, const cha
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_list_pinned_certs(SNEPPXIdentityManager* mgr, char* certs_buffer, int max) {
-    if (!mgr || !certs_buffer || max <= 0) return -1;
+int SNEPPX_identity_list_pinned_certs(SNEPPXIdentityManager* mgr, char* certs_buffer, int max)
+{
+    if (!mgr || !certs_buffer || max <= 0)
+        return -1;
     int written = 0;
-    for (int i = 0; i < mgr->cert_count && written < max - 1; i++) {
-        if (mgr->certs[i].is_active) {
+    for (int i = 0; i < mgr->cert_count && written < max - 1; i++)
+    {
+        if (mgr->certs[i].is_active)
+        {
             int n = snprintf(certs_buffer + written, max - written, "%s\n", mgr->certs[i].subject);
-            if (n > 0) written += n;
+            if (n > 0)
+                written += n;
         }
     }
     return written;
@@ -250,11 +284,15 @@ int SNEPPX_identity_list_pinned_certs(SNEPPXIdentityManager* mgr, char* certs_bu
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ocsp_check(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint) {
-    if (!mgr || !fingerprint) return -1;
-    uint64_t now = (uint64_t)time(NULL);
-    for (int i = 0; i < ocsp_cache_count; i++) {
-        if (memcmp(ocsp_cache[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0) {
+int SNEPPX_identity_ocsp_check(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint)
+{
+    if (!mgr || !fingerprint)
+        return -1;
+    uint64_t now = (uint64_t) time(NULL);
+    for (int i = 0; i < ocsp_cache_count; i++)
+    {
+        if (memcmp(ocsp_cache[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
+        {
             if (now - ocsp_cache[i].checked_at < SNEPPX_OCSP_CACHE_TTL)
                 return ocsp_cache[i].is_revoked ? 1 : 0;
             return -1;
@@ -270,20 +308,24 @@ int SNEPPX_identity_ocsp_check(SNEPPXIdentityManager* mgr, const uint8_t* finger
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ocsp_cache_result(const uint8_t* fingerprint, int is_revoked) {
-    if (!fingerprint) return -1;
-    if (ocsp_cache_count >= SNEPPX_OCSP_CACHE_MAX) {
+int SNEPPX_identity_ocsp_cache_result(const uint8_t* fingerprint, int is_revoked)
+{
+    if (!fingerprint)
+        return -1;
+    if (ocsp_cache_count >= SNEPPX_OCSP_CACHE_MAX)
+    {
         int oldest = 0;
         for (int i = 1; i < ocsp_cache_count; i++)
-            if (ocsp_cache[i].checked_at < ocsp_cache[oldest].checked_at) oldest = i;
+            if (ocsp_cache[i].checked_at < ocsp_cache[oldest].checked_at)
+                oldest = i;
         memcpy(ocsp_cache[oldest].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
         ocsp_cache[oldest].is_revoked = is_revoked;
-        ocsp_cache[oldest].checked_at = (uint64_t)time(NULL);
+        ocsp_cache[oldest].checked_at = (uint64_t) time(NULL);
         return 0;
     }
     memcpy(ocsp_cache[ocsp_cache_count].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
     ocsp_cache[ocsp_cache_count].is_revoked = is_revoked;
-    ocsp_cache[ocsp_cache_count].checked_at = (uint64_t)time(NULL);
+    ocsp_cache[ocsp_cache_count].checked_at = (uint64_t) time(NULL);
     ocsp_cache_count++;
     return 0;
 }
@@ -297,8 +339,11 @@ int SNEPPX_identity_ocsp_cache_result(const uint8_t* fingerprint, int is_revoked
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ddos_get_stats(SNEPPXIdentityManager* mgr, uint64_t* current_count, uint64_t* limit, uint64_t* window) {
-    if (!mgr || !current_count || !limit || !window) return -1;
+int SNEPPX_identity_ddos_get_stats(SNEPPXIdentityManager* mgr, uint64_t* current_count, uint64_t* limit,
+                                   uint64_t* window)
+{
+    if (!mgr || !current_count || !limit || !window)
+        return -1;
     *current_count = mgr->ddos_current_count;
     *limit = mgr->ddos_request_limit;
     *window = mgr->ddos_window_ms;
@@ -312,17 +357,22 @@ int SNEPPX_identity_ddos_get_stats(SNEPPXIdentityManager* mgr, uint64_t* current
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_verify_cert_chain(const uint8_t* cert_chain, int chain_len) {
-    if (!cert_chain || chain_len <= 0) return 0;
-    for (int i = 0; i < chain_len; i++) {
+int SNEPPX_identity_verify_cert_chain(const uint8_t* cert_chain, int chain_len)
+{
+    if (!cert_chain || chain_len <= 0)
+        return 0;
+    for (int i = 0; i < chain_len; i++)
+    {
         int offset = i * SNEPPX_CERT_FINGERPRINT_LEN;
         uint8_t hash[SNEPPX_CERT_FINGERPRINT_LEN];
         for (int j = 0; j < SNEPPX_CERT_FINGERPRINT_LEN; j++)
-            hash[j] = cert_chain[offset + j] ^ (uint8_t)(i + 1);
+            hash[j] = cert_chain[offset + j] ^ (uint8_t) (i + 1);
         int valid = 0;
         for (int j = 0; j < SNEPPX_CERT_FINGERPRINT_LEN; j++)
-            if (hash[j]) valid = 1;
-        if (!valid) return 0;
+            if (hash[j])
+                valid = 1;
+        if (!valid)
+            return 0;
     }
     return 1;
 }
@@ -332,9 +382,11 @@ int SNEPPX_identity_verify_cert_chain(const uint8_t* cert_chain, int chain_len) 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_count(void) {
+int SNEPPX_identity_get_cert_count(void)
+{
     int count = 0;
-    for (int i = 0; i < SNEPPX_MAX_PINNED_CERTS; i++) count++;
+    for (int i = 0; i < SNEPPX_MAX_PINNED_CERTS; i++)
+        count++;
     return count;
 }
 
@@ -345,10 +397,13 @@ int SNEPPX_identity_get_cert_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_set_ddos_threshold(uint64_t limit, uint64_t window_ms) {
-    if (limit == 0 || window_ms == 0) return -1;
-    for (int i = 0; i < SNEPPX_MAX_PINNED_CERTS; i++) {
-        (void)i;
+int SNEPPX_identity_set_ddos_threshold(uint64_t limit, uint64_t window_ms)
+{
+    if (limit == 0 || window_ms == 0)
+        return -1;
+    for (int i = 0; i < SNEPPX_MAX_PINNED_CERTS; i++)
+    {
+        (void) i;
     }
     return 0;
 }
@@ -358,8 +413,10 @@ int SNEPPX_identity_set_ddos_threshold(uint64_t limit, uint64_t window_ms) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ddos_stats(SNEPPXDDoSStats* stats_out) {
-    if (!stats_out) return -1;
+int SNEPPX_identity_get_ddos_stats(SNEPPXDDoSStats* stats_out)
+{
+    if (!stats_out)
+        return -1;
     memset(stats_out, 0, sizeof(*stats_out));
     stats_out->current_count = 0;
     stats_out->limit = 1000;
@@ -373,9 +430,12 @@ int SNEPPX_identity_get_ddos_stats(SNEPPXDDoSStats* stats_out) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_add_revocation(const uint8_t* fingerprint) {
-    if (!fingerprint) return -1;
-    if (revocation_list_count >= SNEPPX_MAX_CRL_ENTRIES) return -1;
+int SNEPPX_identity_add_revocation(const uint8_t* fingerprint)
+{
+    if (!fingerprint)
+        return -1;
+    if (revocation_list_count >= SNEPPX_MAX_CRL_ENTRIES)
+        return -1;
     memcpy(revocation_list[revocation_list_count], fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
     revocation_list_count++;
     return 0;
@@ -386,9 +446,12 @@ int SNEPPX_identity_add_revocation(const uint8_t* fingerprint) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_check_revocation(const uint8_t* fingerprint) {
-    if (!fingerprint) return -1;
-    for (int i = 0; i < revocation_list_count; i++) {
+int SNEPPX_identity_check_revocation(const uint8_t* fingerprint)
+{
+    if (!fingerprint)
+        return -1;
+    for (int i = 0; i < revocation_list_count; i++)
+    {
         if (memcmp(revocation_list[i], fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
             return 1;
     }
@@ -402,23 +465,29 @@ int SNEPPX_identity_check_revocation(const uint8_t* fingerprint) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ocsp_cache_stats(uint64_t* hits, uint64_t* misses) {
-    if (!hits || !misses) return -1;
+int SNEPPX_identity_ocsp_cache_stats(uint64_t* hits, uint64_t* misses)
+{
+    if (!hits || !misses)
+        return -1;
     *hits = ocsp_cache_hits;
     *misses = ocsp_cache_misses;
     return 0;
 }
-static int fingerprint_is_valid(const uint8_t* fp) {
-    if (!fp) return 0;
+static int fingerprint_is_valid(const uint8_t* fp)
+{
+    if (!fp)
+        return 0;
     int non_zero = 0;
     for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
-        if (fp[i]) non_zero = 1;
+        if (fp[i])
+            non_zero = 1;
     return non_zero;
 }
 
-static int find_cert_by_fingerprint(const uint8_t* fp) {
+static int find_cert_by_fingerprint(const uint8_t* fp)
+{
     for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
-        (void)fp[i];
+        (void) fp[i];
     return -1;
 }
 
@@ -431,11 +500,15 @@ static int find_cert_by_fingerprint(const uint8_t* fp) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_subject(SNEPPXIdentityManager* mgr, int index, char* subject, int max_len) {
-    if (!mgr || !subject || max_len <= 0) return -1;
-    if (index < 0 || index >= mgr->cert_count) return -1;
-    if (!mgr->certs[index].is_active) return -1;
-    strncpy(subject, mgr->certs[index].subject, (size_t)(max_len - 1));
+int SNEPPX_identity_get_cert_subject(SNEPPXIdentityManager* mgr, int index, char* subject, int max_len)
+{
+    if (!mgr || !subject || max_len <= 0)
+        return -1;
+    if (index < 0 || index >= mgr->cert_count)
+        return -1;
+    if (!mgr->certs[index].is_active)
+        return -1;
+    strncpy(subject, mgr->certs[index].subject, (size_t) (max_len - 1));
     subject[max_len - 1] = '\0';
     return 0;
 }
@@ -447,8 +520,10 @@ int SNEPPX_identity_get_cert_subject(SNEPPXIdentityManager* mgr, int index, char
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_cert_expiry(SNEPPXIdentityManager* mgr, int index) {
-    if (!mgr || index < 0 || index >= mgr->cert_count) return 0;
+uint64_t SNEPPX_identity_get_cert_expiry(SNEPPXIdentityManager* mgr, int index)
+{
+    if (!mgr || index < 0 || index >= mgr->cert_count)
+        return 0;
     return mgr->certs[index].expiry;
 }
 
@@ -459,8 +534,10 @@ uint64_t SNEPPX_identity_get_cert_expiry(SNEPPXIdentityManager* mgr, int index) 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_cert_is_active(SNEPPXIdentityManager* mgr, int index) {
-    if (!mgr || index < 0 || index >= mgr->cert_count) return 0;
+int SNEPPX_identity_cert_is_active(SNEPPXIdentityManager* mgr, int index)
+{
+    if (!mgr || index < 0 || index >= mgr->cert_count)
+        return 0;
     return mgr->certs[index].is_active ? 1 : 0;
 }
 
@@ -469,8 +546,10 @@ int SNEPPX_identity_cert_is_active(SNEPPXIdentityManager* mgr, int index) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_clear_all_certs(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return -1;
+int SNEPPX_identity_clear_all_certs(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return -1;
     memset(mgr->certs, 0, sizeof(mgr->certs));
     mgr->cert_count = 0;
     return 0;
@@ -483,8 +562,10 @@ int SNEPPX_identity_clear_all_certs(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_set_ddos_enabled(SNEPPXIdentityManager* mgr, int enabled) {
-    if (!mgr) return -1;
+int SNEPPX_identity_set_ddos_enabled(SNEPPXIdentityManager* mgr, int enabled)
+{
+    if (!mgr)
+        return -1;
     mgr->ddos_protection_enabled = (enabled != 0);
     return 0;
 }
@@ -494,8 +575,10 @@ int SNEPPX_identity_set_ddos_enabled(SNEPPXIdentityManager* mgr, int enabled) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_is_ddos_enabled(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+int SNEPPX_identity_is_ddos_enabled(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->ddos_protection_enabled ? 1 : 0;
 }
 
@@ -504,8 +587,10 @@ int SNEPPX_identity_is_ddos_enabled(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ddos_current(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+uint64_t SNEPPX_identity_get_ddos_current(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->ddos_current_count;
 }
 
@@ -514,8 +599,10 @@ uint64_t SNEPPX_identity_get_ddos_current(SNEPPXIdentityManager* mgr) {
  *
  * @param mgr [out] Mgr value.
  */
-void SNEPPX_identity_set_ddos_limit(SNEPPXIdentityManager* mgr, uint64_t limit) {
-    if (mgr && limit > 0) mgr->ddos_request_limit = limit;
+void SNEPPX_identity_set_ddos_limit(SNEPPXIdentityManager* mgr, uint64_t limit)
+{
+    if (mgr && limit > 0)
+        mgr->ddos_request_limit = limit;
 }
 
 /**
@@ -523,12 +610,17 @@ void SNEPPX_identity_set_ddos_limit(SNEPPXIdentityManager* mgr, uint64_t limit) 
  *
  * @param mgr [out] Mgr value.
  */
-void SNEPPX_identity_set_ddos_window(SNEPPXIdentityManager* mgr, uint64_t window_ms) {
-    if (mgr && window_ms > 0) mgr->ddos_window_ms = window_ms;
+void SNEPPX_identity_set_ddos_window(SNEPPXIdentityManager* mgr, uint64_t window_ms)
+{
+    if (mgr && window_ms > 0)
+        mgr->ddos_window_ms = window_ms;
 }
-static int cert_chain_check_loop(const uint8_t* chain, int len) {
-    if (!chain || len <= 1) return 0;
-    for (int i = 0; i < len - 1; i++) {
+static int cert_chain_check_loop(const uint8_t* chain, int len)
+{
+    if (!chain || len <= 1)
+        return 0;
+    for (int i = 0; i < len - 1; i++)
+    {
         int off_i = i * SNEPPX_CERT_FINGERPRINT_LEN;
         int off_j = (i + 1) * SNEPPX_CERT_FINGERPRINT_LEN;
         if (memcmp(chain + off_i, chain + off_j, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
@@ -546,9 +638,11 @@ static int cert_chain_check_loop(const uint8_t* chain, int len) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_subject_by_index(SNEPPXIdentityManager* mgr, int index, char* out, int max) {
-    if (!mgr || !out || max <= 0 || index < 0 || index >= mgr->cert_count) return -1;
-    strncpy(out, mgr->certs[index].subject, (size_t)(max - 1));
+int SNEPPX_identity_get_cert_subject_by_index(SNEPPXIdentityManager* mgr, int index, char* out, int max)
+{
+    if (!mgr || !out || max <= 0 || index < 0 || index >= mgr->cert_count)
+        return -1;
+    strncpy(out, mgr->certs[index].subject, (size_t) (max - 1));
     out[max - 1] = '\0';
     return 0;
 }
@@ -560,9 +654,12 @@ int SNEPPX_identity_get_cert_subject_by_index(SNEPPXIdentityManager* mgr, int in
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_find_cert_by_subject(SNEPPXIdentityManager* mgr, const char* subject) {
-    if (!mgr || !subject) return -1;
-    for (int i = 0; i < mgr->cert_count; i++) {
+int SNEPPX_identity_find_cert_by_subject(SNEPPXIdentityManager* mgr, const char* subject)
+{
+    if (!mgr || !subject)
+        return -1;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
         if (mgr->certs[i].is_active && strcmp(mgr->certs[i].subject, subject) == 0)
             return i;
     }
@@ -574,9 +671,11 @@ int SNEPPX_identity_find_cert_by_subject(SNEPPXIdentityManager* mgr, const char*
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ddos_window_start(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
-    return (int)(mgr->ddos_window_start & 0xFFFFFFFF);
+int SNEPPX_identity_get_ddos_window_start(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
+    return (int) (mgr->ddos_window_start & 0xFFFFFFFF);
 }
 
 /**
@@ -584,8 +683,10 @@ int SNEPPX_identity_get_ddos_window_start(SNEPPXIdentityManager* mgr) {
  *
  * @param mgr [out] Mgr value.
  */
-void SNEPPX_identity_set_request_limit(SNEPPXIdentityManager* mgr, uint64_t limit) {
-    if (mgr && limit > 0) mgr->ddos_request_limit = limit;
+void SNEPPX_identity_set_request_limit(SNEPPXIdentityManager* mgr, uint64_t limit)
+{
+    if (mgr && limit > 0)
+        mgr->ddos_request_limit = limit;
 }
 
 /**
@@ -593,7 +694,8 @@ void SNEPPX_identity_set_request_limit(SNEPPXIdentityManager* mgr, uint64_t limi
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_request_limit(SNEPPXIdentityManager* mgr) {
+uint64_t SNEPPX_identity_get_request_limit(SNEPPXIdentityManager* mgr)
+{
     return mgr ? mgr->ddos_request_limit : 0;
 }
 
@@ -602,8 +704,10 @@ uint64_t SNEPPX_identity_get_request_limit(SNEPPXIdentityManager* mgr) {
  *
  * @param mgr [out] Mgr value.
  */
-void SNEPPX_identity_set_window_ms(SNEPPXIdentityManager* mgr, uint64_t window_ms) {
-    if (mgr && window_ms > 0) mgr->ddos_window_ms = window_ms;
+void SNEPPX_identity_set_window_ms(SNEPPXIdentityManager* mgr, uint64_t window_ms)
+{
+    if (mgr && window_ms > 0)
+        mgr->ddos_window_ms = window_ms;
 }
 
 /**
@@ -611,7 +715,8 @@ void SNEPPX_identity_set_window_ms(SNEPPXIdentityManager* mgr, uint64_t window_m
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_window_ms(SNEPPXIdentityManager* mgr) {
+uint64_t SNEPPX_identity_get_window_ms(SNEPPXIdentityManager* mgr)
+{
     return mgr ? mgr->ddos_window_ms : 0;
 }
 /**
@@ -619,7 +724,8 @@ uint64_t SNEPPX_identity_get_window_ms(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_clear_revocation_list(void) {
+int SNEPPX_identity_clear_revocation_list(void)
+{
     memset(revocation_list, 0, sizeof(revocation_list));
     revocation_list_count = 0;
     return 0;
@@ -630,14 +736,16 @@ int SNEPPX_identity_clear_revocation_list(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_revocation_list_count(void) {
+int SNEPPX_identity_get_revocation_list_count(void)
+{
     return revocation_list_count;
 }
 
 /**
  * @brief Clear Identity Ocsp Cache.
  */
-void SNEPPX_identity_ocsp_cache_clear(void) {
+void SNEPPX_identity_ocsp_cache_clear(void)
+{
     memset(ocsp_cache, 0, sizeof(ocsp_cache));
     ocsp_cache_count = 0;
 }
@@ -647,17 +755,24 @@ void SNEPPX_identity_ocsp_cache_clear(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_ocsp_cache_get_count(void) {
+int SNEPPX_identity_ocsp_cache_get_count(void)
+{
     return ocsp_cache_count;
 }
 /**
  * @brief Perform Identity Increment Ocsp Hits.
  */
-void SNEPPX_identity_increment_ocsp_hits(void) { ocsp_cache_hits++; }
+void SNEPPX_identity_increment_ocsp_hits(void)
+{
+    ocsp_cache_hits++;
+}
 /**
  * @brief Perform Identity Increment Ocsp Misses.
  */
-void SNEPPX_identity_increment_ocsp_misses(void) { ocsp_cache_misses++; }
+void SNEPPX_identity_increment_ocsp_misses(void)
+{
+    ocsp_cache_misses++;
+}
 
 /**
  * @brief Perform Identity Get Cert By Index.
@@ -666,10 +781,12 @@ void SNEPPX_identity_increment_ocsp_misses(void) { ocsp_cache_misses++; }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_by_index(int index, uint8_t* cert_out) {
-    if (!cert_out || index < 0 || index >= SNEPPX_MAX_PINNED_CERTS) return -1;
+int SNEPPX_identity_get_cert_by_index(int index, uint8_t* cert_out)
+{
+    if (!cert_out || index < 0 || index >= SNEPPX_MAX_PINNED_CERTS)
+        return -1;
     for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
-        cert_out[i] = (uint8_t)(index * 0x1f + i * 0x3b);
+        cert_out[i] = (uint8_t) (index * 0x1f + i * 0x3b);
     return 0;
 }
 
@@ -680,11 +797,13 @@ int SNEPPX_identity_get_cert_by_index(int index, uint8_t* cert_out) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_by_subject(const char* subject, uint8_t* cert_out) {
-    if (!subject || !cert_out) return -1;
+int SNEPPX_identity_get_cert_by_subject(const char* subject, uint8_t* cert_out)
+{
+    if (!subject || !cert_out)
+        return -1;
     size_t slen = strlen(subject);
     for (size_t i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
-        cert_out[i] = subject[i % (slen ? slen : 1)] ^ (uint8_t)(i * 0x2d);
+        cert_out[i] = subject[i % (slen ? slen : 1)] ^ (uint8_t) (i * 0x2d);
     return 0;
 }
 
@@ -695,11 +814,18 @@ int SNEPPX_identity_get_cert_by_subject(const char* subject, uint8_t* cert_out) 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_expiry_by_fingerprint(const uint8_t* fingerprint, uint64_t* expiry_out) {
-    if (!fingerprint || !expiry_out) return -1;
-    *expiry_out = (uint64_t)time(NULL) + 86400UL * 365;
-    for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++) {
-        if (fingerprint[i] == 0) { *expiry_out = 0; break; }
+int SNEPPX_identity_get_cert_expiry_by_fingerprint(const uint8_t* fingerprint, uint64_t* expiry_out)
+{
+    if (!fingerprint || !expiry_out)
+        return -1;
+    *expiry_out = (uint64_t) time(NULL) + 86400UL * 365;
+    for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN; i++)
+    {
+        if (fingerprint[i] == 0)
+        {
+            *expiry_out = 0;
+            break;
+        }
     }
     return 0;
 }
@@ -714,12 +840,15 @@ int SNEPPX_identity_get_cert_expiry_by_fingerprint(const uint8_t* fingerprint, u
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_by_index_full(int index, uint8_t* cert_out, size_t* cert_len, char* subject, int subject_max) {
-    if (!cert_out || !cert_len || !subject || index < 0 || index >= SNEPPX_MAX_PINNED_CERTS) return -1;
-    for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN && i < (int)*cert_len; i++)
-        cert_out[i] = (uint8_t)(index * 0x1f + i * 0x3b);
+int SNEPPX_identity_get_cert_by_index_full(int index, uint8_t* cert_out, size_t* cert_len, char* subject,
+                                           int subject_max)
+{
+    if (!cert_out || !cert_len || !subject || index < 0 || index >= SNEPPX_MAX_PINNED_CERTS)
+        return -1;
+    for (int i = 0; i < SNEPPX_CERT_FINGERPRINT_LEN && i < (int) *cert_len; i++)
+        cert_out[i] = (uint8_t) (index * 0x1f + i * 0x3b);
     *cert_len = SNEPPX_CERT_FINGERPRINT_LEN;
-    snprintf(subject, (size_t)subject_max, "cert-index-%d", index);
+    snprintf(subject, (size_t) subject_max, "cert-index-%d", index);
     return 0;
 }
 
@@ -731,8 +860,10 @@ int SNEPPX_identity_get_cert_by_index_full(int index, uint8_t* cert_out, size_t*
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_expiry_by_index(SNEPPXIdentityManager* mgr, int index, uint64_t* expiry_out) {
-    if (!mgr || !expiry_out || index < 0 || index >= mgr->cert_count) return -1;
+int SNEPPX_identity_get_cert_expiry_by_index(SNEPPXIdentityManager* mgr, int index, uint64_t* expiry_out)
+{
+    if (!mgr || !expiry_out || index < 0 || index >= mgr->cert_count)
+        return -1;
     *expiry_out = mgr->certs[index].expiry;
     return 0;
 }
@@ -746,11 +877,16 @@ int SNEPPX_identity_get_cert_expiry_by_index(SNEPPXIdentityManager* mgr, int ind
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_subject_by_fingerprint(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint, char* subject, int max_len) {
-    if (!mgr || !fingerprint || !subject || max_len <= 0) return -1;
-    for (int i = 0; i < mgr->cert_count; i++) {
-        if (memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0) {
-            strncpy(subject, mgr->certs[i].subject, (size_t)(max_len - 1));
+int SNEPPX_identity_get_cert_subject_by_fingerprint(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint,
+                                                    char* subject, int max_len)
+{
+    if (!mgr || !fingerprint || !subject || max_len <= 0)
+        return -1;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
+        if (memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
+        {
+            strncpy(subject, mgr->certs[i].subject, (size_t) (max_len - 1));
             subject[max_len - 1] = '\0';
             return 0;
         }
@@ -763,7 +899,8 @@ int SNEPPX_identity_get_cert_subject_by_fingerprint(SNEPPXIdentityManager* mgr, 
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_ddos_get_current_count(void) {
+uint64_t SNEPPX_identity_ddos_get_current_count(void)
+{
     return 0;
 }
 
@@ -772,7 +909,8 @@ uint64_t SNEPPX_identity_ddos_get_current_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_ddos_get_peak_count(void) {
+uint64_t SNEPPX_identity_ddos_get_peak_count(void)
+{
     return g_ddos_peak;
 }
 
@@ -783,8 +921,10 @@ uint64_t SNEPPX_identity_ddos_get_peak_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_add_trusted_ca(const uint8_t* ca_der, size_t ca_len) {
-    if (!ca_der || ca_len == 0 || ca_len > 128 || trusted_ca_count >= 8) return -1;
+int SNEPPX_identity_add_trusted_ca(const uint8_t* ca_der, size_t ca_len)
+{
+    if (!ca_der || ca_len == 0 || ca_len > 128 || trusted_ca_count >= 8)
+        return -1;
     memcpy(trusted_cas[trusted_ca_count], ca_der, ca_len);
     trusted_ca_lens[trusted_ca_count] = ca_len;
     trusted_ca_count++;
@@ -798,11 +938,16 @@ int SNEPPX_identity_add_trusted_ca(const uint8_t* ca_der, size_t ca_len) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_remove_trusted_ca(const uint8_t* ca_der, size_t ca_len) {
-    if (!ca_der || ca_len == 0) return -1;
-    for (int i = 0; i < trusted_ca_count; i++) {
-        if (trusted_ca_lens[i] == ca_len && memcmp(trusted_cas[i], ca_der, ca_len) == 0) {
-            for (int j = i; j < trusted_ca_count - 1; j++) {
+int SNEPPX_identity_remove_trusted_ca(const uint8_t* ca_der, size_t ca_len)
+{
+    if (!ca_der || ca_len == 0)
+        return -1;
+    for (int i = 0; i < trusted_ca_count; i++)
+    {
+        if (trusted_ca_lens[i] == ca_len && memcmp(trusted_cas[i], ca_der, ca_len) == 0)
+        {
+            for (int j = i; j < trusted_ca_count - 1; j++)
+            {
                 memcpy(trusted_cas[j], trusted_cas[j + 1], 128);
                 trusted_ca_lens[j] = trusted_ca_lens[j + 1];
             }
@@ -818,7 +963,8 @@ int SNEPPX_identity_remove_trusted_ca(const uint8_t* ca_der, size_t ca_len) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_trusted_ca_count(void) {
+int SNEPPX_identity_get_trusted_ca_count(void)
+{
     return trusted_ca_count;
 }
 
@@ -827,11 +973,12 @@ int SNEPPX_identity_get_trusted_ca_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_revoke_all(void) {
+int SNEPPX_identity_revoke_all(void)
+{
     memset(revocation_list, 0, sizeof(revocation_list));
     revocation_list_count = SNEPPX_MAX_CRL_ENTRIES;
     for (int i = 0; i < SNEPPX_MAX_CRL_ENTRIES; i++)
-        revocation_list[i][0] = (uint8_t)(i + 1);
+        revocation_list[i][0] = (uint8_t) (i + 1);
     return 0;
 }
 
@@ -840,7 +987,8 @@ int SNEPPX_identity_revoke_all(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_enable_revocation_checking(int enabled) {
+int SNEPPX_identity_enable_revocation_checking(int enabled)
+{
     g_revocation_checking_enabled = (enabled != 0);
     return 0;
 }
@@ -850,7 +998,8 @@ int SNEPPX_identity_enable_revocation_checking(int enabled) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_is_revocation_checking_enabled(void) {
+int SNEPPX_identity_is_revocation_checking_enabled(void)
+{
     return g_revocation_checking_enabled;
 }
 
@@ -862,8 +1011,10 @@ int SNEPPX_identity_is_revocation_checking_enabled(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_trusted_ca_at(int index, uint8_t* ca_out, size_t* ca_len) {
-    if (!ca_out || !ca_len || index < 0 || index >= trusted_ca_count) return -1;
+int SNEPPX_identity_get_trusted_ca_at(int index, uint8_t* ca_out, size_t* ca_len)
+{
+    if (!ca_out || !ca_len || index < 0 || index >= trusted_ca_count)
+        return -1;
     size_t copy_len = (*ca_len < trusted_ca_lens[index]) ? *ca_len : trusted_ca_lens[index];
     memcpy(ca_out, trusted_cas[index], copy_len);
     *ca_len = copy_len;
@@ -875,7 +1026,8 @@ int SNEPPX_identity_get_trusted_ca_at(int index, uint8_t* ca_out, size_t* ca_len
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_clear_trusted_cas(void) {
+int SNEPPX_identity_clear_trusted_cas(void)
+{
     memset(trusted_cas, 0, sizeof(trusted_cas));
     memset(trusted_ca_lens, 0, sizeof(trusted_ca_lens));
     trusted_ca_count = 0;
@@ -887,7 +1039,8 @@ int SNEPPX_identity_clear_trusted_cas(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_is_initialized(void) {
+int SNEPPX_identity_is_initialized(void)
+{
     return g_identity_initialized;
 }
 
@@ -896,11 +1049,15 @@ int SNEPPX_identity_is_initialized(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_count_active(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+int SNEPPX_identity_get_cert_count_active(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     int count = 0;
-    for (int i = 0; i < mgr->cert_count; i++) {
-        if (mgr->certs[i].is_active) count++;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
+        if (mgr->certs[i].is_active)
+            count++;
     }
     return count;
 }
@@ -912,9 +1069,12 @@ int SNEPPX_identity_get_cert_count_active(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_index_by_fingerprint(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint) {
-    if (!mgr || !fingerprint) return -1;
-    for (int i = 0; i < mgr->cert_count; i++) {
+int SNEPPX_identity_get_cert_index_by_fingerprint(SNEPPXIdentityManager* mgr, const uint8_t* fingerprint)
+{
+    if (!mgr || !fingerprint)
+        return -1;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
         if (memcmp(mgr->certs[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
             return i;
     }
@@ -929,8 +1089,10 @@ int SNEPPX_identity_get_cert_index_by_fingerprint(SNEPPXIdentityManager* mgr, co
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_fingerprint(SNEPPXIdentityManager* mgr, int index, uint8_t* fp_out) {
-    if (!mgr || !fp_out || index < 0 || index >= mgr->cert_count) return -1;
+int SNEPPX_identity_get_cert_fingerprint(SNEPPXIdentityManager* mgr, int index, uint8_t* fp_out)
+{
+    if (!mgr || !fp_out || index < 0 || index >= mgr->cert_count)
+        return -1;
     memcpy(fp_out, mgr->certs[index].fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
     return 0;
 }
@@ -940,8 +1102,9 @@ int SNEPPX_identity_get_cert_fingerprint(SNEPPXIdentityManager* mgr, int index, 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ddos_peak_count(void) {
-    return (int)g_ddos_peak;
+int SNEPPX_identity_get_ddos_peak_count(void)
+{
+    return (int) g_ddos_peak;
 }
 
 /**
@@ -949,24 +1112,28 @@ int SNEPPX_identity_get_ddos_peak_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ddos_current_count(void) {
+int SNEPPX_identity_get_ddos_current_count(void)
+{
     return 0;
 }
 
 /**
  * @brief Perform Identity Reset Peak Count.
  */
-void SNEPPX_identity_reset_peak_count(void) {
+void SNEPPX_identity_reset_peak_count(void)
+{
     g_ddos_peak = 0;
 }
 
 /**
  * @brief Perform Identity Set Ocsp Cache Ttl.
  */
-void SNEPPX_identity_set_ocsp_cache_ttl(int ttl) {
-    if (ttl > 0) {
+void SNEPPX_identity_set_ocsp_cache_ttl(int ttl)
+{
+    if (ttl > 0)
+    {
         SNEPPXOCSPCacheEntry* tmp = ocsp_cache;
-        (void)tmp;
+        (void) tmp;
     }
 }
 
@@ -975,7 +1142,8 @@ void SNEPPX_identity_set_ocsp_cache_ttl(int ttl) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ocsp_cache_count(void) {
+int SNEPPX_identity_get_ocsp_cache_count(void)
+{
     return ocsp_cache_count;
 }
 
@@ -984,7 +1152,8 @@ int SNEPPX_identity_get_ocsp_cache_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_is_ddos_triggered(SNEPPXIdentityManager* mgr) {
+int SNEPPX_identity_is_ddos_triggered(SNEPPXIdentityManager* mgr)
+{
     return SNEPPX_identity_ddos_check(mgr);
 }
 
@@ -993,8 +1162,10 @@ int SNEPPX_identity_is_ddos_triggered(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ddos_window_start_ms(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+uint64_t SNEPPX_identity_get_ddos_window_start_ms(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->ddos_window_start;
 }
 
@@ -1003,8 +1174,10 @@ uint64_t SNEPPX_identity_get_ddos_window_start_ms(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ddos_limit(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+uint64_t SNEPPX_identity_get_ddos_limit(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->ddos_request_limit;
 }
 
@@ -1013,8 +1186,10 @@ uint64_t SNEPPX_identity_get_ddos_limit(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ddos_window_ms(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+uint64_t SNEPPX_identity_get_ddos_window_ms(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->ddos_window_ms;
 }
 
@@ -1023,7 +1198,8 @@ uint64_t SNEPPX_identity_get_ddos_window_ms(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_revocation_count(void) {
+int SNEPPX_identity_get_revocation_count(void)
+{
     return revocation_list_count;
 }
 
@@ -1034,8 +1210,10 @@ int SNEPPX_identity_get_revocation_count(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_revocation_at(int index, uint8_t* fp_out) {
-    if (!fp_out || index < 0 || index >= revocation_list_count) return -1;
+int SNEPPX_identity_get_revocation_at(int index, uint8_t* fp_out)
+{
+    if (!fp_out || index < 0 || index >= revocation_list_count)
+        return -1;
     memcpy(fp_out, revocation_list[index], SNEPPX_CERT_FINGERPRINT_LEN);
     return 0;
 }
@@ -1045,9 +1223,12 @@ int SNEPPX_identity_get_revocation_at(int index, uint8_t* fp_out) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_has_ocsp_cache(const uint8_t* fingerprint) {
-    if (!fingerprint) return 0;
-    for (int i = 0; i < ocsp_cache_count; i++) {
+int SNEPPX_identity_has_ocsp_cache(const uint8_t* fingerprint)
+{
+    if (!fingerprint)
+        return 0;
+    for (int i = 0; i < ocsp_cache_count; i++)
+    {
         if (memcmp(ocsp_cache[i].fingerprint, fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
             return 1;
     }
@@ -1059,7 +1240,8 @@ int SNEPPX_identity_has_ocsp_cache(const uint8_t* fingerprint) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ocsp_cache_hits(void) {
+uint64_t SNEPPX_identity_get_ocsp_cache_hits(void)
+{
     return ocsp_cache_hits;
 }
 
@@ -1068,7 +1250,8 @@ uint64_t SNEPPX_identity_get_ocsp_cache_hits(void) {
  *
  * @return 0 on success, -1 on error.
  */
-uint64_t SNEPPX_identity_get_ocsp_cache_misses(void) {
+uint64_t SNEPPX_identity_get_ocsp_cache_misses(void)
+{
     return ocsp_cache_misses;
 }
 
@@ -1080,8 +1263,10 @@ uint64_t SNEPPX_identity_get_ocsp_cache_misses(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_fingerprint_by_index(SNEPPXIdentityManager* mgr, int index, uint8_t* fp_out) {
-    if (!mgr || !fp_out || index < 0 || index >= mgr->cert_count) return -1;
+int SNEPPX_identity_get_cert_fingerprint_by_index(SNEPPXIdentityManager* mgr, int index, uint8_t* fp_out)
+{
+    if (!mgr || !fp_out || index < 0 || index >= mgr->cert_count)
+        return -1;
     memcpy(fp_out, mgr->certs[index].fingerprint, SNEPPX_CERT_FINGERPRINT_LEN);
     return 0;
 }
@@ -1093,8 +1278,10 @@ int SNEPPX_identity_get_cert_fingerprint_by_index(SNEPPXIdentityManager* mgr, in
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_is_active(SNEPPXIdentityManager* mgr, int index) {
-    if (!mgr || index < 0 || index >= mgr->cert_count) return 0;
+int SNEPPX_identity_get_cert_is_active(SNEPPXIdentityManager* mgr, int index)
+{
+    if (!mgr || index < 0 || index >= mgr->cert_count)
+        return 0;
     return mgr->certs[index].is_active ? 1 : 0;
 }
 
@@ -1103,7 +1290,8 @@ int SNEPPX_identity_get_cert_is_active(SNEPPXIdentityManager* mgr, int index) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_max_pinned_certs(void) {
+int SNEPPX_identity_get_max_pinned_certs(void)
+{
     return SNEPPX_MAX_PINNED_CERTS;
 }
 
@@ -1112,7 +1300,8 @@ int SNEPPX_identity_get_max_pinned_certs(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_max_crl_entries(void) {
+int SNEPPX_identity_get_max_crl_entries(void)
+{
     return SNEPPX_MAX_CRL_ENTRIES;
 }
 
@@ -1121,7 +1310,8 @@ int SNEPPX_identity_get_max_crl_entries(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ocsp_cache_max_entries(void) {
+int SNEPPX_identity_get_ocsp_cache_max_entries(void)
+{
     return SNEPPX_OCSP_CACHE_MAX;
 }
 
@@ -1130,7 +1320,8 @@ int SNEPPX_identity_get_ocsp_cache_max_entries(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_fingerprint_len(void) {
+int SNEPPX_identity_get_cert_fingerprint_len(void)
+{
     return SNEPPX_CERT_FINGERPRINT_LEN;
 }
 
@@ -1139,7 +1330,8 @@ int SNEPPX_identity_get_cert_fingerprint_len(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_ocsp_cache_ttl(void) {
+int SNEPPX_identity_get_ocsp_cache_ttl(void)
+{
     return SNEPPX_OCSP_CACHE_TTL;
 }
 
@@ -1151,14 +1343,21 @@ int SNEPPX_identity_get_ocsp_cache_ttl(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_move_cert(SNEPPXIdentityManager* mgr, int from, int to) {
-    if (!mgr || from < 0 || from >= mgr->cert_count || to < 0 || to >= mgr->cert_count) return -1;
+int SNEPPX_identity_move_cert(SNEPPXIdentityManager* mgr, int from, int to)
+{
+    if (!mgr || from < 0 || from >= mgr->cert_count || to < 0 || to >= mgr->cert_count)
+        return -1;
     SNEPPXPinnedCert tmp;
     memcpy(&tmp, &mgr->certs[from], sizeof(SNEPPXPinnedCert));
-    if (from < to) {
-        for (int i = from; i < to; i++) memcpy(&mgr->certs[i], &mgr->certs[i + 1], sizeof(SNEPPXPinnedCert));
-    } else {
-        for (int i = from; i > to; i--) memcpy(&mgr->certs[i], &mgr->certs[i - 1], sizeof(SNEPPXPinnedCert));
+    if (from < to)
+    {
+        for (int i = from; i < to; i++)
+            memcpy(&mgr->certs[i], &mgr->certs[i + 1], sizeof(SNEPPXPinnedCert));
+    }
+    else
+    {
+        for (int i = from; i > to; i--)
+            memcpy(&mgr->certs[i], &mgr->certs[i - 1], sizeof(SNEPPXPinnedCert));
     }
     memcpy(&mgr->certs[to], &tmp, sizeof(SNEPPXPinnedCert));
     return 0;
@@ -1172,8 +1371,10 @@ int SNEPPX_identity_move_cert(SNEPPXIdentityManager* mgr, int from, int to) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_swap_certs(SNEPPXIdentityManager* mgr, int a, int b) {
-    if (!mgr || a < 0 || a >= mgr->cert_count || b < 0 || b >= mgr->cert_count) return -1;
+int SNEPPX_identity_swap_certs(SNEPPXIdentityManager* mgr, int a, int b)
+{
+    if (!mgr || a < 0 || a >= mgr->cert_count || b < 0 || b >= mgr->cert_count)
+        return -1;
     SNEPPXPinnedCert tmp;
     memcpy(&tmp, &mgr->certs[a], sizeof(SNEPPXPinnedCert));
     memcpy(&mgr->certs[a], &mgr->certs[b], sizeof(SNEPPXPinnedCert));
@@ -1188,9 +1389,12 @@ int SNEPPX_identity_swap_certs(SNEPPXIdentityManager* mgr, int a, int b) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_index_by_subject(SNEPPXIdentityManager* mgr, const char* subject) {
-    if (!mgr || !subject) return -1;
-    for (int i = 0; i < mgr->cert_count; i++) {
+int SNEPPX_identity_get_cert_index_by_subject(SNEPPXIdentityManager* mgr, const char* subject)
+{
+    if (!mgr || !subject)
+        return -1;
+    for (int i = 0; i < mgr->cert_count; i++)
+    {
         if (mgr->certs[i].is_active && strcmp(mgr->certs[i].subject, subject) == 0)
             return i;
     }
@@ -1202,8 +1406,10 @@ int SNEPPX_identity_get_cert_index_by_subject(SNEPPXIdentityManager* mgr, const 
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_count_pinned(SNEPPXIdentityManager* mgr) {
-    if (!mgr) return 0;
+int SNEPPX_identity_get_cert_count_pinned(SNEPPXIdentityManager* mgr)
+{
+    if (!mgr)
+        return 0;
     return mgr->cert_count;
 }
 
@@ -1212,7 +1418,8 @@ int SNEPPX_identity_get_cert_count_pinned(SNEPPXIdentityManager* mgr) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_cert_count_total(void) {
+int SNEPPX_identity_get_cert_count_total(void)
+{
     return SNEPPX_MAX_PINNED_CERTS;
 }
 
@@ -1221,7 +1428,8 @@ int SNEPPX_identity_get_cert_count_total(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_chain_depth_max(void) {
+int SNEPPX_identity_get_chain_depth_max(void)
+{
     return 8;
 }
 
@@ -1230,7 +1438,8 @@ int SNEPPX_identity_get_chain_depth_max(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_get_fingerprint_len(void) {
+int SNEPPX_identity_get_fingerprint_len(void)
+{
     return SNEPPX_CERT_FINGERPRINT_LEN;
 }
 
@@ -1239,9 +1448,12 @@ int SNEPPX_identity_get_fingerprint_len(void) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_is_revoked(const uint8_t* fingerprint) {
-    if (!fingerprint) return -1;
-    for (int i = 0; i < revocation_list_count; i++) {
+int SNEPPX_identity_is_revoked(const uint8_t* fingerprint)
+{
+    if (!fingerprint)
+        return -1;
+    for (int i = 0; i < revocation_list_count; i++)
+    {
         if (memcmp(revocation_list[i], fingerprint, SNEPPX_CERT_FINGERPRINT_LEN) == 0)
             return 1;
     }
@@ -1253,7 +1465,8 @@ int SNEPPX_identity_is_revoked(const uint8_t* fingerprint) {
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_identity_clear_ocsp_cache(void) {
+int SNEPPX_identity_clear_ocsp_cache(void)
+{
     memset(ocsp_cache, 0, sizeof(ocsp_cache));
     ocsp_cache_count = 0;
     ocsp_cache_hits = 0;
@@ -1264,6 +1477,7 @@ int SNEPPX_identity_clear_ocsp_cache(void) {
 /**
  * @brief Perform Identity Reset Ddos Peak.
  */
-void SNEPPX_identity_reset_ddos_peak(void) {
+void SNEPPX_identity_reset_ddos_peak(void)
+{
     g_ddos_peak = 0;
 }

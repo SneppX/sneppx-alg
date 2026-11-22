@@ -5,6 +5,7 @@ from SneppX_ALG.interface_bindings.serve_cli import main as serve_main
 
 def test_serve_cli_import():
     from SneppX_ALG.interface_bindings import serve_cli
+
     assert serve_cli is not None
 
 
@@ -20,7 +21,6 @@ def test_serve_cli_allows_loopback_without_auth():
     _validate_auth_settings("localhost", "none", None, None)
     _validate_auth_settings("::1%lo0", "none", None, None)
     _validate_auth_settings("[::1%lo0]", "none", None, None)
-
 
 
 def test_serve_cli_filters_empty_api_key_entries():
@@ -56,7 +56,6 @@ def test_serve_cli_rejects_remote_bind_without_auth():
         _validate_auth_settings("192.0.2.10", "none", None, None)
 
 
-
 def test_serve_cli_rejects_unsupported_checkpoint():
     from unittest.mock import patch
     import pytest
@@ -82,6 +81,7 @@ def test_serve_cli_requires_credentials_for_enabled_auth():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

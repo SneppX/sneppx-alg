@@ -42,6 +42,7 @@ Features use track prefixes: `python`, `c-core`, `cuda`, `security`, `algo`, `in
 ## Commenting Standard
 
 All source files must follow the four-layer commenting standard in [COMMENTING.md](COMMENTING.md). PRs that add or modify source files must include:
+
 - Layer 1 file header blocks (WHAT/CONCEPT/ROLE/REFERENCES)
 - Layer 4 Doxygen `@brief/@param/@return` on all public `SNEPPX_*` functions
 - Run `sneppx-format --docs` to verify before submitting
@@ -119,6 +120,7 @@ config/                   # Model zoo configs
 ## Code Review
 
 Patches are reviewed for:
+
 - Correctness: does the code do what it claims?
 - Style: does it follow STYLE_GUIDE.md?
 - Safety: are all allocations checked? No buffer overflows?

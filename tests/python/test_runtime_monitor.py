@@ -1,13 +1,21 @@
 """Tests for runtime_monitor.py — S3 runtime monitoring."""
 
 import sys, os, tempfile
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
-from SneppX_ALG.interface_bindings import IntegrityMonitor, ContainerBreakoutDetector, AdvancedMonitor
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
+
+from SneppX_ALG.interface_bindings import (
+    IntegrityMonitor,
+    ContainerBreakoutDetector,
+    AdvancedMonitor,
+)
 
 
 def test_integrity_baseline():
     import tempfile
+
     im = IntegrityMonitor()
     with tempfile.NamedTemporaryFile(delete=False) as f:
         f.write(b"test data")
@@ -21,6 +29,7 @@ def test_integrity_baseline():
 
 def test_integrity_tampered():
     import tempfile
+
     im = IntegrityMonitor()
     with tempfile.NamedTemporaryFile(delete=False) as f:
         f.write(b"original")
@@ -63,8 +72,10 @@ def test_container_breakout_clear():
 
 def test_advanced_monitor_alert():
     alerts = []
+
     def cb(a):
         alerts.append(a)
+
     m = AdvancedMonitor(alert_callback=cb)
     m.raise_alert("high", "test alert", "sensor1")
     assert len(alerts) == 1

@@ -160,6 +160,7 @@ S9: Penetration testing (network fuzzer, self-audit, CTF utilities)
 ```
 
 Every component includes defensive measures appropriate to its role:
+
 - ARC: input sanitization, adversarial training, and output verification
 - NPE: bytecode verification before execution, JIT optimization with provenance
 - FM: differential privacy on gradient shares, NCCL callback authentication

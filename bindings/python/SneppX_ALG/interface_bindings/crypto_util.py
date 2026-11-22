@@ -16,6 +16,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 
 # ---- BigNum (arbitrary-precision integer) --------------------------------
 
+
 class BigNum:
     """Arbitrary-precision integer arithmetic wrapping C bignum routines."""
 
@@ -64,11 +65,13 @@ class BigNum:
 
 # ---- DRBG (Deterministic Random Bit Generator, NIST SP 800-90A) --------
 
+
 class DRBG:
     """Hash-based DRBG (SHA-256) — deterministic random bit generator."""
 
     def __init__(self, entropy_input: bytes, personalization: bytes = b""):
         import hashlib
+
         self._hash = hashlib.sha256
         seed = entropy_input + personalization + struct.pack(">H", 1)
         self._state = self._hash(seed).digest()
@@ -89,6 +92,7 @@ class DRBG:
 
 
 # ---- Random (cryptographic-quality random) --------------------------------
+
 
 class Random:
     """Cryptographically secure random byte generator."""
@@ -116,6 +120,7 @@ class Random:
 
 
 # ---- Constant-time utilities --------------------------------------------
+
 
 class ConstantTime:
     """Constant-time comparison and selection primitives."""
@@ -146,6 +151,7 @@ class ConstantTime:
 
 # ---- EntropyPool --------------------------------------------------------
 
+
 class EntropyPool:
     """Collects entropy from various sources and feeds a DRBG."""
 
@@ -159,6 +165,7 @@ class EntropyPool:
             self._pool.extend(data)
             if len(self._pool) > 4096:
                 import hashlib
+
                 self._pool = bytearray(hashlib.sha256(self._pool).digest())
 
     def reseed(self, drbg: DRBG) -> None:
@@ -170,6 +177,7 @@ class EntropyPool:
     @staticmethod
     def collect_system_entropy() -> bytes:
         import hashlib
+
         h = hashlib.sha256()
         h.update(struct.pack("d", time.time()))
         h.update(os.urandom(32))

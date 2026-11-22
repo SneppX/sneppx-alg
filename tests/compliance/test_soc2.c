@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_soc2_control_assessment(void) {
+static void test_soc2_control_assessment(void)
+{
     SNEPPXSOC2Framework fw;
     memset(&fw, 0, sizeof(fw));
     int ret = snepx_soc2_framework_init(&fw, "SOC2 Test", "1.0");
@@ -27,7 +27,8 @@ static void test_soc2_control_assessment(void) {
     snepx_soc2_framework_destroy(&fw);
 }
 
-static void test_soc2_add_control(void) {
+static void test_soc2_add_control(void)
+{
     SNEPPXSOC2Framework fw;
     snepx_soc2_framework_init(&fw, "SOC2 Controls", "1.0");
     SNEPPXSOC2Control ctrl;
@@ -41,7 +42,8 @@ static void test_soc2_add_control(void) {
     snepx_soc2_framework_destroy(&fw);
 }
 
-int main(void) {
+int main(void)
+{
     test_soc2_control_assessment();
     test_soc2_add_control();
     return 0;

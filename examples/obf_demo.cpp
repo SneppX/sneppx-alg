@@ -1,7 +1,7 @@
 #include "code_obfuscation_interface.h"
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
-#include <chrono>
 #include <iostream>
 
 /*
@@ -19,12 +19,13 @@
  *
  */
 
-
-static int original_add(int a, int b) {
+static int original_add(int a, int b)
+{
     return a + b;
 }
 
-int main() {
+int main()
+{
     printf("\n=== SNEPPX S2 Obfuscation Demo ===\n\n");
 
     // Build a simple CFG representing add(a, b)
@@ -73,7 +74,7 @@ int main() {
     auto orig_end = std::chrono::high_resolution_clock::now();
     auto orig_us = std::chrono::duration_cast<std::chrono::nanoseconds>(orig_end - orig_start).count();
 
-    printf("Original add(2, 3): %d (took %lld ns)\n", orig_result, (long long)orig_us);
+    printf("Original add(2, 3): %d (took %lld ns)\n", orig_result, (long long) orig_us);
 
     // Configure obfuscator at HEAVY level
     SNEPPX::SNEPPXObfuscator obfuscator;
@@ -87,12 +88,23 @@ int main() {
 
     printf("\n--- Obfuscation Report ---\n");
     printf("Level:                    ");
-    switch (report.level) {
-        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_NONE:    printf("NONE\n"); break;
-        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT:   printf("LIGHT\n"); break;
-        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_MEDIUM:  printf("MEDIUM\n"); break;
-        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_HEAVY:   printf("HEAVY\n"); break;
-        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_MAXIMUM: printf("MAXIMUM\n"); break;
+    switch (report.level)
+    {
+        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_NONE:
+            printf("NONE\n");
+            break;
+        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_LIGHT:
+            printf("LIGHT\n");
+            break;
+        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_MEDIUM:
+            printf("MEDIUM\n");
+            break;
+        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_HEAVY:
+            printf("HEAVY\n");
+            break;
+        case SNEPPX::SNEPPXObfuscationLevel::SNEPPX_OBF_MAXIMUM:
+            printf("MAXIMUM\n");
+            break;
     }
     printf("Transformations applied:  %zu\n", report.transformations_applied);
     printf("Blocks flattened:         %zu\n", report.blocks_flattened);
@@ -105,18 +117,19 @@ int main() {
     printf("Obfuscation time:         %.3f ms\n", report.execution_time_ms);
 
     printf("\n--- Decrypted Strings ---\n");
-    for (size_t i = 0; i < obfuscator.string_pool().count(); i++) {
+    for (size_t i = 0; i < obfuscator.string_pool().count(); i++)
+    {
         const char* s = obfuscator.string_pool().get_string(i);
-        if (s) printf("  [%zu]: %s\n", i, s);
+        if (s)
+            printf("  [%zu]: %s\n", i, s);
     }
 
     printf("\n--- Block Structure ---\n");
     printf("Total blocks: %zu\n", cfg.blocks.size());
-    for (auto& pair : cfg.blocks) {
-        printf("  Block %llu %s %s (instrs: %zu)\n",
-               (unsigned long long)pair.first,
-               pair.second->is_entry ? "[ENTRY]" : "",
-               pair.second->is_exit ? "[EXIT]" : "",
+    for (auto& pair : cfg.blocks)
+    {
+        printf("  Block %llu %s %s (instrs: %zu)\n", (unsigned long long) pair.first,
+               pair.second->is_entry ? "[ENTRY]" : "", pair.second->is_exit ? "[EXIT]" : "",
                pair.second->instructions.size());
     }
 

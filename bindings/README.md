@@ -88,6 +88,7 @@ cmake --build build --config Release --target _SNEPPX_c
 ```
 
 Or via pip (uses pre-built extension or builds if C toolchain available):
+
 ```bash
 pip install -e .
 ```
@@ -101,6 +102,7 @@ This allows development and testing without a C compiler.
 ## API Design
 
 The Python API mirrors PyTorch conventions where possible:
+
 - `Tensor` — Multi-dimensional array with NumPy interop
 - `Variable` — Autograd wrapper (requires_grad, backward)
 - `nn.Linear`, `nn.Embedding`, `nn.Dropout`, etc. — Neural network layers
