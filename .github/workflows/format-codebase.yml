@@ -87,8 +87,8 @@ jobs:
           BRANCH: ${{ steps.format.outputs.branch }}
         run: |
           set -euo pipefail
-          for workflow in ci.yml lint-docs.yml package-validation.yml; do
-            gh workflow run ".github/workflows/$workflow" --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          for workflow in ci.yml lint-docs.yml package-validation.yml format-check.yml; do
+            gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
           done
 
       - name: Wait for every required CI workflow
@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for workflow in ci.yml lint-docs.yml package-validation.yml; do
+          for workflow in ci.yml lint-docs.yml package-validation.yml format-check.yml; do
             echo "Waiting for $workflow on $CANDIDATE_SHA"
             run_id=""
             for attempt in $(seq 1 90); do

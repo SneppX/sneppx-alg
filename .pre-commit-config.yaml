@@ -84,14 +84,30 @@ repos:
     hooks:
       - id: actionlint
 
+  # Notebook formatting changes code cells while preserving notebook outputs.
+  - repo: local
+    hooks:
+      - id: notebook-ruff-format
+        name: ruff format Jupyter notebooks
+        entry: nbqa ruff format
+        language: python
+        additional_dependencies: [nbqa==1.9.1, ruff==0.5.0]
+        files: '\.ipynb$'
+
   # Canonical language formatters for the Rust and Go source trees.
   - repo: local
     hooks:
-      - id: rustfmt
-        name: rustfmt
+      - id: rustfmt-workspace
+        name: rustfmt workspace
         entry: cargo fmt --all
         language: system
         types: [rust]
+        pass_filenames: false
+      - id: rustfmt-security
+        name: rustfmt security crate
+        entry: cargo fmt --manifest-path security/rust/Cargo.toml --all
+        language: system
+        files: '^security/rust/.*\.rs$'
         pass_filenames: false
       - id: gofmt
         name: gofmt
