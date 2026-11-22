@@ -252,23 +252,40 @@ int SNEPPX_sbom_validate(sbom_doc_t* doc)
  */
 int SNEPPX_sbom_export_json(sbom_doc_t* doc, char* out, size_t out_len)
 {
-    if (!doc || !out)
+    if (!doc || !out || out_len == 0)
         return -1;
-    size_t pos = 0;
-    pos += snprintf(out + pos, out_len - pos,
-                    "{\n  \"spdxVersion\": \"SPDX-2.3\",\n  \"name\": \"%s\",\n"
-                    "  \"version\": \"%s\",\n  \"created\": \"%s\",\n"
-                    "  \"components\": [\n",
-                    doc->image_name, doc->version, doc->created);
-    for (int i = 0; i < doc->num_components && pos < out_len; i++)
+
+    char* cursor = out;
+    size_t remaining = out_len;
+
+/* Measure before writing so a required length can never wrap `remaining`. */
+#define SBOM_APPEND(...)                                                                                               \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        int need_ = snprintf(NULL, 0, __VA_ARGS__);                                                                    \
+        if (need_ < 0 || (size_t) need_ >= remaining)                                                                  \
+            return -1;                                                                                                 \
+        int written_ = snprintf(cursor, remaining, __VA_ARGS__);                                                      \
+        if (written_ < 0 || written_ != need_)                                                                         \
+            return -1;                                                                                                 \
+        cursor += written_;                                                                                            \
+        remaining -= (size_t) written_;                                                                                \
+    } while (0)
+
+    SBOM_APPEND("{\n  \"spdxVersion\": \"SPDX-2.3\",\n  \"name\": \"%s\",\n"
+                "  \"version\": \"%s\",\n  \"created\": \"%s\",\n"
+                "  \"components\": [\n",
+                doc->image_name, doc->version, doc->created);
+    for (int i = 0; i < doc->num_components; i++)
     {
-        pos += snprintf(out + pos, out_len - pos,
-                        "    {\"name\": \"%s\", \"version\": \"%s\", \"type\": \"%s\", \"supplier\": \"%s\"}%s\n",
-                        doc->components[i].name, doc->components[i].version, doc->components[i].type,
-                        doc->components[i].supplier, i < doc->num_components - 1 ? "," : "");
+        SBOM_APPEND("    {\"name\": \"%s\", \"version\": \"%s\", \"type\": \"%s\", \"supplier\": \"%s\"}%s\n",
+                    doc->components[i].name, doc->components[i].version, doc->components[i].type,
+                    doc->components[i].supplier, i < doc->num_components - 1 ? "," : "");
     }
-    pos += snprintf(out + pos, out_len - pos, "  ]\n}\n");
-    return (int) pos;
+    SBOM_APPEND("  ]\n}\n");
+
+#undef SBOM_APPEND
+    return (int) (out_len - remaining);
 }
 
 /**

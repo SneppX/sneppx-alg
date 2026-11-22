@@ -18,6 +18,20 @@
  *
  */
 
+static void test_sbom_export_tiny_buffer(void)
+{
+    sbom_doc_t doc;
+    SNEPPX_sbom_generate(&doc, "sx:test", "1.0.0");
+    SNEPPX_sbom_add_component(&doc, "lib", "1.0.0", "library", "vendor");
+
+    char buf[16];
+    memset(buf, 0x7f, sizeof(buf));
+    int rc = SNEPPX_sbom_export_json(&doc, buf, sizeof(buf));
+    SX_ASSERT(rc == -1, "tiny buffer is rejected");
+    for (size_t i = 0; i < sizeof(buf); i++)
+        SX_ASSERT((unsigned char) buf[i] == 0x7f, "tiny buffer is untouched");
+}
+
 TEST(test_container_security, suite)
 {
     container_manifest_t manifest;
@@ -51,4 +65,9 @@ TEST(test_container_security, suite)
            stats.high_count);
     printf("PASS: Container security OK\n");
     return;
+}
+
+TEST(test_container_security, export_tiny_buffer)
+{
+    test_sbom_export_tiny_buffer();
 }
