@@ -105,7 +105,7 @@ repos:
         pass_filenames: false
       - id: rustfmt-security
         name: rustfmt security crate
-        entry: cargo fmt --manifest-path security/rust/Cargo.toml --all
+        entry: rustfmt --edition 2021
         language: system
         files: '^security/rust/.*\.rs$'
         pass_filenames: false
@@ -122,5 +122,6 @@ repos:
         name: sneppx-format --docs (Layer 1/4 doc coverage)
         entry: sneppx-format --docs --no-color
         language: system
-        types: [c, cpp, cuda]
+        files: '\\.(c|h|cc|cpp|cxx|hpp|cu|cuh)        fail_fast: false
+
         fail_fast: false
