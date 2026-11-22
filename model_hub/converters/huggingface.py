@@ -143,7 +143,9 @@ def convert_from_hf(hf_dir: str, out_dir: str) -> str:
         return convert_hf_to_sneppx(hf_dir, out_dir)
     elif fmt == "pytorch":
         return convert_pt_to_sneppx(
-            os.path.join(hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir),
+            os.path.join(
+                hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir
+            ),
             out_dir,
         )[0]  # Handle if directory
     raise ValueError(f"Unsupported format: {fmt}")
