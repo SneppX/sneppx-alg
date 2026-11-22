@@ -41,6 +41,7 @@ from ..utils import compute_sha256, ensure_dir, format_file_size
 
 # ---- Database (file-based for now) ----
 
+
 class HubDatabase:
     """File-based database for the model hub.
 
@@ -70,6 +71,7 @@ class HubDatabase:
 
     def _load_json_store(self):
         from ..utils import ensure_dir
+
         self._users: List[Dict] = self._load_json(self._users_file, default=[])
         self._keys: List[Dict] = self._load_json(self._keys_file, default=[])
         self._leaderboard: List[Dict] = self._load_json(self._leaderboard_file, default=[])
@@ -79,11 +81,13 @@ class HubDatabase:
         if not os.path.exists(path):
             return default
         import json
+
         with open(path) as f:
             return json.load(f)
 
     def _save_json(self, path: str, data: Any):
         import json
+
         ensure_dir(os.path.dirname(path))
         with open(path, "w") as f:
             json.dump(data, f, indent=2)
@@ -94,9 +98,16 @@ class HubDatabase:
 
     # ---- Models ----
 
-    def list_models(self, page: int = 1, page_size: int = 20, sort_by: str = "downloads",
-                    query: Optional[str] = None, task: Optional[str] = None,
-                    tag: Optional[str] = None, org: Optional[str] = None) -> Dict[str, Any]:
+    def list_models(
+        self,
+        page: int = 1,
+        page_size: int = 20,
+        sort_by: str = "downloads",
+        query: Optional[str] = None,
+        task: Optional[str] = None,
+        tag: Optional[str] = None,
+        org: Optional[str] = None,
+    ) -> Dict[str, Any]:
         all_models = self._scan_models()
 
         # Filter
@@ -107,7 +118,11 @@ class HubDatabase:
         if tag:
             all_models = [m for m in all_models if tag in (m.get("tags") or [])]
         if org:
-            all_models = [m for m in all_models if m.get("organization") == org or m.get("name", "").startswith(org + "/")]
+            all_models = [
+                m
+                for m in all_models
+                if m.get("organization") == org or m.get("name", "").startswith(org + "/")
+            ]
 
         total = len(all_models)
 
@@ -139,9 +154,12 @@ class HubDatabase:
                 card_path = os.path.join(model_path, version, "model_card.json")
                 if os.path.exists(card_path):
                     import json
+
                     with open(card_path) as f:
                         data = json.load(f)
-                    data["name"] = model_name.replace("_", "/").replace("__", "/")  # restore org/name
+                    data["name"] = model_name.replace("_", "/").replace(
+                        "__", "/"
+                    )  # restore org/name
                     # Normalize the name back properly
                     if "/" in data.get("name", ""):
                         pass  # Already has slash
@@ -163,11 +181,14 @@ class HubDatabase:
         if version == "latest":
             cards = self._scan_models()
             clean = name.replace("/", "_").replace("\\", "_")
-            model_cards = [c for c in cards if c.get("_model_name") == clean or c.get("name") == name]
+            model_cards = [
+                c for c in cards if c.get("_model_name") == clean or c.get("name") == name
+            ]
             if not model_cards:
                 return None
             # Sort by version descending (latest first)
             from ..api.models import SemVer
+
             model_cards.sort(key=lambda c: SemVer(c["_version"]), reverse=True)
             version = model_cards[0]["_version"]
 
@@ -190,6 +211,7 @@ class HubDatabase:
 
     def get_model_versions(self, name: str) -> List[str]:
         from ..api.models import SemVer
+
         cards = self._scan_models()
         clean = name.replace("/", "_").replace("\\", "_")
         versions = []
@@ -207,6 +229,7 @@ class HubDatabase:
     def delete_model(self, name: str, version: Optional[str] = None) -> bool:
         """Delete a model or all versions of a model."""
         from pathlib import Path
+
         clean_name = name.replace("/", "_").replace("\\", "_")
         if version:
             path = Path(self._model_card_path(name, version)).parent
@@ -235,7 +258,13 @@ class HubDatabase:
                 return User(**u)
         return None
 
-    def create_user(self, username: str, email: Optional[str] = None, is_admin: bool = False, org_id: Optional[str] = None) -> User:
+    def create_user(
+        self,
+        username: str,
+        email: Optional[str] = None,
+        is_admin: bool = False,
+        org_id: Optional[str] = None,
+    ) -> User:
         user = User(username=username, email=email, is_admin=is_admin, org_id=org_id)
         self._users.append(user.model_dump(mode="json"))
         self._save_json(self._users_file, self._users)
@@ -249,7 +278,9 @@ class HubDatabase:
                 return APIKey(**k)
         return None
 
-    def create_api_key(self, user_id: str, org_id: Optional[str] = None, scopes: Optional[List[str]] = None) -> tuple[APIKey, str]:
+    def create_api_key(
+        self, user_id: str, org_id: Optional[str] = None, scopes: Optional[List[str]] = None
+    ) -> tuple[APIKey, str]:
         """Create an API key. Returns (key_obj, raw_key_string)."""
         key, _raw = APIKey.generate(user_id=user_id, org_id=org_id)
         key.scopes = scopes or ["read", "write", "models"]
@@ -274,7 +305,13 @@ class HubDatabase:
             return None
 
         admin_user = os.environ.get("SNEPPX_HUB_ADMIN_USER", "admin")
-        admin_pass = os.environ.get("SNEPPX_HUB_ADMIN_PASSWORD", "admin")
+        admin_pass = os.environ.get("SNEPPX_HUB_ADMIN_PASSWORD")
+        if not admin_pass:
+            raise RuntimeError(
+                "SNEPPX_HUB_ADMIN_PASSWORD must be set before the model hub can bootstrap an admin user"
+            )
+        if admin_pass.lower() in {"admin", "password", "changeme", "12345678"}:
+            raise RuntimeError("SNEPPX_HUB_ADMIN_PASSWORD is a known-weak default")
         user = self.create_user(username=admin_user, is_admin=True)
         user.hashed_api_key = hash_password(admin_pass)
         user_dict = user.model_dump(mode="json")
@@ -289,6 +326,7 @@ class HubDatabase:
 
     def verify_api_key(self, api_key: str) -> Optional[User]:
         import hmac
+
         for k in self._keys:
             key_obj = APIKey(**k)
             if APIKey.verify(api_key, key_obj):
@@ -300,7 +338,9 @@ class HubDatabase:
 
     # ---- Leaderboard ----
 
-    def get_leaderboard(self, task: Optional[str] = None, metric: Optional[str] = None) -> List[LeaderboardEntry]:
+    def get_leaderboard(
+        self, task: Optional[str] = None, metric: Optional[str] = None
+    ) -> List[LeaderboardEntry]:
         entries = []
         for e in self._leaderboard:
             if task and e.get("task") != task:
@@ -316,30 +356,35 @@ class HubDatabase:
     def add_leaderboard_entry(self, entry: BenchmarkResult) -> None:
         # Check if entry already exists
         for existing in self._leaderboard:
-            if (existing["model_name"] == entry.model_name and
-                existing["version"] == entry.version and
-                existing["task"] == entry.task.value and
-                existing["metric"] == entry.metric and
-                existing["dataset"] == entry.dataset):
+            if (
+                existing["model_name"] == entry.model_name
+                and existing["version"] == entry.version
+                and existing["task"] == entry.task.value
+                and existing["metric"] == entry.metric
+                and existing["dataset"] == entry.dataset
+            ):
                 # Update existing
                 existing["score"] = entry.score
                 existing["evaluated_at"] = entry.evaluated_at.isoformat()
                 break
         else:
-            self._leaderboard.append({
-                "model_name": entry.model_name,
-                "version": entry.version,
-                "task": entry.task.value,
-                "metric": entry.metric,
-                "score": entry.score,
-                "dataset": entry.dataset,
-                "evaluated_at": entry.evaluated_at.isoformat(),
-                "is_public": True,
-            })
+            self._leaderboard.append(
+                {
+                    "model_name": entry.model_name,
+                    "version": entry.version,
+                    "task": entry.task.value,
+                    "metric": entry.metric,
+                    "score": entry.score,
+                    "dataset": entry.dataset,
+                    "evaluated_at": entry.evaluated_at.isoformat(),
+                    "is_public": True,
+                }
+            )
         self._save_json(self._leaderboard_file, self._leaderboard)
 
 
 # ---- FastAPI app ----
+
 
 def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> FastAPI:
     """Create and configure the FastAPI application."""
@@ -355,7 +400,8 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         ensure_dir(storage_config.base_path)
         fresh_key = db.bootstrap_admin()
         if fresh_key:
-            print(f"[sneppx-hub] Created default admin user + API key: {fresh_key}")
+            fingerprint = hashlib.sha256(fresh_key.encode()).hexdigest()[:16]
+            print(f"[sneppx-hub] Created initial admin API key (fingerprint: {fingerprint})")
         yield
         # Shutdown
         pass
@@ -414,8 +460,13 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         sort_by: str = Query(default="downloads"),
     ):
         return db.list_models(
-            page=page, page_size=page_size, sort_by=sort_by,
-            query=q, task=task, tag=tag, org=org,
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by,
+            query=q,
+            task=task,
+            tag=tag,
+            org=org,
         )
 
     @app.get("/api/v1/models/{model_name}")
@@ -441,6 +492,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         user: User = Depends(require_auth),
     ):
         import json
+
         card_data = json.loads(card)
 
         # Validate the model card
@@ -451,8 +503,13 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
 
         # Check permissions for private models
         if model_card.visibility == ModelVisibility.PRIVATE:
-            if not user.org_id or (model_card.organization and model_card.organization != user.org_id):
-                raise HTTPException(status_code=403, detail="Cannot create private model without organization access")
+            if not user.org_id or (
+                model_card.organization and model_card.organization != user.org_id
+            ):
+                raise HTTPException(
+                    status_code=403,
+                    detail="Cannot create private model without organization access",
+                )
 
         # Save metadata
         db.save_model_card(model_card.full_name, model_card.version, card_data)
@@ -473,7 +530,9 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
 
         # Check permissions
         if card.get("visibility") == ModelVisibility.PRIVATE:
-            if not user.org_id or (card.get("organization") and card.get("organization") != user.org_id):
+            if not user.org_id or (
+                card.get("organization") and card.get("organization") != user.org_id
+            ):
                 raise HTTPException(status_code=403, detail="Access denied")
 
         # Save to storage
@@ -504,12 +563,20 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         return {"url": stored.url, "sha256": stored.sha256, "size": stored.size}
 
     @app.delete("/api/v1/models/{model_name}")
-    async def api_delete_model(model_name: str, version: Optional[str] = Query(default=None), user: User = Depends(require_auth)):
+    async def api_delete_model(
+        model_name: str,
+        version: Optional[str] = Query(default=None),
+        user: User = Depends(require_auth),
+    ):
         card = db.get_model_card(model_name, version or "latest")
         if not card:
             raise HTTPException(status_code=404, detail="Model not found")
 
-        if not user.is_admin and card.get("organization") and card.get("organization") != user.org_id:
+        if (
+            not user.is_admin
+            and card.get("organization")
+            and card.get("organization") != user.org_id
+        ):
             raise HTTPException(status_code=403, detail="Access denied")
 
         return {"deleted": db.delete_model(model_name, version)}
@@ -527,7 +594,10 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         all_models = db._scan_models()
         results = []
         for m in all_models:
-            if q.lower() not in m.get("name", "").lower() and q.lower() not in m.get("description", "").lower():
+            if (
+                q.lower() not in m.get("name", "").lower()
+                and q.lower() not in m.get("description", "").lower()
+            ):
                 continue
             if task and m.get("task") != task:
                 continue
@@ -550,6 +620,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
 
         # Issue an API key for the user so the returned token is usable
         from ..api.models import APIKey as _APIKeyModel
+
         raw = None
         for k in db._keys:
             key_obj = _APIKeyModel(**k)
@@ -587,7 +658,16 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
     @app.get("/api/v1/keys/me")
     async def api_list_keys(current_user: User = Depends(require_auth)):
         user_keys = [k for k in db._keys if k["user_id"] == current_user.id]
-        return {"keys": [{"key_id": k["key_id"], "created_at": k["created_at"], "last_used": k.get("last_used")} for k in user_keys]}
+        return {
+            "keys": [
+                {
+                    "key_id": k["key_id"],
+                    "created_at": k["created_at"],
+                    "last_used": k.get("last_used"),
+                }
+                for k in user_keys
+            ]
+        }
 
     # ---- Leaderboard ----
 
@@ -634,6 +714,7 @@ def create_app(db_path: str, storage_config: Optional[StorageConfig] = None) -> 
         db._orgs.append(org_dict)
         # Save
         import json
+
         with open(db._orgs_file, "w") as f:
             json.dump(db._orgs, f, indent=2)
         return {"org": org_dict}

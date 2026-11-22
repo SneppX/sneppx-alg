@@ -41,7 +41,9 @@ def _get_api_key() -> Optional[str]:
     key = os.environ.get("SNEPPX_HUB_API_KEY")
     if key:
         return key
-    cache_dir = os.environ.get("SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"))
+    cache_dir = os.environ.get(
+        "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+    )
     token_path = os.path.join(cache_dir, "token")
     if os.path.exists(token_path):
         with open(token_path) as f:
@@ -51,6 +53,7 @@ def _get_api_key() -> Optional[str]:
 
 def _ensure_client():
     from ..api.client import HubAPIClient
+
     url = _get_api_url()
     key = _get_api_key()
     return HubAPIClient(base_url=url, api_key=key)
@@ -66,9 +69,9 @@ def _format_model_card(card: Dict[str, Any], verbose: bool = False) -> str:
     if org and org not in name:
         title = f"{org}/{title}"
 
-    lines.append(f"\n{'='*60}")
+    lines.append(f"\n{'=' * 60}")
     lines.append(f"  {title}")
-    lines.append(f"{'='*60}")
+    lines.append(f"{'=' * 60}")
 
     desc = card.get("description", "")
     if desc:
@@ -102,6 +105,7 @@ def _format_model_card(card: Dict[str, Any], verbose: bool = False) -> str:
 
     total_size = card.get("total_size", 0)
     from model_hub.utils import format_file_size
+
     lines.append(f"  Size: {format_file_size(total_size)}")
 
     if verbose:
@@ -161,6 +165,7 @@ def _format_model_list(models: List[Dict], show_size: bool = False) -> str:
 
 
 # ---- Commands ----
+
 
 def cmd_list(args: argparse.Namespace):
     client = _ensure_client()
@@ -262,7 +267,8 @@ def cmd_upload(args: argparse.Namespace):
         card_data["license"] = args.license
     version = card_data.get("version")
     resp = client._request(
-        "POST", "/api/v1/models/upload",
+        "POST",
+        "/api/v1/models/upload",
         data={"card": json.dumps(card_data)},
     )
     print(f"Metadata uploaded: {resp.get('status')}")
@@ -369,16 +375,22 @@ def cmd_orgs(args: argparse.Namespace):
 def cmd_login(args: argparse.Namespace):
     client = _ensure_client()
     try:
-        result = client._request("POST", "/api/v1/auth/login", data={
-            "username": args.username,
-            "password": args.password,
-        })
+        result = client._request(
+            "POST",
+            "/api/v1/auth/login",
+            data={
+                "username": args.username,
+                "password": args.password,
+            },
+        )
     except Exception as e:
         print(f"Login failed: {e}")
         sys.exit(1)
     token = result.get("access_token")
     if token:
-        cache_dir = os.environ.get("SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub"))
+        cache_dir = os.environ.get(
+            "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+        )
         os.makedirs(cache_dir, exist_ok=True)
         with open(os.path.join(cache_dir, "token"), "w") as f:
             f.write(token)
@@ -391,10 +403,14 @@ def cmd_login(args: argparse.Namespace):
 def cmd_keys(args: argparse.Namespace):
     client = _ensure_client()
     if args.create:
-        result = client._request("POST", "/api/v1/keys", data={
-            "username": args.create,
-            "scopes": args.scopes or "read,write,models",
-        })
+        result = client._request(
+            "POST",
+            "/api/v1/keys",
+            data={
+                "username": args.create,
+                "scopes": args.scopes or "read,write,models",
+            },
+        )
         print(f"API key created:")
         print(f"  Key ID: {result.get('key_id')}")
         print(f"  key_id:prefix: {result.get('api_key')}")
@@ -572,7 +588,7 @@ def main():
 
     # server (start the API server)
     p_srv = sub.add_parser("server", help="Start the model hub server")
-    p_srv.add_argument("--host", default="0.0.0.0")
+    p_srv.add_argument("--host", default="127.0.0.1")
     p_srv.add_argument("--port", type=int, default=8000)
     p_srv.add_argument("--db", default=None)
     p_srv.add_argument("--storage-backend", default="local")
@@ -593,8 +609,10 @@ def cmd_server(args: argparse.Namespace):
     from ..api.main import create_app, HubDatabase, StorageConfig, get_storage_backend
 
     db_path = args.db or os.path.join(
-        os.environ.get("SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")),
-        "data"
+        os.environ.get(
+            "SNEPPX_HUB_CACHE", os.path.join(os.path.expanduser("~"), ".cache", "sneppx", "hub")
+        ),
+        "data",
     )
 
     storage_config = StorageConfig(
