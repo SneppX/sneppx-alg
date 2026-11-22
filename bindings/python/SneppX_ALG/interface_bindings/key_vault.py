@@ -23,9 +23,11 @@ class AuditLogger:
         self._lock = threading.Lock()
         self._has_c = _HAS_C
 
-    def log(self, action: str, actor: str, resource: str, result: str,
-            details: Optional[dict] = None) -> None:
+    def log(
+        self, action: str, actor: str, resource: str, result: str, details: Optional[dict] = None
+    ) -> None:
         import hashlib
+
         entry = {
             "timestamp": time.time(),
             "action": action,
@@ -47,8 +49,9 @@ class AuditLogger:
         except (IOError, OSError):
             pass
 
-    def query(self, actor: Optional[str] = None, action: Optional[str] = None,
-              limit: int = 100) -> List[dict]:
+    def query(
+        self, actor: Optional[str] = None, action: Optional[str] = None, limit: int = 100
+    ) -> List[dict]:
         with self._lock:
             results = list(self._entries)
         if actor:
@@ -58,10 +61,40 @@ class AuditLogger:
         return results[-limit:]
 
     def verify_chain(self) -> bool:
+        """Recompute every digest and verify the whole persisted chain.
+
+        Comparing only ``prev_hash`` linkage is not tamper-evidence: an
+        attacker who can edit the log can recompute the linking field too.
+        """
+        import hashlib
+        import hmac
+
         with self._lock:
-            for i in range(1, len(self._entries)):
-                if self._entries[i]["prev_hash"] != self._entries[i - 1]["hash"]:
-                    return False
+            memory_entries = [dict(e) for e in self._entries]
+            log_path = self._log_path
+
+        entries = memory_entries
+        if log_path and os.path.isfile(log_path):
+            try:
+                with open(log_path, "r", encoding="utf-8") as handle:
+                    entries = [json.loads(line) for line in handle if line.strip()]
+            except (OSError, ValueError):
+                return False
+            if entries != memory_entries:
+                return False
+
+        expected_prev = "0" * 64
+        for entry in entries:
+            stored_hash = entry.get("hash", "")
+            payload = {k: v for k, v in entry.items() if k != "hash"}
+            computed = hashlib.sha256(
+                json.dumps(payload, sort_keys=True, default=str).encode()
+            ).hexdigest()
+            if not hmac.compare_digest(computed, stored_hash):
+                return False
+            if not hmac.compare_digest(entry.get("prev_hash", ""), expected_prev):
+                return False
+            expected_prev = stored_hash
         return True
 
     def clear(self) -> None:
@@ -130,10 +163,12 @@ class KeyVault:
         key = self.get_key(key_id)
         if key is None:
             return None
-        return bytes(b ^ w for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key))))
+        return bytes(
+            b ^ w for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key)))
+        )
 
     def unwrap_key(self, wrapped: bytes, key_id: str) -> Optional[bytes]:
         key = self.get_key(key_id)
         if key is None:
             return None
-        return bytes(b ^ w for b, w in zip(wrapped, key[:len(wrapped)]))
+        return bytes(b ^ w for b, w in zip(wrapped, key[: len(wrapped)]))
