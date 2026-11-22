@@ -12,7 +12,9 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import crypto_sign as _cs
 from SneppX_ALG.interface_bindings import Dilithium, SphincsPlus
@@ -21,6 +23,7 @@ import pytest
 
 try:
     from SneppX_ALG import _SNEPPX_c as _ext
+
     _C = getattr(_ext, "crypto", None)
 except ImportError:
     _C = None

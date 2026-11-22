@@ -74,7 +74,12 @@ def xavier_normal_(tensor: Tensor, gain: float = 1.0) -> Tensor:
     return tensor
 
 
-def kaiming_uniform_(tensor: Tensor, a: float = 0.0, mode: str = "fan_in", nonlinearity: str = "leaky_relu") -> Tensor:
+def kaiming_uniform_(
+    tensor: Tensor,
+    a: float = 0.0,
+    mode: str = "fan_in",
+    nonlinearity: str = "leaky_relu",
+) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
     fan = fan_in if mode == "fan_in" else fan_out
     gain = math.sqrt(2.0 / (1 + a * a)) if nonlinearity == "leaky_relu" else 1.0
@@ -85,7 +90,12 @@ def kaiming_uniform_(tensor: Tensor, a: float = 0.0, mode: str = "fan_in", nonli
     return tensor
 
 
-def kaiming_normal_(tensor: Tensor, a: float = 0.0, mode: str = "fan_in", nonlinearity: str = "leaky_relu") -> Tensor:
+def kaiming_normal_(
+    tensor: Tensor,
+    a: float = 0.0,
+    mode: str = "fan_in",
+    nonlinearity: str = "leaky_relu",
+) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
     fan = fan_in if mode == "fan_in" else fan_out
     gain = math.sqrt(2.0 / (1 + a * a)) if nonlinearity == "leaky_relu" else 1.0
@@ -95,7 +105,9 @@ def kaiming_normal_(tensor: Tensor, a: float = 0.0, mode: str = "fan_in", nonlin
     return tensor
 
 
-def trunc_normal_(tensor: Tensor, mean: float = 0.0, std: float = 1.0, a: float = -2.0, b: float = 2.0) -> Tensor:
+def trunc_normal_(
+    tensor: Tensor, mean: float = 0.0, std: float = 1.0, a: float = -2.0, b: float = 2.0
+) -> Tensor:
     arr = _np(tensor)
     out = np.empty(arr.shape)
     n = 0

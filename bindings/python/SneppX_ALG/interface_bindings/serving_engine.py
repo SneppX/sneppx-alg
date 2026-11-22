@@ -45,6 +45,7 @@ __all__ = [
 # Configuration
 # ===========================================================================
 
+
 @dataclass
 class ServingConfig:
     max_batch_size: int = 8
@@ -70,6 +71,7 @@ class ModelVersion:
 @dataclass
 class TrafficSplit:
     """A/B (or A/B/n) traffic policy for a model."""
+
     model: str
     legs: List[Tuple[str, int]] = field(default_factory=list)  # [(version_id, weight)]
 
@@ -201,7 +203,9 @@ class MetricsCollector:
             f"# TYPE {self.prefix}_latency_ms histogram",
         ]
         for b in _LATENCY_BUCKETS_MS:
-            lines.append(f'{self.prefix}_latency_ms_bucket{{le="{b:.3f}"}} {s["buckets"][b]}')
+            lines.append(
+                f'{self.prefix}_latency_ms_bucket{{le="{b:.3f}"}} {s["buckets"][b]}'
+            )
         lines.append(f'{self.prefix}_latency_ms_bucket{{le="+Inf"}} {s["lat_n"]}')
         lines.append(f"{self.prefix}_latency_ms_sum {s['lat_sum_us'] / 1000.0:.6f}")
         lines.append(f"{self.prefix}_latency_ms_count {s['lat_n']}")
@@ -224,6 +228,7 @@ class MetricsCollector:
 # Dynamic batching
 # ===========================================================================
 
+
 @dataclass
 class BatchItem:
     request_id: str
@@ -243,8 +248,9 @@ class DynamicBatchQueue:
 
     def submit(self, request_id: str, key: str = "") -> int:
         with self._lock:
-            self._items.append(BatchItem(request_id=request_id, key=key,
-                                         submitted_at=time.monotonic()))
+            self._items.append(
+                BatchItem(request_id=request_id, key=key, submitted_at=time.monotonic())
+            )
             return len(self._items)
 
     def drain(self, max_items: int = 1024) -> List[BatchItem]:
@@ -281,9 +287,11 @@ def max_batch_size_for(_):
 # Config hot-reload
 # ===========================================================================
 
+
 def _load_yaml(path: str) -> Dict[str, Any]:
     try:
         import yaml  # type: ignore
+
         with open(path, "r") as f:
             return yaml.safe_load(f) or {}
     except ImportError:
@@ -381,20 +389,25 @@ def _traffic_splits(cfg: Dict[str, Any]) -> Dict[str, List[Tuple[str, int]]]:
 # Serving engine
 # ===========================================================================
 
+
 class ServingEngine:
     """Python serving control plane (mirrors net/http/serving_engine.c)."""
 
-    def __init__(self, config: Optional[ServingConfig] = None,
-                 model_fn: Optional[Callable[..., Any]] = None):
+    def __init__(
+        self,
+        config: Optional[ServingConfig] = None,
+        model_fn: Optional[Callable[..., Any]] = None,
+    ):
         self.config = config or ServingConfig()
         self.model_fn = model_fn
         self._lock = threading.RLock()
         self._models: Dict[str, List[ModelVersion]] = {}
-        self._active: Dict[str, str] = {}          # model -> active version_id
+        self._active: Dict[str, str] = {}  # model -> active version_id
         self._traffic: Dict[str, TrafficSplit] = {}
         self.metrics = MetricsCollector(self.config.metrics_prefix)
         self.batcher = DynamicBatchQueue(
-            self.config.max_batch_size, self.config.batch_timeout_ms)
+            self.config.max_batch_size, self.config.batch_timeout_ms
+        )
         self._ready = False
         self._warmup_remaining = self.config.warmup_iters
         self._warmup_done = False
@@ -408,25 +421,41 @@ class ServingEngine:
             return dict(self._active)
 
     # ---------- versioning / rolling updates ----------
-    def register_model(self, name: str, version_id: str = "v1",
-                       description: str = "", weight: Optional[int] = None) -> bool:
+    def register_model(
+        self,
+        name: str,
+        version_id: str = "v1",
+        description: str = "",
+        weight: Optional[int] = None,
+    ) -> bool:
         with self._lock:
             versions = self._models.setdefault(name, [])
             for v in versions:
                 if v.version_id == version_id:
                     return False
-            v = ModelVersion(name=name, version_id=version_id, description=description,
-                             weight=100 if weight is None and not versions else (weight or 0))
+            v = ModelVersion(
+                name=name,
+                version_id=version_id,
+                description=description,
+                weight=100 if weight is None and not versions else (weight or 0),
+            )
             versions.append(v)
             if name not in self._active:
                 self._active[name] = version_id
             if weight is not None:
-                self._traffic.setdefault(name, TrafficSplit(model=name,
-                                                            legs=[(version_id, weight)]))
+                self._traffic.setdefault(
+                    name, TrafficSplit(model=name, legs=[(version_id, weight)])
+                )
             return True
 
-    def deploy(self, name: str, version_id: str, description: str = "",
-               weight: int = 0, promote: bool = False) -> bool:
+    def deploy(
+        self,
+        name: str,
+        version_id: str,
+        description: str = "",
+        weight: int = 0,
+        promote: bool = False,
+    ) -> bool:
         """Rolling update: add a new version at `weight` (default 0 = canary)."""
         if not self.register_model(name, version_id, description, weight=weight):
             return False
@@ -459,8 +488,7 @@ class ServingEngine:
             if not any(v.version_id == version_id for v in versions):
                 return False
             self._active[name] = version_id
-            self._traffic[name] = TrafficSplit(model=name,
-                                               legs=[(version_id, 100)])
+            self._traffic[name] = TrafficSplit(model=name, legs=[(version_id, 100)])
             return True
 
     def rollback(self, name: str) -> bool:
@@ -490,13 +518,21 @@ class ServingEngine:
 
     def _apply_config(self, cfg: Dict[str, Any]) -> None:
         svc = _serving_params(cfg)
-        self.config.max_batch_size = int(svc.get("max_batch_size", self.config.max_batch_size))
-        self.config.batch_timeout_ms = float(svc.get("batch_timeout_ms", self.config.batch_timeout_ms))
+        self.config.max_batch_size = int(
+            svc.get("max_batch_size", self.config.max_batch_size)
+        )
+        self.config.batch_timeout_ms = float(
+            svc.get("batch_timeout_ms", self.config.batch_timeout_ms)
+        )
         self.config.n_workers = int(svc.get("n_workers", self.config.n_workers))
-        self.config.warmup_iters = int(svc.get("warmup_iters", self.config.warmup_iters))
+        self.config.warmup_iters = int(
+            svc.get("warmup_iters", self.config.warmup_iters)
+        )
         self.config.listen = str(svc.get("listen", self.config.listen))
         self.config.port = int(svc.get("port", self.config.port))
-        self.batcher.reconfigure(self.config.max_batch_size, self.config.batch_timeout_ms)
+        self.batcher.reconfigure(
+            self.config.max_batch_size, self.config.batch_timeout_ms
+        )
         for model, legs in _traffic_splits(cfg).items():
             self._traffic[model] = TrafficSplit(model=model, legs=legs)
 
@@ -506,9 +542,13 @@ class ServingEngine:
         return self.config_reloader.check()
 
     # ---------- inference ----------
-    def serve(self, inputs, name: Optional[str] = None,
-              request_id: Optional[str] = None,
-              version: Optional[str] = None) -> Any:
+    def serve(
+        self,
+        inputs,
+        name: Optional[str] = None,
+        request_id: Optional[str] = None,
+        version: Optional[str] = None,
+    ) -> Any:
         if request_id is None:
             request_id = f"{time.time_ns()}"
         if name is None:
@@ -551,7 +591,9 @@ class ServingEngine:
     def warmup(self, name: Optional[str] = None) -> None:
         self._warmup_remaining = self.config.warmup_iters
         self._warmup_done = False
-        self._ready = bool(self.config.ready_after_warmup) and self.config.warmup_iters <= 0
+        self._ready = (
+            bool(self.config.ready_after_warmup) and self.config.warmup_iters <= 0
+        )
         if self.config.warmup_iters <= 0:
             self._ready = True
 
@@ -585,23 +627,32 @@ class ServingEngine:
         with self._lock:
             if name is None:
                 return [
-                    {"name": n, "versions": [
-                        {"version_id": v.version_id, "description": v.description,
-                         "weight": v.weight,
-                         "active": v.version_id == self._active.get(n),
-                         "deployed_at": v.deployed_at}
-                        for v in vs
-                    ]}
+                    {
+                        "name": n,
+                        "versions": [
+                            {
+                                "version_id": v.version_id,
+                                "description": v.description,
+                                "weight": v.weight,
+                                "active": v.version_id == self._active.get(n),
+                                "deployed_at": v.deployed_at,
+                            }
+                            for v in vs
+                        ],
+                    }
                     for n, vs in self._models.items()
                 ]
             if name in self._models:
-                return [{
-                    "version_id": v.version_id,
-                    "description": v.description,
-                    "weight": v.weight,
-                    "active": v.version_id == self._active.get(name),
-                    "deployed_at": v.deployed_at,
-                } for v in self._models[name]]
+                return [
+                    {
+                        "version_id": v.version_id,
+                        "description": v.description,
+                        "weight": v.weight,
+                        "active": v.version_id == self._active.get(name),
+                        "deployed_at": v.deployed_at,
+                    }
+                    for v in self._models[name]
+                ]
         return None if name else []
 
 
@@ -609,8 +660,12 @@ class WorkerPool:
     """Horizontal-scaling worker pool: each worker drains the dynamic batch
     queue and calls ``run_batch``."""
 
-    def __init__(self, engine: ServingEngine, run_batch: Callable[[List[BatchItem]], Any],
-                 n_workers: int = 1):
+    def __init__(
+        self,
+        engine: ServingEngine,
+        run_batch: Callable[[List[BatchItem]], Any],
+        n_workers: int = 1,
+    ):
         self.engine = engine
         self.run_batch = run_batch
         self.n_workers = max(1, n_workers)
@@ -619,8 +674,9 @@ class WorkerPool:
 
     def start(self) -> None:
         self._stop.clear()
-        self._pool = ThreadPoolExecutor(max_workers=self.n_workers,
-                                         thread_name_prefix="sneppx-worker")
+        self._pool = ThreadPoolExecutor(
+            max_workers=self.n_workers, thread_name_prefix="sneppx-worker"
+        )
         for _ in range(self.n_workers):
             self._pool.submit(self._loop)
 
@@ -645,11 +701,17 @@ class WorkerPool:
 # Standalone HTTP server (stdlib) — no FastAPI required
 # ===========================================================================
 
+
 class ServingServer:
     """Lightweight standalone server over stdlib http.server."""
 
-    def __init__(self, engine: ServingEngine, run_fn: Optional[Callable] = None,
-                 host: Optional[str] = None, port: Optional[int] = None):
+    def __init__(
+        self,
+        engine: ServingEngine,
+        run_fn: Optional[Callable] = None,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+    ):
         self.engine = engine
         self.run_fn = run_fn or (lambda inputs: inputs)
         self.host = host or engine.config.listen
@@ -661,40 +723,74 @@ class ServingServer:
 
         def dispatch(handler, method, path, body):
             if path in ("/", "/v1/health", "/healthz"):
-                return 200, {"Content-Type": "application/json"}, \
-                    json.dumps({"status": "ok", **eng.health()})
+                return (
+                    200,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"status": "ok", **eng.health()}),
+                )
             if path in ("/readyz", "/v1/ready"):
                 if eng.ready:
-                    return 200, {"Content-Type": "application/json"}, \
-                        json.dumps({"ready": True, "uptime_ms": int((time.monotonic() - eng.started_at) * 1000)})
-                return 503, {"Content-Type": "application/json"}, \
-                    json.dumps({"ready": False})
+                    return (
+                        200,
+                        {"Content-Type": "application/json"},
+                        json.dumps(
+                            {
+                                "ready": True,
+                                "uptime_ms": int(
+                                    (time.monotonic() - eng.started_at) * 1000
+                                ),
+                            }
+                        ),
+                    )
+                return (
+                    503,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"ready": False}),
+                )
             if path == "/metrics":
                 accept = handler.headers.get("Accept", "")
-                want_json = ("application/json" in accept) or \
-                    ("format=json" in urlparse(handler.path).query)
+                want_json = ("application/json" in accept) or (
+                    "format=json" in urlparse(handler.path).query
+                )
                 if want_json:
-                    return 200, {"Content-Type": "application/json"}, \
-                        json.dumps(eng.metrics.to_dict())
-                return 200, {"Content-Type": "text/plain; version=0.0.4"}, \
-                    eng.metrics.render_prometheus()
+                    return (
+                        200,
+                        {"Content-Type": "application/json"},
+                        json.dumps(eng.metrics.to_dict()),
+                    )
+                return (
+                    200,
+                    {"Content-Type": "text/plain; version=0.0.4"},
+                    eng.metrics.render_prometheus(),
+                )
             if path.startswith("/v1/models/versions"):
                 name = handler.path_query("model")
                 if name:
                     v = eng.versions(name)
-                    return 200, {"Content-Type": "application/json"}, \
-                        json.dumps({"name": name, "versions": v or []})
-                return 200, {"Content-Type": "application/json"}, \
-                    json.dumps({"models": eng.versions()})
+                    return (
+                        200,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"name": name, "versions": v or []}),
+                    )
+                return (
+                    200,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"models": eng.versions()}),
+                )
             if path == "/v1/deploy" and method == "POST":
                 data = json.loads(body or "{}")
-                ok = eng.deploy(data.get("model", "default"),
-                                data.get("version", "v1"),
-                                data.get("description", ""),
-                                weight=int(data.get("weight", 0)),
-                                promote=bool(data.get("promote", False)))
-                return (200 if ok else 409), {"Content-Type": "application/json"}, \
-                    json.dumps({"status": "deployed" if ok else "error"})
+                ok = eng.deploy(
+                    data.get("model", "default"),
+                    data.get("version", "v1"),
+                    data.get("description", ""),
+                    weight=int(data.get("weight", 0)),
+                    promote=bool(data.get("promote", False)),
+                )
+                return (
+                    (200 if ok else 409),
+                    {"Content-Type": "application/json"},
+                    json.dumps({"status": "deployed" if ok else "error"}),
+                )
             if path == "/v1/traffic" and method == "POST":
                 data = json.loads(body or "{}")
                 legs = []
@@ -703,18 +799,38 @@ class ServingServer:
                         vid, w = part.split(":", 1)
                         legs.append((vid.strip(), int(w.strip())))
                 ok = eng.set_traffic(data.get("model", "default"), legs)
-                return (200 if ok else 404), {"Content-Type": "application/json"}, \
-                    json.dumps({"status": "ok" if ok else "error"})
+                return (
+                    (200 if ok else 404),
+                    {"Content-Type": "application/json"},
+                    json.dumps({"status": "ok" if ok else "error"}),
+                )
             if path == "/v1/generate" and method == "POST":
                 data = json.loads(body or "{}")
                 rid = data.get("request_id") or f"{time.time_ns()}"
-                version = data.get("version") or eng.route(data.get("model", "default"), rid)
-                result = eng.serve(data.get("inputs"), name=data.get("model"),
-                                   request_id=rid, version=version)
-                out = result if isinstance(result, (dict, list)) else {"output": str(result)}
-                return 200, {"Content-Type": "application/json"}, json.dumps({"version": version, **out})
-            return 404, {"Content-Type": "application/json"}, \
-                json.dumps({"error": "not_found", "path": path})
+                version = data.get("version") or eng.route(
+                    data.get("model", "default"), rid
+                )
+                result = eng.serve(
+                    data.get("inputs"),
+                    name=data.get("model"),
+                    request_id=rid,
+                    version=version,
+                )
+                out = (
+                    result
+                    if isinstance(result, (dict, list))
+                    else {"output": str(result)}
+                )
+                return (
+                    200,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"version": version, **out}),
+                )
+            return (
+                404,
+                {"Content-Type": "application/json"},
+                json.dumps({"error": "not_found", "path": path}),
+            )
 
         handler._dispatch = staticmethod(dispatch)
         return handler
@@ -730,6 +846,7 @@ class ServingServer:
 
             def path_query(self, key):
                 from urllib.parse import urlparse, parse_qs
+
                 q = parse_qs(urlparse(self.path).query)
                 return q.get(key, [None])[0]
 
@@ -742,21 +859,30 @@ class ServingServer:
                 if not dispatch:
                     self.send_error(404)
                     return
-                status, headers, body = dispatch(self, self.command,
-                                                 urlparse(self.path).path, self._body())
+                status, headers, body = dispatch(
+                    self, self.command, urlparse(self.path).path, self._body()
+                )
                 self.send_response(status)
-                self.send_header("Content-Type", headers.get("Content-Type", "application/json"))
+                self.send_header(
+                    "Content-Type", headers.get("Content-Type", "application/json")
+                )
                 self.end_headers()
                 self.wfile.write(body.encode("utf-8"))
 
-            def do_GET(self):    self._respond()
-            def do_POST(self):   self._respond()
-            def do_PATCH(self):  self._respond()
+            def do_GET(self):
+                self._respond()
+
+            def do_POST(self):
+                self._respond()
+
+            def do_PATCH(self):
+                self._respond()
 
         return self._handle(Handler)
 
     def serve_forever(self) -> None:
         from http.server import ThreadingHTTPServer
+
         Handler = self._build_handler()
         self._httpd = ThreadingHTTPServer((self.host, self.port), Handler)
         try:
@@ -768,6 +894,7 @@ class ServingServer:
     def start_background(self) -> "ServingServer":
         """Bind on an OS-assigned port (port=0) and serve in a daemon thread."""
         from http.server import ThreadingHTTPServer
+
         Handler = self._build_handler()
         # port 0 -> OS chooses
         self._httpd = ThreadingHTTPServer((self.host, 0), Handler)
@@ -805,9 +932,12 @@ def serve_from_config(path: str, run_fn: Optional[Callable] = None) -> ServingEn
     engine.warmup()
     for name, spec in (cfg.get("models") or {}).items():
         if isinstance(spec, dict):
-            engine.register_model(name, spec.get("version_id", "v1"),
-                                 spec.get("description", ""),
-                                 weight=int(spec.get("weight", 100)))
+            engine.register_model(
+                name,
+                spec.get("version_id", "v1"),
+                spec.get("description", ""),
+                weight=int(spec.get("weight", 100)),
+            )
         else:
             engine.register_model(name, str(spec))
     for model, legs in _traffic_splits(cfg).items():

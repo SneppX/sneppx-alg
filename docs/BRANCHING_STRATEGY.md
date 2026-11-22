@@ -155,8 +155,6 @@ experiment/*─┤     ┌──────┐     ┌────────�
 | T4 Maintainer | Above + `main`, `hotfix/*`, `security/*` | `main` | All branches |
 | T5 Core | All | All | All |
 
-
-
 ## Workflow Examples
 
 ### Standard Feature Development (T2 Contributor)

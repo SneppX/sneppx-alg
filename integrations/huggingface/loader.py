@@ -43,6 +43,7 @@ def from_huggingface(model_id: str, **kwargs):
 
 def _wrap_hf_model(model):
     """Wrap a HF model so SNEPPX sees standard ``named_parameters()``."""
+
     class _HFPassthrough:
         def __init__(self, m):
             self._m = m

@@ -16,10 +16,18 @@ _LIB, _HAS_C = load_library("neural_drivers")
 class CUDADeviceProps:
     """CUDA device properties queried at runtime."""
 
-    def __init__(self, name: str = "", global_mem: int = 0, shared_mem: int = 0,
-                 warp_size: int = 32, max_threads: int = 1024,
-                 sm_count: int = 0, compute_major: int = 0, compute_minor: int = 0,
-                 has_tensor_cores: bool = False):
+    def __init__(
+        self,
+        name: str = "",
+        global_mem: int = 0,
+        shared_mem: int = 0,
+        warp_size: int = 32,
+        max_threads: int = 1024,
+        sm_count: int = 0,
+        compute_major: int = 0,
+        compute_minor: int = 0,
+        has_tensor_cores: bool = False,
+    ):
         self.name = name
         self.global_mem_bytes = global_mem
         self.shared_mem_per_block = shared_mem
@@ -122,15 +130,29 @@ class CUDADriver:
 
     # ---- Kernel dispatch ----
 
-    def launch_kernel(self, kernel_name: str, grid: Tuple[int, int, int],
-                      block: Tuple[int, int, int], shared_mem: int = 0,
-                      args: Optional[List] = None) -> int:
+    def launch_kernel(
+        self,
+        kernel_name: str,
+        grid: Tuple[int, int, int],
+        block: Tuple[int, int, int],
+        shared_mem: int = 0,
+        args: Optional[List] = None,
+    ) -> int:
         return 0
 
     # ---- Tensor core GEMM ----
 
-    def tc_gemm(self, m: int, n: int, k: int, a: int, b: int, c: int,
-                dtype: int = 0, stream: Optional[dict] = None) -> int:
+    def tc_gemm(
+        self,
+        m: int,
+        n: int,
+        k: int,
+        a: int,
+        b: int,
+        c: int,
+        dtype: int = 0,
+        stream: Optional[dict] = None,
+    ) -> int:
         return 0
 
 
@@ -149,8 +171,14 @@ class ROCmDriver:
         return 0
 
     def get_device_props(self, dev_id: int = 0) -> dict:
-        return {"name": "cpu", "global_mem_bytes": 0, "wavefront_size": 64,
-                "num_cus": 0, "gcn_arch_major": 0, "gcn_arch_minor": 0}
+        return {
+            "name": "cpu",
+            "global_mem_bytes": 0,
+            "wavefront_size": 64,
+            "num_cus": 0,
+            "gcn_arch_major": 0,
+            "gcn_arch_minor": 0,
+        }
 
     def set_device(self, dev_id: int) -> int:
         self._current_device = dev_id
@@ -198,8 +226,13 @@ class ROCmDriver:
     def mem_dtod(self, dev_dst: int, dev_src: int, bytes: int) -> int:
         return 0
 
-    def launch_kernel(self, kernel_name: str, grid: Tuple[int, int, int],
-                      group: Tuple[int, int, int], local_mem: int = 0) -> int:
+    def launch_kernel(
+        self,
+        kernel_name: str,
+        grid: Tuple[int, int, int],
+        group: Tuple[int, int, int],
+        local_mem: int = 0,
+    ) -> int:
         return 0
 
 
@@ -218,8 +251,13 @@ class TPUDriver:
         return 0
 
     def get_device_props(self, dev_id: int = 0) -> dict:
-        return {"name": "cpu", "device_memory_bytes": 0, "num_cores": 0,
-                "num_chips": 0, "supports_bfloat16": True}
+        return {
+            "name": "cpu",
+            "device_memory_bytes": 0,
+            "num_cores": 0,
+            "num_chips": 0,
+            "supports_bfloat16": True,
+        }
 
     def create_context(self, device_id: int = 0) -> Optional[dict]:
         return {"device_id": device_id, "client": None, "alloc_bytes": 0}
@@ -233,10 +271,14 @@ class TPUDriver:
     def mem_free(self, dev_ptr: int, ctx: dict):
         pass
 
-    def mem_htod(self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict) -> int:
+    def mem_htod(
+        self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict
+    ) -> int:
         return 0
 
-    def mem_dtoh(self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict) -> int:
+    def mem_dtoh(
+        self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict
+    ) -> int:
         return 0
 
     def compile(self, hlo_module: str, ctx: dict) -> Optional[dict]:
@@ -245,11 +287,18 @@ class TPUDriver:
     def executable_destroy(self, exec: dict):
         pass
 
-    def execute(self, exec: dict, inputs: List[np.ndarray],
-                outputs: List[np.ndarray], ctx: dict) -> int:
+    def execute(
+        self, exec: dict, inputs: List[np.ndarray], outputs: List[np.ndarray], ctx: dict
+    ) -> int:
         return 0
 
-    def all_reduce(self, send_buf: np.ndarray, recv_buf: np.ndarray,
-                   dtype: int = 0, reduce_op: int = 0, ctx: Optional[dict] = None) -> int:
+    def all_reduce(
+        self,
+        send_buf: np.ndarray,
+        recv_buf: np.ndarray,
+        dtype: int = 0,
+        reduce_op: int = 0,
+        ctx: Optional[dict] = None,
+    ) -> int:
         np.copyto(recv_buf, send_buf)
         return 0

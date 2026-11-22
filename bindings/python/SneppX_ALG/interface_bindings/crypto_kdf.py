@@ -45,7 +45,9 @@ class HKDF:
 
     def _extract(self, salt: bytes, ikm: bytes) -> bytes:
         return _hmac.new(
-            salt or b"\x00" * hashlib.new(self._digestmod().name).digest_size, ikm, self._digestmod
+            salt or b"\x00" * hashlib.new(self._digestmod().name).digest_size,
+            ikm,
+            self._digestmod,
         ).digest()
 
     def _expand(self, prk: bytes, info: bytes, length: int) -> bytes:
@@ -76,13 +78,23 @@ class PBKDF2:
         self._has_c = _HAS_C
 
     def derive(
-        self, password: bytes, salt: bytes, iterations: int = 600000, dklen: Optional[int] = None
+        self,
+        password: bytes,
+        salt: bytes,
+        iterations: int = 600000,
+        dklen: Optional[int] = None,
     ) -> bytes:
-        return hashlib.pbkdf2_hmac(self._digestmod().name, password, salt, iterations, dklen=dklen)
+        return hashlib.pbkdf2_hmac(
+            self._digestmod().name, password, salt, iterations, dklen=dklen
+        )
 
-    def verify(self, password: bytes, salt: bytes, iterations: int, expected: bytes) -> bool:
+    def verify(
+        self, password: bytes, salt: bytes, iterations: int, expected: bytes
+    ) -> bool:
         derived = self.derive(password, salt, iterations, len(expected))
-        return len(derived) == len(expected) and all(a == b for a, b in zip(derived, expected))
+        return len(derived) == len(expected) and all(
+            a == b for a, b in zip(derived, expected)
+        )
 
 
 # ---- Argon2 (RFC 9106) --------------------------------------------------

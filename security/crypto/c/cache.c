@@ -35,18 +35,21 @@
  * @param ptr  Start of the memory region.
  * @param len  Length of the region in bytes.
  */
-void SNEPPX_cache_flush(const void* ptr, size_t len) {
-    if (!ptr) return;
-    const uint8_t* p = (const uint8_t*)ptr;
-    for (size_t i = 0; i < len; i += 64) {
+void SNEPPX_cache_flush(const void* ptr, size_t len)
+{
+    if (!ptr)
+        return;
+    const uint8_t* p = (const uint8_t*) ptr;
+    for (size_t i = 0; i < len; i += 64)
+    {
 #if defined(_MSC_VER)
         _mm_clflush(&p[i]);
 #elif defined(__x86_64__) || defined(__amd64__)
         _mm_clflush(&p[i]);
 #elif defined(__aarch64__)
-        __asm__ volatile("dc civac, %0" :: "r"(&p[i]) : "memory");
+        __asm__ volatile("dc civac, %0" ::"r"(&p[i]) : "memory");
 #else
-        (void)p;
+        (void) p;
 #endif
     }
 }
@@ -55,23 +58,26 @@ void SNEPPX_cache_flush(const void* ptr, size_t len) {
  * @brief Prefetch data into cache.
  * @param ptr  Pointer to the data to prefetch.
  */
-void SNEPPX_cache_prefetch(const void* ptr) {
-    if (!ptr) return;
+void SNEPPX_cache_prefetch(const void* ptr)
+{
+    if (!ptr)
+        return;
 #if defined(_MSC_VER)
-    _mm_prefetch((const char*)ptr, _MM_HINT_T0);
+    _mm_prefetch((const char*) ptr, _MM_HINT_T0);
 #elif defined(__x86_64__) || defined(__amd64__)
-    _mm_prefetch((const char*)ptr, _MM_HINT_T0);
+    _mm_prefetch((const char*) ptr, _MM_HINT_T0);
 #elif defined(__aarch64__)
-    __asm__ volatile("prfm pldl1keep, [%0]" :: "r"(ptr));
+    __asm__ volatile("prfm pldl1keep, [%0]" ::"r"(ptr));
 #else
-    (void)ptr;
+    (void) ptr;
 #endif
 }
 
 /**
  * @brief Issue a full memory barrier.
  */
-void SNEPPX_cache_barrier(void) {
+void SNEPPX_cache_barrier(void)
+{
 #if defined(_MSC_VER)
     _mm_mfence();
 #elif defined(__x86_64__) || defined(__amd64__)

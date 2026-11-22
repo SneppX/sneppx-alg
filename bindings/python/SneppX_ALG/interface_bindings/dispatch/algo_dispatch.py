@@ -69,7 +69,7 @@ class AlgoBackend:
         h = np.zeros((batch, d_model), dtype=np.float32)
         out = np.zeros_like(x)
         for t in range(seq_len):
-            d = delta[:, t:t+1, :]
+            d = delta[:, t : t + 1, :]
             h = h * np.exp(d @ A) + (d @ B) @ x[:, t, :]
             out[:, t, :] = h @ C[:, t, :]
         return out

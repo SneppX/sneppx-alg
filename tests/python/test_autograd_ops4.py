@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -76,7 +78,11 @@ def test_cosine_embedding_loss_fd():
     y = np.array([1, -1, 1], dtype=np.int64)
 
     def mt(*a):
-        return [Tensor(a[0], requires_grad=True), Tensor(a[1], requires_grad=True), Tensor(a[2])]
+        return [
+            Tensor(a[0], requires_grad=True),
+            Tensor(a[1], requires_grad=True),
+            Tensor(a[2]),
+        ]
 
     def lf(*t):
         return ops.CosineEmbeddingLoss.apply(t[0], t[1], t[2], 0.0)
@@ -91,8 +97,11 @@ def test_triplet_margin_loss_fd():
     n = np.random.randn(3, 4).astype("float64")
 
     def mt(*aa):
-        return [Tensor(aa[0], requires_grad=True), Tensor(aa[1], requires_grad=True),
-                Tensor(aa[2], requires_grad=True)]
+        return [
+            Tensor(aa[0], requires_grad=True),
+            Tensor(aa[1], requires_grad=True),
+            Tensor(aa[2], requires_grad=True),
+        ]
 
     def lf(*t):
         return ops.TripletMarginLoss.apply(t[0], t[1], t[2], 1.0)
@@ -107,7 +116,11 @@ def test_contrastive_loss_fd():
     y = np.array([0, 1, 0], dtype=np.int64)
 
     def mt(*aa):
-        return [Tensor(aa[0], requires_grad=True), Tensor(aa[1], requires_grad=True), Tensor(aa[2])]
+        return [
+            Tensor(aa[0], requires_grad=True),
+            Tensor(aa[1], requires_grad=True),
+            Tensor(aa[2]),
+        ]
 
     def lf(*t):
         return ops.ContrastiveLoss.apply(t[0], t[1], t[2], 1.0)
@@ -122,7 +135,11 @@ def test_margin_ranking_loss_fd():
     y = np.array([1, -1, 1], dtype=np.int64)
 
     def mt(*aa):
-        return [Tensor(aa[0], requires_grad=True), Tensor(aa[1], requires_grad=True), Tensor(aa[2])]
+        return [
+            Tensor(aa[0], requires_grad=True),
+            Tensor(aa[1], requires_grad=True),
+            Tensor(aa[2]),
+        ]
 
     def lf(*t):
         return ops.MarginRankingLoss.apply(t[0], t[1], t[2], 0.0)

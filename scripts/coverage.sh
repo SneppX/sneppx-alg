@@ -7,8 +7,14 @@ BUILD_DIR="${ROOT}/build-coverage"
 REPORT_DIR="${ROOT}/coverage_report"
 
 # Prerequisites
-command -v lcov >/dev/null 2>&1 || { echo "ERROR: lcov not found"; exit 1; }
-command -v genhtml >/dev/null 2>&1 || { echo "ERROR: genhtml not found"; exit 1; }
+command -v lcov >/dev/null 2>&1 || {
+    echo "ERROR: lcov not found"
+    exit 1
+}
+command -v genhtml >/dev/null 2>&1 || {
+    echo "ERROR: genhtml not found"
+    exit 1
+}
 
 echo "=== SNEPPX-Algo Coverage Report ==="
 

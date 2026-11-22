@@ -33,8 +33,8 @@ rsync -a --exclude='.git/' --exclude='build/' --exclude='build_standalone/' \
 
 # Generate checksums
 cd "$ROOT_DIR/releases"
-sha256sum "SNEPPX-algo-v${VERSION}.tar.gz" "SNEPPX-algo-v${VERSION}.zip" > SHA256SUMS
-sha512sum "SNEPPX-algo-v${VERSION}.tar.gz" "SNEPPX-algo-v${VERSION}.zip" > SHA512SUMS
+sha256sum "SNEPPX-algo-v${VERSION}.tar.gz" "SNEPPX-algo-v${VERSION}.zip" >SHA256SUMS
+sha512sum "SNEPPX-algo-v${VERSION}.tar.gz" "SNEPPX-algo-v${VERSION}.zip" >SHA512SUMS
 
 # Sign if signing script exists
 if [ -x "${ROOT_DIR}/scripts/sign-release.sh" ]; then

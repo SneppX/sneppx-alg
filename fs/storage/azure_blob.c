@@ -17,7 +17,6 @@
  *
  */
 
-
 /**
  * @brief Create Azure Blob.
  *
@@ -25,11 +24,19 @@
  *
  * @return Pointer on success, NULL on error.
  */
-void* SNEPPX_azure_blob_create(const char* connection_string, const char* container_name) { (void)connection_string; (void)container_name; return NULL; }
+void* SNEPPX_azure_blob_create(const char* connection_string, const char* container_name)
+{
+    (void) connection_string;
+    (void) container_name;
+    return NULL;
+}
 /**
  * @brief Destroy Azure Blob.
  */
-void SNEPPX_azure_blob_destroy(void* client) { free(client); }
+void SNEPPX_azure_blob_destroy(void* client)
+{
+    free(client);
+}
 /**
  * @brief Load Azure Blob Up.
  *
@@ -40,7 +47,16 @@ void SNEPPX_azure_blob_destroy(void* client) { free(client); }
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_upload(void* client, const char* blob_name, const unsigned char* data, size_t len, const char* content_type) { (void)client; (void)blob_name; (void)data; (void)len; (void)content_type; return 0; }
+int SNEPPX_azure_blob_upload(void* client, const char* blob_name, const unsigned char* data, size_t len,
+                             const char* content_type)
+{
+    (void) client;
+    (void) blob_name;
+    (void) data;
+    (void) len;
+    (void) content_type;
+    return 0;
+}
 /**
  * @brief Load Azure Blob Down.
  *
@@ -50,7 +66,14 @@ int SNEPPX_azure_blob_upload(void* client, const char* blob_name, const unsigned
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_download(void* client, const char* blob_name, unsigned char** data, size_t* len) { (void)client; (void)blob_name; (void)data; (void)len; return 0; }
+int SNEPPX_azure_blob_download(void* client, const char* blob_name, unsigned char** data, size_t* len)
+{
+    (void) client;
+    (void) blob_name;
+    (void) data;
+    (void) len;
+    return 0;
+}
 /**
  * @brief Perform Azure Blob Delete.
  *
@@ -58,7 +81,12 @@ int SNEPPX_azure_blob_download(void* client, const char* blob_name, unsigned cha
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_delete(void* client, const char* blob_name) { (void)client; (void)blob_name; return 0; }
+int SNEPPX_azure_blob_delete(void* client, const char* blob_name)
+{
+    (void) client;
+    (void) blob_name;
+    return 0;
+}
 /**
  * @brief Perform Azure Blob List.
  *
@@ -68,7 +96,14 @@ int SNEPPX_azure_blob_delete(void* client, const char* blob_name) { (void)client
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_list(void* client, const char* prefix, char*** blobs, size_t* count) { (void)client; (void)prefix; (void)blobs; (void)count; return 0; }
+int SNEPPX_azure_blob_list(void* client, const char* prefix, char*** blobs, size_t* count)
+{
+    (void) client;
+    (void) prefix;
+    (void) blobs;
+    (void) count;
+    return 0;
+}
 /**
  * @brief Perform Azure Blob Exists.
  *
@@ -76,7 +111,12 @@ int SNEPPX_azure_blob_list(void* client, const char* prefix, char*** blobs, size
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_exists(void* client, const char* blob_name) { (void)client; (void)blob_name; return 0; }
+int SNEPPX_azure_blob_exists(void* client, const char* blob_name)
+{
+    (void) client;
+    (void) blob_name;
+    return 0;
+}
 /**
  * @brief Perform Azure Blob Get Url.
  *
@@ -86,4 +126,11 @@ int SNEPPX_azure_blob_exists(void* client, const char* blob_name) { (void)client
  *
  * @return 0 on success, -1 on error.
  */
-int SNEPPX_azure_blob_get_url(void* client, const char* blob_name, char* url, size_t url_max) { (void)client; (void)blob_name; (void)url; (void)url_max; return 0; }
+int SNEPPX_azure_blob_get_url(void* client, const char* blob_name, char* url, size_t url_max)
+{
+    (void) client;
+    (void) blob_name;
+    (void) url;
+    (void) url_max;
+    return 0;
+}

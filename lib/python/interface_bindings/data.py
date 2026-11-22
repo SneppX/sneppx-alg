@@ -45,7 +45,7 @@ class TextDataset(Dataset):
 
     def __getitem__(self, idx):
         tokens = self.tokenizer.encode(self.texts[idx])
-        tokens = tokens[:self.max_length]
+        tokens = tokens[: self.max_length]
         if len(tokens) < self.max_length:
             tokens = tokens + [0] * (self.max_length - len(tokens))
         return Tensor(np.array(tokens, dtype=np.int64))
@@ -59,6 +59,7 @@ class SimpleTokenizer:
 
     def train(self, texts: List[str], min_freq: int = 2):
         from collections import Counter
+
         counter = Counter()
         for text in texts:
             counter.update(text.split())

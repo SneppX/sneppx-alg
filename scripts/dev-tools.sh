@@ -13,19 +13,31 @@ BUILD_DIR="build"
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --all) ALL=1; shift ;;
-        --no-test) NO_TEST=1; shift ;;
-        --build-dir) BUILD_DIR="$2"; shift 2 ;;
-        *) echo "Unknown option: $1" >&2; exit 1 ;;
+        --all)
+            ALL=1
+            shift
+            ;;
+        --no-test)
+            NO_TEST=1
+            shift
+            ;;
+        --build-dir)
+            BUILD_DIR="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
     esac
 done
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 FAILED=0
 
-red()   { printf "\033[31m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*"; }
 green() { printf "\033[32m%s\033[0m\n" "$*"; }
-skip()  { printf "\033[33m  SKIP  %s\033[0m\n" "$*"; }
+skip() { printf "\033[33m  SKIP  %s\033[0m\n" "$*"; }
 
 check() {
     local name="$1"
@@ -33,7 +45,7 @@ check() {
     if "$@" >/dev/null 2>&1; then
         green "  PASS  $name"
     else
-        red   "  FAIL  $name"
+        red "  FAIL  $name"
         FAILED=1
     fi
 }

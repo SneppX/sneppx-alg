@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include "test_gtest.h"
-#include <string.h>
-#include "memory_hard_key_derivation.h"
 #include "constant_time_operations.h"
+#include "memory_hard_key_derivation.h"
+#include "test_gtest.h"
+#include <stdio.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Argon2
@@ -19,10 +19,8 @@
  *
  */
 
-
-
-
-void test_hash_verify(void) {
+void test_hash_verify(void)
+{
     printf("\n--- test_hash_verify ---\n");
     uint8_t password[] = "correct horse battery staple";
     uint8_t salt[] = "sodium chloride";
@@ -45,7 +43,8 @@ void test_hash_verify(void) {
     SX_TEST("verify wrong password fails", ret == 0);
 }
 
-void test_timing(void) {
+void test_timing(void)
+{
     printf("\n--- test_timing ---\n");
     uint8_t password[] = "test password";
     uint8_t salt[] = "test salt";
@@ -66,6 +65,11 @@ void test_timing(void) {
     SX_TEST("timing-safe verify works", ret_correct == 1 && ret_wrong == 0);
 }
 
-
-TEST(test_argon2, test_hash_verify) { test_hash_verify(); }
-TEST(test_argon2, test_timing) { test_timing(); }
+TEST(test_argon2, test_hash_verify)
+{
+    test_hash_verify();
+}
+TEST(test_argon2, test_timing)
+{
+    test_timing();
+}

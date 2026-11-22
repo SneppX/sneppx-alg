@@ -1,4 +1,5 @@
 """Regression checks for credential-sensitive WinHTTP header parsing."""
+
 from pathlib import Path
 
 

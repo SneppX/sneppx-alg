@@ -30,10 +30,12 @@ def quantize_model_weights(
         w_t = Tensor.from_numpy(weight)
         if cfg.quant_mode == QuantMode.INT4_SYM:
             from .quantization import quantize_int4_sym
+
             qw, scale = quantize_int4_sym(w_t)
             ql = QuantizedLinear(qw, scale, mode=cfg.quant_mode)
         else:
             from .quantization import quantize_int8_sym
+
             qw, scale = quantize_int8_sym(w_t)
             ql = QuantizedLinear(qw, scale, mode=cfg.quant_mode)
         quantized[name] = ql

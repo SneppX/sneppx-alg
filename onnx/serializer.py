@@ -91,9 +91,9 @@ def _encode_dim(value: Any) -> bytes:
 
 def _encode_value_info(info: ValueInfo) -> bytes:
     dims = [_pb_sub(1, _encode_dim(d)) for d in info.shape]
-    tensor = _pb_varint_field(
-        1, DTYPE_TO_ONNX.get(info.dtype, 1)
-    ) + _pb_sub(2, b"".join(dims))
+    tensor = _pb_varint_field(1, DTYPE_TO_ONNX.get(info.dtype, 1)) + _pb_sub(
+        2, b"".join(dims)
+    )
     type_proto = _pb_sub(1, tensor)
     return _pb_string_field(1, info.name) + _pb_sub(2, type_proto)
 
@@ -103,13 +103,17 @@ def _encode_attr(attr: Attribute) -> bytes:
     atype = attr.attr_type or AttrType.UNDEFINED
     value = attr.value
 
-    if atype == AttrType.FLOAT or (isinstance(value, float) and atype == AttrType.UNDEFINED):
+    if atype == AttrType.FLOAT or (
+        isinstance(value, float) and atype == AttrType.UNDEFINED
+    ):
         return (
             name_field
             + _pb_varint_field(20, AttrType.FLOAT)
             + _pb_float_field(2, float(value))
         )
-    if atype == AttrType.INT or (isinstance(value, bool) and atype == AttrType.UNDEFINED):
+    if atype == AttrType.INT or (
+        isinstance(value, bool) and atype == AttrType.UNDEFINED
+    ):
         return (
             name_field
             + _pb_varint_field(20, AttrType.INT)
@@ -134,7 +138,11 @@ def _encode_attr(attr: Attribute) -> bytes:
             + _pb_float_field(2, float(value))
         )
     if isinstance(value, bytes):
-        return name_field + _pb_varint_field(20, AttrType.STRING) + _pb_bytes_field(4, value)
+        return (
+            name_field
+            + _pb_varint_field(20, AttrType.STRING)
+            + _pb_bytes_field(4, value)
+        )
     if isinstance(value, str):
         return (
             name_field
@@ -142,7 +150,11 @@ def _encode_attr(attr: Attribute) -> bytes:
             + _pb_string_field(4, value)
         )
     if isinstance(value, np.ndarray) or isinstance(value, Tensor):
-        tensor = value if isinstance(value, Tensor) else Tensor("", "float32", list(value.shape), value)
+        tensor = (
+            value
+            if isinstance(value, Tensor)
+            else Tensor("", "float32", list(value.shape), value)
+        )
         return (
             name_field
             + _pb_varint_field(20, AttrType.TENSOR)
@@ -247,9 +259,9 @@ def serialize_model(model: Model) -> bytes:
         parts.append(_pb_string_field(6, model.doc_string))
     opsets = model.opset_imports or [OpsetImport("", ONNX_OPSET_VERSION)]
     for opset in opsets:
-        opset_proto = _pb_string_field(
-            1, opset.domain or ""
-        ) + _pb_varint_field(2, int(opset.version or ONNX_OPSET_VERSION))
+        opset_proto = _pb_string_field(1, opset.domain or "") + _pb_varint_field(
+            2, int(opset.version or ONNX_OPSET_VERSION)
+        )
         parts.append(_pb_sub(8, opset_proto))
     for prop in model.metadata_props:
         entry = _pb_string_field(1, prop.key) + _pb_string_field(2, prop.value)

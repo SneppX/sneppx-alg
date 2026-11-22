@@ -468,19 +468,28 @@ class SwinPatchEmbed(Module):
 class SwinPatchMerging(Module):
     """Patch Merging Layer."""
 
-    def __init__(self, dim: int = None, out_dim: Optional[int] = None,
-                 input_dim: int = None, output_dim: int = None):
+    def __init__(
+        self,
+        dim: int = None,
+        out_dim: Optional[int] = None,
+        input_dim: int = None,
+        output_dim: int = None,
+    ):
         super().__init__()
         if input_dim is not None:
             dim = input_dim
         self.dim = dim
-        self.out_dim = out_dim if out_dim is not None else (
-            output_dim if output_dim is not None else 2 * dim
+        self.out_dim = (
+            out_dim
+            if out_dim is not None
+            else (output_dim if output_dim is not None else 2 * dim)
         )
         self.reduction = Linear(4 * dim, self.out_dim, bias=False)
         self.norm = LayerNorm(4 * dim)
 
-    def forward(self, x: Tensor, H: int = None, W: int = None) -> Tuple[Tensor, int, int]:
+    def forward(
+        self, x: Tensor, H: int = None, W: int = None
+    ) -> Tuple[Tensor, int, int]:
         B, L, C = x.shape
         if H is None:
             H = int(math.sqrt(L))
@@ -788,7 +797,9 @@ class MAE(Module):
 
         x, mask, ids_restore = self.random_masking(x, self.mask_ratio)
 
-        cls_token = Tensor.from_numpy(np.repeat(self.cls_token.data, x.shape[0], axis=0))
+        cls_token = Tensor.from_numpy(
+            np.repeat(self.cls_token.data, x.shape[0], axis=0)
+        )
         x = cat([cls_token, x], dim=1)
         x = x + self.pos_embed[:, : x.shape[1], :]
 

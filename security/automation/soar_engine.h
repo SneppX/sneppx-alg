@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_SOAR_TRIGGER_BY_ALERT,
     SNEPPX_SOAR_TRIGGER_BY_SCHEDULE,
     SNEPPX_SOAR_TRIGGER_BY_IOC,
@@ -36,7 +36,8 @@ typedef enum {
     SNEPPX_SOAR_TRIGGER_MANUAL
 } SNEPPXSOARTriggerType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_SOAR_ACTION_BLOCK_IP,
     SNEPPX_SOAR_ACTION_BLOCK_DOMAIN,
     SNEPPX_SOAR_ACTION_BLOCK_URL,
@@ -59,7 +60,8 @@ typedef enum {
     SNEPPX_SOAR_ACTION_ESCALATE
 } SNEPPXSOARActionType;
 
-typedef struct {
+typedef struct
+{
     uint64_t integration_id;
     SNEPPXSOARActionType action_type;
     char* integration_name;
@@ -78,7 +80,8 @@ typedef struct {
     uint8_t verified : 1;
 } SNEPPXSOARIntegration;
 
-typedef struct {
+typedef struct
+{
     SNEPPXSOARTriggerType trigger;
     char* trigger_filter;
     size_t trigger_filter_len;
@@ -89,7 +92,8 @@ typedef struct {
     uint8_t auto_approve : 1;
 } SNEPPXSOARRule;
 
-typedef struct {
+typedef struct
+{
     char* workflow_name;
     size_t workflow_name_len;
     SNEPPXSOARRule rules[SNEPPX_SOAR_MAX_ACTIONS];
@@ -106,8 +110,10 @@ typedef struct {
 int snepx_soar_workflow_create(SNEPPXSOARWorkflow* wf, const char* name);
 int snepx_soar_workflow_add_rule(SNEPPXSOARWorkflow* wf, const SNEPPXSOARRule* rule);
 int snepx_soar_workflow_add_integration(SNEPPXSOARWorkflow* wf, const SNEPPXSOARIntegration* integration);
-int snepx_soar_workflow_execute(SNEPPXSOARWorkflow* wf, SNEPPXSOARTriggerType trigger, const uint8_t* context, size_t ctx_len);
-int snepx_soar_workflow_execute_action(SNEPPXSOARWorkflow* wf, SNEPPXSOARActionType action, const uint8_t* params, size_t params_len, uint8_t* result, size_t* result_len);
+int snepx_soar_workflow_execute(SNEPPXSOARWorkflow* wf, SNEPPXSOARTriggerType trigger, const uint8_t* context,
+                                size_t ctx_len);
+int snepx_soar_workflow_execute_action(SNEPPXSOARWorkflow* wf, SNEPPXSOARActionType action, const uint8_t* params,
+                                       size_t params_len, uint8_t* result, size_t* result_len);
 int snepx_soar_workflow_get_stats(const SNEPPXSOARWorkflow* wf, uint8_t* stats_out, size_t* stats_len);
 int snepx_soar_workflow_destroy(SNEPPXSOARWorkflow* wf);
 
@@ -115,8 +121,11 @@ int snepx_soar_workflow_destroy(SNEPPXSOARWorkflow* wf);
 int snepx_soar_action_block_ip(const SNEPPXSOARIntegration* integration, const char* ip);
 int snepx_soar_action_block_domain(const SNEPPXSOARIntegration* integration, const char* domain);
 int snepx_soar_action_quarantine_host(const SNEPPXSOARIntegration* integration, const char* hostname);
-int snepx_soar_action_create_ticket(const SNEPPXSOARIntegration* integration, const char* title, const char* description, const char* priority);
-int snepx_soar_action_send_email(const SNEPPXSOARIntegration* integration, const char* to, const char* subject, const char* body);
-int snepx_soar_action_sandbox_submit(const SNEPPXSOARIntegration* integration, const uint8_t* sample, size_t sample_len, uint8_t* report_out, size_t* report_len);
+int snepx_soar_action_create_ticket(const SNEPPXSOARIntegration* integration, const char* title,
+                                    const char* description, const char* priority);
+int snepx_soar_action_send_email(const SNEPPXSOARIntegration* integration, const char* to, const char* subject,
+                                 const char* body);
+int snepx_soar_action_sandbox_submit(const SNEPPXSOARIntegration* integration, const uint8_t* sample, size_t sample_len,
+                                     uint8_t* report_out, size_t* report_len);
 
 #endif

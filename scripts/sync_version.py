@@ -3,6 +3,7 @@
 Version synchronization script for SNEPPX-ALG.
 Keeps VERSION file, pyproject.toml, CMakeLists.txt, and Python __version__ in sync.
 """
+
 import re
 import sys
 import os
@@ -12,43 +13,57 @@ ROOT = Path(__file__).parent.parent
 VERSION_FILE = ROOT / "VERSION"
 PYPROJECT_FILE = ROOT / "pyproject.toml"
 CMAKE_FILE = ROOT / "CMakeLists.txt"
-INIT_FILE = Path(__file__).parent / "bindings" / "python" / "SneppX_ALG" / "interface_bindings" / "__init__.py"
+INIT_FILE = (
+    Path(__file__).parent
+    / "bindings"
+    / "python"
+    / "SneppX_ALG"
+    / "interface_bindings"
+    / "__init__.py"
+)
 
-VERSION_PATTERN = re.compile(r'algo([0-9]+\.[0-9]+\.[0-9]+)')
+VERSION_PATTERN = re.compile(r"algo([0-9]+\.[0-9]+\.[0-9]+)")
+
 
 def read_version() -> str:
     """Read version from VERSION file."""
-    content = VERSION_FILE.read_text(encoding='utf-8')
+    content = VERSION_FILE.read_text(encoding="utf-8")
     match = VERSION_PATTERN.search(content)
     if not match:
         raise ValueError("Could not parse version from VERSION file")
     return match.group(1)
 
+
 def update_pyproject(version: str) -> None:
     """Update version in pyproject.toml."""
-    content = Path(PYPROJECT_FILE).read_text(encoding='utf-8')
+    content = Path(PYPROJECT_FILE).read_text(encoding="utf-8")
     new_content = re.sub(r'version\s*=\s*"[^"]+"', f'version = "{version}"', content)
-    Path(PYPROJECT_FILE).write_text(new_content, encoding='utf-8')
+    Path(PYPROJECT_FILE).write_text(new_content, encoding="utf-8")
     print(f"Updated pyproject.toml to {version}")
+
 
 def update_cmake(version: str) -> None:
     """Update version in CMakeLists.txt."""
-    content = Path(CMAKE_FILE).read_text(encoding='utf-8')
+    content = Path(CMAKE_FILE).read_text(encoding="utf-8")
     new_content = re.sub(
-        r'project\(cognitive_processing_system VERSION [0-9.]+',
-        f'project(cognitive_processing_system VERSION {version}',
-        content
+        r"project\(cognitive_processing_system VERSION [0-9.]+",
+        f"project(cognitive_processing_system VERSION {version}",
+        content,
     )
-    Path(CMAKE_FILE).write_text(new_content, encoding='utf-8')
+    Path(CMAKE_FILE).write_text(new_content, encoding="utf-8")
     print(f"Updated CMakeLists.txt to {version}")
+
 
 def update_init(version: str) -> None:
     """Update __version__ in Python package."""
     if INIT_FILE.exists():
-        content = INIT_FILE.read_text(encoding='utf-8')
-        new_content = re.sub(r'__version__\s*=\s*"[^"]+"', f'__version__ = "{version}"', content)
-        INIT_FILE.write_text(new_content, encoding='utf-8')
+        content = INIT_FILE.read_text(encoding="utf-8")
+        new_content = re.sub(
+            r'__version__\s*=\s*"[^"]+"', f'__version__ = "{version}"', content
+        )
+        INIT_FILE.write_text(new_content, encoding="utf-8")
         print(f"Updated interface_bindings/__init__.py to {version}")
+
 
 def main():
     if len(sys.argv) < 2:
@@ -58,7 +73,7 @@ def main():
 
     action = sys.argv[1]
     current = read_version()
-    major, minor, patch = map(int, current.split('.'))
+    major, minor, patch = map(int, current.split("."))
 
     if action == "major":
         new_version = f"{major + 1}.0.0"
@@ -68,7 +83,7 @@ def main():
         new_version = f"{major}.{minor}.{patch + 1}"
     elif action == "rc":
         new_version = f"{major}.{minor}.{patch}-rc1"
-    elif re.match(r'^\d+\.\d+\.\d+(?:-rc\d+)?$', action):
+    elif re.match(r"^\d+\.\d+\.\d+(?:-rc\d+)?$", action):
         new_version = action
     else:
         print(f"Unknown action: {action}")
@@ -84,7 +99,7 @@ def main():
         f"Security: S0-S9 Complete — 21,809+ lines of security implementation\n"
         f"Build: cmake 3.16+, C11/C++20, Python 3.11+, macOS/Linux/Windows\n"
         f"Total Codebase: ~114,000 lines across 500+ files\n",
-        encoding='utf-8'
+        encoding="utf-8",
     )
 
     update_pyproject(new_version)
@@ -93,6 +108,7 @@ def main():
 
     print(f"✅ Version synchronized to {new_version}")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

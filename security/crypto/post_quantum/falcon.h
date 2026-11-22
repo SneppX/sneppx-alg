@@ -29,13 +29,14 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_FALCON_512,
     SNEPPX_FALCON_1024
 } SNEPPXFalconVariant;
 
-typedef struct {
+typedef struct
+{
     SNEPPXFalconVariant variant;
     uint8_t* secret_key;
     size_t secret_key_len;
@@ -52,7 +53,8 @@ typedef struct {
     uint64_t signing_counter;
 } SNEPPXFalconKeypair;
 
-typedef struct {
+typedef struct
+{
     uint8_t* signature;
     size_t signature_len;
     uint8_t* salt;
@@ -64,8 +66,10 @@ typedef struct {
 } SNEPPXFalconSignature;
 
 int snepx_falcon_keygen(SNEPPXFalconKeypair* keypair, SNEPPXFalconVariant variant);
-int snepx_falcon_sign(SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len, SNEPPXFalconSignature* sig);
-int snepx_falcon_verify(const SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len, const SNEPPXFalconSignature* sig);
+int snepx_falcon_sign(SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len,
+                      SNEPPXFalconSignature* sig);
+int snepx_falcon_verify(const SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len,
+                        const SNEPPXFalconSignature* sig);
 int snepx_falcon_sign_compress(SNEPPXFalconSignature* sig);
 int snepx_falcon_sign_decompress(SNEPPXFalconSignature* sig);
 int snepx_falcon_export_pubkey(const SNEPPXFalconKeypair* keypair, uint8_t* out, size_t* out_len);
@@ -76,7 +80,9 @@ int snepx_falcon_keypair_destroy(SNEPPXFalconKeypair* keypair);
 
 // Falcon-1024 (NIST Level 5)
 int snepx_falcon_1024_keygen(SNEPPXFalconKeypair* keypair);
-int snepx_falcon_1024_sign(SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len, uint8_t* signature, size_t* signature_len);
-int snepx_falcon_1024_verify(const SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len, const uint8_t* signature, size_t signature_len);
+int snepx_falcon_1024_sign(SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len, uint8_t* signature,
+                           size_t* signature_len);
+int snepx_falcon_1024_verify(const SNEPPXFalconKeypair* keypair, const uint8_t* message, size_t message_len,
+                             const uint8_t* signature, size_t signature_len);
 
 #endif

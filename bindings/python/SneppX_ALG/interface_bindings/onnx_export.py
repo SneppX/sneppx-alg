@@ -255,9 +255,9 @@ class OnnxTensor:
                 shape_dims.append(_pb_sub(1, _pb_varint_field(1, int(d))))
             else:
                 shape_dims.append(_pb_sub(1, _pb_string_field(2, "None")))
-        tensor = _pb_varint_field(
-            1, DTYPE_TO_ONNX.get(self.dtype, 1)
-        ) + _pb_sub(2, b"".join(shape_dims))
+        tensor = _pb_varint_field(1, DTYPE_TO_ONNX.get(self.dtype, 1)) + _pb_sub(
+            2, b"".join(shape_dims)
+        )
         type_proto = _pb_sub(1, tensor)
         return _pb_string_field(1, self.name) + _pb_sub(2, type_proto)
 

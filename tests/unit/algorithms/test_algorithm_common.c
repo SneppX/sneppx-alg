@@ -13,7 +13,6 @@
  *
  */
 
-
 /*
  * Algorithm Unit Tests — SKELETON
  * VERSION: v0.5
@@ -24,10 +23,11 @@
  * isolation from the full model pipeline.
  */
 
-#include <stdio.h>
 #include "test_gtest.h"
+#include <stdio.h>
 
-TEST(test_algorithm_common, suite) {
+TEST(test_algorithm_common, suite)
+{
     printf("test_algorithm: skeleton — no algorithm unit tests implemented\n");
     return;
 }

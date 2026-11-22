@@ -6,6 +6,7 @@ Canonical metadata lives in pyproject.toml. This file exists only to:
      (`_SNEPPX_c.cp311-win_amd64.pyd`) so wheels are not published as
      `py3-none-any`.
 """
+
 import os
 import re
 import sys
@@ -20,7 +21,9 @@ def _find_pyd():
     if not os.path.isdir(pkg_dir):
         return None
     for f in os.listdir(pkg_dir):
-        if f.startswith(("_SNEPPX_c", "_sneppx_c", "_arix_c")) and f.endswith((".pyd", ".so")):
+        if f.startswith(("_SNEPPX_c", "_sneppx_c", "_arix_c")) and f.endswith(
+            (".pyd", ".so")
+        ):
             return f
     return None
 
@@ -39,6 +42,7 @@ def _detect_tag(pyd_name):
         if m:
             return m.group(1), m.group(1), m.group(2)
     import sysconfig
+
     impl = sys.implementation.name
     ver = "".join(map(str, sys.version_info[:2]))
     return (

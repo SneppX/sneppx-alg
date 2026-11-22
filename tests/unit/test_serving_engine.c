@@ -1,10 +1,10 @@
+#include "http_server.h"
 #include "serving_engine.h"
 #include "test_gtest.h"
-#include "http_server.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 /*
@@ -20,7 +20,8 @@
 
 static int pass = 0, fail = 0;
 
-TEST(test_serving_engine, suite) {
+TEST(test_serving_engine, suite)
+{
     /* ---- lifecycle + config ---- */
     SNEPPX_ServingEngine* e = SNEPPX_serving_engine_create();
     SX_CHECK(e != NULL, "engine create");
@@ -49,13 +50,20 @@ TEST(test_serving_engine, suite) {
     {
         int n_v1 = 0, n_v2 = 0;
         char ver[64];
-        for (long long i = 0; i < 10000; i++) {
+        for (long long i = 0; i < 10000; i++)
+        {
             char rid[32];
             snprintf(rid, sizeof(rid), "req-%lld", i);
             SX_CHECK(SNEPPX_serving_route(e, "gpt", rid, ver) == 0, "route");
-            if (strcmp(ver, "v1") == 0) n_v1++;
-            else if (strcmp(ver, "v2") == 0) n_v2++;
-            else { SX_CHECK(0, "unknown version returned"); break; }
+            if (strcmp(ver, "v1") == 0)
+                n_v1++;
+            else if (strcmp(ver, "v2") == 0)
+                n_v2++;
+            else
+            {
+                SX_CHECK(0, "unknown version returned");
+                break;
+            }
         }
         SX_CHECK(n_v1 + n_v2 == 10000, "all routed");
         SX_CHECK(n_v1 > 6500 && n_v1 < 7500, "v1 share ~70%");
@@ -69,11 +77,13 @@ TEST(test_serving_engine, suite) {
     {
         char ver[64];
         int routed_v2 = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++)
+        {
             char rid[32];
             snprintf(rid, sizeof(rid), "post-%d", i);
             SNEPPX_serving_route(e, "gpt", rid, ver);
-            if (strcmp(ver, "v2") == 0) routed_v2++;
+            if (strcmp(ver, "v2") == 0)
+                routed_v2++;
         }
         SX_CHECK(routed_v2 == 1000, "100% traffic to v2 after promote");
     }
@@ -112,9 +122,11 @@ TEST(test_serving_engine, suite) {
     SNEPPX_serving_engine_configure(b, 8, 5, 1, 4);
     SNEPPX_serving_warmup_start(b);
     int became_ready = 0;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         /* warmup_tick records the synthetic request internally */
-        if (SNEPPX_serving_warmup_tick(b, 100 + i * 10, 8)) became_ready = 1;
+        if (SNEPPX_serving_warmup_tick(b, 100 + i * 10, 8))
+            became_ready = 1;
     }
     SX_CHECK(became_ready == 1, "warm-up made engine ready");
     SX_CHECK(SNEPPX_serving_is_ready(b) == 1, "warm engine ready");
@@ -151,7 +163,8 @@ TEST(test_serving_engine, suite) {
         char tmppath[] = "tmp_serving_test.yaml";
         FILE* f = fopen(tmppath, "w");
         SX_CHECK(f != NULL, "create tmp yaml");
-        if (f) {
+        if (f)
+        {
             fputs("serving.max_batch_size: 16\n", f);
             fputs("serving.batch_timeout_ms: 20\n", f);
             fputs("serving.n_workers: 4\n", f);
@@ -173,5 +186,4 @@ TEST(test_serving_engine, suite) {
 
     SNEPPX_serving_engine_destroy(b);
     SNEPPX_serving_engine_destroy(e);
-
 }

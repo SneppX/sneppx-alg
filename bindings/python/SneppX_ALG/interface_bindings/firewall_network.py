@@ -162,7 +162,10 @@ class FirewallNetwork:
             raise ValueError("block_duration_seconds must be at least 1")
         self._state_lock = threading.Lock()
         self._knock_ports = list(knock_ports or [])
-        if any(not isinstance(port, int) or not 1 <= port <= 65535 for port in self._knock_ports):
+        if any(
+            not isinstance(port, int) or not 1 <= port <= 65535
+            for port in self._knock_ports
+        ):
             raise ValueError("knock_ports must contain valid TCP/UDP port numbers")
         self._knock_window_ns = int(knock_window_ms) * 1_000_000
         if self._knock_window_ns < 1:
@@ -208,14 +211,20 @@ class FirewallNetwork:
     def _check_allowlist(self, address: IPAddress) -> Optional[FirewallResult]:
         if not self._allowlist_enabled:
             return None
-        if any(address.version == rule.network.version and address in rule.network for rule in self._allowlist):
+        if any(
+            address.version == rule.network.version and address in rule.network
+            for rule in self._allowlist
+        ):
             return None
         return FirewallResult(False, 403, "IP not in allowlist", 2)
 
     def _check_denylist(self, address: IPAddress) -> Optional[FirewallResult]:
         if not self._denylist_enabled:
             return None
-        if any(address.version == rule.network.version and address in rule.network for rule in self._denylist):
+        if any(
+            address.version == rule.network.version and address in rule.network
+            for rule in self._denylist
+        ):
             return FirewallResult(False, 403, "IP in denylist", 2)
         return None
 
@@ -241,13 +250,16 @@ class FirewallNetwork:
                 self._blocked_ips[ip_str] = now + self._block_duration
         return FirewallResult(False, 429, "rate limit exceeded", 2)
 
-    def _check_port_knock(self, ip_str: str, knock_header: str) -> Optional[FirewallResult]:
+    def _check_port_knock(
+        self, ip_str: str, knock_header: str
+    ) -> Optional[FirewallResult]:
         # This legacy header-based mechanism is compatibility-only. HTTP headers
         # are client-controlled and must never be treated as network-layer proof.
         if not self._knock_ports:
             return None
         return FirewallResult(
-            False, 501,
+            False,
+            501,
             "port-knock enforcement requires trusted packet metadata; HTTP headers are not trusted",
             2,
         )
@@ -258,7 +270,8 @@ class FirewallNetwork:
         # No GeoIP provider is currently wired into this module. Never silently
         # report a pass when an operator has explicitly enabled this control.
         return FirewallResult(
-            False, 503,
+            False,
+            503,
             "GeoIP enforcement is enabled but no verified GeoIP provider is configured",
             2,
         )

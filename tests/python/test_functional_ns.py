@@ -1,4 +1,5 @@
 """Tests for the torch.nn.functional-compatible namespace (F.*)."""
+
 import numpy as np
 import pytest
 

@@ -61,6 +61,7 @@ def test_round_trip_int_and_bool_dtypes():
     b = np.array([[True, False], [False, True]])
     assert np.array_equal(b, cb.round_trip(b))
 
+
 @pytest.mark.parametrize(
     ("dtype_name", "storage_dtype"),
     [("bfloat16", np.uint16), ("float8", np.uint8)],
@@ -84,6 +85,7 @@ def test_public_tensor_native_conversion_preserves_low_precision_storage():
         assert restored.dtype_name == dtype_name
         assert restored.data.dtype == np.dtype(storage_dtype)
         assert np.array_equal(restored.data, raw)
+
 
 @pytest.mark.parametrize(
     ("dtype_name", "values"),
@@ -179,7 +181,9 @@ def test_native_split_uses_allocator_contract_and_validates_failures():
     parts = tensor.split(2, 0)
     assert len(parts) == 2
     assert np.array_equal(parts[0].data(), np.arange(6, dtype=np.float32).reshape(2, 3))
-    assert np.array_equal(parts[1].data(), np.arange(6, 12, dtype=np.float32).reshape(2, 3))
+    assert np.array_equal(
+        parts[1].data(), np.arange(6, 12, dtype=np.float32).reshape(2, 3)
+    )
     with pytest.raises(RuntimeError):
         tensor.split(3, 0)
 
@@ -198,7 +202,6 @@ def test_public_tensor_from_native_rejects_non_cpu_device():
     native = cb.from_numpy(np.array([1.0], dtype=np.float32))
     with pytest.raises(NotImplementedError, match="CPU"):
         Tensor.from_native(native, device="cuda")
-
 
 
 def test_python_tensor_independent_of_c_memory():
@@ -540,7 +543,9 @@ def test_public_tensor_native_binary_ops_reject_dtype_mismatch_and_autograd():
     with pytest.raises(TypeError, match="matching dtypes"):
         float32.native_add(float64)
 
-    tracked = Tensor(np.array([1.0], dtype=np.float32), dtype="float32", requires_grad=True)
+    tracked = Tensor(
+        np.array([1.0], dtype=np.float32), dtype="float32", requires_grad=True
+    )
     with pytest.raises(RuntimeError, match="detach"):
         tracked.native_add(float32)
 
@@ -556,7 +561,7 @@ def test_public_tensor_native_arithmetic_and_activations_match_numpy():
     assert np.allclose(left.native_sub(right).data, left_values - right_values)
     assert np.allclose(left.native_mul(right).data, left_values * right_values)
     assert np.allclose(left.native_div(right).data, left_values / right_values)
-    assert np.allclose(left.native_pow(right).data, left_values ** right_values)
+    assert np.allclose(left.native_pow(right).data, left_values**right_values)
     assert np.allclose(left.native_relu().data, np.maximum(left_values, 0))
     assert np.allclose(
         left.native_sigmoid().data,
@@ -564,7 +569,9 @@ def test_public_tensor_native_arithmetic_and_activations_match_numpy():
         rtol=1e-6,
         atol=1e-6,
     )
-    assert np.allclose(left.native_tanh().data, np.tanh(left_values), rtol=1e-6, atol=1e-6)
+    assert np.allclose(
+        left.native_tanh().data, np.tanh(left_values), rtol=1e-6, atol=1e-6
+    )
 
 
 def test_public_tensor_native_softmax_and_reductions_match_numpy():
@@ -575,10 +582,15 @@ def test_public_tensor_native_softmax_and_reductions_match_numpy():
     shifted = values - np.max(values, axis=1, keepdims=True)
     expected_softmax = np.exp(shifted) / np.sum(np.exp(shifted), axis=1, keepdims=True)
 
-    assert np.allclose(tensor.native_softmax(dim=1).data, expected_softmax, rtol=1e-5, atol=1e-6)
-    assert np.allclose(tensor.native_sum(dim=1).data, np.sum(values, axis=1), rtol=1e-5, atol=1e-6)
-    assert np.allclose(tensor.native_mean(dim=1).data, np.mean(values, axis=1), rtol=1e-5, atol=1e-6)
-
+    assert np.allclose(
+        tensor.native_softmax(dim=1).data, expected_softmax, rtol=1e-5, atol=1e-6
+    )
+    assert np.allclose(
+        tensor.native_sum(dim=1).data, np.sum(values, axis=1), rtol=1e-5, atol=1e-6
+    )
+    assert np.allclose(
+        tensor.native_mean(dim=1).data, np.mean(values, axis=1), rtol=1e-5, atol=1e-6
+    )
 
 
 def test_public_tensor_native_variance_and_std_match_numpy():
@@ -607,5 +619,9 @@ def test_public_tensor_native_cumulative_ops_match_numpy():
 
     assert cumulative_sum.shape == values.shape
     assert cumulative_product.shape == values.shape
-    assert np.allclose(cumulative_sum.data, np.cumsum(values, axis=1), rtol=1e-5, atol=1e-6)
-    assert np.allclose(cumulative_product.data, np.cumprod(values, axis=1), rtol=1e-5, atol=1e-6)
+    assert np.allclose(
+        cumulative_sum.data, np.cumsum(values, axis=1), rtol=1e-5, atol=1e-6
+    )
+    assert np.allclose(
+        cumulative_product.data, np.cumprod(values, axis=1), rtol=1e-5, atol=1e-6
+    )

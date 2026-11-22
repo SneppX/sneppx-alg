@@ -1,10 +1,10 @@
 #include "hierarchical_state_space.h"
-#include "test_gtest.h"
 #include "polymorphic_memory_allocator.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "test_gtest.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*
  * SNEPPX - Test Hss Parallel Scan
@@ -21,12 +21,8 @@
  *
  */
 
-
-
-
-
-
-static void test_parallel_vs_sequential(void) {
+static void test_parallel_vs_sequential(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 8;
     cfg.input_dim = 16;
@@ -43,8 +39,9 @@ static void test_parallel_vs_sequential(void) {
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
     SX_ASSERT(input != NULL, "input tensor created");
 
-    float* data = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) data[i] = ((float)(i % 7) - 3.0f) * 0.5f;
+    float* data = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        data[i] = ((float) (i % 7) - 3.0f) * 0.5f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_hss_forward(model, input, &output);
@@ -57,7 +54,8 @@ static void test_parallel_vs_sequential(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-static void test_parallel_scan_disabled_fallback(void) {
+static void test_parallel_scan_disabled_fallback(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 8;
     cfg.input_dim = 16;
@@ -74,8 +72,9 @@ static void test_parallel_scan_disabled_fallback(void) {
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
     SX_ASSERT(input != NULL, "input tensor created");
 
-    float* data = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) data[i] = ((float)(i % 7) - 3.0f) * 0.5f;
+    float* data = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        data[i] = ((float) (i % 7) - 3.0f) * 0.5f;
 
     SNEPPXTensor* output = NULL;
     int ret = SNEPPX_hss_forward(model, input, &output);
@@ -87,7 +86,8 @@ static void test_parallel_scan_disabled_fallback(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-static void test_parallel_scan_matches_sequential(void) {
+static void test_parallel_scan_matches_sequential(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -107,8 +107,9 @@ static void test_parallel_scan_matches_sequential(void) {
     SNEPPXTensor* input = SNEPPX_tensor_create(shape_in, 3, SNEPPX_FLOAT32);
     SX_ASSERT(input != NULL, "input tensor created");
 
-    float* data = (float*)input->data;
-    for (size_t i = 0; i < input->size; i++) data[i] = sinf((float)i * 0.1f);
+    float* data = (float*) input->data;
+    for (size_t i = 0; i < input->size; i++)
+        data[i] = sinf((float) i * 0.1f);
 
     SNEPPXTensor* out_seq = NULL;
     SNEPPX_hss_forward(model_seq, input, &out_seq);
@@ -118,9 +119,10 @@ static void test_parallel_scan_matches_sequential(void) {
     SNEPPX_hss_forward(model_par, input, &out_par);
     SX_ASSERT(out_par != NULL, "par output");
 
-    float* seq_data = (float*)out_seq->data;
-    float* par_data = (float*)out_par->data;
-    for (size_t i = 0; i < out_seq->size; i++) {
+    float* seq_data = (float*) out_seq->data;
+    float* par_data = (float*) out_par->data;
+    for (size_t i = 0; i < out_seq->size; i++)
+    {
         SX_ASSERT_NEAR(seq_data[i], par_data[i], 1e-3f, "parallel scan matches sequential");
     }
 
@@ -131,7 +133,15 @@ static void test_parallel_scan_matches_sequential(void) {
     SNEPPX_hss_model_destroy(model_par);
 }
 
-
-TEST(test_hss_parallel_scan, parallel_vs_sequential) { test_parallel_vs_sequential(); }
-TEST(test_hss_parallel_scan, parallel_scan_disabled_fallback) { test_parallel_scan_disabled_fallback(); }
-TEST(test_hss_parallel_scan, parallel_scan_matches_sequential) { test_parallel_scan_matches_sequential(); }
+TEST(test_hss_parallel_scan, parallel_vs_sequential)
+{
+    test_parallel_vs_sequential();
+}
+TEST(test_hss_parallel_scan, parallel_scan_disabled_fallback)
+{
+    test_parallel_scan_disabled_fallback();
+}
+TEST(test_hss_parallel_scan, parallel_scan_matches_sequential)
+{
+    test_parallel_scan_matches_sequential();
+}

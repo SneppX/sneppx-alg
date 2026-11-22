@@ -15,6 +15,7 @@ from .sneppx_format import load_sneppx_native, save_sneppx_native
 def convert_hf_to_sneppx(hf_dir: str, out_dir: str) -> str:
     """Convert a HuggingFace model directory to SNEPPX format."""
     from ..utils import ensure_dir
+
     ensure_dir(out_dir)
 
     config_path = os.path.join(hf_dir, "config.json")
@@ -30,12 +31,14 @@ def convert_hf_to_sneppx(hf_dir: str, out_dir: str) -> str:
 
     if os.path.exists(safetensors_path):
         import safetensors
+
         with safetensors.safe_open(safetensors_path, framework="numpy") as f:
             for key in f.keys():
                 tensors[key] = f.get_tensor(key)
         source_format = "safetensors"
     elif os.path.exists(pytorch_path) or os.path.exists(hf_model_path):
         import torch
+
         path = pytorch_path if os.path.exists(pytorch_path) else hf_model_path
         checkpoint = torch.load(path, map_location="cpu", weights_only=False)
         for name, param in checkpoint.items():
@@ -61,6 +64,7 @@ def convert_hf_to_sneppx(hf_dir: str, out_dir: str) -> str:
 def convert_sneppx_to_hf(sneppx_path: str, out_dir: str) -> str:
     """Convert a SNEPPX native model to HuggingFace format."""
     from ..utils import ensure_dir
+
     ensure_dir(out_dir)
 
     meta, tensors = load_sneppx_native(sneppx_path)
@@ -79,10 +83,12 @@ def convert_sneppx_to_hf(sneppx_path: str, out_dir: str) -> str:
 
     try:
         from safetensors.numpy import save_file
+
         out_path = os.path.join(out_dir, "model.safetensors")
         save_file(save_dict, out_path)
     except ImportError:
         import torch
+
         state_dict = {k: torch.from_numpy(v) for k, v in save_dict.items()}
         out_path = os.path.join(out_dir, "pytorch_model.bin")
         torch.save(state_dict, out_path)
@@ -94,7 +100,12 @@ def convert_sneppx_to_hf(sneppx_path: str, out_dir: str) -> str:
         json.dump(config, f, indent=2, default=str)
 
     # Copy tokenizer files if present
-    for fname in ["tokenizer.json", "tokenizer_config.json", "vocab.txt", "special_tokens_map.json"]:
+    for fname in [
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.txt",
+        "special_tokens_map.json",
+    ]:
         src = os.path.join(os.path.dirname(sneppx_path), fname)
         if os.path.exists(src):
             shutil.copy2(src, os.path.join(out_dir, fname))
@@ -105,6 +116,7 @@ def convert_sneppx_to_hf(sneppx_path: str, out_dir: str) -> str:
 def convert_to_hf(source_path: str, out_dir: str, **kwargs) -> str:
     """Convert any supported format to HuggingFace format."""
     from .format import detect_format
+
     fmt = detect_format(source_path)
 
     if fmt in ("sneppx-native", "sneppx"):
@@ -122,6 +134,7 @@ def convert_to_hf(source_path: str, out_dir: str, **kwargs) -> str:
 def convert_from_hf(hf_dir: str, out_dir: str) -> str:
     """Convert a HuggingFace model to SNEPPX native format."""
     from .format import detect_format
+
     fmt = detect_format(hf_dir)
 
     if fmt == "sneppx-native":
@@ -130,7 +143,9 @@ def convert_from_hf(hf_dir: str, out_dir: str) -> str:
         return convert_hf_to_sneppx(hf_dir, out_dir)
     elif fmt == "pytorch":
         return convert_pt_to_sneppx(
-            os.path.join(hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir),
+            os.path.join(
+                hf_dir, os.listdir(hf_dir)[0] if os.path.isdir(hf_dir) else hf_dir
+            ),
             out_dir,
         )[0]  # Handle if directory
     raise ValueError(f"Unsupported format: {fmt}")
@@ -159,6 +174,7 @@ def convert_to_sneppx(source_path: str, out_dir: str) -> str:
 def convert_from_torch(pt_path: str, out_dir: str) -> str:
     """Convert PyTorch checkpoint to SNEPPX format."""
     from .pytorch import convert_pt_to_sneppx
+
     return convert_pt_to_sneppx(pt_path, out_dir)
 
 
@@ -166,6 +182,7 @@ def _convert_pt_to_hf(pt_path: str, out_dir: str, **kwargs) -> str:
     """Convert PyTorch checkpoint directly to HF format."""
     import torch
     from ..utils import ensure_dir
+
     ensure_dir(out_dir)
 
     checkpoint = torch.load(pt_path, map_location="cpu", weights_only=False)
@@ -183,10 +200,12 @@ def _convert_pt_to_hf(pt_path: str, out_dir: str, **kwargs) -> str:
 
     try:
         from safetensors.torch import save_file
+
         out_path = os.path.join(out_dir, "model.safetensors")
         save_file(state_dict, out_path)
     except ImportError:
         import torch
+
         out_path = os.path.join(out_dir, "pytorch_model.bin")
         torch.save(state_dict, out_path)
 
@@ -196,6 +215,7 @@ def _convert_pt_to_hf(pt_path: str, out_dir: str, **kwargs) -> str:
 def _copy_hf_dir(src: str, dst: str) -> str:
     """Copy a HuggingFace model directory."""
     from ..utils import ensure_dir
+
     ensure_dir(dst)
     for item in os.listdir(src):
         s = os.path.join(src, item)
@@ -208,6 +228,7 @@ def _copy_hf_dir(src: str, dst: str) -> str:
 def _convert_safetensors_to_hf(st_path: str, out_dir: str, **kwargs) -> str:
     """Convert safetensors directly to HF format (just copy)."""
     from ..utils import ensure_dir
+
     ensure_dir(out_dir)
     shutil.copy2(st_path, os.path.join(out_dir, "model.safetensors"))
     # Copy config if it exists

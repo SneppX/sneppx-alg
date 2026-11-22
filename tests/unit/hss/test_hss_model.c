@@ -1,8 +1,8 @@
 #include "hierarchical_state_space.h"
 #include "test_gtest.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
 /*
  * SNEPPX - Test Hss Model
@@ -19,11 +19,8 @@
  *
  */
 
-
-
-
-
-static void test_model_create(void) {
+static void test_model_create(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -40,7 +37,8 @@ static void test_model_create(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-static void test_forward_small(void) {
+static void test_forward_small(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -62,10 +60,15 @@ static void test_forward_small(void) {
     SX_ASSERT(output->shape[1] == 8, "output seq_len == 8");
     SX_ASSERT(output->shape[2] == 8, "output dim == 8");
 
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int has_nan = 0;
-    for (size_t i = 0; i < output->size; i++) {
-        if (!isfinite(od[i])) { has_nan = 1; break; }
+    for (size_t i = 0; i < output->size; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            has_nan = 1;
+            break;
+        }
     }
     SX_ASSERT(!has_nan, "no NaN/inf in output");
 
@@ -74,7 +77,8 @@ static void test_forward_small(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-static void test_forward_single_seq(void) {
+static void test_forward_single_seq(void)
+{
     SNEPPXHSSConfig cfg = SNEPPX_hss_config_default();
     cfg.state_dim = 4;
     cfg.input_dim = 8;
@@ -93,10 +97,15 @@ static void test_forward_single_seq(void) {
     SX_ASSERT(ret == 0, "forward returned 0");
     SX_ASSERT(output != NULL, "output not null");
 
-    float* od = (float*)output->data;
+    float* od = (float*) output->data;
     int has_nan = 0;
-    for (size_t i = 0; i < output->size; i++) {
-        if (!isfinite(od[i])) { has_nan = 1; break; }
+    for (size_t i = 0; i < output->size; i++)
+    {
+        if (!isfinite(od[i]))
+        {
+            has_nan = 1;
+            break;
+        }
     }
     SX_ASSERT(!has_nan, "no NaN/inf in output");
 
@@ -105,7 +114,15 @@ static void test_forward_single_seq(void) {
     SNEPPX_hss_model_destroy(model);
 }
 
-
-TEST(test_hss_model, test_model_create) { test_model_create(); }
-TEST(test_hss_model, test_forward_small) { test_forward_small(); }
-TEST(test_hss_model, test_forward_single_seq) { test_forward_single_seq(); }
+TEST(test_hss_model, test_model_create)
+{
+    test_model_create();
+}
+TEST(test_hss_model, test_forward_small)
+{
+    test_forward_small();
+}
+TEST(test_hss_model, test_forward_single_seq)
+{
+    test_forward_single_seq();
+}

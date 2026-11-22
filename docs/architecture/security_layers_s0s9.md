@@ -225,6 +225,7 @@ SelfAuditor().run_full()
 ## Threat Model
 
 **Assumptions:**
+
 - Hardware is trusted (no CPU side-channels).
 - OS/hypervisor is trusted (no kernel-level compromise).
 - The network is **untrusted**. Other AI models are **untrusted** and may be adversarial.

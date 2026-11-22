@@ -1,7 +1,7 @@
 # SneppX API Reference
 
-**Version:** 1.1.1  
-**Base URL:** `http://localhost:8080`  
+**Version:** 1.1.1
+**Base URL:** `http://localhost:8080`
 **OpenAPI:** Auto-generated at `/docs` (Swagger UI) when FastAPI server is running.
 
 ---

@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_IOC_TYPE_IPV4,
     SNEPPX_TI_IOC_TYPE_IPV6,
     SNEPPX_TI_IOC_TYPE_DOMAIN,
@@ -46,7 +46,8 @@ typedef enum {
     SNEPPX_TI_IOC_TYPE_USER_AGENT
 } SNEPPXTIIoCType;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_CONFIDENCE_NONE,
     SNEPPX_TI_CONFIDENCE_LOW,
     SNEPPX_TI_CONFIDENCE_MEDIUM,
@@ -54,7 +55,8 @@ typedef enum {
     SNEPPX_TI_CONFIDENCE_VERIFIED
 } SNEPPXTIConfidenceLevel;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_TI_KILL_CHAIN_RECONNAISSANCE,
     SNEPPX_TI_KILL_CHAIN_WEAPONIZATION,
     SNEPPX_TI_KILL_CHAIN_DELIVERY,
@@ -64,7 +66,8 @@ typedef enum {
     SNEPPX_TI_KILL_CHAIN_ACTIONS_OBJECTIVES
 } SNEPPXTIKillChainPhase;
 
-typedef struct {
+typedef struct
+{
     uint64_t ioc_id;
     SNEPPXTIIOType ioc_type;
     SNEPPXTIConfidenceLevel confidence;
@@ -95,7 +98,8 @@ typedef struct {
     float severity_score;
 } SNEPPXTIIoC;
 
-typedef struct {
+typedef struct
+{
     SNEPPXTIKillChainPhase phases[SNEPPX_TI_ANALYSIS_MAX_KILL_CHAIN];
     uint32_t num_phases;
     uint8_t* narrative;
@@ -109,7 +113,8 @@ typedef struct {
     uint8_t automated_response : 1;
 } SNEPPXTIKillChainAnalysis;
 
-typedef struct {
+typedef struct
+{
     SNEPPXTIIoC* iocs;
     uint32_t num_iocs;
     uint32_t ioc_capacity;
@@ -132,7 +137,8 @@ int snepx_ti_analyzer_compute_confidence(SNEPPXTIIoC* ioc);
 int snepx_ti_analyzer_kill_chain(SNEPPXTIIoC* ioc, SNEPPXTIKillChainAnalysis* analysis);
 int snepx_ti_analyzer_correlate(SNEPPXTIIoC* iocs, uint32_t num_iocs, SNEPPXTIAnalyzerResult* result);
 int snepx_ti_analyzer_cluster(SNEPPXTIIoC* iocs, uint32_t num_iocs, uint32_t* cluster_ids, uint32_t* num_clusters);
-int snepx_ti_analyzer_temporal_analysis(SNEPPXTIIoC* iocs, uint32_t num_iocs, uint64_t* activity_spike_timestamps, uint32_t* num_spikes);
+int snepx_ti_analyzer_temporal_analysis(SNEPPXTIIoC* iocs, uint32_t num_iocs, uint64_t* activity_spike_timestamps,
+                                        uint32_t* num_spikes);
 int snepx_ti_analyzer_diamond_model(SNEPPXTIIoC* ioc, SNEPPXTIKillChainAnalysis* analysis);
 int snepx_ti_analyzer_ioc_destroy(SNEPPXTIIoC* ioc);
 int snepx_ti_analyzer_result_destroy(SNEPPXTIAnalyzerResult* result);

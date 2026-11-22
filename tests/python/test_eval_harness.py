@@ -159,7 +159,9 @@ def test_distribution_tail():
 def test_harness_summary():
     harness = EvalHarness()
     harness.register_defaults()
-    harness.results["test"] = type("R", (), {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100})()
+    harness.results["test"] = type(
+        "R", (), {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100}
+    )()
     s = harness.summary()
     assert "test" in s
     assert "85.00" in s
@@ -167,7 +169,9 @@ def test_harness_summary():
 
 def test_export_json():
     harness = EvalHarness()
-    harness.results["test"] = type("R", (), {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100})()
+    harness.results["test"] = type(
+        "R", (), {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100}
+    )()
     j = harness.export_json()
     data = json.loads(j)
     assert data["test"]["value"] == 85.0
@@ -178,7 +182,11 @@ def test_export_json_with_path():
         path = f.name
     try:
         harness = EvalHarness(EvalConfig(output_path=path))
-        harness.results["test"] = type("R", (), {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100})()
+        harness.results["test"] = type(
+            "R",
+            (),
+            {"name": "test", "metric": "acc", "value": 85.0, "num_samples": 100},
+        )()
         harness.export_json()
         with open(path) as f2:
             data = json.load(f2)
@@ -193,6 +201,7 @@ def test_mmlu_categories_count():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = locals().copy()
     passed = 0
     failed = 0

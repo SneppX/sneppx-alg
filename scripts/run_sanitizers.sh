@@ -26,7 +26,7 @@ cmake -B "$BUILD_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSNEPPX_USE_UBSAN=ON
 cmake --build "$BUILD_DIR" --config Debug -j$(nproc)
 
 # 3. Run CUDA compute-sanitizer (memcheck) on tests
-if command -v compute-sanitizer &> /dev/null; then
+if command -v compute-sanitizer &>/dev/null; then
     echo ""
     echo "--- Running compute-sanitizer (memcheck) ---"
     for test_bin in "$BUILD_DIR"/tests/*/test_*; do
@@ -41,7 +41,7 @@ else
 fi
 
 # 4. Run compute-sanitizer racecheck (if CUDA)
-if command -v compute-sanitizer &> /dev/null; then
+if command -v compute-sanitizer &>/dev/null; then
     echo ""
     echo "--- Running compute-sanitizer (racecheck) ---"
     for test_bin in "$BUILD_DIR"/tests/*/test_*; do
@@ -52,7 +52,7 @@ if command -v compute-sanitizer &> /dev/null; then
 fi
 
 # 5. Run compute-sanitizer initcheck
-if command -v compute-sanitizer &> /dev/null; then
+if command -v compute-sanitizer &>/dev/null; then
     echo ""
     echo "--- Running compute-sanitizer (initcheck) ---"
     for test_bin in "$BUILD_DIR"/tests/*/test_*; do

@@ -5,14 +5,24 @@ import tempfile
 import time
 import threading
 from SneppX_ALG.interface_bindings import (
-    ServingEngine, ServingConfig, TrafficSplit, MetricsCollector,
-    DynamicBatchQueue, ConfigReloader, ModelVersion, WorkerPool,
+    ServingEngine,
+    ServingConfig,
+    TrafficSplit,
+    MetricsCollector,
+    DynamicBatchQueue,
+    ConfigReloader,
+    ModelVersion,
+    WorkerPool,
 )
 
 
 def _make_engine(batches=8, timeout_ms=5.0, workers=1, warmup=0):
-    cfg = ServingConfig(max_batch_size=batches, batch_timeout_ms=timeout_ms,
-                        n_workers=workers, warmup_iters=warmup)
+    cfg = ServingConfig(
+        max_batch_size=batches,
+        batch_timeout_ms=timeout_ms,
+        n_workers=workers,
+        warmup_iters=warmup,
+    )
     eng = ServingEngine(config=cfg, model_fn=lambda x: x)
     return eng
 
@@ -42,8 +52,10 @@ def test_ab_traffic_split():
     n1 = n2 = 0
     for i in range(10000):
         r = eng.route("gpt", f"req-{i}")
-        if r == "v1": n1 += 1
-        elif r == "v2": n2 += 1
+        if r == "v1":
+            n1 += 1
+        elif r == "v2":
+            n2 += 1
     assert n1 + n2 == 10000
     assert 6500 < n1 < 7500, f"v1 share {n1}"
     assert 2500 < n2 < 3500, f"v2 share {n2}"
@@ -57,7 +69,8 @@ def test_ab_traffic_split():
 def test_dynamic_batching():
     eng = _make_engine(batches=3, timeout_ms=1000.0)
     assert eng.batcher.pending == 0
-    eng.batcher.submit("r1"); eng.batcher.submit("r2")
+    eng.batcher.submit("r1")
+    eng.batcher.submit("r2")
     assert eng.batcher.pending == 2
     drained = eng.batcher.drain()  # not full, but timeout 1s not elapsed yet
     assert drained == [], "not drained before timeout"
@@ -133,7 +146,9 @@ def test_warmup():
 def test_config_reload():
     eng = _make_engine()
     with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False) as f:
-        f.write("serving:\n  max_batch_size: 32\n  batch_timeout_ms: 50\n  n_workers: 4\n  warmup_iters: 10\n")
+        f.write(
+            "serving:\n  max_batch_size: 32\n  batch_timeout_ms: 50\n  n_workers: 4\n  warmup_iters: 10\n"
+        )
         path = f.name
     try:
         eng.set_config_path(path)

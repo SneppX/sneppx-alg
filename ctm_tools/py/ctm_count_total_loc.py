@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compatibility wrapper for the unified CTM physical line counter."""
+
 import argparse
 from ctm import scan
 
@@ -12,7 +13,11 @@ def count_loc(root=".", count_all_text=True):
 def main():
     parser = argparse.ArgumentParser(description="Count repository text lines")
     parser.add_argument("root", nargs="?", default=".")
-    parser.add_argument("--source-only", action="store_true", help="count recognized source/documentation extensions only")
+    parser.add_argument(
+        "--source-only",
+        action="store_true",
+        help="count recognized source/documentation extensions only",
+    )
     args = parser.parse_args()
     print(count_loc(args.root, count_all_text=not args.source_only))
 

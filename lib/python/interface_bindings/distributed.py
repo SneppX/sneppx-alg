@@ -13,12 +13,13 @@ class _NCCLBackend:
     def __init__(self):
         self._lib = None
         self._loaded = False
-    
+
     def _load(self):
         if self._loaded:
             return
         try:
             import ctypes
+
             paths = ["libnccl.so", "libnccl.so.2", "libnccl.dylib", "nccl.dll"]
             for p in paths:
                 try:
@@ -33,7 +34,7 @@ class _NCCLBackend:
     def all_reduce(self, data, op="sum"):
         self._load()
         return data
-    
+
     def broadcast(self, data, root=0):
         self._load()
         return data
@@ -126,8 +127,8 @@ class DistributedSampler:
         indices = list(range(len(self.dataset)))
         if self.shuffle:
             np.random.RandomState(self.epoch).shuffle(indices)
-        indices = indices[:self.total_size]
-        indices = indices[self.rank:self.total_size:self.num_replicas]
+        indices = indices[: self.total_size]
+        indices = indices[self.rank : self.total_size : self.num_replicas]
         return iter(indices)
 
     def __len__(self):
@@ -141,7 +142,7 @@ class DistributedDataParallel(Module):
     def __init__(self, module: Module):
         super().__init__()
         self.module = module
-        self._modules['module'] = module
+        self._modules["module"] = module
 
     def forward(self, x: Tensor) -> Tensor:
         return self.module(x)
@@ -166,8 +167,11 @@ def launch(train_fn: Callable, num_nodes: int = 1, num_gpus: int = 1):
         return
     import subprocess
     import sys
+
     cmd = [
-        sys.executable, "-m", "torch.distributed.run",
+        sys.executable,
+        "-m",
+        "torch.distributed.run",
         f"--nproc_per_node={num_gpus}",
         f"--nnodes={num_nodes}",
         sys.argv[0],

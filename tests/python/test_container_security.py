@@ -2,16 +2,34 @@
 
 import json
 from SneppX_ALG.interface_bindings.container_security import (
-    CVE, Severity, ScanStatus, UpdateStatus, SBOMComponent, SBOM,
-    CVEScanner, SBOMGenerator, ContainerSecurityManager,
-    scan_image, scan_requirements, generate_sbom,
-    stage_update, install_update, rollback_update, get_scan_history,
+    CVE,
+    Severity,
+    ScanStatus,
+    UpdateStatus,
+    SBOMComponent,
+    SBOM,
+    CVEScanner,
+    SBOMGenerator,
+    ContainerSecurityManager,
+    scan_image,
+    scan_requirements,
+    generate_sbom,
+    stage_update,
+    install_update,
+    rollback_update,
+    get_scan_history,
 )
 
 
 def test_cve_creation():
-    cve = CVE(id="CVE-2024-1234", severity=Severity.HIGH, cvss_score=7.5,
-              description="Test vuln", package="openssl", version="1.1.1")
+    cve = CVE(
+        id="CVE-2024-1234",
+        severity=Severity.HIGH,
+        cvss_score=7.5,
+        description="Test vuln",
+        package="openssl",
+        version="1.1.1",
+    )
     assert cve.id == "CVE-2024-1234"
     assert cve.severity == Severity.HIGH
 
@@ -38,8 +56,13 @@ def test_sbom_component_defaults():
 
 
 def test_sbom_component_full():
-    c = SBOMComponent(name="torch", version="2.0.0", supplier="Meta",
-                      licenses=["BSD"], purl="pkg:pypi/torch@2.0.0")
+    c = SBOMComponent(
+        name="torch",
+        version="2.0.0",
+        supplier="Meta",
+        licenses=["BSD"],
+        purl="pkg:pypi/torch@2.0.0",
+    )
     assert c.supplier == "Meta"
 
 
@@ -110,6 +133,7 @@ def test_scan_image_nonexistent():
 
 def test_scan_requirements_empty():
     import tempfile, os
+
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
         f.write("# empty\n")
         p = f.name
@@ -127,6 +151,7 @@ def test_generate_sbom_docker():
 
 def test_stage_update():
     import tempfile, os
+
     with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as f:
         f.write(b"test")
         path = f.name
@@ -157,6 +182,7 @@ def test_get_scan_history():
 
 if __name__ == "__main__":
     import sys
+
     locals_ = {k: v for k, v in locals().items() if k.startswith("test_")}
     passed = 0
     failed = 0

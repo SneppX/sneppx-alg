@@ -16,8 +16,8 @@
  *
  */
 
-
-static void bench_create_ops(void) {
+static void bench_create_ops(void)
+{
     BENCH_INIT(bs);
     printf("  Tensor create:\n");
 
@@ -43,16 +43,15 @@ static void bench_create_ops(void) {
     bench_print("create [1024,1024]", &bs);
 }
 
-static void bench_fill_ops(void) {
+static void bench_fill_ops(void)
+{
     BENCH_INIT(bs);
 
     size_t sh_small[] = {256, 256};
     SNEPPXTensor* t = SNEPPX_tensor_create(sh_small, 2, SNEPPX_FLOAT32);
     printf("  Fill [256,256]:\n");
 
-    BENCH_START(bs, 1000, 100, {
-        SNEPPX_tensor_fill_f32(t, 1.0f);
-    });
+    BENCH_START(bs, 1000, 100, { SNEPPX_tensor_fill_f32(t, 1.0f); });
     bench_print("fill_f32", &bs);
 
     SNEPPX_tensor_destroy(t);
@@ -61,15 +60,14 @@ static void bench_fill_ops(void) {
     t = SNEPPX_tensor_create(sh_large, 2, SNEPPX_FLOAT32);
     printf("  Fill [1024,1024]:\n");
 
-    BENCH_START(bs, 100, 10, {
-        SNEPPX_tensor_fill_f32(t, 1.0f);
-    });
+    BENCH_START(bs, 100, 10, { SNEPPX_tensor_fill_f32(t, 1.0f); });
     bench_print("fill_f32", &bs);
 
     SNEPPX_tensor_destroy(t);
 }
 
-static void bench_elemwise_ops(void) {
+static void bench_elemwise_ops(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* a = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -88,10 +86,12 @@ static void bench_elemwise_ops(void) {
     });
     bench_print("mul", &bs);
 
-    SNEPPX_tensor_destroy(a); SNEPPX_tensor_destroy(b);
+    SNEPPX_tensor_destroy(a);
+    SNEPPX_tensor_destroy(b);
 }
 
-static void bench_matmul_ops(void) {
+static void bench_matmul_ops(void)
+{
     BENCH_INIT(bs);
     printf("  Matmul:\n");
 
@@ -106,7 +106,8 @@ static void bench_matmul_ops(void) {
     });
     bench_print("matmul [128,128]x[128,128]", &bs);
 
-    SNEPPX_tensor_destroy(a); SNEPPX_tensor_destroy(b);
+    SNEPPX_tensor_destroy(a);
+    SNEPPX_tensor_destroy(b);
 
     size_t sh3[] = {64, 256};
     size_t sh4[] = {256, 64};
@@ -119,10 +120,12 @@ static void bench_matmul_ops(void) {
     });
     bench_print("matmul [64,256]x[256,64]", &bs);
 
-    SNEPPX_tensor_destroy(a); SNEPPX_tensor_destroy(b);
+    SNEPPX_tensor_destroy(a);
+    SNEPPX_tensor_destroy(b);
 }
 
-static void bench_slice_reshape_ops(void) {
+static void bench_slice_reshape_ops(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {128, 128};
     SNEPPXTensor* t = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -150,7 +153,8 @@ static void bench_slice_reshape_ops(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-static void bench_unary_ops(void) {
+static void bench_unary_ops(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* t = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -183,7 +187,8 @@ static void bench_unary_ops(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-static void bench_reduction_ops(void) {
+static void bench_reduction_ops(void)
+{
     BENCH_INIT(bs);
     size_t sh[] = {256, 256};
     SNEPPXTensor* t = SNEPPX_tensor_ones(sh, 2, SNEPPX_FLOAT32);
@@ -204,7 +209,8 @@ static void bench_reduction_ops(void) {
     SNEPPX_tensor_destroy(t);
 }
 
-int main(void) {
+int main(void)
+{
     printf("=== Tensor Benchmarks ===\n");
     BENCH_RUN("Create ops", bench_create_ops);
     BENCH_RUN("Fill ops", bench_fill_ops);

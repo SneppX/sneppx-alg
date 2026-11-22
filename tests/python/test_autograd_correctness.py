@@ -2,7 +2,9 @@ import sys
 import os
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.tensor import Tensor
 from SneppX_ALG.interface_bindings import autograd_ops as ops
@@ -53,9 +55,9 @@ def _check(f, shapes, seeds, atol=1e-2, rtol=1e-2):
     numeric = numerical_grads(f, inputs)
     for a, n in zip(analytic, numeric):
         assert a.shape == n.shape, f"shape mismatch {a.shape} vs {n.shape}"
-        assert np.allclose(a, n, atol=atol, rtol=rtol), (
-            f"grad mismatch max|diff|={np.max(np.abs(a - n)):.3e}"
-        )
+        assert np.allclose(
+            a, n, atol=atol, rtol=rtol
+        ), f"grad mismatch max|diff|={np.max(np.abs(a - n)):.3e}"
 
 
 def test_add():
@@ -115,7 +117,7 @@ def test_exp():
 
 
 def test_log():
-    _check(lambda I: ((I[0] * I[0] + 2.0)).log().sum(), [(4, 3)], [1])
+    _check(lambda I: (I[0] * I[0] + 2.0).log().sum(), [(4, 3)], [1])
 
 
 def test_pow():
@@ -136,6 +138,7 @@ def test_composite_graph():
         h = ((a @ b) * c + 1.0).relu()
         h = h.tanh()
         return (h * h).sum()
+
     _check(f, [(5, 4), (4, 6), (5, 6)], [1, 2, 3])
 
 
@@ -146,6 +149,7 @@ def test_chain_with_activations():
         x = x.gelu()
         x = x.softmax(dim=-1)
         return x.sum()
+
     _check(f, [(4, 3)], [1])
 
 

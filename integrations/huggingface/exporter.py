@@ -10,8 +10,9 @@ import json
 from typing import Optional, Dict
 
 
-def to_huggingface(model, output_dir: str, model_type: str = "bert",
-                   config: Optional[Dict] = None):
+def to_huggingface(
+    model, output_dir: str, model_type: str = "bert", config: Optional[Dict] = None
+):
     """Export a SNEPPX model to HuggingFace format.
 
     Args:
@@ -79,6 +80,7 @@ def _hf_arch(model_type: str) -> str:
 def _write_pytorch_bin(path: str, state: Dict[str, bytes], metadata: Dict[str, Dict]):
     """Serialize tensors to PyTorch's zip-storage format (subset)."""
     import struct
+
     with open(path, "wb") as f:
         for name, raw in state.items():
             meta = metadata[name]

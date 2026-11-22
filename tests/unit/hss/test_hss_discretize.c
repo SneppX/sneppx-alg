@@ -1,7 +1,7 @@
 #include "hierarchical_state_space.h"
 #include "test_gtest.h"
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 /*
  * SNEPPX - Test Hss Discretize
@@ -18,12 +18,8 @@
  *
  */
 
-
-
-
-
-
-static void test_discretize_zoh(void) {
+static void test_discretize_zoh(void)
+{
     float A[] = {-0.5f, 0.0f, 0.0f, -0.5f};
     float B[] = {1.0f, 0.0f, 0.0f, 1.0f};
     float dt = 0.1f;
@@ -35,7 +31,8 @@ static void test_discretize_zoh(void) {
     SX_ASSERT_NEAR(Ad[2], 0.0f, 1e-6f, "Ad[2] zero");
 }
 
-static void test_discretize_bilinear(void) {
+static void test_discretize_bilinear(void)
+{
     float A[] = {-1.0f};
     float B[] = {1.0f};
     float dt = 0.1f;
@@ -45,7 +42,8 @@ static void test_discretize_bilinear(void) {
     SX_ASSERT(Bd[0] > 0.0f, "Bd bilinear positive");
 }
 
-static void test_discretize_identity(void) {
+static void test_discretize_identity(void)
+{
     float A[] = {0.0f};
     float B[] = {1.0f};
     float dt = 1.0f;
@@ -55,7 +53,15 @@ static void test_discretize_identity(void) {
     SX_ASSERT_NEAR(Bd[0], 1.0f, 1e-4f, "Bd identity");
 }
 
-
-TEST(test_hss_discretize, discretize_zoh) { test_discretize_zoh(); }
-TEST(test_hss_discretize, discretize_bilinear) { test_discretize_bilinear(); }
-TEST(test_hss_discretize, discretize_identity) { test_discretize_identity(); }
+TEST(test_hss_discretize, discretize_zoh)
+{
+    test_discretize_zoh();
+}
+TEST(test_hss_discretize, discretize_bilinear)
+{
+    test_discretize_bilinear();
+}
+TEST(test_hss_discretize, discretize_identity)
+{
+    test_discretize_identity();
+}

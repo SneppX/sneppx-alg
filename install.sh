@@ -11,16 +11,16 @@ echo ""
 OS="unknown"
 ARCH="unknown"
 case "$(uname -s)" in
-    Linux*)     OS="linux";;
-    Darwin*)    OS="macos";;
-    MSYS*|MINGW*) OS="windows";;
-    *)          OS="unknown";;
+    Linux*) OS="linux" ;;
+    Darwin*) OS="macos" ;;
+    MSYS* | MINGW*) OS="windows" ;;
+    *) OS="unknown" ;;
 esac
 
 case "$(uname -m)" in
-    x86_64|amd64) ARCH="x86_64";;
-    aarch64|arm64) ARCH="arm64";;
-    *)          ARCH="unknown";;
+    x86_64 | amd64) ARCH="x86_64" ;;
+    aarch64 | arm64) ARCH="arm64" ;;
+    *) ARCH="unknown" ;;
 esac
 
 echo "Detected: ${OS} (${ARCH})"

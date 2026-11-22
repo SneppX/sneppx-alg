@@ -2,11 +2,20 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import (
-    sha256, sha512, sha3_256, sha3_512, shake_128, shake_256,
-    Blake3, SipHash,
+    sha256,
+    sha512,
+    sha3_256,
+    sha3_512,
+    shake_128,
+    shake_256,
+    Blake3,
+    SipHash,
 )
 
 

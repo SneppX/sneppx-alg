@@ -1,12 +1,20 @@
 """Tests for hub API client and registry (mocked)."""
+
 import os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 import tempfile
 import json
 
 from model_hub.api.models import (
-    ModelCard, ModelFormat, ModelTask, ModelVersion, SemVer,
+    ModelCard,
+    ModelFormat,
+    ModelTask,
+    ModelVersion,
+    SemVer,
 )
 from model_hub.api.registry import ModelRegistry
 from model_hub.storage.backend import StorageConfig
@@ -14,17 +22,36 @@ from model_hub.storage.backend import StorageConfig
 
 class MockClient:
     """Mock API client for testing."""
+
     def __init__(self):
         self.calls = []
         self.models = [
-            {"name": "sneppx/test-model", "version": "v1.0.0", "description": "A test model",
-             "architecture": "Transformer", "format": "sneppx-native", "task": "text-generation",
-             "license": "mit", "visibility": "public", "tags": ["test"], "total_size": 1024,
-             "created_at": "2024-01-01T00:00:00Z"},
-            {"name": "sneppx/test-model", "version": "v1.1.0", "description": "Updated test model",
-             "architecture": "Transformer", "format": "sneppx-native", "task": "text-generation",
-             "license": "mit", "visibility": "public", "tags": ["test"], "total_size": 2048,
-             "created_at": "2024-06-01T00:00:00Z"},
+            {
+                "name": "sneppx/test-model",
+                "version": "v1.0.0",
+                "description": "A test model",
+                "architecture": "Transformer",
+                "format": "sneppx-native",
+                "task": "text-generation",
+                "license": "mit",
+                "visibility": "public",
+                "tags": ["test"],
+                "total_size": 1024,
+                "created_at": "2024-01-01T00:00:00Z",
+            },
+            {
+                "name": "sneppx/test-model",
+                "version": "v1.1.0",
+                "description": "Updated test model",
+                "architecture": "Transformer",
+                "format": "sneppx-native",
+                "task": "text-generation",
+                "license": "mit",
+                "visibility": "public",
+                "tags": ["test"],
+                "total_size": 2048,
+                "created_at": "2024-06-01T00:00:00Z",
+            },
         ]
         self.versions = ["v1.0.0", "v1.1.0"]
 
@@ -34,7 +61,7 @@ class MockClient:
             return {"items": self.models, "total": len(self.models)}
         if path.startswith("/api/v1/models/"):
             # Parse path: /api/v1/models/{name}/{version}
-            parts = path[len("/api/v1/models/"):].split("/")
+            parts = path[len("/api/v1/models/") :].split("/")
             if len(parts) == 2:
                 name, ver = parts
             elif len(parts) == 1:
@@ -70,15 +97,27 @@ class MockClient:
 
     def get_model_versions(self, name):
         if name == "sneppx/test-model":
-            return [ModelVersion(name=name, version=v, format=ModelFormat.SNEPPX_NATIVE,
-                                 task=ModelTask.TEXT_GENERATION) for v in self.versions]
+            return [
+                ModelVersion(
+                    name=name,
+                    version=v,
+                    format=ModelFormat.SNEPPX_NATIVE,
+                    task=ModelTask.TEXT_GENERATION,
+                )
+                for v in self.versions
+            ]
         return []
 
     def list_models(self, query=None, task=None, tag=None, page_size=1000):
         """List models with filtering."""
         result = self.models
         if query:
-            result = [m for m in result if query.lower() in m.get("name", "").lower() or query.lower() in m.get("description", "").lower()]
+            result = [
+                m
+                for m in result
+                if query.lower() in m.get("name", "").lower()
+                or query.lower() in m.get("description", "").lower()
+            ]
         if task:
             result = [m for m in result if m.get("task") == task]
         if tag:

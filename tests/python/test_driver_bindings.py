@@ -1,11 +1,17 @@
 """Tests for driver_bindings.py — hardware driver interfaces."""
 
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings.driver_bindings import (
-    CUDADriver, CUDADeviceProps, ROCmDriver, TPUDriver
+    CUDADriver,
+    CUDADeviceProps,
+    ROCmDriver,
+    TPUDriver,
 )
 
 

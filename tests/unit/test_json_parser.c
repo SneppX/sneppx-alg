@@ -1,5 +1,5 @@
-#include "test_gtest.h"
 #include "json.h"
+#include "test_gtest.h"
 #include <string.h>
 
 /*
@@ -9,19 +9,27 @@
  * re-entrant dotted-path lookup.
  */
 
-static void test_json_rejects_truncated_containers(void) {
-    const char* invalid[] = {
-        "{", "[", "{\"key\":", "[1,", "{\"key\":{", "{\"key\":[",
-        "{\"key\":\"\\uD800\"}", "{\"key\":\"\\uDC00\"}",
-        "{\"key\":\"\\uD800\\u0041\"}", "{\"key\":\"\\u0000tail\"}",
-        "\v{}"
-    };
-    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+static void test_json_rejects_truncated_containers(void)
+{
+    const char* invalid[] = {"{",
+                             "[",
+                             "{\"key\":",
+                             "[1,",
+                             "{\"key\":{",
+                             "{\"key\":[",
+                             "{\"key\":\"\\uD800\"}",
+                             "{\"key\":\"\\uDC00\"}",
+                             "{\"key\":\"\\uD800\\u0041\"}",
+                             "{\"key\":\"\\u0000tail\"}",
+                             "\v{}"};
+    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i)
+    {
         SX_ASSERT_NULL(sneppx_json_parse(invalid[i]), "invalid JSON must be rejected");
     }
 }
 
-static void test_json_accepts_empty_containers(void) {
+static void test_json_accepts_empty_containers(void)
+{
     SNEPPX_JsonValue* root = sneppx_json_parse("{\"object\":{},\"array\":[]}");
     SX_ASSERT_NOT_NULL(root, "valid empty containers parse");
     SNEPPX_JsonValue* object = sneppx_json_find(root, "object");
@@ -34,9 +42,9 @@ static void test_json_accepts_empty_containers(void) {
     sneppx_json_free(root);
 }
 
-static void test_json_decodes_unicode_surrogate_pairs(void) {
-    SNEPPX_JsonValue* root = sneppx_json_parse(
-        "{\"emoji\":\"\\uD83D\\uDE00\",\"accent\":\"\\u00E9\"}");
+static void test_json_decodes_unicode_surrogate_pairs(void)
+{
+    SNEPPX_JsonValue* root = sneppx_json_parse("{\"emoji\":\"\\uD83D\\uDE00\",\"accent\":\"\\u00E9\"}");
     SX_ASSERT_NOT_NULL(root, "valid Unicode escapes parse");
     SNEPPX_JsonValue* emoji = sneppx_json_find(root, "emoji");
     SNEPPX_JsonValue* accent = sneppx_json_find(root, "accent");
@@ -47,9 +55,9 @@ static void test_json_decodes_unicode_surrogate_pairs(void) {
     sneppx_json_free(root);
 }
 
-static void test_json_find_array_paths_are_reentrant_and_strict(void) {
-    SNEPPX_JsonValue* root = sneppx_json_parse(
-        "{\"items\":[{\"name\":\"first\"},{\"name\":\"second\"}]}");
+static void test_json_find_array_paths_are_reentrant_and_strict(void)
+{
+    SNEPPX_JsonValue* root = sneppx_json_parse("{\"items\":[{\"name\":\"first\"},{\"name\":\"second\"}]}");
     SX_ASSERT_NOT_NULL(root, "path lookup input parses");
     SNEPPX_JsonValue* second = sneppx_json_find(root, "items.1.name");
     SX_ASSERT_NOT_NULL(second, "second array item path exists");
@@ -65,7 +73,19 @@ static void test_json_find_array_paths_are_reentrant_and_strict(void) {
     sneppx_json_free(root);
 }
 
-TEST(test_json_parser, reject_truncated_containers) { test_json_rejects_truncated_containers(); }
-TEST(test_json_parser, accept_empty_containers) { test_json_accepts_empty_containers(); }
-TEST(test_json_parser, decode_unicode_surrogate_pairs) { test_json_decodes_unicode_surrogate_pairs(); }
-TEST(test_json_parser, reentrant_array_path_lookup) { test_json_find_array_paths_are_reentrant_and_strict(); }
+TEST(test_json_parser, reject_truncated_containers)
+{
+    test_json_rejects_truncated_containers();
+}
+TEST(test_json_parser, accept_empty_containers)
+{
+    test_json_accepts_empty_containers();
+}
+TEST(test_json_parser, decode_unicode_surrogate_pairs)
+{
+    test_json_decodes_unicode_surrogate_pairs();
+}
+TEST(test_json_parser, reentrant_array_path_lookup)
+{
+    test_json_find_array_paths_are_reentrant_and_strict();
+}

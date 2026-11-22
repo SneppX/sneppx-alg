@@ -21,8 +21,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_TEE_NONE = 0,
     SNEPPX_TEE_SGX,
     SNEPPX_TEE_SEV,
@@ -30,7 +30,8 @@ typedef enum {
     SNEPPX_TEE_PSP
 } SNEPPXTeeType;
 
-typedef struct {
+typedef struct
+{
     int initialized;
     SNEPPXTeeType tee_type;
     int attestation_verified;

@@ -17,8 +17,8 @@
  *
  */
 
-
-static void test_experiment_create(void) {
+static void test_experiment_create(void)
+{
     SNEPPXChaosExperiment exp;
     memset(&exp, 0, sizeof(exp));
     int ret = snepx_chaos_experiment_create(&exp, "network_test", "Network should survive packet loss", 37);
@@ -27,7 +27,8 @@ static void test_experiment_create(void) {
     snepx_chaos_experiment_destroy(&exp);
 }
 
-static void test_add_fault(void) {
+static void test_add_fault(void)
+{
     SNEPPXChaosExperiment exp;
     snepx_chaos_experiment_create(&exp, "fault_test", "Fault injection test", 20);
     SNEPPXChaosFault fault;
@@ -41,17 +42,20 @@ static void test_add_fault(void) {
     snepx_chaos_experiment_destroy(&exp);
 }
 
-static void test_circuit_breaker(void) {
+static void test_circuit_breaker(void)
+{
     SNEPPXChaosCircuitBreaker cb;
     snepx_chaos_circuit_breaker_init(&cb, 0.5f, 0.8f, 60000000000ULL);
     assert(cb.hystrix_status == SNEPPX_CHAOS_HYSTRIX_CLOSED);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         snepx_chaos_circuit_breaker_record_failure(&cb);
     }
     assert(snepx_chaos_circuit_breaker_is_open(&cb) == 1);
 }
 
-int main(void) {
+int main(void)
+{
     test_experiment_create();
     test_add_fault();
     test_circuit_breaker();

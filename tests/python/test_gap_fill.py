@@ -280,9 +280,9 @@ def test_named_pool_modules_shapes_and_backward():
             return (yy * yy).mean().data
 
         num = _fd_grad(x, loss)
-        assert np.allclose(xr.grad.data, num, atol=1e-6), (
-            f"{tag}: max|d|={np.abs(xr.grad.data - num).max()}"
-        )
+        assert np.allclose(
+            xr.grad.data, num, atol=1e-6
+        ), f"{tag}: max|d|={np.abs(xr.grad.data - num).max()}"
 
 
 def test_adaptive_pool_shapes():

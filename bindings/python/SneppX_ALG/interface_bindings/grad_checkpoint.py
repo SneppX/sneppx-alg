@@ -72,7 +72,11 @@ def checkpoint_sequential(functions, input, segments=1):
     is split into (1 = checkpoint the whole sequence as one unit)."""
     if segments < 1:
         segments = 1
-    chunks = [functions[i::segments] for i in range(segments)] if segments > 1 else [functions]
+    chunks = (
+        [functions[i::segments] for i in range(segments)]
+        if segments > 1
+        else [functions]
+    )
 
     def run_chunk(fns, x):
         for f in fns:

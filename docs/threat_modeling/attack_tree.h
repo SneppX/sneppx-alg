@@ -22,15 +22,16 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_AT_GOAL,
     SNEPPX_AT_OR_NODE,
     SNEPPX_AT_AND_NODE,
     SNEPPX_AT_LEAF
 } SNEPPXAtNodeType;
 
-typedef struct {
+typedef struct
+{
     uint64_t node_id;
     SNEPPXAtNodeType node_type;
     uint8_t* description;
@@ -49,7 +50,8 @@ typedef struct {
     size_t mitigation_len;
 } SNEPPXAtNode;
 
-typedef struct {
+typedef struct
+{
     uint8_t* tree_name;
     size_t name_len;
     SNEPPXAtNode* nodes;
@@ -60,7 +62,8 @@ typedef struct {
 } SNEPPXAttackTree;
 
 int snepx_at_tree_create(SNEPPXAttackTree* tree, const uint8_t* name, size_t name_len);
-uint64_t snepx_at_tree_add_node(SNEPPXAttackTree* tree, SNEPPXAtNodeType type, const uint8_t* desc, size_t desc_len, uint64_t parent_id);
+uint64_t snepx_at_tree_add_node(SNEPPXAttackTree* tree, SNEPPXAtNodeType type, const uint8_t* desc, size_t desc_len,
+                                uint64_t parent_id);
 int snepx_at_tree_compute_risk(SNEPPXAttackTree* tree);
 int snepx_at_tree_find_shortest_path(const SNEPPXAttackTree* tree, uint64_t** path, uint32_t* path_len);
 int snepx_at_tree_find_most_likely_path(const SNEPPXAttackTree* tree, uint64_t** path, uint32_t* path_len);

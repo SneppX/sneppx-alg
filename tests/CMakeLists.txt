@@ -3,11 +3,7 @@ file(GLOB_RECURSE INTEGRATION_TEST_SRCS ../tests/integration/*.c)
 file(GLOB_RECURSE SECURITY_TEST_SRCS ../tests/security/*.c)
 
 # Tests excluded because they reference APIs that were never implemented
-set(EXCLUDED_TESTS
-    test_secure_allocator
-    test_firewall_engine
-    test_object_pool
-)
+set(EXCLUDED_TESTS test_secure_allocator test_firewall_engine test_object_pool)
 
 # --- GoogleTest discovery -------------------------------------------------
 # Prefer an installed GTest; fall back to FetchContent. The C test sources
@@ -18,13 +14,19 @@ if(SNEPPX_USE_GTEST)
     find_package(GTest QUIET)
     if(NOT GTest_FOUND)
         include(FetchContent)
-        FetchContent_Declare(googletest
+        FetchContent_Declare(
+            googletest
             GIT_REPOSITORY https://github.com/google/googletest.git
             GIT_TAG v1.14.0
             GIT_SHALLOW TRUE
         )
         if(MSVC)
-            set(gtest_force_shared_crt ON CACHE BOOL "Force gtest to use the shared C runtime" FORCE)
+            set(gtest_force_shared_crt
+                ON
+                CACHE BOOL
+                "Force gtest to use the shared C runtime"
+                FORCE
+            )
         endif()
         FetchContent_MakeAvailable(googletest)
     endif()
@@ -41,51 +43,56 @@ macro(add_neural_test test_src link_libs)
     if(NOT _excluded EQUAL -1)
         message(STATUS "Skipping excluded test: ${test_name}")
     else()
-    add_executable(${test_name} ${test_src})
-    target_link_libraries(${test_name} PRIVATE ${link_libs})
-    if(SNEPPX_USE_GTEST)
-        # The migrated test sources are C files that now use GoogleTest;
-        # compile them as C++ (MSVC needs /TP because cl decides the
-        # language from the .c extension).
-        set_source_files_properties(${test_src} PROPERTIES LANGUAGE CXX)
-        if(MSVC)
-            set_source_files_properties(${test_src} PROPERTIES COMPILE_OPTIONS "/TP")
+        add_executable(${test_name} ${test_src})
+        target_link_libraries(${test_name} PRIVATE ${link_libs})
+        if(SNEPPX_USE_GTEST)
+            # The migrated test sources are C files that now use GoogleTest;
+            # compile them as C++ (MSVC needs /TP because cl decides the
+            # language from the .c extension).
+            set_source_files_properties(${test_src} PROPERTIES LANGUAGE CXX)
+            if(MSVC)
+                set_source_files_properties(
+                    ${test_src}
+                    PROPERTIES COMPILE_OPTIONS "/TP"
+                )
+            endif()
+            target_link_libraries(${test_name} PRIVATE ${SNEPPX_GTEST_LIBS})
         endif()
-        target_link_libraries(${test_name} PRIVATE ${SNEPPX_GTEST_LIBS})
-    endif()
-    target_include_directories(${test_name} PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
-        ${CMAKE_SOURCE_DIR}/include/neural_core/architecture
-        ${CMAKE_SOURCE_DIR}/include/neural_core/security
-        ${CMAKE_SOURCE_DIR}/tests
-        ${CMAKE_SOURCE_DIR}/lib/internal
-        ${CMAKE_SOURCE_DIR}/drivers/cuda
-        ${CMAKE_SOURCE_DIR}/drivers/tpu
-        ${CMAKE_SOURCE_DIR}/drivers/rocm
-        ${CMAKE_SOURCE_DIR}/fs/format
-        ${CMAKE_SOURCE_DIR}/security/monitor
-        ${CMAKE_SOURCE_DIR}/security/memory
-        ${CMAKE_SOURCE_DIR}/kernel
-        ${CMAKE_SOURCE_DIR}/security/crypto/c
-        ${CMAKE_SOURCE_DIR}/security/network
-        ${CMAKE_SOURCE_DIR}/security/updates
-        ${CMAKE_SOURCE_DIR}/security/formal
-        ${CMAKE_SOURCE_DIR}/security/pentest
-        ${CMAKE_SOURCE_DIR}/security/ai
-        ${CMAKE_SOURCE_DIR}/security/ui
-        ${CMAKE_SOURCE_DIR}/drivers/vulkan
-        ${CMAKE_SOURCE_DIR}/drivers/tpu
-        ${CMAKE_SOURCE_DIR}/drivers/http
-        ${CMAKE_SOURCE_DIR}/drivers/zk
-        ${CMAKE_SOURCE_DIR}/drivers/amd
-        ${CMAKE_SOURCE_DIR}/drivers/intel
-        ${CMAKE_SOURCE_DIR}/drivers/qualcomm
-        ${CMAKE_SOURCE_DIR}/drivers/npu
-        ${CMAKE_SOURCE_DIR}/drivers/sgx
-        ${CMAKE_SOURCE_DIR}/drivers/shim
-    )
-    add_test(NAME ${test_name} COMMAND ${test_name})
+        target_include_directories(
+            ${test_name}
+            PRIVATE
+                ${CMAKE_SOURCE_DIR}/include
+                ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
+                ${CMAKE_SOURCE_DIR}/include/neural_core/architecture
+                ${CMAKE_SOURCE_DIR}/include/neural_core/security
+                ${CMAKE_SOURCE_DIR}/tests
+                ${CMAKE_SOURCE_DIR}/lib/internal
+                ${CMAKE_SOURCE_DIR}/drivers/cuda
+                ${CMAKE_SOURCE_DIR}/drivers/tpu
+                ${CMAKE_SOURCE_DIR}/drivers/rocm
+                ${CMAKE_SOURCE_DIR}/fs/format
+                ${CMAKE_SOURCE_DIR}/security/monitor
+                ${CMAKE_SOURCE_DIR}/security/memory
+                ${CMAKE_SOURCE_DIR}/kernel
+                ${CMAKE_SOURCE_DIR}/security/crypto/c
+                ${CMAKE_SOURCE_DIR}/security/network
+                ${CMAKE_SOURCE_DIR}/security/updates
+                ${CMAKE_SOURCE_DIR}/security/formal
+                ${CMAKE_SOURCE_DIR}/security/pentest
+                ${CMAKE_SOURCE_DIR}/security/ai
+                ${CMAKE_SOURCE_DIR}/security/ui
+                ${CMAKE_SOURCE_DIR}/drivers/vulkan
+                ${CMAKE_SOURCE_DIR}/drivers/tpu
+                ${CMAKE_SOURCE_DIR}/drivers/http
+                ${CMAKE_SOURCE_DIR}/drivers/zk
+                ${CMAKE_SOURCE_DIR}/drivers/amd
+                ${CMAKE_SOURCE_DIR}/drivers/intel
+                ${CMAKE_SOURCE_DIR}/drivers/qualcomm
+                ${CMAKE_SOURCE_DIR}/drivers/npu
+                ${CMAKE_SOURCE_DIR}/drivers/sgx
+                ${CMAKE_SOURCE_DIR}/drivers/shim
+        )
+        add_test(NAME ${test_name} COMMAND ${test_name})
     endif()
 endmacro()
 
@@ -102,10 +109,12 @@ if(SNEPPX_USE_GTEST)
     if(TARGET sneppx_vizmon)
         target_link_libraries(test_vizmon PRIVATE sneppx_vizmon)
         if(MSVC AND SNEPPX_BUILD_VIZMON)
-            add_custom_command(TARGET test_vizmon POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:sneppx_vizmon>
-                $<TARGET_FILE_DIR:test_vizmon>
+            add_custom_command(
+                TARGET test_vizmon
+                POST_BUILD
+                COMMAND
+                    ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_FILE:sneppx_vizmon> $<TARGET_FILE_DIR:test_vizmon>
             )
         endif()
     endif()
@@ -114,16 +123,25 @@ if(SNEPPX_USE_GTEST)
         add_neural_test(${test_src} "neural_security_c;neural_core_kernel;neural_architecture_layer")
     endforeach()
 else()
-    message(WARNING "SNEPPX_USE_GTEST=OFF: C test executables are not built. "
-                    "Set SNEPPX_USE_GTEST=ON to build the GoogleTest suite.")
+    message(
+        WARNING
+        "SNEPPX_USE_GTEST=OFF: C test executables are not built. "
+        "Set SNEPPX_USE_GTEST=ON to build the GoogleTest suite."
+    )
 endif()
 
 # The firewall policy engine has a standalone C test so it runs even when
 # the optional GoogleTest migration suite is disabled.
 if(TARGET neural_security_c)
-    add_executable(test_firewall_engine_native ../tests/security/test_firewall_engine.c)
+    add_executable(
+        test_firewall_engine_native
+        ../tests/security/test_firewall_engine.c
+    )
     target_link_libraries(test_firewall_engine_native PRIVATE neural_security_c)
-    target_include_directories(test_firewall_engine_native PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    target_include_directories(
+        test_firewall_engine_native
+        PRIVATE ${CMAKE_SOURCE_DIR}/include
+    )
     target_compile_features(test_firewall_engine_native PRIVATE c_std_11)
     add_test(NAME firewall_engine_native COMMAND test_firewall_engine_native)
 endif()
@@ -136,17 +154,19 @@ macro(add_neural_cpp_test test_src link_libs)
     if(NOT _excluded EQUAL -1)
         message(STATUS "Skipping excluded test: ${test_name}")
     else()
-    add_executable(${test_name} ${test_src})
-    target_link_libraries(${test_name} ${link_libs})
-    target_include_directories(${test_name} PRIVATE
-        ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
-        ${CMAKE_SOURCE_DIR}/include/neural_core/architecture
-        ${CMAKE_SOURCE_DIR}/include/neural_core/security
-        ${CMAKE_SOURCE_DIR}/tests
-        ${CMAKE_SOURCE_DIR}/security/obfuscation
-        ${CMAKE_SOURCE_DIR}/security/cpp/include
-    )
-    add_test(NAME ${test_name} COMMAND ${test_name})
+        add_executable(${test_name} ${test_src})
+        target_link_libraries(${test_name} ${link_libs})
+        target_include_directories(
+            ${test_name}
+            PRIVATE
+                ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
+                ${CMAKE_SOURCE_DIR}/include/neural_core/architecture
+                ${CMAKE_SOURCE_DIR}/include/neural_core/security
+                ${CMAKE_SOURCE_DIR}/tests
+                ${CMAKE_SOURCE_DIR}/security/obfuscation
+                ${CMAKE_SOURCE_DIR}/security/cpp/include
+        )
+        add_test(NAME ${test_name} COMMAND ${test_name})
     endif()
 endmacro()
 
@@ -162,12 +182,14 @@ endforeach()
 # failed with ModuleNotFoundError before any assertion could run.
 
 # The object pool has a standalone C test and does not use GoogleTest.
-add_executable(test_object_pool_native
+add_executable(
+    test_object_pool_native
     ../tests/unit/memory/test_object_pool.c
     ../mm/pool/object_pool.c
 )
-target_include_directories(test_object_pool_native PRIVATE
-    ${CMAKE_SOURCE_DIR}/mm/pool
+target_include_directories(
+    test_object_pool_native
+    PRIVATE ${CMAKE_SOURCE_DIR}/mm/pool
 )
 target_compile_features(test_object_pool_native PRIVATE c_std_11)
 add_test(NAME object_pool_native COMMAND test_object_pool_native)
@@ -176,18 +198,27 @@ add_test(NAME object_pool_native COMMAND test_object_pool_native)
 # under CTest; LLVMFuzzerTestOneInput can also be linked with libFuzzer.
 add_executable(test_fuzz_tensor_native ../tests/fuzz/fuzz_tensor.c)
 target_link_libraries(test_fuzz_tensor_native PRIVATE neural_core_kernel)
-target_include_directories(test_fuzz_tensor_native PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
+target_include_directories(
+    test_fuzz_tensor_native
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/include/neural_core/kernel
 )
 target_compile_features(test_fuzz_tensor_native PRIVATE c_std_11)
 add_test(NAME fuzz_tensor_native COMMAND test_fuzz_tensor_native)
 
 # Checkpoint parser integrity regression tests (independent of GoogleTest).
 add_executable(test_checkpoint_integrity_native ../tests/fuzz/fuzz_checkpoint.c)
-target_link_libraries(test_checkpoint_integrity_native PRIVATE neural_core_kernel)
-target_include_directories(test_checkpoint_integrity_native PRIVATE
-    ${CMAKE_SOURCE_DIR}/fs/format
+target_link_libraries(
+    test_checkpoint_integrity_native
+    PRIVATE neural_core_kernel
+)
+target_include_directories(
+    test_checkpoint_integrity_native
+    PRIVATE ${CMAKE_SOURCE_DIR}/fs/format
 )
 target_compile_features(test_checkpoint_integrity_native PRIVATE c_std_11)
-add_test(NAME checkpoint_integrity_native COMMAND test_checkpoint_integrity_native)
+add_test(
+    NAME checkpoint_integrity_native
+    COMMAND test_checkpoint_integrity_native
+)

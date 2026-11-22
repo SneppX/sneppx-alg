@@ -1,6 +1,6 @@
 #include "control_flow_obfuscation.h"
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
 #include <iostream>
 
 /*
@@ -18,16 +18,38 @@
  *
  */
 
-
 static int tests_passed = 0;
 static int tests_failed = 0;
 
-#define TEST(name) do { printf("  TEST: %s ... ", name); } while(0)
-#define PASS() do { printf("PASS\n"); tests_passed++; } while(0)
-#define FAIL(msg) do { printf("FAIL: %s\n", msg); tests_failed++; } while(0)
-#define ASSERT(cond, msg) do { if (!(cond)) { FAIL(msg); return; } } while(0)
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST: %s ... ", name);                                                                               \
+    } while (0)
+#define PASS()                                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+        tests_passed++;                                                                                                \
+    } while (0)
+#define FAIL(msg)                                                                                                      \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("FAIL: %s\n", msg);                                                                                     \
+        tests_failed++;                                                                                                \
+    } while (0)
+#define ASSERT(cond, msg)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            FAIL(msg);                                                                                                 \
+            return;                                                                                                    \
+        }                                                                                                              \
+    } while (0)
 
-void build_test_cfg(SNEPPX::SNEPPXObfCFG& cfg) {
+void build_test_cfg(SNEPPX::SNEPPXObfCFG& cfg)
+{
     cfg.entry_block = cfg.add_block();
     cfg.blocks[cfg.entry_block]->is_entry = true;
 
@@ -61,7 +83,8 @@ void build_test_cfg(SNEPPX::SNEPPXObfCFG& cfg) {
     cfg.add_edge(b3, cfg.exit_block);
 }
 
-void test_flatten_simple() {
+void test_flatten_simple()
+{
     TEST("flatten_simple_3_blocks");
     SNEPPX::SNEPPXObfCFG cfg;
     build_test_cfg(cfg);
@@ -75,12 +98,15 @@ void test_flatten_simple() {
     ASSERT(cfg.blocks.size() >= 4, "flatten should not remove blocks");
 
     bool has_dispatcher = false;
-    for (auto& pair : cfg.blocks) {
-        if (pair.second->is_entry) {
+    for (auto& pair : cfg.blocks)
+    {
+        if (pair.second->is_entry)
+        {
             has_dispatcher = true;
-            for (auto& inst : pair.second->instructions) {
-                if (inst.type == SNEPPX::SNEPPXObfInstType::MOV &&
-                    inst.result == "state_var") {
+            for (auto& inst : pair.second->instructions)
+            {
+                if (inst.type == SNEPPX::SNEPPXObfInstType::MOV && inst.result == "state_var")
+                {
                     has_dispatcher = true;
                     break;
                 }
@@ -91,7 +117,8 @@ void test_flatten_simple() {
     PASS();
 }
 
-void test_flatten_loop() {
+void test_flatten_loop()
+{
     TEST("flatten_loop");
     SNEPPX::SNEPPXObfCFG cfg;
 
@@ -115,7 +142,8 @@ void test_flatten_loop() {
     PASS();
 }
 
-void test_semantic_preserve() {
+void test_semantic_preserve()
+{
     TEST("semantic_preserve");
     SNEPPX::SNEPPXObfCFG cfg;
     build_test_cfg(cfg);
@@ -128,15 +156,15 @@ void test_semantic_preserve() {
     PASS();
 }
 
-int main() {
+int main()
+{
     printf("\n=== S2 Obfuscation CFG Tests ===\n\n");
 
     test_flatten_simple();
     test_flatten_loop();
     test_semantic_preserve();
 
-    printf("\nResults: %d passed, %d failed out of %d\n",
-           tests_passed, tests_failed, tests_passed + tests_failed);
+    printf("\nResults: %d passed, %d failed out of %d\n", tests_passed, tests_failed, tests_passed + tests_failed);
 
     return tests_failed > 0 ? 1 : 0;
 }

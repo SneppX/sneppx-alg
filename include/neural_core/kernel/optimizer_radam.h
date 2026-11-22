@@ -18,8 +18,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     float* m;
     float* v;
     float beta1, beta2;
@@ -49,7 +49,7 @@ void SNEPPX_radam_init(SNEPPXRAdamState* state, size_t size, float lr, float bet
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_radam_step(SNEPPXRAdamState* state, float* params, const float* grads);
+int SNEPPX_radam_step(SNEPPXRAdamState* state, float* params, const float* grads);
 /**
  * @brief Destroy Radam.
  *

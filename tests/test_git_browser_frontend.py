@@ -15,7 +15,9 @@ def test_source_views_share_language_aware_highlighter():
     assert "window.SneppXGitHighlighter.language(path)" in BROWSER
     # Allow formatter-controlled whitespace around JS operators and arguments.
     assert re.search(r'highlightedLine\(\s*line\s*\|\|\s*" "\s*,\s*lang\s*\)', BROWSER)
-    assert re.search(r'source\.replace\(/\\r\\n/g\s*,\s*"\\n"\)\.split\("\\n"\)', BROWSER)
+    assert re.search(
+        r'source\.replace\(/\\r\\n/g\s*,\s*"\\n"\)\.split\("\\n"\)', BROWSER
+    )
 
 
 def test_highlighter_and_browser_are_registered_in_load_order():
@@ -30,9 +32,9 @@ def test_root_404_deployment_includes_both_browser_assets():
         'cp "$RUNNER_TEMP/git-browser-highlighter.js" javascripts/git-browser-highlighter.js'
         in DEPLOY
     )
-    assert DEPLOY.index('latest/javascripts/git-browser-highlighter.js" defer') < DEPLOY.index(
-        'javascripts/git-browser.js" defer'
-    )
+    assert DEPLOY.index(
+        'latest/javascripts/git-browser-highlighter.js" defer'
+    ) < DEPLOY.index('javascripts/git-browser.js" defer')
 
 
 def test_theme_is_dark_only():
@@ -62,7 +64,8 @@ def test_pages_workflow_preserves_highlighter_before_mike_switches_branch():
 
 def test_pages_workflow_stages_root_highlighter_asset():
     assert (
-        "git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js" in DEPLOY
+        "git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js"
+        in DEPLOY
     )
 
 

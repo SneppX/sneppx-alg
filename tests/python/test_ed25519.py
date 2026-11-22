@@ -32,17 +32,46 @@ else:
 
 # RFC 8032 test vector seed
 RFC8032_SEED = bytes.fromhex(
-    "9d61b19deffd5a60ba844af492ec2cc4"
-    "4449c5697b3a6339cb3cc4cd8a14442a"
+    "9d61b19deffd5a60ba844af492ec2cc4" "4449c5697b3a6339cb3cc4cd8a14442a"
 )
 
 # L — Ed25519 group order
-_L_BYTES = bytes([
-    0xed, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58,
-    0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10,
-])
+_L_BYTES = bytes(
+    [
+        0xED,
+        0xD3,
+        0xF5,
+        0x5C,
+        0x1A,
+        0x63,
+        0x12,
+        0x58,
+        0xD6,
+        0x9C,
+        0xF7,
+        0xA2,
+        0xDE,
+        0xF9,
+        0xDE,
+        0x14,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x10,
+    ]
+)
 ED25519_L = int.from_bytes(_L_BYTES, "little")
 
 pytestmark = pytest.mark.skipif(not HAS_C, reason="C extension _SNEPPX_c not available")
@@ -50,13 +79,17 @@ pytestmark = pytest.mark.skipif(not HAS_C, reason="C extension _SNEPPX_c not ava
 
 # ── SHA-512 tests ────────────────────────────────────────────────────────
 
-@pytest.mark.parametrize("data", [
-    b"",
-    b"abc",
-    b"hello world",
-    b"The quick brown fox jumps over the lazy dog",
-    b"a" * 1024,
-])
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        b"",
+        b"abc",
+        b"hello world",
+        b"The quick brown fox jumps over the lazy dog",
+        b"a" * 1024,
+    ],
+)
 def test_sha512_matches_hashlib(data):
     """C SHA-512 must match Python's hashlib."""
     c_result = crypto.sha512(data)
@@ -71,6 +104,7 @@ def test_sha512_rfc_abc():
 
 
 # ── Ed25519 interop tests ────────────────────────────────────────────────
+
 
 def _build_sk64(seed: bytes, pk: bytes) -> bytes:
     """Build the 64-byte private key format: seed[32] || pk[32]."""

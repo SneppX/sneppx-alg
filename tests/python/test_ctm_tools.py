@@ -1,4 +1,5 @@
 """Regression tests for the standalone CTM scanner."""
+
 import importlib.util
 import json
 import subprocess
@@ -14,7 +15,9 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
+LARGE_SPEC = importlib.util.spec_from_file_location(
+    "ctm_large_files", LARGE_MODULE_PATH
+)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -25,7 +28,9 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "ignored.py").write_text(
+        "bad = True\n", encoding="utf-8"
+    )
 
     report = ctm.scan(tmp_path)
 
@@ -72,7 +77,10 @@ def test_cli_json_output_is_machine_readable(tmp_path):
     (tmp_path / "a.py").write_text("print('ok')\n", encoding="utf-8")
     result = subprocess.run(
         [sys.executable, str(MODULE_PATH), str(tmp_path), "--format", "json"],
-        check=True, capture_output=True, text=True, timeout=10,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
     )
     report = json.loads(result.stdout)
 
@@ -82,15 +90,15 @@ def test_cli_json_output_is_machine_readable(tmp_path):
 
 
 def test_html_dashboard_escapes_untrusted_root_path(tmp_path):
-    report_root = tmp_path / 'repo<script>alert(1)</script>'
+    report_root = tmp_path / "repo<script>alert(1)</script>"
     report_root.mkdir(parents=True)
-    (report_root / 'main.py').write_text('pass\\n', encoding='utf-8')
+    (report_root / "main.py").write_text("pass\\n", encoding="utf-8")
 
     rendered = ctm.render_html(ctm.scan(report_root))
 
-    assert '&lt;script&gt;' in rendered
-    assert '<script>alert(1)</script>' not in rendered
-    assert 'Language breakdown' in rendered
+    assert "&lt;script&gt;" in rendered
+    assert "<script>alert(1)</script>" not in rendered
+    assert "Language breakdown" in rendered
 
 
 def test_large_file_scanner_filters_threshold_and_sorts(tmp_path):

@@ -21,9 +21,15 @@ function(enable_clang_tidy TARGET)
     endif()
     set(CLANG_TIDY_OPTIONS ${ARGN})
     if(NOT CLANG_TIDY_OPTIONS)
-        set(CLANG_TIDY_OPTIONS "-checks=*,-clang-analyzer-*,-llvmlibc-*,-modernize-use-trailing-return-type" "-warnings-as-errors=*")
+        set(CLANG_TIDY_OPTIONS
+            "-checks=*,-clang-analyzer-*,-llvmlibc-*,-modernize-use-trailing-return-type"
+            "-warnings-as-errors=*"
+        )
     endif()
-    set_target_properties(${TARGET} PROPERTIES C_CLANG_TIDY "${CLANG_TIDY};${CLANG_TIDY_OPTIONS}")
+    set_target_properties(
+        ${TARGET}
+        PROPERTIES C_CLANG_TIDY "${CLANG_TIDY};${CLANG_TIDY_OPTIONS}"
+    )
 endfunction()
 
 function(enable_cppcheck TARGET)
@@ -32,9 +38,17 @@ function(enable_cppcheck TARGET)
     endif()
     set(CPPCHECK_OPTIONS ${ARGN})
     if(NOT CPPCHECK_OPTIONS)
-        set(CPPCHECK_OPTIONS "--enable=warning,performance,portability" "--suppress=missingIncludeSystem" "--language=c" "--std=c11")
+        set(CPPCHECK_OPTIONS
+            "--enable=warning,performance,portability"
+            "--suppress=missingIncludeSystem"
+            "--language=c"
+            "--std=c11"
+        )
     endif()
-    set_target_properties(${TARGET} PROPERTIES C_CPPCHECK "${CPPCHECK};${CPPCHECK_OPTIONS}")
+    set_target_properties(
+        ${TARGET}
+        PROPERTIES C_CPPCHECK "${CPPCHECK};${CPPCHECK_OPTIONS}"
+    )
 endfunction()
 
 function(enable_iwyu TARGET)

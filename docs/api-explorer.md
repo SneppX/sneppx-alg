@@ -8,7 +8,6 @@ Quick reference for SNEPPX-Alg's Python API.
     - [Loss gallery](loss-gallery.md) — every loss with its gradient curve
     - [Optimizer race](optimizer-race.md) — SGD vs Adam vs AdamW vs NAdam
 
-
 ## Tensor
 
 ```python

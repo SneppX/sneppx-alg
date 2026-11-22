@@ -18,8 +18,8 @@
  *
  */
 
-
-typedef struct {
+typedef struct
+{
     float* z;
     float* m;
     float* v;
@@ -42,7 +42,8 @@ typedef struct {
  * @param eps [in] Eps value.
  * @param weight_decay [in] Weight Decay value.
  */
-void SNEPPX_sf_adamw_init(SNEPPXSFRAdamWState* state, size_t size, float lr, float beta1, float beta2, float eps, float weight_decay);
+void SNEPPX_sf_adamw_init(SNEPPXSFRAdamWState* state, size_t size, float lr, float beta1, float beta2, float eps,
+                          float weight_decay);
 /**
  * @brief Perform Sf Adamw Step.
  *
@@ -52,7 +53,7 @@ void SNEPPX_sf_adamw_init(SNEPPXSFRAdamWState* state, size_t size, float lr, flo
  *
  * @return 0 on success, -1 on error.
  */
-int  SNEPPX_sf_adamw_step(SNEPPXSFRAdamWState* state, float* params, const float* grads);
+int SNEPPX_sf_adamw_step(SNEPPXSFRAdamWState* state, float* params, const float* grads);
 /**
  * @brief Destroy Sf Adamw.
  *

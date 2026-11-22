@@ -17,7 +17,9 @@ def test_bearer_authenticator_accepts_active_session_token(tmp_path, monkeypatch
     assert info["token_type"] == "session"
 
 
-def test_api_key_mode_accepts_bearer_session_and_rejects_revoked_token(tmp_path, monkeypatch):
+def test_api_key_mode_accepts_bearer_session_and_rejects_revoked_token(
+    tmp_path, monkeypatch
+):
     store = UserStore(db_path=str(tmp_path / "users.db"))
     user = store.create_user("api-mode@example.com", "correct-horse-123")
     token = store.create_session_token(user["id"])

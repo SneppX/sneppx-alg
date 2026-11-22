@@ -24,8 +24,8 @@
  *
  */
 
-
-typedef enum {
+typedef enum
+{
     SNEPPX_AI_CATEGORY_HATE_SPEECH,
     SNEPPX_AI_CATEGORY_VIOLENCE,
     SNEPPX_AI_CATEGORY_SEXUAL_CONTENT,
@@ -47,7 +47,8 @@ typedef enum {
     SNEPPX_AI_CATEGORY_CUSTOM
 } SNEPPXAIGuardrailCategory;
 
-typedef enum {
+typedef enum
+{
     SNEPPX_AI_GUARDRAIL_ACTION_BLOCK,
     SNEPPX_AI_GUARDRAIL_ACTION_FLAG,
     SNEPPX_AI_GUARDRAIL_ACTION_LOG,
@@ -57,7 +58,8 @@ typedef enum {
     SNEPPX_AI_GUARDRAIL_ACTION_ESCALATE
 } SNEPPXAIGuardrailAction;
 
-typedef struct {
+typedef struct
+{
     SNEPPXAIGuardrailCategory category;
     SNEPPXAIGuardrailAction action;
     uint8_t* regex_pattern;
@@ -72,7 +74,8 @@ typedef struct {
     uint8_t use_ml : 1;
 } SNEPPXAIGuardrailRule;
 
-typedef struct {
+typedef struct
+{
     SNEPPXAIGuardrailRule rules[SNEPPX_AI_GUARDRAIL_MAX_RULES];
     uint32_t num_rules;
     uint8_t* input_buffer;
@@ -91,12 +94,15 @@ typedef struct {
 
 int snepx_ai_guardrail_add_rule(SNEPPXAIGuardrailRule* rules, uint32_t* num_rules, const SNEPPXAIGuardrailRule* rule);
 int snepx_ai_guardrail_remove_rule(SNEPPXAIGuardrailRule* rules, uint32_t* num_rules, uint32_t rule_index);
-int snepx_ai_guardrail_filter_input(const SNEPPXAIGuardrailRule* rules, uint32_t num_rules, const uint8_t* input, size_t input_len, SNEPPXAIGuardrailResult* result);
-int snepx_ai_guardrail_filter_output(const SNEPPXAIGuardrailRule* rules, uint32_t num_rules, const uint8_t* output, size_t output_len, SNEPPXAIGuardrailResult* result);
+int snepx_ai_guardrail_filter_input(const SNEPPXAIGuardrailRule* rules, uint32_t num_rules, const uint8_t* input,
+                                    size_t input_len, SNEPPXAIGuardrailResult* result);
+int snepx_ai_guardrail_filter_output(const SNEPPXAIGuardrailRule* rules, uint32_t num_rules, const uint8_t* output,
+                                     size_t output_len, SNEPPXAIGuardrailResult* result);
 int snepx_ai_guardrail_detect_prompt_injection(const uint8_t* text, size_t text_len, float* score);
 int snepx_ai_guardrail_detect_jailbreak(const uint8_t* text, size_t text_len, float* score);
 int snepx_ai_guardrail_redact_pii(uint8_t* text, size_t* text_len);
-int snepx_ai_guardrail_scan_output(const uint8_t* output, size_t output_len, SNEPPXAIGuardrailCategory* categories, uint32_t* num_categories);
+int snepx_ai_guardrail_scan_output(const uint8_t* output, size_t output_len, SNEPPXAIGuardrailCategory* categories,
+                                   uint32_t* num_categories);
 int snepx_ai_guardrail_result_destroy(SNEPPXAIGuardrailResult* result);
 
 #endif

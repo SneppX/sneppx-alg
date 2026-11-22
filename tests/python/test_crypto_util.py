@@ -2,9 +2,18 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
-from SneppX_ALG.interface_bindings import BigNum, DRBG, Random, ConstantTime, EntropyPool
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
+
+from SneppX_ALG.interface_bindings import (
+    BigNum,
+    DRBG,
+    Random,
+    ConstantTime,
+    EntropyPool,
+)
 
 
 def test_bignum_from_int():

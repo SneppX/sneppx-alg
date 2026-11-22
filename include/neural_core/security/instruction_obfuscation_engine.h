@@ -4,9 +4,9 @@
 
 #include "control_flow_obfuscation.h"
 #include <random>
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 /*
  * SNEPPX - Instruction Obfuscation Engine
@@ -23,11 +23,12 @@
  *
  */
 
+namespace SNEPPX
+{
 
-namespace SNEPPX {
-
-class SNEPPXObfSubst {
-public:
+class SNEPPXObfSubst
+{
+  public:
     SNEPPXObfSubst();
     void set_seed(uint64_t seed);
     void substitute_add(SNEPPXObfBlock& block);
@@ -47,7 +48,7 @@ public:
     void rename_registers_block(SNEPPXObfBlock& block, int& next_temp);
     void rename_registers_cfg(SNEPPXObfCFG& cfg);
 
-private:
+  private:
     std::mt19937_64 rng;
     bool choose_substitution();
     int rand_int(int min, int max);

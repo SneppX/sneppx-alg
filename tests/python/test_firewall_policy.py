@@ -4,7 +4,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from SneppX_ALG.interface_bindings.firewall import FirewallConfig, FirewallRunner, create_firewall
+from SneppX_ALG.interface_bindings.firewall import (
+    FirewallConfig,
+    FirewallRunner,
+    create_firewall,
+)
 from SneppX_ALG.interface_bindings.firewall_application import FirewallApplication
 from SneppX_ALG.interface_bindings.firewall_network import FirewallNetwork
 
@@ -14,10 +18,12 @@ def _request(runner, path, ip="192.0.2.20"):
 
 
 def test_default_deny_allows_only_explicit_routes_and_prefixes():
-    runner = FirewallRunner(FirewallConfig(
-        block_all_by_default=True,
-        application={"allowed_paths": ["/health", "/v1/*"]},
-    ))
+    runner = FirewallRunner(
+        FirewallConfig(
+            block_all_by_default=True,
+            application={"allowed_paths": ["/health", "/v1/*"]},
+        )
+    )
     assert _request(runner, "/health").allowed
     assert _request(runner, "/v1/models").allowed
     assert _request(runner, "/v1").allowed

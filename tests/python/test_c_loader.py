@@ -17,7 +17,10 @@ def test_find_load_nonexistent():
 
 if __name__ == "__main__":
     import sys
-    for name, fn in sorted({k: v for k, v in locals().items() if k.startswith("test_")}.items()):
+
+    for name, fn in sorted(
+        {k: v for k, v in locals().items() if k.startswith("test_")}.items()
+    ):
         try:
             fn()
             print(f"  PASS {name}")

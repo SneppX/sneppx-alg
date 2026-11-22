@@ -27,16 +27,18 @@ class FirewallASGIMiddleware:
     @staticmethod
     async def _reject(send, status_code, detail):
         body = json.dumps({"detail": str(detail)}).encode("utf-8")
-        await send({
-            "type": "http.response.start",
-            "status": int(status_code),
-            "headers": [
-                (b"content-type", b"application/json; charset=utf-8"),
-                (b"content-length", str(len(body)).encode("ascii")),
-                (b"cache-control", b"no-store"),
-                (b"connection", b"close"),
-            ],
-        })
+        await send(
+            {
+                "type": "http.response.start",
+                "status": int(status_code),
+                "headers": [
+                    (b"content-type", b"application/json; charset=utf-8"),
+                    (b"content-length", str(len(body)).encode("ascii")),
+                    (b"cache-control", b"no-store"),
+                    (b"connection", b"close"),
+                ],
+            }
+        )
         await send({"type": "http.response.body", "body": body, "more_body": False})
 
     async def __call__(self, scope, receive, send):
@@ -74,7 +76,9 @@ class FirewallASGIMiddleware:
                 return
             if name in headers:
                 if name in _SINGLETON_HEADERS:
-                    await self._reject(send, 400, "Duplicate security-sensitive request header")
+                    await self._reject(
+                        send, 400, "Duplicate security-sensitive request header"
+                    )
                     return
                 separator = "; " if name == "cookie" else ", "
                 headers[name] = headers[name] + separator + value
@@ -121,7 +125,11 @@ class FirewallASGIMiddleware:
         client_ip = client[0] if client and len(client) > 0 else ""
         query_bytes = scope.get("query_string", b"")
         try:
-            query = query_bytes.decode("latin-1") if isinstance(query_bytes, bytes) else str(query_bytes)
+            query = (
+                query_bytes.decode("latin-1")
+                if isinstance(query_bytes, bytes)
+                else str(query_bytes)
+            )
             result = firewall.check_request(
                 client_ip=client_ip,
                 method=scope.get("method", "GET"),
@@ -136,7 +144,9 @@ class FirewallASGIMiddleware:
             return
 
         if not result.allowed:
-            await self._reject(send, result.status_code, result.reason or "Request blocked")
+            await self._reject(
+                send, result.status_code, result.reason or "Request blocked"
+            )
             return
 
         delivered = False
