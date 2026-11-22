@@ -35,7 +35,7 @@ repos:
       - id: ruff-format
         exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
 
-  # Prettier owns consistent formatting for web sources, JSON, YAML, and Markdown.
+  # Prettier owns consistent formatting for web sources, JSON, and YAML.
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: b40b4e02d5a0c977e64da51e8742e3240ef6372a
     hooks:
@@ -44,7 +44,7 @@ repos:
         # same files in opposite directions and makes the promotion bot loop.
         types_or: [javascript, jsx, ts, tsx, json, yaml, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/|^benchmarks/baseline\.json$|^\.clang-tidy$|^tests/data/acvp/slhdsa_keygen_kat\.json$|^conda-forge-recipe/meta\.yaml$'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
@@ -57,7 +57,8 @@ repos:
     hooks:
       - id: shfmt
         args: [-w, -i, "4", -ci, -bn]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        # The legacy helper contains nested sh -c quoting that shfmt cannot parse.
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/|^scripts/pre-commit\.sh$'
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.42.0
@@ -71,7 +72,8 @@ repos:
     hooks:
       - id: yamllint
         args: [-c, .yamllint.yml]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/'
+        # conda-forge/meta.yaml is a Jinja template, not parseable YAML.
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist)/|^conda-forge-recipe/meta\.yaml$'
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
