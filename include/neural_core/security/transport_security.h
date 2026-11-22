@@ -123,6 +123,18 @@ extern "C"
     int SNEPPX_transport_noise_handshake(SNEPPXTransportSecurity* ts, const uint8_t* prologue, size_t prologue_len,
                                          uint8_t* handshake_msg, size_t* msg_len);
 
+    /**
+     * @brief Select the transport cipher.
+     *
+     * Only ChaCha20 (cipher 0 / use_aes 0) is supported. Requests to enable
+     * AES-GCM are rejected because this API has no authentication tag path.
+     *
+     * @return 0 on success, -1 on error.
+     */
+    int SNEPPX_transport_set_cipher(SNEPPXTransportSecurity* ts, int use_aes);
+    int SNEPPX_transport_set_cipher_type(int cipher_type);
+    int SNEPPX_transport_get_cipher_type(void);
+
 #ifdef __cplusplus
 }
 #endif
