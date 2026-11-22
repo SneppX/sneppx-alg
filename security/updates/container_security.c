@@ -1,6 +1,7 @@
 #include "container_security.h"
 #include "sha256.h"
 #include "cryptographic_random_generator.h"
+#include "../../include/neural_core/security/ed25519_signature_verification.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -76,11 +77,17 @@ static void hex_decode(uint8_t *out, const char *hex) {
  */
 int SNEPPX_container_verify_image(const uint8_t *manifest, size_t manifest_len, const uint8_t *signature, size_t sig_len, const uint8_t *pubkey) {
     if (!manifest || !signature || !pubkey) return -1;
-    uint8_t hash[32];
-    SNEPPX_sha256(hash, manifest, manifest_len);
-    for (size_t i = 0; i < 32 && i < sig_len; i++)
-        if (signature[i] != hash[i]) return 1;
-    return 0;
+    if (sig_len != SNEPPX_ED25519_SIGNATURE_LEN) return 1;
+
+    SNEPPXEd25519Signature sig;
+    memcpy(sig.data, signature, SNEPPX_ED25519_SIGNATURE_LEN);
+
+    uint8_t digest[32];
+    SNEPPX_sha256(digest, manifest, manifest_len);
+
+    int verified = SNEPPX_ed25519_verify(pubkey, digest, sizeof(digest), &sig);
+    if (verified < 0) return -1;
+    return verified == 1 ? 0 : 1;
 }
 
 /**

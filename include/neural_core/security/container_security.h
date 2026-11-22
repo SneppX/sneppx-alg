@@ -81,9 +81,9 @@ typedef struct {
  * @param manifest_len [in] Manifest Len value.
  * @param signature [in] Signature value.
  * @param sig_len [in] Sig Len value.
- * @param pubkey [in] Pubkey value.
+ * @param pubkey [in] 32-byte Ed25519 public key.
  *
- * @return 0 on success, -1 on error.
+ * @return 0 if the signature is valid, 1 if invalid, -1 on error.
  */
 int SNEPPX_container_verify_image(const uint8_t *manifest, size_t manifest_len, const uint8_t *signature, size_t sig_len, const uint8_t *pubkey);
 /**
