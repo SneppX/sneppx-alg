@@ -65,7 +65,9 @@ def _tape_with(a_arr, *more):
 
 
 def test_tape_add_mul_forward_parity():
-    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32) * 2)
+    tape, a, (b,) = _tape_with(
+        np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32) * 2
+    )
     r = tape.add(a, b)
     assert r.data.shape == (2, 3)
     assert np.allclose(np.asarray(r.data.data()), 5.0)
@@ -75,7 +77,9 @@ def test_tape_add_mul_forward_parity():
 
 
 def test_tape_sub_div_forward_parity():
-    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 6, np.ones((2, 3), np.float32) * 2)
+    tape, a, (b,) = _tape_with(
+        np.ones((2, 3), np.float32) * 6, np.ones((2, 3), np.float32) * 2
+    )
     s = tape.sub(a, b)
     assert np.allclose(np.asarray(s.data.data()), 4.0)
     d = tape.div(a, b)
@@ -190,7 +194,9 @@ def test_variable_grad_accessor_is_owning_copy():
 
 def test_tape_double_record_is_safe():
     """Recording the same variable twice must not corrupt teardown."""
-    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32))
+    tape, a, (b,) = _tape_with(
+        np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32)
+    )
     tape.record(a)  # duplicate on purpose
     r = tape.add(a, b)
     assert np.allclose(np.asarray(r.data.data()), 4.0)

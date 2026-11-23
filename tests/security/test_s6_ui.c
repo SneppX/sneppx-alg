@@ -139,6 +139,5 @@ TEST(test_s6_ui, csprng_backed_secrets)
     uint8_t key2[32];
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc1, key1, sizeof(key1)), 0);
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc2, key2, sizeof(key2)), 0);
-    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0)
-        << "M-10: ceremony keys must be CSPRNG-generated";
+    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0) << "M-10: ceremony keys must be CSPRNG-generated";
 }
