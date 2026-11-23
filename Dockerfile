@@ -53,6 +53,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r sneppx && useradd -r -g sneppx sneppx
+
 # Copy installed artifacts from builder
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /install /usr/local
@@ -64,7 +66,9 @@ COPY --from=builder /install/lib/${PYTHON_SITE}/dist-packages /usr/local/lib/${P
 ENV PYTHONPATH=/usr/local/lib/${PYTHON_SITE}/dist-packages
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
+RUN mkdir -p /workspace && chown sneppx:sneppx /workspace
 WORKDIR /workspace
+USER sneppx
 
 # =====================================================================
 # CPU-ONLY RUNTIME IMAGE
@@ -81,6 +85,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r sneppx && useradd -r -g sneppx sneppx
+
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /install /usr/local
 
@@ -90,7 +96,9 @@ COPY --from=builder /install/lib/${PYTHON_SITE}/dist-packages /usr/local/lib/${P
 ENV PYTHONPATH=/usr/local/lib/${PYTHON_SITE}/dist-packages
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
+RUN mkdir -p /workspace && chown sneppx:sneppx /workspace
 WORKDIR /workspace
+USER sneppx
 
 # =====================================================================
 # DEVELOPMENT IMAGE (Full CUDA + dev tools)
@@ -132,13 +140,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libomp5 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r sneppx && useradd -r -g sneppx sneppx
+
 COPY --from=builder /usr/local/lib/${PYTHON_SITE}/dist-packages /usr/local/lib/${PYTHON_SITE}/dist-packages
 COPY --from=builder /usr/local/lib /usr/local/lib
+
+RUN pip3 install --no-cache-dir uvicorn
 
 ENV PYTHONPATH=/usr/local/lib/${PYTHON_SITE}/dist-packages
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
+RUN mkdir -p /workspace && chown sneppx:sneppx /workspace
 WORKDIR /workspace
+USER sneppx
 
 # =====================================================================
 # DEFAULT TARGET
