@@ -1,6 +1,7 @@
 """Regression tests for the standalone CTM utility tools."""
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -111,3 +112,24 @@ def test_recent_files_orders_by_mtime_and_honors_limit(tmp_path):
     assert [item["path"] for item in report["files"]] == ["recent.py"]
     assert report["files"][0]["modified"].endswith("+00:00")
     assert len(json.loads(ctm_recent_files.render(report, "json"))["files"]) == 1
+
+
+def test_all_new_tools_run_as_scripts(tmp_path):
+    (tmp_path / "a.py").write_text("def f():\n    pass\n", encoding="utf-8")
+    tools = {
+        "ctm_count_functions": [str(tmp_path)],
+        "ctm_count_headers": [str(tmp_path)],
+        "ctm_diff_loc": [str(tmp_path), str(tmp_path)],
+        "ctm_list_large_files": [str(tmp_path)],
+        "ctm_recent_files": [str(tmp_path)],
+    }
+    for tool, args in tools.items():
+        result = subprocess.run(
+            [sys.executable, str(PY_DIR / f"{tool}.py"), *args, "--format", "json"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        payload = json.loads(result.stdout)
+        assert payload["tool"] == tool
