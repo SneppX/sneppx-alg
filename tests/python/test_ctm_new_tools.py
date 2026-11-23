@@ -16,6 +16,8 @@ import ctm_list_large_files  # noqa: E402
 import ctm_recent_files  # noqa: E402
 import ctm_todo_scan  # noqa: E402
 import ctm_doc_links  # noqa: E402
+import ctm_duplicate_files  # noqa: E402
+import ctm_duplicate_files  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -166,3 +168,17 @@ def test_doc_links_flags_missing_relative_targets_only(tmp_path):
     assert report["links_checked"] == 3
     assert report["broken"] == 1
     assert report["issues"] == [{"path": "docs/index.md", "line": 2, "target": "./missing.md"}]
+
+
+def test_duplicate_files_groups_identical_content(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "a.py").write_bytes(b"identical\n")
+    (tmp_path / "b.py").write_bytes(b"identical\n")
+    (tmp_path / "c.py").write_bytes(b"different\n")
+
+    report = ctm_duplicate_files.duplicate_files(tmp_path)
+
+    assert len(report["groups"]) == 1
+    assert report["groups"][0]["files"] == ["b.py", "src/a.py"]
+    assert report["groups"][0]["wasted_bytes"] == 10
+    assert report["wasted_bytes"] == 10
