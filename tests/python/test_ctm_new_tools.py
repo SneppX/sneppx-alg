@@ -10,6 +10,7 @@ if str(PY_DIR) not in sys.path:
 
 import ctm_count_functions  # noqa: E402
 import ctm_count_headers  # noqa: E402
+import ctm_diff_loc  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -52,3 +53,25 @@ def test_count_headers_classifies_headers_and_sources(tmp_path):
     assert report["files_scanned"] == 4
     assert report["headers"] == ["src/b.h", "src/c.hpp"]
     assert report["by_language"]["Python"] == 1
+
+
+def test_diff_loc_reports_per_language_and_total_deltas(tmp_path):
+    old = tmp_path / "old"
+    new = tmp_path / "new"
+    old.mkdir()
+    new.mkdir()
+    (old / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (new / "a.py").write_text("x = 1\ny = 2\nz = 3\n", encoding="utf-8")
+    (new / "b.md").write_text("# Title\n", encoding="utf-8")
+
+    report = ctm_diff_loc.diff_loc(old, new)
+
+    assert report["by_language"]["Python"]["loc"] == 2
+    assert report["by_language"]["Markdown"]["loc"] == 1
+    expected_bytes = (
+        (new / "a.py").stat().st_size
+        + (new / "b.md").stat().st_size
+        - (old / "a.py").stat().st_size
+    )
+    assert report["totals"] == {"files": 1, "loc": 3, "bytes": expected_bytes}
+    assert f"TOTAL,1,3,{expected_bytes}" in ctm_diff_loc.render(report, "csv")
