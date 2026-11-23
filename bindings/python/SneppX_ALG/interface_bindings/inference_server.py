@@ -215,6 +215,16 @@ def _filter_prompt(prompt: str) -> Tuple[str, str]:
     return "clean", prompt
 
 
+def _prepare_prompt(prompt: str) -> str:
+    """Apply the prompt filter and reject unsafe/oversized prompts (M-14)."""
+    status, sanitized = _filter_prompt(prompt)
+    if status == "injection":
+        raise HTTPException(400, "Prompt blocked by content filter")
+    if status == "too_long":
+        raise HTTPException(413, "Prompt too long")
+    return sanitized if status == "sanitized" else prompt
+
+
 def _verify_output(text: str) -> Tuple[str, str]:
     sec = get_security()
     if sec is not None:
@@ -615,10 +625,7 @@ async def get_model_info(model_id: str):
     dependencies=[Depends(require_auth)],
 )
 async def generate_endpoint(req: GenerateRequest):
-    filter_status, sanitized = _filter_prompt(req.prompt)
-    if filter_status == "injection":
-        raise HTTPException(400, "Prompt blocked by content filter")
-    prompt_to_use = sanitized if filter_status == "sanitized" else req.prompt
+    prompt_to_use = _prepare_prompt(req.prompt)
 
     entry = get_model(req.model)
     gen_config = _make_generation_config(req)
@@ -657,12 +664,7 @@ async def generate_endpoint(req: GenerateRequest):
     dependencies=[Depends(require_auth)],
 )
 async def batch_generate_endpoint(req: BatchGenerateRequest):
-    sanitized_prompts = []
-    for prompt in req.prompts:
-        filter_status, sanitized = _filter_prompt(prompt)
-        if filter_status == "injection":
-            raise HTTPException(400, "Prompt blocked by content filter")
-        sanitized_prompts.append(sanitized if filter_status == "sanitized" else prompt)
+    sanitized_prompts = [_prepare_prompt(prompt) for prompt in req.prompts]
 
     entry = get_model(req.model)
     gen_config = GenerationConfig(
@@ -711,12 +713,7 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
     dependencies=[Depends(require_auth)],
 )
 async def continuous_batch_endpoint(req: BatchGenerateRequest):
-    sanitized_prompts = []
-    for prompt in req.prompts:
-        filter_status, sanitized = _filter_prompt(prompt)
-        if filter_status == "injection":
-            raise HTTPException(400, "Prompt blocked by content filter")
-        sanitized_prompts.append(sanitized if filter_status == "sanitized" else prompt)
+    sanitized_prompts = [_prepare_prompt(prompt) for prompt in req.prompts]
 
     entry = get_model(req.model)
     # M-13: a scheduler is request-scoped; sharing a global scheduler lets one
@@ -826,10 +823,7 @@ async def quantize_model_endpoint(
 
 @app.post("/v1/generate/stream", dependencies=[Depends(require_auth)])
 async def generate_stream_endpoint(req: GenerateRequest):
-    filter_status, sanitized = _filter_prompt(req.prompt)
-    if filter_status == "injection":
-        raise HTTPException(400, "Prompt blocked by content filter")
-    prompt_to_use = sanitized if filter_status == "sanitized" else req.prompt
+    prompt_to_use = _prepare_prompt(req.prompt)
 
     entry = get_model(req.model)
     gen_config = _make_generation_config(req)
@@ -907,10 +901,7 @@ async def chat_completions(req: ChatCompletionRequest):
             "\n".join(f"{m.role}: {m.content}" for m in req.messages) + "\nassistant:"
         )
 
-    filter_status, sanitized = _filter_prompt(prompt)
-    if filter_status == "injection":
-        raise HTTPException(400, "Prompt blocked by content filter")
-    prompt_to_use = sanitized if filter_status == "sanitized" else prompt
+    prompt_to_use = _prepare_prompt(prompt)
 
     if entry.tokenizer:
         input_ids = entry.tokenizer.encode(prompt_to_use)
