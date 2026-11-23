@@ -331,25 +331,40 @@ class Sophia:
     def estimate_hessian(self, grads: List[Optional[Tensor]], loss_fn: Callable):
         """Update the (diagonal) Hessian estimate via Hutchinson's method.
 
-        ``loss_fn`` should return a scalar loss given the current params;
-        ``grads`` are the fresh first-order gradients to perturb.
+        ``grads`` supplies the first-order gradients at the current parameters.
+        ``loss_fn`` is evaluated at a Rademacher-perturbed point; its gradient
+        is obtained with autograd and differenced against ``grads`` to form the
+        Hessian-vector product ``Hz``.  The diagonal estimate is ``z * Hz``.
+
+        A scalar finite difference of the loss would only yield ``∇f·z``, which
+        is not the Hessian diagonal.
         """
+        from .autograd import grad as autograd_grad
+
+        eps = 1e-4
         for i, p in enumerate(self.params):
-            if p.grad is None:
+            base = grads[i] if grads is not None else None
+            if base is None:
+                base = p.grad
+            if base is None:
                 continue
-            g = _as_array(p.grad)
-            # random Rademacher vector z in {-1, +1}
-            z = np.random.choice([-1.0, 1.0], size=g.shape)
-            # finite-difference Hessian-direction product: (g(x+eps z) - g(x-eps z)) / (2 eps)
-            eps = 1e-4
-            orig = _as_array(p).copy()
-            p.data = (orig + eps * z).astype(p.data.dtype)
-            loss_plus = loss_fn()
-            p.data = (orig - eps * z).astype(p.data.dtype)
-            loss_minus = loss_fn()
-            p.data = orig.astype(p.data.dtype)
-            h_est = (loss_plus - loss_minus) / (2 * eps)
-            self.h[i] = self.beta2 * self.h[i] + (1 - self.beta2) * h_est * z
+            g0 = _as_array(base)
+            z = np.random.choice([-1.0, 1.0], size=g0.shape)
+            orig = np.array(p.data, copy=True)
+            try:
+                p.data = (orig + eps * z).astype(p.data.dtype)
+                loss = loss_fn()
+                g_t = autograd_grad(loss, [p], allow_unused=True)[0]
+                if g_t is None:
+                    raise RuntimeError(
+                        "Sophia.estimate_hessian requires loss_fn to build an "
+                        "autograd graph connected to the optimizer parameters"
+                    )
+                g1 = _as_array(g_t)
+            finally:
+                p.data = orig.astype(p.data.dtype)
+            hvp = (g1 - g0) / eps
+            self.h[i] = self.beta2 * self.h[i] + (1 - self.beta2) * (z * hvp)
 
     def step(self):
         for i, p in enumerate(self.params):

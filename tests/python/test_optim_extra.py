@@ -77,6 +77,26 @@ def test_sophia():
     assert _run_step(Sophia, lr=0.01)
 
 
+def test_sophia_hessian_diagonal():
+    # f(x) = 0.5 * (x0**2 + 4*x1**2) has Hessian diag(1, 4). The Hutchinson
+    # estimate z * Hz must recover it; a scalar loss difference only gives
+    # grad(f).z and cannot.
+    p = Tensor(np.array([1.0, 2.0], dtype=np.float64), requires_grad=True)
+    coeff = Tensor(np.array([1.0, 4.0], dtype=np.float64))
+    opt = Sophia([p], lr=0.01, betas=(0.9, 0.0))
+    base = Tensor(np.array([1.0, 8.0], dtype=np.float64))
+
+    def loss_fn():
+        return (0.5 * coeff * p * p).sum()
+
+    p.grad = base
+    opt.estimate_hessian([base], loss_fn)
+    assert np.allclose(opt.h[0], [1.0, 4.0], rtol=5e-3, atol=1e-4)
+    # Perturbed evaluation must leave the parameter and its base grad intact.
+    assert np.allclose(p.data, [1.0, 2.0])
+    assert np.allclose(p.grad.data, [1.0, 8.0])
+
+
 def test_adan():
     assert _run_step(Adan, lr=0.01)
 
