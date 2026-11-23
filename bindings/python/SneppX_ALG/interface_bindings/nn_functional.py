@@ -894,7 +894,7 @@ def triplet_margin_loss(
     swap: bool = False,
     reduction: str = "mean",
 ) -> Tensor:
-    return anchor.triplet_margin_loss(positive, negative, margin)
+    return anchor.triplet_margin_loss(positive, negative, margin, p)
 
 
 def cosine_embedding_loss(

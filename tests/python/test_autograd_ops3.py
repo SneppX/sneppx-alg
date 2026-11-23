@@ -55,6 +55,35 @@ def test_cross_entropy():
     _check(f, [(5, 4)], [1])
 
 
+def test_triplet_margin_loss_uses_p():
+    a = Tensor(np.array([[0.0, 0.0]], dtype=np.float32), requires_grad=True)
+    pos = Tensor(np.array([[1.0, 1.0]], dtype=np.float32), requires_grad=True)
+    neg = Tensor(np.array([[0.5, 0.0]], dtype=np.float32), requires_grad=True)
+
+    loss_p1 = ops.TripletMarginLoss.apply(a, pos, neg, 0.0, 1)
+    loss_p2 = ops.TripletMarginLoss.apply(a, pos, neg, 0.0, 2)
+    # ||a-pos||_1 = 2, ||a-neg||_1 = 0.5 -> hinge 1.5
+    assert np.allclose(loss_p1.data, [1.5], atol=1e-5)
+    # ||a-pos||_2 = sqrt(2), ||a-neg||_2 = 0.5 -> hinge sqrt(2) - 0.5
+    assert np.allclose(loss_p2.data, [np.sqrt(2) - 0.5], atol=1e-5)
+    assert not np.allclose(loss_p1.data, loss_p2.data)
+
+
+def test_triplet_margin_loss_p_grads():
+    # Positive is always much farther than negative, so the hinge stays active
+    # and the p-norm gradient is exercised across all perturbations.
+    def make_f(p):
+        def f(I):
+            pos = Tensor(np.array([[5.0, 0.0]], dtype=np.float32))
+            neg = Tensor(np.array([[0.0, 0.1]], dtype=np.float32))
+            return ops.TripletMarginLoss.apply(I[0], pos, neg, 0.0, p)
+
+        return f
+
+    _check(make_f(1), [(2, 2)], [3])
+    _check(make_f(2), [(2, 2)], [3])
+
+
 def test_nllloss():
     tgt = np.array([0, 1, 2, 3, 1], dtype=np.int64)
 

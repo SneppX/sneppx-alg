@@ -1024,10 +1024,10 @@ class Tensor(NativeTensorOps):
 
         return FocalLoss.apply(self, target, gamma, alpha)
 
-    def triplet_margin_loss(self, positive, negative, margin=1.0):
+    def triplet_margin_loss(self, positive, negative, margin=1.0, p=2):
         from .autograd_ops import TripletMarginLoss
 
-        return TripletMarginLoss.apply(self, positive, negative, margin)
+        return TripletMarginLoss.apply(self, positive, negative, margin, p)
 
     def contrastive_loss(self, other, y, margin=1.0):
         from .autograd_ops import ContrastiveLoss

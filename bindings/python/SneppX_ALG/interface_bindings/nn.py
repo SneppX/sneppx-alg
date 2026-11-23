@@ -1736,12 +1736,13 @@ class FocalLoss(_Loss):
 
 
 class TripletMarginLoss(_Loss):
-    def __init__(self, margin: float = 1.0, reduction: str = "mean"):
+    def __init__(self, margin: float = 1.0, reduction: str = "mean", p: float = 2.0):
         super().__init__(reduction)
         self.margin = margin
+        self.p = p
 
     def forward(self, anchor: Tensor, positive: Tensor, negative: Tensor) -> Tensor:
-        return anchor.triplet_margin_loss(positive, negative, self.margin)
+        return anchor.triplet_margin_loss(positive, negative, self.margin, self.p)
 
 
 class ContrastiveLoss(_Loss):

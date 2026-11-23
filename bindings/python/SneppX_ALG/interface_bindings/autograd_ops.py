@@ -5042,12 +5042,17 @@ class TripletMarginLoss(Function):
         a = anchor.data
         pos = positive.data
         neg = negative.data
-        d_ap = np.linalg.norm(a - pos, axis=-1) + 1e-10
-        d_an = np.linalg.norm(a - neg, axis=-1) + 1e-10
+        p = float(p)
+        diff_ap = a - pos
+        diff_an = a - neg
+        # General p-norm; the previous code always used the L2 norm regardless
+        # of the ``p`` argument it accepted.
+        d_ap = np.sum(np.abs(diff_ap) ** p, axis=-1) ** (1.0 / p) + 1e-10
+        d_an = np.sum(np.abs(diff_an) ** p, axis=-1) ** (1.0 / p) + 1e-10
         hinge = d_ap - d_an + margin
         loss = np.maximum(0.0, hinge)
         ctx.save_for_backward(anchor=anchor, positive=positive, negative=negative)
-        ctx.save_attr(margin=margin, n=a.shape[0], d_ap=d_ap, d_an=d_an)
+        ctx.save_attr(margin=margin, p=p, n=a.shape[0], d_ap=d_ap, d_an=d_an)
         return Tensor(
             np.array([float(np.mean(loss))], dtype=a.dtype), dtype=anchor.dtype
         )
@@ -5058,6 +5063,7 @@ class TripletMarginLoss(Function):
         positive = ctx.get_saved_tensor("positive")
         negative = ctx.get_saved_tensor("negative")
         margin = ctx.get_attr("margin")
+        p = ctx.get_attr("p")
         n = ctx.get_attr("n")
         d_ap = ctx.get_attr("d_ap")
         d_an = ctx.get_attr("d_an")
@@ -5065,11 +5071,20 @@ class TripletMarginLoss(Function):
         a = anchor.data
         pos = positive.data
         neg = negative.data
+        diff_ap = a - pos
+        diff_an = a - neg
         hinge = d_ap - d_an + margin
         active = (hinge > 0).astype(np.float64)[:, None]
-        ga = active * ((a - pos) / d_ap[:, None] - (a - neg) / d_an[:, None]) / n * g
-        gp = active * (-(a - pos) / d_ap[:, None]) / n * g
-        gn = active * ((a - neg) / d_an[:, None]) / n * g
+
+        def _dnorm_dx(diff, d):
+            # d(||diff||_p)/d(diff) = sign(diff) * |diff|^(p-1) / d^(p-1)
+            return np.sign(diff) * np.abs(diff) ** (p - 1.0) / d[:, None] ** (p - 1.0)
+
+        s_p = _dnorm_dx(diff_ap, d_ap)
+        s_n = _dnorm_dx(diff_an, d_an)
+        ga = active * (s_p - s_n) / n * g
+        gp = active * (-s_p) / n * g
+        gn = active * s_n / n * g
         return [
             Tensor(ga, dtype=anchor.dtype),
             Tensor(gp, dtype=anchor.dtype),
