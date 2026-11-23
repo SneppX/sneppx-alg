@@ -1005,12 +1005,31 @@ SNEPPX_VIZMON_API int SNEPPX_vizmon_get_sweeps(SNEPPX_VizMon* m, SNEPPX_VizSweep
 }
 
 /* ---- JSON emitter ---- */
+/* M-25: JSON is embedded in an inline <script>, so escape characters that can
+ * close the script element or terminate a JavaScript line. */
 static void json_escape(char* dst, const char* src, size_t cap)
 {
+    if (!dst || cap == 0)
+        return;
+    dst[0] = '\0';
+
     size_t n = 0;
-    for (const char* p = src; *p && n + 2 < cap; p++)
+    const unsigned char* p = (const unsigned char*) src;
+    while (*p && n + 7 < cap) /* 6-byte escape + NUL */
     {
-        char c = *p;
+        unsigned char c = *p;
+
+        /* UTF-8 U+2028 / U+2029 are line terminators in JavaScript. */
+        if (c == 0xE2 && p[1] == 0x80 && (p[2] == 0xA8 || p[2] == 0xA9))
+        {
+            const char* esc = p[2] == 0xA8 ? "\\u2028" : "\\u2029";
+            memcpy(dst + n, esc, 6);
+            n += 6;
+            p += 3;
+            continue;
+        }
+        p++;
+
         if (c == '"')
         {
             memcpy(dst + n, "\\\"", 2);
@@ -1019,6 +1038,31 @@ static void json_escape(char* dst, const char* src, size_t cap)
         else if (c == '\\')
         {
             memcpy(dst + n, "\\\\", 2);
+            n += 2;
+        }
+        else if (c == '<')
+        {
+            memcpy(dst + n, "\\u003c", 6);
+            n += 6;
+        }
+        else if (c == '>')
+        {
+            memcpy(dst + n, "\\u003e", 6);
+            n += 6;
+        }
+        else if (c == '&')
+        {
+            memcpy(dst + n, "\\u0026", 6);
+            n += 6;
+        }
+        else if (c == '\b')
+        {
+            memcpy(dst + n, "\\b", 2);
+            n += 2;
+        }
+        else if (c == '\f')
+        {
+            memcpy(dst + n, "\\f", 2);
             n += 2;
         }
         else if (c == '\n')
@@ -1036,8 +1080,15 @@ static void json_escape(char* dst, const char* src, size_t cap)
             memcpy(dst + n, "\\t", 2);
             n += 2;
         }
+        else if (c < 0x20)
+        {
+            char hex[7];
+            snprintf(hex, sizeof(hex), "\\u%04x", (unsigned int) c);
+            memcpy(dst + n, hex, 6);
+            n += 6;
+        }
         else
-            dst[n++] = c;
+            dst[n++] = (char) c;
     }
     dst[n] = '\0';
 }
@@ -1591,6 +1642,10 @@ static void handle_one_http(SNEPPX_VizMon* m, snepx_socket_t client_fd)
         char hdr[256];
         int hl = snprintf(hdr, sizeof(hdr),
                           "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+                          "Content-Security-Policy: default-src 'self'; "
+                          "script-src 'unsafe-inline' https://unpkg.com "
+                          "https://cdn.jsdelivr.net; style-src 'unsafe-inline'; "
+                          "connect-src 'self' ws: wss:; img-src 'self' data:\r\n"
                           "Access-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n");
         http_write_all(client_fd, hdr, (size_t) hl);
         if (html)
