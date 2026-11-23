@@ -530,8 +530,12 @@ class S5OutputVerifier:
             ctypes.POINTER(ctypes.c_size_t),
         ]
         _LIB.SNEPPX_training_sanitize.restype = ctypes.c_int
-        _LIB.SNEPPX_training_sanitize(b, len(b), buf, ctypes.byref(out_len))
-        return buf.value.decode("utf-8", "replace")
+        rc = _LIB.SNEPPX_training_sanitize(b, len(b), buf, ctypes.byref(out_len))
+        if rc != 0:
+            raise RuntimeError(f"SNEPPX_training_sanitize failed with status {rc}")
+        if out_len.value > len(buf) - 1:
+            raise RuntimeError("SNEPPX_training_sanitize reported an oversized output")
+        return ctypes.string_at(buf, out_len.value).decode("utf-8", "replace")
 
 
 class S5RLHFSafety:
