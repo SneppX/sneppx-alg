@@ -137,7 +137,9 @@ def render(report: dict[str, Any], fmt: str) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Report file encodings and newline styles")
+    parser = argparse.ArgumentParser(
+        description="Report file encodings and newline styles"
+    )
     parser.add_argument("root", nargs="?", default=".")
     parser.add_argument("--format", choices=("text", "json", "csv"), default="text")
     parser.add_argument("--output")

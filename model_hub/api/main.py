@@ -84,7 +84,9 @@ class HubDatabase:
 
         self._users: List[Dict] = self._load_json(self._users_file, default=[])
         self._keys: List[Dict] = self._load_json(self._keys_file, default=[])
-        self._leaderboard: List[Dict] = self._load_json(self._leaderboard_file, default=[])
+        self._leaderboard: List[Dict] = self._load_json(
+            self._leaderboard_file, default=[]
+        )
         self._orgs: List[Dict] = self._load_json(self._orgs_file, default=[])
 
     def _load_json(self, path: str, default: Any = None) -> Any:
@@ -122,7 +124,9 @@ class HubDatabase:
 
         # Filter
         if query:
-            all_models = [m for m in all_models if query.lower() in m.get("name", "").lower()]
+            all_models = [
+                m for m in all_models if query.lower() in m.get("name", "").lower()
+            ]
         if task:
             all_models = [m for m in all_models if m.get("task") == task]
         if tag:
@@ -131,7 +135,8 @@ class HubDatabase:
             all_models = [
                 m
                 for m in all_models
-                if m.get("organization") == org or m.get("name", "").startswith(org + "/")
+                if m.get("organization") == org
+                or m.get("name", "").startswith(org + "/")
             ]
 
         total = len(all_models)
@@ -183,7 +188,9 @@ class HubDatabase:
                     data["_model_name"] = model_name
                     data["_version"] = version
                     data["_downloads"] = 0  # Would come from usage tracking
-                    data["_size"] = sum(f.get("size", 0) for f in (data.get("files") or []))
+                    data["_size"] = sum(
+                        f.get("size", 0) for f in (data.get("files") or [])
+                    )
                     results.append(data)
         return results
 
@@ -192,7 +199,9 @@ class HubDatabase:
             cards = self._scan_models()
             clean = name.replace("/", "_").replace("\\", "_")
             model_cards = [
-                c for c in cards if c.get("_model_name") == clean or c.get("name") == name
+                c
+                for c in cards
+                if c.get("_model_name") == clean or c.get("name") == name
             ]
             if not model_cards:
                 return None
@@ -333,7 +342,9 @@ class HubDatabase:
                 break
         self._save_json(self._users_file, self._users)
 
-        _, raw = self.create_api_key(user.id, None, ["read", "write", "models", "admin"])
+        _, raw = self.create_api_key(
+            user.id, None, ["read", "write", "models", "admin"]
+        )
         return raw
 
     def authenticate_api_key(self, api_key: str) -> "Optional[tuple[User, APIKey]]":
@@ -440,7 +451,9 @@ def create_app(
         fresh_key = db.bootstrap_admin()
         if fresh_key:
             fingerprint = hashlib.sha256(fresh_key.encode()).hexdigest()[:16]
-            print(f"[sneppx-hub] Created initial admin API key (fingerprint: {fingerprint})")
+            print(
+                f"[sneppx-hub] Created initial admin API key (fingerprint: {fingerprint})"
+            )
         yield
         # Shutdown
         pass
@@ -488,7 +501,9 @@ def create_app(
         authorization: Annotated[Optional[str], Header()] = None,
         x_api_key: Annotated[Optional[str], Header()] = None,
     ) -> Optional[User]:
-        identity = await get_current_identity(authorization=authorization, x_api_key=x_api_key)
+        identity = await get_current_identity(
+            authorization=authorization, x_api_key=x_api_key
+        )
         return identity[0] if identity is not None else None
 
     async def require_auth(user: Optional[User] = Depends(get_current_user)) -> User:
@@ -537,7 +552,9 @@ def create_app(
     async def api_get_model(model_name: str, version: str = Query(default="latest")):
         card = db.get_model_card(model_name, version)
         if not card:
-            raise HTTPException(status_code=404, detail=f"Model not found: {model_name}@{version}")
+            raise HTTPException(
+                status_code=404, detail=f"Model not found: {model_name}@{version}"
+            )
         return card
 
     @app.get("/api/v1/models/{model_name}/{version}")
@@ -547,7 +564,9 @@ def create_app(
             return {"versions": [{"version": v} for v in versions]}
         card = db.get_model_card(model_name, version)
         if not card:
-            raise HTTPException(status_code=404, detail=f"Model not found: {model_name}@{version}")
+            raise HTTPException(
+                status_code=404, detail=f"Model not found: {model_name}@{version}"
+            )
         return card
 
     @app.post("/api/v1/models/upload", status_code=201)
@@ -786,7 +805,9 @@ def create_app(
         total_size = sum(m.get("_size", 0) for m in models)
         return {
             "total_models": len(models),
-            "total_versions": len(set((m.get("name"), m.get("version")) for m in models)),
+            "total_versions": len(
+                set((m.get("name"), m.get("version")) for m in models)
+            ),
             "total_size_human": format_file_size(total_size),
             "total_size_bytes": total_size,
             "total_users": len(db._users),

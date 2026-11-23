@@ -55,7 +55,9 @@ def ignore_audit(root: str | Path, limit: int = 50) -> dict[str, Any]:
             child = current_path / dirname
             if ctm.is_link(child):
                 counts["symlink"] += 1
-                grouped["symlink"].append({"path": child.relative_to(base).as_posix(), "bytes": 0})
+                grouped["symlink"].append(
+                    {"path": child.relative_to(base).as_posix(), "bytes": 0}
+                )
             else:
                 kept_dirs.append(dirname)
         dirnames[:] = kept_dirs
@@ -69,7 +71,9 @@ def ignore_audit(root: str | Path, limit: int = 50) -> dict[str, Any]:
                 size = 0
             counts[reason] += 1
             totals[reason] += size
-            grouped[reason].append({"path": path.relative_to(base).as_posix(), "bytes": size})
+            grouped[reason].append(
+                {"path": path.relative_to(base).as_posix(), "bytes": size}
+            )
 
     for items in grouped.values():
         items.sort(key=lambda item: (-item["bytes"], item["path"]))
@@ -109,7 +113,9 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"Excluded: {report['files_excluded']}",
     ]
     for reason, count in report["count_by_reason"].items():
-        lines.append(f"  {reason}: {count} files, {report['bytes_by_reason'][reason]:,} bytes")
+        lines.append(
+            f"  {reason}: {count} files, {report['bytes_by_reason'][reason]:,} bytes"
+        )
     return "\n".join(lines) + "\n"
 
 

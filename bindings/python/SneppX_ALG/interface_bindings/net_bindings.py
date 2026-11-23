@@ -341,7 +341,9 @@ class NCCLComm:
         self._initialized = False
         return 0
 
-    def comm_init_rank(self, ndev: int, rank: int, devs: Optional[List[int]] = None) -> int:
+    def comm_init_rank(
+        self, ndev: int, rank: int, devs: Optional[List[int]] = None
+    ) -> int:
         self._rank = rank
         self._world_size = ndev
         return 0
@@ -369,7 +371,9 @@ class NCCLComm:
     def broadcast(self, buf: np.ndarray, root: int = 0) -> int:
         return 0
 
-    def reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0) -> int:
+    def reduce(
+        self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0
+    ) -> int:
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0

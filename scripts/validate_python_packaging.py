@@ -71,12 +71,16 @@ def main() -> int:
                 f"bindings={bindings_build.get(field)!r}"
             )
 
-    root_package_data = root_config.get("tool", {}).get("setuptools", {}).get("package-data")
+    root_package_data = (
+        root_config.get("tool", {}).get("setuptools", {}).get("package-data")
+    )
     bindings_package_data = (
         bindings_config.get("tool", {}).get("setuptools", {}).get("package-data")
     )
     if root_package_data != bindings_package_data:
-        errors.append("Setuptools package-data declarations differ between build roots.")
+        errors.append(
+            "Setuptools package-data declarations differ between build roots."
+        )
 
     root_where = (
         root_config.get("tool", {})
@@ -98,7 +102,9 @@ def main() -> int:
             f"found {root_where!r}."
         )
     if bindings_where != ["."]:
-        errors.append(f"Standalone bindings discovery must use ['.']; found {bindings_where!r}.")
+        errors.append(
+            f"Standalone bindings discovery must use ['.']; found {bindings_where!r}."
+        )
     if not (PACKAGE_DIR / "__init__.py").is_file():
         errors.append("The canonical SneppX_ALG package entry point is missing.")
 
