@@ -41,9 +41,7 @@ def test_gaussian_mech():
     expected_sigma = math.sqrt(2 * math.log(1.25 / 1e-5))
     var = float(np.var(vals))
     assert abs(mean) < 0.1, f"Mean too large: {mean}"
-    assert (
-        abs(var - expected_sigma**2) < 0.5
-    ), f"Var {var:.3f} != {expected_sigma**2:.3f}"
+    assert abs(var - expected_sigma**2) < 0.5, f"Var {var:.3f} != {expected_sigma**2:.3f}"
     print("  test_gaussian_mech PASS")
 
 
@@ -131,9 +129,7 @@ def test_privacy_budget_serialize():
 def test_rdp_accountant_eps_monotonic():
     acc = RDPAccountant(delta=1e-5)
     eps_before = acc.get_epsilon()
-    assert eps_before == float(
-        "inf"
-    ), f"Expected inf before any steps, got {eps_before}"
+    assert eps_before == float("inf"), f"Expected inf before any steps, got {eps_before}"
     acc.step(noise_multiplier=1.0, batch_size=256, num_samples=50000)
     eps_after = acc.get_epsilon()
     assert eps_after < float("inf"), "Epsilon should be finite after one step"
@@ -142,9 +138,7 @@ def test_rdp_accountant_eps_monotonic():
     for _ in range(50):
         acc.step(noise_multiplier=1.0, batch_size=256, num_samples=50000)
         eps_curr = acc.get_epsilon()
-        assert (
-            eps_curr >= eps_prev - 1e-6
-        ), f"Epsilon decreased: {eps_prev} -> {eps_curr}"
+        assert eps_curr >= eps_prev - 1e-6, f"Epsilon decreased: {eps_prev} -> {eps_curr}"
         eps_prev = eps_curr
     print("  test_rdp_accountant_eps_monotonic PASS")
 
@@ -234,9 +228,7 @@ def test_dpsgd_noise_std():
     x = Tensor.ones((batch_size, 2))
     targets = Tensor.zeros((batch_size, 1))
     outputs = linear(x)
-    per_sample = [
-        outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(batch_size)
-    ]
+    per_sample = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(batch_size)]
     grads_all = []
     for _ in range(200):
         dpsgd.step(per_sample)
@@ -247,9 +239,9 @@ def test_dpsgd_noise_std():
     expected_sigma = noise_mult * max_norm / batch_size
     observed_std = float(np.std(all_grads))
     tol = 0.15
-    assert (
-        abs(observed_std - expected_sigma) < tol
-    ), f"Observed std {observed_std:.4f} != expected sigma {expected_sigma:.4f}"
+    assert abs(observed_std - expected_sigma) < tol, (
+        f"Observed std {observed_std:.4f} != expected sigma {expected_sigma:.4f}"
+    )
     print("  test_dpsgd_noise_std PASS")
 
 
@@ -329,9 +321,7 @@ def test_dp_training_reduces_memorization():
     loss_test_dp = float(model_dp(x_test).mse_loss(y_test).data.flat[0])
     gap_dp = abs(loss_train_dp - loss_test_dp)
 
-    assert (
-        gap_dp <= gap_np + 0.5
-    ), f"DP gap {gap_dp:.4f} > non-private gap {gap_np:.4f} + 0.5"
+    assert gap_dp <= gap_np + 0.5, f"DP gap {gap_dp:.4f} > non-private gap {gap_np:.4f} + 0.5"
     print("  test_dp_training_reduces_memorization PASS")
 
 
@@ -385,3 +375,46 @@ def test_dpsgd_empty_batch():
     params_after = [p.data.copy() for p in linear.parameters()]
     assert all(np.allclose(b, a) for b, a in zip(params_before, params_after))
     print("  test_dpsgd_empty_batch PASS")
+
+
+def test_dpsgd_epsilon_is_enforced():
+    """M-7: epsilon must be an enforced budget, not decoration."""
+    import pytest
+
+    linear = Linear(2, 1)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.01),
+        noise_multiplier=2.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        epsilon=1e6,
+        delta=1e-5,
+    )
+    assert dpsgd._budget is not None
+    # Exhaust the budget without running a step.
+    dpsgd._budget.spend(1e6)
+
+    x = Tensor.randn((4, 2))
+    targets = Tensor.ones((4, 1))
+    outputs = linear(x)
+    per_sample = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(4)]
+    with pytest.raises(ValueError, match="budget exhausted"):
+        dpsgd.step(per_sample)
+
+
+def test_dpsgd_zero_noise_skips_enforcement():
+    """noise_multiplier=0 has no DP guarantee, so budget checks are moot."""
+    linear = Linear(2, 1)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.01),
+        noise_multiplier=0.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        epsilon=1.0,
+        delta=1e-5,
+    )
+    x = Tensor.randn((4, 2))
+    targets = Tensor.ones((4, 1))
+    outputs = linear(x)
+    per_sample = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(4)]
+    dpsgd.step(per_sample)  # must not raise
