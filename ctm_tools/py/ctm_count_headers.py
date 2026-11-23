@@ -43,7 +43,9 @@ def count_headers(root: str | Path, include_other_text: bool = False) -> dict[st
         "files_scanned": files_scanned,
         "header_files": header_count,
         "source_files": source_count,
-        "headers_per_source": round(header_count / source_count, 3) if source_count else None,
+        "headers_per_source": round(header_count / source_count, 3)
+        if source_count
+        else None,
         "by_language": dict(sorted(by_language.items())),
         "headers": headers,
     }
@@ -69,7 +71,9 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"Sources: {report['source_files']}",
         f"Headers per source: {ratio if ratio is not None else 'n/a'}",
     ]
-    lines.extend(f"  {language}: {count}" for language, count in report["by_language"].items())
+    lines.extend(
+        f"  {language}: {count}" for language, count in report["by_language"].items()
+    )
     return "\n".join(lines) + "\n"
 
 
