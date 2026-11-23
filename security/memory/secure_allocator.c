@@ -723,8 +723,8 @@ int SNEPPX_secure_canary_check(void* ptr, uint64_t canary)
             size_t alloc_bytes = 0;
             size_t total = 0;
             size_t total_with_guards = 0;
-            if (secure_layout(g_records[i].size, g_records[i].guard_front, g_records[i].guard_back, &alloc_bytes, &total,
-                              &total_with_guards) != 0)
+            if (secure_layout(g_records[i].size, g_records[i].guard_front, g_records[i].guard_back, &alloc_bytes,
+                              &total, &total_with_guards) != 0)
                 return -1;
             uint64_t* canary_ptr =
                 (uint64_t*) ((char*) ptr + total - SNEPPX_SECURE_OVERHEAD_SIZE - SNEPPX_SECURE_CANARY_SIZE);
