@@ -63,6 +63,24 @@ def test_int8_asym_roundtrip():
     print(f"  test_int8_asym_roundtrip: MSE={err:.6f} PASS")
 
 
+def test_int8_asym_all_positive_preserves_max():
+    # All-positive ranges previously clipped the zero-point to 0 and then
+    # saturated vmax: 4.0 reconstructed as 3.0.
+    x = Tensor(np.array([1.0, 2.0, 4.0], dtype=np.float32))
+    q, scale, zp = quantize_int8_asym(x)
+    dq = dequantize_int8_asym(q, scale, zp)
+    assert zp == 0
+    assert np.allclose(dq.data, [1.0, 2.0, 4.0], atol=0.02)
+
+
+def test_int8_asym_all_negative_preserves_min():
+    x = Tensor(np.array([-4.0, -2.0, -1.0], dtype=np.float32))
+    q, scale, zp = quantize_int8_asym(x)
+    dq = dequantize_int8_asym(q, scale, zp)
+    assert zp == 255
+    assert np.allclose(dq.data, [-4.0, -2.0, -1.0], atol=0.02)
+
+
 def test_int8_channel():
     x = Tensor.randn((8, 16))
     q, scales = quantize_int8_channel(x, dim=0)

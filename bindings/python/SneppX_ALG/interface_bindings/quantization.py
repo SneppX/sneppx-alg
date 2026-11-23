@@ -52,15 +52,26 @@ def dequantize_int8_sym(qtensor: Tensor, scale: float) -> Tensor:
 
 
 def quantize_int8_asym(tensor: Tensor) -> Tuple[Tensor, float, int]:
-    """Asymmetric INT8 quantization with zero-point."""
+    """Asymmetric INT8 quantization with a jointly chosen scale/zero-point."""
     arr = tensor.data
-    vmin, vmax = np.min(arr), np.max(arr)
+    vmin, vmax = float(np.min(arr)), float(np.max(arr))
     if vmax - vmin < 1e-10:
         return Tensor(np.zeros_like(arr, dtype=np.int8)), 1.0, 0
-    scale = (vmax - vmin) / 255.0
-    zp = int(np.round(-vmin / scale))
-    zp = max(0, min(255, zp))
-    q_arr = np.round(arr / scale + zp).clip(0, 255).astype(np.uint8)
+    qmin, qmax = 0, 255
+    scale = (vmax - vmin) / (qmax - qmin)
+    zp = int(np.round(qmin - vmin / scale))
+    zp = max(qmin, min(qmax, zp))
+    # Clamping the zero-point can leave part of the real range outside the
+    # quantised interval (e.g. all-positive [1, 4] used to clip vmax to 3).
+    # Reselect the scale so [vmin, vmax] still fits in [qmin, qmax] at this zp.
+    lower_scale = (-vmin / zp) if zp > qmin else 0.0
+    if zp < qmax:
+        upper_scale = vmax / (qmax - zp)
+    else:
+        # zp == qmax only happens for all-negative ranges: -zp*scale <= vmin.
+        upper_scale = (-vmin / qmax) if vmin < 0 else 0.0
+    scale = max(scale, lower_scale, upper_scale, 1e-12)
+    q_arr = np.round(arr / scale + zp).clip(qmin, qmax).astype(np.uint8)
     return Tensor.from_numpy(q_arr, dtype="uint8"), scale, zp
 
 
