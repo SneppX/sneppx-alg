@@ -18,6 +18,8 @@ without FastAPI.
 from __future__ import annotations
 
 import hashlib
+import hmac
+import ipaddress
 import json
 import os
 import threading
@@ -56,6 +58,8 @@ class ServingConfig:
     metrics_prefix: str = "sneppx"
     listen: str = "127.0.0.1"
     port: int = 8300
+    auth_token: Optional[str] = None
+    max_body_bytes: int = 1024 * 1024
 
 
 @dataclass
@@ -553,7 +557,7 @@ class ServingEngine:
             request_id = f"{time.time_ns()}"
         if name is None:
             name = next(iter(self._models)) if self._models else "default"
-        target = version or self.route(name, request_id) or name
+        _ = version or self.route(name, request_id) or name
         t0 = time.perf_counter()
         try:
             result = self.model_fn(inputs) if self.model_fn else inputs
@@ -702,6 +706,15 @@ class WorkerPool:
 # ===========================================================================
 
 
+class _BodyError(Exception):
+    """Request-body validation failure with an HTTP status code."""
+
+    def __init__(self, status: int, message: str):
+        super().__init__(message)
+        self.status = status
+        self.message = message
+
+
 class ServingServer:
     """Lightweight standalone server over stdlib http.server."""
 
@@ -711,17 +724,62 @@ class ServingServer:
         run_fn: Optional[Callable] = None,
         host: Optional[str] = None,
         port: Optional[int] = None,
+        auth_token: Optional[str] = None,
+        max_body_bytes: Optional[int] = None,
     ):
         self.engine = engine
         self.run_fn = run_fn or (lambda inputs: inputs)
         self.host = host or engine.config.listen
         self.port = int(port if port is not None else engine.config.port)
+        cfg = engine.config
+        self.auth_token = cfg.auth_token if auth_token is None else auth_token
+        self.max_body_bytes = (
+            cfg.max_body_bytes if max_body_bytes is None else int(max_body_bytes)
+        )
+        if self.max_body_bytes <= 0:
+            raise ValueError("max_body_bytes must be positive")
         self._httpd: Any = None
 
     def _handle(self, handler):
         eng = self.engine
+        auth_token = self.auth_token
+
+        def _authorized(handler) -> bool:
+            if auth_token:
+                supplied = handler.headers.get("Authorization", "")
+                return hmac.compare_digest(supplied, f"Bearer {auth_token}")
+            try:
+                client_ip = ipaddress.ip_address(handler.client_address[0])
+            except (AttributeError, IndexError, ValueError):
+                return False
+            return bool(client_ip.is_loopback)
+
+        def _json_body(body):
+            try:
+                data = json.loads(body or "{}")
+            except (TypeError, ValueError):
+                return None, (
+                    400,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"error": "invalid_json"}),
+                )
+            if not isinstance(data, dict):
+                return None, (
+                    400,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"error": "expected_object"}),
+                )
+            return data, None
 
         def dispatch(handler, method, path, body):
+            if method in ("POST", "PUT", "PATCH", "DELETE") and not _authorized(
+                handler
+            ):
+                return (
+                    401,
+                    {"Content-Type": "application/json"},
+                    json.dumps({"error": "unauthorized"}),
+                )
             if path in ("/", "/v1/health", "/healthz"):
                 return (
                     200,
@@ -778,13 +836,28 @@ class ServingServer:
                     json.dumps({"models": eng.versions()}),
                 )
             if path == "/v1/deploy" and method == "POST":
-                data = json.loads(body or "{}")
+                data, error = _json_body(body)
+                if error:
+                    return error
+                model = data.get("model", "default")
+                version = data.get("version", "v1")
+                description = data.get("description", "")
+                weight = data.get("weight", 0)
+                promote = data.get("promote", False)
+                if (
+                    not all(isinstance(v, str) for v in (model, version, description))
+                    or not isinstance(promote, bool)
+                    or isinstance(weight, bool)
+                    or not isinstance(weight, int)
+                    or not 0 <= weight <= 100
+                ):
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_deploy_request"}),
+                    )
                 ok = eng.deploy(
-                    data.get("model", "default"),
-                    data.get("version", "v1"),
-                    data.get("description", ""),
-                    weight=int(data.get("weight", 0)),
-                    promote=bool(data.get("promote", False)),
+                    model, version, description, weight=weight, promote=promote
                 )
                 return (
                     (200 if ok else 409),
@@ -792,26 +865,86 @@ class ServingServer:
                     json.dumps({"status": "deployed" if ok else "error"}),
                 )
             if path == "/v1/traffic" and method == "POST":
-                data = json.loads(body or "{}")
+                data, error = _json_body(body)
+                if error:
+                    return error
+                model = data.get("model", "default")
+                if not isinstance(model, str):
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_model"}),
+                    )
                 legs = []
                 for part in str(data.get("split", "")).split(","):
-                    if ":" in part:
-                        vid, w = part.split(":", 1)
-                        legs.append((vid.strip(), int(w.strip())))
-                ok = eng.set_traffic(data.get("model", "default"), legs)
+                    if not part.strip():
+                        continue
+                    if ":" not in part:
+                        return (
+                            400,
+                            {"Content-Type": "application/json"},
+                            json.dumps({"error": "invalid_split"}),
+                        )
+                    vid, raw_weight = part.split(":", 1)
+                    vid = vid.strip()
+                    try:
+                        weight = int(raw_weight.strip())
+                    except (TypeError, ValueError):
+                        return (
+                            400,
+                            {"Content-Type": "application/json"},
+                            json.dumps({"error": "invalid_weight"}),
+                        )
+                    if not vid or weight < 0:
+                        return (
+                            400,
+                            {"Content-Type": "application/json"},
+                            json.dumps({"error": "invalid_split"}),
+                        )
+                    legs.append((vid, weight))
+                if not legs:
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_split"}),
+                    )
+                ok = eng.set_traffic(model, legs)
                 return (
                     (200 if ok else 404),
                     {"Content-Type": "application/json"},
                     json.dumps({"status": "ok" if ok else "error"}),
                 )
             if path == "/v1/generate" and method == "POST":
-                data = json.loads(body or "{}")
+                data, error = _json_body(body)
+                if error:
+                    return error
+                inputs = data.get("inputs")
+                if inputs is None or not isinstance(
+                    inputs, (str, int, float, list, dict)
+                ):
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_inputs"}),
+                    )
                 rid = data.get("request_id") or f"{time.time_ns()}"
-                version = data.get("version") or eng.route(
-                    data.get("model", "default"), rid
-                )
+                if not isinstance(rid, str):
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_request_id"}),
+                    )
+                version = data.get("version")
+                if version is not None and not isinstance(version, str):
+                    return (
+                        400,
+                        {"Content-Type": "application/json"},
+                        json.dumps({"error": "invalid_version"}),
+                    )
+                if version is None:
+                    version = eng.route(data.get("model", "default"), rid)
                 result = eng.serve(
-                    data.get("inputs"),
+                    inputs,
                     name=data.get("model"),
                     request_id=rid,
                     version=version,
@@ -838,7 +971,7 @@ class ServingServer:
     def _build_handler(self):
         from http.server import BaseHTTPRequestHandler
 
-        eng = self.engine
+        max_body_bytes = self.max_body_bytes
 
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, fmt, *args):  # silence
@@ -851,7 +984,14 @@ class ServingServer:
                 return q.get(key, [None])[0]
 
             def _body(self):
-                length = int(self.headers.get("Content-Length", 0) or 0)
+                try:
+                    length = int(self.headers.get("Content-Length", 0) or 0)
+                except (TypeError, ValueError):
+                    raise _BodyError(400, "invalid content length") from None
+                if length < 0:
+                    raise _BodyError(400, "invalid content length")
+                if length > max_body_bytes:
+                    raise _BodyError(413, "request body too large")
                 return self.rfile.read(length).decode("utf-8") if length else ""
 
             def _respond(self):
@@ -859,9 +999,19 @@ class ServingServer:
                 if not dispatch:
                     self.send_error(404)
                     return
-                status, headers, body = dispatch(
-                    self, self.command, urlparse(self.path).path, self._body()
-                )
+                try:
+                    request_body = self._body()
+                except _BodyError as exc:
+                    status = exc.status
+                    headers = {"Content-Type": "application/json"}
+                    body = json.dumps({"error": exc.message})
+                else:
+                    status, headers, body = dispatch(
+                        self,
+                        self.command,
+                        urlparse(self.path).path,
+                        request_body,
+                    )
                 self.send_response(status)
                 self.send_header(
                     "Content-Type", headers.get("Content-Type", "application/json")
