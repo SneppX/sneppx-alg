@@ -1,6 +1,7 @@
 #include "transport_security.h"
 #include "chacha20_stream_cipher.h"
 #include "cryptographic_random_generator.h"
+#include "hmac.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -88,6 +89,77 @@ static void transport_reset_all_sequences(void)
 {
     memset(session_tx_sequence, 0, sizeof(session_tx_sequence));
     memset(session_rx_sequence, 0, sizeof(session_rx_sequence));
+}
+
+static void transport_encode_u64(uint8_t out[8], uint64_t value)
+{
+    for (int i = 0; i < 8; i++)
+        out[i] = (uint8_t) (value >> (56 - 8 * i));
+}
+
+static int transport_derive_aad_nonce(const uint8_t base_nonce[SNEPPX_TLS_NONCE_LEN], const uint8_t* aad,
+                                      size_t aad_len, uint8_t aad_nonce[SNEPPX_TLS_NONCE_LEN])
+{
+    uint8_t mac[32];
+    uint8_t empty_aad = 0;
+    if (SNEPPX_hmac_sha256(base_nonce, SNEPPX_TLS_NONCE_LEN, aad ? aad : &empty_aad, aad_len, mac) != 0)
+        return -1;
+    memcpy(aad_nonce, mac, SNEPPX_TLS_NONCE_LEN);
+    memset(mac, 0, sizeof(mac));
+    return 0;
+}
+
+static int transport_compute_aad_tag(const uint8_t key[SNEPPX_TLS_KEY_LEN], uint64_t sequence,
+                                     const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], const uint8_t* aad, size_t aad_len,
+                                     const uint8_t* ciphertext, size_t len,
+                                     uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN])
+{
+    static const uint8_t domain[16] = {'S', 'N', 'E', 'P', 'P', 'X', '-', 'A',
+                                       'E', 'A', 'D', '-', 'V', '1', 0,   0};
+    const size_t fixed = sizeof(domain) + 8 + SNEPPX_TLS_NONCE_LEN + 8 + 8;
+    if (aad_len > SIZE_MAX - fixed)
+        return -1;
+    size_t total = fixed + aad_len;
+    if (len > SIZE_MAX - total)
+        return -1;
+    total += len;
+
+    uint8_t* data = (uint8_t*) malloc(total);
+    if (!data)
+        return -1;
+
+    size_t offset = 0;
+    memcpy(data + offset, domain, sizeof(domain));
+    offset += sizeof(domain);
+    transport_encode_u64(data + offset, sequence);
+    offset += 8;
+    memcpy(data + offset, nonce, SNEPPX_TLS_NONCE_LEN);
+    offset += SNEPPX_TLS_NONCE_LEN;
+    transport_encode_u64(data + offset, (uint64_t) aad_len);
+    offset += 8;
+    transport_encode_u64(data + offset, (uint64_t) len);
+    offset += 8;
+    if (aad_len > 0)
+    {
+        memcpy(data + offset, aad, aad_len);
+        offset += aad_len;
+    }
+    if (len > 0)
+        memcpy(data + offset, ciphertext, len);
+
+    int rc = SNEPPX_hmac_sha256(key, SNEPPX_TLS_KEY_LEN, data, total, tag);
+    memset(data, 0, total);
+    free(data);
+    return rc;
+}
+
+static int transport_tags_equal(const uint8_t a[SNEPPX_TRANSPORT_AAD_TAG_LEN],
+                                const uint8_t b[SNEPPX_TRANSPORT_AAD_TAG_LEN])
+{
+    uint8_t diff = 0;
+    for (size_t i = 0; i < SNEPPX_TRANSPORT_AAD_TAG_LEN; i++)
+        diff |= (uint8_t) (a[i] ^ b[i]);
+    return diff == 0;
 }
 
 static uint64_t g_total_encrypted = 0;
@@ -473,9 +545,65 @@ int SNEPPX_transport_encrypt_with_aad(SNEPPXTransportSecurity* ts, int session_i
                                       const uint8_t* aad, size_t aad_len, uint8_t* ciphertext,
                                       uint8_t nonce[SNEPPX_TLS_NONCE_LEN])
 {
-    (void) aad;
-    (void) aad_len;
     if (!ts || !plaintext || !ciphertext || !nonce)
+        return -1;
+    if (!aad && aad_len > 0)
+        return -1;
+    if (session_id < 0 || session_id >= ts->session_count)
+        return -1;
+    SNEPPXTLSSession* s = &ts->sessions[session_id];
+    if (!s->is_active)
+        return -1;
+    if (session_timeouts[session_id] > 0)
+    {
+        uint64_t now = (uint64_t) time(NULL);
+        if (now - s->last_used > session_timeouts[session_id])
+            return -1;
+    }
+    if (use_aes_gcm || session_tx_sequence[session_id] == UINT64_MAX)
+        return -1;
+
+    uint64_t sequence = ++session_tx_sequence[session_id];
+    transport_encode_sequence(nonce, sequence);
+    SNEPPX_random_bytes(nonce + 8, SNEPPX_TLS_NONCE_LEN - 8);
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    uint8_t aad_nonce[SNEPPX_TLS_NONCE_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
+    if (transport_derive_aad_nonce(nonce, aad, aad_len, aad_nonce) != 0)
+    {
+        memset(message_key, 0, sizeof(message_key));
+        return -1;
+    }
+
+    {
+        SNEPPXChaCha20State state;
+        SNEPPX_chacha20_init(&state, message_key, aad_nonce, 0);
+        memcpy(ciphertext, plaintext, len);
+        SNEPPX_chacha20_encrypt(&state, ciphertext, len);
+        memset(&state, 0, sizeof(state));
+    }
+    memset(message_key, 0, sizeof(message_key));
+    memset(aad_nonce, 0, sizeof(aad_nonce));
+
+    s->last_used = (uint64_t) time(NULL);
+    memset(session_aad_keys[session_id], 0, 16);
+    if (aad && aad_len > 0)
+        memcpy(session_aad_keys[session_id], aad, aad_len < 16 ? aad_len : 16);
+    g_total_encrypted += (uint64_t) len;
+    return 0;
+}
+
+/**
+ * @brief Perform Transport Decrypt With Aad.
+ */
+int SNEPPX_transport_decrypt_with_aad(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext, size_t len,
+                                       const uint8_t* aad, size_t aad_len,
+                                       const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t* plaintext)
+{
+    if (!ts || !ciphertext || !plaintext || !nonce)
+        return -1;
+    if (!aad && aad_len > 0)
         return -1;
     if (session_id < 0 || session_id >= ts->session_count)
         return -1;
@@ -490,20 +618,168 @@ int SNEPPX_transport_encrypt_with_aad(SNEPPXTransportSecurity* ts, int session_i
     }
     if (use_aes_gcm)
         return -1;
-    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
+
+    uint64_t sequence = transport_decode_sequence(nonce);
+    if (sequence == 0 || sequence != session_rx_sequence[session_id] + 1)
+        return -1;
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    uint8_t aad_nonce[SNEPPX_TLS_NONCE_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
+    if (transport_derive_aad_nonce(nonce, aad, aad_len, aad_nonce) != 0)
+    {
+        memset(message_key, 0, sizeof(message_key));
+        return -1;
+    }
+
     {
         SNEPPXChaCha20State state;
-        uint8_t aad_nonce[12];
-        memcpy(aad_nonce, nonce, 12);
-        for (size_t i = 0; i < aad_len && i < 12; i++)
-            aad_nonce[i] ^= aad[i];
-        SNEPPX_chacha20_init(&state, s->session_key, aad_nonce, 0);
+        SNEPPX_chacha20_init(&state, message_key, aad_nonce, 0);
+        memcpy(plaintext, ciphertext, len);
+        SNEPPX_chacha20_encrypt(&state, plaintext, len);
+        memset(&state, 0, sizeof(state));
+    }
+    memset(message_key, 0, sizeof(message_key));
+    memset(aad_nonce, 0, sizeof(aad_nonce));
+
+    session_rx_sequence[session_id] = sequence;
+    s->last_used = (uint64_t) time(NULL);
+    memset(session_aad_keys[session_id], 0, 16);
+    if (aad && aad_len > 0)
+        memcpy(session_aad_keys[session_id], aad, aad_len < 16 ? aad_len : 16);
+    g_total_decrypted += (uint64_t) len;
+    return 0;
+}
+
+/**
+ * @brief Perform Transport Encrypt With Aad And HMAC Tag.
+ */
+int SNEPPX_transport_encrypt_aead(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* plaintext, size_t len,
+                                  const uint8_t* aad, size_t aad_len, uint8_t* ciphertext,
+                                  uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN])
+{
+    if (!tag)
+        return -1;
+    if (!ts || !plaintext || !ciphertext || !nonce)
+        return -1;
+    if (!aad && aad_len > 0)
+        return -1;
+    if (session_id < 0 || session_id >= ts->session_count)
+        return -1;
+    SNEPPXTLSSession* s = &ts->sessions[session_id];
+    if (!s->is_active)
+        return -1;
+    if (session_timeouts[session_id] > 0)
+    {
+        uint64_t now = (uint64_t) time(NULL);
+        if (now - s->last_used > session_timeouts[session_id])
+            return -1;
+    }
+    if (use_aes_gcm || session_tx_sequence[session_id] == UINT64_MAX)
+        return -1;
+
+    uint64_t sequence = ++session_tx_sequence[session_id];
+    transport_encode_sequence(nonce, sequence);
+    SNEPPX_random_bytes(nonce + 8, SNEPPX_TLS_NONCE_LEN - 8);
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    uint8_t aad_nonce[SNEPPX_TLS_NONCE_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
+    if (transport_derive_aad_nonce(nonce, aad, aad_len, aad_nonce) != 0)
+    {
+        memset(message_key, 0, sizeof(message_key));
+        return -1;
+    }
+
+    {
+        SNEPPXChaCha20State state;
+        SNEPPX_chacha20_init(&state, message_key, aad_nonce, 0);
         memcpy(ciphertext, plaintext, len);
         SNEPPX_chacha20_encrypt(&state, ciphertext, len);
+        memset(&state, 0, sizeof(state));
     }
+
+    int rc = transport_compute_aad_tag(message_key, sequence, nonce, aad, aad_len, ciphertext, len, tag);
+    memset(message_key, 0, sizeof(message_key));
+    memset(aad_nonce, 0, sizeof(aad_nonce));
+    if (rc != 0)
+        return -1;
+
     s->last_used = (uint64_t) time(NULL);
-    memcpy(session_aad_keys[session_id], aad, aad_len < 16 ? aad_len : 16);
+    memset(session_aad_keys[session_id], 0, 16);
+    if (aad && aad_len > 0)
+        memcpy(session_aad_keys[session_id], aad, aad_len < 16 ? aad_len : 16);
     g_total_encrypted += (uint64_t) len;
+    return 0;
+}
+
+/**
+ * @brief Perform Transport Decrypt With Aad And HMAC Tag.
+ */
+int SNEPPX_transport_decrypt_aead(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext, size_t len,
+                                  const uint8_t* aad, size_t aad_len, const uint8_t nonce[SNEPPX_TLS_NONCE_LEN],
+                                  const uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN], uint8_t* plaintext)
+{
+    if (!tag)
+        return -1;
+    if (!ts || !ciphertext || !plaintext || !nonce)
+        return -1;
+    if (!aad && aad_len > 0)
+        return -1;
+    if (session_id < 0 || session_id >= ts->session_count)
+        return -1;
+    SNEPPXTLSSession* s = &ts->sessions[session_id];
+    if (!s->is_active)
+        return -1;
+    if (session_timeouts[session_id] > 0)
+    {
+        uint64_t now = (uint64_t) time(NULL);
+        if (now - s->last_used > session_timeouts[session_id])
+            return -1;
+    }
+    if (use_aes_gcm)
+        return -1;
+
+    uint64_t sequence = transport_decode_sequence(nonce);
+    if (sequence == 0 || sequence != session_rx_sequence[session_id] + 1)
+        return -1;
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    uint8_t aad_nonce[SNEPPX_TLS_NONCE_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
+    if (transport_derive_aad_nonce(nonce, aad, aad_len, aad_nonce) != 0)
+    {
+        memset(message_key, 0, sizeof(message_key));
+        return -1;
+    }
+
+    {
+        SNEPPXChaCha20State state;
+        SNEPPX_chacha20_init(&state, message_key, aad_nonce, 0);
+        memcpy(plaintext, ciphertext, len);
+        SNEPPX_chacha20_encrypt(&state, plaintext, len);
+        memset(&state, 0, sizeof(state));
+    }
+
+    uint8_t expected_tag[SNEPPX_TRANSPORT_AAD_TAG_LEN];
+    int rc = transport_compute_aad_tag(message_key, sequence, nonce, aad, aad_len, ciphertext, len, expected_tag);
+    if (rc == 0 && !transport_tags_equal(tag, expected_tag))
+        rc = -1;
+    memset(expected_tag, 0, sizeof(expected_tag));
+    memset(message_key, 0, sizeof(message_key));
+    memset(aad_nonce, 0, sizeof(aad_nonce));
+    if (rc != 0)
+    {
+        memset(plaintext, 0, len);
+        return -1;
+    }
+
+    session_rx_sequence[session_id] = sequence;
+    s->last_used = (uint64_t) time(NULL);
+    memset(session_aad_keys[session_id], 0, 16);
+    if (aad && aad_len > 0)
+        memcpy(session_aad_keys[session_id], aad, aad_len < 16 ? aad_len : 16);
+    g_total_decrypted += (uint64_t) len;
     return 0;
 }
 
