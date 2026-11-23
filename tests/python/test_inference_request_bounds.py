@@ -1,6 +1,7 @@
 """M-14 regressions: bounded inference requests and enforced filter statuses."""
 
 import asyncio
+import threading
 from unittest.mock import patch
 
 import pytest
@@ -47,6 +48,17 @@ def test_prepare_prompt_rejects_unsafe_statuses(status, status_code):
         with pytest.raises(HTTPException) as exc:
             server._prepare_prompt("x")
     assert exc.value.status_code == status_code
+
+
+def test_blocking_work_runs_off_event_loop():
+    seen = []
+
+    def work():
+        seen.append(threading.current_thread().name)
+        return 42
+
+    assert asyncio.run(server._run_blocking(work)) == 42
+    assert seen and seen[0] != threading.current_thread().name
 
 
 def test_prepare_prompt_uses_sanitized_text():
