@@ -141,6 +141,36 @@ def test_file_chain_hmac_detects_payload_tampering(tmp_path):
     assert errors
 
 
+def test_verify_chain_checks_full_history():
+    class CappedBackend(AuditBackend):
+        def __init__(self):
+            self.events = []
+
+        def write(self, event):
+            self.events.append(event)
+            return True
+
+        def query(self, **kwargs):
+            # A capped query hides older tampering; verification must not use it.
+            events = self.events
+            return (
+                list(events[-1:]) if kwargs.get("limit") is not None else list(events)
+            )
+
+        def close(self):
+            pass
+
+    backend = CappedBackend()
+    logger = AuditLogger(backends=[backend])
+    for actor in ("a", "b", "c"):
+        logger.log(AuditAction.LOGIN, actor, result=AuditResult.SUCCESS)
+
+    backend.events[0].actor = "tampered"
+    valid, errors = logger.verify_chain()
+    assert valid is False
+    assert errors
+
+
 def test_get_audit_logger():
     logger = get_audit_logger()
     assert logger is not None

@@ -254,7 +254,7 @@ class AuditBackend(ABC):
         action: Optional[AuditAction] = None,
         actor: Optional[str] = None,
         severity: Optional[AuditSeverity] = None,
-        limit: int = 1000,
+        limit: Optional[int] = 1000,
     ) -> List[AuditEvent]:
         pass
 
@@ -345,7 +345,7 @@ class FileAuditBackend(AuditBackend):
         action: Optional[AuditAction] = None,
         actor: Optional[str] = None,
         severity: Optional[AuditSeverity] = None,
-        limit: int = 1000,
+        limit: Optional[int] = 1000,
     ) -> List[AuditEvent]:
         results = []
         files = sorted(
@@ -355,7 +355,7 @@ class FileAuditBackend(AuditBackend):
         )
 
         for file_path in files:
-            if len(results) >= limit:
+            if limit is not None and len(results) >= limit:
                 break
 
             open_func = gzip.open if file_path.suffix == ".gz" else open
@@ -364,7 +364,7 @@ class FileAuditBackend(AuditBackend):
             try:
                 with open_func(file_path, mode, encoding="utf-8") as f:
                     for line in f:
-                        if len(results) >= limit:
+                        if limit is not None and len(results) >= limit:
                             break
                         try:
                             data = json.loads(line)
@@ -636,8 +636,11 @@ class DatabaseAuditBackend(AuditBackend):
             query += " AND severity = ?"
             params.append(kwargs["severity"].name)
 
-        query += " ORDER BY timestamp DESC LIMIT ?"
-        params.append(kwargs.get("limit", 1000))
+        query += " ORDER BY timestamp DESC"
+        limit = kwargs.get("limit", 1000)
+        if limit is not None:
+            query += " LIMIT ?"
+            params.append(limit)
 
         cursor = self._conn.execute(query, params)
         results = []
@@ -894,7 +897,7 @@ class AuditLogger:
         action: Optional[AuditAction] = None,
         actor: Optional[str] = None,
         severity: Optional[AuditSeverity] = None,
-        limit: int = 1000,
+        limit: Optional[int] = 1000,
     ) -> List[AuditEvent]:
         """Query audit events from backends that support it."""
         all_results = []
@@ -920,7 +923,7 @@ class AuditLogger:
                 seen.add(event.event_id)
                 unique.append(event)
 
-        return unique[:limit]
+        return unique if limit is None else unique[:limit]
 
     def clear(self):
         """Clear all events from all backends."""
@@ -934,7 +937,8 @@ class AuditLogger:
     def verify_chain(self) -> Tuple[bool, List[str]]:
         """Verify hash chain integrity across all backends."""
         errors = []
-        all_events = self.query(limit=10000)
+        # Verify every persisted entry, not just the newest 10,000.
+        all_events = self.query(limit=None)
 
         prev_hash = "0" * 64
         for event in sorted(all_events, key=lambda e: e.timestamp):  # Oldest first
