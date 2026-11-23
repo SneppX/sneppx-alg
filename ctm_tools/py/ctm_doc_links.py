@@ -81,7 +81,8 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"Checked: {report['links_checked']}  Broken: {report['broken']}",
     ]
     lines.extend(
-        f"  {issue['path']}:{issue['line']} -> {issue['target']}" for issue in report["issues"]
+        f"  {issue['path']}:{issue['line']} -> {issue['target']}"
+        for issue in report["issues"]
     )
     return "\n".join(lines) + "\n"
 
