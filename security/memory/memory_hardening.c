@@ -1,4 +1,5 @@
 #include "memory_hardening.h"
+#include "neural_core/security/cryptographic_random_generator.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,11 @@
  *   four-layer commenting standard used across this codebase.
  *
  */
+
+static int random_u64(uint64_t* out)
+{
+    return (out && SNEPPX_random_bytes((uint8_t*) out, sizeof(*out)) == 0) ? 0 : -1;
+}
 
 /* --- Quarantine --- */
 /**
@@ -264,7 +270,8 @@ int SNEPPX_pac_init(SNEPPXPAC* pac)
         return -1;
     for (int i = 0; i < SNEPPX_MAX_PAC_KEYS; i++)
     {
-        pac->pac_keys[i] = (uint64_t) rand() ^ ((uint64_t) rand() << 32) ^ ((uint64_t) time(NULL) << (i % 8));
+        if (random_u64(&pac->pac_keys[i]) != 0)
+            return -1;
         pac->pac_keys[i] = pac->pac_keys[i] * 6364136223846793005ULL + 1442695040888963407ULL;
     }
     pac->key_count = SNEPPX_MAX_PAC_KEYS;
@@ -410,7 +417,10 @@ int SNEPPX_tls_canary_pool_init(SNEPPXThreadCanaryPool* pool)
     if (!pool)
         return -1;
     for (int i = 0; i < 64; i++)
-        pool->canaries[i] = (uint64_t) rand() ^ ((uint64_t) rand() << 32);
+    {
+        if (random_u64(&pool->canaries[i]) != 0)
+            return -1;
+    }
     pool->count = 64;
     return 0;
 }
