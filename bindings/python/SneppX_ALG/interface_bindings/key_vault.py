@@ -19,9 +19,7 @@ _LIB, _HAS_C = load_library("neural_security_c")
 class AuditLogger:
     """Security event audit logging with tamper-evident chain."""
 
-    def __init__(
-        self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None
-    ):
+    def __init__(self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None):
         """Create an audit logger.
 
         ``hmac_key`` (or ``SNEPPX_AUDIT_HMAC_KEY``) is a secret held outside
@@ -183,17 +181,42 @@ class KeyVault:
         with self._lock:
             return dict(self._metadata)
 
+    @staticmethod
+    def _wrap_aad(wrapping_key_id: str) -> bytes:
+        """Domain-separated AAD binding a wrapped blob to its wrapping key."""
+        return b"sneppx-key-vault-wrap-v1\x00" + wrapping_key_id.encode("utf-8")
+
     def wrap_key(self, key_id: str, wrapping_key_id: str) -> Optional[bytes]:
         key = self.get_key(key_id)
         if key is None:
             return None
-        return bytes(
-            b ^ w
-            for b, w in zip(key, self.get_key(wrapping_key_id) or os.urandom(len(key)))
-        )
+        wrapping_key = self.get_key(wrapping_key_id)
+        # M-9: fail closed when the wrapping key is missing — never XOR with
+        # fresh random bytes (the blob was unrecoverable and unauthenticated).
+        if wrapping_key is None or len(wrapping_key) not in (16, 24, 32):
+            return None
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError:
+            return None
+        nonce = os.urandom(12)
+        aad = self._wrap_aad(wrapping_key_id)
+        ciphertext = AESGCM(wrapping_key).encrypt(nonce, key, aad)
+        return nonce + ciphertext
 
     def unwrap_key(self, wrapped: bytes, key_id: str) -> Optional[bytes]:
-        key = self.get_key(key_id)
-        if key is None:
+        wrapping_key = self.get_key(key_id)
+        if wrapping_key is None or len(wrapping_key) not in (16, 24, 32):
             return None
-        return bytes(b ^ w for b, w in zip(wrapped, key[: len(wrapped)]))
+        if not isinstance(wrapped, (bytes, bytearray)) or len(wrapped) < 12 + 16:
+            return None
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError:
+            return None
+        nonce, ciphertext = wrapped[:12], wrapped[12:]
+        aad = self._wrap_aad(key_id)
+        try:
+            return AESGCM(wrapping_key).decrypt(nonce, ciphertext, aad)
+        except Exception:
+            return None
