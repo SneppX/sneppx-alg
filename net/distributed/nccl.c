@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 /*
  * SNEPPX - Nccl
@@ -52,6 +58,74 @@ typedef struct
 
 static SNEPPX_NCCLBackend g_nccl_backend = {0};
 static int g_nccl_initialized = 0;
+
+#define SNEPPX_NCCL_UNIQUE_ID_SIZE 128
+#define SNEPPX_NCCL_ID_WAIT_SECONDS 60
+
+static void sneppx_nccl_sleep_ms(unsigned int milliseconds)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    Sleep(milliseconds);
+#else
+    usleep((useconds_t) milliseconds * 1000);
+#endif
+}
+
+/*
+ * Single-node multi-process rendezvous: rank 0 publishes the NCCL unique ID
+ * atomically; the other ranks wait for it. SNEPPX_NCCL_ID_FILE is required for
+ * ndev > 1 so communicators never silently start with a zeroed unique ID.
+ */
+static int sneppx_nccl_publish_unique_id(const char* path, const uint8_t id[SNEPPX_NCCL_UNIQUE_ID_SIZE])
+{
+    char tmp[1024];
+    if (strlen(path) + 5 >= sizeof(tmp))
+        return -1;
+    snprintf(tmp, sizeof(tmp), "%s.tmp", path);
+    FILE* f = fopen(tmp, "wb");
+    if (!f)
+        return -1;
+    size_t written = fwrite(id, 1, SNEPPX_NCCL_UNIQUE_ID_SIZE, f);
+    int ok = written == SNEPPX_NCCL_UNIQUE_ID_SIZE;
+    if (fclose(f) != 0)
+        ok = 0;
+    if (!ok)
+    {
+        remove(tmp);
+        return -1;
+    }
+    remove(path);
+    if (rename(tmp, path) != 0)
+    {
+        remove(tmp);
+        return -1;
+    }
+    return 0;
+}
+
+static int sneppx_nccl_read_unique_id(const char* path, uint8_t id[SNEPPX_NCCL_UNIQUE_ID_SIZE], time_t deadline)
+{
+    while (time(NULL) < deadline)
+    {
+        FILE* f = fopen(path, "rb");
+        if (f)
+        {
+            if (fseek(f, 0, SEEK_END) == 0)
+            {
+                long size = ftell(f);
+                if (size == (long) SNEPPX_NCCL_UNIQUE_ID_SIZE && fseek(f, 0, SEEK_SET) == 0)
+                {
+                    size_t read = fread(id, 1, SNEPPX_NCCL_UNIQUE_ID_SIZE, f);
+                    fclose(f);
+                    return read == SNEPPX_NCCL_UNIQUE_ID_SIZE ? 0 : -1;
+                }
+            }
+            fclose(f);
+        }
+        sneppx_nccl_sleep_ms(20);
+    }
+    return -1;
+}
 
 // Convert SNEPPX data type to NCCL data type
 static int sneppx_nccl_to_nccl_dtype(SNEPPX_NCCL_DataType dt)
@@ -148,6 +222,17 @@ static int sneppx_nccl_try_load(void)
     g_nccl_backend.ncclGetErrorString =
         (int (*)(int, const char**)) sneppx_dlsym(g_nccl_backend.handle, "ncclGetErrorString");
 
+    if (!g_nccl_backend.ncclGetUniqueId || !g_nccl_backend.ncclCommInitRank || !g_nccl_backend.ncclCommDestroy ||
+        !g_nccl_backend.ncclAllReduce || !g_nccl_backend.ncclAllGather || !g_nccl_backend.ncclBroadcast ||
+        !g_nccl_backend.ncclReduce || !g_nccl_backend.ncclReduceScatter || !g_nccl_backend.ncclSend ||
+        !g_nccl_backend.ncclRecv)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] Required NCCL symbols missing; refusing to use backend\n");
+        sneppx_dlclose(g_nccl_backend.handle);
+        memset(&g_nccl_backend, 0, sizeof(g_nccl_backend));
+        return 0;
+    }
+
     g_nccl_backend.loaded = 1;
     return 1;
 }
@@ -168,7 +253,11 @@ int sneppx_nccl_initialize(void)
 {
     if (g_nccl_initialized)
         return 0;
-    sneppx_nccl_try_load();
+    if (!sneppx_nccl_try_load())
+    {
+        fprintf(stderr, "[SNEPPX NCCL] NCCL unavailable; only single-rank CPU fallback is supported\n");
+        return -1;
+    }
     g_nccl_initialized = 1;
     return 0;
 }
@@ -186,7 +275,7 @@ int sneppx_nccl_finalize(void)
 
 int sneppx_nccl_comm_init_rank(SNEPPX_NCCLComm** comm, int ndev, int rank, int* devs)
 {
-    if (!comm)
+    if (!comm || ndev <= 0 || rank < 0 || rank >= ndev)
         return -1;
 
     SNEPPX_NCCLComm* c = (SNEPPX_NCCLComm*) calloc(1, sizeof(SNEPPX_NCCLComm));
@@ -197,21 +286,58 @@ int sneppx_nccl_comm_init_rank(SNEPPX_NCCLComm** comm, int ndev, int rank, int* 
     c->size = ndev;
     c->use_nccl = g_nccl_backend.loaded;
 
-    if (c->use_nccl && g_nccl_backend.ncclCommInitRank)
+    if (!c->use_nccl)
     {
-        cudaSetDevice(devs ? devs[rank] : rank);
-
-        void* uid = malloc(128);
-        memset(uid, 0, 128);
-
-        int ret = g_nccl_backend.ncclCommInitRank(&c->nccl_comm, ndev, uid, rank);
-        free(uid);
-
-        if (ret != 0)
+        /* The CPU path only reproduces rank-local data; multiple ranks need a real backend. */
+        if (ndev > 1)
         {
-            fprintf(stderr, "[SNEPPX NCCL] Failed to init NCCL comm: %d\n", ret);
-            c->use_nccl = 0;
+            fprintf(stderr, "[SNEPPX NCCL] NCCL unavailable for world_size > 1; refusing simulated collectives\n");
+            free(c);
+            return -1;
         }
+        *comm = c;
+        return 0;
+    }
+
+    cudaSetDevice(devs ? devs[rank] : rank);
+
+    uint8_t uid[SNEPPX_NCCL_UNIQUE_ID_SIZE];
+    memset(uid, 0, sizeof(uid));
+    if (g_nccl_backend.ncclGetUniqueId(uid) != 0)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] ncclGetUniqueId failed\n");
+        free(c);
+        return -1;
+    }
+
+    if (ndev > 1)
+    {
+        const char* path = getenv("SNEPPX_NCCL_ID_FILE");
+        if (!path || !*path)
+        {
+            fprintf(stderr, "[SNEPPX NCCL] SNEPPX_NCCL_ID_FILE must be set for world_size > 1\n");
+            memset(uid, 0, sizeof(uid));
+            free(c);
+            return -1;
+        }
+        int rc = (rank == 0) ? sneppx_nccl_publish_unique_id(path, uid)
+                             : sneppx_nccl_read_unique_id(path, uid, time(NULL) + SNEPPX_NCCL_ID_WAIT_SECONDS);
+        if (rc != 0)
+        {
+            fprintf(stderr, "[SNEPPX NCCL] unique ID rendezvous failed for rank %d\n", rank);
+            memset(uid, 0, sizeof(uid));
+            free(c);
+            return -1;
+        }
+    }
+
+    int ret = g_nccl_backend.ncclCommInitRank(&c->nccl_comm, ndev, uid, rank);
+    memset(uid, 0, sizeof(uid));
+    if (ret != 0)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] Failed to init NCCL comm: %d\n", ret);
+        free(c);
+        return -1;
     }
 
     *comm = c;
@@ -291,6 +417,13 @@ int sneppx_nccl_all_reduce(const void* sendbuf, void* recvbuf, size_t count, SNE
     }
 
     // CPU fallback
+    if (comm->size > 1)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] all_reduce requires NCCL for world_size > 1\n");
+        return -1;
+    }
+    if (count > SIZE_MAX / sizeof(float))
+        return -1;
     if (datatype == SNEPPX_NCCL_FLOAT && op == SNEPPX_NCCL_SUM)
     {
         cudaMemcpy(recvbuf, sendbuf, count * sizeof(float), cudaMemcpyDeviceToHost);
@@ -315,9 +448,17 @@ int sneppx_nccl_all_gather(const void* sendbuf, void* recvbuf, size_t sendcount,
         return (ret == 0) ? 0 : -1;
     }
 
-    // CPU fallback: copy to host, gather, copy back
+    // CPU fallback
+    if (comm->size > 1)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] all_gather requires NCCL for world_size > 1\n");
+        return -1;
+    }
     size_t dtype_size = (datatype == SNEPPX_NCCL_INT64) ? 8 : 4;
+    if (sendcount > SIZE_MAX / dtype_size || sendcount * dtype_size > SIZE_MAX / (size_t) comm->size)
+        return -1;
     size_t total = sendcount * comm->size * dtype_size;
+    (void) total;
 
     // Simplified: each rank copies its portion
     cudaMemcpy((char*) recvbuf + comm->rank * sendcount * dtype_size, sendbuf, sendcount * dtype_size,
@@ -340,6 +481,13 @@ int sneppx_nccl_reduce(const void* sendbuf, void* recvbuf, size_t count, SNEPPX_
     }
 
     // CPU fallback
+    if (comm->size > 1)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] reduce requires NCCL for world_size > 1\n");
+        return -1;
+    }
+    if (count > SIZE_MAX / sizeof(float))
+        return -1;
     if (datatype == SNEPPX_NCCL_FLOAT && op == SNEPPX_NCCL_SUM)
     {
         cudaMemcpy(recvbuf, sendbuf, count * sizeof(float), cudaMemcpyDeviceToHost);
@@ -373,8 +521,15 @@ int sneppx_nccl_reduce_scatter(const void* sendbuf, void* recvbuf, size_t recvco
         return (ret == 0) ? 0 : -1;
     }
 
-    // CPU fallback: copy our chunk
+    // CPU fallback
+    if (comm->size > 1)
+    {
+        fprintf(stderr, "[SNEPPX NCCL] reduce_scatter requires NCCL for world_size > 1\n");
+        return -1;
+    }
     size_t dtype_size = (datatype == SNEPPX_NCCL_INT64) ? 8 : 4;
+    if (recvcount > SIZE_MAX / dtype_size || recvcount * dtype_size > SIZE_MAX / (size_t) comm->size)
+        return -1;
     cudaMemcpy(recvbuf, (const char*) sendbuf + comm->rank * recvcount * dtype_size, recvcount * dtype_size,
                cudaMemcpyDeviceToDevice);
 
@@ -390,7 +545,8 @@ int sneppx_nccl_send(const void* buf, size_t count, SNEPPX_NCCL_DataType datatyp
     {
         return g_nccl_backend.ncclSend(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
     }
-    return 0;
+    fprintf(stderr, "[SNEPPX NCCL] send requires NCCL for world_size > 1\n");
+    return -1;
 }
 
 int sneppx_nccl_recv(void* buf, size_t count, SNEPPX_NCCL_DataType datatype, int peer, SNEPPX_NCCLComm* comm,
@@ -402,7 +558,8 @@ int sneppx_nccl_recv(void* buf, size_t count, SNEPPX_NCCL_DataType datatype, int
     {
         return g_nccl_backend.ncclRecv(buf, count, sneppx_nccl_to_nccl_dtype(datatype), peer, comm->nccl_comm, stream);
     }
-    return 0;
+    fprintf(stderr, "[SNEPPX NCCL] recv requires NCCL for world_size > 1\n");
+    return -1;
 }
 
 const char* sneppx_nccl_get_error_string(int error)
