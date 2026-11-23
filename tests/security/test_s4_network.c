@@ -84,6 +84,52 @@ static void test_transport_rejects_xor_aes_mode(void)
     SNEPPX_transport_shutdown(&ts);
 }
 
+static void test_transport_sequence_tracking(void)
+{
+    SNEPPXTransportSecurity ts;
+    SX_ASSERT(SNEPPX_transport_init(&ts) == 0, "init");
+    int sid = SNEPPX_transport_new_session(&ts, NULL, 0);
+    SX_ASSERT(sid >= 0, "new session");
+
+    uint8_t plaintext[16];
+    uint8_t ciphertext[16];
+    uint8_t nonce[SNEPPX_TLS_NONCE_LEN];
+    uint8_t decrypted[16];
+
+    for (int i = 0; i < 1002; i++)
+    {
+        memset(plaintext, (unsigned char) i, sizeof(plaintext));
+        SX_ASSERT(SNEPPX_transport_encrypt(&ts, sid, plaintext, sizeof(plaintext), ciphertext, nonce) == 0,
+                  "sequential encrypt");
+        SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), nonce, decrypted) == 0,
+                  "sequential decrypt");
+        SX_ASSERT(memcmp(plaintext, decrypted, sizeof(plaintext)) == 0, "sequential roundtrip");
+    }
+
+    memset(plaintext, 0xA5, sizeof(plaintext));
+    SX_ASSERT(SNEPPX_transport_encrypt(&ts, sid, plaintext, sizeof(plaintext), ciphertext, nonce) == 0,
+              "encrypt after rekey threshold");
+
+    uint8_t replay_nonce[SNEPPX_TLS_NONCE_LEN];
+    memcpy(replay_nonce, nonce, sizeof(nonce));
+    replay_nonce[7] ^= 1;
+    SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), replay_nonce, decrypted) == -1,
+              "out-of-order sequence rejected");
+    memcpy(replay_nonce, nonce, sizeof(nonce));
+    SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), replay_nonce, decrypted) == 0,
+              "expected sequence accepted");
+    SX_ASSERT(memcmp(plaintext, decrypted, sizeof(plaintext)) == 0, "roundtrip after rekey threshold");
+
+    uint8_t next_ciphertext[16];
+    uint8_t next_nonce[SNEPPX_TLS_NONCE_LEN];
+    SX_ASSERT(SNEPPX_transport_encrypt(&ts, sid, plaintext, sizeof(plaintext), next_ciphertext, next_nonce) == 0,
+              "encrypt next sequence");
+    SX_ASSERT(SNEPPX_transport_decrypt(&ts, sid, ciphertext, sizeof(ciphertext), replay_nonce, decrypted) == -1,
+              "replayed sequence rejected");
+
+    SNEPPX_transport_shutdown(&ts);
+}
+
 static void test_transport_noise_handshake(void)
 {
     SNEPPXTransportSecurity ts;
@@ -147,6 +193,10 @@ TEST(test_s4_network, transport_encrypt_decrypt)
 TEST(test_s4_network, transport_rejects_xor_aes_mode)
 {
     test_transport_rejects_xor_aes_mode();
+}
+TEST(test_s4_network, transport_sequence_tracking)
+{
+    test_transport_sequence_tracking();
 }
 TEST(test_s4_network, transport_noise_handshake)
 {
