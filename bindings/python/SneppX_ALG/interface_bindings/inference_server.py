@@ -225,6 +225,12 @@ def _prepare_prompt(prompt: str) -> str:
     return sanitized if status == "sanitized" else prompt
 
 
+async def _run_blocking(fn, *args, **kwargs):
+    """Run CPU-bound generation in a worker thread (M-14)."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, lambda: fn(*args, **kwargs))
+
+
 def _verify_output(text: str) -> Tuple[str, str]:
     sec = get_security()
     if sec is not None:
@@ -632,7 +638,8 @@ async def generate_endpoint(req: GenerateRequest):
 
     input_ids = _encode_prompt(entry, prompt_to_use)
 
-    result = generate(
+    result = await _run_blocking(
+        generate,
         entry.model,
         input_ids,
         generation_config=gen_config,
@@ -681,7 +688,9 @@ async def batch_generate_endpoint(req: BatchGenerateRequest):
         ids = _encode_prompt(entry, prompt)
         all_prompts.append(np.array(ids, dtype=np.int64))
 
-    result = batch_generate(entry.model, all_prompts, generation_config=gen_config)
+    result = await _run_blocking(
+        batch_generate, entry.model, all_prompts, generation_config=gen_config
+    )
     outputs = result["output_ids"]
     results_list = []
     for i, prompt in enumerate(req.prompts):
@@ -748,13 +757,20 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
     def decode_fn(token_ids):
         return _decode_tokens(entry, token_ids)
 
-    completed_by_id = {}
-    for batch_result in continuous_generate_loop(
-        model_fn, scheduler, decode_fn, max_steps=req.max_new_tokens * len(req.prompts)
-    ):
+    def _run_scheduler():
         # M-13: drain each yielded result immediately; the loop clears the
         # scheduler's completed list, so reading it afterwards loses results.
-        completed_by_id[batch_result.request_id] = batch_result
+        return {
+            result.request_id: result
+            for result in continuous_generate_loop(
+                model_fn,
+                scheduler,
+                decode_fn,
+                max_steps=req.max_new_tokens * len(req.prompts),
+            )
+        }
+
+    completed_by_id = await _run_blocking(_run_scheduler)
 
     results_list = []
     for i, rid in enumerate(req_ids):
@@ -911,7 +927,9 @@ async def chat_completions(req: ChatCompletionRequest):
     if req.stream:
         return await _chat_stream(entry, prompt_to_use, input_ids, gen_config)
 
-    result = generate(entry.model, input_ids, generation_config=gen_config)
+    result = await _run_blocking(
+        generate, entry.model, input_ids, generation_config=gen_config
+    )
     output_ids = result["output_ids"].flatten().tolist()
     prompt_len = len(input_ids)
     completion_len = len(output_ids) - prompt_len
