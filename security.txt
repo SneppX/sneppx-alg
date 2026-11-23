@@ -1,9 +1,8 @@
------BEGIN SECURITY CONTACT-----
+# Security contact information for SneppX-ALG (RFC 9116)
 Contact: mailto:algoSNEPPX@gmail.com
+Contact: https://github.com/SneppX/sneppx-alg/security/advisories/new
 Expires: 2027-06-24T00:00:00Z
-Acknowledgments: https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md
-Policy: https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md
-Hiring: no
+Acknowledgments: https://github.com/SneppX/sneppx-alg/security/advisories
 Preferred-Languages: en
-Canonical: https://SNEPPX.dev/security.txt
------END SECURITY CONTACT-----
+Canonical: https://raw.githubusercontent.com/SneppX/sneppx-alg/main/.well-known/security.txt
+Policy: https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md
