@@ -189,7 +189,11 @@ def continuous_generate_loop(
         next_tokens, kv_caches = model_fn(input_ids, positions)
 
         for i, req in enumerate(batch):
-            next_id = next_tokens[i][0] if isinstance(next_tokens[i], list) else next_tokens[i]
+            next_id = (
+                next_tokens[i][0]
+                if isinstance(next_tokens[i], list)
+                else next_tokens[i]
+            )
             req.generated_tokens.append(next_id)
 
             if len(req.generated_tokens) >= req.max_new_tokens:
