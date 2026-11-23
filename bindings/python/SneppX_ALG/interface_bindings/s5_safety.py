@@ -621,12 +621,16 @@ class S5RLHFSafety:
                 ctypes.POINTER(ctypes.c_double),
             ]
             _LIB.SNEPPX_membership_inference_defense_apply.restype = ctypes.c_int
-            _LIB.SNEPPX_membership_inference_defense_apply(
+            rc = _LIB.SNEPPX_membership_inference_defense_apply(
                 arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
                 arr.size,
                 eps,
                 out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             )
+            if rc != 0:
+                raise RuntimeError(
+                    f"SNEPPX_membership_inference_defense_apply failed with status {rc}"
+                )
             return out.reshape(np.asarray(logits).shape)
         return _py_membership_inference_defense(
             np.asarray(logits, dtype=np.float64), eps

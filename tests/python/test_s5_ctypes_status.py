@@ -3,6 +3,7 @@
 import ctypes
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
 import SneppX_ALG.interface_bindings.s5_safety as s5
@@ -11,6 +12,29 @@ import SneppX_ALG.interface_bindings.s5_safety as s5
 def _use_fake_lib(monkeypatch, lib):
     monkeypatch.setattr(s5, "_HAS_C_S5", True)
     monkeypatch.setattr(s5, "_LIB", lib)
+
+
+def test_membership_defense_fails_closed_on_error(monkeypatch):
+    lib = Mock()
+    lib.SNEPPX_membership_inference_defense_apply = Mock(return_value=-1)
+    _use_fake_lib(monkeypatch, lib)
+
+    with pytest.raises(RuntimeError, match="membership_inference"):
+        s5.S5RLHFSafety().membership_inference_defense(np.array([0.1, 0.2]))
+
+
+def test_membership_defense_uses_c_output(monkeypatch):
+    lib = Mock()
+
+    def fake_apply(_logits, _count, _epsilon, out):
+        ctypes.memmove(out, (ctypes.c_double * 2)(5.0, 6.0), 16)
+        return 0
+
+    lib.SNEPPX_membership_inference_defense_apply = Mock(side_effect=fake_apply)
+    _use_fake_lib(monkeypatch, lib)
+
+    out = s5.S5RLHFSafety().membership_inference_defense(np.array([0.1, 0.2]))
+    assert np.allclose(out, [5.0, 6.0])
 
 
 def test_training_sanitize_fails_closed_on_error(monkeypatch):
