@@ -77,14 +77,17 @@ def render(report: dict[str, Any], fmt: str) -> str:
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["path", "changes", "added", "deleted"])
         for item in report["files"]:
-            writer.writerow([item["path"], item["changes"], item["added"], item["deleted"]])
+            writer.writerow(
+                [item["path"], item["changes"], item["added"], item["deleted"]]
+            )
         return stream.getvalue()
     lines = [
         f"CTM churn: {report['root']}",
         f"Commits: {report['commits']}  +{report['additions']} / -{report['deletions']}",
     ]
     lines.extend(
-        f"  {item['added'] + item['deleted']:>7}  {item['path']}" for item in report["files"]
+        f"  {item['added'] + item['deleted']:>7}  {item['path']}"
+        for item in report["files"]
     )
     return "\n".join(lines) + "\n"
 

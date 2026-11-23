@@ -3,7 +3,9 @@
 import sys, os
 import struct
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 import pytest
@@ -196,7 +198,9 @@ def test_recv_tensor_rejects_huge_shape():
     try:
         # rows*cols would overflow any sane buffer; must be rejected before
         # multiplication/allocation.
-        client._sock.sendall(struct.pack("!I", 8) + struct.pack("!II", 0xFFFFFFFF, 0xFFFFFFFF))
+        client._sock.sendall(
+            struct.pack("!I", 8) + struct.pack("!II", 0xFFFFFFFF, 0xFFFFFFFF)
+        )
         assert server.recv_tensor() is None
     finally:
         client.close()

@@ -78,7 +78,10 @@ def trend(store: str | Path, limit: int = 0) -> dict[str, Any]:
     first = entries[0] if entries else None
     snapshots: list[dict[str, Any]] = []
     for entry in entries:
-        delta = {key: entry.get(key, 0) - first.get(key, 0) if first else 0 for key in METRICS}
+        delta = {
+            key: entry.get(key, 0) - first.get(key, 0) if first else 0
+            for key in METRICS
+        }
         snapshots.append({**entry, "delta": delta})
     return {
         "tool": "ctm_trend",

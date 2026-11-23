@@ -62,7 +62,9 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"CTM LOC diff: {report['old_root']} -> {report['new_root']}",
     ]
     for language, values in report["by_language"].items():
-        lines.append(f"  {language}: {values['loc']:+d} lines, {values['files']:+d} files")
+        lines.append(
+            f"  {language}: {values['loc']:+d} lines, {values['files']:+d} files"
+        )
     totals = report["totals"]
     lines.append(
         f"TOTAL: {totals['loc']:+d} lines, {totals['files']:+d} files, {totals['bytes']:+d} bytes"

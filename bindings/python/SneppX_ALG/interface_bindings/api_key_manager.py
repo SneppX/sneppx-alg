@@ -106,7 +106,9 @@ class ApiKeyManager:
             if len(self._cache) >= self._max_cache_entries:
                 self._cache.popitem(last=False)
             cached = dict(key_info)
-            self._cache[raw_key] = KeyCacheEntry(key_info=cached, expires_at=now + self._cache_ttl)
+            self._cache[raw_key] = KeyCacheEntry(
+                key_info=cached, expires_at=now + self._cache_ttl
+            )
             return dict(cached)
 
     def revoke_key(self, key_id: str) -> bool:
@@ -144,7 +146,9 @@ class ApiKeyManager:
                     del self._cache[raw_key]
             return result
 
-    def get_usage_stats(self, key_id: str, since: Optional[float] = None) -> Dict[str, Any]:
+    def get_usage_stats(
+        self, key_id: str, since: Optional[float] = None
+    ) -> Dict[str, Any]:
         return self._store.get_usage_stats(key_id, since=since)
 
     def record_usage(
