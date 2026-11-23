@@ -42,9 +42,7 @@ class LaplaceMech:
             raise ValueError(f"epsilon must be > 0, got {epsilon}")
         self.epsilon = epsilon
 
-    def apply(
-        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
-    ) -> np.ndarray:
+    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
         scale = sensitivity / self.epsilon
         noise = _secure_laplace(scale, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -65,9 +63,7 @@ class GaussianMech:
         self.epsilon = epsilon
         self.delta = delta
 
-    def apply(
-        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
-    ) -> np.ndarray:
+    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
         sigma = sensitivity * math.sqrt(2 * math.log(1.25 / self.delta)) / self.epsilon
         noise = _secure_normal(sigma, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -164,9 +160,7 @@ class RDPAccountant:
         self._orders = (
             orders
             if orders is not None
-            else [1 + 0.1 * i for i in range(1, 100)]
-            + list(range(11, 65))
-            + [128, 256, 512]
+            else [1 + 0.1 * i for i in range(1, 100)] + list(range(11, 65)) + [128, 256, 512]
         )
         self._rdp = np.zeros(len(self._orders))
         self._steps = 0
@@ -200,12 +194,7 @@ class RDPAccountant:
             if q < 1.0:
                 # E[ (q * N(0,sigma^2) + (1-q))^alpha ] approximation
                 step_rdp = math.log(
-                    1.0
-                    + q
-                    * q
-                    * alpha
-                    * (alpha - 1)
-                    / (2.0 * noise_multiplier * noise_multiplier)
+                    1.0 + q * q * alpha * (alpha - 1) / (2.0 * noise_multiplier * noise_multiplier)
                 ) / (alpha - 1)
                 if step_rdp < 0:
                     step_rdp = 0.0
@@ -277,6 +266,7 @@ class DPSGD:
         accountant: Optional[RDPAccountant] = None,
         epsilon: Optional[float] = None,
         delta: float = 1e-5,
+        budget: Optional[PrivacyBudget] = None,
     ):
         self._opt = optimizer
         self._params = optimizer.params
@@ -293,6 +283,11 @@ class DPSGD:
             self._accountant = RDPAccountant(delta=delta)
         else:
             self._accountant = None
+
+        # M-7: accept epsilon?/delta? as an ENFORCED budget, not decoration.
+        self._budget = budget
+        if self._budget is None and epsilon is not None:
+            self._budget = PrivacyBudget(epsilon, delta)
 
     @property
     def lr(self):
@@ -334,6 +329,11 @@ class DPSGD:
             return
         self._check_budget(batch_size)
 
+        # M-7: refuse to spend past an exhausted privacy budget.
+        if self._budget is not None and self._noise_mult > 0:
+            if self._budget.remaining[0] <= 0:
+                raise ValueError("Privacy budget exhausted: refusing additional DP-SGD step")
+
         # Accumulate clipped per-sample gradients
         accumulated = [np.zeros_like(p.data, dtype=np.float64) for p in self._params]
 
@@ -370,9 +370,7 @@ class DPSGD:
             noise = _secure_normal(sigma, self._params[i].data.shape)
             accumulated[i] += noise
             # Note: tensor.data returns a copy — must create a new Tensor to set grad
-            self._params[i].grad = Tensor(
-                accumulated[i].astype(self._params[i].data.dtype)
-            )
+            self._params[i].grad = Tensor(accumulated[i].astype(self._params[i].data.dtype))
 
         self._opt.step()
 
@@ -383,6 +381,17 @@ class DPSGD:
                 batch_size=batch_size,
                 num_samples=self._num_samples,
             )
+            if self._budget is not None and self._noise_mult > 0:
+                # RDP->DP conversion has a delta term and optimal-alpha
+                # selection, so epsilon is NOT additive; track the accountant's
+                # actual cumulative value rather than summing step deltas.
+                epsilon_after = self._accountant.get_epsilon()
+                self._budget._spent_epsilon = epsilon_after
+                if epsilon_after > self._budget._total_epsilon:
+                    raise ValueError(
+                        "Privacy budget exhausted: "
+                        f"epsilon {epsilon_after:.4f} > {self._budget._total_epsilon:.4f}"
+                    )
 
     def privacy_spent(self) -> Dict[str, float]:
         """Return (epsilon, delta) privacy cost so far."""
