@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -9,7 +10,11 @@ from pathlib import Path
 import pytest
 
 
-MODULE_PATH = Path(__file__).resolve().parents[2] / "ctm_tools" / "py" / "ctm.py"
+PY_DIR = Path(__file__).resolve().parents[2] / "ctm_tools" / "py"
+if str(PY_DIR) not in sys.path:
+    sys.path.insert(0, str(PY_DIR))
+
+MODULE_PATH = PY_DIR / "ctm.py"
 SPEC = importlib.util.spec_from_file_location("sneppx_ctm", MODULE_PATH)
 ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
@@ -157,18 +162,48 @@ def test_symlink_files_are_not_followed_when_supported(tmp_path):
     assert report["skipped_binary_or_symlink"] == 1
 
 
+def _make_directory_link(link: Path, target: Path) -> None:
+    """Create a directory symlink, falling back to a Windows junction."""
+    try:
+        link.symlink_to(target, target_is_directory=True)
+        return
+    except (OSError, NotImplementedError):
+        pass
+    if os.name == "nt":
+        result = subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            return
+    pytest.skip("directory symlink/junction creation is not permitted")
+
+
 def test_symlink_directories_are_not_followed_and_are_counted(tmp_path):
     target = tmp_path / "target_dir"
     target.mkdir()
     (target / "inside.py").write_text("x = 1\n", encoding="utf-8")
     link = tmp_path / "linked_dir"
-    try:
-        link.symlink_to(target, target_is_directory=True)
-    except (OSError, NotImplementedError):
-        pytest.skip("symlink creation is not permitted on this platform")
+    _make_directory_link(link, target)
 
     report = ctm.scan(tmp_path)
 
     assert report["files"] == 1
     assert report["directories"] == 1
     assert report["skipped_binary_or_symlink"] == 1
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows junctions only")
+def test_windows_junctions_are_not_followed(tmp_path):
+    target = tmp_path / "target_dir"
+    target.mkdir()
+    (target / "inside.py").write_text("x = 1\n", encoding="utf-8")
+    link = tmp_path / "linked_dir"
+    _make_directory_link(link, target)
+
+    assert ctm.is_link(link) is True
+    report = ctm.scan(tmp_path)
+    assert report["files"] == 1
+    assert report["skipped_binary_or_symlink"] == 1
+    assert [p.name for p in ctm.text_files(tmp_path)] == ["inside.py"]

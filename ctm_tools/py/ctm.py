@@ -12,6 +12,7 @@ import csv
 import json
 import html
 import os
+import stat
 import subprocess
 import sys
 from collections import defaultdict
@@ -72,6 +73,21 @@ IGNORED_SUFFIXES = {
     ".ttf",
     ".otf",
 }
+
+
+def is_link(path: Path) -> bool:
+    """True for symlinks and Windows junctions/reparse points."""
+    if path.is_symlink():
+        return True
+    if os.name == "nt":
+        try:
+            attributes = os.stat(path, follow_symlinks=False).st_file_attributes
+            return bool(attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+        except (AttributeError, OSError):
+            return False
+    return False
+
+
 LANGUAGES = {
     ".c": "C",
     ".h": "C headers",
@@ -183,7 +199,7 @@ def iter_files(root: str | Path, include_other_text: bool = False) -> Iterator[P
         kept_dirs = []
         for dirname in sorted(dirnames):
             child = current_path / dirname
-            if child.is_symlink():
+            if is_link(child):
                 continue
             if dirname not in IGNORED_DIRS:
                 kept_dirs.append(dirname)
@@ -191,7 +207,7 @@ def iter_files(root: str | Path, include_other_text: bool = False) -> Iterator[P
 
         for filename in sorted(filenames):
             path = current_path / filename
-            if path.is_symlink() or path.suffix.lower() in IGNORED_SUFFIXES:
+            if is_link(path) or path.suffix.lower() in IGNORED_SUFFIXES:
                 continue
             if path.suffix.lower() not in LANGUAGES and not include_other_text:
                 continue
@@ -229,7 +245,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
         kept_dirs = []
         for dirname in sorted(dirnames):
             child = current_path / dirname
-            if child.is_symlink():
+            if is_link(child):
                 skipped_binary += 1
             elif dirname not in IGNORED_DIRS:
                 kept_dirs.append(dirname)
@@ -238,7 +254,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
 
         for filename in sorted(filenames):
             path = current_path / filename
-            if path.is_symlink() or path.suffix.lower() in IGNORED_SUFFIXES:
+            if is_link(path) or path.suffix.lower() in IGNORED_SUFFIXES:
                 skipped_binary += 1
                 continue
             suffix = path.suffix.lower()

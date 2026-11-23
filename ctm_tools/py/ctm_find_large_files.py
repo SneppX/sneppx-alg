@@ -8,6 +8,8 @@ import os
 import sys
 from pathlib import Path
 
+import ctm
+
 IGNORE_DIRS = {
     ".git",
     ".hg",
@@ -43,11 +45,11 @@ def find_large_files(root=".", min_size=1024 * 1024, limit=50):
         dirnames[:] = [
             name
             for name in dirnames
-            if name not in IGNORE_DIRS and not (current_path / name).is_symlink()
+            if name not in IGNORE_DIRS and not ctm.is_link(current_path / name)
         ]
         for filename in filenames:
             path = current_path / filename
-            if path.is_symlink():
+            if ctm.is_link(path):
                 continue
             try:
                 stat = path.stat()
@@ -71,12 +73,8 @@ def find_large_files(root=".", min_size=1024 * 1024, limit=50):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Find large regular files")
     parser.add_argument("root", nargs="?", default=".")
-    parser.add_argument(
-        "--min-size", type=int, default=1024 * 1024, help="minimum size in bytes"
-    )
-    parser.add_argument(
-        "--limit", type=int, default=50, help="maximum results; 0 means no limit"
-    )
+    parser.add_argument("--min-size", type=int, default=1024 * 1024, help="minimum size in bytes")
+    parser.add_argument("--limit", type=int, default=50, help="maximum results; 0 means no limit")
     parser.add_argument("--format", choices=("text", "json", "csv"), default="text")
     parser.add_argument("--output")
     args = parser.parse_args(argv)
@@ -98,16 +96,12 @@ def main(argv=None):
             writer.writerow([item["path"], item["bytes"]])
         rendered = stream.getvalue()
     else:
-        rendered = "".join(
-            f"{item['bytes']:>12,}  {item['path']}\n" for item in report["files"]
-        )
+        rendered = "".join(f"{item['bytes']:>12,}  {item['path']}\n" for item in report["files"])
         if not rendered:
             rendered = "No files matched the size threshold.\n"
         rendered += f"Unreadable entries: {report['errors']}\n"
     if args.output:
-        with Path(args.output).expanduser().open(
-            "w", encoding="utf-8", newline=""
-        ) as output:
+        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output:
             output.write(rendered)
     else:
         sys.stdout.write(rendered)

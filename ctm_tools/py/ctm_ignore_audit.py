@@ -19,7 +19,7 @@ def _reason(path: Path, base: Path) -> str:
     relative = path.relative_to(base)
     if any(part in ctm.IGNORED_DIRS for part in relative.parts[:-1]):
         return "ignored_dir"
-    if path.is_symlink():
+    if ctm.is_link(path):
         return "symlink"
     suffix = path.suffix.lower()
     if suffix in ctm.IGNORED_SUFFIXES:
@@ -53,7 +53,7 @@ def ignore_audit(root: str | Path, limit: int = 50) -> dict[str, Any]:
         kept_dirs = []
         for dirname in sorted(dirnames):
             child = current_path / dirname
-            if child.is_symlink():
+            if ctm.is_link(child):
                 counts["symlink"] += 1
                 grouped["symlink"].append({"path": child.relative_to(base).as_posix(), "bytes": 0})
             else:
