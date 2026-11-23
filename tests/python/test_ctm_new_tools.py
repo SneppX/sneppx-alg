@@ -15,6 +15,7 @@ import ctm_diff_loc  # noqa: E402
 import ctm_list_large_files  # noqa: E402
 import ctm_recent_files  # noqa: E402
 import ctm_todo_scan  # noqa: E402
+import ctm_doc_links  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -149,3 +150,19 @@ def test_todo_scan_finds_markers_with_line_numbers(tmp_path):
     assert report["counts"] == {"FIXME": 1, "HACK": 1, "TODO": 1}
     assert report["occurrences"][0]["line"] == 1
     assert all("node_modules" not in item["path"] for item in report["occurrences"])
+
+
+def test_doc_links_flags_missing_relative_targets_only(tmp_path):
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "target.md").write_text("# Target\n", encoding="utf-8")
+    (tmp_path / "docs" / "index.md").write_text(
+        "[ok](../target.md)\n[bad](./missing.md)\n"
+        "[external](https://example.com)\n[anchor](../target.md#section)\n",
+        encoding="utf-8",
+    )
+
+    report = ctm_doc_links.check_links(tmp_path)
+
+    assert report["links_checked"] == 3
+    assert report["broken"] == 1
+    assert report["issues"] == [{"path": "docs/index.md", "line": 2, "target": "./missing.md"}]
