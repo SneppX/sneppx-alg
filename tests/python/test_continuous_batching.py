@@ -1,6 +1,7 @@
 """Tests for continuous batching scheduler."""
 
 import time
+import threading
 import numpy as np
 from SneppX_ALG.interface_bindings.continuous_batching import (
     ContinuousBatchScheduler,
@@ -89,6 +90,37 @@ def test_stats_after_complete():
     print("  test_stats_after_complete PASS")
 
 
+def test_concurrent_submit_uses_unique_ids():
+    s = ContinuousBatchScheduler()
+    ids = []
+    ids_lock = threading.Lock()
+
+    def submit_one():
+        rid = s.submit("hello", [1, 2], max_new_tokens=2)
+        with ids_lock:
+            ids.append(rid)
+
+    threads = [threading.Thread(target=submit_one) for _ in range(64)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert len(ids) == 64
+    assert len(set(ids)) == 64
+
+
+def test_pending_queue_is_bounded():
+    s = ContinuousBatchScheduler(SchedulerConfig(max_queue_size=2))
+    assert s.submit("a", [1]) != s.submit("b", [2])
+    try:
+        s.submit("c", [3])
+    except RuntimeError as exc:
+        assert "queue is full" in str(exc)
+    else:
+        raise AssertionError("third submit should be rejected")
+    assert s.get_stats()["pending"] == 2
+
+
 if __name__ == "__main__":
     test_scheduler_create()
     test_submit_and_stats()
@@ -98,4 +130,6 @@ if __name__ == "__main__":
     test_max_batch_size()
     test_empty_batch()
     test_stats_after_complete()
+    test_concurrent_submit_uses_unique_ids()
+    test_pending_queue_is_bounded()
     print("ALL continuous_batching TESTS PASS")
