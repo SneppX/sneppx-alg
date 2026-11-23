@@ -94,6 +94,32 @@ static void test_secure_alloc_rejects_overflowing_size(void)
     SNEPPX_secure_allocator_destroy(&alloc);
 }
 
+static void test_secure_alloc_reuses_records_after_free(void)
+{
+    SNEPPXSecureAllocator alloc;
+    SNEPPX_secure_allocator_init(&alloc);
+    void* ptrs[SNEPPX_SECURE_MAX_RECORDS];
+
+    for (int i = 0; i < SNEPPX_SECURE_MAX_RECORDS; i++)
+    {
+        ptrs[i] = SNEPPX_secure_alloc(&alloc, 128, 16);
+        SX_ASSERT(ptrs[i] != NULL, "allocation succeeds while records are available");
+    }
+
+    void* overflow = SNEPPX_secure_alloc(&alloc, 128, 16);
+    SX_ASSERT(overflow == NULL, "allocation fails when record table is full");
+
+    SNEPPX_secure_free(&alloc, ptrs[0]);
+    void* reused = SNEPPX_secure_alloc(&alloc, 128, 16);
+    SX_ASSERT(reused != NULL, "record is reused after free");
+
+    if (reused)
+        SNEPPX_secure_free(&alloc, reused);
+    for (int i = 1; i < SNEPPX_SECURE_MAX_RECORDS; i++)
+        SNEPPX_secure_free(&alloc, ptrs[i]);
+    SNEPPX_secure_allocator_destroy(&alloc);
+}
+
 TEST(test_secure_allocator, secure_alloc_free)
 {
     test_secure_alloc_free();
@@ -110,4 +136,9 @@ TEST(test_secure_allocator, secure_alloc_large)
 TEST(test_secure_allocator, secure_alloc_rejects_overflowing_size)
 {
     test_secure_alloc_rejects_overflowing_size();
+}
+
+TEST(test_secure_allocator, secure_alloc_reuses_records_after_free)
+{
+    test_secure_alloc_reuses_records_after_free();
 }
