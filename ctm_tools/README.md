@@ -65,10 +65,26 @@ check `schema_version` before assuming future fields are compatible.
   counted incrementally to avoid loading an entire large file into memory.
   Do not point it at untrusted network mounts without considering the I/O cost.
 
+## Utility tools
+
+Five additional Python tools share `ctm.py`'s inclusion filters:
+
+| Tool | Purpose |
+|---|---|
+| `py/ctm_count_functions.py` | Heuristic function-definition counts by language |
+| `py/ctm_count_headers.py` | C/C++ header and source file counts |
+| `py/ctm_diff_loc.py` | Per-language LOC/bytes delta between two trees |
+| `py/ctm_list_large_files.py` | Largest included files with human-readable sizes |
+| `py/ctm_recent_files.py` | Most recently modified included files |
+
+Each accepts a root directory, `--format text|json|csv`, `--output`, and
+`--include-other-text` where applicable. Their counts are filesystem telemetry,
+not semantic analysis; function counting is a conservative text heuristic.
+
 ## Regression tests
 
 ```bash
-python -m pytest tests/python/test_ctm_tools.py -q
+python -m pytest tests/python/test_ctm_tools.py tests/python/test_ctm_new_tools.py -q
 ```
 
 ## Legacy implementations
