@@ -63,6 +63,15 @@ def test_membership_defense_uses_c_output(monkeypatch):
     assert np.allclose(out, [5.0, 6.0])
 
 
+def test_data_extraction_prevent_fails_closed_on_error(monkeypatch):
+    lib = Mock()
+    lib.SNEPPX_data_extraction_prevent = Mock(return_value=-1)
+    _use_fake_lib(monkeypatch, lib)
+
+    with pytest.raises(RuntimeError, match="data_extraction_prevent"):
+        s5.S5OutputVerifier().check("hello")
+
+
 def test_training_sanitize_fails_closed_on_error(monkeypatch):
     lib = Mock()
     lib.SNEPPX_training_sanitize = Mock(return_value=-1)
