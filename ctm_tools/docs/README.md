@@ -2,75 +2,59 @@
 
 ## Overview
 
-Custom tools for codebase metrics analysis. Both C and Python implementations provided.
+Custom tools for codebase metrics analysis. The maintained implementation is the
+dependency-free Python scanner `ctm_tools/py/ctm.py`. The C sources under
+`ctm_tools/c/` are **unbuilt legacy prototypes** and must not be used for
+measurements (see `ctm_tools/README.md`).
 
-## Core Tools (Implemented)
+## Supported scanner (Python)
 
-### 1. ctm_count_total_loc
+Run from the repository root:
 
-Counts total lines of code in a directory tree (ignoring common build/cache dirs).
+```bash
+python ctm_tools/py/ctm.py /path/to/repo
+python ctm_tools/py/ctm.py /path/to/repo --format json --output ctm-report.json
+python ctm_tools/py/ctm.py /path/to/repo --format csv
+python ctm_tools/py/ctm.py /path/to/repo --format html --output ctm-report.html
+```
 
-**Python:** ctm_tools/py/ctm_count_total_loc.py
-`ash
-python ctm_tools/py/ctm_count_total_loc.py /path/to/repo
-`
+Formats: `text` (default), `json` (schema version 1), `csv`, and `html`.
+See `ctm_tools/README.md` for metric definitions, exclusions, and safety notes.
 
-**C (Windows):** ctm_tools/c/ctm_count_total_loc.c (build via CMake in ctm_tools/)
+Regression tests:
 
-### 2. ctm_count_total_files
+```bash
+python -m pytest tests/python/test_ctm_tools.py -q
+```
 
-Counts total files.
+## Legacy single-purpose Python scripts
 
-**Python:** ctm_tools/py/ctm_count_total_files.py
-`ash
-python ctm_tools/py/ctm_count_total_files.py /path/to/repo
-`
+These remain available for compatibility. Their exclusions and output contracts
+are **not** uniform with `ctm.py`, so prefer the unified scanner for automation:
 
-**C:** ctm_tools/c/ctm_count_total_files.c
+| Tool | Purpose |
+|---|---|
+| `ctm_count_total_loc.py` | Total physical lines |
+| `ctm_count_total_files.py` | Total files |
+| `ctm_count_total_dirs.py` | Total directories |
+| `ctm_count_loc_by_file.py` | LOC per file |
+| `ctm_count_loc_by_language.py` | LOC aggregated by language |
+| `ctm_summary_report.py` | Combined summary |
 
-### 3. ctm_count_total_dirs
+Run any of them as `python ctm_tools/py/<tool>.py /path/to/repo`.
+Additional counters are listed in `EXTENDED.md`.
 
-Counts total directories.
+## C prototypes (not built)
 
-**Python:** ctm_tools/py/ctm_count_total_dirs.py
-`ash
-python ctm_tools/py/ctm_count_total_dirs.py /path/to/repo
-`
-
-**C:** ctm_tools/c/ctm_count_total_dirs.c
-
-### 4. ctm_count_loc_by_file
-
-Lists LOC per file sorted by count.
-
-**Python:** ctm_tools/py/ctm_count_loc_by_file.py
-`ash
-python ctm_tools/py/ctm_count_loc_by_file.py /path/to/repo
-`
-
-**C:** ctm_tools/c/ctm_count_loc_by_file.c
-
-### 5. ctm_count_loc_by_language
-
-Aggregates LOC and file counts by language.
-
-**Python:** ctm_tools/py/ctm_count_loc_by_language.py
-`ash
-python ctm_tools/py/ctm_count_loc_by_language.py /path/to/repo
-`
-
-## Build (C tools)
-
-`ash
-cd sneppx-alg
-cmake -B build -DSNEPPX_BUILD_TOOLS=ON  # or use ctm_tools/CMakeLists.txt standalone
-
-# or: cmake -B build_ctm -S ctm_tools
-
-`
+The sources in `ctm_tools/c/` are incomplete prototypes: several return
+placeholder values, one does not compile, and none provides a portable
+implementation. `ctm_tools/CMakeLists.txt` therefore exposes only a `ctm-help`
+target. The root CMake option `SNEPPX_BUILD_TOOLS` builds `tools/`, **not**
+`ctm_tools/`. Do not use the C files for measurements and do not add build
+targets for them without a shared, tested cross-platform filesystem walker.
 
 ## Notes
 
-- Tools ignore .git, build, **pycache**, node_modules, venvs, etc.
-- Binary/extensions like .pyc, .exe, .dll are skipped.
-- Python versions are cross-platform and tested on Windows.
+- Tools ignore `.git`, `build`, `__pycache__`, `node_modules`, virtualenvs, and other generated/cache directories; the authoritative list is in `ctm.py`.
+- Binary extensions and files containing NUL bytes are skipped by `ctm.py`.
+- The Python implementations are cross-platform and tested on Windows.
