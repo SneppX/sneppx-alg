@@ -1,4 +1,5 @@
 #include "identity_management.h"
+#include "s4_extensions.h"
 #include "test_gtest.h"
 #include "transport_security.h"
 #include <stdio.h>
@@ -286,4 +287,27 @@ TEST(test_s4_network, identity_pin_verify)
 TEST(test_s4_network, ddos_protection)
 {
     test_ddos_protection();
+}
+TEST(test_s4_network, csprng_backed_security_material)
+{
+    SNEPPXTLS13ClientHello ch1;
+    SNEPPXTLS13ClientHello ch2;
+    ASSERT_EQ(SNEPPX_tls13_client_hello_init(&ch1), 0);
+    ASSERT_EQ(SNEPPX_tls13_client_hello_init(&ch2), 0);
+    EXPECT_NE(memcmp(ch1.random, ch2.random, sizeof(ch1.random)), 0)
+        << "M-10: TLS ClientHello randomness must be fresh";
+
+    SNEPPXNoiseHandshake nh1;
+    SNEPPXNoiseHandshake nh2;
+    ASSERT_EQ(SNEPPX_noise_init(&nh1, 0, 1), 0);
+    ASSERT_EQ(SNEPPX_noise_init(&nh2, 0, 1), 0);
+    EXPECT_NE(memcmp(nh1.e, nh2.e, sizeof(nh1.e)), 0)
+        << "M-10: Noise ephemeral keys must be fresh";
+
+    SNEPPXWireGuardSession wg1;
+    SNEPPXWireGuardSession wg2;
+    ASSERT_EQ(SNEPPX_wireguard_init(&wg1), 0);
+    ASSERT_EQ(SNEPPX_wireguard_init(&wg2), 0);
+    EXPECT_NE(memcmp(wg1.private_key, wg2.private_key, sizeof(wg1.private_key)), 0)
+        << "M-10: WireGuard keys must be fresh";
 }

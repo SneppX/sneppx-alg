@@ -1,4 +1,5 @@
 #include "s4_extensions.h"
+#include "cryptographic_random_generator.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -176,8 +177,8 @@ int SNEPPX_tls13_client_hello_init(SNEPPXTLS13ClientHello* ch)
     if (!ch)
         return -1;
     memset(ch, 0, sizeof(*ch));
-    for (int i = 0; i < 32; i++)
-        ch->random[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(ch->random, sizeof(ch->random)) != 0)
+        return -1;
     ch->cipher_suites[0] = 0x1301;
     ch->cipher_suites[1] = 0x1302;
     ch->cipher_suites[2] = 0x1303;
@@ -281,8 +282,8 @@ int SNEPPX_tls13_init_server(SNEPPXTLS13Session* sess, const uint8_t* cert_der, 
     if (!sess || !cert_der || !key_der || cert_len == 0 || key_len == 0)
         return -1;
     memset(sess, 0, sizeof(*sess));
-    for (int i = 0; i < 32; i++)
-        sess->server_random[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(sess->server_random, sizeof(sess->server_random)) != 0)
+        return -1;
     sess->handshake_complete = 0;
     /* sess->cert_sel = 1; */ /* not in SNEPPXTLS13Session */
     uint8_t tmp[64];
@@ -463,11 +464,9 @@ int SNEPPX_noise_init(SNEPPXNoiseHandshake* nh, int pattern, int initiator)
     nh->pattern = pattern;
     nh->initiator = initiator;
     nh->step = 0;
-    for (int i = 0; i < 32; i++)
-    {
-        nh->e[i] = (uint8_t) (rand() % 256);
-        nh->s[i] = (uint8_t) (rand() % 256);
-    }
+    if (SNEPPX_random_bytes(nh->e, sizeof(nh->e)) != 0 ||
+        SNEPPX_random_bytes(nh->s, sizeof(nh->s)) != 0)
+        return -1;
     g_noise_transport_phase = 0;
     g_noise_chaining_set = 0;
     memset(g_noise_chaining_key, 0, 32);
@@ -703,7 +702,8 @@ int SNEPPX_quic_conn_init(SNEPPXQUICConn* qc)
     if (!qc)
         return -1;
     memset(qc, 0, sizeof(*qc));
-    qc->connection_id = rand() % 100000;
+    if (SNEPPX_random_uniform_checked(100000, &qc->connection_id) != 0)
+        return -1;
     qc->stream_count = 0;
     for (int i = 0; i < 16; i++)
     {
@@ -733,7 +733,12 @@ int SNEPPX_quic_conn_handshake(SNEPPXQUICConn* qc, const uint8_t* params, size_t
     }
     qc->connection_id ^= 0xa5a5a5a5;
     if (qc->connection_id == 0)
-        qc->connection_id = rand() % 100000 + 1;
+    {
+        uint32_t fresh_id = 0;
+        if (SNEPPX_random_uniform_checked(99999, &fresh_id) != 0)
+            return -1;
+        qc->connection_id = fresh_id + 1;
+    }
     qc->established = 1;
     return 0;
 }
@@ -1033,8 +1038,8 @@ int SNEPPX_mtls_get_peer_cert(uint8_t* cert_out, size_t cert_len)
         memcpy(cert_out, g_peer_cert_buffer, copy_len);
         return (int) copy_len;
     }
-    for (size_t i = 0; i < cert_len; i++)
-        cert_out[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(cert_out, cert_len) != 0)
+        return -1;
     return (int) cert_len;
 }
 
@@ -1355,8 +1360,8 @@ int SNEPPX_ct_verify_all_scts(const uint8_t* cert, size_t cert_len, uint8_t* res
     {
         results[i] = 0;
         uint8_t sct_stub[64];
-        for (int j = 0; j < 13; j++)
-            sct_stub[j] = (uint8_t) (rand() % 256);
+        if (SNEPPX_random_bytes(sct_stub, 13) != 0)
+            return -1;
         sct_stub[0] = 0;
         uint64_t ts = (uint64_t) time(NULL) * 1000;
         for (int j = 0; j < 8; j++)
@@ -1448,8 +1453,8 @@ int SNEPPX_wireguard_init(SNEPPXWireGuardSession* wg)
     if (!wg)
         return -1;
     memset(wg, 0, sizeof(*wg));
-    for (int i = 0; i < 32; i++)
-        wg->private_key[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(wg->private_key, sizeof(wg->private_key)) != 0)
+        return -1;
     wg->established = 0;
     /* wg->rx_bytes = 0; */ /* not in SNEPPXWireGuardSession */
     /* wg->tx_bytes = 0; */ /* not in SNEPPXWireGuardSession */
@@ -1664,7 +1669,6 @@ int SNEPPX_ip_blocklist_get_count(SNEPPXIPBlocklist* bl)
  */
 int SNEPPX_nids_init(void)
 {
-    srand((unsigned int) time(NULL));
     g_nids_packet_count = 0;
     g_nids_alert_count = 0;
     g_nids_alert_timestamp = 0;
@@ -1870,8 +1874,8 @@ int SNEPPX_traffic_pad(uint8_t* data, size_t* len, size_t max_len, size_t block_
     size_t padded = ((*len + block_size - 1) / block_size) * block_size;
     if (padded > max_len)
         return -1;
-    for (size_t i = *len; i < padded; i++)
-        data[i] = (uint8_t) (rand() % 256);
+    if (padded > *len && SNEPPX_random_bytes(data + *len, padded - *len) != 0)
+        return -1;
     *len = padded;
     return 0;
 }
@@ -1889,8 +1893,8 @@ int SNEPPX_traffic_pad_to(uint8_t* data, size_t* len, size_t max, size_t target_
 {
     if (!data || !len || target_size > max || *len > target_size)
         return -1;
-    for (size_t i = *len; i < target_size; i++)
-        data[i] = (uint8_t) (rand() % 256);
+    if (target_size > *len && SNEPPX_random_bytes(data + *len, target_size - *len) != 0)
+        return -1;
     *len = target_size;
     return 0;
 }
@@ -1913,12 +1917,17 @@ int SNEPPX_traffic_mtu_obfuscate(uint8_t* data, size_t* len, size_t max, size_t 
     for (size_t off = 0; off < orig;)
     {
         size_t chunk = (orig - off > mtu) ? mtu : (orig - off);
-        size_t pad = (size_t) (rand() % (mtu - chunk + 1));
+        size_t bound = mtu - chunk + 1;
+        uint32_t pad32 = 0;
+        if (bound > UINT32_MAX ||
+            SNEPPX_random_uniform_checked((uint32_t) bound, &pad32) != 0)
+            return -1;
+        size_t pad = (size_t) pad32;
         size_t seg = chunk + pad;
         if (total + seg > max)
             break;
-        for (size_t i = chunk; i < seg; i++)
-            data[total + i] = (uint8_t) (rand() % 256);
+        if (pad && SNEPPX_random_bytes(data + total + chunk, pad) != 0)
+            return -1;
         if (off != 0)
         {
             for (size_t i = 0; i < chunk; i++)
@@ -2160,8 +2169,9 @@ int SNEPPX_grpc_auth_renew(SNEPPXGRPCAuth* ga)
 {
     if (!ga)
         return -1;
-    for (size_t i = 0; i < ga->token_len && i < sizeof(ga->token); i++)
-        ga->token[i] = (uint8_t) (rand() % 256);
+    size_t token_len = ga->token_len < sizeof(ga->token) ? ga->token_len : sizeof(ga->token);
+    if (token_len && SNEPPX_random_bytes(ga->token, token_len) != 0)
+        return -1;
     return 0;
 }
 
