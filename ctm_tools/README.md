@@ -67,19 +67,36 @@ check `schema_version` before assuming future fields are compatible.
 
 ## Utility tools
 
-Five additional Python tools share `ctm.py`'s inclusion filters:
+The unified scanner and ten focused additional tools share `ctm.py`'s inclusion
+filters:
 
-| Tool | Purpose |
-|---|---|
-| `py/ctm_count_functions.py` | Heuristic function-definition counts by language |
-| `py/ctm_count_headers.py` | C/C++ header and source file counts |
-| `py/ctm_diff_loc.py` | Per-language LOC/bytes delta between two trees |
-| `py/ctm_list_large_files.py` | Largest included files with human-readable sizes |
-| `py/ctm_recent_files.py` | Most recently modified included files |
+| Tool | Entry point | Purpose |
+|---|---|---|
+| `py/ctm.py` | `sneppx-ctm` | Unified scanner: files, dirs, LOC, bytes, languages, skips |
+| `py/ctm_count_functions.py` | `sneppx-ctm-functions` | Heuristic function-definition counts by language |
+| `py/ctm_count_headers.py` | `sneppx-ctm-headers` | C/C++ header and source file counts |
+| `py/ctm_diff_loc.py` | `sneppx-ctm-diff` | Per-language LOC/bytes delta between two trees |
+| `py/ctm_list_large_files.py` | `sneppx-ctm-large` | Largest included files with human-readable sizes |
+| `py/ctm_recent_files.py` | `sneppx-ctm-recent` | Most recently modified included files |
+| `py/ctm_todo_scan.py` | `sneppx-ctm-todo` | TODO/FIXME/HACK/XXX marker scan |
+| `py/ctm_doc_links.py` | `sneppx-ctm-links` | Relative Markdown link checker |
+| `py/ctm_duplicate_files.py` | `sneppx-ctm-duplicates` | Byte-identical file duplicate detection |
+| `py/ctm_churn.py` | `sneppx-ctm-churn` | Git-history change frequency per file |
+| `py/ctm_license_inventory.py` | `sneppx-ctm-license` | SPDX/heuristic license header + manifest inventory |
+| `py/ctm_schema_check.py` | `sneppx-ctm-schema` | Validate CTM JSON reports against schema v1 |
+| `py/ctm_encoding_report.py` | `sneppx-ctm-encoding` | BOM / invalid-UTF-8 / newline-style report |
+| `py/ctm_ignore_audit.py` | `sneppx-ctm-ignore` | Explain why files are excluded by the default filters |
+| `py/ctm_trend.py` | `sneppx-ctm-trend` | Record and chart successive CTM JSON reports |
 
-Each accepts a root directory, `--format text|json|csv`, `--output`, and
-`--include-other-text` where applicable. Their counts are filesystem telemetry,
-not semantic analysis; function counting is a conservative text heuristic.
+The console scripts are registered in `pyproject.toml` under
+`[project.scripts]` and point at the `ctm_tools.py` import package
+(`ctm_tools.py.<module>:main`). The tools also run directly from source via
+`python ctm_tools/py/<tool>.py ...`.
+
+Each accepts a root directory, `--format text|json|csv` (plus `html` for the
+unified scanner), `--output`, and `--include-other-text` where applicable. Their
+counts are filesystem telemetry, not semantic analysis; function counting is a
+conservative text heuristic.
 
 ## Regression tests
 

@@ -57,6 +57,20 @@ CUDA and other optional backends are not required for a basic CPU build. See the
 
 The [SneppX-OV project website](https://sneppx.github.io/sneppxov/) provides source-linked catalogues and a project overview.
 
+## Codebase telemetry
+
+The repository ships a dependency-free codebase telemetry & metrics (CTM) CLI:
+
+```bash
+sneppx-ctm .
+sneppx-ctm . --format json --output ctm-report.json
+```
+
+It reports per-language LOC/bytes, skips generated and binary content, and
+exposes console scripts such as `sneppx-ctm-functions`, `sneppx-ctm-large`, and
+`sneppx-ctm-todo`. See the [CTM tools documentation](docs/tools/ctm-tools.md)
+and the [CTM guide](ctm_tools/README.md) for the full surface.
+
 ## Security
 
 Security-related components have different implementation and validation levels. They have not all received independent security audits or certification. Review the [security documentation](docs/security_layers.md) and the relevant tests before deployment.
