@@ -647,7 +647,9 @@ class S5RLHFSafety:
         noise = self._inv_noise if noise is None else noise
         clip = self._inv_clip if clip is None else clip
         if _HAS_C_S5:
-            out = np.empty_like(g)
+            # The C function mutates its input buffer and takes four arguments;
+            # the old five-argument call returned an uninitialized output.
+            out = np.ascontiguousarray(g, dtype=np.float64).copy()
             _LIB.SNEPPX_model_inversion_defend_gradients.argtypes = [
                 ctypes.POINTER(ctypes.c_double),
                 ctypes.c_size_t,
@@ -655,13 +657,16 @@ class S5RLHFSafety:
                 ctypes.c_double,
             ]
             _LIB.SNEPPX_model_inversion_defend_gradients.restype = ctypes.c_int
-            _LIB.SNEPPX_model_inversion_defend_gradients(
-                g.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-                g.size,
+            rc = _LIB.SNEPPX_model_inversion_defend_gradients(
+                out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                out.size,
                 noise,
                 clip,
-                out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             )
+            if rc != 0:
+                raise RuntimeError(
+                    f"SNEPPX_model_inversion_defend_gradients failed with status {rc}"
+                )
             return out
         return _py_model_inversion_apply(g, noise, clip)
 

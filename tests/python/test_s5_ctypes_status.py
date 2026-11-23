@@ -14,6 +14,32 @@ def _use_fake_lib(monkeypatch, lib):
     monkeypatch.setattr(s5, "_LIB", lib)
 
 
+def test_model_inversion_uses_in_place_c_output(monkeypatch):
+    lib = Mock()
+
+    def fake_defend(gradients, count, _noise, _clip):
+        assert count == 2
+        ctypes.memmove(gradients, (ctypes.c_double * 2)(7.0, 8.0), 16)
+        return 0
+
+    lib.SNEPPX_model_inversion_defend_gradients = Mock(side_effect=fake_defend)
+    _use_fake_lib(monkeypatch, lib)
+
+    out = s5.S5RLHFSafety().model_inversion_defense(np.array([1.0, 2.0]))
+    assert np.allclose(out, [7.0, 8.0])
+    lib.SNEPPX_model_inversion_defend_gradients.assert_called_once()
+    assert len(lib.SNEPPX_model_inversion_defend_gradients.call_args.args) == 4
+
+
+def test_model_inversion_fails_closed_on_error(monkeypatch):
+    lib = Mock()
+    lib.SNEPPX_model_inversion_defend_gradients = Mock(return_value=-1)
+    _use_fake_lib(monkeypatch, lib)
+
+    with pytest.raises(RuntimeError, match="model_inversion"):
+        s5.S5RLHFSafety().model_inversion_defense(np.array([1.0, 2.0]))
+
+
 def test_membership_defense_fails_closed_on_error(monkeypatch):
     lib = Mock()
     lib.SNEPPX_membership_inference_defense_apply = Mock(return_value=-1)
