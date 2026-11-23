@@ -90,6 +90,28 @@ def test_asgd_average_tracks_pytorch_reference():
     assert np.allclose(opt.state[0]["ax"], [ref_ax], atol=1e-9)
 
 
+def test_optimizer_state_dict_restores_param_groups():
+    p1 = _make_param(np.array([1.0]))
+    p2 = _make_param(np.array([2.0]))
+    opt = optim.SGD(
+        [
+            {"params": [p1], "lr": 0.5, "weight_decay": 0.01},
+            {"params": [p2], "lr": 0.01},
+        ],
+        lr=0.1,
+    )
+    sd = opt.state_dict()
+    assert [g["lr"] for g in sd["param_groups"]] == [0.5, 0.01]
+
+    # Simulate a corrupted live optimizer and restore the saved group settings.
+    for group in opt.param_groups:
+        group["lr"] = 999.0
+        group["weight_decay"] = 999.0
+    opt.load_state_dict(sd)
+    assert [g["lr"] for g in opt.param_groups] == [0.5, 0.01]
+    assert opt.param_groups[0]["weight_decay"] == 0.01
+
+
 def test_param_groups_apply_distinct_lrs():
     rng = np.random.default_rng(8)
     p_fast = _make_param(rng.standard_normal((3,)))

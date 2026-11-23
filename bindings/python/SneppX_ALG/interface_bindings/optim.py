@@ -97,11 +97,23 @@ class Optimizer:
             "weight_decay": self.weight_decay,
             "state": state_copy,
             "param_count": len(self.params),
+            # Per-group hyperparameters (lr, weight_decay, betas, ...) must be
+            # restored too, otherwise a saved checkpoint reopens with stale
+            # group settings that silently override the top-level values.
+            "param_groups": [
+                {k: v for k, v in group.items() if k != "params"}
+                for group in self.param_groups
+            ],
         }
 
     def load_state_dict(self, state_dict: dict):
         self.lr = state_dict.get("lr", self.lr)
         self.weight_decay = state_dict.get("weight_decay", self.weight_decay)
+        saved_groups = state_dict.get("param_groups", [])
+        for group, saved in zip(self.param_groups, saved_groups):
+            for k, v in saved.items():
+                if k != "params":
+                    group[k] = v
         restored = state_dict.get("state", [])
         for i, s in enumerate(restored):
             if i < len(self.state):
