@@ -2,9 +2,7 @@
 
 import sys, os
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings import (
     KeyVault,
@@ -66,13 +64,35 @@ def test_kv_wrap_unwrap():
     assert unwrapped == kv.get_key("target")
 
 
+def test_kv_wrap_fails_closed_without_wrapping_key():
+    kv = KeyVault()
+    kv.generate_key("target")
+    # No "wrapper" key: must not XOR with fresh random bytes.
+    assert kv.wrap_key("target", "wrapper") is None
+
+
+def test_kv_unwrap_rejects_tampered_blob():
+    kv = KeyVault()
+    target = kv.generate_key("target")
+    kv.generate_key("wrapper")
+    wrapped = bytearray(kv.wrap_key("target", "wrapper"))
+    assert bytes(wrapped) != target
+    wrapped[-1] ^= 0x01
+    assert kv.unwrap_key(bytes(wrapped), "wrapper") is None
+
+
+def test_kv_wrap_uses_fresh_nonce():
+    kv = KeyVault()
+    kv.generate_key("target")
+    kv.generate_key("wrapper")
+    assert kv.wrap_key("target", "wrapper") != kv.wrap_key("target", "wrapper")
+
+
 def _audit_logger():
     import tempfile
 
     tmpdir = tempfile.mkdtemp()
-    backend = FileAuditBackend(
-        log_dir=tmpdir, max_file_size=10 * 1024 * 1024, compress=False
-    )
+    backend = FileAuditBackend(log_dir=tmpdir, max_file_size=10 * 1024 * 1024, compress=False)
     return AuditLogger(backends=[backend]), tmpdir
 
 
