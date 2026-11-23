@@ -111,11 +111,9 @@ static int transport_derive_aad_nonce(const uint8_t base_nonce[SNEPPX_TLS_NONCE_
 
 static int transport_compute_aad_tag(const uint8_t key[SNEPPX_TLS_KEY_LEN], uint64_t sequence,
                                      const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], const uint8_t* aad, size_t aad_len,
-                                     const uint8_t* ciphertext, size_t len,
-                                     uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN])
+                                     const uint8_t* ciphertext, size_t len, uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN])
 {
-    static const uint8_t domain[16] = {'S', 'N', 'E', 'P', 'P', 'X', '-', 'A',
-                                       'E', 'A', 'D', '-', 'V', '1', 0,   0};
+    static const uint8_t domain[16] = {'S', 'N', 'E', 'P', 'P', 'X', '-', 'A', 'E', 'A', 'D', '-', 'V', '1', 0, 0};
     const size_t fixed = sizeof(domain) + 8 + SNEPPX_TLS_NONCE_LEN + 8 + 8;
     if (aad_len > SIZE_MAX - fixed)
         return -1;
@@ -597,9 +595,9 @@ int SNEPPX_transport_encrypt_with_aad(SNEPPXTransportSecurity* ts, int session_i
 /**
  * @brief Perform Transport Decrypt With Aad.
  */
-int SNEPPX_transport_decrypt_with_aad(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext, size_t len,
-                                       const uint8_t* aad, size_t aad_len,
-                                       const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t* plaintext)
+int SNEPPX_transport_decrypt_with_aad(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext,
+                                      size_t len, const uint8_t* aad, size_t aad_len,
+                                      const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t* plaintext)
 {
     if (!ts || !ciphertext || !plaintext || !nonce)
         return -1;

@@ -127,8 +127,7 @@ extern "C"
      */
     int SNEPPX_transport_encrypt_aead(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* plaintext, size_t len,
                                       const uint8_t* aad, size_t aad_len, uint8_t* ciphertext,
-                                      uint8_t nonce[SNEPPX_TLS_NONCE_LEN],
-                                      uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN]);
+                                      uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN]);
     /**
      * @brief Decrypt with associated data and verify the HMAC-SHA256 tag.
      */
