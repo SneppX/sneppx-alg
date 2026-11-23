@@ -19,6 +19,7 @@ import ctm_doc_links  # noqa: E402
 import ctm_duplicate_files  # noqa: E402
 import ctm_churn  # noqa: E402
 import ctm_license_inventory  # noqa: E402
+import ctm_schema_check  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -220,3 +221,29 @@ def test_license_inventory_finds_spdx_and_manifests(tmp_path):
     assert report["manifests"] == ["pyproject.toml"]
     assert report["license_files"] == ["LICENSE"]
     assert report["files"][0]["path"] == "a.py"
+
+
+def test_schema_check_accepts_scan_output_and_rejects_tampering(tmp_path):
+    import ctm
+
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    payload = ctm.scan(tmp_path)
+    assert ctm_schema_check.validate(payload) == []
+
+    bad = json.loads(json.dumps(payload))
+    bad["schema_version"] = 2
+    bad["files"] = 999
+    errors = ctm_schema_check.validate(bad)
+    assert any("schema_version" in error for error in errors)
+    assert any("languages sum of files" in error for error in errors)
+
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(payload), encoding="utf-8")
+    result = ctm_schema_check.check_files([report_path])
+    assert result == {
+        "tool": "ctm_schema_check",
+        "reports": 1,
+        "valid": 1,
+        "invalid": 0,
+        "results": [{"path": str(report_path.resolve()), "valid": True, "errors": []}],
+    }
