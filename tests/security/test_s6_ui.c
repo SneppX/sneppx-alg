@@ -114,8 +114,7 @@ TEST(test_s6_ui, csprng_backed_secrets)
     size_t lens_b[3];
     ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_a, lens_a), 0);
     ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_b, lens_b), 0);
-    EXPECT_NE(memcmp(shares_a[0], shares_b[0], lens_a[0]), 0)
-        << "M-10: Shamir coefficients must be CSPRNG-generated";
+    EXPECT_NE(memcmp(shares_a[0], shares_b[0], lens_a[0]), 0) << "M-10: Shamir coefficients must be CSPRNG-generated";
     for (int i = 0; i < 3; i++)
     {
         free(shares_a[i]);
@@ -135,6 +134,5 @@ TEST(test_s6_ui, csprng_backed_secrets)
     uint8_t key2[32];
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc1, key1, sizeof(key1)), 0);
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc2, key2, sizeof(key2)), 0);
-    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0)
-        << "M-10: ceremony keys must be CSPRNG-generated";
+    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0) << "M-10: ceremony keys must be CSPRNG-generated";
 }
