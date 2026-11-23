@@ -58,8 +58,7 @@ static void test_manifest_digest_is_content_derived(void)
     container_manifest_t parsed;
     SX_ASSERT(SNEPPX_container_parse_manifest(manifest, strlen((const char*) manifest), &parsed) == 0,
               "parse manifest without trailing NUL");
-    SX_ASSERT(strcmp(parsed.digest,
-                     "sha256:1c6814dabf1efebbdb79879efd346f054f55160f03eaa620b78c97df7e4f6f66") == 0,
+    SX_ASSERT(strcmp(parsed.digest, "sha256:1c6814dabf1efebbdb79879efd346f054f55160f03eaa620b78c97df7e4f6f66") == 0,
               "digest follows manifest bytes");
     SX_ASSERT(parsed.size == strlen((const char*) manifest), "size follows input length");
 }
