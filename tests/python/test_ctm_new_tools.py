@@ -30,7 +30,9 @@ def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
         encoding="utf-8",
     )
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "ignored.py").write_text("def nope(): pass\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "ignored.py").write_text(
+        "def nope(): pass\n", encoding="utf-8"
+    )
 
     report = ctm_count_functions.count_functions(tmp_path)
 
@@ -43,7 +45,9 @@ def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
 
 def test_count_headers_classifies_headers_and_sources(tmp_path):
     (tmp_path / "src").mkdir()
-    (tmp_path / "src" / "a.c").write_text("int main(void) { return 0; }\n", encoding="utf-8")
+    (tmp_path / "src" / "a.c").write_text(
+        "int main(void) { return 0; }\n", encoding="utf-8"
+    )
     (tmp_path / "src" / "b.h").write_text("#pragma once\n", encoding="utf-8")
     (tmp_path / "src" / "c.hpp").write_text("#pragma once\n", encoding="utf-8")
     (tmp_path / "notes.py").write_text("x = 1\n", encoding="utf-8")
@@ -142,7 +146,9 @@ def test_todo_scan_finds_markers_with_line_numbers(tmp_path):
         "# TODO: add tests\n# FIXME: handle None\nx = 1  # HACK\n", encoding="utf-8"
     )
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "b.py").write_text("# TODO ignored\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "b.py").write_text(
+        "# TODO ignored\n", encoding="utf-8"
+    )
 
     report = ctm_todo_scan.todo_scan(tmp_path)
 
@@ -165,4 +171,6 @@ def test_doc_links_flags_missing_relative_targets_only(tmp_path):
 
     assert report["links_checked"] == 3
     assert report["broken"] == 1
-    assert report["issues"] == [{"path": "docs/index.md", "line": 2, "target": "./missing.md"}]
+    assert report["issues"] == [
+        {"path": "docs/index.md", "line": 2, "target": "./missing.md"}
+    ]

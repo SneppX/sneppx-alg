@@ -49,7 +49,9 @@ def _patterns(language: str) -> tuple[re.Pattern[str], ...]:
     return ()
 
 
-def count_functions(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
+def count_functions(
+    root: str | Path, include_other_text: bool = False
+) -> dict[str, Any]:
     """Count heuristic function definitions using ctm.py's file filters."""
     by_language: dict[str, int] = defaultdict(int)
     by_file: list[dict[str, Any]] = []
@@ -70,7 +72,9 @@ def count_functions(root: str | Path, include_other_text: bool = False) -> dict[
                         break
         if count:
             by_language[language] += count
-            by_file.append({"path": path.relative_to(base).as_posix(), "functions": count})
+            by_file.append(
+                {"path": path.relative_to(base).as_posix(), "functions": count}
+            )
     by_file.sort(key=lambda item: (-item["functions"], item["path"]))
     return {
         "tool": "ctm_count_functions",
@@ -100,12 +104,16 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"Files scanned: {report['files_scanned']}",
         f"Functions (heuristic): {report['functions']}",
     ]
-    lines.extend(f"  {language}: {count}" for language, count in report["by_language"].items())
+    lines.extend(
+        f"  {language}: {count}" for language, count in report["by_language"].items()
+    )
     return "\n".join(lines) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Count function definitions heuristically")
+    parser = argparse.ArgumentParser(
+        description="Count function definitions heuristically"
+    )
     parser.add_argument("root", nargs="?", default=".")
     parser.add_argument("--format", choices=("text", "json", "csv"), default="text")
     parser.add_argument("--output")
