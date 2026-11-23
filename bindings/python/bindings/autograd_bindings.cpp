@@ -108,11 +108,24 @@ class PyVariable
     }
     PyTensor get_data() const
     {
-        return PyTensor(ptr->data, false);
+        /* M-26: a recorded variable is owned by the tape, not by this python
+         * wrapper. Return an owning deep copy so a NumPy view (which keeps the
+         * returned PyTensor alive) cannot outlive the tape's storage. */
+        if (!ptr || !ptr->data)
+            return PyTensor();
+        SNEPPXTensor* copy = SNEPPX_tensor_clone(ptr->data);
+        if (!copy)
+            throw std::runtime_error("SNEPPX_tensor_clone failed for variable data");
+        return PyTensor(copy);
     }
     PyTensor get_grad() const
     {
-        return ptr->grad ? PyTensor(ptr->grad, false) : PyTensor();
+        if (!ptr || !ptr->grad)
+            return PyTensor();
+        SNEPPXTensor* copy = SNEPPX_tensor_clone(ptr->grad);
+        if (!copy)
+            throw std::runtime_error("SNEPPX_tensor_clone failed for variable grad");
+        return PyTensor(copy);
     }
     int get_requires_grad() const
     {
