@@ -19,7 +19,9 @@ _LIB, _HAS_C = load_library("neural_security_c")
 class AuditLogger:
     """Security event audit logging with tamper-evident chain."""
 
-    def __init__(self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None):
+    def __init__(
+        self, log_path: Optional[str] = None, hmac_key: Optional[bytes] = None
+    ):
         """Create an audit logger.
 
         ``hmac_key`` (or ``SNEPPX_AUDIT_HMAC_KEY``) is a secret held outside

@@ -79,7 +79,8 @@ def render(report: dict[str, Any], fmt: str) -> str:
     lines = [f"CTM marker scan: {report['root']}", f"Total: {report['total']}"]
     lines.extend(f"  {kind}: {count}" for kind, count in report["counts"].items())
     lines.extend(
-        f"  {item['path']}:{item['line']} {item['text']}" for item in report["occurrences"]
+        f"  {item['path']}:{item['line']} {item['text']}"
+        for item in report["occurrences"]
     )
     return "\n".join(lines) + "\n"
 

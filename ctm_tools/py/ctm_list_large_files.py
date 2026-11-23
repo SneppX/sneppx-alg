@@ -26,7 +26,9 @@ def human_size(size: int) -> str:
     return f"{value:.1f} TiB"  # pragma: no cover - unreachable
 
 
-def list_large_files(root: str | Path = ".", min_size: int = 0, limit: int = 20) -> dict[str, Any]:
+def list_large_files(
+    root: str | Path = ".", min_size: int = 0, limit: int = 20
+) -> dict[str, Any]:
     """Return the largest files, smallest threshold 0, sorted by size."""
     report = ctm_find_large_files.find_large_files(root, min_size=min_size, limit=limit)
     for item in report["files"]:
