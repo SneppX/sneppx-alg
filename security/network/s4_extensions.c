@@ -464,8 +464,7 @@ int SNEPPX_noise_init(SNEPPXNoiseHandshake* nh, int pattern, int initiator)
     nh->pattern = pattern;
     nh->initiator = initiator;
     nh->step = 0;
-    if (SNEPPX_random_bytes(nh->e, sizeof(nh->e)) != 0 ||
-        SNEPPX_random_bytes(nh->s, sizeof(nh->s)) != 0)
+    if (SNEPPX_random_bytes(nh->e, sizeof(nh->e)) != 0 || SNEPPX_random_bytes(nh->s, sizeof(nh->s)) != 0)
         return -1;
     g_noise_transport_phase = 0;
     g_noise_chaining_set = 0;
@@ -1919,8 +1918,7 @@ int SNEPPX_traffic_mtu_obfuscate(uint8_t* data, size_t* len, size_t max, size_t 
         size_t chunk = (orig - off > mtu) ? mtu : (orig - off);
         size_t bound = mtu - chunk + 1;
         uint32_t pad32 = 0;
-        if (bound > UINT32_MAX ||
-            SNEPPX_random_uniform_checked((uint32_t) bound, &pad32) != 0)
+        if (bound > UINT32_MAX || SNEPPX_random_uniform_checked((uint32_t) bound, &pad32) != 0)
             return -1;
         size_t pad = (size_t) pad32;
         size_t seg = chunk + pad;

@@ -301,8 +301,7 @@ TEST(test_s4_network, csprng_backed_security_material)
     SNEPPXNoiseHandshake nh2;
     ASSERT_EQ(SNEPPX_noise_init(&nh1, 0, 1), 0);
     ASSERT_EQ(SNEPPX_noise_init(&nh2, 0, 1), 0);
-    EXPECT_NE(memcmp(nh1.e, nh2.e, sizeof(nh1.e)), 0)
-        << "M-10: Noise ephemeral keys must be fresh";
+    EXPECT_NE(memcmp(nh1.e, nh2.e, sizeof(nh1.e)), 0) << "M-10: Noise ephemeral keys must be fresh";
 
     SNEPPXWireGuardSession wg1;
     SNEPPXWireGuardSession wg2;
