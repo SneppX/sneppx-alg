@@ -60,7 +60,11 @@ class Blake3:
             hasher = blake3.blake3(data, key=self._key)
             return hasher.digest()
         except ImportError:
-            return hashlib.sha256(data).digest()
+            from ._blake3_pure import blake3_hash, blake3_keyed_hash
+
+            if self._key is None:
+                return blake3_hash(data)
+            return blake3_keyed_hash(self._key, data)
 
     def keyed_hash(self, key: bytes, data: bytes) -> bytes:
         b = Blake3(key=key)
@@ -74,7 +78,9 @@ class Blake3:
                 length
             )
         except ImportError:
-            return hashlib.sha256(key_material + context.encode()).digest()[:length]
+            from ._blake3_pure import blake3_derive_key
+
+            return blake3_derive_key(context, key_material, length)
 
 
 # ---- SipHash (RFC 7974) -------------------------------------------------
