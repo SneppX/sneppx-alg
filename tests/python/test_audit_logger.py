@@ -21,6 +21,7 @@ from SneppX_ALG.interface_bindings.audit_logger import (
 )
 import tempfile
 import os
+import json
 import time
 
 
@@ -123,6 +124,23 @@ def test_file_audit_backend():
             pass
 
 
+def test_file_chain_hmac_detects_payload_tampering(tmp_path):
+    key = b"out-of-log-secret"
+    backend = FileAuditBackend(str(tmp_path), compress=False, hmac_key=key)
+    logger = AuditLogger(backends=[backend], hmac_key=key)
+    logger.log(AuditAction.LOGIN, "alice", result=AuditResult.SUCCESS)
+    assert logger.verify_chain()[0] is True
+
+    log_file = next(tmp_path.glob("audit_*.log"))
+    entries = [json.loads(line) for line in log_file.read_text().splitlines()]
+    entries[0]["actor"] = "attacker"  # recomputing an unkeyed hash would pass
+    log_file.write_text("\n".join(json.dumps(e) for e in entries) + "\n")
+
+    valid, errors = logger.verify_chain()
+    assert valid is False
+    assert errors
+
+
 def test_get_audit_logger():
     logger = get_audit_logger()
     assert logger is not None
@@ -200,6 +218,6 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"  FAIL {name}: {e}")
             failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)

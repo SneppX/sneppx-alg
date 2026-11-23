@@ -15,6 +15,7 @@ import json
 import time
 import tempfile
 import hashlib
+import hmac
 import threading
 import logging
 from datetime import datetime, timedelta
@@ -27,6 +28,38 @@ from collections import deque
 import queue
 import gzip
 import shutil
+
+
+_AUDIT_KEY_ENV = "SNEPPX_AUDIT_HMAC_KEY"
+
+
+def _resolve_audit_key(hmac_key: Optional[bytes] = None) -> Optional[bytes]:
+    """Resolve the out-of-log HMAC key (explicit argument, then environment)."""
+    if hmac_key is not None:
+        return hmac_key
+    configured = os.environ.get(_AUDIT_KEY_ENV)
+    if not configured:
+        return None
+    try:
+        return bytes.fromhex(configured)
+    except ValueError:
+        return configured.encode("utf-8")
+
+
+def _event_digest(event_data: Dict[str, Any], hmac_key: Optional[bytes] = None) -> str:
+    """Hash an audit entry with HMAC-SHA256 when a secret key is configured.
+
+    Unkeyed SHA-256 is retained only for backwards compatibility with logs
+    written before the key was configured.
+    """
+    payload = {k: v for k, v in event_data.items() if k != "hash"}
+    data = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), default=str
+    ).encode()
+    key = _resolve_audit_key(hmac_key)
+    if key:
+        return hmac.new(key, data, hashlib.sha256).hexdigest()
+    return hashlib.sha256(data).hexdigest()
 
 
 class AuditSeverity(Enum):
@@ -239,7 +272,9 @@ class FileAuditBackend(AuditBackend):
         max_file_size: int = 100 * 1024 * 1024,  # 100MB
         max_files: int = 10,
         compress: bool = True,
+        hmac_key: Optional[bytes] = None,
     ):
+        self._hmac_key = _resolve_audit_key(hmac_key)
         self.log_dir = Path(log_dir)
         try:
             self.log_dir.mkdir(parents=True, exist_ok=True)
@@ -292,13 +327,7 @@ class FileAuditBackend(AuditBackend):
     def write(self, event: AuditEvent) -> bool:
         with self._lock:
             event.prev_hash = self._prev_hash
-            entry_data = event.to_dict()
-            # Compute hash of entry without the hash field itself
-            entry_data.pop("hash", None)
-            hash_input = json.dumps(
-                entry_data, sort_keys=True, separators=(",", ":")
-            ).encode()
-            event.hash = hashlib.sha256(hash_input).hexdigest()
+            event.hash = _event_digest(event.to_dict(), self._hmac_key)
             self._prev_hash = event.hash
 
             line = json.dumps(event.to_dict(), separators=(",", ":")) + "\n"
@@ -371,9 +400,10 @@ class FileAuditBackend(AuditBackend):
 class SyslogAuditBackend(AuditBackend):
     """Syslog audit backend."""
 
-    def __init__(self, facility: int | None = None):
+    def __init__(self, facility: int | None = None, hmac_key: Optional[bytes] = None):
         import logging.handlers
 
+        self._hmac_key = _resolve_audit_key(hmac_key)
         if facility is None:
             facility = logging.handlers.SysLogHandler.LOG_LOCAL0
         self.handler = logging.handlers.SysLogHandler(facility=facility)
@@ -385,10 +415,7 @@ class SyslogAuditBackend(AuditBackend):
 
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(
-            event.to_dict(), sort_keys=True, separators=(",", ":")
-        ).encode()
-        event.hash = hashlib.sha256(hash_input).hexdigest()
+        event.hash = _event_digest(event.to_dict(), self._hmac_key)
         self._prev_hash = event.hash
 
         self.logger.info(json.dumps(event.to_dict(), separators=(",", ":")))
@@ -411,7 +438,9 @@ class RemoteAPIAuditBackend(AuditBackend):
         timeout: int = 10,
         batch_size: int = 100,
         flush_interval: float = 5.0,
+        hmac_key: Optional[bytes] = None,
     ):
+        self._hmac_key = _resolve_audit_key(hmac_key)
         self.endpoint = endpoint
         self.api_key = api_key
         self.timeout = timeout
@@ -461,10 +490,7 @@ class RemoteAPIAuditBackend(AuditBackend):
 
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(
-            event.to_dict(), sort_keys=True, separators=(",", ":")
-        ).encode()
-        event.hash = hashlib.sha256(hash_input).hexdigest()
+        event.hash = _event_digest(event.to_dict(), self._hmac_key)
         self._prev_hash = event.hash
 
         with self._lock:
@@ -488,7 +514,9 @@ class DatabaseAuditBackend(AuditBackend):
         self,
         connection_string: str,
         table_name: str = "audit_log",
+        hmac_key: Optional[bytes] = None,
     ):
+        self._hmac_key = _resolve_audit_key(hmac_key)
         self.connection_string = connection_string
         self.table_name = table_name
         self._conn = None
@@ -541,10 +569,7 @@ class DatabaseAuditBackend(AuditBackend):
 
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash
-        hash_input = json.dumps(
-            event.to_dict(), sort_keys=True, separators=(",", ":")
-        ).encode()
-        event.hash = hashlib.sha256(hash_input).hexdigest()
+        event.hash = _event_digest(event.to_dict(), self._hmac_key)
         self._prev_hash = event.hash
 
         import sqlite3
@@ -656,7 +681,9 @@ class AuditLogger:
         backends: Optional[List[AuditBackend]] = None,
         default_severity: AuditSeverity = AuditSeverity.INFO,
         default_result: AuditResult = AuditResult.SUCCESS,
+        hmac_key: Optional[bytes] = None,
     ):
+        self._hmac_key = _resolve_audit_key(hmac_key)
         self.backends = backends or []
         self.default_severity = default_severity
         self.default_result = default_result
@@ -916,13 +943,9 @@ class AuditLogger:
                     f"Hash chain broken at {event.event_id}: "
                     f"expected prev_hash={prev_hash}, got {event.prev_hash}"
                 )
-            # Verify event hash
-            event_data = event.to_dict()
-            event_data.pop("hash", None)
-            computed = hashlib.sha256(
-                json.dumps(event_data, sort_keys=True, separators=(",", ":")).encode()
-            ).hexdigest()
-            if computed != event.hash:
+            # Verify event hash with the same out-of-log key used when writing.
+            computed = _event_digest(event.to_dict(), self._hmac_key)
+            if not hmac.compare_digest(computed, event.hash):
                 errors.append(f"Event hash mismatch for {event.event_id}")
             prev_hash = event.hash
 
