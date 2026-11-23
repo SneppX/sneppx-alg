@@ -45,7 +45,9 @@ LICENSE_FILES = {"license", "license.txt", "license.md", "copying", "copying.txt
 HEADER_LINES = 40
 
 
-def license_inventory(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
+def license_inventory(
+    root: str | Path, include_other_text: bool = False
+) -> dict[str, Any]:
     """Report SPDX/heuristic license headers and dependency manifests."""
     base = Path(root).expanduser().resolve()
     by_spdx: dict[str, int] = defaultdict(int)
@@ -110,7 +112,9 @@ def render(report: dict[str, Any], fmt: str) -> str:
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["path", "spdx", "heuristic"])
         for item in report["files"]:
-            writer.writerow([item["path"], ",".join(item["spdx"]), ",".join(item["heuristic"])])
+            writer.writerow(
+                [item["path"], ",".join(item["spdx"]), ",".join(item["heuristic"])]
+            )
         return stream.getvalue()
     lines = [
         f"CTM license inventory: {report['root']}",
@@ -118,14 +122,18 @@ def render(report: dict[str, Any], fmt: str) -> str:
         f"Files with license header: {report['files_with_license_header']}",
     ]
     lines.extend(f"  SPDX {name}: {count}" for name, count in report["by_spdx"].items())
-    lines.extend(f"  heuristic {name}: {count}" for name, count in report["by_heuristic"].items())
+    lines.extend(
+        f"  heuristic {name}: {count}" for name, count in report["by_heuristic"].items()
+    )
     lines.append(f"  license files: {', '.join(report['license_files']) or 'n/a'}")
     lines.append(f"  manifests: {', '.join(report['manifests']) or 'n/a'}")
     return "\n".join(lines) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Inventory license headers and manifests")
+    parser = argparse.ArgumentParser(
+        description="Inventory license headers and manifests"
+    )
     parser.add_argument("root", nargs="?", default=".")
     parser.add_argument("--format", choices=("text", "json", "csv"), default="text")
     parser.add_argument("--output")
