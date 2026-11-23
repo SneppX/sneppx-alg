@@ -31,7 +31,9 @@ def recent_files(
             {
                 "path": path.relative_to(base).as_posix(),
                 "bytes": stat.st_size,
-                "modified": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+                "modified": datetime.fromtimestamp(
+                    stat.st_mtime, timezone.utc
+                ).isoformat(),
                 "_mtime": stat.st_mtime,
             }
         )
