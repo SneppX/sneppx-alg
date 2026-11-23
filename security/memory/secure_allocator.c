@@ -20,6 +20,7 @@
 #define SNEPPX_SECURE_GUARD_MAGIC 0x414E58
 #define SNEPPX_SECURE_QUARANTINE_SIZE 64
 #define SNEPPX_SECURE_FREED_SET_SIZE 1024
+#define SNEPPX_SECURE_FREED_SET_DELETED ((void*) 1)
 #define SNEPPX_SECURE_FREELIST_CANARY ((uint64_t) 0xDEADFEEE)
 
 #define SNEPPX_SMALL_OBJECT_MAX 64
@@ -152,6 +153,15 @@ static int secure_layout(size_t bytes, size_t guard_front, size_t guard_back, si
     return 0;
 }
 
+static void release_region(void* base, size_t total_with_guards)
+{
+#ifdef _WIN32
+    VirtualFree(base, 0, MEM_RELEASE);
+#else
+    munmap(base, total_with_guards);
+#endif
+}
+
 static uint32_t freed_set_hash(void* ptr)
 {
     return (uint32_t) (((uintptr_t) ptr >> 4) % SNEPPX_SECURE_FREED_SET_SIZE);
@@ -174,15 +184,22 @@ static int freed_set_check(void* ptr)
 static void freed_set_add(void* ptr)
 {
     uint32_t idx = freed_set_hash(ptr);
+    int deleted_slot = -1;
     for (size_t i = 0; i < SNEPPX_SECURE_FREED_SET_SIZE; i++)
     {
         size_t j = (idx + (uint32_t) i) % SNEPPX_SECURE_FREED_SET_SIZE;
-        if (g_freed_set[j] == NULL || g_freed_set[j] == ptr)
+        if (g_freed_set[j] == ptr)
+            return;
+        if (g_freed_set[j] == SNEPPX_SECURE_FREED_SET_DELETED && deleted_slot < 0)
+            deleted_slot = (int) j;
+        if (g_freed_set[j] == NULL)
         {
-            g_freed_set[j] = ptr;
+            g_freed_set[(deleted_slot >= 0) ? (size_t) deleted_slot : j] = ptr;
             return;
         }
     }
+    if (deleted_slot >= 0)
+        g_freed_set[(size_t) deleted_slot] = ptr;
 }
 
 static void freed_set_remove(void* ptr)
@@ -193,7 +210,7 @@ static void freed_set_remove(void* ptr)
         size_t j = (idx + (uint32_t) i) % SNEPPX_SECURE_FREED_SET_SIZE;
         if (g_freed_set[j] == ptr)
         {
-            g_freed_set[j] = NULL;
+            g_freed_set[j] = SNEPPX_SECURE_FREED_SET_DELETED;
             return;
         }
         if (g_freed_set[j] == NULL)
@@ -206,17 +223,58 @@ static void freed_set_clear(void)
     memset(g_freed_set, 0, sizeof(g_freed_set));
 }
 
+static SNEPPXSecureAllocRecord* find_active_record(void* ptr)
+{
+    for (int i = 0; i < g_record_count; i++)
+    {
+        if (g_records[i].addr == ptr && !g_records[i].is_freed)
+            return &g_records[i];
+    }
+    return NULL;
+}
+
+static void trim_freed_records(void)
+{
+    while (g_record_count > 0 && g_records[g_record_count - 1].is_freed)
+    {
+        memset(&g_records[g_record_count - 1], 0, sizeof(g_records[0]));
+        g_record_count--;
+    }
+}
+
+static void release_record(SNEPPXSecureAllocRecord* r)
+{
+    if (!r)
+        return;
+    r->is_freed = 1;
+    trim_freed_records();
+}
+
 static int add_record(void* addr, size_t size, size_t guard_f, size_t guard_b, uint64_t canary)
 {
-    if (g_record_count >= SNEPPX_SECURE_MAX_RECORDS)
-        return -1;
-    SNEPPXSecureAllocRecord* r = &g_records[g_record_count++];
+    SNEPPXSecureAllocRecord* r = NULL;
+    for (int i = 0; i < g_record_count; i++)
+    {
+        if (g_records[i].is_freed)
+        {
+            r = &g_records[i];
+            break;
+        }
+    }
+    if (!r)
+    {
+        if (g_record_count >= SNEPPX_SECURE_MAX_RECORDS)
+            return -1;
+        r = &g_records[g_record_count++];
+    }
+
     r->addr = addr;
     r->size = size;
     r->guard_front = guard_f;
     r->guard_back = guard_b;
     r->canary = canary;
     r->is_freed = 0;
+    freed_set_remove(addr);
     return 0;
 }
 
@@ -356,6 +414,15 @@ static void small_bin_mark_free(int bin_idx, int slot)
     g_small_bins[bin_idx].bitmap[word] &= ~(1u << bit);
 }
 
+static int small_bin_is_used(int bin_idx, int slot)
+{
+    if (bin_idx < 0 || bin_idx >= SNEPPX_SMALL_BINS || slot < 0 || slot >= SNEPPX_SMALL_BIN_CAPACITY)
+        return 0;
+    int word = slot / 32;
+    int bit = slot % 32;
+    return (g_small_bins[bin_idx].bitmap[word] & (1u << bit)) != 0;
+}
+
 static int small_bin_find_free(int bin_idx)
 {
     if (bin_idx < 0 || bin_idx >= SNEPPX_SMALL_BINS)
@@ -466,12 +533,13 @@ void* SNEPPX_secure_alloc(SNEPPXSecureAllocator* alloc, size_t bytes, size_t ali
             int slot = small_bin_find_free(bin_idx);
             if (slot >= 0)
             {
-                small_bin_mark_used(bin_idx, slot);
                 void* ptr = g_small_bins[bin_idx].blocks[slot];
                 if (ptr)
                 {
+                    if (add_record(ptr, g_small_bins[bin_idx].bin_size, 0, 0, 0) != 0)
+                        return NULL;
+                    small_bin_mark_used(bin_idx, slot);
                     g_small_bins[bin_idx].count++;
-                    add_record(ptr, g_small_bins[bin_idx].bin_size, 0, 0, 0);
                     alloc->total_allocated += g_small_bins[bin_idx].bin_size;
                     alloc->num_allocations++;
                     if (alloc->total_allocated > alloc->peak_allocated)
@@ -524,6 +592,12 @@ void* SNEPPX_secure_alloc(SNEPPXSecureAllocator* alloc, size_t bytes, size_t ali
     uint64_t* canary_ptr = (uint64_t*) ((char*) ptr + total - SNEPPX_SECURE_OVERHEAD_SIZE - SNEPPX_SECURE_CANARY_SIZE);
     *canary_ptr = canary_val;
 
+    if (add_record(ptr, bytes, SNEPPX_SECURE_PAGE_SIZE, SNEPPX_SECURE_PAGE_SIZE, canary_val) != 0)
+    {
+        release_region(base, total_with_guards);
+        return NULL;
+    }
+
     if (alloc->use_guard_pages)
     {
         alloc->total_allocated += bytes;
@@ -532,7 +606,6 @@ void* SNEPPX_secure_alloc(SNEPPXSecureAllocator* alloc, size_t bytes, size_t ali
             alloc->peak_allocated = alloc->total_allocated;
     }
 
-    add_record(ptr, bytes, SNEPPX_SECURE_PAGE_SIZE, SNEPPX_SECURE_PAGE_SIZE, canary_val);
     return ptr;
 }
 
@@ -552,6 +625,15 @@ void SNEPPX_secure_free(SNEPPXSecureAllocator* alloc, void* ptr)
         {
             if (g_small_bins[i].blocks[j] == ptr)
             {
+                if (!small_bin_is_used(i, j))
+                {
+                    g_stats_num_double_free++;
+                    SNEPPXSecureAllocRecord* stale = find_active_record(ptr);
+                    if (alloc->on_overflow && stale)
+                        alloc->on_overflow(stale);
+                    return;
+                }
+                release_record(find_active_record(ptr));
                 small_bin_mark_free(i, j);
                 g_small_bins[i].count--;
                 alloc->total_allocated -= (alloc->total_allocated >= (size_t) g_small_bins[i].bin_size)
@@ -614,9 +696,10 @@ void SNEPPX_secure_free(SNEPPXSecureAllocator* alloc, void* ptr)
                     alloc->on_overflow(r);
             }
 
-            secure_scrub(ptr, r->size);
-            r->is_freed = 1;
-            alloc->total_allocated -= (alloc->total_allocated >= r->size) ? r->size : alloc->total_allocated;
+            size_t record_size = r->size;
+            secure_scrub(ptr, record_size);
+            release_record(r);
+            alloc->total_allocated -= (alloc->total_allocated >= record_size) ? record_size : alloc->total_allocated;
             g_stats_num_frees++;
             freed_set_add(ptr);
 
@@ -837,9 +920,10 @@ int SNEPPX_secure_free_quarantine(SNEPPXSecureAllocator* alloc, void* ptr)
                     alloc->on_overflow(r);
             }
 
-            secure_scrub(ptr, r->size);
-            r->is_freed = 1;
-            alloc->total_allocated -= (alloc->total_allocated >= r->size) ? r->size : alloc->total_allocated;
+            size_t record_size = r->size;
+            secure_scrub(ptr, record_size);
+            release_record(r);
+            alloc->total_allocated -= (alloc->total_allocated >= record_size) ? record_size : alloc->total_allocated;
             g_stats_num_frees++;
             freed_set_add(ptr);
 
