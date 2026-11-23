@@ -11,6 +11,7 @@ if str(PY_DIR) not in sys.path:
 import ctm_count_functions  # noqa: E402
 import ctm_count_headers  # noqa: E402
 import ctm_diff_loc  # noqa: E402
+import ctm_list_large_files  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -75,3 +76,16 @@ def test_diff_loc_reports_per_language_and_total_deltas(tmp_path):
     )
     assert report["totals"] == {"files": 1, "loc": 3, "bytes": expected_bytes}
     assert f"TOTAL,1,3,{expected_bytes}" in ctm_diff_loc.render(report, "csv")
+
+
+def test_list_large_files_sorts_and_formats_sizes(tmp_path):
+    (tmp_path / "small.bin").write_bytes(b"a" * 10)
+    (tmp_path / "large.bin").write_bytes(b"b" * 2048)
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "huge.bin").write_bytes(b"c" * 4096)
+
+    report = ctm_list_large_files.list_large_files(tmp_path, min_size=0, limit=2)
+
+    assert [item["path"] for item in report["files"]] == ["large.bin", "small.bin"]
+    assert report["files"][0]["size"] == "2.0 KiB"
+    assert "2.0 KiB  large.bin" in ctm_list_large_files.render(report, "text")
