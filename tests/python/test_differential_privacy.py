@@ -3,6 +3,7 @@
 import math
 import json
 import numpy as np
+import pytest
 from SneppX_ALG.interface_bindings import (
     Tensor,
     Linear,
@@ -59,6 +60,34 @@ def test_noise_uses_os_entropy_not_legacy_numpy_rng():
     d = GaussianMech(epsilon=1.0).apply(np.zeros(32))
     assert not np.array_equal(c, d)
     assert np.all(np.isfinite(a)) and np.all(np.isfinite(c))
+
+
+def test_dpsgd_enforces_epsilon_budget():
+    linear = Linear(2, 1)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.0),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        epsilon=1e-6,
+        delta=1e-5,
+    )
+    with pytest.raises(ValueError, match="epsilon budget"):
+        dpsgd.step([None])
+
+
+def test_dpsgd_allows_step_within_budget():
+    linear = Linear(2, 1)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.0),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        epsilon=1000.0,
+        delta=1e-5,
+    )
+    dpsgd._check_budget(8)
+    assert dpsgd._epsilon == 1000.0
 
 
 # ===========================================================================
@@ -287,7 +316,9 @@ def test_dp_training_reduces_memorization():
         noise_multiplier=0.8,
         max_grad_norm=0.5,
         num_samples=50,
-        epsilon=8.0,
+        # 200 steps at noise_multiplier=0.8 spend ~10 epsilon; the old 8.0
+        # under-declared the actual privacy cost of this training run.
+        epsilon=1e6,
         delta=1e-5,
     )
     for _ in range(200):

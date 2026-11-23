@@ -284,6 +284,8 @@ class DPSGD:
         self._max_grad_norm = max_grad_norm
         self._num_samples = num_samples
         self._steps = 0
+        self._epsilon = epsilon
+        self._delta = delta
 
         if accountant is not None:
             self._accountant = accountant
@@ -307,6 +309,20 @@ class DPSGD:
     def zero_grad(self):
         self._opt.zero_grad()
 
+    def _check_budget(self, batch_size: int):
+        """Reject a step that would exceed the configured epsilon budget."""
+        if self._epsilon is None or self._accountant is None or self._noise_mult <= 0:
+            return
+        import copy
+
+        trial = copy.deepcopy(self._accountant)
+        trial.step(self._noise_mult, batch_size, self._num_samples)
+        projected = trial.get_epsilon(self._delta)
+        if projected > self._epsilon:
+            raise ValueError(
+                f"epsilon budget exhausted: step would spend {projected:.4f} > {self._epsilon:.4f}"
+            )
+
     def step(self, per_sample_losses):
         """Take a DP-SGD step using per-sample losses.
 
@@ -316,6 +332,7 @@ class DPSGD:
         batch_size = len(per_sample_losses)
         if batch_size == 0:
             return
+        self._check_budget(batch_size)
 
         # Accumulate clipped per-sample gradients
         accumulated = [np.zeros_like(p.data, dtype=np.float64) for p in self._params]
