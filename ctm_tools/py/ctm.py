@@ -239,6 +239,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
 
     languages: dict[str, dict[str, int]] = defaultdict(lambda: {"files": 0, "loc": 0, "bytes": 0})
     files = dirs = total_bytes = loc = skipped_binary = unreadable = 0
+    skipped_by_reason: dict[str, int] = defaultdict(int)
 
     for current, dirnames, filenames in os.walk(base, topdown=True, followlinks=False):
         current_path = Path(current)
@@ -247,6 +248,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
             child = current_path / dirname
             if is_link(child):
                 skipped_binary += 1
+                skipped_by_reason["symlink_dir"] += 1
             elif dirname not in IGNORED_DIRS:
                 kept_dirs.append(dirname)
         dirnames[:] = kept_dirs
@@ -256,10 +258,12 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
             path = current_path / filename
             if is_link(path) or path.suffix.lower() in IGNORED_SUFFIXES:
                 skipped_binary += 1
+                skipped_by_reason["symlink_file" if is_link(path) else "binary_suffix"] += 1
                 continue
             suffix = path.suffix.lower()
             language = LANGUAGES.get(suffix)
             if language is None and not include_other_text:
+                skipped_by_reason["unsupported_suffix"] += 1
                 continue
             try:
                 size = path.stat().st_size
@@ -273,6 +277,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
                 continue
             if line_count is None:
                 skipped_binary += 1
+                skipped_by_reason["binary_content"] += 1
                 continue
             label = language or "Other text"
             files += 1
@@ -292,6 +297,7 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
         "bytes": total_bytes,
         "skipped_binary_or_symlink": skipped_binary,
         "unreadable_files": unreadable,
+        "skipped_by_reason": dict(sorted(skipped_by_reason.items())),
         "languages": dict(sorted(languages.items())),
     }
     git = _git_counts(base)
@@ -323,11 +329,34 @@ def render_html(report: dict[str, Any]) -> str:
             f"<td>{metrics['bytes']:,}</td></tr>"
         )
     table_rows = "\n".join(rows) or '<tr><td colspan="4">No supported text files found.</td></tr>'
+    max_files = max((metrics["files"] for metrics in report["languages"].values()), default=0)
+    bar_rows = []
+    for language, metrics in report["languages"].items():
+        width = round(100.0 * metrics["files"] / max_files) if max_files else 0
+        bar_rows.append(
+            f'<div class="bar-row">'
+            f'<span class="bar-label">{html.escape(language)}</span>'
+            f'<div class="bar"><span style="width: {width}%"></span></div>'
+            f'<span class="bar-value">{metrics["files"]:,}</span>'
+            f"</div>"
+        )
+    bars_html = "\n".join(bar_rows) or '<p class="muted">No supported text files found.</p>'
     git = report.get("git")
     git_summary = (
         f"<p>Tracked files: {git['tracked_files']:,} · Untracked files: {git['untracked_files']:,}</p>"
         if git
         else "<p>Git metadata unavailable for this directory.</p>"
+    )
+    skipped_reasons = report.get("skipped_by_reason") or {}
+    skipped_breakdown = (
+        "<ul>"
+        + "".join(
+            f"<li>{html.escape(str(reason))}: {count:,}</li>"
+            for reason, count in sorted(skipped_reasons.items())
+        )
+        + "</ul>"
+        if skipped_reasons
+        else '<p class="muted">No skipped entries.</p>'
     )
     return f"""<!doctype html>
 <html lang="en">
@@ -354,6 +383,11 @@ th,td {{ padding: .7rem .85rem; border-bottom: 1px solid color-mix(in srgb, Canv
 thead {{ background: color-mix(in srgb, CanvasText 6%, Canvas); }}
 td {{ text-align: right; font-variant-numeric: tabular-nums; }}
 td:first-child, th:first-child {{ text-align: left; }}
+.bar-row {{ display: grid; grid-template-columns: 130px 1fr 64px; gap: .6rem; align-items: center; margin-bottom: .35rem; }}
+.bar-label {{ text-align: right; font-size: .85rem; overflow-wrap: anywhere; }}
+.bar {{ height: 10px; background: color-mix(in srgb, CanvasText 12%, transparent); border-radius: 999px; overflow: hidden; }}
+.bar > span {{ display: block; height: 100%; background: color-mix(in srgb, Canvas 85%, CanvasText); border-radius: 999px; }}
+.bar-value {{ font-size: .85rem; font-variant-numeric: tabular-nums; }}
 footer {{ margin-top: 2rem; font-size: .85rem; }}
 </style>
 </head>
@@ -365,10 +399,11 @@ footer {{ margin-top: 2rem; font-size: .85rem; }}
 <div class="card"><span class="value">{report["lines_of_code"]:,}</span><span class="label">Physical text lines</span></div>
 <div class="card"><span class="value">{report["bytes"]:,}</span><span class="label">Included bytes</span></div>
 </div>
-<section><h2>Language breakdown</h2><div class="table-wrap"><table>
+<section><h2>Language breakdown</h2><div class="bars">{bars_html}</div><div class="table-wrap"><table>
 <thead><tr><th scope="col">Language</th><th scope="col">Files</th><th scope="col">Lines</th><th scope="col">Bytes</th></tr></thead>
 <tbody>{table_rows}</tbody></table></div></section>
 <section><h2>Scan diagnostics</h2><p>Skipped binary or symlink entries: {report["skipped_binary_or_symlink"]:,}</p><p>Unreadable files: {report["unreadable_files"]:,}</p>{git_summary}</section>
+<section><h2>Skipped-file breakdown</h2>{skipped_breakdown}</section>
 <footer class="muted">Generated by CTM schema v{report["schema_version"]}. Physical line counts include blank and comment lines; they are not a code-quality or security score.</footer>
 </main></body></html>
 """

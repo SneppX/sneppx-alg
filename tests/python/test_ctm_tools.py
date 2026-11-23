@@ -43,6 +43,42 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     assert report["skipped_binary_or_symlink"] == 1
 
 
+def test_scan_reports_skipped_by_reason_breakdown(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "main.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "big.png").write_bytes(b"x")
+    (tmp_path / "notes.custom").write_text("x\n", encoding="utf-8")
+
+    report = ctm.scan(tmp_path)
+
+    assert report["skipped_by_reason"] == {"binary_suffix": 1, "unsupported_suffix": 1}
+
+    real = tmp_path / "real.py"
+    real.write_text("x = 1\n", encoding="utf-8")
+    link = tmp_path / "linked.py"
+    try:
+        link.symlink_to(real)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlink creation is not permitted on this platform")
+
+    report = ctm.scan(tmp_path)
+    assert report["skipped_by_reason"]["symlink_file"] == 1
+
+
+def test_render_html_includes_bar_chart_and_skip_breakdown(tmp_path):
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "big.bin").write_bytes(b"x")
+
+    report = ctm.scan(tmp_path)
+    rendered = ctm.render_html(report)
+
+    assert "Language breakdown" in rendered
+    assert "bar-row" in rendered
+    assert "Skipped-file breakdown" in rendered
+    assert "unsupported_suffix" in rendered
+    assert "<script>alert(1)</script>" not in rendered
+
+
 def test_line_reader_handles_universal_newlines(tmp_path):
     source = tmp_path / "mixed.txt"
     source.write_bytes(b"one\rtwo\r\nthree")
