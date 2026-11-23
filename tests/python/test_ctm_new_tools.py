@@ -20,6 +20,7 @@ import ctm_duplicate_files  # noqa: E402
 import ctm_churn  # noqa: E402
 import ctm_license_inventory  # noqa: E402
 import ctm_schema_check  # noqa: E402
+import ctm_encoding_report  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -247,3 +248,23 @@ def test_schema_check_accepts_scan_output_and_rejects_tampering(tmp_path):
         "invalid": 0,
         "results": [{"path": str(report_path.resolve()), "valid": True, "errors": []}],
     }
+
+
+def test_encoding_report_detects_bom_newlines_and_invalid_utf8(tmp_path):
+    (tmp_path / "crlf.py").write_bytes(b"x = 1\r\ny = 2\r\n")
+    (tmp_path / "mixed.py").write_bytes(b"a\r\nb\nc\rd")
+    (tmp_path / "bom.py").write_bytes(b"\xef\xbb\xbfx = 1\n")
+    (tmp_path / "binary.py").write_bytes(b"\x80\x00\xff")
+
+    report = ctm_encoding_report.encoding_report(tmp_path)
+    by_path = {item["path"]: item for item in report["files"]}
+
+    assert by_path["crlf.py"]["newlines"] == ["crlf"]
+    assert by_path["mixed.py"]["mixed_newlines"] is True
+    assert by_path["mixed.py"]["newlines"] == ["cr", "crlf", "lf"]
+    assert by_path["bom.py"]["bom"] == "utf-8-sig"
+    assert by_path["binary.py"]["invalid_utf8"] is True
+    assert by_path["binary.py"]["has_nul"] is True
+    assert report["summary"]["with_bom"] == 1
+    assert report["summary"]["mixed_newlines"] == 1
+    assert "with_bom: 1" in ctm_encoding_report.render(report, "text")
