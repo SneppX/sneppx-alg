@@ -191,6 +191,14 @@ def test_avg_pool2d():
     assert np.allclose(out.data, 1.0)
 
 
+def test_avg_pool2d_excludes_only_padding_not_real_zeros():
+    # Padded row is [0, 3, 0, 5, 0]. The [3, 0] window contains a genuine zero
+    # activation which must stay in the divisor: 3/2 = 1.5.
+    x = Tensor(np.array([[[[3.0, 0.0, 5.0]]]], dtype=np.float32))
+    out = avg_pool2d(x, kernel_size=2, stride=1, padding=1, count_include_pad=False)
+    assert np.allclose(out.data[0, 0, 0], [3.0, 1.5, 2.5, 5.0])
+
+
 def test_adaptive_avg_pool2d():
     x = Tensor.ones((1, 1, 8, 8))
     out = adaptive_avg_pool2d(x, (4, 4))

@@ -348,6 +348,16 @@ def avg_pool2d(
 
     if pad_h > 0 or pad_w > 0:
         x = np.pad(x, ((0, 0), (0, 0), (pad_h, pad_h), (pad_w, pad_w)), mode="constant")
+        # Track which positions are real data. Inferring this from ``window != 0``
+        # also discards genuine zero activations from the divisor.
+        pad_mask = np.pad(
+            np.ones((H, W), dtype=bool),
+            ((pad_h, pad_h), (pad_w, pad_w)),
+            mode="constant",
+            constant_values=False,
+        )
+    else:
+        pad_mask = np.ones((H, W), dtype=bool)
 
     H_out = (H + 2 * pad_h - kH) // stride_h + 1
     W_out = (W + 2 * pad_w - kW) // stride_w + 1
@@ -361,10 +371,10 @@ def avg_pool2d(
             if count_include_pad:
                 out[:, :, i, j] = np.mean(window, axis=(2, 3))
             else:
-                # Only count non-padded elements
-                valid = window != 0  # simplified
+                # Only count positions that came from the original input.
+                valid = pad_mask[h_start : h_start + kH, w_start : w_start + kW]
                 out[:, :, i, j] = np.sum(window, axis=(2, 3)) / np.maximum(
-                    1, np.sum(valid, axis=(2, 3))
+                    1, np.sum(valid)
                 )
 
     return Tensor.from_numpy(out.astype(np.float32))
