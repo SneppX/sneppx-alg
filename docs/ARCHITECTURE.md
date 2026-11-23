@@ -425,12 +425,16 @@ When `SNEPPX_HAS_CUDA` is not defined, all `trainer_cuda` functions return clean
 
 ## Security Layers
 
+Maturity statements below are aligned with the authoritative table in
+[SECURITY.md](../SECURITY.md#security-status); "files exist" does not mean a
+layer is complete, validated, or independently audited.
+
 ### S0 — Cryptographic Core
 
-**Status: Complete**
+**Status: Experimental / partial (no FIPS validation claimed)**
 **Files**: `security/crypto/c/` and `include/neural_core/security/`
 
-Production-grade cryptographic primitives:
+Cryptographic primitives (maturity varies; PQC interoperability is incomplete):
 
 | Primitive | Implementation | Status |
 |-----------|---------------|--------|
@@ -448,7 +452,7 @@ Production-grade cryptographic primitives:
 
 ### S1 — Secure Memory
 
-**Status: Complete**
+**Status: Partial; independent audit required**
 **Files**: `security/memory/` and `include/neural_core/security/`
 
 | Feature | Description |
@@ -463,56 +467,56 @@ Production-grade cryptographic primitives:
 
 ### S2 — Obfuscation Engine
 
-**Status: Complete**
+**Status: Experimental; do not rely on as a security boundary**
 **Files**: `security/cpp/` and `security/obfuscation/`
 
 Control flow flattening, string encryption, instruction substitution, opaque predicates, code virtualization, anti-debug, binary substitution, junk code insertion, constant unfolding, IAT protection, SEH/VEH obfuscation, TLS callback obfuscation, anti-dump, multi-VM diversity, instruction scheduling randomization.
 
 ### S3 — Behavioral Monitor
 
-**Status: Complete**
+**Status: Partial**
 **Files**: `security/monitor/`
 
 Integrity monitoring (CRC32), container breakout detection, frequency analysis, timing analysis, anomaly detection (statistical baseline comparison).
 
 ### S4 — Network Security
 
-**Status: Complete**
+**Status: Experimental / partial; deployment hardening requires review**
 **Files**: `security/network/`
 
 DDoS mitigation (SYN flood detection, rate limiting, connection tracking, IP blacklisting), transport security (TLS-compatible handshake padding, traffic analysis resistance), identity management (certificate pinning, peer fingerprint verification).
 
 ### S5 — AI Sanitizer
 
-**Status: Complete**
+**Status: Partial**
 **Files**: `security/ai/`
 
 Prompt injection detection, differential privacy (Laplace mechanism), data poisoning defense (gradient outlier detection), RLHF safety (reward model validation, preference alignment checking, harmful output filtering).
 
 ### S6 — Security UI / Key Vault
 
-**Status: Complete**
+**Status: Incomplete / verify per component**
 **Files**: `security/ui/`
 
 Audit logging (structured JSON), key vault (in-memory encrypted store with PIN protection).
 
 ### S7 — Secure Updates
 
-**Status: Complete**
+**Status: Incomplete / verify per component**
 **Files**: `security/updates/`
 
 Container security (OCI layer verification), signed update bundles (Ed25519), rollback protection (monotonic version counter), staged rollout.
 
 ### S8 — Formal Verification
 
-**Status: Complete**
+**Status: Not formally verified**
 **Files**: `security/formal/`
 
 Model checking (bounded state-space exploration), invariant verification (pre/post-condition checking), symbolic execution (NPE bytecode), container breakout detection (state-machine rules).
 
 ### S9 — Penetration Testing
 
-**Status: Complete**
+**Status: Not independently audited**
 **Files**: `security/pentest/`
 
 Network fuzzer (protocol-aware, mutation strategies), self-audit (internal consistency checks), security report generation, CTF utilities.
