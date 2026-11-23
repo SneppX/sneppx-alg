@@ -65,6 +65,8 @@ class AuthConfig:
     jwt_audience: str = "sneppx-inference"
 
     def __post_init__(self):
+        if self.mode not in {"none", "bearer", "api_key"}:
+            raise ValueError(f"unsupported auth mode {self.mode!r}")
         if self.mode == "api_key" and not self.api_keys:
             env_keys = os.environ.get("SNEPPX_API_KEYS", "")
             if env_keys:

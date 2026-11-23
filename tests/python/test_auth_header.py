@@ -32,6 +32,11 @@ def test_bearer_scheme_rejects_unknown_tokens():
     assert authenticator.authenticate("Bearer another-token") is None
 
 
+def test_invalid_auth_mode_fails_closed():
+    with pytest.raises(ValueError):
+        AuthConfig(mode="bogus")
+
+
 def test_static_key_uses_constant_time_comparison(monkeypatch):
     import SneppX_ALG.interface_bindings.security_middleware as middleware_module
 
