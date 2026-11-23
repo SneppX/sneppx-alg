@@ -125,7 +125,10 @@ TEST(test_vizmon, suite)
 
     /* ---- M-25: inline-script-safe JSON escaping ---- */
     SNEPPX_vizmon_push_scalar(m, "</script><img src=x onerror=alert(1)>", 1.0, 0.0);
-    SNEPPX_vizmon_push_scalar(m, "line\xE2\x80\xA8" "break", 1.0, 0.0);
+    SNEPPX_vizmon_push_scalar(m,
+                              "line\xE2\x80\xA8"
+                              "break",
+                              1.0, 0.0);
     char* safe_json = SNEPPX_vizmon_snapshot_json(m);
     EXPECT_TRUE(safe_json != NULL);
     EXPECT_TRUE(strstr(safe_json, "\\u003c/script\\u003e") != NULL);
