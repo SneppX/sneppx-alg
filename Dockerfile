@@ -4,7 +4,7 @@
 # =====================================================================
 # BASE BUILDER - Full development environment
 # =====================================================================
-FROM nvidia/cuda:12.2-devel-ubuntu22.04 AS builder
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04@sha256:ae8a022c02aec945c4f8c52f65deaf535de7abb58e840350d19391ec683f4980 AS builder
 
 ARG PYTHON_SITE=python3.11
 
@@ -40,7 +40,7 @@ RUN pip3 install --no-cache-dir ./bindings/python
 # =====================================================================
 # CUDA RUNTIME IMAGE
 # =====================================================================
-FROM nvidia/cuda:12.2-runtime-ubuntu22.04 AS cuda-runtime
+FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04@sha256:94c1577b2cd9dd6c0312dc04dff9cb2fdce2b268018abc3d7c2dbcacf1155000 AS cuda-runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -73,7 +73,7 @@ USER sneppx
 # =====================================================================
 # CPU-ONLY RUNTIME IMAGE
 # =====================================================================
-FROM ubuntu:22.04 AS cpu-runtime
+FROM ubuntu:22.04@sha256:f64b2ffc2f10ab8f8505aa56b2664bd846cbb9df87c7e2532e30f7667021c0e6 AS cpu-runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -103,7 +103,7 @@ USER sneppx
 # =====================================================================
 # DEVELOPMENT IMAGE (Full CUDA + dev tools)
 # =====================================================================
-FROM nvidia/cuda:12.2-devel-ubuntu22.04 AS dev
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04@sha256:ae8a022c02aec945c4f8c52f65deaf535de7abb58e840350d19391ec683f4980 AS dev
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -131,7 +131,7 @@ WORKDIR /sneppx
 # =====================================================================
 # PYTHON-ONLY RUNTIME (Minimal)
 # =====================================================================
-FROM python:3.11-slim AS py-runtime
+FROM python:3.11-slim@sha256:07d4824036af339fa1b6ef769cc99d9c10a141769538b52b3b597c84f7a7b535 AS py-runtime
 
 ARG PYTHON_SITE=python3.11
 
@@ -145,7 +145,7 @@ RUN groupadd -r sneppx && useradd -r -g sneppx sneppx
 COPY --from=builder /usr/local/lib/${PYTHON_SITE}/dist-packages /usr/local/lib/${PYTHON_SITE}/dist-packages
 COPY --from=builder /usr/local/lib /usr/local/lib
 
-RUN pip3 install --no-cache-dir uvicorn
+RUN pip3 install --no-cache-dir uvicorn==0.54.0
 
 ENV PYTHONPATH=/usr/local/lib/${PYTHON_SITE}/dist-packages
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
