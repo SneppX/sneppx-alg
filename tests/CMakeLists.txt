@@ -146,6 +146,20 @@ if(TARGET neural_security_c)
     add_test(NAME firewall_engine_native COMMAND test_firewall_engine_native)
 endif()
 
+if(TARGET neural_security_c)
+    add_executable(
+        test_entropy_pool_native
+        ../tests/native/test_entropy_pool_native.c
+    )
+    target_link_libraries(test_entropy_pool_native PRIVATE neural_security_c)
+    target_include_directories(
+        test_entropy_pool_native
+        PRIVATE ${CMAKE_SOURCE_DIR}/include/neural_core/security
+    )
+    target_compile_features(test_entropy_pool_native PRIVATE c_std_11)
+    add_test(NAME entropy_pool_native COMMAND test_entropy_pool_native)
+endif()
+
 file(GLOB_RECURSE SECURITY_CPP_TEST_SRCS ../tests/security/cpp/*.cpp)
 
 macro(add_neural_cpp_test test_src link_libs)
