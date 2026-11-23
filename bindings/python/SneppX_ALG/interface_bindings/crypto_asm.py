@@ -139,7 +139,8 @@ class Poly1305ASM:
     def mac(self, msg: bytes, key: bytes) -> bytes:
         if len(key) != 32:
             raise ValueError("key must be 32 bytes")
-        r = int.from_bytes(key[:16], "little") & 0x0FFFFFFF0FFFFFFF0FFFFFFF0FFFFFFF
+        # RFC 8439 section 2.5.1: clamp r with the 4-bit pattern ...ccc...7.
+        r = int.from_bytes(key[:16], "little") & 0x0FFFFFFC0FFFFFFC0FFFFFFC0FFFFFFF
         s = int.from_bytes(key[16:32], "little")
         acc = 0
         for i in range(0, len(msg), 16):

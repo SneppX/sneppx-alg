@@ -78,6 +78,22 @@ def test_poly1305_mac():
     assert len(tag) == 16
 
 
+def test_poly1305_rfc8439_kat():
+    from SneppX_ALG.interface_bindings.crypto_symmetric import Poly1305
+
+    # RFC 8439 section 2.5.2 test vectors.
+    key = bytes.fromhex(
+        "85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b"
+    )
+    msg = b"Cryptographic Forum Research Group"
+    expected = bytes.fromhex("a8061dc1305136c6c22b8baf0c0127a9")
+
+    poly = Poly1305ASM()
+    assert poly.mac(msg, key) == expected
+    assert poly.mac(b"", bytes(32)) == bytes(16)
+    assert Poly1305(key).mac(msg) == expected
+
+
 def test_montgomery_mul():
     mm = MontgomeryMul()
     a, b, mod = 7, 8, 13
