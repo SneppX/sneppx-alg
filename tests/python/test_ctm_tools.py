@@ -55,6 +55,24 @@ def test_unknown_utf8_text_is_opt_in(tmp_path):
     assert inclusive["languages"]["Other text"]["loc"] == 2
 
 
+def test_text_files_uses_same_filters_as_scan(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "src" / "main.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01")
+    (tmp_path / "node_modules" / "ignored.py").write_text("x\n", encoding="utf-8")
+    (tmp_path / "notes.custom").write_text("text\n", encoding="utf-8")
+
+    default = [p.name for p in ctm.text_files(tmp_path)]
+    inclusive = [p.name for p in ctm.text_files(tmp_path, include_other_text=True)]
+    report = ctm.scan(tmp_path)
+
+    assert default == ["main.py"]
+    assert len(default) == report["files"]
+    assert sorted(inclusive) == ["main.py", "notes.custom"]
+    assert len(inclusive) == ctm.scan(tmp_path, include_other_text=True)["files"]
+
+
 def test_scan_rejects_missing_root(tmp_path):
     with pytest.raises(FileNotFoundError):
         ctm.scan(tmp_path / "missing")
