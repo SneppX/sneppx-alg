@@ -1,4 +1,5 @@
 #include "s6_extensions.h"
+#include "cryptographic_random_generator.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -299,8 +300,15 @@ int SNEPPX_shamir_split(const uint8_t* secret, size_t secret_len, int n, int k, 
     {
         uint8_t coeff[16];
         coeff[0] = secret[pos];
-        for (int i = 1; i < k; i++)
-            coeff[i] = (uint8_t) (rand() % 256);
+        if (k > 1 && SNEPPX_random_bytes(coeff + 1, (size_t) (k - 1)) != 0)
+        {
+            for (int m = 0; m < n; m++)
+            {
+                free(shares[m]);
+                shares[m] = NULL;
+            }
+            return -1;
+        }
         for (int j = 1; j <= n; j++)
         {
             shares[j - 1][1 + pos] = gf_poly_eval(coeff, k, (uint8_t) j);
@@ -395,8 +403,8 @@ int SNEPPX_key_ceremony_execute(SNEPPXKeyCeremony* kc, uint8_t* generated_key, s
 {
     if (!kc || kc->participants_present < kc->participants_required || !generated_key)
         return -1;
-    for (size_t i = 0; i < key_len; i++)
-        generated_key[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(generated_key, key_len) != 0)
+        return -1;
     kc->approved = 1;
     return 0;
 }
@@ -759,12 +767,12 @@ int SNEPPX_hsm_generate_key(uint8_t* key_id_out, int key_type)
         return -1;
     if (!hsm_initialized)
         return -1;
-    for (int i = 0; i < 32; i++)
-        key_id_out[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(key_id_out, 32) != 0)
+        return -1;
     uint8_t key_data[HSM_MAX_DATA];
     size_t key_len = 32;
-    for (size_t i = 0; i < key_len; i++)
-        key_data[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(key_data, key_len) != 0)
+        return -1;
     int free_slot = -1;
     hsm_find_slot(key_id_out, &free_slot);
     if (free_slot < 0)
@@ -843,8 +851,8 @@ int SNEPPX_hsm_unwrap_key(const uint8_t* wrapped, size_t wrapped_len, const uint
     for (size_t i = 0; i < plain_len; i++)
         plain[i] = wrapped[i] ^ wk[i % 32];
     uint8_t new_id[32];
-    for (int i = 0; i < 32; i++)
-        new_id[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(new_id, sizeof(new_id)) != 0)
+        return -1;
     int free_slot = -1;
     hsm_find_slot(new_id, &free_slot);
     if (free_slot < 0)
