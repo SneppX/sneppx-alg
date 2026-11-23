@@ -35,7 +35,9 @@ def test_continuous_batch_endpoint_uses_request_scoped_scheduler_and_drains_resu
 
     monkeypatch.setattr(server, "continuous_generate_loop", fake_loop)
 
-    req = server.BatchGenerateRequest(prompts=["hello", "world"], max_new_tokens=1, do_sample=False)
+    req = server.BatchGenerateRequest(
+        prompts=["hello", "world"], max_new_tokens=1, do_sample=False
+    )
     response = asyncio.run(server.continuous_batch_endpoint(req))
 
     assert len(response.results) == 2

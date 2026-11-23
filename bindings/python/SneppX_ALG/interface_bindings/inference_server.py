@@ -63,7 +63,9 @@ def get_serving_engine() -> ServingEngine:
     """Shared production-grade serving engine for metrics, readiness, A/B routing."""
     global _serving_engine
     if _serving_engine is None:
-        _serving_engine = ServingEngine(config=ServingConfig(), model_fn=lambda batch: batch)
+        _serving_engine = ServingEngine(
+            config=ServingConfig(), model_fn=lambda batch: batch
+        )
         _serving_engine.set_ready(True)
     return _serving_engine
 
@@ -319,7 +321,9 @@ def set_security(
     if usage_db_path:
         set_usage_tracker(UsageTracker(db_path=usage_db_path))
     if config is None:
-        _security = SecurityMiddleware(SecurityConfig.from_env(), key_manager=get_key_manager())
+        _security = SecurityMiddleware(
+            SecurityConfig.from_env(), key_manager=get_key_manager()
+        )
     else:
         _security = SecurityMiddleware(config, key_manager=get_key_manager())
     _admin_key = admin_key
@@ -355,7 +359,9 @@ def require_auth(request: "Request"):
                 headers={"Retry-After": "60"},
             )
         return None
-    header = request.headers.get("authorization") or request.headers.get("Authorization")
+    header = request.headers.get("authorization") or request.headers.get(
+        "Authorization"
+    )
     info = auth.authenticate(header)
     if info is None:
         raise HTTPException(status_code=401, detail="Authentication required")
@@ -382,7 +388,9 @@ def _verify_admin_auth(authorization: Optional[str]) -> bool:
     scheme, separator, credential = value.partition(" ")
     if separator and scheme.casefold() == "bearer":
         value = credential.strip()
-    return bool(value) and hmac.compare_digest(value.encode("utf-8"), _admin_key.encode("utf-8"))
+    return bool(value) and hmac.compare_digest(
+        value.encode("utf-8"), _admin_key.encode("utf-8")
+    )
 
 
 def require_admin(
@@ -452,7 +460,9 @@ async def usage_middleware(request: callable, call_next):
     response = await call_next(request)
     elapsed_ms = (time_module.time() - start) * 1000
     try:
-        auth_header = request.headers.get("authorization") or request.headers.get("Authorization")
+        auth_header = request.headers.get("authorization") or request.headers.get(
+            "Authorization"
+        )
         if auth_header:
             key = auth_header.strip()
             scheme, separator, credential = key.partition(" ")
@@ -543,7 +553,9 @@ async def deploy_endpoint(
     promote: bool = Query(False),
 ):
     eng = get_serving_engine()
-    ok = eng.deploy(model, version, description, weight=100 if promote else 0, promote=promote)
+    ok = eng.deploy(
+        model, version, description, weight=100 if promote else 0, promote=promote
+    )
     return {"status": "deployed" if ok else "error"}
 
 
@@ -757,7 +769,9 @@ async def continuous_batch_endpoint(req: BatchGenerateRequest):
 
 
 @app.post("/v1/models/quantize", dependencies=[Depends(require_admin)])
-async def quantize_model_endpoint(model_id: str = Query(...), quant_mode: str = Query("int4")):
+async def quantize_model_endpoint(
+    model_id: str = Query(...), quant_mode: str = Query("int4")
+):
     entry = get_model(model_id)
     mode_map = {"int4": "INT4_SYM", "int8": "INT8_SYM", "fp8": "INT4_SYM"}
     from .quantization import QuantMode
@@ -766,14 +780,18 @@ async def quantize_model_endpoint(model_id: str = Query(...), quant_mode: str = 
     cfg = QuantizedModelConfig(quant_mode=mode)
     params = {}
     for name, param in (
-        entry.model.named_parameters().items() if hasattr(entry.model, "named_parameters") else []
+        entry.model.named_parameters().items()
+        if hasattr(entry.model, "named_parameters")
+        else []
     ):
         from .tensor import Tensor
 
         p = param.data if hasattr(param, "data") else param
         params[name] = np.asarray(p, dtype=np.float32)
     if not params:
-        return JSONResponse({"status": "skipped", "message": "No parameters to quantize"})
+        return JSONResponse(
+            {"status": "skipped", "message": "No parameters to quantize"}
+        )
     quantized = quantize_model_weights(params, cfg)
     from .quantized_serve import estimate_model_size_mb
 
@@ -867,9 +885,13 @@ async def chat_completions(req: ChatCompletionRequest):
     gen_config = _make_chat_config(req)
 
     if entry.tokenizer and hasattr(entry.tokenizer, "apply_chat_template"):
-        prompt = entry.tokenizer.apply_chat_template([m.model_dump() for m in req.messages])
+        prompt = entry.tokenizer.apply_chat_template(
+            [m.model_dump() for m in req.messages]
+        )
     else:
-        prompt = "\n".join(f"{m.role}: {m.content}" for m in req.messages) + "\nassistant:"
+        prompt = (
+            "\n".join(f"{m.role}: {m.content}" for m in req.messages) + "\nassistant:"
+        )
 
     filter_status, sanitized = _filter_prompt(prompt)
     if filter_status == "injection":
