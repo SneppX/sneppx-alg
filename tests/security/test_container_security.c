@@ -51,6 +51,29 @@ static void test_sbom_add_component_rejects_oversized_hash_input(void)
     SX_ASSERT(strcmp(doc.components[0].supplier, "unknown") == 0, "default supplier");
 }
 
+static void test_manifest_digest_is_content_derived(void)
+{
+    const uint8_t manifest[] =
+        "{\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"schemaVersion\":2,\"config\":{}}";
+    container_manifest_t parsed;
+    SX_ASSERT(SNEPPX_container_parse_manifest(manifest, strlen((const char*) manifest), &parsed) == 0,
+              "parse manifest without trailing NUL");
+    SX_ASSERT(strcmp(parsed.digest,
+                     "sha256:1c6814dabf1efebbdb79879efd346f054f55160f03eaa620b78c97df7e4f6f66") == 0,
+              "digest follows manifest bytes");
+    SX_ASSERT(parsed.size == strlen((const char*) manifest), "size follows input length");
+}
+
+static void test_manifest_parse_accepts_non_nul_terminated_input(void)
+{
+    const uint8_t partial[18] = {'"', 'c', 'o', 'n', 'f', 'i', 'g', '"', ':',
+                                 '"', 'l', 'a', 'y', 'e', 'r', 's', '"', ':'};
+    container_manifest_t parsed;
+    SX_ASSERT(SNEPPX_container_parse_manifest(partial, sizeof(partial), &parsed) == 0, "parse bounded buffer");
+    SX_ASSERT(parsed.num_layers == 3, "bounded layers key detected");
+    SX_ASSERT(strncmp(parsed.digest, "sha256:", 7) == 0, "bounded digest generated");
+}
+
 TEST(test_container_security, suite)
 {
     container_manifest_t manifest;
@@ -94,4 +117,14 @@ TEST(test_container_security, export_tiny_buffer)
 TEST(test_container_security, add_component_rejects_oversized_hash_input)
 {
     test_sbom_add_component_rejects_oversized_hash_input();
+}
+
+TEST(test_container_security, manifest_digest_is_content_derived)
+{
+    test_manifest_digest_is_content_derived();
+}
+
+TEST(test_container_security, manifest_parse_accepts_non_nul_terminated_input)
+{
+    test_manifest_parse_accepts_non_nul_terminated_input();
 }
