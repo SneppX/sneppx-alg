@@ -2678,29 +2678,64 @@ class LinearFn(Function):
 
 class EmbeddingFn(Function):
     @staticmethod
-    def forward(ctx, weight, indices):
+    def forward(ctx, weight, indices, padding_idx=None, max_norm=None, norm_type=2.0):
         idx = (
             indices.data.astype(np.int64)
             if isinstance(indices, Tensor)
             else np.array(indices, dtype=np.int64)
         )
-        ctx.save_attr(indices=idx)
+        out = np.array(weight.data[idx], copy=True)
+        if max_norm is not None:
+            norms = np.linalg.norm(out, ord=norm_type, axis=-1, keepdims=True)
+            scales = np.minimum(1.0, float(max_norm) / np.maximum(norms, 1e-12))
+            out = out * scales
+        if padding_idx is not None:
+            out[idx == int(padding_idx)] = 0.0
+        ctx.save_attr(
+            indices=idx,
+            padding_idx=padding_idx,
+            max_norm=max_norm,
+            norm_type=norm_type,
+        )
         ctx.save_for_backward(weight=weight)
-        return Tensor(weight.data[idx], dtype=weight.dtype)
+        return Tensor(out, dtype=weight.dtype)
 
     @staticmethod
     def backward(ctx, grad_output, create_graph=False):
         weight = ctx.get_saved_tensor("weight")
         indices = ctx.get_attr("indices")
+        padding_idx = ctx.get_attr("padding_idx")
+        max_norm = ctx.get_attr("max_norm")
+        norm_type = float(ctx.get_attr("norm_type"))
         g = grad_output.data
+        w_data = weight.data
         grad_w = np.zeros(
             (weight.shape[0], weight.shape[1]), dtype=_numpy_dtype(weight.dtype)
         )
         for i in range(grad_w.shape[0]):
             mask = indices == i
-            if mask.any():
-                grad_w[i] = g[mask].sum(axis=0)
-        return [Tensor(grad_w, dtype=weight.dtype), None]
+            if not mask.any():
+                continue
+            if padding_idx is not None and i == int(padding_idx):
+                continue
+            row_grad = g[mask].sum(axis=0).astype(np.float64)
+            if max_norm is not None:
+                row = w_data[i].astype(np.float64)
+                norm = np.linalg.norm(row, ord=norm_type)
+                if norm > float(max_norm):
+                    scale = float(max_norm) / norm
+                    dot = float(np.dot(row_grad, row))
+                    if norm_type == 2.0:
+                        row_grad = scale * (row_grad - row * (dot / (norm * norm)))
+                    elif np.isfinite(norm_type):
+                        dnorm = (
+                            np.sign(row)
+                            * np.abs(row) ** (norm_type - 1.0)
+                            / norm ** (norm_type - 1.0)
+                        )
+                        row_grad = scale * row_grad - scale * dot * dnorm / norm
+            grad_w[i] = row_grad
+        return [Tensor(grad_w, dtype=weight.dtype), None, None, None, None]
 
 
 # ===========================================================================

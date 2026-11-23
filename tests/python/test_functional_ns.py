@@ -182,6 +182,29 @@ def test_embedding():
     assert np.allclose(out.data[0, 0], w.data[1])
 
 
+def test_embedding_padding_and_max_norm_are_differentiable():
+    w = Tensor(
+        np.array([[9.0, 9.0], [1.0, 2.0], [3.0, 4.0]], dtype=np.float32),
+        requires_grad=True,
+    )
+    idx = Tensor(np.array([[0, 1]], dtype=np.int64))
+
+    padded = F.embedding(idx, w, padding_idx=0)
+    assert np.allclose(padded.data[0, 0], [0.0, 0.0])
+    padded.sum().backward()
+    assert w.grad is not None
+    assert np.allclose(w.grad.data[0], [0.0, 0.0])
+    assert np.allclose(w.grad.data[1], [1.0, 1.0])
+
+    w2 = Tensor(np.array([[3.0, 4.0]], dtype=np.float32), requires_grad=True)
+    idx2 = Tensor(np.array([0], dtype=np.int64))
+    clamped = F.embedding(idx2, w2, max_norm=1.0)
+    assert np.allclose(clamped.data[0], [0.6, 0.8], atol=1e-6)
+    clamped.sum().backward()
+    # d(w/||w|| * max_norm)/dw dotted with ones for w=[3, 4], ||w||=5.
+    assert np.allclose(w2.grad.data[0], [0.032, -0.024], atol=1e-5), w2.grad.data
+
+
 def test_embedding_bag():
     w = Tensor(np.random.randn(10, 3).astype("float32"))
     idx = Tensor(np.array([0, 1, 2, 0], dtype=np.int64))

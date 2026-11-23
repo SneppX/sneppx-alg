@@ -340,19 +340,9 @@ def embedding(
     scale_grad_by_freq=False,
     sparse=False,
 ) -> Tensor:
-    if padding_idx is None and max_norm is None:
-        from .autograd_ops import EmbeddingFn
+    from .autograd_ops import EmbeddingFn
 
-        return EmbeddingFn.apply(weight, input)
-    idx = input.data.astype(np.int64)
-    w = weight.data
-    out = Tensor.from_numpy(w[idx])
-    if max_norm is not None:
-        norms = np.linalg.norm(out.data, axis=-1, keepdims=True)
-        out = Tensor.from_numpy(
-            out.data * np.minimum(1.0, max_norm / np.maximum(norms, 1e-12))
-        )
-    return out
+    return EmbeddingFn.apply(weight, input, padding_idx, max_norm, norm_type)
 
 
 def embedding_bag(
