@@ -12,6 +12,9 @@ recursive-include include/neural_core *.h
 # Include Python bindings
 recursive-include bindings/python/SneppX_ALG/interface_bindings *.py
 
+# Include CTM code-metrics tools
+recursive-include ctm_tools *.py
+
 # Include tests
 recursive-include tests/python *.py
 

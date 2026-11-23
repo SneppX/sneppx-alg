@@ -23,6 +23,7 @@ import ctm_schema_check  # noqa: E402
 import ctm_encoding_report  # noqa: E402
 import ctm_ignore_audit  # noqa: E402
 import ctm_trend  # noqa: E402
+import tomllib  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -319,3 +320,33 @@ def test_trend_records_snapshots_and_computes_deltas(tmp_path):
     with (store / "history.jsonl").open("a", encoding="utf-8") as stream:
         stream.write("not json\n")
     assert ctm_trend.trend(store)["snapshots"] == 2
+
+
+def test_pyproject_declares_every_ctm_console_script():
+    pyproject = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    with pyproject.open("rb") as stream:
+        config = tomllib.load(stream)
+    scripts = config["project"]["scripts"]
+
+    tools = (
+        "ctm",
+        "ctm_count_functions",
+        "ctm_count_headers",
+        "ctm_diff_loc",
+        "ctm_list_large_files",
+        "ctm_recent_files",
+        "ctm_todo_scan",
+        "ctm_doc_links",
+        "ctm_duplicate_files",
+        "ctm_churn",
+        "ctm_license_inventory",
+        "ctm_schema_check",
+        "ctm_encoding_report",
+        "ctm_ignore_audit",
+        "ctm_trend",
+    )
+    assert scripts["sneppx-ctm"] == "ctm_tools.py.ctm:main"
+    for name in tools:
+        assert any(target == f"ctm_tools.py.{name}:main" for target in scripts.values()), name
+    assert "ctm_tools" in config["tool"]["setuptools"]["package-dir"]
+    assert "ctm_tools*" in config["tool"]["setuptools"]["packages"]["find"]["include"]

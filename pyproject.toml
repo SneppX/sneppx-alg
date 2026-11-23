@@ -63,6 +63,21 @@ sneppx-eval = "SneppX_ALG.interface_bindings.eval_cli:main"
 sneppx-quantize = "SneppX_ALG.interface_bindings.quantize_cli:main"
 sneppx-rlhf = "SneppX_ALG.interface_bindings.rlhf_cli:main"
 sneppx-onnx = "SneppX_ALG.interface_bindings.onnx_cli:main"
+sneppx-ctm = "ctm_tools.py.ctm:main"
+sneppx-ctm-functions = "ctm_tools.py.ctm_count_functions:main"
+sneppx-ctm-headers = "ctm_tools.py.ctm_count_headers:main"
+sneppx-ctm-diff = "ctm_tools.py.ctm_diff_loc:main"
+sneppx-ctm-large = "ctm_tools.py.ctm_list_large_files:main"
+sneppx-ctm-recent = "ctm_tools.py.ctm_recent_files:main"
+sneppx-ctm-todo = "ctm_tools.py.ctm_todo_scan:main"
+sneppx-ctm-links = "ctm_tools.py.ctm_doc_links:main"
+sneppx-ctm-duplicates = "ctm_tools.py.ctm_duplicate_files:main"
+sneppx-ctm-churn = "ctm_tools.py.ctm_churn:main"
+sneppx-ctm-license = "ctm_tools.py.ctm_license_inventory:main"
+sneppx-ctm-schema = "ctm_tools.py.ctm_schema_check:main"
+sneppx-ctm-encoding = "ctm_tools.py.ctm_encoding_report:main"
+sneppx-ctm-ignore = "ctm_tools.py.ctm_ignore_audit:main"
+sneppx-ctm-trend = "ctm_tools.py.ctm_trend:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "scipy>=1.7"]
@@ -81,8 +96,12 @@ docs = [
   "properdocs-theme-mkdocs>=1.6.7",
 ]
 
+[tool.setuptools]
+package-dir = { "" = "bindings/python", "ctm_tools" = "ctm_tools" }
+
 [tool.setuptools.packages.find]
-where = ["bindings/python"]
+where = ["bindings/python", "."]
+include = ["SneppX_ALG*", "ctm_tools*"]
 
 [tool.setuptools.package-data]
 SneppX_ALG = [
