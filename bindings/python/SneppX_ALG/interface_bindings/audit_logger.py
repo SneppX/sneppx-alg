@@ -16,6 +16,7 @@ import time
 import tempfile
 import hashlib
 import hmac
+import re
 import threading
 import logging
 from datetime import datetime, timedelta
@@ -548,6 +549,13 @@ class RemoteAPIAuditBackend(AuditBackend):
         self._flush_batch()
 
 
+def _validate_sql_identifier(name: str) -> str:
+    """Restrict interpolated SQL identifiers to plain ASCII names."""
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+        raise ValueError("invalid SQL identifier")
+    return name
+
+
 class DatabaseAuditBackend(AuditBackend):
     """Database audit backend (SQLite/PostgreSQL/MySQL)."""
 
@@ -559,7 +567,7 @@ class DatabaseAuditBackend(AuditBackend):
     ):
         self._hmac_key = _resolve_audit_key(hmac_key)
         self.connection_string = connection_string
-        self.table_name = table_name
+        self.table_name = _validate_sql_identifier(table_name)
         self._conn = None
         self._prev_hash = "0" * 64
         self._init_db()

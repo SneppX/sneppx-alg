@@ -6,6 +6,7 @@ import urllib.request
 import pytest
 
 from SneppX_ALG.interface_bindings.audit_logger import (
+    DatabaseAuditBackend,
     AuditAction,
     AuditEvent,
     AuditResult,
@@ -24,6 +25,24 @@ def _event():
         result=AuditResult.SUCCESS,
         actor="alice",
     )
+
+
+@pytest.mark.parametrize(
+    "table_name",
+    ["audit_log; DROP TABLE users--", "1audit", "audit.log", "audit log"],
+)
+def test_database_rejects_invalid_table_names(table_name):
+    with pytest.raises(ValueError, match="identifier"):
+        DatabaseAuditBackend(":memory:", table_name=table_name)
+
+
+def test_database_accepts_plain_identifier():
+    backend = DatabaseAuditBackend(":memory:", table_name="audit_log_2")
+    try:
+        assert backend.table_name == "audit_log_2"
+        assert backend.write(_event()) is True
+    finally:
+        backend.close()
 
 
 @pytest.mark.parametrize(
