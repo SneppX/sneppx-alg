@@ -4,6 +4,7 @@ Wraps the C implementations in ``security/crypto/c/`` with pure-Python
 fallback via stdlib and ``cryptography``.
 """
 
+import hmac
 import os
 from typing import Optional
 
@@ -31,9 +32,7 @@ class AESGCM:
     def _iv(nonce: bytes) -> bytes:
         return nonce or os.urandom(12)
 
-    def encrypt(
-        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
-    ) -> bytes:
+    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
         iv = self._iv(nonce)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import AESGCM as _AESGCM
@@ -70,9 +69,7 @@ class ChaCha20:
         self._key = key
         self._has_c = _HAS_C
 
-    def encrypt(
-        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
-    ) -> bytes:
+    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
         n = nonce or os.urandom(12)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
@@ -110,13 +107,31 @@ class Poly1305:
         self._has_c = _HAS_C
 
     def mac(self, msg: bytes) -> bytes:
-        import hashlib
+        """Compute the RFC 8439 Poly1305 tag for ``msg``."""
+        if not isinstance(msg, (bytes, bytearray, memoryview)):
+            raise TypeError("Poly1305 message must be bytes-like")
+        data = bytes(msg)
 
-        return hashlib.sha256(self._key + msg).digest()[:16]
+        # RFC 8439 section 2.5.1: clamp r, treat s as the little-endian upper key half.
+        r = int.from_bytes(self._key[:16], "little") & 0x0FFFFFFC0FFFFFFC0FFFFFFC0FFFFFFF
+        s = int.from_bytes(self._key[16:], "little")
+        modulus = (1 << 130) - 5
+
+        acc = 0
+        for offset in range(0, len(data), 16):
+            block = data[offset : offset + 16]
+            # Append the 0x01 stop bit in the byte following the final partial block.
+            value = int.from_bytes(block, "little") | (1 << (8 * len(block)))
+            acc = ((acc + value) * r) % modulus
+
+        return ((acc + s) & ((1 << 128) - 1)).to_bytes(16, "little")
 
     def verify(self, msg: bytes, tag: bytes) -> bool:
+        """Constant-time tag verification."""
         expected = self.mac(msg)
-        return len(expected) == len(tag) and all(a == b for a, b in zip(expected, tag))
+        if not isinstance(tag, (bytes, bytearray, memoryview)):
+            return False
+        return hmac.compare_digest(expected, bytes(tag))
 
 
 # ---- Generic AEAD wrapper -----------------------------------------------
@@ -137,9 +152,7 @@ class AEAD:
         else:
             raise ValueError(f"Unknown AEAD algorithm: {algorithm}")
 
-    def encrypt(
-        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
-    ) -> bytes:
+    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
         return self._impl.encrypt(plaintext, aad, nonce)
 
     def decrypt(self, ciphertext: bytes, aad: bytes = b"") -> Optional[bytes]:
