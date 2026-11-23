@@ -1,5 +1,6 @@
 #include "entropy_pool.h"
 #include "siphash.h"
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -40,6 +41,69 @@ static uint64_t get_tsc(void)
 #endif
 }
 
+static void store64_le(uint8_t* out, uint64_t value)
+{
+    for (unsigned int i = 0; i < 8; ++i)
+        out[i] = (uint8_t) (value >> (8U * i));
+}
+
+/*
+ * One-way absorption: derive a SipHash output from the current pool and the
+ * incoming bytes, then mix that output into the pool. Using the previous pool
+ * as the key means an observer cannot recover earlier state from the new pool.
+ */
+static void entropy_absorb(SNEPPXEntropyPool* ep, const uint8_t* data, size_t len)
+{
+    uint8_t key[SNEPPX_SIPHASH_KEY_SIZE];
+    uint8_t block[8 + 16];
+    size_t off = 0;
+    uint64_t counter = 0;
+
+    while (off < len)
+    {
+        size_t take = len - off;
+        if (take > 16)
+            take = 16;
+        memcpy(key, ep->pool, sizeof(key));
+        store64_le(block, counter++);
+        memcpy(block + 8, data + off, take);
+        if (take < 16)
+            memset(block + 8 + take, 0, 16 - take);
+        uint64_t h = SNEPPX_siphash(key, block, sizeof(block));
+        for (unsigned int i = 0; i < 8; ++i)
+            ep->pool[(ep->pool_index + (int) i) % SNEPPX_ENTROPY_POOL_SIZE] ^=
+                (uint8_t) (h >> (8U * i));
+        ep->pool_index = (ep->pool_index + 8) % SNEPPX_ENTROPY_POOL_SIZE;
+        off += take;
+    }
+}
+
+/* Counter-mode SipHash stream. No timing source is used after seeding. */
+static void entropy_extract(const SNEPPXEntropyPool* ep, uint8_t* out, size_t out_len)
+{
+    uint8_t key[SNEPPX_SIPHASH_KEY_SIZE];
+    uint8_t msg[8 + SNEPPX_ENTROPY_POOL_SIZE];
+    uint8_t block[8];
+    uint64_t counter = 0;
+
+    memcpy(key, ep->pool, sizeof(key));
+    memcpy(msg + 8, ep->pool, SNEPPX_ENTROPY_POOL_SIZE);
+    while (out_len > 0)
+    {
+        store64_le(msg, counter++);
+        uint64_t h = SNEPPX_siphash(key, msg, sizeof(msg));
+        store64_le(block, h);
+        size_t take = out_len < 8 ? out_len : 8;
+        memcpy(out, block, take);
+        out += take;
+        out_len -= take;
+        for (unsigned int i = 0; i < 8; ++i)
+            key[i] ^= block[i];
+        for (size_t i = 8; i < sizeof(key); ++i)
+            key[i] ^= key[i - 8];
+    }
+}
+
 /**
  * @brief Initialize Entropy Pool.
  *
@@ -70,36 +134,7 @@ int SNEPPX_entropy_pool_add(SNEPPXEntropyPool* ep, SNEPPXEntropySource src, cons
         return -1;
     if ((int) src < 0 || src >= SNEPPX_ENTROPY_SOURCES)
         return -1;
-    uint8_t sip_key[16] = {0};
-    SNEPPXSipHash sh;
-    SNEPPX_siphash_init(&sh, sip_key);
-    SNEPPX_siphash_update(&sh, data, len);
-    uint64_t hash = SNEPPX_siphash_finalize(&sh);
-
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 56);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 48);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 40);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 32);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 24);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 16);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) (hash >> 8);
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
-    ep->pool[ep->pool_index] ^= (uint8_t) hash;
-    if (++ep->pool_index >= SNEPPX_ENTROPY_POOL_SIZE)
-        ep->pool_index = 0;
+    entropy_absorb(ep, data, len);
 
     ep->source_available[src] = 1;
     ep->last_collection[src] = (uint64_t) time(NULL);
@@ -201,25 +236,19 @@ int SNEPPX_entropy_pool_get(SNEPPXEntropyPool* ep, uint8_t* out, size_t out_len)
 {
     if (!ep || !out)
         return -1;
+    if (out_len == 0)
+        return 0;
+    if (out_len > INT_MAX)
+        return -1;
     if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD &&
         SNEPPX_entropy_pool_collect(ep) != 0)
         return -1;
-    uint8_t sip_key[16];
-    memcpy(sip_key, ep->pool, 16);
-    SNEPPXSipHash sh;
-    SNEPPX_siphash_init(&sh, sip_key);
-    SNEPPX_siphash_update(&sh, ep->pool, SNEPPX_ENTROPY_POOL_SIZE);
-    SNEPPX_siphash_update(&sh, (uint8_t*) &out_len, sizeof(out_len));
-    uint64_t h = SNEPPX_siphash_finalize(&sh);
-    for (size_t i = 0; i < out_len; i++)
-    {
-        out[i] = (uint8_t) (h >> (i % 8) * 8);
-        if (i % 8 == 7)
-        {
-            h = get_tsc();
-        }
-    }
-    ep->entropy_estimate -= out_len;
+
+    entropy_extract(ep, out, out_len);
+    /* One-way rekey after generation: old state cannot be recovered. */
+    entropy_absorb(ep, out, out_len);
+
+    ep->entropy_estimate -= (int) out_len;
     if (ep->entropy_estimate < 0)
         ep->entropy_estimate = 0;
     return 0;
@@ -242,12 +271,11 @@ void SNEPPX_entropy_pool_stir(SNEPPXEntropyPool* ep)
 {
     if (!ep)
         return;
-    uint8_t sip_key[16];
-    memcpy(sip_key, ep->pool, 16);
     for (int i = 0; i < 4; i++)
     {
         uint8_t hash[32];
-        SNEPPX_entropy_pool_get(ep, hash, 32);
+        if (SNEPPX_entropy_pool_get(ep, hash, sizeof(hash)) != 0)
+            return;
         for (int j = 0; j < 32 && (i * 32 + j) < SNEPPX_ENTROPY_POOL_SIZE; j++)
             ep->pool[i * 32 + j] = hash[j];
     }
