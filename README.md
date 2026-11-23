@@ -1,3 +1,5 @@
-# Github site pages branch
+﻿# SneppX-ALG documentation site
 
-## the documentation site branch
+This branch holds the built documentation site for [SneppX-ALG](https://github.com/SneppX/sneppx-alg), published with [mike](https://github.com/jimporter/mike). The live site is <https://sneppx.github.io/sneppx-alg/>.
+
+For source code, issues, releases, and contributing, see the [main branch](https://github.com/SneppX/sneppx-alg/tree/main).
