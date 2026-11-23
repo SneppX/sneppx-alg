@@ -105,6 +105,12 @@ repos:
   # Canonical language formatters for the Rust and Go source trees.
   - repo: local
     hooks:
+      - id: secret-scan
+        name: scan tracked files for credential literals
+        entry: python scripts/scan_secrets.py
+        language: system
+        types: [text]
+        pass_filenames: true
       - id: rustfmt-workspace
         name: rustfmt workspace
         entry: cargo fmt --all
