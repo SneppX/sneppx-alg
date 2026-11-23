@@ -73,6 +73,18 @@ def test_text_files_uses_same_filters_as_scan(tmp_path):
     assert len(inclusive) == ctm.scan(tmp_path, include_other_text=True)["files"]
 
 
+def test_iter_files_skips_path_level_exclusions_without_reading_content(tmp_path):
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "blob.py").write_bytes(b"\x00\x01")
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "config.py").write_text("x\n", encoding="utf-8")
+
+    paths = [p.name for p in ctm.iter_files(tmp_path)]
+
+    assert paths == ["a.py", "blob.py"]
+    assert [p.name for p in ctm.text_files(tmp_path)] == ["a.py"]
+
+
 def test_scan_rejects_missing_root(tmp_path):
     with pytest.raises(FileNotFoundError):
         ctm.scan(tmp_path / "missing")

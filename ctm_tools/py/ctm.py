@@ -166,12 +166,11 @@ def _git_counts(root: Path) -> dict[str, int] | None:
         return None
 
 
-def text_files(root: str | Path, include_other_text: bool = False) -> Iterator[Path]:
-    """Yield included text files using the same filters as :func:`scan`.
+def iter_files(root: str | Path, include_other_text: bool = False) -> Iterator[Path]:
+    """Yield candidate files using path-level filters only (no content reads).
 
-    New tools should consume this helper so their file selection stays aligned
-    with the unified scanner (ignored dirs, binary suffixes, NUL bytes,
-    undecodable text, symlinks, and unknown extensions).
+    Useful for stat-only tools (sizes, timestamps). Use :func:`text_files` when
+    NUL-byte and UTF-8 validation is required.
     """
     base = Path(root).expanduser().resolve()
     if not base.exists():
@@ -196,12 +195,23 @@ def text_files(root: str | Path, include_other_text: bool = False) -> Iterator[P
                 continue
             if path.suffix.lower() not in LANGUAGES and not include_other_text:
                 continue
-            try:
-                if _read_text_lines(path) is None:
-                    continue
-            except OSError:
-                continue
             yield path
+
+
+def text_files(root: str | Path, include_other_text: bool = False) -> Iterator[Path]:
+    """Yield included text files using the same filters as :func:`scan`.
+
+    New tools should consume this helper so their file selection stays aligned
+    with the unified scanner (ignored dirs, binary suffixes, NUL bytes,
+    undecodable text, symlinks, and unknown extensions).
+    """
+    for path in iter_files(root, include_other_text=include_other_text):
+        try:
+            if _read_text_lines(path) is None:
+                continue
+        except OSError:
+            continue
+        yield path
 
 
 def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
