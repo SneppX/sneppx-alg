@@ -51,14 +51,22 @@ def test_documented_algorithm_and_utility_imports() -> None:
 
 
 def test_source_install_instructions_use_the_repository_build_root() -> None:
+    import tomllib
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
-    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
+    pyproject = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
     index = (root / "docs" / "index.md").read_text(encoding="utf-8")
     api = (root / "docs" / "api" / "python.md").read_text(encoding="utf-8")
 
-    assert 'where = ["bindings/python"]' in pyproject
+    where = (
+        pyproject.get("tool", {})
+        .get("setuptools", {})
+        .get("packages", {})
+        .get("find", {})
+        .get("where", [])
+    )
+    assert "bindings/python" in where
     assert "python -m pip install ." in index
     assert "python -m pip install ." in api
     assert "python -m pip install ./bindings/python" not in index

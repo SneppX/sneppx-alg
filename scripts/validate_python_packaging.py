@@ -47,10 +47,19 @@ def main() -> int:
         bindings_value = bindings_project.get(field)
         if not root_value or not bindings_value:
             errors.append(f"Both project files must declare project.{field}.")
+        elif field == "scripts":
+            # The repository-root build also exposes the CTM console scripts,
+            # which live outside bindings/python. The canonical bindings wheel
+            # keeps the original core CLI set, so require that subset here.
+            if not bindings_value.items() <= root_value.items():
+                errors.append(
+                    f"project.{field} differs: root scripts must be a superset "
+                    f"of bindings scripts; root={root_value!r}, "
+                    f"bindings={bindings_value!r}"
+                )
         elif root_value != bindings_value:
             errors.append(
-                f"project.{field} differs: root={root_value!r}, "
-                f"bindings={bindings_value!r}"
+                f"project.{field} differs: root={root_value!r}, bindings={bindings_value!r}"
             )
 
     root_build = root_config.get("build-system", {})
@@ -62,16 +71,12 @@ def main() -> int:
                 f"bindings={bindings_build.get(field)!r}"
             )
 
-    root_package_data = (
-        root_config.get("tool", {}).get("setuptools", {}).get("package-data")
-    )
+    root_package_data = root_config.get("tool", {}).get("setuptools", {}).get("package-data")
     bindings_package_data = (
         bindings_config.get("tool", {}).get("setuptools", {}).get("package-data")
     )
     if root_package_data != bindings_package_data:
-        errors.append(
-            "Setuptools package-data declarations differ between build roots."
-        )
+        errors.append("Setuptools package-data declarations differ between build roots.")
 
     root_where = (
         root_config.get("tool", {})
@@ -87,16 +92,13 @@ def main() -> int:
         .get("find", {})
         .get("where")
     )
-    if root_where != ["bindings/python"]:
+    if not root_where or "bindings/python" not in root_where:
         errors.append(
-            "Root workspace package discovery must point to ['bindings/python']; "
+            "Root workspace package discovery must include 'bindings/python'; "
             f"found {root_where!r}."
         )
     if bindings_where != ["."]:
-        errors.append(
-            "Standalone bindings discovery must use ['.']; "
-            f"found {bindings_where!r}."
-        )
+        errors.append(f"Standalone bindings discovery must use ['.']; found {bindings_where!r}.")
     if not (PACKAGE_DIR / "__init__.py").is_file():
         errors.append("The canonical SneppX_ALG package entry point is missing.")
 

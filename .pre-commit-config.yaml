@@ -18,6 +18,8 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: detect-private-key
+        # This regression test deliberately embeds fake private-key fixtures.
+        exclude: '^tests/python/test_scan_secrets\.py$'
       - id: check-case-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
@@ -111,6 +113,8 @@ repos:
         language: system
         types: [text]
         pass_filenames: true
+        # This regression test deliberately embeds fake credential fixtures.
+        exclude: '^tests/python/test_scan_secrets\.py$'
       - id: rustfmt-workspace
         name: rustfmt workspace
         entry: cargo fmt --all
