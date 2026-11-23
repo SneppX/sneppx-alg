@@ -446,9 +446,13 @@ Cryptographic primitives (maturity varies; PQC interoperability is incomplete):
 | BLAKE3 | Reference impl | Fast hashing |
 | Argon2id | RFC 9106 | KDF with timing defense |
 | Secure Random | OS CPRG | Entropy source abstraction |
-| Kyber-512/768/1024 | FIPS 203 (ML-KEM) | PQ key encapsulation |
-| Dilithium-2/3/5 | FIPS 204 (ML-DSA) | PQ digital signatures |
-| SPHINCS+-128/192/256 | FIPS 205 (SLH-DSA) | Stateless PQ signatures |
+| Kyber-512/768/1024 | round-3 Kyber (ML-KEM lineage), not validated | PQ key encapsulation; experimental |
+| Dilithium-2/3/5 | round-3 Dilithium (ML-DSA lineage), not validated | PQ digital signatures; experimental |
+| SPHINCS+-128/192/256 | round-3 SPHINCS+ (SLH-DSA lineage), not validated | Stateless PQ signatures; experimental |
+
+> These implementations are not FIPS-validated and are not byte-compatible with
+> the finalized FIPS 203/204/205 formats. See the
+> [PQC KAT report](pqc_kat.md) for the measured limitations.
 
 ### S1 — Secure Memory
 
