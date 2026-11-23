@@ -126,6 +126,32 @@ static size_t round_up_page(size_t bytes)
     return (bytes + SNEPPX_SECURE_PAGE_SIZE - 1) & ~(SNEPPX_SECURE_PAGE_SIZE - 1);
 }
 
+static int secure_layout(size_t bytes, size_t guard_front, size_t guard_back, size_t* alloc_bytes, size_t* total,
+                         size_t* total_with_guards)
+{
+    if (!alloc_bytes || !total || !total_with_guards)
+        return -1;
+    if (bytes > SIZE_MAX - SNEPPX_SECURE_OVERHEAD_SIZE)
+        return -1;
+
+    *alloc_bytes = bytes + SNEPPX_SECURE_OVERHEAD_SIZE;
+    if (*alloc_bytes > SIZE_MAX - SNEPPX_SECURE_CANARY_SIZE)
+        return -1;
+
+    size_t unrounded = *alloc_bytes + SNEPPX_SECURE_CANARY_SIZE;
+    if (unrounded > SIZE_MAX - (SNEPPX_SECURE_PAGE_SIZE - 1))
+        return -1;
+    *total = round_up_page(unrounded);
+
+    if (guard_front > SIZE_MAX - guard_back)
+        return -1;
+    size_t guards = guard_front + guard_back;
+    if (*total > SIZE_MAX - guards)
+        return -1;
+    *total_with_guards = *total + guards;
+    return 0;
+}
+
 static uint32_t freed_set_hash(void* ptr)
 {
     return (uint32_t) (((uintptr_t) ptr >> 4) % SNEPPX_SECURE_FREED_SET_SIZE);
@@ -456,9 +482,12 @@ void* SNEPPX_secure_alloc(SNEPPXSecureAllocator* alloc, size_t bytes, size_t ali
         }
     }
 
-    size_t alloc_bytes = bytes + SNEPPX_SECURE_OVERHEAD_SIZE;
-    size_t total = round_up_page(alloc_bytes + SNEPPX_SECURE_CANARY_SIZE);
-    size_t total_with_guards = total + SNEPPX_SECURE_PAGE_SIZE * 2;
+    size_t alloc_bytes = 0;
+    size_t total = 0;
+    size_t total_with_guards = 0;
+    if (secure_layout(bytes, SNEPPX_SECURE_PAGE_SIZE, SNEPPX_SECURE_PAGE_SIZE, &alloc_bytes, &total,
+                      &total_with_guards) != 0)
+        return NULL;
 
     void* base = NULL;
 #ifdef _WIN32
@@ -556,9 +585,15 @@ void SNEPPX_secure_free(SNEPPXSecureAllocator* alloc, void* ptr)
         if (g_records[i].addr == ptr && !g_records[i].is_freed)
         {
             SNEPPXSecureAllocRecord* r = &g_records[i];
-            size_t alloc_bytes = r->size + SNEPPX_SECURE_OVERHEAD_SIZE;
-            size_t total = round_up_page(alloc_bytes + SNEPPX_SECURE_CANARY_SIZE);
-            size_t total_with_guards = total + r->guard_front + r->guard_back;
+            size_t alloc_bytes = 0;
+            size_t total = 0;
+            size_t total_with_guards = 0;
+            if (secure_layout(r->size, r->guard_front, r->guard_back, &alloc_bytes, &total, &total_with_guards) != 0)
+            {
+                if (alloc->on_overflow)
+                    alloc->on_overflow(r);
+                return;
+            }
             void* base = (char*) ptr - r->guard_front - SNEPPX_SECURE_OVERHEAD_SIZE;
             void* user_region = (char*) base + r->guard_front;
 
@@ -615,8 +650,16 @@ void SNEPPX_secure_audit(SNEPPXSecureAllocator* alloc)
     {
         if (g_records[i].is_freed)
             continue;
-        size_t alloc_bytes = g_records[i].size + SNEPPX_SECURE_OVERHEAD_SIZE;
-        size_t total = round_up_page(alloc_bytes + SNEPPX_SECURE_CANARY_SIZE);
+        size_t alloc_bytes = 0;
+        size_t total = 0;
+        size_t total_with_guards = 0;
+        if (secure_layout(g_records[i].size, g_records[i].guard_front, g_records[i].guard_back, &alloc_bytes, &total,
+                          &total_with_guards) != 0)
+        {
+            printf("VIOLATION: invalid layout for record %d\n", i);
+            violations++;
+            continue;
+        }
         uint64_t* canary_ptr =
             (uint64_t*) ((char*) g_records[i].addr + total - SNEPPX_SECURE_OVERHEAD_SIZE - SNEPPX_SECURE_CANARY_SIZE);
         if (*canary_ptr != g_records[i].canary)
@@ -677,8 +720,12 @@ int SNEPPX_secure_canary_check(void* ptr, uint64_t canary)
     {
         if (g_records[i].addr == ptr && !g_records[i].is_freed)
         {
-            size_t alloc_bytes = g_records[i].size + SNEPPX_SECURE_OVERHEAD_SIZE;
-            size_t total = round_up_page(alloc_bytes + SNEPPX_SECURE_CANARY_SIZE);
+            size_t alloc_bytes = 0;
+            size_t total = 0;
+            size_t total_with_guards = 0;
+            if (secure_layout(g_records[i].size, g_records[i].guard_front, g_records[i].guard_back, &alloc_bytes, &total,
+                              &total_with_guards) != 0)
+                return -1;
             uint64_t* canary_ptr =
                 (uint64_t*) ((char*) ptr + total - SNEPPX_SECURE_OVERHEAD_SIZE - SNEPPX_SECURE_CANARY_SIZE);
             return (*canary_ptr == canary && g_records[i].canary == canary) ? 0 : -1;
@@ -761,9 +808,15 @@ int SNEPPX_secure_free_quarantine(SNEPPXSecureAllocator* alloc, void* ptr)
         if (g_records[i].addr == ptr && !g_records[i].is_freed)
         {
             SNEPPXSecureAllocRecord* r = &g_records[i];
-            size_t alloc_bytes = r->size + SNEPPX_SECURE_OVERHEAD_SIZE;
-            size_t total = round_up_page(alloc_bytes + SNEPPX_SECURE_CANARY_SIZE);
-            size_t total_with_guards = total + r->guard_front + r->guard_back;
+            size_t alloc_bytes = 0;
+            size_t total = 0;
+            size_t total_with_guards = 0;
+            if (secure_layout(r->size, r->guard_front, r->guard_back, &alloc_bytes, &total, &total_with_guards) != 0)
+            {
+                if (alloc->on_overflow)
+                    alloc->on_overflow(r);
+                return -1;
+            }
             void* base = (char*) ptr - r->guard_front - SNEPPX_SECURE_OVERHEAD_SIZE;
             void* user_region = (char*) base + r->guard_front;
 
