@@ -32,7 +32,9 @@ class AESGCM:
     def _iv(nonce: bytes) -> bytes:
         return nonce or os.urandom(12)
 
-    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
+    def encrypt(
+        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
+    ) -> bytes:
         iv = self._iv(nonce)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import AESGCM as _AESGCM
@@ -69,7 +71,9 @@ class ChaCha20:
         self._key = key
         self._has_c = _HAS_C
 
-    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
+    def encrypt(
+        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
+    ) -> bytes:
         n = nonce or os.urandom(12)
         try:
             from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
@@ -113,7 +117,10 @@ class Poly1305:
         data = bytes(msg)
 
         # RFC 8439 section 2.5.1: clamp r, treat s as the little-endian upper key half.
-        r = int.from_bytes(self._key[:16], "little") & 0x0FFFFFFC0FFFFFFC0FFFFFFC0FFFFFFF
+        r = (
+            int.from_bytes(self._key[:16], "little")
+            & 0x0FFFFFFC0FFFFFFC0FFFFFFC0FFFFFFF
+        )
         s = int.from_bytes(self._key[16:], "little")
         modulus = (1 << 130) - 5
 
@@ -152,7 +159,9 @@ class AEAD:
         else:
             raise ValueError(f"Unknown AEAD algorithm: {algorithm}")
 
-    def encrypt(self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None) -> bytes:
+    def encrypt(
+        self, plaintext: bytes, aad: bytes = b"", nonce: Optional[bytes] = None
+    ) -> bytes:
         return self._impl.encrypt(plaintext, aad, nonce)
 
     def decrypt(self, ciphertext: bytes, aad: bytes = b"") -> Optional[bytes]:
