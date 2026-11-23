@@ -172,12 +172,12 @@ static void test_transport_aead(void)
 
     uint8_t legacy_ciphertext[64];
     uint8_t legacy_nonce[SNEPPX_TLS_NONCE_LEN];
-    SX_ASSERT(SNEPPX_transport_encrypt_with_aad(&ts, sid, plaintext, len, aad, aad_len, legacy_ciphertext,
-                                                 legacy_nonce) == 0,
-              "encrypt with aad");
-    SX_ASSERT(SNEPPX_transport_decrypt_with_aad(&ts, sid, legacy_ciphertext, len, aad, aad_len, legacy_nonce,
-                                                decrypted) == 0,
-              "decrypt with aad");
+    SX_ASSERT(
+        SNEPPX_transport_encrypt_with_aad(&ts, sid, plaintext, len, aad, aad_len, legacy_ciphertext, legacy_nonce) == 0,
+        "encrypt with aad");
+    SX_ASSERT(
+        SNEPPX_transport_decrypt_with_aad(&ts, sid, legacy_ciphertext, len, aad, aad_len, legacy_nonce, decrypted) == 0,
+        "decrypt with aad");
     SX_ASSERT(memcmp(plaintext, decrypted, len) == 0, "aad roundtrip");
 
     uint8_t empty_ciphertext[64];

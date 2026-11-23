@@ -25,7 +25,8 @@
  * the generic path writes a 64-byte digest, which overflowed the 32-byte
  * output buffer expected by SNEPPX_hmac_sha256 callers.
  */
-static int hmac_sha256_compute(const uint8_t* key, size_t key_len, const uint8_t* data, size_t data_len, uint8_t out[32])
+static int hmac_sha256_compute(const uint8_t* key, size_t key_len, const uint8_t* data, size_t data_len,
+                               uint8_t out[32])
 {
     uint8_t k[64], ipad[64], opad[64], inner_hash[32], outer[96];
     if (key_len > sizeof(k))
