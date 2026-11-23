@@ -53,6 +53,23 @@ def test_remote_endpoint_allows_https():
         backend.close()
 
 
+def test_remote_buffer_is_bounded():
+    backend = RemoteAPIAuditBackend(
+        endpoint="https://audit.example.com/events",
+        api_key="key",
+        batch_size=1000,
+        max_buffer=2,
+        flush_interval=1000,
+    )
+    try:
+        assert backend.write(_event()) is True
+        assert backend.write(_event()) is True
+        assert backend.write(_event()) is False
+        assert len(backend._buffer) == 2
+    finally:
+        backend.close()
+
+
 def test_remote_flush_refuses_redirects(monkeypatch):
     backend = RemoteAPIAuditBackend(
         endpoint="https://audit.example.com/events",

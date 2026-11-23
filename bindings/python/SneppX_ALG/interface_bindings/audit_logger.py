@@ -472,6 +472,7 @@ class RemoteAPIAuditBackend(AuditBackend):
         batch_size: int = 100,
         flush_interval: float = 5.0,
         hmac_key: Optional[bytes] = None,
+        max_buffer: int = 10000,
     ):
         self._hmac_key = _resolve_audit_key(hmac_key)
         self.endpoint = _validate_audit_endpoint(endpoint)
@@ -479,6 +480,7 @@ class RemoteAPIAuditBackend(AuditBackend):
         self.timeout = timeout
         self.batch_size = batch_size
         self.flush_interval = flush_interval
+        self.max_buffer = max_buffer
 
         self._queue: queue.Queue = queue.Queue()
         self._buffer: List[AuditEvent] = []
@@ -528,6 +530,11 @@ class RemoteAPIAuditBackend(AuditBackend):
         self._prev_hash = event.hash
 
         with self._lock:
+            if len(self._buffer) >= self.max_buffer:
+                logging.getLogger(__name__).warning(
+                    "audit event dropped: remote backend buffer is full"
+                )
+                return False
             self._buffer.append(event)
             if len(self._buffer) >= self.batch_size:
                 self._flush_batch()
