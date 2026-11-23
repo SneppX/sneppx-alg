@@ -17,7 +17,7 @@ import ctm_recent_files  # noqa: E402
 import ctm_todo_scan  # noqa: E402
 import ctm_doc_links  # noqa: E402
 import ctm_duplicate_files  # noqa: E402
-import ctm_duplicate_files  # noqa: E402
+import ctm_churn  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -182,3 +182,22 @@ def test_duplicate_files_groups_identical_content(tmp_path):
     assert report["groups"][0]["files"] == ["b.py", "src/a.py"]
     assert report["groups"][0]["wasted_bytes"] == 10
     assert report["wasted_bytes"] == 10
+
+
+def test_churn_aggregates_git_history(tmp_path):
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "t@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "T"], cwd=tmp_path, check=True)
+    (tmp_path / "a.py").write_text("x = 1\ny = 2\n", encoding="utf-8")
+    subprocess.run(["git", "add", "a.py"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "init"], cwd=tmp_path, check=True)
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    subprocess.run(["git", "commit", "-qam", "edit"], cwd=tmp_path, check=True)
+
+    report = ctm_churn.churn(tmp_path)
+
+    assert report["commits"] == 2
+    assert report["additions"] == 2
+    assert report["deletions"] == 1
+    assert report["files"] == [{"path": "a.py", "changes": 2, "added": 2, "deleted": 1}]
+    assert "path,changes,added,deleted" in ctm_churn.render(report, "csv")
