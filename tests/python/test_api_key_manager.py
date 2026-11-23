@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+import time
 
 from SneppX_ALG.interface_bindings.api_key_store import ApiKeyStore
 from SneppX_ALG.interface_bindings.api_key_manager import ApiKeyManager
@@ -75,3 +76,26 @@ def test_tier_config():
     cfg = mgr.get_tier_config("free")
     assert isinstance(cfg, dict)
     assert "rate_limit_rpm" in cfg
+
+
+def test_cache_does_not_outlive_key_expiry():
+    mgr = _manager()
+    rec = mgr.create_key(name="k1", tier="free", expires_in_days=1)
+    key = rec["key"]
+    info = mgr.validate_key(key)
+    assert info is not None
+
+    # Expire the key behind the manager's back (simulating wall-clock expiry
+    # during the 60s cache window). Both the store and the cached copy must
+    # reflect the expiry so the cache is the only thing that could serve it.
+    conn = mgr._store._get_conn()
+    conn.execute(
+        "UPDATE api_keys SET expires_at = ? WHERE id = ?",
+        (time.time() - 1, info["id"]),
+    )
+    conn.commit()
+    with mgr._lock:
+        mgr._cache[key].key_info["expires_at"] = time.time() - 1
+
+    # The cache must not keep an expired key alive.
+    assert mgr.validate_key(key) is None
