@@ -993,23 +993,32 @@ def one_hot(tensor: Tensor, num_classes: int = -1) -> Tensor:
 def pad_sequence(
     sequences, batch_first: bool = False, padding_value: float = 0.0
 ) -> Tensor:
+    """Pad a sequence of variable-length tensors to a common first dimension.
+
+    Built from differentiable ``Cat`` / ``Stack`` / ``Permute`` ops so gradients
+    flow back to each input sequence (the previous raw-NumPy build detached them).
+    """
     if isinstance(sequences, Tensor):
         return sequences
-    max_len = max(int(s.shape[0]) for s in sequences)
-    out = np.full(
-        (len(sequences), max_len) + tuple(sequences[0].shape[1:]),
-        padding_value,
-        dtype=sequences[0].data.dtype,
-    )
-    for i, s in enumerate(sequences):
+    seqs = list(sequences)
+    max_len = max(int(s.shape[0]) for s in seqs)
+    trailing = tuple(seqs[0].shape[1:])
+    padded = []
+    for s in seqs:
         n = int(s.shape[0])
-        out[i, :n] = np.asarray(s.data)
-    outT = out
-    if batch_first:
-        outT = out
-    else:
-        outT = out.transpose(1, 0, *range(2, out.ndim))
-    return Tensor.from_numpy(outT)
+        if n < max_len:
+            pad_shape = (max_len - n,) + trailing
+            pad = Tensor.from_numpy(
+                np.full(pad_shape, padding_value, dtype=s.data.dtype)
+            )
+            padded.append(autograd_ops.Cat.apply(s, pad, 0))
+        else:
+            padded.append(s)
+    out = autograd_ops.Stack.apply(*padded, 0)
+    if not batch_first:
+        perm = [1, 0] + list(range(2, out.ndim))
+        out = autograd_ops.Permute.apply(out, perm)
+    return out
 
 
 # ---------------------------------------------------------------------------

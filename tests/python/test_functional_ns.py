@@ -126,6 +126,26 @@ def test_losses():
     assert np.isfinite(F.binary_cross_entropy_with_logits(logits, b).data).all()
 
 
+def test_pad_sequence_is_differentiable():
+    # Sequences share a trailing feature dim (1) but differ in length (2 vs 1).
+    a = Tensor(np.array([[1.0], [2.0]], dtype=np.float32), requires_grad=True)
+    b = Tensor(np.array([[3.0]], dtype=np.float32), requires_grad=True)
+
+    out = F.pad_sequence([a, b], batch_first=True)
+    assert out.shape == (2, 2, 1)
+    assert np.allclose(out.data[0, :, 0], [1.0, 2.0])
+    assert np.allclose(out.data[1, :, 0], [3.0, 0.0])
+
+    out.sum().backward()
+    # Each input keeps grad 1 at its real positions; padded zeros receive none.
+    assert a.grad is not None and np.allclose(a.grad.data, [[1.0], [1.0]])
+    assert b.grad is not None and np.allclose(b.grad.data, [[1.0]])
+
+    # batch_first=False transposes the output back to (max_len, batch, ...).
+    out_t = F.pad_sequence([a.detach(), b.detach()], batch_first=False)
+    assert out_t.shape == (2, 2, 1)
+
+
 def test_pad():
     x4 = Tensor(np.random.randn(2, 3, 4, 4).astype("float32"))
     p = F.pad(x4, (1, 1, 2, 2))
