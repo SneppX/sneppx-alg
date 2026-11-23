@@ -21,10 +21,14 @@ python ctm_tools/py/ctm.py /path/to/repo --format html --output ctm-report.html
 Formats: `text` (default), `json` (schema version 1), `csv`, and `html`.
 See `ctm_tools/README.md` for metric definitions, exclusions, and safety notes.
 
+Utility tools (`ctm_count_functions.py`, `ctm_count_headers.py`,
+`ctm_diff_loc.py`, `ctm_list_large_files.py`, `ctm_recent_files.py`) reuse the
+same inclusion filters as `ctm.py`; see `ctm_tools/README.md`.
+
 Regression tests:
 
 ```bash
-python -m pytest tests/python/test_ctm_tools.py -q
+python -m pytest tests/python/test_ctm_tools.py tests/python/test_ctm_new_tools.py -q
 ```
 
 ## Legacy single-purpose Python scripts
