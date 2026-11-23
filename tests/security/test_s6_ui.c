@@ -114,7 +114,10 @@ TEST(test_s6_ui, csprng_backed_secrets)
     size_t lens_b[3];
     ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_a, lens_a), 0);
     ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_b, lens_b), 0);
-    EXPECT_NE(memcmp(shares_a[0], shares_b[0], lens_a[0]), 0)
+    /* shares[0][0] is the x-coordinate (always 1); the CSPRNG-generated
+     * polynomial coefficients start at offset 1. */
+    ASSERT_GT(lens_a[0], 1u);
+    EXPECT_NE(memcmp(shares_a[0] + 1, shares_b[0] + 1, lens_a[0] - 1), 0)
         << "M-10: Shamir coefficients must be CSPRNG-generated";
     for (int i = 0; i < 3; i++)
     {
