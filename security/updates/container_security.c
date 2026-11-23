@@ -101,6 +101,12 @@ int SNEPPX_container_verify_image(const uint8_t* manifest, size_t manifest_len, 
     return verified == 1 ? 0 : 1;
 }
 
+static int manifest_starts_with(const char* p, const char* end, const char* pattern)
+{
+    size_t pattern_len = strlen(pattern);
+    return (size_t) (end - p) >= pattern_len && memcmp(p, pattern, pattern_len) == 0;
+}
+
 /**
  * @brief Perform Container Parse Manifest.
  *
@@ -119,11 +125,11 @@ int SNEPPX_container_parse_manifest(const uint8_t* manifest, size_t len, contain
     int found_config = 0, found_layers = 0;
     while (p < end && *p)
     {
-        if (strncmp(p, "\"config\":", 9) == 0)
+        if (manifest_starts_with(p, end, "\"config\":"))
             found_config = 1;
-        else if (strncmp(p, "\"layers\":", 9) == 0)
+        else if (manifest_starts_with(p, end, "\"layers\":"))
             found_layers = 1;
-        else if (strncmp(p, "\"mediaType\":\"", 13) == 0 && found_config)
+        else if (manifest_starts_with(p, end, "\"mediaType\":\"") && found_config)
         {
             p += 13;
             int ml = 0;
@@ -135,10 +141,12 @@ int SNEPPX_container_parse_manifest(const uint8_t* manifest, size_t len, contain
     }
     out->schema_version = 2;
     out->num_layers = found_layers ? 3 : 1;
+
+    uint8_t digest[32];
+    SNEPPX_sha256(digest, manifest, len);
     snprintf(out->digest, sizeof(out->digest), "%s", "sha256:");
-    for (int i = 0; i < 64; i++)
-        out->digest[7 + i] = "0123456789abcdef"[rand() % 16];
-    out->digest[71] = 0;
+    for (size_t i = 0; i < sizeof(digest); i++)
+        snprintf(out->digest + 7 + 2 * i, sizeof(out->digest) - 7 - 2 * i, "%02x", digest[i]);
     out->size = len;
     return 0;
 }
