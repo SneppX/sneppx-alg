@@ -22,6 +22,7 @@ import ctm_license_inventory  # noqa: E402
 import ctm_schema_check  # noqa: E402
 import ctm_encoding_report  # noqa: E402
 import ctm_ignore_audit  # noqa: E402
+import ctm_trend  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -289,3 +290,32 @@ def test_ignore_audit_explains_exclusion_reasons(tmp_path):
     assert report["files_excluded"] == 4
     assert report["examples"]["ignored_dir"][0]["path"] == "build/ignored.py"
     assert "included: 1 files" in ctm_ignore_audit.render(report, "text")
+
+
+def test_trend_records_snapshots_and_computes_deltas(tmp_path):
+    import ctm
+
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "a.py").write_text("x = 1\n", encoding="utf-8")
+    first = tmp_path / "first.json"
+    first.write_text(json.dumps(ctm.scan(source)), encoding="utf-8")
+    (source / "a.py").write_text("x = 1\ny = 2\nz = 3\n", encoding="utf-8")
+    second = tmp_path / "second.json"
+    second.write_text(json.dumps(ctm.scan(source)), encoding="utf-8")
+
+    store = tmp_path / "store"
+    ctm_trend.add_snapshot(store, first)
+    ctm_trend.add_snapshot(store, second)
+    report = ctm_trend.trend(store)
+
+    assert report["snapshots"] == 2
+    assert report["series"][0]["delta"]["lines_of_code"] == 0
+    assert report["series"][1]["delta"]["lines_of_code"] == 2
+    assert "LOC" in ctm_trend.render(report, "text")
+    assert "recorded_at,root,files,loc,bytes,loc_delta" in ctm_trend.render(report, "csv")
+
+    # Malformed lines are skipped rather than breaking the trend.
+    with (store / "history.jsonl").open("a", encoding="utf-8") as stream:
+        stream.write("not json\n")
+    assert ctm_trend.trend(store)["snapshots"] == 2
