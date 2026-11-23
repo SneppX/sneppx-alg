@@ -100,6 +100,12 @@ class Topology:
         return Topology(TopologyType.TREE, n)
 
 
+# M-16: bound framing so a malicious/broken peer cannot force unbounded
+# allocation or an indefinite block. Callers may tighten (never loosen) these.
+MAX_FRAME_BYTES = 128 * 1024 * 1024  # 128 MiB per frame
+DEFAULT_SOCKET_TIMEOUT = 30.0  # seconds
+
+
 class SocketComm:
     """TCP / Unix socket communication for point-to-point tensor transfers."""
 
@@ -109,16 +115,29 @@ class SocketComm:
         self._sock: Optional[_socket.socket] = None
 
     def create(self, sock_type: int = 0):
-        family = _socket.AF_INET if sock_type == 0 else _socket.AF_UNIX
+        if sock_type == 0 or not hasattr(_socket, "AF_UNIX"):
+            family = _socket.AF_INET
+        else:
+            family = _socket.AF_UNIX
         self._sock = _socket.socket(family, _socket.SOCK_STREAM)
+        self._sock.settimeout(DEFAULT_SOCKET_TIMEOUT)
 
-    def bind(self, port: int) -> int:
+    def bind(self, port: int, host: Optional[str] = None) -> int:
+        """Bind the listening socket.
+
+        M-16: binds to loopback by default. Pass ``host="0.0.0.0"`` (or a
+        specific interface address) only when external peers are expected.
+        """
         if self._sock is None:
             return -1
+        af_unix = getattr(_socket, "AF_UNIX", None)
         try:
-            self._sock.bind(("0.0.0.0", port))
+            if af_unix is not None and self._sock.family == af_unix:
+                self._sock.bind(str(port))
+            else:
+                self._sock.bind((host or "127.0.0.1", port))
             return 0
-        except OSError:
+        except (OSError, ValueError):
             return -1
 
     def listen(self, backlog: int = 5) -> int:
@@ -135,6 +154,7 @@ class SocketComm:
             return None
         try:
             conn, addr = self._sock.accept()
+            conn.settimeout(DEFAULT_SOCKET_TIMEOUT)
             return conn
         except OSError:
             return None
@@ -151,28 +171,53 @@ class SocketComm:
     def send(self, data: bytes) -> int:
         if self._sock is None:
             return -1
+        if not isinstance(data, (bytes, bytearray, memoryview)):
+            return -1
+        # M-16: refuse to emit a frame larger than the negotiated cap.
+        if len(data) > MAX_FRAME_BYTES:
+            return -1
         try:
-            self._sock.sendall(struct.pack("!I", len(data)) + data)
+            self._sock.sendall(struct.pack("!I", len(data)) + bytes(data))
             return len(data)
         except OSError:
             return -1
 
-    def recv(self) -> Optional[bytes]:
+    def _recv_exact(self, count: int) -> Optional[bytes]:
+        """Read exactly ``count`` bytes or return ``None`` on EOF/timeout."""
+        if count < 0:
+            return None
+        chunks = []
+        remaining = count
+        while remaining > 0:
+            chunk = self._sock.recv(remaining)
+            if not chunk:
+                return None
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+
+    def recv(self, max_bytes: Optional[int] = None) -> Optional[bytes]:
+        """Receive one length-prefixed frame.
+
+        M-16: the declared length is validated against ``max_bytes`` (capped at
+        ``MAX_FRAME_BYTES``) BEFORE any payload is read, so a peer cannot
+        request an oversized allocation.
+        """
         if self._sock is None:
             return None
+        limit = MAX_FRAME_BYTES if max_bytes is None else int(max_bytes)
+        if limit < 0:
+            return None
+        limit = min(limit, MAX_FRAME_BYTES)
         try:
-            raw = self._sock.recv(4)
-            if not raw:
+            raw = self._recv_exact(4)
+            if raw is None:
                 return None
             n = struct.unpack("!I", raw)[0]
-            data = b""
-            while len(data) < n:
-                chunk = self._sock.recv(n - len(data))
-                if not chunk:
-                    return None
-                data += chunk
-            return data
-        except OSError:
+            if n > limit:
+                return None
+            return self._recv_exact(n)
+        except (OSError, struct.error, ValueError):
             return None
 
     def close(self):
@@ -181,22 +226,40 @@ class SocketComm:
             self._sock = None
 
     def send_tensor(self, tensor: np.ndarray) -> int:
-        data = tensor.tobytes()
-        header = struct.pack(
-            "!II", tensor.shape[0], tensor.shape[1] if tensor.ndim > 1 else 1
-        )
+        if not isinstance(tensor, np.ndarray) or tensor.ndim > 2:
+            return -1
+        if tensor.ndim == 0:
+            rows, cols = 1, 1
+        else:
+            rows = int(tensor.shape[0])
+            cols = int(tensor.shape[1]) if tensor.ndim > 1 else 1
+        data = np.ascontiguousarray(tensor, dtype=np.float32).tobytes()
+        header = struct.pack("!II", rows, cols)
+        # Single length-prefixed frame: 8-byte shape header + payload, matching
+        # recv_tensor() below.
         return self.send(header + data)
 
-    def recv_tensor(self) -> Optional[np.ndarray]:
-        header = self.recv()
-        if header is None or len(header) < 8:
+    def recv_tensor(self, max_elements: Optional[int] = None) -> Optional[np.ndarray]:
+        frame = self.recv()
+        if frame is None or len(frame) < 8:
             return None
-        rows, cols = struct.unpack("!II", header[:8])
+        rows, cols = struct.unpack("!II", frame[:8])
+        # M-16: validate dimensions and the product BEFORE multiplying or
+        # allocating, so huge/zero-sized shapes are rejected cheaply.
+        if rows == 0 or cols == 0:
+            return None
+        element_cap = MAX_FRAME_BYTES // 4
+        if max_elements is not None:
+            element_cap = min(element_cap, int(max_elements))
+        if element_cap <= 0 or rows > element_cap or cols > element_cap:
+            return None
         n = rows * cols
-        raw = self.recv()
-        if raw is None or len(raw) < n * 4:
+        if n > element_cap:
             return None
-        return np.frombuffer(raw[: n * 4], dtype=np.float32).reshape(rows, cols)
+        payload = frame[8:]
+        if len(payload) < n * 4:
+            return None
+        return np.frombuffer(payload[: n * 4], dtype=np.float32).reshape(rows, cols)
 
 
 class RDMA:
@@ -278,9 +341,7 @@ class NCCLComm:
         self._initialized = False
         return 0
 
-    def comm_init_rank(
-        self, ndev: int, rank: int, devs: Optional[List[int]] = None
-    ) -> int:
+    def comm_init_rank(self, ndev: int, rank: int, devs: Optional[List[int]] = None) -> int:
         self._rank = rank
         self._world_size = ndev
         return 0
@@ -308,9 +369,7 @@ class NCCLComm:
     def broadcast(self, buf: np.ndarray, root: int = 0) -> int:
         return 0
 
-    def reduce(
-        self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0
-    ) -> int:
+    def reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0) -> int:
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0
