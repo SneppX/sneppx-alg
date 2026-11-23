@@ -240,8 +240,7 @@ int SNEPPX_entropy_pool_get(SNEPPXEntropyPool* ep, uint8_t* out, size_t out_len)
         return 0;
     if (out_len > INT_MAX)
         return -1;
-    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD &&
-        SNEPPX_entropy_pool_collect(ep) != 0)
+    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD && SNEPPX_entropy_pool_collect(ep) != 0)
         return -1;
 
     entropy_extract(ep, out, out_len);
