@@ -21,6 +21,7 @@ import ctm_churn  # noqa: E402
 import ctm_license_inventory  # noqa: E402
 import ctm_schema_check  # noqa: E402
 import ctm_encoding_report  # noqa: E402
+import ctm_ignore_audit  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -268,3 +269,23 @@ def test_encoding_report_detects_bom_newlines_and_invalid_utf8(tmp_path):
     assert report["summary"]["with_bom"] == 1
     assert report["summary"]["mixed_newlines"] == 1
     assert "with_bom: 1" in ctm_encoding_report.render(report, "text")
+
+
+def test_ignore_audit_explains_exclusion_reasons(tmp_path):
+    (tmp_path / "ok.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "notes.txt").write_text("note\n", encoding="utf-8")
+    (tmp_path / "blob.py").write_bytes(b"\x00\x01")
+    (tmp_path / "image.png").write_bytes(b"\x89PNG")
+    (tmp_path / "build").mkdir()
+    (tmp_path / "build" / "ignored.py").write_text("x\n", encoding="utf-8")
+
+    report = ctm_ignore_audit.ignore_audit(tmp_path)
+
+    assert report["count_by_reason"]["included"] == 1
+    assert report["count_by_reason"]["unsupported_suffix"] == 1
+    assert report["count_by_reason"]["binary_content"] == 1
+    assert report["count_by_reason"]["binary_suffix"] == 1
+    assert report["count_by_reason"]["ignored_dir"] == 1
+    assert report["files_excluded"] == 4
+    assert report["examples"]["ignored_dir"][0]["path"] == "build/ignored.py"
+    assert "included: 1 files" in ctm_ignore_audit.render(report, "text")
