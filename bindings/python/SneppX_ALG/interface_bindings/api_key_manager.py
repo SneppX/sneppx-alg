@@ -90,9 +90,15 @@ class ApiKeyManager:
         with self._lock:
             entry = self._cache.get(raw_key)
             if entry is not None:
-                if now < entry.expires_at:
+                cached = entry.key_info
+                # M-3: the 60s cache TTL must never outlive the key itself.
+                key_expiry = cached.get("expires_at")
+                wall_now = time.time()
+                key_expired = key_expiry is not None and wall_now > key_expiry
+                inactive = cached.get("is_active") is False
+                if now < entry.expires_at and not key_expired and not inactive:
                     self._cache.move_to_end(raw_key)
-                    return dict(entry.key_info)
+                    return dict(cached)
                 del self._cache[raw_key]
             key_info = self._store.validate_key(raw_key)
             if not key_info:
@@ -100,9 +106,7 @@ class ApiKeyManager:
             if len(self._cache) >= self._max_cache_entries:
                 self._cache.popitem(last=False)
             cached = dict(key_info)
-            self._cache[raw_key] = KeyCacheEntry(
-                key_info=cached, expires_at=now + self._cache_ttl
-            )
+            self._cache[raw_key] = KeyCacheEntry(key_info=cached, expires_at=now + self._cache_ttl)
             return dict(cached)
 
     def revoke_key(self, key_id: str) -> bool:
@@ -140,9 +144,7 @@ class ApiKeyManager:
                     del self._cache[raw_key]
             return result
 
-    def get_usage_stats(
-        self, key_id: str, since: Optional[float] = None
-    ) -> Dict[str, Any]:
+    def get_usage_stats(self, key_id: str, since: Optional[float] = None) -> Dict[str, Any]:
         return self._store.get_usage_stats(key_id, since=since)
 
     def record_usage(
