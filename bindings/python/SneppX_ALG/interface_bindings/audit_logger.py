@@ -23,6 +23,8 @@ from typing import Dict, List, Optional, Any, Iterator, Callable, Tuple
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 from pathlib import Path
+from urllib.parse import urlparse
+import urllib.request
 from abc import ABC, abstractmethod
 from collections import deque
 import queue
@@ -428,6 +430,37 @@ class SyslogAuditBackend(AuditBackend):
         self.handler.close()
 
 
+def _validate_audit_endpoint(endpoint: str) -> str:
+    """Allow only HTTPS (or explicit loopback HTTP) audit endpoints.
+
+    The Bearer token is attached to this URL, so redirects or credential
+    bearing URLs must never be accepted.
+    """
+    parsed = urlparse(endpoint)
+    host = parsed.hostname or ""
+    loopback = host in {"localhost", "127.0.0.1", "::1"}
+    if parsed.scheme != "https" and not (parsed.scheme == "http" and loopback):
+        raise ValueError("audit endpoint must be HTTPS or loopback HTTP")
+    if (
+        not host
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError(
+            "audit endpoint must not contain credentials, query, or fragment"
+        )
+    return endpoint
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """urllib handler that refuses redirects (do not forward the API key)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 class RemoteAPIAuditBackend(AuditBackend):
     """Remote API audit backend."""
 
@@ -441,7 +474,7 @@ class RemoteAPIAuditBackend(AuditBackend):
         hmac_key: Optional[bytes] = None,
     ):
         self._hmac_key = _resolve_audit_key(hmac_key)
-        self.endpoint = endpoint
+        self.endpoint = _validate_audit_endpoint(endpoint)
         self.api_key = api_key
         self.timeout = timeout
         self.batch_size = batch_size
@@ -482,7 +515,8 @@ class RemoteAPIAuditBackend(AuditBackend):
                     "Authorization": f"Bearer {self.api_key}",
                 },
             )
-            urllib.request.urlopen(req, timeout=self.timeout)
+            opener = urllib.request.build_opener(_NoRedirectHandler())
+            opener.open(req, timeout=self.timeout)
         except Exception:
             # Re-queue on failure
             with self._lock:
