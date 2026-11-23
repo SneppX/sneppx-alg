@@ -42,7 +42,9 @@ class LaplaceMech:
             raise ValueError(f"epsilon must be > 0, got {epsilon}")
         self.epsilon = epsilon
 
-    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
+    def apply(
+        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
+    ) -> np.ndarray:
         scale = sensitivity / self.epsilon
         noise = _secure_laplace(scale, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -63,7 +65,9 @@ class GaussianMech:
         self.epsilon = epsilon
         self.delta = delta
 
-    def apply(self, value: Union[float, np.ndarray], sensitivity: float = 1.0) -> np.ndarray:
+    def apply(
+        self, value: Union[float, np.ndarray], sensitivity: float = 1.0
+    ) -> np.ndarray:
         sigma = sensitivity * math.sqrt(2 * math.log(1.25 / self.delta)) / self.epsilon
         noise = _secure_normal(sigma, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
@@ -160,7 +164,9 @@ class RDPAccountant:
         self._orders = (
             orders
             if orders is not None
-            else [1 + 0.1 * i for i in range(1, 100)] + list(range(11, 65)) + [128, 256, 512]
+            else [1 + 0.1 * i for i in range(1, 100)]
+            + list(range(11, 65))
+            + [128, 256, 512]
         )
         self._rdp = np.zeros(len(self._orders))
         self._steps = 0
@@ -194,7 +200,12 @@ class RDPAccountant:
             if q < 1.0:
                 # E[ (q * N(0,sigma^2) + (1-q))^alpha ] approximation
                 step_rdp = math.log(
-                    1.0 + q * q * alpha * (alpha - 1) / (2.0 * noise_multiplier * noise_multiplier)
+                    1.0
+                    + q
+                    * q
+                    * alpha
+                    * (alpha - 1)
+                    / (2.0 * noise_multiplier * noise_multiplier)
                 ) / (alpha - 1)
                 if step_rdp < 0:
                     step_rdp = 0.0
@@ -332,7 +343,9 @@ class DPSGD:
         # M-7: refuse to spend past an exhausted privacy budget.
         if self._budget is not None and self._noise_mult > 0:
             if self._budget.remaining[0] <= 0:
-                raise ValueError("Privacy budget exhausted: refusing additional DP-SGD step")
+                raise ValueError(
+                    "Privacy budget exhausted: refusing additional DP-SGD step"
+                )
 
         # Accumulate clipped per-sample gradients
         accumulated = [np.zeros_like(p.data, dtype=np.float64) for p in self._params]
@@ -370,7 +383,9 @@ class DPSGD:
             noise = _secure_normal(sigma, self._params[i].data.shape)
             accumulated[i] += noise
             # Note: tensor.data returns a copy — must create a new Tensor to set grad
-            self._params[i].grad = Tensor(accumulated[i].astype(self._params[i].data.dtype))
+            self._params[i].grad = Tensor(
+                accumulated[i].astype(self._params[i].data.dtype)
+            )
 
         self._opt.step()
 

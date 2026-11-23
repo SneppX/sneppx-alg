@@ -49,7 +49,9 @@ def validate(payload: Any) -> list[str]:
             for field in LANGUAGE_FIELDS:
                 value = metrics.get(field)
                 if not isinstance(value, int) or isinstance(value, bool) or value < 0:
-                    errors.append(f"languages.{name}.{field} must be a non-negative integer")
+                    errors.append(
+                        f"languages.{name}.{field} must be a non-negative integer"
+                    )
         for field, total in (
             ("files", "files"),
             ("loc", "lines_of_code"),
