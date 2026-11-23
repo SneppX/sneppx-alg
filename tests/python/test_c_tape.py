@@ -7,6 +7,7 @@ analytic backward gradients, and exit the interpreter cleanly (no heap
 corruption / double free at teardown).
 """
 
+import gc
 import subprocess
 import sys
 import os
@@ -64,9 +65,7 @@ def _tape_with(a_arr, *more):
 
 
 def test_tape_add_mul_forward_parity():
-    tape, a, (b,) = _tape_with(
-        np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32) * 2
-    )
+    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32) * 2)
     r = tape.add(a, b)
     assert r.data.shape == (2, 3)
     assert np.allclose(np.asarray(r.data.data()), 5.0)
@@ -76,9 +75,7 @@ def test_tape_add_mul_forward_parity():
 
 
 def test_tape_sub_div_forward_parity():
-    tape, a, (b,) = _tape_with(
-        np.ones((2, 3), np.float32) * 6, np.ones((2, 3), np.float32) * 2
-    )
+    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 6, np.ones((2, 3), np.float32) * 2)
     s = tape.sub(a, b)
     assert np.allclose(np.asarray(s.data.data()), 4.0)
     d = tape.div(a, b)
@@ -164,11 +161,36 @@ def test_tape_sum_backward_keeps_dim():
     assert np.allclose(np.asarray(a.grad.data()), 2 * a_arr, atol=1e-6)
 
 
+def test_variable_data_accessor_is_owning_copy():
+    """M-26: a NumPy view from var.data must not alias tape-owned storage."""
+    tape, a, _ = _tape_with(np.array([[1.0, 2.0, 3.0]], dtype=np.float32))
+    r = tape.mul(a, a)
+    arr = np.asarray(r.data.data())
+    original = arr.copy()
+    arr[0, 0] = 99.0
+    assert np.allclose(np.asarray(r.data.data()), original)
+    del r, tape
+    gc.collect()
+    assert np.allclose(arr, [[99.0, 4.0, 9.0]])
+
+
+def test_variable_grad_accessor_is_owning_copy():
+    """M-26: a NumPy view from var.grad must not alias tape-owned storage."""
+    tape, a, _ = _tape_with(np.array([[1.0, 2.0, 3.0]], dtype=np.float32))
+    r = tape.mul(a, a)
+    tape.backward(r)
+    arr = np.asarray(a.grad.data())
+    original = arr.copy()
+    arr[0, 0] = -7.0
+    assert np.allclose(np.asarray(a.grad.data()), original)
+    del tape
+    gc.collect()
+    assert np.allclose(arr, [[-7.0, 4.0, 6.0]])
+
+
 def test_tape_double_record_is_safe():
     """Recording the same variable twice must not corrupt teardown."""
-    tape, a, (b,) = _tape_with(
-        np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32)
-    )
+    tape, a, (b,) = _tape_with(np.ones((2, 3), np.float32) * 3, np.ones((2, 3), np.float32))
     tape.record(a)  # duplicate on purpose
     r = tape.add(a, b)
     assert np.allclose(np.asarray(r.data.data()), 4.0)
