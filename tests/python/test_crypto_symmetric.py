@@ -86,6 +86,30 @@ def test_poly1305_wrong_key():
     assert not poly2.verify(b"msg", tag)
 
 
+def test_poly1305_rfc8439_known_answer():
+    key = bytes.fromhex(
+        "85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b"
+    )
+    msg = b"Cryptographic Forum Research Group"
+    expected = bytes.fromhex("a8061dc1305136c6c22b8baf0c0127a9")
+    poly = Poly1305(key)
+    assert poly.mac(msg) == expected
+    assert poly.verify(msg, expected)
+
+
+def test_poly1305_empty_message():
+    poly = Poly1305(bytes(32))
+    assert poly.mac(b"") == bytes(16)
+    assert poly.verify(b"", bytes(16))
+
+
+def test_poly1305_rejects_tampered_tag_length():
+    poly = Poly1305(b"k" * 32)
+    tag = poly.mac(b"msg")
+    assert not poly.verify(b"msg", tag[:-1])
+    assert not poly.verify(b"msg", tag + b"\x00")
+
+
 def test_aead_aes():
     aead = AEAD(b"k" * 32, "aes-256-gcm")
     ct = aead.encrypt(b"data")
@@ -118,6 +142,9 @@ if __name__ == "__main__":
     test_chacha20_invalid_key()
     test_poly1305_mac_verify()
     test_poly1305_wrong_key()
+    test_poly1305_rfc8439_known_answer()
+    test_poly1305_empty_message()
+    test_poly1305_rejects_tampered_tag_length()
     test_aead_aes()
     test_aead_chacha()
     test_aead_with_aad()
