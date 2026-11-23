@@ -14,6 +14,13 @@ def _T(arr):
     return Tensor(np.asarray(arr, dtype=np.float64), dtype="float64")
 
 
+def test_as_tensor_with_python_list():
+    # Non-float inputs used to hit an undefined _resolve_dtype name.
+    t = F._as_tensor([1, 2, 3])
+    assert isinstance(t, Tensor)
+    assert np.allclose(t.data, [1, 2, 3])
+
+
 def test_jvp_scalar():
     # f(a,b) = a^2 * b + a^3, analytic jvp = (2ab+3a^2)*ta + a^2*tb
     def f(a, b):

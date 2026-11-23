@@ -10,7 +10,7 @@ requiring a separate forward tape.
 
 import numpy as np
 
-from .tensor import Tensor
+from .tensor import Tensor, _resolve_dtype
 from .autograd import _wrap_tensor_backward
 
 
