@@ -9,14 +9,18 @@
 
 All tools support passing root directory as first argument. Defaults to current directory.
 
+These are legacy single-purpose scripts. For consistent exclusions and
+machine-readable output, prefer the unified scanner `ctm.py` documented in
+`README.md`.
+
 ## Usage Examples
 
-`ash
+```bash
 python ctm_tools/py/ctm_count_files_by_ext.py .
 python ctm_tools/py/ctm_largest_files.py . 30
 python ctm_tools/py/ctm_count_empty_files.py .
 python ctm_tools/py/ctm_dir_sizes.py .
-`
+```
 
 ## Ignored Patterns
 
