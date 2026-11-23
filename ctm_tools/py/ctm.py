@@ -221,7 +221,9 @@ def scan(root: str | Path, include_other_text: bool = False) -> dict[str, Any]:
     if not base.is_dir():
         raise NotADirectoryError(f"scan root is not a directory: {base}")
 
-    languages: dict[str, dict[str, int]] = defaultdict(lambda: {"files": 0, "loc": 0, "bytes": 0})
+    languages: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"files": 0, "loc": 0, "bytes": 0}
+    )
     files = dirs = total_bytes = loc = skipped_binary = unreadable = 0
 
     for current, dirnames, filenames in os.walk(base, topdown=True, followlinks=False):
@@ -292,7 +294,9 @@ def render_csv(report: dict[str, Any]) -> str:
     writer.writerow(["language", "files", "loc", "bytes"])
     for language, metrics in report["languages"].items():
         writer.writerow([language, metrics["files"], metrics["loc"], metrics["bytes"]])
-    writer.writerow(["TOTAL", report["files"], report["lines_of_code"], report["bytes"]])
+    writer.writerow(
+        ["TOTAL", report["files"], report["lines_of_code"], report["bytes"]]
+    )
     return stream.getvalue()
 
 
@@ -306,7 +310,10 @@ def render_html(report: dict[str, Any]) -> str:
             f"<td>{metrics['files']:,}</td><td>{metrics['loc']:,}</td>"
             f"<td>{metrics['bytes']:,}</td></tr>"
         )
-    table_rows = "\n".join(rows) or '<tr><td colspan="4">No supported text files found.</td></tr>'
+    table_rows = (
+        "\n".join(rows)
+        or '<tr><td colspan="4">No supported text files found.</td></tr>'
+    )
     git = report.get("git")
     git_summary = (
         f"<p>Tracked files: {git['tracked_files']:,} · Untracked files: {git['untracked_files']:,}</p>"
@@ -366,7 +373,9 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="directory to scan (default: current directory)",
     )
-    parser.add_argument("--format", choices=("text", "json", "csv", "html"), default="text")
+    parser.add_argument(
+        "--format", choices=("text", "json", "csv", "html"), default="text"
+    )
     parser.add_argument("--output", help="write report to a file instead of stdout")
     parser.add_argument(
         "--include-other-text",
@@ -396,7 +405,9 @@ def main(argv: list[str] | None = None) -> int:
             f"Unreadable: {report['unreadable_files']}\n"
         )
         for language, metrics in report["languages"].items():
-            rendered += f"  {language}: {metrics['files']} files, {metrics['loc']} LOC\n"
+            rendered += (
+                f"  {language}: {metrics['files']} files, {metrics['loc']} LOC\n"
+            )
         if "git" in report:
             rendered += (
                 f"Git tracked: {report['git']['tracked_files']}\n"
@@ -404,7 +415,9 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     if args.output:
-        with Path(args.output).expanduser().open("w", encoding="utf-8", newline="") as output_file:
+        with Path(args.output).expanduser().open(
+            "w", encoding="utf-8", newline=""
+        ) as output_file:
             output_file.write(rendered)
     else:
         sys.stdout.write(rendered)

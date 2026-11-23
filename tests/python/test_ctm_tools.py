@@ -15,7 +15,9 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
+LARGE_SPEC = importlib.util.spec_from_file_location(
+    "ctm_large_files", LARGE_MODULE_PATH
+)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -26,7 +28,9 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "ignored.py").write_text(
+        "bad = True\n", encoding="utf-8"
+    )
 
     report = ctm.scan(tmp_path)
 
