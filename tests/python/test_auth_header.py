@@ -32,6 +32,24 @@ def test_bearer_scheme_rejects_unknown_tokens():
     assert authenticator.authenticate("Bearer another-token") is None
 
 
+def test_static_key_uses_constant_time_comparison(monkeypatch):
+    import SneppX_ALG.interface_bindings.security_middleware as middleware_module
+
+    real_compare = middleware_module.hmac.compare_digest
+    calls = []
+
+    def spy_compare(a, b):
+        calls.append((a, b))
+        return real_compare(a, b)
+
+    monkeypatch.setattr(middleware_module.hmac, "compare_digest", spy_compare)
+    authenticator = Authenticator(AuthConfig(mode="api_key", api_keys=["secret-key"]))
+
+    assert authenticator.authenticate("secret-key") is not None
+    assert authenticator.authenticate("wrong-key") is None
+    assert calls
+
+
 def test_static_key_uses_configured_rate_limit():
     middleware = SecurityMiddleware(
         SecurityConfig(

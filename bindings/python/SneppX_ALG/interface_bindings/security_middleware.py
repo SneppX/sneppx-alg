@@ -2,6 +2,7 @@
 
 import os
 import time
+import hmac
 import hashlib
 import logging
 import re
@@ -351,6 +352,17 @@ class Authenticator:
     def mode(self) -> str:
         return self._config.mode
 
+    def _static_key_info(self, token: str) -> Optional[Dict[str, Any]]:
+        """Return info for a configured static key using constant-time matching."""
+        encoded = token.encode("utf-8")
+        for key in self._key_set:
+            if hmac.compare_digest(encoded, key.encode("utf-8")):
+                return {
+                    "user_id": f"user_{hashlib.sha256(token.encode()).hexdigest()[:16]}",
+                    "tier": "static",
+                }
+        return None
+
     @staticmethod
     def _validate_session_token(token: str) -> Optional[Dict[str, Any]]:
         if not token.startswith("sxs_"):
@@ -383,12 +395,7 @@ class Authenticator:
                 info = self._key_manager.validate_key(token)
                 if info:
                     return info
-            if token in self._key_set:
-                return {
-                    "user_id": f"user_{hashlib.sha256(token.encode()).hexdigest()[:16]}",
-                    "tier": "static",
-                }
-            return None
+            return self._static_key_info(token)
         if self._config.mode == "api_key":
             key = self._extract_bearer(authorization) or authorization.strip()
             if not key:
@@ -400,12 +407,7 @@ class Authenticator:
                 info = self._key_manager.validate_key(key)
                 if info:
                     return info
-            if key in self._key_set:
-                return {
-                    "user_id": f"user_{hashlib.sha256(key.encode()).hexdigest()[:16]}",
-                    "tier": "static",
-                }
-            return None
+            return self._static_key_info(key)
         return None
 
     @staticmethod
