@@ -68,6 +68,8 @@ int SNEPPX_entropy_pool_add(SNEPPXEntropyPool* ep, SNEPPXEntropySource src, cons
 {
     if (!ep || !data || len == 0)
         return -1;
+    if ((int) src < 0 || src >= SNEPPX_ENTROPY_SOURCES)
+        return -1;
     uint8_t sip_key[16] = {0};
     SNEPPXSipHash sh;
     SNEPPX_siphash_init(&sh, sip_key);
@@ -167,9 +169,8 @@ int SNEPPX_entropy_pool_add_os(SNEPPXEntropyPool* ep)
 
     if (!got)
     {
-        srand((unsigned) time(NULL));
-        for (int i = 0; i < 32; i++)
-            buf[i] = (uint8_t) (rand() % 256);
+        ep->source_available[SNEPPX_ENTROPY_SOURCE_OS] = 0;
+        return -1;
     }
     return SNEPPX_entropy_pool_add(ep, SNEPPX_ENTROPY_SOURCE_OS, buf, sizeof(buf));
 }
@@ -183,9 +184,9 @@ int SNEPPX_entropy_pool_collect(SNEPPXEntropyPool* ep)
 {
     if (!ep)
         return -1;
-    SNEPPX_entropy_pool_add_rdtsc(ep);
-    SNEPPX_entropy_pool_add_os(ep);
-    return 0;
+    if (SNEPPX_entropy_pool_add_rdtsc(ep) != 0)
+        return -1;
+    return SNEPPX_entropy_pool_add_os(ep);
 }
 
 /**
@@ -200,8 +201,9 @@ int SNEPPX_entropy_pool_get(SNEPPXEntropyPool* ep, uint8_t* out, size_t out_len)
 {
     if (!ep || !out)
         return -1;
-    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD)
-        SNEPPX_entropy_pool_collect(ep);
+    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD &&
+        SNEPPX_entropy_pool_collect(ep) != 0)
+        return -1;
     uint8_t sip_key[16];
     memcpy(sip_key, ep->pool, 16);
     SNEPPXSipHash sh;
