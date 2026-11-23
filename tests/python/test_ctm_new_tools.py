@@ -14,6 +14,7 @@ import ctm_count_headers  # noqa: E402
 import ctm_diff_loc  # noqa: E402
 import ctm_list_large_files  # noqa: E402
 import ctm_recent_files  # noqa: E402
+import ctm_todo_scan  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -133,3 +134,18 @@ def test_all_new_tools_run_as_scripts(tmp_path):
         )
         payload = json.loads(result.stdout)
         assert payload["tool"] == tool
+
+
+def test_todo_scan_finds_markers_with_line_numbers(tmp_path):
+    (tmp_path / "a.py").write_text(
+        "# TODO: add tests\n# FIXME: handle None\nx = 1  # HACK\n", encoding="utf-8"
+    )
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "b.py").write_text("# TODO ignored\n", encoding="utf-8")
+
+    report = ctm_todo_scan.todo_scan(tmp_path)
+
+    assert report["total"] == 3
+    assert report["counts"] == {"FIXME": 1, "HACK": 1, "TODO": 1}
+    assert report["occurrences"][0]["line"] == 1
+    assert all("node_modules" not in item["path"] for item in report["occurrences"])
