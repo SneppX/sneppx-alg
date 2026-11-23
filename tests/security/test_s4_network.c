@@ -130,6 +130,75 @@ static void test_transport_sequence_tracking(void)
     SNEPPX_transport_shutdown(&ts);
 }
 
+static void test_transport_aead(void)
+{
+    SNEPPXTransportSecurity ts;
+    SX_ASSERT(SNEPPX_transport_init(&ts) == 0, "init");
+    int sid = SNEPPX_transport_new_session(&ts, NULL, 0);
+    SX_ASSERT(sid >= 0, "new session");
+
+    uint8_t plaintext[] = "aad protected message";
+    uint8_t aad[] = "session-context";
+    uint8_t ciphertext[64];
+    uint8_t nonce[SNEPPX_TLS_NONCE_LEN];
+    uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN];
+    uint8_t decrypted[64];
+    size_t len = strlen((char*) plaintext) + 1;
+    size_t aad_len = strlen((char*) aad) + 1;
+
+    SX_ASSERT(SNEPPX_transport_encrypt_aead(&ts, sid, plaintext, len, aad, aad_len, ciphertext, nonce, tag) == 0,
+              "encrypt aead");
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, ciphertext, len, aad, aad_len, nonce, tag, decrypted) == 0,
+              "decrypt aead");
+    SX_ASSERT(memcmp(plaintext, decrypted, len) == 0, "aead roundtrip");
+
+    uint8_t bad_aad[sizeof(aad)];
+    memcpy(bad_aad, aad, sizeof(aad));
+    bad_aad[0] ^= 1;
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, ciphertext, len, bad_aad, aad_len, nonce, tag, decrypted) == -1,
+              "tampered aad rejected");
+
+    uint8_t bad_tag[SNEPPX_TRANSPORT_AAD_TAG_LEN];
+    memcpy(bad_tag, tag, sizeof(tag));
+    bad_tag[0] ^= 1;
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, ciphertext, len, aad, aad_len, nonce, bad_tag, decrypted) == -1,
+              "tampered tag rejected");
+
+    uint8_t bad_ciphertext[sizeof(ciphertext)];
+    memcpy(bad_ciphertext, ciphertext, sizeof(ciphertext));
+    bad_ciphertext[0] ^= 1;
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, bad_ciphertext, len, aad, aad_len, nonce, tag, decrypted) == -1,
+              "tampered ciphertext rejected");
+
+    uint8_t legacy_ciphertext[64];
+    uint8_t legacy_nonce[SNEPPX_TLS_NONCE_LEN];
+    SX_ASSERT(SNEPPX_transport_encrypt_with_aad(&ts, sid, plaintext, len, aad, aad_len, legacy_ciphertext,
+                                                 legacy_nonce) == 0,
+              "encrypt with aad");
+    SX_ASSERT(SNEPPX_transport_decrypt_with_aad(&ts, sid, legacy_ciphertext, len, aad, aad_len, legacy_nonce,
+                                                decrypted) == 0,
+              "decrypt with aad");
+    SX_ASSERT(memcmp(plaintext, decrypted, len) == 0, "aad roundtrip");
+
+    uint8_t empty_ciphertext[64];
+    uint8_t empty_nonce[SNEPPX_TLS_NONCE_LEN];
+    SX_ASSERT(SNEPPX_transport_encrypt_aead(&ts, sid, plaintext, len, NULL, 0, empty_ciphertext, empty_nonce, tag) == 0,
+              "null aad accepted when length is zero");
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, empty_ciphertext, len, NULL, 0, empty_nonce, tag, decrypted) == 0,
+              "null aad decrypt accepted when length is zero");
+
+    SX_ASSERT(SNEPPX_transport_encrypt_with_aad(&ts, sid, plaintext, len, NULL, 1, ciphertext, nonce) == -1,
+              "null aad rejected when length is nonzero");
+    SX_ASSERT(SNEPPX_transport_decrypt_with_aad(&ts, sid, ciphertext, len, NULL, 1, nonce, decrypted) == -1,
+              "null aad decrypt rejected when length is nonzero");
+    SX_ASSERT(SNEPPX_transport_encrypt_aead(&ts, sid, plaintext, len, NULL, 1, ciphertext, nonce, tag) == -1,
+              "null aad aead rejected when length is nonzero");
+    SX_ASSERT(SNEPPX_transport_decrypt_aead(&ts, sid, ciphertext, len, NULL, 1, nonce, tag, decrypted) == -1,
+              "null aad aead decrypt rejected when length is nonzero");
+
+    SNEPPX_transport_shutdown(&ts);
+}
+
 static void test_transport_noise_handshake(void)
 {
     SNEPPXTransportSecurity ts;
@@ -197,6 +266,10 @@ TEST(test_s4_network, transport_rejects_xor_aes_mode)
 TEST(test_s4_network, transport_sequence_tracking)
 {
     test_transport_sequence_tracking();
+}
+TEST(test_s4_network, transport_aead)
+{
+    test_transport_aead();
 }
 TEST(test_s4_network, transport_noise_handshake)
 {

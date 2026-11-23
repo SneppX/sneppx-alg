@@ -31,6 +31,7 @@ extern "C"
 #define SNEPPX_TLS_MAX_SESSIONS 64
 #define SNEPPX_TLS_KEY_LEN 32
 #define SNEPPX_TLS_NONCE_LEN 12
+#define SNEPPX_TRANSPORT_AAD_TAG_LEN 32
 
     typedef struct
     {
@@ -109,6 +110,32 @@ extern "C"
      */
     int SNEPPX_transport_decrypt(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext, size_t len,
                                  const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t* plaintext);
+    /**
+     * @brief Encrypt with associated data (no integrity tag).
+     *
+     * Pairs with SNEPPX_transport_decrypt_with_aad. AAD is bound to the nonce;
+     * use the *_aead variants below when tamper detection is required.
+     */
+    int SNEPPX_transport_encrypt_with_aad(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* plaintext,
+                                          size_t len, const uint8_t* aad, size_t aad_len, uint8_t* ciphertext,
+                                          uint8_t nonce[SNEPPX_TLS_NONCE_LEN]);
+    int SNEPPX_transport_decrypt_with_aad(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext,
+                                          size_t len, const uint8_t* aad, size_t aad_len,
+                                          const uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint8_t* plaintext);
+    /**
+     * @brief Encrypt with associated data and an HMAC-SHA256 integrity tag.
+     */
+    int SNEPPX_transport_encrypt_aead(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* plaintext, size_t len,
+                                      const uint8_t* aad, size_t aad_len, uint8_t* ciphertext,
+                                      uint8_t nonce[SNEPPX_TLS_NONCE_LEN],
+                                      uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN]);
+    /**
+     * @brief Decrypt with associated data and verify the HMAC-SHA256 tag.
+     */
+    int SNEPPX_transport_decrypt_aead(SNEPPXTransportSecurity* ts, int session_id, const uint8_t* ciphertext,
+                                      size_t len, const uint8_t* aad, size_t aad_len,
+                                      const uint8_t nonce[SNEPPX_TLS_NONCE_LEN],
+                                      const uint8_t tag[SNEPPX_TRANSPORT_AAD_TAG_LEN], uint8_t* plaintext);
     /**
      * @brief Perform Transport Noise Handshake.
      *
