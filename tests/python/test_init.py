@@ -52,16 +52,13 @@ def test_normal_mean_std():
 
 
 def test_xavier_uniform_variance():
-    # For a square weight the uniform bound is gain*sqrt(3/(fan_in+fan_out));
-    # check the realised std ~ gain/sqrt(fan_in+fan_out).
+    # PyTorch uses bound = gain*sqrt(6/(fan_in+fan_out)); uniform(-b, b) then
+    # has std = b/sqrt(3) = gain*sqrt(2/(fan_in+fan_out)), matching
+    # xavier_normal_.
     t = Tensor(np.zeros((100, 100), dtype="float32"))
     init.xavier_uniform_(t, gain=1.0)
     _, std, _, _ = _stats(t)
-    expected_std = math.sqrt(
-        1.0 / (100 + 100)
-    )  # gain*sqrt(2/(fan_in+fan_out)) for normal-equiv
-    # uniform(-b,b) has std = b/sqrt(3); b = sqrt(3/(fan_in+fan_out))
-    expected_std = math.sqrt(3.0 / (100 + 100)) / math.sqrt(3.0)
+    expected_std = math.sqrt(2.0 / (100 + 100))
     assert abs(std - expected_std) < 0.02
 
 

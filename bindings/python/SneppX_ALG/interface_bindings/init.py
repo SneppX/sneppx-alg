@@ -114,7 +114,7 @@ def _rand_dtype(tensor):
 
 def xavier_uniform_(tensor: Tensor, gain: float = 1.0) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor.shape)
-    bound = gain * math.sqrt(3.0 / (fan_in + fan_out))
+    bound = gain * math.sqrt(6.0 / (fan_in + fan_out))
     return uniform_(tensor, -bound, bound)
 
 
