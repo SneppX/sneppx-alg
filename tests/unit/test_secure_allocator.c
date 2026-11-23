@@ -85,6 +85,15 @@ static void test_secure_alloc_large(void)
     SNEPPX_secure_allocator_destroy(&alloc);
 }
 
+static void test_secure_alloc_rejects_overflowing_size(void)
+{
+    SNEPPXSecureAllocator alloc;
+    SNEPPX_secure_allocator_init(&alloc);
+    void* p = SNEPPX_secure_alloc(&alloc, SIZE_MAX, 16);
+    SX_ASSERT(p == NULL, "overflowing allocation rejected");
+    SNEPPX_secure_allocator_destroy(&alloc);
+}
+
 TEST(test_secure_allocator, secure_alloc_free)
 {
     test_secure_alloc_free();
@@ -96,4 +105,9 @@ TEST(test_secure_allocator, secure_alloc_zero)
 TEST(test_secure_allocator, secure_alloc_large)
 {
     test_secure_alloc_large();
+}
+
+TEST(test_secure_allocator, secure_alloc_rejects_overflowing_size)
+{
+    test_secure_alloc_rejects_overflowing_size();
 }
