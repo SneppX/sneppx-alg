@@ -21,7 +21,8 @@ def recent_files(
     base = Path(root).expanduser().resolve()
     files: list[dict[str, Any]] = []
     unreadable = 0
-    for path in ctm.text_files(base, include_other_text=include_other_text):
+    # Stat-only tool: path-level filters are enough, so avoid reading contents.
+    for path in ctm.iter_files(base, include_other_text=include_other_text):
         try:
             stat = path.stat()
         except OSError:
