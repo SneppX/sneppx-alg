@@ -89,6 +89,30 @@ def test_grad_scaler_state_dict():
     assert scaler2.scale == 64.0
 
 
+def test_grad_scaler_state_dict_round_trips_all_params():
+    scaler = GradScaler(
+        init_scale=64.0, growth_factor=3.0, backoff_factor=0.25, growth_interval=7
+    )
+    scaler._growth_tracker = 4
+    state = scaler.state_dict()
+    assert state["growth_factor"] == 3.0
+    assert state["backoff_factor"] == 0.25
+    assert state["growth_interval"] == 7
+
+    restored = GradScaler()
+    restored.load_state_dict(state)
+    assert restored.scale == 64.0
+    assert restored._growth_factor == 3.0
+    assert restored._backoff_factor == 0.25
+    assert restored._growth_interval == 7
+    assert restored._growth_tracker == 4
+
+    # Legacy checkpoints used ``growth_tracker`` without the leading underscore.
+    legacy = GradScaler()
+    legacy.load_state_dict({"scale": 8.0, "growth_tracker": 2})
+    assert legacy.scale == 8.0 and legacy._growth_tracker == 2
+
+
 def test_grad_scaler_growth_interval():
     scaler = GradScaler(init_scale=16.0, growth_interval=3)
     opt = DummyOptimizer()
@@ -128,6 +152,6 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"  FAIL {name}: {e}")
                 failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)

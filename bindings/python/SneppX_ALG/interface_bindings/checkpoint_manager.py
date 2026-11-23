@@ -107,13 +107,29 @@ class CheckpointManager:
             },
         }
         if hasattr(trainer, "scaler") and trainer.scaler is not None:
-            state["scaler_state"] = {
-                "scale": trainer.scaler.scale,
-                "growth_factor": trainer.scaler.growth_factor,
-                "backoff_factor": trainer.scaler.backoff_factor,
-                "growth_interval": trainer.scaler.growth_interval,
-                "_growth_tracker": getattr(trainer.scaler, "_growth_tracker", 0),
-            }
+            scaler = trainer.scaler
+            if hasattr(scaler, "state_dict"):
+                # GradScaler exposes read-only properties, so delegate to its
+                # own serialisation rather than assigning to them on restore.
+                state["scaler_state"] = scaler.state_dict()
+            else:
+                state["scaler_state"] = {
+                    "scale": getattr(scaler, "_scale", getattr(scaler, "scale", 1.0)),
+                    "growth_factor": getattr(
+                        scaler, "_growth_factor", getattr(scaler, "growth_factor", 2.0)
+                    ),
+                    "backoff_factor": getattr(
+                        scaler,
+                        "_backoff_factor",
+                        getattr(scaler, "backoff_factor", 0.5),
+                    ),
+                    "growth_interval": getattr(
+                        scaler,
+                        "_growth_interval",
+                        getattr(scaler, "growth_interval", 2000),
+                    ),
+                    "_growth_tracker": getattr(scaler, "_growth_tracker", 0),
+                }
         return state
 
     def _restore_trainer_state(self, trainer, state: dict):
@@ -135,11 +151,15 @@ class CheckpointManager:
             trainer.optimizer.load_state_dict(opt_sd)
         scaler_sd = state.get("scaler_state")
         if scaler_sd and hasattr(trainer, "scaler") and trainer.scaler is not None:
-            trainer.scaler.scale = scaler_sd["scale"]
-            trainer.scaler.growth_factor = scaler_sd["growth_factor"]
-            trainer.scaler.backoff_factor = scaler_sd["backoff_factor"]
-            trainer.scaler.growth_interval = scaler_sd["growth_interval"]
-            trainer.scaler._growth_tracker = scaler_sd.get("_growth_tracker", 0)
+            scaler = trainer.scaler
+            if hasattr(scaler, "load_state_dict"):
+                scaler.load_state_dict(scaler_sd)
+            else:
+                scaler._scale = scaler_sd["scale"]
+                scaler._growth_factor = scaler_sd["growth_factor"]
+                scaler._backoff_factor = scaler_sd["backoff_factor"]
+                scaler._growth_interval = scaler_sd["growth_interval"]
+                scaler._growth_tracker = scaler_sd.get("_growth_tracker", 0)
 
     def _do_save(self, path: str, state: dict):
         if self.save_format == "binary":

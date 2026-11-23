@@ -16,6 +16,7 @@ from SneppX_ALG.interface_bindings import (
     TrainerV3,
     CheckpointManager,
 )
+from SneppX_ALG.interface_bindings.amp import GradScaler
 
 
 def _make_model():
@@ -67,6 +68,30 @@ def test_checkpoint_save_and_load():
         assert loaded
         assert np.allclose(trainer.model.weight.data, original_w)
     print("  test_checkpoint_save_and_load PASS")
+
+
+def test_checkpoint_scaler_state_round_trip():
+    with tempfile.TemporaryDirectory() as tmp:
+        trainer = _make_trainer(tmp)
+        trainer.scaler = GradScaler(
+            init_scale=64.0, growth_factor=3.0, backoff_factor=0.25, growth_interval=7
+        )
+        mgr = trainer.checkpoint_manager
+        state = mgr._build_trainer_state(trainer)
+        assert state["scaler_state"]["scale"] == 64.0
+
+        # Mutate the live scaler, then restore from the captured state.
+        trainer.scaler.update(2.0)
+        trainer.scaler._growth_factor = 99.0
+        trainer.scaler._backoff_factor = 99.0
+        trainer.scaler._growth_interval = 99
+        mgr._restore_trainer_state(trainer, state)
+
+        assert trainer.scaler.scale == 64.0
+        assert trainer.scaler._growth_factor == 3.0
+        assert trainer.scaler._backoff_factor == 0.25
+        assert trainer.scaler._growth_interval == 7
+    print("  test_checkpoint_scaler_state_round_trip PASS")
 
 
 def test_checkpoint_best_retention():

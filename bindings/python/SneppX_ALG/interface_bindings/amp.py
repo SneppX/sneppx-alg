@@ -137,13 +137,26 @@ class GradScaler:
 
     def load_state_dict(self, state: dict) -> None:
         self._scale = state.get("scale", self._scale)
-        self._growth_tracker = state.get("growth_tracker", 0)
+        # ``growth_tracker`` is the legacy key; checkpoints written by
+        # CheckpointManager use the underscored form.
+        self._growth_tracker = state.get(
+            "_growth_tracker", state.get("growth_tracker", 0)
+        )
         self._found_inf = state.get("found_inf", False)
+        if "growth_factor" in state:
+            self._growth_factor = float(state["growth_factor"])
+        if "backoff_factor" in state:
+            self._backoff_factor = float(state["backoff_factor"])
+        if "growth_interval" in state:
+            self._growth_interval = int(state["growth_interval"])
 
     def state_dict(self) -> dict:
         return {
             "scale": self._scale,
-            "growth_tracker": self._growth_tracker,
+            "growth_factor": self._growth_factor,
+            "backoff_factor": self._backoff_factor,
+            "growth_interval": self._growth_interval,
+            "_growth_tracker": self._growth_tracker,
             "found_inf": self._found_inf,
         }
 
