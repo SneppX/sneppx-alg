@@ -48,6 +48,7 @@ class SchedulerConfig:
     max_batch_size: int = 32
     max_waiting_ms: float = 10.0
     max_total_tokens: int = 4096
+    max_queue_size: int = 1024
     schedule_strategy: str = "fcfs"
 
 
@@ -80,19 +81,21 @@ class ContinuousBatchScheduler:
         top_k: int = 0,
         top_p: float = 1.0,
     ) -> str:
-        req_id = f"req_{int(time.time() * 1000)}_{self._next_id}"
-        self._next_id += 1
-        req = ScheduledRequest(
-            id=req_id,
-            prompt=prompt,
-            prompt_tokens=prompt_tokens,
-            max_new_tokens=max_new_tokens,
-            priority=priority,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-        )
         with self._lock:
+            if len(self._pending) >= self.config.max_queue_size:
+                raise RuntimeError("continuous batching queue is full")
+            req_id = f"req_{int(time.time() * 1000)}_{self._next_id}"
+            self._next_id += 1
+            req = ScheduledRequest(
+                id=req_id,
+                prompt=prompt,
+                prompt_tokens=prompt_tokens,
+                max_new_tokens=max_new_tokens,
+                priority=priority,
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+            )
             self._pending.append(req)
         return req_id
 
@@ -174,11 +177,7 @@ def continuous_generate_loop(
         next_tokens, kv_caches = model_fn(input_ids, positions)
 
         for i, req in enumerate(batch):
-            next_id = (
-                next_tokens[i][0]
-                if isinstance(next_tokens[i], list)
-                else next_tokens[i]
-            )
+            next_id = next_tokens[i][0] if isinstance(next_tokens[i], list) else next_tokens[i]
             req.generated_tokens.append(next_id)
 
             if len(req.generated_tokens) >= req.max_new_tokens:
