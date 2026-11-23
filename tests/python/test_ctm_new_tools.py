@@ -9,6 +9,7 @@ if str(PY_DIR) not in sys.path:
     sys.path.insert(0, str(PY_DIR))
 
 import ctm_count_functions  # noqa: E402
+import ctm_count_headers  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -32,3 +33,22 @@ def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
     assert report["files_scanned"] == 3
     assert report["heuristic"] is True
     assert json.loads(ctm_count_functions.render(report, "json"))["functions"] == 5
+
+
+def test_count_headers_classifies_headers_and_sources(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "a.c").write_text("int main(void) { return 0; }\n", encoding="utf-8")
+    (tmp_path / "src" / "b.h").write_text("#pragma once\n", encoding="utf-8")
+    (tmp_path / "src" / "c.hpp").write_text("#pragma once\n", encoding="utf-8")
+    (tmp_path / "notes.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.h").write_text("x\n", encoding="utf-8")
+
+    report = ctm_count_headers.count_headers(tmp_path)
+
+    assert report["header_files"] == 2
+    assert report["source_files"] == 1
+    assert report["headers_per_source"] == 2.0
+    assert report["files_scanned"] == 4
+    assert report["headers"] == ["src/b.h", "src/c.hpp"]
+    assert report["by_language"]["Python"] == 1
