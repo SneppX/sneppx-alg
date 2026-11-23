@@ -12,6 +12,7 @@ import ctm_count_functions  # noqa: E402
 import ctm_count_headers  # noqa: E402
 import ctm_diff_loc  # noqa: E402
 import ctm_list_large_files  # noqa: E402
+import ctm_recent_files  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -89,3 +90,24 @@ def test_list_large_files_sorts_and_formats_sizes(tmp_path):
     assert [item["path"] for item in report["files"]] == ["large.bin", "small.bin"]
     assert report["files"][0]["size"] == "2.0 KiB"
     assert "2.0 KiB  large.bin" in ctm_list_large_files.render(report, "text")
+
+
+def test_recent_files_orders_by_mtime_and_honors_limit(tmp_path):
+    import os
+    import time
+
+    old = tmp_path / "old.py"
+    recent = tmp_path / "recent.py"
+    ignored = tmp_path / "node_modules" / "ignored.py"
+    tmp_path.joinpath("node_modules").mkdir()
+    for path in (old, recent, ignored):
+        path.write_text("x = 1\n", encoding="utf-8")
+    now = time.time()
+    os.utime(old, (now - 1000, now - 1000))
+    os.utime(recent, (now, now))
+
+    report = ctm_recent_files.recent_files(tmp_path, limit=1)
+
+    assert [item["path"] for item in report["files"]] == ["recent.py"]
+    assert report["files"][0]["modified"].endswith("+00:00")
+    assert len(json.loads(ctm_recent_files.render(report, "json"))["files"]) == 1
