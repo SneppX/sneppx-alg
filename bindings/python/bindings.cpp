@@ -164,11 +164,17 @@ static std::vector<size_t> pyarray_to_sizevec(py::array a, size_t max_dims = 0)
 }
 
 // ---- Include split module files ----
-#include "bindings/autograd_bindings.cpp"
-#include "bindings/crypto_bindings.cpp"
-#include "bindings/npe_extra_bindings.cpp"
-#include "bindings/optim_model_bindings.cpp"
+// Include order matters in this single translation unit: PyTensor is defined
+// by tensor_bindings.cpp, PyModel by optim_model_bindings.cpp, and both are
+// used by later modules. clang-format would alphabetize this block and break
+// the build, so keep it explicitly ordered.
+// clang-format off
 #include "bindings/tensor_bindings.cpp"
+#include "bindings/crypto_bindings.cpp"
+#include "bindings/optim_model_bindings.cpp"
+#include "bindings/npe_extra_bindings.cpp"
+#include "bindings/autograd_bindings.cpp"
+// clang-format on
 
 // ---------------------------------------------------------------------------
 // Python module
