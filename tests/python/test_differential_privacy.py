@@ -46,6 +46,21 @@ def test_gaussian_mech():
     print("  test_gaussian_mech PASS")
 
 
+def test_noise_uses_os_entropy_not_legacy_numpy_rng():
+    np.random.seed(123)
+    a = LaplaceMech(epsilon=1.0).apply(np.zeros(32))
+    np.random.seed(123)
+    b = LaplaceMech(epsilon=1.0).apply(np.zeros(32))
+    assert not np.array_equal(a, b)
+
+    np.random.seed(123)
+    c = GaussianMech(epsilon=1.0).apply(np.zeros(32))
+    np.random.seed(123)
+    d = GaussianMech(epsilon=1.0).apply(np.zeros(32))
+    assert not np.array_equal(c, d)
+    assert np.all(np.isfinite(a)) and np.all(np.isfinite(c))
+
+
 # ===========================================================================
 #  PrivacyBudget
 # ===========================================================================

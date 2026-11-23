@@ -1,6 +1,7 @@
 """Differential Privacy — Laplace/Gaussian mechanisms, RDP accountant, DP-SGD."""
 
 import math
+import os
 import json
 import numpy as np
 from typing import Optional, List, Tuple, Dict, Union
@@ -9,6 +10,25 @@ from typing import Optional, List, Tuple, Dict, Union
 # ===========================================================================
 #  Noise Mechanisms
 # ===========================================================================
+
+
+def _secure_uniform(shape) -> np.ndarray:
+    """Uniform samples in [0, 1) drawn directly from OS entropy (CSPRNG)."""
+    count = int(np.prod(shape)) if shape else 1
+    words = np.frombuffer(os.urandom(8 * max(count, 1)), dtype=np.uint64)
+    return (words >> 11).astype(np.float64).reshape(shape) / float(1 << 53)
+
+
+def _secure_laplace(scale: float, shape) -> np.ndarray:
+    u = _secure_uniform(shape) - 0.5
+    u = np.where(u == 0.0, 0.5 / float(1 << 53), u)
+    return -scale * np.sign(u) * np.log1p(-2.0 * np.abs(u))
+
+
+def _secure_normal(sigma: float, shape) -> np.ndarray:
+    u1 = np.maximum(_secure_uniform(shape), 0.5 / float(1 << 53))
+    u2 = _secure_uniform(shape)
+    return sigma * np.sqrt(-2.0 * np.log(u1)) * np.cos(2.0 * math.pi * u2)
 
 
 class LaplaceMech:
@@ -26,7 +46,7 @@ class LaplaceMech:
         self, value: Union[float, np.ndarray], sensitivity: float = 1.0
     ) -> np.ndarray:
         scale = sensitivity / self.epsilon
-        noise = np.random.laplace(0, scale, size=np.shape(value))
+        noise = _secure_laplace(scale, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
 
 
@@ -49,7 +69,7 @@ class GaussianMech:
         self, value: Union[float, np.ndarray], sensitivity: float = 1.0
     ) -> np.ndarray:
         sigma = sensitivity * math.sqrt(2 * math.log(1.25 / self.delta)) / self.epsilon
-        noise = np.random.normal(0, sigma, size=np.shape(value))
+        noise = _secure_normal(sigma, np.shape(value))
         return np.asarray(value, dtype=np.float64) + noise
 
 
@@ -330,9 +350,7 @@ class DPSGD:
         from .tensor import Tensor
 
         for i in range(len(self._params)):
-            noise = np.random.normal(0, sigma, size=self._params[i].data.shape).astype(
-                np.float64
-            )
+            noise = _secure_normal(sigma, self._params[i].data.shape)
             accumulated[i] += noise
             # Note: tensor.data returns a copy — must create a new Tensor to set grad
             self._params[i].grad = Tensor(
