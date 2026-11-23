@@ -47,4 +47,6 @@ def test_preflight_only_allowed_for_allowlisted_origin(tmp_path, monkeypatch):
 
         headers["Origin"] = "https://trusted.example"
         resp = client.options("/api/v1/models", headers=headers)
-        assert resp.headers.get("access-control-allow-origin") == ("https://trusted.example")
+        assert resp.headers.get("access-control-allow-origin") == (
+            "https://trusted.example"
+        )

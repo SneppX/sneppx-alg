@@ -2,7 +2,9 @@
 
 import sys, os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings import (
     KeyVault,
@@ -92,7 +94,9 @@ def _audit_logger():
     import tempfile
 
     tmpdir = tempfile.mkdtemp()
-    backend = FileAuditBackend(log_dir=tmpdir, max_file_size=10 * 1024 * 1024, compress=False)
+    backend = FileAuditBackend(
+        log_dir=tmpdir, max_file_size=10 * 1024 * 1024, compress=False
+    )
     return AuditLogger(backends=[backend]), tmpdir
 
 

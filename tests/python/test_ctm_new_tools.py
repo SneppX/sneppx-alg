@@ -37,7 +37,9 @@ def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
         encoding="utf-8",
     )
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "ignored.py").write_text("def nope(): pass\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "ignored.py").write_text(
+        "def nope(): pass\n", encoding="utf-8"
+    )
 
     report = ctm_count_functions.count_functions(tmp_path)
 
@@ -50,7 +52,9 @@ def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
 
 def test_count_headers_classifies_headers_and_sources(tmp_path):
     (tmp_path / "src").mkdir()
-    (tmp_path / "src" / "a.c").write_text("int main(void) { return 0; }\n", encoding="utf-8")
+    (tmp_path / "src" / "a.c").write_text(
+        "int main(void) { return 0; }\n", encoding="utf-8"
+    )
     (tmp_path / "src" / "b.h").write_text("#pragma once\n", encoding="utf-8")
     (tmp_path / "src" / "c.hpp").write_text("#pragma once\n", encoding="utf-8")
     (tmp_path / "notes.py").write_text("x = 1\n", encoding="utf-8")
@@ -149,7 +153,9 @@ def test_todo_scan_finds_markers_with_line_numbers(tmp_path):
         "# TODO: add tests\n# FIXME: handle None\nx = 1  # HACK\n", encoding="utf-8"
     )
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "b.py").write_text("# TODO ignored\n", encoding="utf-8")
+    (tmp_path / "node_modules" / "b.py").write_text(
+        "# TODO ignored\n", encoding="utf-8"
+    )
 
     report = ctm_todo_scan.todo_scan(tmp_path)
 
@@ -172,7 +178,9 @@ def test_doc_links_flags_missing_relative_targets_only(tmp_path):
 
     assert report["links_checked"] == 3
     assert report["broken"] == 1
-    assert report["issues"] == [{"path": "docs/index.md", "line": 2, "target": "./missing.md"}]
+    assert report["issues"] == [
+        {"path": "docs/index.md", "line": 2, "target": "./missing.md"}
+    ]
 
 
 def test_duplicate_files_groups_identical_content(tmp_path):
@@ -191,7 +199,9 @@ def test_duplicate_files_groups_identical_content(tmp_path):
 
 def test_churn_aggregates_git_history(tmp_path):
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.email", "t@example.com"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "t@example.com"], cwd=tmp_path, check=True
+    )
     subprocess.run(["git", "config", "user.name", "T"], cwd=tmp_path, check=True)
     (tmp_path / "a.py").write_text("x = 1\ny = 2\n", encoding="utf-8")
     subprocess.run(["git", "add", "a.py"], cwd=tmp_path, check=True)
@@ -313,7 +323,9 @@ def test_trend_records_snapshots_and_computes_deltas(tmp_path):
     assert report["series"][0]["delta"]["lines_of_code"] == 0
     assert report["series"][1]["delta"]["lines_of_code"] == 2
     assert "LOC" in ctm_trend.render(report, "text")
-    assert "recorded_at,root,files,loc,bytes,loc_delta" in ctm_trend.render(report, "csv")
+    assert "recorded_at,root,files,loc,bytes,loc_delta" in ctm_trend.render(
+        report, "csv"
+    )
 
     # Malformed lines are skipped rather than breaking the trend.
     with (store / "history.jsonl").open("a", encoding="utf-8") as stream:
