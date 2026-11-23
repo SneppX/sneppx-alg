@@ -18,6 +18,7 @@ import ctm_todo_scan  # noqa: E402
 import ctm_doc_links  # noqa: E402
 import ctm_duplicate_files  # noqa: E402
 import ctm_churn  # noqa: E402
+import ctm_license_inventory  # noqa: E402
 
 
 def test_count_functions_counts_python_js_and_c_definitions(tmp_path):
@@ -201,3 +202,21 @@ def test_churn_aggregates_git_history(tmp_path):
     assert report["deletions"] == 1
     assert report["files"] == [{"path": "a.py", "changes": 2, "added": 2, "deleted": 1}]
     assert "path,changes,added,deleted" in ctm_churn.render(report, "csv")
+
+
+def test_license_inventory_finds_spdx_and_manifests(tmp_path):
+    (tmp_path / "a.py").write_text(
+        "# SPDX-License-Identifier: MIT\n# MIT License\n", encoding="utf-8"
+    )
+    (tmp_path / "b.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("[project]\n", encoding="utf-8")
+    (tmp_path / "LICENSE").write_text("MIT License\n", encoding="utf-8")
+
+    report = ctm_license_inventory.license_inventory(tmp_path)
+
+    assert report["files_with_license_header"] == 1
+    assert report["by_spdx"] == {"MIT": 1}
+    assert report["by_heuristic"] == {"MIT License": 1}
+    assert report["manifests"] == ["pyproject.toml"]
+    assert report["license_files"] == ["LICENSE"]
+    assert report["files"][0]["path"] == "a.py"
