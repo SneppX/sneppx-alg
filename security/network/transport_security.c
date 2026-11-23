@@ -41,8 +41,54 @@ static int use_aes_gcm = 0;
 static uint64_t session_rekey_time[SNEPPX_TLS_MAX_SESSIONS];
 static uint64_t session_timeouts[SNEPPX_TLS_MAX_SESSIONS];
 static uint64_t session_rekey_counter[SNEPPX_TLS_MAX_SESSIONS];
+static uint64_t session_tx_sequence[SNEPPX_TLS_MAX_SESSIONS];
+static uint64_t session_rx_sequence[SNEPPX_TLS_MAX_SESSIONS];
 static int session_handshake_done[SNEPPX_TLS_MAX_SESSIONS];
 static uint8_t session_aad_keys[SNEPPX_TLS_MAX_SESSIONS][16];
+
+static void transport_encode_sequence(uint8_t nonce[SNEPPX_TLS_NONCE_LEN], uint64_t sequence)
+{
+    for (int i = 0; i < 8; i++)
+        nonce[i] = (uint8_t) (sequence >> (56 - 8 * i));
+}
+
+static uint64_t transport_decode_sequence(const uint8_t nonce[SNEPPX_TLS_NONCE_LEN])
+{
+    uint64_t sequence = 0;
+    for (int i = 0; i < 8; i++)
+        sequence = (sequence << 8) | nonce[i];
+    return sequence;
+}
+
+static void transport_derive_message_key(const uint8_t session_key[SNEPPX_TLS_KEY_LEN], uint64_t sequence,
+                                         uint8_t message_key[SNEPPX_TLS_KEY_LEN])
+{
+    uint8_t derivation_nonce[SNEPPX_TLS_NONCE_LEN];
+    SNEPPXChaCha20State state;
+    transport_encode_sequence(derivation_nonce, sequence);
+    derivation_nonce[8] = 0x53;
+    derivation_nonce[9] = 0x58;
+    derivation_nonce[10] = 0x4B;
+    derivation_nonce[11] = 0x45;
+    memset(message_key, 0, SNEPPX_TLS_KEY_LEN);
+    SNEPPX_chacha20_init(&state, session_key, derivation_nonce, 0);
+    SNEPPX_chacha20_encrypt(&state, message_key, SNEPPX_TLS_KEY_LEN);
+    memset(&state, 0, sizeof(state));
+}
+
+static void transport_reset_sequences(int session_id)
+{
+    if (session_id < 0 || session_id >= SNEPPX_TLS_MAX_SESSIONS)
+        return;
+    session_tx_sequence[session_id] = 0;
+    session_rx_sequence[session_id] = 0;
+}
+
+static void transport_reset_all_sequences(void)
+{
+    memset(session_tx_sequence, 0, sizeof(session_tx_sequence));
+    memset(session_rx_sequence, 0, sizeof(session_rx_sequence));
+}
 
 static uint64_t g_total_encrypted = 0;
 static uint64_t g_total_decrypted = 0;
@@ -71,6 +117,8 @@ int SNEPPX_transport_init(SNEPPXTransportSecurity* ts)
         session_rekey_time[i] = 0;
         session_timeouts[i] = 0;
         session_rekey_counter[i] = 0;
+        session_tx_sequence[i] = 0;
+        session_rx_sequence[i] = 0;
         session_handshake_done[i] = 0;
         memset(session_aad_keys[i], 0, 16);
     }
@@ -94,6 +142,7 @@ void SNEPPX_transport_shutdown(SNEPPXTransportSecurity* ts)
     for (int i = 0; i < ts->session_count; i++)
         memset(ts->sessions[i].session_key, 0, SNEPPX_TLS_KEY_LEN);
     memset(ts, 0, sizeof(*ts));
+    transport_reset_all_sequences();
 }
 
 /**
@@ -120,6 +169,7 @@ int SNEPPX_transport_new_session(SNEPPXTransportSecurity* ts, const uint8_t* psk
     session_rekey_time[ts->session_count] = s->creation_time;
     session_timeouts[ts->session_count] = 0;
     session_rekey_counter[ts->session_count] = 0;
+    transport_reset_sequences(ts->session_count);
     session_handshake_done[ts->session_count] = ts->use_noise_protocol ? 0 : 1;
     memset(session_aad_keys[ts->session_count], 0, 16);
     g_active_sessions++;
@@ -141,6 +191,7 @@ int SNEPPX_transport_close_session(SNEPPXTransportSecurity* ts, int session_id)
     ts->sessions[session_id].is_active = 0;
     memset(session_aad_keys[session_id], 0, 16);
     session_timeouts[session_id] = 0;
+    transport_reset_sequences(session_id);
     g_active_sessions--;
     if (g_active_sessions < 0)
         g_active_sessions = 0;
@@ -176,24 +227,25 @@ int SNEPPX_transport_encrypt(SNEPPXTransportSecurity* ts, int session_id, const 
     }
     if (use_aes_gcm)
         return -1;
-    SNEPPX_random_bytes(nonce, SNEPPX_TLS_NONCE_LEN);
+
+    if (session_tx_sequence[session_id] == UINT64_MAX)
+        return -1;
+    uint64_t sequence = ++session_tx_sequence[session_id];
+    transport_encode_sequence(nonce, sequence);
+    SNEPPX_random_bytes(nonce + 8, SNEPPX_TLS_NONCE_LEN - 8);
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
     {
         SNEPPXChaCha20State state;
-        SNEPPX_chacha20_init(&state, s->session_key, nonce, 0);
+        SNEPPX_chacha20_init(&state, message_key, nonce, 0);
         memcpy(ciphertext, plaintext, len);
         SNEPPX_chacha20_encrypt(&state, ciphertext, len);
+        memset(&state, 0, sizeof(state));
     }
+    memset(message_key, 0, sizeof(message_key));
     s->last_used = (uint64_t) time(NULL);
-    session_rekey_counter[session_id]++;
     g_total_encrypted += (uint64_t) len;
-    if (session_rekey_counter[session_id] >= 1000)
-    {
-        uint8_t new_key[SNEPPX_TLS_KEY_LEN];
-        SNEPPX_random_bytes(new_key, SNEPPX_TLS_KEY_LEN);
-        memcpy(s->session_key, new_key, SNEPPX_TLS_KEY_LEN);
-        session_rekey_counter[session_id] = 0;
-        session_rekey_time[session_id] = (uint64_t) time(NULL);
-    }
     return 0;
 }
 
@@ -225,12 +277,22 @@ int SNEPPX_transport_decrypt(SNEPPXTransportSecurity* ts, int session_id, const 
     }
     if (use_aes_gcm)
         return -1;
+
+    uint64_t sequence = transport_decode_sequence(nonce);
+    if (sequence == 0 || sequence != session_rx_sequence[session_id] + 1)
+        return -1;
+
+    uint8_t message_key[SNEPPX_TLS_KEY_LEN];
+    transport_derive_message_key(s->session_key, sequence, message_key);
     {
         SNEPPXChaCha20State state;
-        SNEPPX_chacha20_init(&state, s->session_key, nonce, 0);
+        SNEPPX_chacha20_init(&state, message_key, nonce, 0);
         memcpy(plaintext, ciphertext, len);
         SNEPPX_chacha20_encrypt(&state, plaintext, len);
+        memset(&state, 0, sizeof(state));
     }
+    memset(message_key, 0, sizeof(message_key));
+    session_rx_sequence[session_id] = sequence;
     s->last_used = (uint64_t) time(NULL);
     g_total_decrypted += (uint64_t) len;
     return 0;
@@ -289,6 +351,7 @@ int SNEPPX_transport_rekey(SNEPPXTransportSecurity* ts, int session_id, const ui
     memcpy(s->session_key, new_key, SNEPPX_TLS_KEY_LEN);
     session_rekey_time[session_id] = (uint64_t) time(NULL);
     session_rekey_counter[session_id] = 0;
+    transport_reset_sequences(session_id);
     return 0;
 }
 
@@ -314,6 +377,7 @@ int SNEPPX_transport_cleanup_expired(SNEPPXTransportSecurity* ts, uint64_t max_a
             {
                 memset(ts->sessions[i].session_key, 0, SNEPPX_TLS_KEY_LEN);
                 ts->sessions[i].is_active = 0;
+                transport_reset_sequences(i);
                 cleaned++;
             }
         }
@@ -716,6 +780,7 @@ int SNEPPX_transport_set_session_key(SNEPPXTransportSecurity* ts, int session_id
     memcpy(s->session_key, key, SNEPPX_TLS_KEY_LEN);
     session_rekey_time[session_id] = (uint64_t) time(NULL);
     session_rekey_counter[session_id] = 0;
+    transport_reset_sequences(session_id);
     return 0;
 }
 
@@ -867,6 +932,7 @@ int SNEPPX_transport_get_cipher_type(void)
 void SNEPPX_transport_reset_session_counters(void)
 {
     memset(session_rekey_counter, 0, sizeof(session_rekey_counter));
+    transport_reset_all_sequences();
 }
 
 /**
@@ -886,6 +952,7 @@ int SNEPPX_transport_session_rekey(int session_id)
     }
     session_rekey_time[session_id] = (uint64_t) time(NULL);
     session_rekey_counter[session_id] = 0;
+    transport_reset_sequences(session_id);
     session_handshake_done[session_id] = 0;
     return 0;
 }
@@ -965,6 +1032,7 @@ int SNEPPX_transport_cipher_ctx_reset(int session_id)
     if (!validate_session_id(session_id))
         return -1;
     session_rekey_counter[session_id] = 0;
+    transport_reset_sequences(session_id);
     session_handshake_done[session_id] = 0;
     memset(session_aad_keys[session_id], 0, 16);
     return 0;
