@@ -201,8 +201,7 @@ int SNEPPX_entropy_pool_get(SNEPPXEntropyPool* ep, uint8_t* out, size_t out_len)
 {
     if (!ep || !out)
         return -1;
-    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD &&
-        SNEPPX_entropy_pool_collect(ep) != 0)
+    if (ep->entropy_estimate < SNEPPX_ENTROPY_THRESHOLD && SNEPPX_entropy_pool_collect(ep) != 0)
         return -1;
     uint8_t sip_key[16];
     memcpy(sip_key, ep->pool, 16);
