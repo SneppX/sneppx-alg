@@ -1,5 +1,13 @@
 # SNEPPX-Algo Architecture
 
+> [!WARNING]
+> **Alpha software.** The security layers below have uneven maturity and none
+> is independently audited or certified. Do not treat any layer as a security
+> boundary without reviewing the authoritative
+> [security status table](../SECURITY.md#security-status) and the component
+> tests. This document describes current partial implementations, not
+> guarantees of completeness or assurance.
+
 ## Documentation Standards
 
 This project uses a four-layer commenting standard defined in [COMMENTING.md](COMMENTING.md). All source files must have Layer 1 file headers and public `SNEPPX_*` functions must have Layer 4 Doxygen docs. See [STYLE_GUIDE.md](STYLE_GUIDE.md) for code formatting rules.
