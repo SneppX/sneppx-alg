@@ -34,6 +34,7 @@ from SneppX_ALG.interface_bindings.advanced_ops import (
     relu,
     leaky_relu,
     sigmoid,
+    cross_entropy,
 )
 
 
@@ -197,6 +198,32 @@ def test_avg_pool2d_excludes_only_padding_not_real_zeros():
     x = Tensor(np.array([[[[3.0, 0.0, 5.0]]]], dtype=np.float32))
     out = avg_pool2d(x, kernel_size=2, stride=1, padding=1, count_include_pad=False)
     assert np.allclose(out.data[0, 0, 0], [3.0, 1.5, 2.5, 5.0])
+
+
+def test_cross_entropy_reductions():
+    logits = Tensor(np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32))
+    targets = Tensor(np.array([0, 1], dtype=np.int64))
+
+    per_sample = cross_entropy(logits, targets, reduction="none")
+    assert per_sample.shape == (2,)
+    expected = -np.log(
+        np.exp(np.array([1.0, 4.0]))
+        / np.exp(np.array([[1.0, 2.0], [3.0, 4.0]])).sum(axis=-1)
+    )
+    assert np.allclose(per_sample.data, expected, atol=1e-6)
+
+    summed = cross_entropy(logits, targets, reduction="sum")
+    assert np.allclose(summed.data, [expected.sum()], atol=1e-6)
+
+    averaged = cross_entropy(logits, targets)  # default is "mean"
+    assert np.allclose(averaged.data, [expected.mean()], atol=1e-6)
+
+    try:
+        cross_entropy(logits, targets, reduction="bogus")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError for unsupported reduction")
 
 
 def test_adaptive_avg_pool2d():

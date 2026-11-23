@@ -636,8 +636,11 @@ def topk(x: Tensor, k: int, dim: int = -1):
     )
 
 
-def cross_entropy(logits: Tensor, targets: Tensor) -> Tensor:
-    """Negative log-likelihood of targets given logits (mean-reduced)."""
+def cross_entropy(logits: Tensor, targets: Tensor, reduction: str = "mean") -> Tensor:
+    """Negative log-likelihood of targets given logits.
+
+    ``reduction`` follows PyTorch: ``"mean"`` (default), ``"sum"`` or ``"none"``.
+    """
     l = np.asarray(logits.data, dtype=np.float32)
     t = np.asarray(targets.data if hasattr(targets, "data") else targets)
     orig_shape = t.shape
@@ -647,7 +650,15 @@ def cross_entropy(logits: Tensor, targets: Tensor) -> Tensor:
     logsumexp = np.log(np.exp(l - lmax).sum(axis=-1, keepdims=True)) + lmax
     logp = l - logsumexp
     loss = -logp[np.arange(l.shape[0]), t]
-    return Tensor.from_numpy(loss.reshape(orig_shape).astype(np.float32))
+    if reduction == "none":
+        return Tensor.from_numpy(loss.reshape(orig_shape).astype(np.float32))
+    if reduction == "sum":
+        return Tensor.from_numpy(np.array([loss.sum()], dtype=np.float32))
+    if reduction == "mean":
+        return Tensor.from_numpy(np.array([loss.mean()], dtype=np.float32))
+    raise ValueError(
+        f"unsupported reduction {reduction!r}; expected 'mean', 'sum' or 'none'"
+    )
 
 
 def log_softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
