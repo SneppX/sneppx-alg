@@ -18,6 +18,8 @@ def set_global_seed(seed: int) -> None:
     random.seed(seed)
     if np is not None:
         np.random.seed(seed)
+    os.environ["SNEPPX_SEED"] = str(seed)
+    # Retained temporarily for consumers of the old misspelled key.
     os.environ["SNEAPX_SEED"] = str(seed)
 
 

@@ -25,6 +25,8 @@ def test_set_global_seed_deterministic():
 
 def test_set_global_seed_env():
     set_global_seed(7)
+    assert os.environ.get("SNEPPX_SEED") == "7"
+    # Legacy misspelling is still written for backward compatibility.
     assert os.environ.get("SNEAPX_SEED") == "7"
 
 
