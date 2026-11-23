@@ -3,7 +3,10 @@
 Wraps C implementations in ``net/`` with pure-Python fallback.
 """
 
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, List, Dict
+import hashlib
+import hmac
+import ipaddress
 import socket as _socket
 import struct
 import threading
@@ -101,22 +104,59 @@ class Topology:
 
 
 class SocketComm:
-    """TCP / Unix socket communication for point-to-point tensor transfers."""
+    """TCP / Unix socket communication for point-to-point tensor transfers.
 
-    def __init__(self):
+    Frames are ``4-byte big-endian length || payload``. With an authentication
+    key set, a truncated HMAC-SHA256 tag is appended and verified using a
+    constant-time comparison. Listeners bind to loopback by default, frames
+    are size-capped, and socket operations have a timeout so a stalled peer
+    cannot block indefinitely.
+    """
+
+    MAX_MESSAGE_BYTES = 64 * 1024 * 1024
+    DEFAULT_TIMEOUT = 30.0
+    _TAG_LEN = 16
+
+    def __init__(
+        self,
+        max_message_bytes: int = MAX_MESSAGE_BYTES,
+        timeout: float = DEFAULT_TIMEOUT,
+    ):
+        if max_message_bytes <= 0:
+            raise ValueError("max_message_bytes must be positive")
         self._has_c = _HAS_C
         self._lock = threading.Lock()
         self._sock: Optional[_socket.socket] = None
+        self._max_message_bytes = max_message_bytes
+        self._timeout = float(timeout)
+        self._auth_key: Optional[bytes] = None
+
+    def set_auth_key(self, key: Optional[bytes]) -> None:
+        """Set the shared secret for authenticated frames (None disables it)."""
+        if key is not None and len(key) < 16:
+            raise ValueError("auth key must be at least 16 bytes")
+        self._auth_key = bytes(key) if key is not None else None
+
+    def set_timeout(self, timeout: float) -> None:
+        self._timeout = float(timeout)
+        if self._sock is not None:
+            self._sock.settimeout(self._timeout)
 
     def create(self, sock_type: int = 0):
         family = _socket.AF_INET if sock_type == 0 else _socket.AF_UNIX
         self._sock = _socket.socket(family, _socket.SOCK_STREAM)
+        self._sock.settimeout(self._timeout)
 
-    def bind(self, port: int) -> int:
-        if self._sock is None:
+    def bind(self, port: int, host: str = "127.0.0.1") -> int:
+        """Bind to ``host``; loopback is the safe default."""
+        if self._sock is None or not 0 < port < 65536:
             return -1
         try:
-            self._sock.bind(("0.0.0.0", port))
+            ipaddress.ip_address(host)
+        except ValueError:
+            return -1
+        try:
+            self._sock.bind((host, port))
             return 0
         except OSError:
             return -1
@@ -135,12 +175,13 @@ class SocketComm:
             return None
         try:
             conn, addr = self._sock.accept()
+            conn.settimeout(self._timeout)
             return conn
         except OSError:
             return None
 
     def connect(self, host: str, port: int) -> int:
-        if self._sock is None:
+        if self._sock is None or not 0 < port < 65536:
             return -1
         try:
             self._sock.connect((host, port))
@@ -148,11 +189,36 @@ class SocketComm:
         except OSError:
             return -1
 
+    def _recv_exact(self, count: int) -> Optional[bytes]:
+        if self._sock is None or count < 0:
+            return None
+        chunks = []
+        remaining = count
+        while remaining:
+            try:
+                chunk = self._sock.recv(remaining)
+            except OSError:
+                return None
+            if not chunk:
+                return None
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+
+    def _tag(self, framed: bytes) -> bytes:
+        assert self._auth_key is not None
+        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[
+            : self._TAG_LEN
+        ]
+
     def send(self, data: bytes) -> int:
-        if self._sock is None:
+        if self._sock is None or len(data) > self._max_message_bytes:
             return -1
         try:
-            self._sock.sendall(struct.pack("!I", len(data)) + data)
+            framed = struct.pack("!I", len(data)) + data
+            if self._auth_key is not None:
+                framed += self._tag(framed)
+            self._sock.sendall(framed)
             return len(data)
         except OSError:
             return -1
@@ -160,20 +226,20 @@ class SocketComm:
     def recv(self) -> Optional[bytes]:
         if self._sock is None:
             return None
-        try:
-            raw = self._sock.recv(4)
-            if not raw:
-                return None
-            n = struct.unpack("!I", raw)[0]
-            data = b""
-            while len(data) < n:
-                chunk = self._sock.recv(n - len(data))
-                if not chunk:
-                    return None
-                data += chunk
-            return data
-        except OSError:
+        raw = self._recv_exact(4)
+        if raw is None:
             return None
+        n = struct.unpack("!I", raw)[0]
+        if n > self._max_message_bytes:
+            return None
+        payload = self._recv_exact(n)
+        if payload is None:
+            return None
+        if self._auth_key is not None:
+            tag = self._recv_exact(self._TAG_LEN)
+            if tag is None or not hmac.compare_digest(tag, self._tag(raw + payload)):
+                return None
+        return payload
 
     def close(self):
         if self._sock:
@@ -181,22 +247,32 @@ class SocketComm:
             self._sock = None
 
     def send_tensor(self, tensor: np.ndarray) -> int:
-        data = tensor.tobytes()
-        header = struct.pack(
-            "!II", tensor.shape[0], tensor.shape[1] if tensor.ndim > 1 else 1
-        )
+        if tensor.ndim not in (1, 2) or 0 in tensor.shape:
+            return -1
+        rows = int(tensor.shape[0])
+        cols = int(tensor.shape[1]) if tensor.ndim == 2 else 1
+        nbytes = rows * cols * 4
+        if nbytes + 8 > self._max_message_bytes:
+            return -1
+        data = np.ascontiguousarray(tensor, dtype=np.float32).tobytes()
+        header = struct.pack("!II", rows, cols)
         return self.send(header + data)
 
     def recv_tensor(self) -> Optional[np.ndarray]:
-        header = self.recv()
-        if header is None or len(header) < 8:
+        # send_tensor writes the shape header and payload as one frame.
+        frame = self.recv()
+        if frame is None or len(frame) < 8:
             return None
-        rows, cols = struct.unpack("!II", header[:8])
-        n = rows * cols
-        raw = self.recv()
-        if raw is None or len(raw) < n * 4:
+        rows, cols = struct.unpack("!II", frame[:8])
+        if rows == 0 or cols == 0:
             return None
-        return np.frombuffer(raw[: n * 4], dtype=np.float32).reshape(rows, cols)
+        nbytes = rows * cols * 4
+        if nbytes + 8 > self._max_message_bytes:
+            return None
+        raw = frame[8:]
+        if len(raw) != nbytes:
+            return None
+        return np.frombuffer(raw, dtype=np.float32).reshape(rows, cols)
 
 
 class RDMA:
