@@ -121,6 +121,22 @@ def test_pending_queue_is_bounded():
     assert s.get_stats()["pending"] == 2
 
 
+def test_get_batch_respects_max_total_tokens():
+    cfg = SchedulerConfig(max_batch_size=4, max_total_tokens=6)
+    s = ContinuousBatchScheduler(cfg)
+    a = s.submit("a", [1, 2], max_new_tokens=2)
+    b = s.submit("b", [3, 4], max_new_tokens=2)
+    c = s.submit("c", [5], max_new_tokens=1)
+
+    batch = s.get_batch()
+    assert {req.id for req in batch} == {a, c}
+    assert s.get_stats()["pending"] == 1
+
+    for req in batch:
+        s.complete(req.id, [9], "x")
+    assert {req.id for req in s.get_batch()} == {b}
+
+
 if __name__ == "__main__":
     test_scheduler_create()
     test_submit_and_stats()
@@ -132,4 +148,5 @@ if __name__ == "__main__":
     test_stats_after_complete()
     test_concurrent_submit_uses_unique_ids()
     test_pending_queue_is_bounded()
+    test_get_batch_respects_max_total_tokens()
     print("ALL continuous_batching TESTS PASS")

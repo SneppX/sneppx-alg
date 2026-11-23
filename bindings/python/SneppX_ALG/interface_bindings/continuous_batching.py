@@ -104,13 +104,25 @@ class ContinuousBatchScheduler:
             active = list(self._running.values())
             slots_left = self.config.max_batch_size - len(active)
             if slots_left > 0 and self._pending:
-                if self.config.schedule_strategy == "fcfs":
-                    batch = self._pending[:slots_left]
-                    self._pending = self._pending[slots_left:]
-                else:
-                    self._pending.sort(key=lambda r: -r.priority)
-                    batch = self._pending[:slots_left]
-                    self._pending = self._pending[slots_left:]
+                candidates = self._pending
+                if self.config.schedule_strategy != "fcfs":
+                    candidates = sorted(candidates, key=lambda r: -r.priority)
+                used_tokens = sum(
+                    len(req.prompt_tokens) + len(req.generated_tokens) for req in active
+                )
+                batch = []
+                deferred = []
+                for req in candidates:
+                    cost = len(req.prompt_tokens) + req.max_new_tokens
+                    if (
+                        len(batch) >= slots_left
+                        or used_tokens + cost > self.config.max_total_tokens
+                    ):
+                        deferred.append(req)
+                        continue
+                    used_tokens += cost
+                    batch.append(req)
+                self._pending = deferred
                 for req in batch:
                     req.status = RequestStatus.RUNNING
                     self._running[req.id] = req
@@ -177,11 +189,7 @@ def continuous_generate_loop(
         next_tokens, kv_caches = model_fn(input_ids, positions)
 
         for i, req in enumerate(batch):
-            next_id = (
-                next_tokens[i][0]
-                if isinstance(next_tokens[i], list)
-                else next_tokens[i]
-            )
+            next_id = next_tokens[i][0] if isinstance(next_tokens[i], list) else next_tokens[i]
             req.generated_tokens.append(next_id)
 
             if len(req.generated_tokens) >= req.max_new_tokens:
