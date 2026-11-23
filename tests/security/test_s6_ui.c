@@ -1,5 +1,6 @@
 #include "audit_logger.h"
 #include "key_vault.h"
+#include "s6_extensions.h"
 #include "test_gtest.h"
 #include <stdio.h>
 #include <string.h>
@@ -103,4 +104,37 @@ TEST(test_s6_ui, audit_logger)
 TEST(test_s6_ui, audit_search)
 {
     test_audit_search();
+}
+TEST(test_s6_ui, csprng_backed_secrets)
+{
+    const uint8_t secret[4] = {1, 2, 3, 4};
+    uint8_t* shares_a[3] = {0};
+    uint8_t* shares_b[3] = {0};
+    size_t lens_a[3];
+    size_t lens_b[3];
+    ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_a, lens_a), 0);
+    ASSERT_EQ(SNEPPX_shamir_split(secret, sizeof(secret), 3, 2, shares_b, lens_b), 0);
+    EXPECT_NE(memcmp(shares_a[0], shares_b[0], lens_a[0]), 0)
+        << "M-10: Shamir coefficients must be CSPRNG-generated";
+    for (int i = 0; i < 3; i++)
+    {
+        free(shares_a[i]);
+        free(shares_b[i]);
+    }
+
+    SNEPPXKeyCeremony kc1;
+    SNEPPXKeyCeremony kc2;
+    ASSERT_EQ(SNEPPX_key_ceremony_init(&kc1, 2), 0);
+    ASSERT_EQ(SNEPPX_key_ceremony_init(&kc2, 2), 0);
+    const uint8_t token[1] = {1};
+    ASSERT_EQ(SNEPPX_key_ceremony_participant_approve(&kc1, token, 1), 0);
+    ASSERT_EQ(SNEPPX_key_ceremony_participant_approve(&kc1, token, 1), 0);
+    ASSERT_EQ(SNEPPX_key_ceremony_participant_approve(&kc2, token, 1), 0);
+    ASSERT_EQ(SNEPPX_key_ceremony_participant_approve(&kc2, token, 1), 0);
+    uint8_t key1[32];
+    uint8_t key2[32];
+    ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc1, key1, sizeof(key1)), 0);
+    ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc2, key2, sizeof(key2)), 0);
+    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0)
+        << "M-10: ceremony keys must be CSPRNG-generated";
 }
