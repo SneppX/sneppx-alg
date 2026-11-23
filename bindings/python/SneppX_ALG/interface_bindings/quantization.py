@@ -431,34 +431,59 @@ class QuantizedLinear:
         scale: Union[float, Tensor],
         bias: Optional[Tensor] = None,
         mode: int = QuantMode.INT8_SYM,
+        zero_point: Optional[int] = None,
+        weight_shape: Optional[Tuple[int, ...]] = None,
     ):
         self.weight = weight
         self.scale = scale
         self.bias = bias
         self.mode = mode
+        self.zero_point = zero_point
+        self.weight_shape = tuple(weight_shape) if weight_shape is not None else None
 
     @classmethod
     def from_float(cls, linear_layer, mode: int = QuantMode.INT8_SYM):
         """Quantize a Linear layer's weight."""
-        from .nn import Linear
-
         w = linear_layer.weight.data
+        zero_point = None
         if mode == QuantMode.INT8_SYM:
             qw, scale = quantize_int8_sym(linear_layer.weight)
         elif mode == QuantMode.INT8_ASYM:
-            qw, scale, _ = quantize_int8_asym(linear_layer.weight)
+            qw, scale, zero_point = quantize_int8_asym(linear_layer.weight)
         elif mode == QuantMode.INT4_SYM:
             qw, scale = quantize_int4_sym(linear_layer.weight)
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-        return cls(qw, scale, linear_layer.bias, mode)
+        return cls(
+            qw,
+            scale,
+            linear_layer.bias,
+            mode,
+            zero_point=zero_point,
+            weight_shape=tuple(w.shape),
+        )
+
+    def dequantize_weight(self) -> Tensor:
+        """Reconstruct the float weight using the selected quantization mode."""
+        if isinstance(self.scale, Tensor):
+            return dequantize_int8_channel(self.weight, self.scale)
+        if self.mode == QuantMode.INT8_ASYM:
+            zp = self.zero_point if self.zero_point is not None else 0
+            return dequantize_int8_asym(self.weight, self.scale, zp)
+        if self.mode == QuantMode.INT4_SYM:
+            shape = self.weight_shape
+            if shape is None:
+                shape = (int(np.prod(self.weight.shape)) * 2,)
+            n = int(np.prod(shape))
+            w = dequantize_int4_sym(self.weight, self.scale, n)
+            return w.reshape(*shape)
+        if self.mode == QuantMode.INT8_SYM:
+            return dequantize_int8_sym(self.weight, self.scale)
+        raise ValueError(f"Unsupported mode: {self.mode}")
 
     def forward(self, x: Tensor) -> Tensor:
         """W8A16: dequantize weights, compute matmul in float32."""
-        if isinstance(self.scale, Tensor):
-            w = dequantize_int8_channel(self.weight, self.scale)
-        else:
-            w = dequantize_int8_sym(self.weight, self.scale)
+        w = self.dequantize_weight()
         out = x @ w.T
         if self.bias is not None:
             out = out + self.bias

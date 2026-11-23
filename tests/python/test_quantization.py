@@ -190,6 +190,38 @@ def test_quantized_linear_asym():
     print("  test_quantized_linear_asym PASS")
 
 
+def test_quantized_linear_dispatches_on_mode():
+    from SneppX_ALG.interface_bindings.nn import Linear
+
+    linear = Linear(2, 2)
+    linear.weight = Tensor(np.array([[3.0, 4.0], [7.0, 0.0]], dtype=np.float32))
+    linear.bias = Tensor(np.zeros((2,), dtype=np.float32))
+    x = Tensor(np.array([[1.0, 0.0]], dtype=np.float32))
+
+    # Range [0, 7] is exact for both asymmetric INT8 and packed INT4.
+    for mode in (QuantMode.INT8_ASYM, QuantMode.INT4_SYM):
+        qlinear = QuantizedLinear.from_float(linear, mode=mode)
+        out = qlinear(x)
+        assert out.shape == (1, 2)
+        assert np.allclose(out.data, [[3.0, 7.0]], atol=0.05), out.data
+
+
+def test_quantized_linear_stores_mode_metadata():
+    from SneppX_ALG.interface_bindings.nn import Linear
+
+    linear = Linear(2, 2)
+    linear.weight = Tensor(np.array([[3.0, 4.0], [7.0, 0.0]], dtype=np.float32))
+    linear.bias = Tensor(np.zeros((2,), dtype=np.float32))
+
+    asym = QuantizedLinear.from_float(linear, mode=QuantMode.INT8_ASYM)
+    assert asym.zero_point is not None
+    assert asym.weight_shape == (2, 2)
+
+    int4 = QuantizedLinear.from_float(linear, mode=QuantMode.INT4_SYM)
+    assert int4.weight_shape == (2, 2)
+    assert int4.dequantize_weight().shape == (2, 2)
+
+
 def test_quantize_error_metrics():
     x = Tensor([1.0, 2.0, 3.0])
     y = Tensor([0.9, 2.1, 2.8])
