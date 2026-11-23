@@ -1,3 +1,4 @@
+#include "neural_core/security/cryptographic_random_generator.h"
 #include "tee_interface.h"
 #include <stdlib.h>
 #include <string.h>
@@ -99,9 +100,5 @@ int SNEPPX_hsm_get_random(uint8_t* buf, size_t len)
 {
     if (!buf || len == 0)
         return -1;
-    for (size_t i = 0; i < len; i++)
-    {
-        buf[i] = (uint8_t) (rand() % 256);
-    }
-    return 0;
+    return SNEPPX_random_bytes(buf, len) == 0 ? 0 : -1;
 }
