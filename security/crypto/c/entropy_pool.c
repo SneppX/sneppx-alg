@@ -71,8 +71,7 @@ static void entropy_absorb(SNEPPXEntropyPool* ep, const uint8_t* data, size_t le
             memset(block + 8 + take, 0, 16 - take);
         uint64_t h = SNEPPX_siphash(key, block, sizeof(block));
         for (unsigned int i = 0; i < 8; ++i)
-            ep->pool[(ep->pool_index + (int) i) % SNEPPX_ENTROPY_POOL_SIZE] ^=
-                (uint8_t) (h >> (8U * i));
+            ep->pool[(ep->pool_index + (int) i) % SNEPPX_ENTROPY_POOL_SIZE] ^= (uint8_t) (h >> (8U * i));
         ep->pool_index = (ep->pool_index + 8) % SNEPPX_ENTROPY_POOL_SIZE;
         off += take;
     }
