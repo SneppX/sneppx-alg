@@ -31,6 +31,27 @@ static double total_delta_consumed = 0.0;
 static dp_budget_t global_budget = {1.0, 1e-5};
 static int budget_initialized = 0;
 
+/* CSPRNG-backed uniform in the open interval (0, 1); fail closed on entropy errors. */
+static int dp_uniform_unit(double* out)
+{
+    uint32_t v;
+    if (!out || SNEPPX_random_uint32_checked(&v) != 0)
+        return -1;
+    *out = ((double) v + 0.5) / 4294967296.0;
+    return 0;
+}
+
+/* Standard normal via Box-Muller; fail closed on entropy errors. */
+static int dp_gaussian_sample(double* out)
+{
+    double u1;
+    double u2;
+    if (!out || dp_uniform_unit(&u1) != 0 || dp_uniform_unit(&u2) != 0)
+        return -1;
+    *out = sqrt(-2.0 * log(u1)) * cos(2.0 * 3.141592653589793 * u2);
+    return 0;
+}
+
 /**
  * @brief Perform Dp Laplace Mech.
  *
@@ -42,7 +63,10 @@ static int budget_initialized = 0;
 double SNEPPX_dp_laplace_mech(double value, double sensitivity, double epsilon)
 {
     double scale = sensitivity / epsilon;
-    double u = ((double) rand() / RAND_MAX) - 0.5;
+    double u;
+    if (dp_uniform_unit(&u) != 0)
+        return 0.0;
+    u -= 0.5;
     return value - scale * (u > 0 ? log(1 - 2 * u) : -log(1 + 2 * u));
 }
 
@@ -58,9 +82,9 @@ double SNEPPX_dp_laplace_mech(double value, double sensitivity, double epsilon)
 double SNEPPX_dp_gaussian_mech(double value, double sensitivity, double epsilon, double delta)
 {
     double sigma = sensitivity * sqrt(2 * log(1.25 / delta)) / epsilon;
-    double u1 = (double) rand() / RAND_MAX;
-    double u2 = (double) rand() / RAND_MAX;
-    double z = sqrt(-2 * log(u1)) * cos(2 * 3.141592653589793 * u2);
+    double z;
+    if (dp_gaussian_sample(&z) != 0)
+        return 0.0;
     return value + sigma * z;
 }
 
@@ -211,9 +235,10 @@ int SNEPPX_dp_dpsgd_step(double* params, const double* gradients, int n, double 
     double sigma = clip_norm * sqrt(2 * log(1.25 / delta)) / epsilon;
     for (int i = 0; i < n; i++)
     {
-        double u1 = (double) rand() / RAND_MAX;
-        double u2 = (double) rand() / RAND_MAX;
-        double noise = sqrt(-2 * log(u1)) * cos(2 * 3.141592653589793 * u2) * sigma;
+        double z;
+        if (dp_gaussian_sample(&z) != 0)
+            return -1;
+        double noise = z * sigma;
         params[i] -= lr * (gradients[i] * scale + noise);
     }
     return 0;
@@ -234,9 +259,10 @@ int SNEPPX_dp_noise_layer(double* data, int n, double sensitivity, double epsilo
     double sigma = sensitivity * sqrt(2 * log(1.25 / delta)) / epsilon;
     for (int i = 0; i < n; i++)
     {
-        double u1 = (double) rand() / RAND_MAX;
-        double u2 = (double) rand() / RAND_MAX;
-        data[i] += sqrt(-2 * log(u1)) * cos(2 * 3.141592653589793 * u2) * sigma;
+        double z;
+        if (dp_gaussian_sample(&z) != 0)
+            return -1;
+        data[i] += z * sigma;
     }
     return 0;
 }
