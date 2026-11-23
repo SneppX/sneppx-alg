@@ -103,33 +103,49 @@ class Topology:
         return Topology(TopologyType.TREE, n)
 
 
+# M-16: bound framing so a malicious/broken peer cannot force unbounded
+# allocation or an indefinite block. Callers may tighten (never loosen) these.
+MAX_FRAME_BYTES = 128 * 1024 * 1024  # 128 MiB per frame
+DEFAULT_SOCKET_TIMEOUT = 30.0  # seconds
+
+
 class SocketComm:
     """TCP / Unix socket communication for point-to-point tensor transfers.
 
     Frames are ``4-byte big-endian length || payload``. With an authentication
-    key set, a truncated HMAC-SHA256 tag is appended and verified using a
+    key set, a truncated HMAC-SHA256 tag is appended and verified with a
     constant-time comparison. Listeners bind to loopback by default, frames
     are size-capped, and socket operations have a timeout so a stalled peer
     cannot block indefinitely.
     """
 
-    MAX_MESSAGE_BYTES = 64 * 1024 * 1024
-    DEFAULT_TIMEOUT = 30.0
     _TAG_LEN = 16
 
     def __init__(
         self,
-        max_message_bytes: int = MAX_MESSAGE_BYTES,
-        timeout: float = DEFAULT_TIMEOUT,
+        max_message_bytes: Optional[int] = None,
+        timeout: Optional[float] = None,
     ):
-        if max_message_bytes <= 0:
-            raise ValueError("max_message_bytes must be positive")
         self._has_c = _HAS_C
         self._lock = threading.Lock()
         self._sock: Optional[_socket.socket] = None
-        self._max_message_bytes = max_message_bytes
-        self._timeout = float(timeout)
+        if max_message_bytes is not None and int(max_message_bytes) <= 0:
+            raise ValueError("max_message_bytes must be positive")
+        self._max_message_bytes = (
+            None if max_message_bytes is None else int(max_message_bytes)
+        )
+        self._timeout = None if timeout is None else float(timeout)
         self._auth_key: Optional[bytes] = None
+
+    def _max_frame_bytes(self) -> int:
+        """Return the effective cap; instance caps may only tighten globals."""
+        cap = int(MAX_FRAME_BYTES)
+        if self._max_message_bytes is not None:
+            cap = min(cap, self._max_message_bytes)
+        return max(0, cap)
+
+    def _socket_timeout(self) -> float:
+        return float(DEFAULT_SOCKET_TIMEOUT if self._timeout is None else self._timeout)
 
     def set_auth_key(self, key: Optional[bytes]) -> None:
         """Set the shared secret for authenticated frames (None disables it)."""
@@ -143,14 +159,28 @@ class SocketComm:
             self._sock.settimeout(self._timeout)
 
     def create(self, sock_type: int = 0):
-        family = _socket.AF_INET if sock_type == 0 else _socket.AF_UNIX
+        if sock_type == 0 or not hasattr(_socket, "AF_UNIX"):
+            family = _socket.AF_INET
+        else:
+            family = _socket.AF_UNIX
         self._sock = _socket.socket(family, _socket.SOCK_STREAM)
-        self._sock.settimeout(self._timeout)
+        self._sock.settimeout(self._socket_timeout())
 
     def bind(self, port: int, host: str = "127.0.0.1") -> int:
         """Bind to ``host``; loopback is the safe default."""
-        if self._sock is None or not 0 < port < 65536:
+        if self._sock is None:
             return -1
+        af_unix = getattr(_socket, "AF_UNIX", None)
+        if af_unix is not None and self._sock.family == af_unix:
+            try:
+                self._sock.bind(str(port))
+                return 0
+            except (OSError, ValueError):
+                return -1
+        if not isinstance(port, int) or not 0 <= port <= 65535:
+            return -1
+        if host is None:
+            host = "127.0.0.1"
         try:
             ipaddress.ip_address(host)
         except ValueError:
@@ -158,7 +188,7 @@ class SocketComm:
         try:
             self._sock.bind((host, port))
             return 0
-        except OSError:
+        except (OSError, ValueError):
             return -1
 
     def listen(self, backlog: int = 5) -> int:
@@ -175,26 +205,59 @@ class SocketComm:
             return None
         try:
             conn, addr = self._sock.accept()
-            conn.settimeout(self._timeout)
+            conn.settimeout(self._socket_timeout())
             return conn
         except OSError:
             return None
 
     def connect(self, host: str, port: int) -> int:
-        if self._sock is None or not 0 < port < 65536:
+        if self._sock is None:
+            return -1
+        af_unix = getattr(_socket, "AF_UNIX", None)
+        if af_unix is not None and self._sock.family == af_unix:
+            try:
+                self._sock.connect(str(port))
+                return 0
+            except (OSError, ValueError):
+                return -1
+        if not isinstance(port, int) or not 0 <= port <= 65535:
             return -1
         try:
             self._sock.connect((host, port))
             return 0
+        except (OSError, ValueError):
+            return -1
+
+    def _tag(self, framed: bytes) -> bytes:
+        assert self._auth_key is not None
+        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[
+            : self._TAG_LEN
+        ]
+
+    def send(self, data: bytes) -> int:
+        if self._sock is None:
+            return -1
+        if not isinstance(data, (bytes, bytearray, memoryview)):
+            return -1
+        payload = bytes(data)
+        if len(payload) > self._max_frame_bytes():
+            return -1
+        try:
+            framed = struct.pack("!I", len(payload)) + payload
+            if self._auth_key is not None:
+                framed += self._tag(framed)
+            self._sock.sendall(framed)
+            return len(payload)
         except OSError:
             return -1
 
     def _recv_exact(self, count: int) -> Optional[bytes]:
+        """Read exactly ``count`` bytes or return ``None`` on EOF/timeout."""
         if self._sock is None or count < 0:
             return None
         chunks = []
         remaining = count
-        while remaining:
+        while remaining > 0:
             try:
                 chunk = self._sock.recv(remaining)
             except OSError:
@@ -205,41 +268,41 @@ class SocketComm:
             remaining -= len(chunk)
         return b"".join(chunks)
 
-    def _tag(self, framed: bytes) -> bytes:
-        assert self._auth_key is not None
-        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[
-            : self._TAG_LEN
-        ]
+    def recv(self, max_bytes: Optional[int] = None) -> Optional[bytes]:
+        """Receive one length-prefixed frame.
 
-    def send(self, data: bytes) -> int:
-        if self._sock is None or len(data) > self._max_message_bytes:
-            return -1
-        try:
-            framed = struct.pack("!I", len(data)) + data
-            if self._auth_key is not None:
-                framed += self._tag(framed)
-            self._sock.sendall(framed)
-            return len(data)
-        except OSError:
-            return -1
-
-    def recv(self) -> Optional[bytes]:
+        The declared length is validated against the effective cap BEFORE any
+        payload is read, so a peer cannot request an oversized allocation.
+        """
         if self._sock is None:
             return None
-        raw = self._recv_exact(4)
-        if raw is None:
-            return None
-        n = struct.unpack("!I", raw)[0]
-        if n > self._max_message_bytes:
-            return None
-        payload = self._recv_exact(n)
-        if payload is None:
-            return None
-        if self._auth_key is not None:
-            tag = self._recv_exact(self._TAG_LEN)
-            if tag is None or not hmac.compare_digest(tag, self._tag(raw + payload)):
+        limit = self._max_frame_bytes()
+        if max_bytes is not None:
+            try:
+                limit = min(limit, int(max_bytes))
+            except (TypeError, ValueError):
                 return None
-        return payload
+        if limit < 0:
+            return None
+        try:
+            raw = self._recv_exact(4)
+            if raw is None:
+                return None
+            n = struct.unpack("!I", raw)[0]
+            if n > limit:
+                return None
+            payload = self._recv_exact(n)
+            if payload is None:
+                return None
+            if self._auth_key is not None:
+                tag = self._recv_exact(self._TAG_LEN)
+                if tag is None or not hmac.compare_digest(
+                    tag, self._tag(raw + payload)
+                ):
+                    return None
+            return payload
+        except (OSError, struct.error, ValueError):
+            return None
 
     def close(self):
         if self._sock:
@@ -247,32 +310,48 @@ class SocketComm:
             self._sock = None
 
     def send_tensor(self, tensor: np.ndarray) -> int:
-        if tensor.ndim not in (1, 2) or 0 in tensor.shape:
+        if not isinstance(tensor, np.ndarray) or tensor.ndim > 2:
             return -1
-        rows = int(tensor.shape[0])
-        cols = int(tensor.shape[1]) if tensor.ndim == 2 else 1
-        nbytes = rows * cols * 4
-        if nbytes + 8 > self._max_message_bytes:
+        if tensor.ndim == 0:
+            rows, cols = 1, 1
+        else:
+            rows = int(tensor.shape[0])
+            cols = int(tensor.shape[1]) if tensor.ndim > 1 else 1
+        if rows <= 0 or cols <= 0:
+            return -1
+        element_cap = self._max_frame_bytes() // 4
+        if element_cap <= 0 or rows > element_cap or cols > element_cap:
+            return -1
+        n = rows * cols
+        if n > element_cap or n * 4 + 8 > self._max_frame_bytes():
             return -1
         data = np.ascontiguousarray(tensor, dtype=np.float32).tobytes()
         header = struct.pack("!II", rows, cols)
+        # Single length-prefixed frame: 8-byte shape header + payload, matching
+        # recv_tensor() below.
         return self.send(header + data)
 
-    def recv_tensor(self) -> Optional[np.ndarray]:
-        # send_tensor writes the shape header and payload as one frame.
+    def recv_tensor(self, max_elements: Optional[int] = None) -> Optional[np.ndarray]:
         frame = self.recv()
         if frame is None or len(frame) < 8:
             return None
         rows, cols = struct.unpack("!II", frame[:8])
+        # Validate dimensions and the product BEFORE multiplying or allocating,
+        # so huge/zero-sized shapes are rejected cheaply.
         if rows == 0 or cols == 0:
             return None
-        nbytes = rows * cols * 4
-        if nbytes + 8 > self._max_message_bytes:
+        element_cap = self._max_frame_bytes() // 4
+        if max_elements is not None:
+            element_cap = min(element_cap, int(max_elements))
+        if element_cap <= 0 or rows > element_cap or cols > element_cap:
             return None
-        raw = frame[8:]
-        if len(raw) != nbytes:
+        n = rows * cols
+        if n > element_cap:
             return None
-        return np.frombuffer(raw, dtype=np.float32).reshape(rows, cols)
+        payload = frame[8:]
+        if len(payload) < n * 4:
+            return None
+        return np.frombuffer(payload[: n * 4], dtype=np.float32).reshape(rows, cols)
 
 
 class RDMA:
