@@ -131,7 +131,9 @@ class SocketComm:
         self._sock: Optional[_socket.socket] = None
         if max_message_bytes is not None and int(max_message_bytes) <= 0:
             raise ValueError("max_message_bytes must be positive")
-        self._max_message_bytes = None if max_message_bytes is None else int(max_message_bytes)
+        self._max_message_bytes = (
+            None if max_message_bytes is None else int(max_message_bytes)
+        )
         self._timeout = None if timeout is None else float(timeout)
         self._auth_key: Optional[bytes] = None
 
@@ -228,7 +230,9 @@ class SocketComm:
 
     def _tag(self, framed: bytes) -> bytes:
         assert self._auth_key is not None
-        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[: self._TAG_LEN]
+        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[
+            : self._TAG_LEN
+        ]
 
     def send(self, data: bytes) -> int:
         if self._sock is None:
@@ -292,7 +296,9 @@ class SocketComm:
                 return None
             if self._auth_key is not None:
                 tag = self._recv_exact(self._TAG_LEN)
-                if tag is None or not hmac.compare_digest(tag, self._tag(raw + payload)):
+                if tag is None or not hmac.compare_digest(
+                    tag, self._tag(raw + payload)
+                ):
                     return None
             return payload
         except (OSError, struct.error, ValueError):
@@ -435,7 +441,9 @@ class NCCLComm:
         self._initialized = False
         return 0
 
-    def comm_init_rank(self, ndev: int, rank: int, devs: Optional[List[int]] = None) -> int:
+    def comm_init_rank(
+        self, ndev: int, rank: int, devs: Optional[List[int]] = None
+    ) -> int:
         self._rank = rank
         self._world_size = ndev
         return 0
@@ -466,7 +474,9 @@ class NCCLComm:
         """No-op: no cross-rank broadcast is performed."""
         return 0
 
-    def reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0) -> int:
+    def reduce(
+        self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0
+    ) -> int:
         """Local identity copy only; no cross-rank reduction is performed."""
         if op == 0:
             np.copyto(recvbuf, sendbuf)

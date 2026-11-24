@@ -226,9 +226,13 @@ class DistributedSampler:
     ``drop_last=True`` to discard the incomplete tail instead.
     """
 
-    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False):
+    def __init__(
+        self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False
+    ):
         self.dataset = dataset
-        self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
+        self.num_replicas = (
+            get_world_size() if num_replicas is None else int(num_replicas)
+        )
         self.rank = get_rank() if rank is None else int(rank)
         if self.num_replicas < 1:
             raise ValueError("num_replicas must be >= 1")
@@ -271,7 +275,9 @@ class DistributedSampler:
 class DistributedDataParallel(Module):
     """DistributedDataParallel wrapper with gradient synchronization."""
 
-    def __init__(self, module: Module, device_ids: List[int] = None, process_group=None):
+    def __init__(
+        self, module: Module, device_ids: List[int] = None, process_group=None
+    ):
         super().__init__()
         self.module = module
         self._modules["module"] = module
