@@ -1045,31 +1045,25 @@ int SNEPPX_mtls_get_peer_cert(uint8_t* cert_out, size_t cert_len)
 /**
  * @brief Perform Mtls Verify Chain.
  *
- * @param cert_chain [in] Cert Chain value.
- * @param chain_len [in] Chain Len value.
- * @param trusted_ca [in] Trusted Ca value.
+ * This entry point has no certificate-buffer length parameter and no X.509
+ * parser; the previous fixed-stride 8-byte prefix comparison both read past
+ * the caller's buffer for long chains and reported success for untrusted
+ * chains. It is therefore unsupported and fails closed. Use a real TLS stack
+ * (for example OpenSSL's chain verification) for mTLS authentication.
  *
- * @return 0 on success, -1 on error.
+ * @param cert_chain [in] Cert Chain value (unused).
+ * @param chain_len [in] Chain Len value (unused).
+ * @param trusted_ca [in] Trusted Ca value (unused).
+ *
+ * @return always -1 (unsupported).
  */
 int SNEPPX_mtls_verify_chain(const uint8_t* cert_chain, int chain_len, const uint8_t* trusted_ca, size_t ca_len)
 {
-    if (!cert_chain || !trusted_ca || chain_len <= 0 || ca_len == 0)
-        return 0;
-    for (int i = 0; i < chain_len; i++)
-    {
-        int match = 1;
-        for (size_t j = 0; j < ca_len && j < 8; j++)
-        {
-            if (cert_chain[i * 32 + j] != trusted_ca[j])
-            {
-                match = 0;
-                break;
-            }
-        }
-        if (match)
-            return 1;
-    }
-    return 0;
+    (void) cert_chain;
+    (void) chain_len;
+    (void) trusted_ca;
+    (void) ca_len;
+    return -1;
 }
 
 /* ---- OCSP ---- */

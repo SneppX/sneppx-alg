@@ -288,6 +288,29 @@ TEST(test_s4_network, ddos_protection)
 {
     test_ddos_protection();
 }
+/* SNEPPX_mtls_verify_chain has no public header declaration: it was an
+ * unsafe fixed-stride prefix comparison with an out-of-bounds read, so it now
+ * fails closed. Declared here only to guard that behaviour. */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    int SNEPPX_mtls_verify_chain(const uint8_t* cert_chain, int chain_len, const uint8_t* trusted_ca, size_t ca_len);
+#ifdef __cplusplus
+}
+#endif
+
+TEST(test_s4_network, mtls_verify_chain_fails_closed)
+{
+    uint8_t chain[64];
+    uint8_t ca[8];
+    memset(chain, 0xAA, sizeof(chain));
+    memset(ca, 0xAA, sizeof(ca));
+    /* Even a byte-for-byte prefix match must not be accepted. */
+    EXPECT_EQ(SNEPPX_mtls_verify_chain(chain, 2, ca, sizeof(ca)), -1);
+    EXPECT_EQ(SNEPPX_mtls_verify_chain(NULL, 0, NULL, 0), -1);
+}
+
 TEST(test_s4_network, csprng_backed_security_material)
 {
     SNEPPXTLS13ClientHello ch1;
