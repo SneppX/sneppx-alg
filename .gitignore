@@ -60,6 +60,7 @@ node_modules/
 .sneppx/
 
 # IDE
+.vs/
 .vscode/
 .idea/
 *.swp
