@@ -7,10 +7,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from SneppX_ALG.interface_bindings import container_security
-from SneppX_ALG.interface_bindings.container_security import (
-    ABOOTPartition,
-    SignedUpdateManager,
-)
+from SneppX_ALG.interface_bindings.container_security import ABOOTPartition, SignedUpdateManager
 
 
 def _manager(tmp_path):
@@ -72,9 +69,7 @@ def test_stage_rejects_invalid_signature(tmp_path):
     manager, _ = _manager(tmp_path)
     update_path, _ = _signed_update(tmp_path, Ed25519PrivateKey.generate())
 
-    ok, message = manager.stage_update(
-        str(update_path), "1.0.0", str(tmp_path / "update.zip.sig")
-    )
+    ok, message = manager.stage_update(str(update_path), "1.0.0", str(tmp_path / "update.zip.sig"))
 
     assert ok is False
     assert "signature" in message.lower()
@@ -106,9 +101,7 @@ def test_install_rejects_unverified_metadata(tmp_path, monkeypatch):
     meta_path.write_text(json.dumps(meta))
 
     calls = _no_dd(monkeypatch)
-    ok, message = manager.install_update(
-        update_id, ABOOTPartition(root=str(tmp_path / "boot"))
-    )
+    ok, message = manager.install_update(update_id, ABOOTPartition(root=str(tmp_path / "boot")))
 
     assert ok is False
     assert "verified" in message.lower()
@@ -125,9 +118,7 @@ def test_install_reverifies_staged_bytes(tmp_path, monkeypatch):
     staged_update.write_bytes(b"tampered after staging")
 
     calls = _no_dd(monkeypatch)
-    ok, message = manager.install_update(
-        update_id, ABOOTPartition(root=str(tmp_path / "boot"))
-    )
+    ok, message = manager.install_update(update_id, ABOOTPartition(root=str(tmp_path / "boot")))
 
     assert ok is False
     assert "signature" in message.lower()
@@ -141,9 +132,7 @@ def test_verified_install_reaches_partition_write(tmp_path, monkeypatch):
     assert ok is True
 
     calls = _no_dd(monkeypatch)
-    ok, message = manager.install_update(
-        update_id, ABOOTPartition(root=str(tmp_path / "boot"))
-    )
+    ok, message = manager.install_update(update_id, ABOOTPartition(root=str(tmp_path / "boot")))
 
     assert ok is True, message
     assert calls
