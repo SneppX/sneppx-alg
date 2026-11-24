@@ -157,7 +157,9 @@ class CVEScanner:
     """CVE vulnerability scanner with multiple backend support."""
 
     def __init__(self, cache_dir: Optional[str] = None):
-        self.cache_dir = Path(cache_dir) if cache_dir else Path.home() / ".sneppx" / "cve_cache"
+        self.cache_dir = (
+            Path(cache_dir) if cache_dir else Path.home() / ".sneppx" / "cve_cache"
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self._cache: Dict[str, List[CVE]] = {}
         self._lock = threading.Lock()
@@ -281,7 +283,9 @@ class CVEScanner:
             cvss_score = 0.0
             for key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
                 if key in metrics and metrics[key]:
-                    cvss_score = metrics[key][0].get("cvssData", {}).get("baseScore", 0.0)
+                    cvss_score = (
+                        metrics[key][0].get("cvssData", {}).get("baseScore", 0.0)
+                    )
                     break
 
             if cvss_score >= 9.0:
@@ -366,7 +370,9 @@ class CVEScanner:
                         package=package,
                         version=version,
                         fixed_version=fixed_version,
-                        references=[r.get("url", "") for r in vuln.get("references", [])],
+                        references=[
+                            r.get("url", "") for r in vuln.get("references", [])
+                        ],
                         published_date=vuln.get("published"),
                     )
                 )
@@ -383,9 +389,12 @@ class CVEScanner:
         try:
             eco = urllib.parse.quote("pip")
             pkg = urllib.parse.quote(package)
-            url = "https://api.github.com/advisories?ecosystem=%s&package=%s&per_page=20" % (
-                eco,
-                pkg,
+            url = (
+                "https://api.github.com/advisories?ecosystem=%s&package=%s&per_page=20"
+                % (
+                    eco,
+                    pkg,
+                )
             )
             req = urllib.request.Request(
                 url,
@@ -467,7 +476,9 @@ class CVEScanner:
                         parts = line.split("==")
                         if len(parts) == 2:
                             pkg, ver = parts
-                            results[f"{pkg}@{ver}"] = self.scan_package(pkg.strip(), ver.strip())
+                            results[f"{pkg}@{ver}"] = self.scan_package(
+                                pkg.strip(), ver.strip()
+                            )
         elif requirements_path.endswith("pyproject.toml"):
             try:
                 import tomli
@@ -482,7 +493,9 @@ class CVEScanner:
                         pkg, ver = dep.split("==")
                     else:
                         continue
-                    results[f"{pkg}@{ver}"] = self.scan_package(pkg.strip(), ver.strip())
+                    results[f"{pkg}@{ver}"] = self.scan_package(
+                        pkg.strip(), ver.strip()
+                    )
             except Exception:
                 pass
 
@@ -552,7 +565,9 @@ class SBOMGenerator:
 
         return sbom
 
-    def generate_from_docker(self, image: str, output_path: Optional[str] = None) -> SBOM:
+    def generate_from_docker(
+        self, image: str, output_path: Optional[str] = None
+    ) -> SBOM:
         """Generate SBOM from Docker image (uses syft if available)."""
         sbom = SBOM()
         sbom.metadata = {
@@ -582,7 +597,8 @@ class SBOMGenerator:
                             else None,
                             description=comp.get("description", ""),
                             licenses=[
-                                l.get("license", {}).get("id", "") for l in comp.get("licenses", [])
+                                l.get("license", {}).get("id", "")
+                                for l in comp.get("licenses", [])
                             ],
                             hashes={
                                 h.get("alg", ""): h.get("content", "")
@@ -771,7 +787,9 @@ class SignedUpdateManager:
 
             return True, update_id
 
-    def install_update(self, update_id: str, partition: ABOOTPartition) -> Tuple[bool, str]:
+    def install_update(
+        self, update_id: str, partition: ABOOTPartition
+    ) -> Tuple[bool, str]:
         """Install a verified staged update to the inactive partition."""
         if not _is_safe_component(update_id):
             return False, "Invalid update id"
@@ -791,7 +809,9 @@ class SignedUpdateManager:
 
             filename = meta.get("filename") or Path(meta.get("path", "")).name
             signature_name = meta.get("signature")
-            if not _is_safe_component(filename) or not _is_safe_component(signature_name):
+            if not _is_safe_component(filename) or not _is_safe_component(
+                signature_name
+            ):
                 return False, "Invalid update metadata"
 
             update_file = staged_dir / filename
