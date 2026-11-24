@@ -178,7 +178,9 @@ class ModelChecker:
     def check(self, property_name: Optional[str] = None) -> Dict[str, bool]:
         with self._lock:
             props = [
-                p for p in self._properties if property_name is None or p.name == property_name
+                p
+                for p in self._properties
+                if property_name is None or p.name == property_name
             ]
         for prop in props:
             result = self._check_property(prop)
