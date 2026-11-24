@@ -36,7 +36,7 @@ See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-
 
 ## Build from source
 
-Requirements include CMake 3.16 or newer, a C11 and C++17-compatible toolchain, and Python with NumPy for Python support.
+Requirements include CMake 3.16 or newer, a C11/C++20 compiler (GCC 11+, Clang 14+, or MSVC 2022), and Python with NumPy for Python bindings.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
