@@ -20,9 +20,7 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location(
-    "ctm_large_files", LARGE_MODULE_PATH
-)
+LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -33,9 +31,7 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text(
-        "bad = True\n", encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
 
     report = ctm.scan(tmp_path)
 
@@ -207,6 +203,22 @@ def test_legacy_count_empty_uses_unified_filters(tmp_path):
     (tmp_path / "node_modules" / "ignored.py").write_text("", encoding="utf-8")
 
     assert ctm_count_empty_files.count_empty(tmp_path) == 1
+
+
+def test_legacy_count_by_ext_uses_unified_filters(tmp_path):
+    import ctm_count_files_by_ext
+
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "b.h").write_text("#pragma once\n", encoding="utf-8")
+    (tmp_path / "notes.custom").write_text("text\n", encoding="utf-8")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.py").write_text("x\n", encoding="utf-8")
+
+    assert ctm_count_files_by_ext.count_by_ext(tmp_path) == {
+        ".py": 1,
+        ".h": 1,
+        ".custom": 1,
+    }
 
 
 def test_symlink_files_are_not_followed_when_supported(tmp_path):
