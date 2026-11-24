@@ -56,7 +56,9 @@ def _event_digest(event_data: Dict[str, Any], hmac_key: Optional[bytes] = None) 
     written before the key was configured.
     """
     payload = {k: v for k, v in event_data.items() if k != "hash"}
-    data = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode()
+    data = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), default=str
+    ).encode()
     key = _resolve_audit_key(hmac_key)
     if key:
         return hmac.new(key, data, hashlib.sha256).hexdigest()
@@ -310,7 +312,9 @@ class FileAuditBackend(AuditBackend):
         if self._file_handle:
             self._file_handle.close()
         self._file_handle = open(self._current_file, "a", encoding="utf-8")
-        self._current_size = self._current_file.stat().st_size if self._current_file.exists() else 0
+        self._current_size = (
+            self._current_file.stat().st_size if self._current_file.exists() else 0
+        )
 
     def _rotate_if_needed(self):
         if self._current_size >= self.max_file_size:
@@ -328,7 +332,9 @@ class FileAuditBackend(AuditBackend):
             self._current_file.unlink()
 
         # Clean old files
-        files = sorted(self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime)
+        files = sorted(
+            self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime
+        )
         while len(files) > self.max_files:
             files.pop(0).unlink()
 
@@ -449,8 +455,16 @@ def _validate_audit_endpoint(endpoint: str) -> str:
     loopback = host in {"localhost", "127.0.0.1", "::1"}
     if parsed.scheme != "https" and not (parsed.scheme == "http" and loopback):
         raise ValueError("audit endpoint must be HTTPS or loopback HTTP")
-    if not host or parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("audit endpoint must not contain credentials, query, or fragment")
+    if (
+        not host
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError(
+            "audit endpoint must not contain credentials, query, or fragment"
+        )
     return endpoint
 
 
@@ -871,7 +885,9 @@ class AuditLogger:
             try:
                 written = backend.write(event)
                 if written is False and self.strict:
-                    failures.append((backend, RuntimeError("backend reported write failure")))
+                    failures.append(
+                        (backend, RuntimeError("backend reported write failure"))
+                    )
             except Exception as exc:
                 if self.strict:
                     failures.append((backend, exc))
