@@ -117,9 +117,10 @@ TEST(test_s6_ui, csprng_backed_secrets)
     /* shares[0][0] is the x-coordinate (always 1); the CSPRNG-generated
      * polynomial coefficients start at offset 1. */
     ASSERT_EQ(lens_a[0], 1u + sizeof(secret));
-    for (size_t i = 1; i < lens_a[0]; i++)
-        EXPECT_NE(shares_a[0][i], shares_b[0][i])
-            << "M-10: Shamir coefficients must be CSPRNG-generated (byte " << i << ")";
+    /* Compare the whole share: individual bytes can legitimately collide
+     * with probability 1/256, so a per-byte check is flaky in CI. */
+    EXPECT_NE(memcmp(shares_a[0], shares_b[0], lens_a[0]), 0)
+        << "M-10: Shamir coefficients must be CSPRNG-generated";
 
     uint8_t recovered[sizeof(secret)] = {0};
     size_t recovered_len = sizeof(recovered);
