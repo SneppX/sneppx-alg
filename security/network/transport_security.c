@@ -371,34 +371,31 @@ int SNEPPX_transport_decrypt(SNEPPXTransportSecurity* ts, int session_id, const 
 /**
  * @brief Perform Transport Noise Handshake.
  *
- * @param ts [out] Ts value.
- * @param prologue [in] Prologue value.
- * @param prologue_len [in] Prologue Len value.
- * @param handshake_msg [out] Handshake Msg value.
+ * The reference transport layer has no per-session Noise handshake state (no
+ * DH, chaining key or transcript), so it cannot establish a real Noise
+ * session. The previous implementation emitted 48 random bytes XORed with a
+ * fixed-key-derived value, which offered no key agreement or authentication
+ * and produced false assurance. This entry point now fails closed. Use the
+ * real Noise protocol implementation in security/crypto/protocols/
+ * noise_protocol_extended.{h,c} (snepx_noise_handshake_init /
+ * snepx_noise_handshake_write_message) for an actual handshake.
  *
- * @return 0 on success, -1 on error.
+ * @param ts [out] Ts value (unused).
+ * @param prologue [in] Prologue value (unused).
+ * @param prologue_len [in] Prologue Len value (unused).
+ * @param handshake_msg [out] Handshake Msg value (unused).
+ *
+ * @return always -1 (unsupported).
  */
 int SNEPPX_transport_noise_handshake(SNEPPXTransportSecurity* ts, const uint8_t* prologue, size_t prologue_len,
                                      uint8_t* handshake_msg, size_t* msg_len)
 {
+    (void) ts;
     (void) prologue;
     (void) prologue_len;
-    if (!ts || !handshake_msg || !msg_len)
-        return -1;
-    if (*msg_len < 48)
-        return -1;
-    SNEPPX_random_bytes(handshake_msg, 48);
-    if (ts->use_noise_protocol)
-    {
-        uint8_t eph_key[32], eph_pub[32];
-        SNEPPX_random_bytes(eph_key, 32);
-        for (int i = 0; i < 32; i++)
-            eph_pub[i] = eph_key[i] ^ 0xAA;
-        for (int i = 0; i < 32; i++)
-            handshake_msg[i] ^= eph_pub[i];
-    }
-    *msg_len = 48;
-    return 0;
+    (void) handshake_msg;
+    (void) msg_len;
+    return -1;
 }
 
 /**
@@ -1137,13 +1134,14 @@ uint64_t SNEPPX_transport_get_rekey_time(int session_id)
 int SNEPPX_transport_noise_handshake_respond(SNEPPXTransportSecurity* ts, const uint8_t* msg, size_t msg_len,
                                              uint8_t* response, size_t* resp_len)
 {
-    if (!ts || !msg || !response || !resp_len || *resp_len < 48)
-        return -1;
+    /* See SNEPPX_transport_noise_handshake: this reference shim has no Noise
+     * handshake state, so it cannot produce a real responder message. */
+    (void) ts;
     (void) msg;
     (void) msg_len;
-    SNEPPX_random_bytes(response, 48);
-    *resp_len = 48;
-    return 0;
+    (void) response;
+    (void) resp_len;
+    return -1;
 }
 /**
  * @brief Perform Transport Get Session Age.

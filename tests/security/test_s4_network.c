@@ -206,8 +206,10 @@ static void test_transport_noise_handshake(void)
     SNEPPX_transport_init(&ts);
     uint8_t msg[64];
     size_t msg_len = sizeof(msg);
-    SX_ASSERT(SNEPPX_transport_noise_handshake(&ts, NULL, 0, msg, &msg_len) == 0, "noise handshake");
-    SX_ASSERT(msg_len == 48, "handshake msg 48 bytes");
+    /* Fake Noise handshake (random bytes XOR fixed key) is unsupported: must
+     * fail closed rather than emit a message that offers no real handshake. */
+    SX_ASSERT(SNEPPX_transport_noise_handshake(&ts, NULL, 0, msg, &msg_len) == -1, "noise handshake fails closed");
+    SX_ASSERT(msg_len == sizeof(msg), "handshake length unchanged on failure");
     SNEPPX_transport_shutdown(&ts);
 }
 
