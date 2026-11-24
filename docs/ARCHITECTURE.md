@@ -4,7 +4,7 @@
 > **Alpha software.** The security layers below have uneven maturity and none
 > is independently audited or certified. Do not treat any layer as a security
 > boundary without reviewing the authoritative
-> [security status table](../SECURITY.md#security-status) and the component
+> [security status table](https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md#security-status) and the component
 > tests. This document describes current partial implementations, not
 > guarantees of completeness or assurance.
 
@@ -434,7 +434,7 @@ When `SNEPPX_HAS_CUDA` is not defined, all `trainer_cuda` functions return clean
 ## Security Layers
 
 Maturity statements below are aligned with the authoritative table in
-[SECURITY.md](../SECURITY.md#security-status); "files exist" does not mean a
+[SECURITY.md](https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md#security-status); "files exist" does not mean a
 layer is complete, validated, or independently audited.
 
 ### S0 — Cryptographic Core
