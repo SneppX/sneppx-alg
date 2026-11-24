@@ -1,6 +1,7 @@
 #include "data_poisoning_defense.h"
 #include "output_verifier.h"
 #include "prompt_filter.h"
+#include "s5_extensions.h"
 #include "test_gtest.h"
 #include <math.h>
 #include <stdio.h>
@@ -120,4 +121,22 @@ TEST(test_s5_ai_sanitizer, poison_detector_init)
 TEST(test_s5_ai_sanitizer, poison_detector_train_detect)
 {
     test_poison_detector_train_detect();
+}
+TEST(test_s5_ai_sanitizer, csprng_backed_privacy_noise)
+{
+    SNEPPXModelWatermark wm1;
+    SNEPPXModelWatermark wm2;
+    ASSERT_EQ(SNEPPX_watermark_init(&wm1), 0);
+    ASSERT_EQ(SNEPPX_watermark_init(&wm2), 0);
+    EXPECT_NE(memcmp(wm1.watermark, wm2.watermark, sizeof(wm1.watermark)), 0)
+        << "M-10: watermark keys must be CSPRNG-generated";
+
+    double logits_a[4] = {0.1, 0.2, 0.3, 0.4};
+    double logits_b[4] = {0.1, 0.2, 0.3, 0.4};
+    ASSERT_EQ(SNEPPX_membership_inference_defense(logits_a, 4, 1.0), 0);
+    ASSERT_EQ(SNEPPX_membership_inference_defense(logits_b, 4, 1.0), 0);
+    EXPECT_NE(memcmp(logits_a, logits_b, sizeof(logits_a)), 0)
+        << "M-10: membership-inference noise must be CSPRNG-generated";
+    for (size_t i = 0; i < 4; i++)
+        EXPECT_TRUE(std::isfinite(logits_a[i]));
 }

@@ -1,4 +1,5 @@
 #include "rlhf_safety.h"
+#include "cryptographic_random_generator.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -262,7 +263,9 @@ int SNEPPX_rlhf_generate_refusal(char* out, size_t out_len, rlhf_score_t* score)
         "I'm not able to help with this request. Please rephrase your question.",
         "I cannot provide this information as it could be misused.",
     };
-    int idx = rand() % 5;
+    uint32_t idx = 0;
+    if (SNEPPX_random_uniform_checked(5, &idx) != 0)
+        return -1;
     snprintf(out, out_len, "%s", refusals[idx]);
     return 0;
 }

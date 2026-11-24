@@ -46,3 +46,25 @@ TEST(test_rlhf_safety, suite)
     printf("PASS: RLHF safety filter OK\n");
     return;
 }
+TEST(test_rlhf_safety, csprng_backed_refusal_selection)
+{
+    rlhf_score_t score;
+    char refusals[24][256];
+    int distinct = 0;
+    for (int i = 0; i < 24; i++)
+    {
+        ASSERT_EQ(SNEPPX_rlhf_generate_refusal(refusals[i], sizeof(refusals[i]), &score), 0);
+        bool seen = false;
+        for (int j = 0; j < i; j++)
+        {
+            if (strcmp(refusals[i], refusals[j]) == 0)
+            {
+                seen = true;
+                break;
+            }
+        }
+        if (!seen)
+            distinct++;
+    }
+    EXPECT_GE(distinct, 2) << "M-10: refusal selection must be CSPRNG-backed";
+}

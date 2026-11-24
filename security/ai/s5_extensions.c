@@ -1,4 +1,5 @@
 #include "s5_extensions.h"
+#include "cryptographic_random_generator.h"
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
@@ -19,6 +20,18 @@
  *   four-layer commenting standard used across this codebase.
  *
  */
+
+/* M-10: privacy noise and watermark keys must come from the CSPRNG.
+ * 53 random mantissa bits + 0.5 yields an open interval (0,1), so log()
+ * never sees zero in the Laplace mechanisms below. */
+static int s5_random_unit(double* out)
+{
+    uint64_t bits = 0;
+    if (!out || SNEPPX_random_bytes((uint8_t*) &bits, sizeof(bits)) != 0)
+        return -1;
+    *out = ((double) (bits >> 11) + 0.5) / 9007199254740992.0;
+    return 0;
+}
 
 /* --- Semantic Injection --- */
 /**
@@ -350,7 +363,12 @@ int SNEPPX_model_inversion_apply(SNEPPXModelInversionDefense* mid, double* gradi
         for (size_t i = 0; i < grad_count; i++)
             gradients[i] = gradients[i] / norm * mid->clip_norm;
     for (size_t i = 0; i < grad_count; i++)
-        gradients[i] += ((double) rand() / RAND_MAX - 0.5) * mid->noise_scale;
+    {
+        double u;
+        if (s5_random_unit(&u) != 0)
+            return -1;
+        gradients[i] += (u - 0.5) * mid->noise_scale;
+    }
     return 0;
 }
 
@@ -377,7 +395,9 @@ int SNEPPX_membership_inference_defense(double* logits, size_t logit_count, doub
     double scale = epsilon > 0 ? 1.0 / epsilon : 1.0;
     for (size_t i = 0; i < logit_count; i++)
     {
-        double u = (double) rand() / (double) RAND_MAX;
+        double u;
+        if (s5_random_unit(&u) != 0)
+            return -1;
         double lap = 0.0;
         if (u < 0.5)
             lap = scale * log(2.0 * u);
@@ -556,8 +576,8 @@ int SNEPPX_watermark_init(SNEPPXModelWatermark* mw)
     if (!mw)
         return -1;
     memset(mw, 0, sizeof(*mw));
-    for (int i = 0; i < 32; i++)
-        mw->watermark[i] = (uint8_t) (rand() % 256);
+    if (SNEPPX_random_bytes(mw->watermark, sizeof(mw->watermark)) != 0)
+        return -1;
     mw->embedded = 0;
     return 0;
 }
@@ -625,7 +645,12 @@ int SNEPPX_adversarial_smooth(double* input, size_t input_dim, double epsilon)
     if (!input)
         return -1;
     for (size_t i = 0; i < input_dim; i++)
-        input[i] += ((double) rand() / RAND_MAX - 0.5) * 2.0 * epsilon;
+    {
+        double u;
+        if (s5_random_unit(&u) != 0)
+            return -1;
+        input[i] += (u - 0.5) * 2.0 * epsilon;
+    }
     return 0;
 }
 
@@ -1170,7 +1195,9 @@ int SNEPPX_membership_inference_defense_apply(double* logits, size_t count, doub
             v = -epsilon;
         if (v > epsilon)
             v = epsilon;
-        double u = (double) rand() / (double) RAND_MAX;
+        double u;
+        if (s5_random_unit(&u) != 0)
+            return -1;
         double lap = u < 0.5 ? scale * log(2.0 * u) : -scale * log(2.0 * (1.0 - u));
         clipped_out[i] = v + lap;
     }
@@ -2006,7 +2033,12 @@ int SNEPPX_model_inversion_defend_gradients(double* gradients, size_t grad_count
         for (size_t i = 0; i < grad_count; i++)
             gradients[i] = gradients[i] / norm * clip;
     for (size_t i = 0; i < grad_count; i++)
-        gradients[i] += ((double) rand() / RAND_MAX - 0.5) * noise;
+    {
+        double u;
+        if (s5_random_unit(&u) != 0)
+            return -1;
+        gradients[i] += (u - 0.5) * noise;
+    }
     return 0;
 }
 /**
