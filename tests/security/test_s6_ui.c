@@ -125,8 +125,7 @@ TEST(test_s6_ui, csprng_backed_secrets)
     size_t recovered_len = sizeof(recovered);
     ASSERT_EQ(SNEPPX_shamir_reconstruct(shares_a, lens_a, 2, recovered, &recovered_len), 0);
     EXPECT_EQ(recovered_len, sizeof(secret));
-    EXPECT_EQ(memcmp(recovered, secret, sizeof(secret)), 0)
-        << "M-10: Shamir reconstruction must recover the secret";
+    EXPECT_EQ(memcmp(recovered, secret, sizeof(secret)), 0) << "M-10: Shamir reconstruction must recover the secret";
     for (int i = 0; i < 3; i++)
     {
         free(shares_a[i]);
@@ -146,6 +145,5 @@ TEST(test_s6_ui, csprng_backed_secrets)
     uint8_t key2[32];
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc1, key1, sizeof(key1)), 0);
     ASSERT_EQ(SNEPPX_key_ceremony_execute(&kc2, key2, sizeof(key2)), 0);
-    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0)
-        << "M-10: ceremony keys must be CSPRNG-generated";
+    EXPECT_NE(memcmp(key1, key2, sizeof(key1)), 0) << "M-10: ceremony keys must be CSPRNG-generated";
 }
