@@ -20,9 +20,7 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location(
-    "ctm_large_files", LARGE_MODULE_PATH
-)
+LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -33,9 +31,7 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text(
-        "bad = True\n", encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
 
     report = ctm.scan(tmp_path)
 
@@ -45,6 +41,15 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     assert report["languages"]["Python"]["loc"] == 3
     assert report["languages"]["Markdown"]["loc"] == 1
     assert report["skipped_binary_or_symlink"] == 1
+
+
+def test_iter_all_files_includes_binaries_but_skips_ignored_dirs(tmp_path):
+    (tmp_path / "a.py").write_text("x\n", encoding="utf-8")
+    (tmp_path / "blob.exe").write_bytes(b"\x00")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "skip.py").write_text("x\n", encoding="utf-8")
+
+    assert sorted(p.name for p in ctm.iter_all_files(tmp_path)) == ["a.py", "blob.exe"]
 
 
 def test_scan_reports_skipped_by_reason_breakdown(tmp_path):
@@ -228,14 +233,10 @@ def test_legacy_count_by_ext_uses_unified_filters(tmp_path):
 def test_legacy_count_includes_uses_unified_filters(tmp_path):
     import ctm_count_includes
 
-    (tmp_path / "a.c").write_text(
-        '#include <stdio.h>\n#include "local.h"\n', encoding="utf-8"
-    )
+    (tmp_path / "a.c").write_text('#include <stdio.h>\n#include "local.h"\n', encoding="utf-8")
     (tmp_path / "notes.py").write_text('#include "ignored.h"\n', encoding="utf-8")
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "b.h").write_text(
-        '#include "ignored.h"\n', encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "b.h").write_text('#include "ignored.h"\n', encoding="utf-8")
 
     report = ctm_count_includes.count_includes(tmp_path)
 
