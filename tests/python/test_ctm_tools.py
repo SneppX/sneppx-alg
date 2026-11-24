@@ -275,6 +275,21 @@ def test_legacy_count_dirs_uses_unified_filters(tmp_path):
     assert ctm_count_total_dirs.count_dirs(tmp_path) == 3
 
 
+def test_legacy_loc_by_language_uses_unified_filters(tmp_path):
+    import ctm_count_loc_by_language
+
+    (tmp_path / "a.py").write_text("x = 1\ny = 2\n", encoding="utf-8")
+    (tmp_path / "b.custom").write_text("text\n", encoding="utf-8")
+    (tmp_path / "blob.exe").write_bytes(b"\x00\x01")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "c.py").write_text("x\n", encoding="utf-8")
+
+    stats, files = ctm_count_loc_by_language.count_loc_by_language(tmp_path)
+
+    assert dict(stats) == {"Python": 2, "Other(.custom)": 1}
+    assert dict(files) == {"Python": 1, "Other(.custom)": 1}
+
+
 def test_symlink_files_are_not_followed_when_supported(tmp_path):
     target = tmp_path / "target.py"
     target.write_text("x = 1\n", encoding="utf-8")

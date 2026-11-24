@@ -1,37 +1,12 @@
 #!/usr/bin/env python3
-import os
+"""Count lines by language using the unified CTM text-file filters."""
+
 import sys
 import json
 from pathlib import Path
 from collections import defaultdict
 
-IGNORE_DIRS = {
-    ".git",
-    ".svn",
-    ".hg",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    ".next",
-    ".cache",
-    ".pytest_cache",
-    ".ruff_cache",
-}
-IGNORE_EXTS = {
-    ".pyc",
-    ".pyo",
-    ".o",
-    ".obj",
-    ".exe",
-    ".dll",
-    ".so",
-    ".dylib",
-    ".class",
-    ".jar",
-}
+import ctm
 
 LANG_MAP = {
     ".c": "C",
@@ -71,37 +46,18 @@ LANG_MAP = {
 }
 
 
-def should_ignore(path):
-    parts = Path(path).parts
-    for p in parts:
-        if p in IGNORE_DIRS:
-            return True
-    return False
-
-
 def count_loc_by_language(root="."):
-    root = Path(root).resolve()
     stats = defaultdict(int)
     files = defaultdict(int)
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
-        if should_ignore(dirpath):
+    for path in ctm.text_files(root, include_other_text=True):
+        ext = path.suffix.lower()
+        lang = LANG_MAP.get(ext, f"Other({ext})")
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
             continue
-        for fn in filenames:
-            full = Path(dirpath) / fn
-            if should_ignore(str(full)):
-                continue
-            if full.suffix.lower() in IGNORE_EXTS:
-                continue
-            ext = full.suffix.lower()
-            lang = LANG_MAP.get(ext, f"Other({ext})")
-            try:
-                with open(full, "r", encoding="utf-8", errors="ignore") as f:
-                    lines = sum(1 for _ in f)
-                stats[lang] += lines
-                files[lang] += 1
-            except:
-                continue
+        stats[lang] += len(text.splitlines())
+        files[lang] += 1
     return stats, files
 
 
@@ -131,16 +87,14 @@ def main():
         "languages": [],
     }
     for lang, lines in sorted(stats.items(), key=lambda x: x[1], reverse=True):
-        result["languages"].append(
-            {"language": lang, "files": files[lang], "loc": lines}
-        )
+        result["languages"].append({"language": lang, "files": files[lang], "loc": lines})
 
     if fmt == "json":
         out = json.dumps(result, indent=2)
     elif fmt == "csv":
         out = "language,files,loc\n"
         for item in result["languages"]:
-            out += f'{item["language"]},{item["files"]},{item["loc"]}\n'
+            out += f"{item['language']},{item['files']},{item['loc']}\n"
     else:
         out = "\n".join(
             f"{lines:8d} {files[lang]:6d} {lang}"
