@@ -3,9 +3,7 @@
 import sys, os
 import struct
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 import numpy as np
 import pytest
@@ -103,6 +101,10 @@ def test_nccl_comm():
     b = np.zeros(16, dtype=np.float32)
     nccl.all_reduce(a, b, op=0)
     assert np.allclose(b, a)
+    # Multi-rank point-to-point transfers are unimplemented: fail closed
+    # instead of claiming an empty transfer succeeded.
+    assert nccl.send(a, 1) == -1
+    assert nccl.recv(b, 1) == -1
     nccl.finalize()
 
 
@@ -198,9 +200,7 @@ def test_recv_tensor_rejects_huge_shape():
     try:
         # rows*cols would overflow any sane buffer; must be rejected before
         # multiplication/allocation.
-        client._sock.sendall(
-            struct.pack("!I", 8) + struct.pack("!II", 0xFFFFFFFF, 0xFFFFFFFF)
-        )
+        client._sock.sendall(struct.pack("!I", 8) + struct.pack("!II", 0xFFFFFFFF, 0xFFFFFFFF))
         assert server.recv_tensor() is None
     finally:
         client.close()

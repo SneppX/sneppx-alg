@@ -131,9 +131,7 @@ class SocketComm:
         self._sock: Optional[_socket.socket] = None
         if max_message_bytes is not None and int(max_message_bytes) <= 0:
             raise ValueError("max_message_bytes must be positive")
-        self._max_message_bytes = (
-            None if max_message_bytes is None else int(max_message_bytes)
-        )
+        self._max_message_bytes = None if max_message_bytes is None else int(max_message_bytes)
         self._timeout = None if timeout is None else float(timeout)
         self._auth_key: Optional[bytes] = None
 
@@ -230,9 +228,7 @@ class SocketComm:
 
     def _tag(self, framed: bytes) -> bytes:
         assert self._auth_key is not None
-        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[
-            : self._TAG_LEN
-        ]
+        return hmac.new(self._auth_key, framed, hashlib.sha256).digest()[: self._TAG_LEN]
 
     def send(self, data: bytes) -> int:
         if self._sock is None:
@@ -296,9 +292,7 @@ class SocketComm:
                 return None
             if self._auth_key is not None:
                 tag = self._recv_exact(self._TAG_LEN)
-                if tag is None or not hmac.compare_digest(
-                    tag, self._tag(raw + payload)
-                ):
+                if tag is None or not hmac.compare_digest(tag, self._tag(raw + payload)):
                     return None
             return payload
         except (OSError, struct.error, ValueError):
@@ -417,7 +411,15 @@ class GRPCService:
 
 
 class NCCLComm:
-    """NCCL communication primitives for GPU collectives."""
+    """NCCL communication primitives — reference / single-process fallback.
+
+    .. warning::
+       No real cross-rank transfer is implemented. ``all_reduce``/``all_gather``
+       are local copies and ``broadcast``/``reduce`` are identity no-ops. For
+       ``world_size > 1``, ``send``/``recv`` fail closed (-1) rather than
+       claiming an unimplemented transfer succeeded. Use :mod:`distributed`
+       with a real backend for genuine multi-rank communication.
+    """
 
     def __init__(self):
         self._has_c = _HAS_C
@@ -433,9 +435,7 @@ class NCCLComm:
         self._initialized = False
         return 0
 
-    def comm_init_rank(
-        self, ndev: int, rank: int, devs: Optional[List[int]] = None
-    ) -> int:
+    def comm_init_rank(self, ndev: int, rank: int, devs: Optional[List[int]] = None) -> int:
         self._rank = rank
         self._world_size = ndev
         return 0
@@ -452,33 +452,42 @@ class NCCLComm:
         return self._world_size
 
     def all_reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0) -> int:
+        """Local identity copy only; no cross-rank reduction is performed."""
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0
 
     def all_gather(self, sendbuf: np.ndarray, recvbuf: np.ndarray) -> int:
+        """Copy into the local buffer only; no cross-rank gather is performed."""
         np.copyto(recvbuf[: len(sendbuf)], sendbuf)
         return 0
 
     def broadcast(self, buf: np.ndarray, root: int = 0) -> int:
+        """No-op: no cross-rank broadcast is performed."""
         return 0
 
-    def reduce(
-        self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0
-    ) -> int:
+    def reduce(self, sendbuf: np.ndarray, recvbuf: np.ndarray, op: int = 0, root: int = 0) -> int:
+        """Local identity copy only; no cross-rank reduction is performed."""
         if op == 0:
             np.copyto(recvbuf, sendbuf)
         return 0
 
     def send(self, buf: np.ndarray, peer: int) -> int:
-        return 0
+        """Fail closed for multi-rank: no transfer backend is available."""
+        return -1 if self._world_size > 1 else 0
 
     def recv(self, buf: np.ndarray, peer: int) -> int:
-        return 0
+        """Fail closed for multi-rank: no transfer backend is available."""
+        return -1 if self._world_size > 1 else 0
 
 
 class ProcessGroup:
-    """Higher-level process group with barrier and collectives."""
+    """Higher-level process group (single-process reference fallback).
+
+    ``barrier`` is a no-op and ``all_reduce`` is a local identity copy; no
+    cross-rank communication occurs for ``world_size > 1``. Use the
+    :mod:`distributed` module with a real backend for genuine collectives.
+    """
 
     def __init__(self, world_size: int = 1, rank: int = 0):
         self._has_c = _HAS_C

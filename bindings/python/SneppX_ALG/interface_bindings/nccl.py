@@ -1,4 +1,14 @@
-"""NCCL Python Bindings — Distributed communication for multi-GPU training."""
+"""NCCL Python bindings — reference / single-process fallback.
+
+.. warning::
+   This module does **not** perform real multi-rank communication. The
+   collectives below are identity or local CPU fallbacks: ``all_reduce``
+   returns its input unchanged for ``world_size > 1``, ``all_gather`` replicates
+   locally, and ``send``/``recv`` are no-ops. It is usable only for API-shape
+   tests and single-process execution. For real distributed training use the
+   NCCL/MPI-backed :mod:`distributed` module (which fails closed for multi-rank
+   collectives when no real backend is loaded) or a supported multi-node stack.
+"""
 
 from typing import List, Optional, Tuple, Union
 import ctypes
@@ -76,31 +86,29 @@ class _NCCLComm:
         self._use_nccl = _nccl_backend.is_loaded
 
     def all_reduce(self, data: np.ndarray, op: int = NCCLRedOp.SUM) -> np.ndarray:
-        """All-reduce operation."""
+        """Return ``data`` unchanged (identity fallback, no cross-rank reduce)."""
         if self._use_nccl and self._lib and self._lib.ncclAllReduce:
-            # Real NCCL path (requires proper NCCL init)
+            # Real NCCL path is not wired up in this reference fallback.
             pass
-        # CPU fallback
         return data
 
     def all_gather(self, data: np.ndarray) -> List[np.ndarray]:
-        """All-gather operation."""
+        """Return local copies of ``data`` (no cross-rank gather)."""
         if self._use_nccl:
             pass
-        # CPU fallback
         return [data.copy() for _ in range(self.world_size)]
 
     def broadcast(self, data: np.ndarray, root: int = 0) -> np.ndarray:
-        """Broadcast from root."""
+        """Return a local copy of ``data`` (no cross-rank broadcast)."""
         if self._use_nccl:
             pass
         return data.copy()
 
     def send(self, data: np.ndarray, peer: int):
-        pass
+        """No-op: no data is sent to ``peer`` in the reference fallback."""
 
     def recv(self, data: np.ndarray, peer: int):
-        pass
+        """No-op: no data is received from ``peer`` in the reference fallback."""
 
 
 # ============================================================================
@@ -136,20 +144,24 @@ class ProcessGroup:
         return self._comm
 
     def all_reduce(self, tensor: Tensor, op: int = NCCLRedOp.SUM) -> Tensor:
-        """All-reduce across all ranks."""
+        """Return ``tensor`` unchanged; no real multi-rank reduction occurs.
+
+        For ``world_size > 1`` this is an identity fallback, not a reduction.
+        Use :mod:`distributed` for a backend that fails closed rather than
+        silently returning an un-reduced value.
+        """
         if self.world_size <= 1:
             return tensor
-        # CPU fallback - in real implementation, would use NCCL
         return tensor
 
     def broadcast(self, tensor: Tensor, root: int = 0) -> Tensor:
-        """Broadcast from root rank."""
+        """Return ``tensor`` unchanged; no real multi-rank broadcast occurs."""
         if self.world_size <= 1:
             return tensor
         return tensor
 
     def barrier(self):
-        """Synchronization barrier."""
+        """No-op barrier: no cross-rank synchronisation is performed."""
         pass
 
 
@@ -214,13 +226,9 @@ class DistributedSampler:
     ``drop_last=True`` to discard the incomplete tail instead.
     """
 
-    def __init__(
-        self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False
-    ):
+    def __init__(self, dataset, num_replicas=None, rank=None, shuffle=True, drop_last=False):
         self.dataset = dataset
-        self.num_replicas = (
-            get_world_size() if num_replicas is None else int(num_replicas)
-        )
+        self.num_replicas = get_world_size() if num_replicas is None else int(num_replicas)
         self.rank = get_rank() if rank is None else int(rank)
         if self.num_replicas < 1:
             raise ValueError("num_replicas must be >= 1")
@@ -263,9 +271,7 @@ class DistributedSampler:
 class DistributedDataParallel(Module):
     """DistributedDataParallel wrapper with gradient synchronization."""
 
-    def __init__(
-        self, module: Module, device_ids: List[int] = None, process_group=None
-    ):
+    def __init__(self, module: Module, device_ids: List[int] = None, process_group=None):
         super().__init__()
         self.module = module
         self._modules["module"] = module
