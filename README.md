@@ -5,9 +5,9 @@
 [![CI](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](LICENSE)
 
-SneppX-ALG is an open-source AI and machine-learning framework with a native C/C++ codebase and Python bindings. It brings together tensor operations, automatic differentiation, neural-network components, model utilities, and security-related tooling.
+SneppX-ALG is an open-source AI framework engineered for performance, composability, and security from the ground up. A native C/C++ core powers a full tensor and automatic-differentiation engine, while Python bindings keep research and production workflows approachable. Neural-network building blocks, distributed-training primitives, quantization, and a layered post-quantum security stack make SneppX-ALG a serious foundation for next-generation AI systems.
 
-**Project maturity: Alpha.** Implementation and test coverage vary across components and optional backends. Check the relevant documentation and tests before depending on a specific feature. SneppX-ALG is not a drop-in replacement for TensorFlow or PyTorch.
+**Project maturity: Alpha.** Core paths are tested and evolving; coverage varies across components and optional backends. Check the relevant documentation and tests before depending on a specific feature. SneppX-ALG is not yet a drop-in replacement for TensorFlow or PyTorch.
 
 ## Install
 
