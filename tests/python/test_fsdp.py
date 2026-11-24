@@ -192,7 +192,7 @@ def test_save_load_checkpoint():
         fsdp_save_checkpoint(fsdp, path)
         new_model = SmallModel()
         new_fsdp = shard_model(new_model, cfg)
-        fsdp_load_checkpoint(new_fsdp, path)
+        fsdp_load_checkpoint(new_fsdp, path, allow_unsafe=True)
         out1 = fsdp(Tensor.ones((1, 4)))
         out2 = new_fsdp(Tensor.ones((1, 4)))
         assert np.allclose(out1.data, out2.data)
@@ -260,6 +260,6 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"  FAIL {name}: {e}")
                 failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)

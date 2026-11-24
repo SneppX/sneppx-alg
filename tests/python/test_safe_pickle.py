@@ -41,3 +41,34 @@ def test_safe_pickle_load_returns_payload_when_opted_in():
 
 def test_error_is_a_runtime_error():
     assert issubclass(UnsafeDeserializationError, RuntimeError)
+
+
+class _DummyFSDP:
+    def __init__(self):
+        self.loaded = None
+
+    def load_state_dict(self, state_dict):
+        self.loaded = state_dict
+
+
+def _write_ckpt(tmp_path):
+    path = tmp_path / "ckpt.pkl"
+    path.write_bytes(pickle.dumps({"model": {"w": 1}, "optimizer": {"step": 7}}))
+    return str(path)
+
+
+def test_fsdp_loader_refuses_without_opt_in(tmp_path):
+    from SneppX_ALG.interface_bindings.fsdp import fsdp_load_checkpoint
+
+    with pytest.raises(UnsafeDeserializationError, match="FSDP checkpoint"):
+        fsdp_load_checkpoint(_DummyFSDP(), _write_ckpt(tmp_path))
+
+
+def test_fsdp_loader_honours_opt_in(tmp_path):
+    from SneppX_ALG.interface_bindings.fsdp import fsdp_load_checkpoint
+
+    model = _DummyFSDP()
+    with pytest.warns(RuntimeWarning):
+        optimizer = fsdp_load_checkpoint(model, _write_ckpt(tmp_path), allow_unsafe=True)
+    assert model.loaded == {"w": 1}
+    assert optimizer == {"step": 7}

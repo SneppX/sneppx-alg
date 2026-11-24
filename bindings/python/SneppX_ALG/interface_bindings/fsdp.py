@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from .tensor import Tensor
 from .nn import Module
+from .safe_pickle import safe_pickle_load
 import numpy as np
 
 
@@ -291,10 +292,9 @@ def fsdp_load_checkpoint(
     fsdp_model: FullyShardedDataParallel,
     path: str,
     load_optimizer: bool = True,
+    allow_unsafe: bool = False,
 ) -> Optional[dict]:
-    import pickle
-
     with open(path, "rb") as f:
-        state = pickle.load(f)
+        state = safe_pickle_load(f, "FSDP checkpoint", allow_unsafe)
     fsdp_model.load_state_dict(state.get("model", {}))
     return state.get("optimizer") if load_optimizer else None
