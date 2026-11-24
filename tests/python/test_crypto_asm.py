@@ -2,9 +2,9 @@
 
 import sys, os, hashlib
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings.crypto_asm import (
     AESNI,
@@ -82,9 +82,7 @@ def test_poly1305_rfc8439_kat():
     from SneppX_ALG.interface_bindings.crypto_symmetric import Poly1305
 
     # RFC 8439 section 2.5.2 test vectors.
-    key = bytes.fromhex(
-        "85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b"
-    )
+    key = bytes.fromhex("85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b")
     msg = b"Cryptographic Forum Research Group"
     expected = bytes.fromhex("a8061dc1305136c6c22b8baf0c0127a9")
 
@@ -103,10 +101,24 @@ def test_montgomery_mul():
 
 
 def test_ed25519_sign():
+    from SneppX_ALG.interface_bindings.crypto_sign import Ed25519
+
     ed = Ed25519ASM()
     sk = b"\x00" * 64
     sig = ed.sign(b"test message", sk)
     assert len(sig) == 64
+    # The old hand-rolled sign emitted only R_y||s (invalid Ed25519). It must
+    # now be a real RFC 8032 signature that both verifiers accept.
+    pk = Ed25519.keypair(seed=sk[:32])[1]
+    assert ed.verify(b"test message", pk, sig)
+    assert Ed25519.verify(pk, b"test message", sig)
+    assert not ed.verify(b"tampered", pk, sig)
+
+
+def test_aes_rejects_nonstandard_rounds():
+    aes = AESNI()
+    with pytest.raises(ValueError):
+        aes.encrypt_block(b"\x00" * 16, b"\x00" * 32, rounds=10)
 
 
 def test_ct_cache_const_lookup():

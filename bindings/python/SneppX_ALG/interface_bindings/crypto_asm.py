@@ -21,11 +21,20 @@ class AESNI:
         self.cpu = CPUFeatures()
         self._has_hardware = self.cpu.has("aes_ni")
 
-    def encrypt_block(
-        self, plaintext: bytes, round_key: bytes, rounds: int = 14
-    ) -> bytes:
+    def encrypt_block(self, plaintext: bytes, round_key: bytes, rounds: int = 14) -> bytes:
+        """Encrypt one block with AES-256 (14 rounds).
+
+        ``round_key`` is the *cipher key* (first 32 bytes); this fallback does
+        not consume an expanded round-key schedule, and only AES-256's fixed
+        14-round schedule is supported. ``rounds`` is validated to prevent a
+        caller from believing a different round count was applied.
+        """
         if len(plaintext) != 16:
             raise ValueError("plaintext must be 16 bytes")
+        if rounds != 14:
+            raise ValueError("AES-256 fallback supports only 14 rounds")
+        if len(round_key) < 32:
+            raise ValueError("round_key must be at least 32 bytes")
         from cryptography.hazmat.primitives.ciphers.algorithms import AES
         from cryptography.hazmat.primitives.ciphers import Cipher, modes
 
@@ -191,26 +200,25 @@ class Ed25519ASM:
         return result
 
     def sign(self, message: bytes, secret_key: bytes) -> bytes:
-        import hashlib as _hashlib
+        """Produce an RFC 8032 Ed25519 signature over ``message``.
 
-        h = _hashlib.sha512(secret_key[:32]).digest()
-        a = int.from_bytes(h[:32], "little")
-        a &= (1 << 254) - 8
-        a |= 1 << 254
-        r = _hashlib.sha512(h[32:64] + message).digest()
-        r = int.from_bytes(r, "little") % (
-            2**252 + 27742317777372353535851937790883648493
-        )
-        B = (0, 1, 1, 0)
-        R = self._point_mul(r, B)
-        Ry = R[1]
-        R_bytes = Ry.to_bytes(32, "little")
-        hram = _hashlib.sha512(R_bytes + secret_key[32:64] + message).digest()
-        hram = int.from_bytes(hram, "little") % (
-            2**252 + 27742317777372353535851937790883648493
-        )
-        s = (r + hram * a) % (2**252 + 27742317777372353535851937790883648493)
-        return R_bytes + s.to_bytes(32, "little")
+        The former hand-rolled routine encoded only the y-coordinate of the
+        ephemeral point ``R`` (no x sign bit) and had no verifier, so its output
+        was not a valid Ed25519 signature. Delegate to the real implementation
+        in :mod:`crypto_sign` (native backend or ``cryptography`` fallback),
+        deriving the keypair from the first 32 bytes of ``secret_key`` as a seed.
+        """
+        from . import crypto_sign
+
+        seed = bytes(secret_key[:32])
+        sk, _ = crypto_sign.Ed25519.keypair(seed=seed)
+        return crypto_sign.Ed25519.sign(sk, message)
+
+    def verify(self, message: bytes, public_key: bytes, signature: bytes) -> bool:
+        """Verify an RFC 8032 Ed25519 signature (delegates to crypto_sign)."""
+        from . import crypto_sign
+
+        return crypto_sign.Ed25519.verify(public_key, message, signature)
 
 
 class ConstantTimeOps:
@@ -253,9 +261,7 @@ class FirewallASM:
         return h ^ 0xFFFFFFFF
 
     @staticmethod
-    def conn_track(
-        ip: int, state_table: List[int], now_sec: int, timeout_sec: int
-    ) -> bool:
+    def conn_track(ip: int, state_table: List[int], now_sec: int, timeout_sec: int) -> bool:
         idx = hash(ip) % len(state_table) if state_table else 0
         entry = state_table[idx] if idx < len(state_table) else 0
         return (entry > 0) and (now_sec - entry < timeout_sec)
