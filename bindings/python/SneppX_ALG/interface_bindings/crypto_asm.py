@@ -21,7 +21,9 @@ class AESNI:
         self.cpu = CPUFeatures()
         self._has_hardware = self.cpu.has("aes_ni")
 
-    def encrypt_block(self, plaintext: bytes, round_key: bytes, rounds: int = 14) -> bytes:
+    def encrypt_block(
+        self, plaintext: bytes, round_key: bytes, rounds: int = 14
+    ) -> bytes:
         """Encrypt one block with AES-256 (14 rounds).
 
         ``round_key`` is the *cipher key* (first 32 bytes); this fallback does
@@ -261,7 +263,9 @@ class FirewallASM:
         return h ^ 0xFFFFFFFF
 
     @staticmethod
-    def conn_track(ip: int, state_table: List[int], now_sec: int, timeout_sec: int) -> bool:
+    def conn_track(
+        ip: int, state_table: List[int], now_sec: int, timeout_sec: int
+    ) -> bool:
         idx = hash(ip) % len(state_table) if state_table else 0
         entry = state_table[idx] if idx < len(state_table) else 0
         return (entry > 0) and (now_sec - entry < timeout_sec)

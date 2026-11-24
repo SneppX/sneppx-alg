@@ -4,7 +4,9 @@ import sys, os, hashlib
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 from SneppX_ALG.interface_bindings.crypto_asm import (
     AESNI,
@@ -82,7 +84,9 @@ def test_poly1305_rfc8439_kat():
     from SneppX_ALG.interface_bindings.crypto_symmetric import Poly1305
 
     # RFC 8439 section 2.5.2 test vectors.
-    key = bytes.fromhex("85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b")
+    key = bytes.fromhex(
+        "85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b"
+    )
     msg = b"Cryptographic Forum Research Group"
     expected = bytes.fromhex("a8061dc1305136c6c22b8baf0c0127a9")
 
