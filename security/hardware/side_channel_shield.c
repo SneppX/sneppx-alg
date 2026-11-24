@@ -76,17 +76,21 @@ int SNEPPX_hsm_unseal_key(const uint8_t* sealed, size_t sealed_len, uint8_t* key
 /**
  * @brief Perform Hsm Verify Measurement.
  *
- * @param expected [in] Expected value.
+ * No TEE/HSM measurement source is available to this reference shim, so an
+ * attestation cannot be verified. Previously this returned success for any
+ * non-empty input, which produced false assurance. It now fails closed; use
+ * a platform attestation service (SGX/TDX/SEV quote verification) instead.
  *
- * @return 0 on success, -1 on error.
+ * @param expected [in] Expected value (unused).
+ * @param len [in] Len value (unused).
+ *
+ * @return always -1 (unsupported).
  */
 int SNEPPX_hsm_verify_measurement(const uint8_t* expected, size_t len)
 {
-    if (!expected || len == 0)
-        return -1;
     (void) expected;
     (void) len;
-    return 0;
+    return -1;
 }
 
 /**
