@@ -13,6 +13,19 @@ def test_serve_cli_has_main():
     assert callable(serve_main)
 
 
+def test_serve_cli_defaults_to_authenticated_mode():
+    """M-3: no auth flag means authenticated, never anonymous by omission."""
+    import pytest
+    from SneppX_ALG.interface_bindings.serve_cli import (
+        DEFAULT_AUTH_MODE,
+        _validate_auth_settings,
+    )
+
+    assert DEFAULT_AUTH_MODE == "bearer"
+    with pytest.raises(ValueError, match="requires"):
+        _validate_auth_settings("127.0.0.1", DEFAULT_AUTH_MODE, None, None)
+
+
 def test_serve_cli_allows_loopback_without_auth():
     from SneppX_ALG.interface_bindings.serve_cli import _validate_auth_settings
 
@@ -93,6 +106,6 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"  FAIL {name}: {e}")
             failed += 1
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"  {passed} passed, {failed} failed")
     sys.exit(failed)

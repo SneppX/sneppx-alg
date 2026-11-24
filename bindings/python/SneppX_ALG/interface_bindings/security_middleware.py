@@ -56,9 +56,14 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AuthConfig:
-    """Authentication configuration."""
+    """Authentication configuration.
 
-    mode: str = "none"  # "none", "bearer", "api_key"
+    M-3: authentication is enabled by default. Anonymous access is only
+    available through the explicit :meth:`anonymous` opt-in so an omitted
+    configuration can never silently disable authentication.
+    """
+
+    mode: str = "bearer"  # "none", "bearer", "api_key"
     api_keys: List[str] = field(default_factory=list)
     jwt_secret: Optional[str] = None
     jwt_issuer: str = "sneppx"
@@ -71,6 +76,11 @@ class AuthConfig:
             env_keys = os.environ.get("SNEPPX_API_KEYS", "")
             if env_keys:
                 self.api_keys = [k.strip() for k in env_keys.split(",") if k.strip()]
+
+    @classmethod
+    def anonymous(cls) -> "AuthConfig":
+        """Explicitly opt into anonymous access (loopback/dev use only)."""
+        return cls(mode="none")
 
 
 @dataclass
@@ -139,9 +149,14 @@ class SecurityConfig:
     output_verifier: OutputVerifierConfig = field(default_factory=OutputVerifierConfig)
 
     @classmethod
+    def anonymous(cls) -> "SecurityConfig":
+        """Explicitly opt into an anonymous configuration."""
+        return cls(auth=AuthConfig.anonymous())
+
+    @classmethod
     def from_env(cls) -> "SecurityConfig":
-        """Create config from environment variables."""
-        auth_mode = os.environ.get("SNEPPX_AUTH_MODE", "none")
+        """Create config from environment variables (auth fails closed)."""
+        auth_mode = os.environ.get("SNEPPX_AUTH_MODE", "bearer")
         auth = AuthConfig(mode=auth_mode)
         rate_limit = RateLimitConfig(
             enabled=os.environ.get("SNEPPX_RATE_LIMIT", "true").lower() == "true",
@@ -259,9 +274,7 @@ class PromptFilter:
         if pattern not in self._config.patterns:
             self._config.patterns.append(pattern)
         try:
-            self._compiled.append(
-                (re.compile(re.escape(pattern), re.IGNORECASE), pattern)
-            )
+            self._compiled.append((re.compile(re.escape(pattern), re.IGNORECASE), pattern))
         except re.error:
             pass
         if self._s5 is not None:
