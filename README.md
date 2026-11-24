@@ -25,12 +25,12 @@ python -m pip install ./bindings/python
 
 ## Features
 
-- Tensor operations and automatic differentiation.
-- Neural-network layers, losses, and optimizers.
-- Transformer and model components.
-- Quantization and distributed-computing components, with varying maturity.
-- Python bindings and developer utilities.
-- Security, monitoring, cryptography, and network-security components.
+- A full tensor engine with reverse- and forward-mode automatic differentiation, higher-order gradients, and a PyTorch-familiar `F.*` functional namespace.
+- Neural-network layers, losses, optimizers, transformer blocks, and model utilities with `from_pretrained()` helpers.
+- Distributed training: ZeRO stages 1–3, pipeline, tensor, and expert parallelism, FSDP, and elastic scheduling.
+- Quantization paths for INT8, INT4, and FP8, including AWQ and GPTQ workflows.
+- Security by design: ten S0–S9 layers spanning post-quantum cryptography, memory hardening, signed updates, monitoring, and formal-verification tooling.
+- A native C/C++ core with optional accelerator backends, pip-installable Python bindings, CLI tools, and live documentation.
 
 See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md) for current gaps and compatibility goals.
 
