@@ -18,6 +18,10 @@ paths = [
   '''^tests/python/test_ai_safety_ext\.py$''',
   '''^tests/python/test_model_hub_bootstrap\.py$''',
   '''^tests/python/test_model_hub_cors\.py$''',
+  # Versioned MkDocs output on the gh-pages history embeds the same fake
+  # docs credentials in generated HTML and the search index.
+  '''^[0-9]+\.[0-9]+(\.[0-9]+)?/API_REFERENCE/index\.html$''',
+  '''^[0-9]+\.[0-9]+(\.[0-9]+)?/search/search_index\.json$''',
   '''(^|/)(__pycache__|build|dist|site)/''',
   '''\.(pyc|pyd|so|dll|exe|zip|tar|gz|whl|png|jpg|jpeg|gif|pdf|bin)$''',
 ]

@@ -1,34 +1,34 @@
 """Regression tests for the gitleaks configuration (audit finding M-19)."""
 
 import re
+import tomllib
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
+_CONFIG = _ROOT / ".gitleaks.toml"
 
 
-def _parse_paths(text):
-    """Extract the quoted TOML strings from the allowlist ``paths`` array."""
-    section = text.split("[allowlist]", 1)[1]
-    array = section.split("paths = [", 1)[1].split("]", 1)[0]
-    return re.findall(r"'''([^']+)'''", array)
+def _config():
+    return tomllib.loads(_CONFIG.read_text(encoding="utf-8"))
 
 
 def test_gitleaks_config_exists_and_extends_defaults():
-    path = _ROOT / ".gitleaks.toml"
-    assert path.is_file()
-    text = path.read_text(encoding="utf-8")
-    assert "useDefault = true" in text
-    assert "[allowlist]" in text
+    assert _CONFIG.is_file()
+    config = _config()
+    assert config["extend"]["useDefault"] is True
+    assert "allowlist" in config
 
 
 def test_gitleaks_allowlist_is_fixture_only():
-    paths = _parse_paths((_ROOT / ".gitleaks.toml").read_text(encoding="utf-8"))
+    paths = _config()["allowlist"]["paths"]
     patterns = [re.compile(p) for p in paths]
     fixtures = [
         "docs/API_REFERENCE.md",
         "sonar-project.properties",
         "tests/python/test_scan_secrets.py",
         "tests/python/__pycache__/x.pyc",
+        "1.5.3/API_REFERENCE/index.html",
+        "1.5.2/search/search_index.json",
     ]
     for fixture in fixtures:
         assert any(p.search(fixture) for p in patterns), fixture
