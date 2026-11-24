@@ -6,6 +6,8 @@ import urllib.request
 import pytest
 
 from SneppX_ALG.interface_bindings.audit_logger import (
+    AuditLogger,
+    AuditWriteError,
     DatabaseAuditBackend,
     AuditAction,
     AuditEvent,
@@ -114,3 +116,52 @@ def test_remote_flush_refuses_redirects(monkeypatch):
 
     assert len(calls) == 1
     assert calls[0][0].get_header("Authorization") == "Bearer secret"
+
+
+class _FailingBackend:
+    """Backend that always raises on write."""
+
+    def write(self, event):
+        raise OSError("disk unavailable")
+
+    def close(self):
+        pass
+
+
+class _FalseBackend:
+    """Backend that reports a rejected write via its return value."""
+
+    def write(self, event):
+        return False
+
+    def close(self):
+        pass
+
+
+def test_strict_mode_surfaces_backend_exception():
+    logger = AuditLogger(backends=[_FailingBackend()], strict=True)
+    with pytest.raises(AuditWriteError, match="_FailingBackend"):
+        logger.log(action=AuditAction.LOGIN, actor="alice")
+
+
+def test_strict_mode_surfaces_false_return():
+    logger = AuditLogger(backends=[_FalseBackend()], strict=True)
+    with pytest.raises(AuditWriteError, match="_FalseBackend"):
+        logger.log(action=AuditAction.LOGIN, actor="alice")
+
+
+def test_default_mode_still_swallows_backend_failure():
+    logger = AuditLogger(backends=[_FailingBackend()])
+    # Non-strict behaviour is unchanged: failures must not block the caller.
+    event = logger.log(action=AuditAction.LOGIN, actor="alice")
+    assert event.actor == "alice"
+
+
+def test_strict_mode_allows_successful_writes():
+    backend = DatabaseAuditBackend(":memory:")
+    try:
+        logger = AuditLogger(backends=[backend], strict=True)
+        event = logger.log(action=AuditAction.LOGIN, actor="alice")
+        assert event.actor == "alice"
+    finally:
+        backend.close()
