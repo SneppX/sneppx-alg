@@ -1,74 +1,29 @@
 #!/usr/bin/env python3
-import os
+"""Count C/C++ ``#include`` lines via the unified CTM text-file filters."""
+
 import sys
 import json
 from pathlib import Path
 from collections import defaultdict
 
-IGNORE_DIRS = {
-    ".git",
-    ".svn",
-    ".hg",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    ".next",
-    ".cache",
-    ".pytest_cache",
-    ".ruff_cache",
-}
-IGNORE_EXTS = {
-    ".pyc",
-    ".pyo",
-    ".o",
-    ".obj",
-    ".exe",
-    ".dll",
-    ".so",
-    ".dylib",
-    ".class",
-    ".jar",
-}
+import ctm
 
-
-def should_ignore(path):
-    parts = Path(path).parts
-    for p in parts:
-        if p in IGNORE_DIRS:
-            return True
-    return False
+SOURCE_SUFFIXES = {".c", ".h", ".cpp", ".hpp", ".cc"}
 
 
 def count_includes(root="."):
-    root = Path(root).resolve()
     includes = defaultdict(int)
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
-        if should_ignore(dirpath):
+    for path in ctm.text_files(root):
+        if path.suffix.lower() not in SOURCE_SUFFIXES:
             continue
-        for fn in filenames:
-            if not (
-                fn.endswith(".c")
-                or fn.endswith(".h")
-                or fn.endswith(".cpp")
-                or fn.endswith(".hpp")
-                or fn.endswith(".cc")
-            ):
-                continue
-            full = Path(dirpath) / fn
-            if should_ignore(str(full)):
-                continue
-            try:
-                with open(full, "r", encoding="utf-8", errors="ignore") as f:
-                    for line in f:
-                        s = line.strip()
-                        if s.startswith("#include"):
-                            includes[s] += 1
-            except:
-                continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for line in text.splitlines():
+            s = line.strip()
+            if s.startswith("#include"):
+                includes[s] += 1
     return includes
 
 
