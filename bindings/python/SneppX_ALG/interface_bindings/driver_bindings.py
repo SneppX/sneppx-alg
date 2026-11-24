@@ -355,7 +355,9 @@ class TPUDriver:
     def mem_free(self, dev_ptr: int, ctx: dict):
         _free_buffer(dev_ptr)
 
-    def mem_htod(self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict) -> int:
+    def mem_htod(
+        self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict
+    ) -> int:
         buf = _get_buffer(dev_dst)
         data = _as_bytes(host_src)[:bytes]
         if len(data) != bytes or bytes > len(buf):
@@ -363,7 +365,9 @@ class TPUDriver:
         buf[:bytes] = data
         return 0
 
-    def mem_dtoh(self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict) -> int:
+    def mem_dtoh(
+        self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict
+    ) -> int:
         buf = _get_buffer(dev_src)
         if bytes > len(buf):
             return -1
