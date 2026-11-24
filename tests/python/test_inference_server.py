@@ -42,9 +42,7 @@ class DummyGenModel(Module):
         use_cache=True,
     ):
         batch, seq = (
-            input_ids.shape
-            if hasattr(input_ids, "shape")
-            else (1, input_ids.data.shape[1])
+            input_ids.shape if hasattr(input_ids, "shape") else (1, input_ids.data.shape[1])
         )
         import numpy as npp
 
@@ -235,9 +233,7 @@ def test_serving_control_and_batch_routes_require_authentication():
         SecurityConfig,
     )
 
-    set_security(
-        SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-protected"]))
-    )
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-protected"])))
     try:
         client = TestClient(app)
         requests = [
@@ -252,7 +248,7 @@ def test_serving_control_and_batch_routes_require_authentication():
         ]
         assert [response.status_code for response in requests] == [401] * len(requests)
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_regular_api_key_cannot_mutate_serving_control_plane():
@@ -275,7 +271,7 @@ def test_regular_api_key_cannot_mutate_serving_control_plane():
         ]
         assert [response.status_code for response in responses] == [401, 401, 401]
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_admin_auth_uses_authorization_header_not_query_parameter():
@@ -296,7 +292,7 @@ def test_admin_keys_reject_query_credentials_and_accept_header():
     from SneppX_ALG.interface_bindings.inference_server import set_security
     from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
 
-    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    set_security(SecurityConfig.anonymous(), admin_key="test-admin-secret")
     try:
         with patch(
             "SneppX_ALG.interface_bindings.inference_server.get_key_manager"
@@ -313,7 +309,7 @@ def test_admin_keys_reject_query_credentials_and_accept_header():
             assert header_auth.status_code == 200
             assert header_auth.json() == {"keys": [], "count": 0}
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_admin_authentication_attempts_are_rate_limited():
@@ -325,9 +321,7 @@ def test_admin_authentication_attempts_are_rate_limited():
         SecurityConfig,
     )
 
-    set_security(
-        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1))
-    )
+    set_security(SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1)))
     try:
         client = TestClient(app)
         first = client.get("/v1/admin/keys")
@@ -336,7 +330,7 @@ def test_admin_authentication_attempts_are_rate_limited():
         assert second.status_code == 429
         assert second.headers["Retry-After"] == "60"
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_admin_bearer_scheme_is_case_insensitive():
@@ -346,7 +340,7 @@ def test_admin_bearer_scheme_is_case_insensitive():
     )
     from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
 
-    set_security(SecurityConfig(), admin_key="test-admin-secret")
+    set_security(SecurityConfig.anonymous(), admin_key="test-admin-secret")
     try:
         assert _verify_admin_auth("Bearer test-admin-secret")
         assert _verify_admin_auth("bearer test-admin-secret")
@@ -354,7 +348,7 @@ def test_admin_bearer_scheme_is_case_insensitive():
         assert not _verify_admin_auth("Basic test-admin-secret")
         assert not _verify_admin_auth(None)
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_auth_bearer_required():
@@ -366,9 +360,7 @@ def test_auth_bearer_required():
     )
     from SneppX_ALG.interface_bindings.inference_server import set_security
 
-    set_security(
-        SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-test123"]))
-    )
+    set_security(SecurityConfig(auth=AuthConfig(mode="bearer", api_keys=["sk-test123"])))
     client = TestClient(app)
     resp = client.post("/v1/generate", json={"prompt": "hello", "max_new_tokens": 2})
     assert resp.status_code == 401
@@ -379,7 +371,7 @@ def test_auth_bearer_required():
     )
     assert resp.status_code == 200
     # Reset
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
 
 
 def test_auth_bad_token():
@@ -399,7 +391,7 @@ def test_auth_bad_token():
         headers={"Authorization": "Bearer sk-fake"},
     )
     assert resp.status_code == 401
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
 
 
 def test_prompt_filter_blocks_injection():
@@ -435,7 +427,7 @@ def test_prompt_filter_blocks_injection():
         json={"prompt": "hello world", "max_new_tokens": 2},
     )
     assert resp.status_code == 200
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
 
 
 def test_prompt_filter_sanitize():
@@ -499,7 +491,7 @@ def test_rate_limiter():
         )
         # May be 200 or 429 depending on timing
         assert resp.status_code in (200, 429)
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
 
 
 def test_authenticated_requests_enforce_configured_rate_limit():
@@ -522,15 +514,12 @@ def test_authenticated_requests_enforce_configured_rate_limit():
         client = TestClient(app)
         headers = {"Authorization": "Bearer sk-rate-limited"}
         payload = {"prompt": "hello", "max_new_tokens": 1}
-        assert (
-            client.post("/v1/generate", json=payload, headers=headers).status_code
-            == 200
-        )
+        assert client.post("/v1/generate", json=payload, headers=headers).status_code == 200
         limited = client.post("/v1/generate", json=payload, headers=headers)
         assert limited.status_code == 429
         assert limited.headers["Retry-After"] == "60"
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_loopback_unauthenticated_requests_are_rate_limited():
@@ -542,9 +531,7 @@ def test_loopback_unauthenticated_requests_are_rate_limited():
         SecurityConfig,
     )
 
-    set_security(
-        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1))
-    )
+    set_security(SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=1)))
     try:
         client = TestClient(app)
         payload = {"prompt": "hello", "max_new_tokens": 1}
@@ -552,7 +539,7 @@ def test_loopback_unauthenticated_requests_are_rate_limited():
         limited = client.post("/v1/generate", json=payload)
         assert limited.status_code == 429
     finally:
-        set_security(SecurityConfig())
+        set_security(SecurityConfig.anonymous())
 
 
 def test_auth_noop_when_disabled():
@@ -561,7 +548,7 @@ def test_auth_noop_when_disabled():
     from SneppX_ALG.interface_bindings.security_middleware import SecurityConfig
     from SneppX_ALG.interface_bindings.inference_server import set_security
 
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
     client = TestClient(app)
     resp = client.post(
         "/v1/generate",
@@ -569,7 +556,7 @@ def test_auth_noop_when_disabled():
         headers={},
     )
     assert resp.status_code == 200
-    set_security(SecurityConfig())
+    set_security(SecurityConfig.anonymous())
 
 
 def test_prompt_filter_too_long():
@@ -582,9 +569,7 @@ def test_prompt_filter_too_long():
     )
     from SneppX_ALG.interface_bindings.inference_server import set_security
 
-    config = SecurityConfig(
-        prompt_filter=PromptFilterConfig(enabled=True, max_token_length=1)
-    )
+    config = SecurityConfig(prompt_filter=PromptFilterConfig(enabled=True, max_token_length=1))
     sec = SecurityMiddleware(config)
     status, _ = sec.filter_prompt("a" * 100)
     assert status == "too_long"

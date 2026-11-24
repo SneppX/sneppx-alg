@@ -37,6 +37,24 @@ def test_invalid_auth_mode_fails_closed():
         AuthConfig(mode="bogus")
 
 
+def test_auth_enabled_by_default(monkeypatch):
+    """M-3: an omitted auth config must never silently admit anonymous requests."""
+    monkeypatch.delenv("SNEPPX_AUTH_MODE", raising=False)
+    assert AuthConfig().mode == "bearer"
+    assert SecurityConfig().auth.mode == "bearer"
+    assert SecurityConfig.from_env().auth.mode == "bearer"
+
+    authenticator = Authenticator(AuthConfig())
+    assert authenticator.enabled is True
+    assert authenticator.authenticate(None) is None
+
+
+def test_anonymous_requires_explicit_opt_in():
+    assert AuthConfig.anonymous().mode == "none"
+    assert SecurityConfig.anonymous().auth.mode == "none"
+    assert Authenticator(AuthConfig.anonymous()).enabled is False
+
+
 def test_static_key_uses_constant_time_comparison(monkeypatch):
     import SneppX_ALG.interface_bindings.security_middleware as middleware_module
 
@@ -82,7 +100,10 @@ def test_static_key_uses_configured_rate_limit():
 
 def test_key_specific_rate_limit_overrides_tier_default():
     middleware = SecurityMiddleware(
-        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=20))
+        SecurityConfig(
+            auth=AuthConfig.anonymous(),
+            rate_limit=RateLimitConfig(enabled=True, requests_per_minute=20),
+        )
     )
 
     assert middleware.check_rate_limit("managed-user", "pro", 1) == (True, "")
@@ -95,7 +116,10 @@ def test_rate_limiter_is_atomic_under_concurrent_requests():
     from concurrent.futures import ThreadPoolExecutor
 
     middleware = SecurityMiddleware(
-        SecurityConfig(rate_limit=RateLimitConfig(enabled=True, requests_per_minute=5))
+        SecurityConfig(
+            auth=AuthConfig.anonymous(),
+            rate_limit=RateLimitConfig(enabled=True, requests_per_minute=5),
+        )
     )
     with ThreadPoolExecutor(max_workers=16) as executor:
         results = list(
@@ -110,7 +134,10 @@ def test_rate_limiter_is_atomic_under_concurrent_requests():
 
 def test_disabled_rate_limiter_allows_requests():
     middleware = SecurityMiddleware(
-        SecurityConfig(rate_limit=RateLimitConfig(enabled=False, requests_per_minute=1))
+        SecurityConfig(
+            auth=AuthConfig.anonymous(),
+            rate_limit=RateLimitConfig(enabled=False, requests_per_minute=1),
+        )
     )
     assert middleware.check_rate_limit("user", "static") == (True, "")
     assert middleware.check_rate_limit("user", "static") == (True, "")
