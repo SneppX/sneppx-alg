@@ -40,8 +40,48 @@ class RLHFSafety:
         }
 
     def check_factuality(self, statement: str, context: str) -> float:
-        score = 0.8
-        return score
+        """Advisory lexical-support signal (NOT a factuality oracle).
+
+        Returns the fraction of meaningful statement tokens that are present
+        in ``context``, halved when the context contains a negation. This is a
+        cheap triage signal; it cannot establish truth and must not be used as
+        a security control.
+        """
+        stop_words = {
+            "a",
+            "an",
+            "the",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "to",
+            "of",
+            "and",
+            "or",
+            "in",
+            "on",
+            "at",
+            "it",
+            "its",
+        }
+        stmt_tokens = {
+            w
+            for w in re.findall(r"[a-z0-9]+", (statement or "").lower())
+            if len(w) > 1 and w not in stop_words
+        }
+        if not stmt_tokens:
+            return 0.0
+        context_lower = (context or "").lower()
+        ctx_tokens = set(re.findall(r"[a-z0-9]+", context_lower))
+        if not ctx_tokens:
+            return 0.0
+        support = len(stmt_tokens & ctx_tokens) / len(stmt_tokens)
+        if re.search(r"\b(not|no|never|isn't|isnt|doesn't|doesnt)\b", context_lower):
+            support *= 0.5
+        return float(max(0.0, min(1.0, support)))
 
     def check_bias(self, text: str) -> Dict[str, float]:
         scores = {}
@@ -53,13 +93,45 @@ class RLHFSafety:
             self._bias_scores = scores
         return scores
 
-    def detect_semantic_injection(
-        self, text: str, base_embedding: List[float]
-    ) -> float:
-        return 0.0
+    def detect_semantic_injection(self, text: str, base_embedding: List[float]) -> float:
+        """Advisory cosine-distance signal between ``text`` and a baseline.
+
+        A stable bag-of-tokens projection of ``text`` is compared against the
+        caller-supplied ``base_embedding``. ``0.0`` means the text matches the
+        baseline; larger values indicate drift worth inspecting. Advisory
+        heuristic only — it cannot prove an injection occurred.
+        """
+        if not base_embedding:
+            return 0.0
+        dim = len(base_embedding)
+        vec = [0.0] * dim
+        for token in re.findall(r"[a-z0-9]+", (text or "").lower()):
+            slot = int.from_bytes(hashlib.md5(token.encode()).digest()[:4], "little") % dim
+            vec[slot] += 1.0
+        norm_vec = math.sqrt(sum(x * x for x in vec))
+        norm_base = math.sqrt(sum(x * x for x in base_embedding))
+        if norm_vec == 0.0 or norm_base == 0.0:
+            return 0.0
+        dot = sum(a * b for a, b in zip(vec, base_embedding))
+        cosine = max(-1.0, min(1.0, dot / (norm_vec * norm_base)))
+        return float(1.0 - cosine)
 
     def detect_membership_inference(self, sample: bytes, model_output: bytes) -> float:
-        return 0.0
+        """Advisory confidence-proxy signal based on output entropy.
+
+        Returns ``1 - normalised_shannon_entropy(model_output)``: a near-constant
+        output (low entropy) is a weak indicator of memorisation. Advisory
+        heuristic only — not a certified membership-inference test.
+        """
+        if not sample or not model_output:
+            return 0.0
+        counts: Dict[int, int] = {}
+        for byte in model_output:
+            counts[byte] = counts.get(byte, 0) + 1
+        total = len(model_output)
+        entropy = -sum((count / total) * math.log2(count / total) for count in counts.values())
+        max_entropy = math.log2(min(total, 256)) or 1.0
+        return float(max(0.0, min(1.0, 1.0 - entropy / max_entropy)))
 
     def detect_model_inversion(self, input_gradients: np.ndarray) -> float:
         return float(np.max(np.abs(input_gradients)))
@@ -166,9 +238,7 @@ class OutputVerifier:
 
     def detect_secrets(self, text: str) -> List[Tuple[str, str]]:
         secrets = []
-        api_key = (
-            r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
-        )
+        api_key = r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
         for match in re.finditer(api_key, text, re.IGNORECASE):
             secrets.append(("api_key", match.group(1)))
         return secrets
@@ -221,7 +291,5 @@ class DataPoisoningDefense:
         return data[~outliers], labels[~outliers]
 
     @staticmethod
-    def gradient_norm_detection(
-        gradients: List[np.ndarray], threshold: float = 10.0
-    ) -> List[bool]:
+    def gradient_norm_detection(gradients: List[np.ndarray], threshold: float = 10.0) -> List[bool]:
         return [float(np.linalg.norm(g)) > threshold for g in gradients]

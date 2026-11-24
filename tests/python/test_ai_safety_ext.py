@@ -2,9 +2,7 @@
 
 import sys, os
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 import numpy as np
 from SneppX_ALG.interface_bindings import (
@@ -124,6 +122,37 @@ def test_dp_sanitize():
     assert len(clean_x) <= len(data)
     assert len(clean_y) <= len(labels)
     assert len(clean_x) == len(clean_y)
+
+
+def test_factuality_uses_context_and_is_not_constant():
+    rlhf = RLHFSafety()
+    supported = rlhf.check_factuality("the sky is blue", "the sky appears blue during the day")
+    unsupported = rlhf.check_factuality("the sky is blue", "unrelated banana recipes")
+    negated = rlhf.check_factuality("the sky is blue", "the sky is not blue at all")
+    assert supported > unsupported
+    assert 0.0 <= negated <= supported
+    assert rlhf.check_factuality("", "anything") == 0.0
+
+
+def test_semantic_injection_tracks_embedding_distance():
+    rlhf = RLHFSafety()
+    baseline = [1.0, 0.0, 0.0, 0.0]
+    same = rlhf.detect_semantic_injection("", baseline)
+    drifted = rlhf.detect_semantic_injection(
+        "completely different unrelated vocabulary here", baseline
+    )
+    assert same == 0.0
+    assert drifted > 0.0
+    assert 0.0 <= drifted <= 1.0
+
+
+def test_membership_inference_tracks_output_entropy():
+    rlhf = RLHFSafety()
+    constant = rlhf.detect_membership_inference(b"sample", b"\x01" * 256)
+    varied = rlhf.detect_membership_inference(b"sample", bytes(range(256)))
+    assert constant > varied
+    assert 0.0 <= varied <= 1.0
+    assert rlhf.detect_membership_inference(b"", b"\x01\x02") == 0.0
 
 
 def test_dp_gradient_detection():
