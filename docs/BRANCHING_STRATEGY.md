@@ -1,6 +1,6 @@
 # Branching Strategy
 
-SNEPPX-Algo follows a **track-based Git Flow** model adapted for security-first development. Every branch type maps to a contributor tier. All verification is manual — no CI/CD.
+SneppX-ALG follows a **track-based Git Flow** model adapted for security-first development. Every branch type maps to a contributor tier. Pushes and pull requests are checked by the CI workflow in `.github/workflows/ci.yml`.
 
 ---
 
