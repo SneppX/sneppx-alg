@@ -20,9 +20,7 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location(
-    "ctm_large_files", LARGE_MODULE_PATH
-)
+LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -33,9 +31,7 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text(
-        "bad = True\n", encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
 
     report = ctm.scan(tmp_path)
 
@@ -185,6 +181,28 @@ def test_large_file_scanner_filters_threshold_and_sorts(tmp_path):
 
     assert [item["path"] for item in report["files"]] == ["large-b.bin", "large-a.bin"]
     assert [item["bytes"] for item in report["files"]] == [32, 16]
+
+
+def test_legacy_largest_files_delegates_to_unified_scanner(tmp_path):
+    import ctm_largest_files
+
+    (tmp_path / "a.bin").write_bytes(b"a" * 8)
+    (tmp_path / "b.bin").write_bytes(b"b" * 16)
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.bin").write_bytes(b"x" * 128)
+
+    assert ctm_largest_files.largest_files(tmp_path, 1) == [(16, "b.bin")]
+
+
+def test_legacy_count_empty_uses_unified_filters(tmp_path):
+    import ctm_count_empty_files
+
+    (tmp_path / "empty.py").write_text("", encoding="utf-8")
+    (tmp_path / "full.py").write_text("x", encoding="utf-8")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.py").write_text("", encoding="utf-8")
+
+    assert ctm_count_empty_files.count_empty(tmp_path) == 1
 
 
 def test_symlink_files_are_not_followed_when_supported(tmp_path):

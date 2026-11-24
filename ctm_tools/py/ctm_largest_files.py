@@ -1,64 +1,20 @@
 #!/usr/bin/env python3
-import os, sys
-from pathlib import Path
+"""Legacy large-file listing — delegates to :mod:`ctm_find_large_files`.
 
-IGNORE_DIRS = {
-    ".git",
-    ".svn",
-    ".hg",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    ".next",
-    ".cache",
-    ".pytest_cache",
-    ".ruff_cache",
-}
-IGNORE_EXTS = {
-    ".pyc",
-    ".pyo",
-    ".o",
-    ".obj",
-    ".exe",
-    ".dll",
-    ".so",
-    ".dylib",
-    ".class",
-    ".jar",
-}
+Kept for backwards compatibility with existing invocations. New code should
+use ``sneppx-ctm-large`` / ``ctm_find_large_files``, which shares the unified
+scanner's path filters (generated directories, binary suffixes, symlinks).
+"""
 
+import sys
 
-def should_ignore(path):
-    for p in Path(path).parts:
-        if p in IGNORE_DIRS:
-            return True
-    return False
+from ctm_find_large_files import find_large_files
 
 
 def largest_files(root=".", n=50):
-    root = Path(root).resolve()
-    res = []
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
-        if should_ignore(dirpath):
-            continue
-        for fn in filenames:
-            full = Path(dirpath) / fn
-            if should_ignore(str(full)):
-                continue
-            if full.suffix.lower() in IGNORE_EXTS:
-                continue
-            try:
-                sz = full.stat().st_size
-                rel = full.relative_to(root)
-                res.append((sz, str(rel)))
-            except:
-                pass
-    res.sort(reverse=True)
-    return res[:n]
+    """Return ``(size_bytes, relative_path)`` pairs, largest first."""
+    report = find_large_files(root, min_size=0, limit=n)
+    return [(item["bytes"], item["path"]) for item in report["files"]]
 
 
 def main():
