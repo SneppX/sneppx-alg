@@ -24,6 +24,7 @@ smoothing implemented here).
 from typing import List, Optional, Callable, Dict, Any, Tuple, Iterable
 import time
 import math
+import os
 import numpy as np
 
 from .tensor import Tensor
@@ -35,6 +36,7 @@ from .profiler import Profiler, Timer, TrainProfiler, get_profiler
 from .checkpoint import CheckpointCoordinator, FaultToleranceManager
 from .optim import AdamW, SGD, Optimizer
 from .nn import Module
+from .safe_pickle import safe_pickle_load
 
 # ---------------------------------------------------------------------------
 # Loss helpers
@@ -59,9 +61,7 @@ def cross_entropy_with_smoothing(
 
     # stable log-softmax
     m = np.max(logits_np, axis=-1, keepdims=True)
-    log_probs = (
-        logits_np - m - np.log(np.sum(np.exp(logits_np - m), axis=-1, keepdims=True))
-    )
+    log_probs = logits_np - m - np.log(np.sum(np.exp(logits_np - m), axis=-1, keepdims=True))
 
     n_classes = logits_np.shape[-1]
     loss = 0.0
@@ -71,9 +71,7 @@ def cross_entropy_with_smoothing(
         if t == ignore_index:
             continue
         if smoothing > 0.0:
-            true_dist = np.full(
-                n_classes, smoothing / (n_classes - 1), dtype=np.float64
-            )
+            true_dist = np.full(n_classes, smoothing / (n_classes - 1), dtype=np.float64)
             true_dist[t] = 1.0 - smoothing
             loss += -np.sum(true_dist * log_probs[i])
         else:
@@ -168,19 +166,13 @@ class UltraTrainer:
         self.config = config
         self.loss_fn = loss_fn or cross_entropy_with_smoothing
         self.distributed_ctx = distributed_ctx
-        self.scaler = amp.GradScaler(
-            init_scale=config.amp_init_scale, enabled=config.use_amp
-        )
-        self.checkpointer = (
-            GradientCheckpointer() if config.use_grad_checkpoint else None
-        )
+        self.scaler = amp.GradScaler(init_scale=config.amp_init_scale, enabled=config.use_amp)
+        self.checkpointer = GradientCheckpointer() if config.use_grad_checkpoint else None
         self.optimizer = self._build_optimizer()
         self.scheduler = self._build_scheduler()
         self.ema: Dict[int, np.ndarray] = {}
         self.step_count = 0
-        self.best_metric = (
-            float("inf") if config.early_stopping_mode == "min" else float("-inf")
-        )
+        self.best_metric = float("inf") if config.early_stopping_mode == "min" else float("-inf")
         self.patience_left = config.early_stopping_patience
         self.profiler = config.profiler or TrainProfiler()
         self.train_losses: List[float] = []
@@ -394,21 +386,13 @@ class UltraTrainer:
                 batch = next(loader_iter)
             loss = self.training_step(batch)
             self.train_losses.append(loss)
-            if (
-                self.config.log_every
-                and step % self.config.log_every == 0
-                and self._rank == 0
-            ):
+            if self.config.log_every and step % self.config.log_every == 0 and self._rank == 0:
                 lr = self.config.lr
                 print(
                     f"  step {step:6d} | loss {loss:.4f} | lr {lr:.2e} | "
                     f"scale {self.scaler.scale:.0f}"
                 )
-            if (
-                self.config.eval_every
-                and eval_fn
-                and step % self.config.eval_every == 0
-            ):
+            if self.config.eval_every and eval_fn and step % self.config.eval_every == 0:
                 self._maybe_early_stop(eval_fn())
             if self.config.save_every and step % self.config.save_every == 0:
                 self.save(f"{self.config.checkpoint_dir}/step_{step}")
@@ -449,11 +433,9 @@ class UltraTrainer:
         if self.config.verbose:
             print(f"[UltraTrainer] saved -> {path}.ultra")
 
-    def load(self, path: str):
-        import pickle
-
+    def load(self, path: str, allow_unsafe: bool = False):
         with open(path + ".ultra", "rb") as f:
-            state = pickle.load(f)
+            state = safe_pickle_load(f, "UltraTrainer checkpoint", allow_unsafe)
         params = self._params()
         for p, data in zip(params, state["params"]):
             p.data = data

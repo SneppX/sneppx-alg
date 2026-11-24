@@ -69,9 +69,7 @@ def test_fsdp_loader_honours_opt_in(tmp_path):
 
     model = _DummyFSDP()
     with pytest.warns(RuntimeWarning):
-        optimizer = fsdp_load_checkpoint(
-            model, _write_ckpt(tmp_path), allow_unsafe=True
-        )
+        optimizer = fsdp_load_checkpoint(model, _write_ckpt(tmp_path), allow_unsafe=True)
     assert model.loaded == {"w": 1}
     assert optimizer == {"step": 7}
 
@@ -104,3 +102,34 @@ def test_trainer_passthrough_refuses_without_opt_in(tmp_path):
     trainer = Trainer(model, TrainConfig())
     with pytest.raises(UnsafeDeserializationError):
         trainer.load_checkpoint(path)
+
+
+def _make_ultra_checkpoint(tmp_path):
+    from SneppX_ALG.interface_bindings.nn import Linear, Module
+    from SneppX_ALG.interface_bindings.trainer_v2 import UltraTrainer, UltraTrainConfig
+
+    class _Tiny(Module):
+        def __init__(self):
+            super().__init__()
+            self.fc = Linear(2, 2)
+
+        def forward(self, x):
+            return self.fc(x)
+
+    trainer = UltraTrainer(_Tiny(), UltraTrainConfig())
+    path = tmp_path / "ultra"
+    trainer.save(str(path))
+    return trainer, str(path)
+
+
+def test_ultra_trainer_loader_refuses_without_opt_in(tmp_path):
+    trainer, path = _make_ultra_checkpoint(tmp_path)
+    with pytest.raises(UnsafeDeserializationError, match="UltraTrainer checkpoint"):
+        trainer.load(path)
+
+
+def test_ultra_trainer_loader_honours_opt_in(tmp_path):
+    trainer, path = _make_ultra_checkpoint(tmp_path)
+    with pytest.warns(RuntimeWarning):
+        trainer.load(path, allow_unsafe=True)
+    assert trainer.step_count == 0
