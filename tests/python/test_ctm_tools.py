@@ -255,6 +255,23 @@ def test_legacy_comments_blank_code_uses_unified_filters(tmp_path):
     assert report == {"total": 3, "blank": 1, "comments": 1, "code": 1}
 
 
+def test_legacy_loc_by_file_uses_unified_filters(tmp_path):
+    import ctm_count_loc_by_file
+
+    (tmp_path / "a.py").write_text("x = 1\ny = 2\n", encoding="utf-8")
+    (tmp_path / "notes.md").write_text("# title\n", encoding="utf-8")
+    (tmp_path / "blob.exe").write_bytes(b"\x00\x01")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "ignored.py").write_text("x\n", encoding="utf-8")
+
+    report = ctm_count_loc_by_file.count_loc_by_file(tmp_path)
+
+    assert report == [
+        {"file": "a.py", "loc": 2},
+        {"file": "notes.md", "loc": 1},
+    ]
+
+
 def test_symlink_files_are_not_followed_when_supported(tmp_path):
     target = tmp_path / "target.py"
     target.write_text("x = 1\n", encoding="utf-8")
