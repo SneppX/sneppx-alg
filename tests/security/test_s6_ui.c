@@ -120,6 +120,13 @@ TEST(test_s6_ui, csprng_backed_secrets)
     for (size_t i = 1; i < lens_a[0]; i++)
         EXPECT_NE(shares_a[0][i], shares_b[0][i])
             << "M-10: Shamir coefficients must be CSPRNG-generated (byte " << i << ")";
+
+    uint8_t recovered[sizeof(secret)] = {0};
+    size_t recovered_len = sizeof(recovered);
+    ASSERT_EQ(SNEPPX_shamir_reconstruct(shares_a, lens_a, 2, recovered, &recovered_len), 0);
+    EXPECT_EQ(recovered_len, sizeof(secret));
+    EXPECT_EQ(memcmp(recovered, secret, sizeof(secret)), 0)
+        << "M-10: Shamir reconstruction must recover the secret";
     for (int i = 0; i < 3; i++)
     {
         free(shares_a[i]);

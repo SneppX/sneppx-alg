@@ -34,7 +34,14 @@ static void gf_init(void)
     {
         gf_exp[i] = (uint8_t) x;
         gf_log[x] = (uint8_t) i;
-        x = (x << 1) ^ (x & 0x80 ? 0x11b : 0);
+        /* GF(256) modulus 0x11b is irreducible but NOT primitive for
+         * generator 2: x has order 51, leaving 204 field elements with a
+         * zero log entry (and repeatedly clobbering gf_log[1]). 3 is a
+         * primitive element, so enumerate with x*3 = xtime(x) ^ x.  Keep
+         * x masked to 8 bits: an unmasked shift made gf_log[x] write far
+         * past its 256-entry bounds. */
+        int doubled = (x << 1) ^ ((x & 0x80) ? 0x1b : 0);
+        x = (doubled ^ x) & 0xff;
     }
     for (int i = 255; i < 512; i++)
         gf_exp[i] = gf_exp[i - 255];
