@@ -303,6 +303,38 @@ class FileAuditBackend(AuditBackend):
         self._lock = threading.Lock()
         self._prev_hash = "0" * 64
         self._open_new_file()
+        self._load_chain_head()
+
+    def _load_chain_head(self):
+        """Restore the hash chain head from persisted events on startup.
+
+        A fresh backend starts at the zero hash; without this step a process
+        restart (or reopening the same directory) would silently break hash
+        chain continuity with events written by an earlier process.
+        """
+        files = sorted(self.log_dir.glob("audit_*.log*"), key=lambda f: f.stat().st_mtime)
+        for file_path in reversed(files):
+            try:
+                is_gzip = file_path.suffix == ".gz"
+                open_func = gzip.open if is_gzip else open
+                mode = "rt" if is_gzip else "r"
+                last_hash = None
+                with open_func(file_path, mode, encoding="utf-8") as f:
+                    for line in f:
+                        if not line.strip():
+                            continue
+                        try:
+                            data = json.loads(line)
+                        except (ValueError, TypeError):
+                            continue
+                        h = data.get("hash")
+                        if isinstance(h, str) and h:
+                            last_hash = h
+                if last_hash is not None:
+                    self._prev_hash = last_hash
+                    return
+            except (OSError, EOFError):
+                continue
 
     def _open_new_file(self):
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -614,6 +646,17 @@ class DatabaseAuditBackend(AuditBackend):
             ON {self.table_name}(action)
         """)
         self._conn.commit()
+
+        # Restore the hash chain head from the newest persisted event so a
+        # reopened database continues the chain instead of restarting it.
+        try:
+            row = self._conn.execute(
+                f"SELECT hash FROM {self.table_name} ORDER BY id DESC LIMIT 1"
+            ).fetchone()
+            if row and row[0]:
+                self._prev_hash = row[0]
+        except sqlite3.Error:
+            pass
 
     def write(self, event: AuditEvent) -> bool:
         event.prev_hash = self._prev_hash

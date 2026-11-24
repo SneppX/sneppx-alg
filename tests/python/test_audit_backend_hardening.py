@@ -9,6 +9,7 @@ from SneppX_ALG.interface_bindings.audit_logger import (
     AuditLogger,
     AuditWriteError,
     DatabaseAuditBackend,
+    FileAuditBackend,
     AuditAction,
     AuditEvent,
     AuditResult,
@@ -165,3 +166,46 @@ def test_strict_mode_allows_successful_writes():
         assert event.actor == "alice"
     finally:
         backend.close()
+
+
+def _event_with_id(event_id):
+    event = _event()
+    event.event_id = event_id
+    return event
+
+
+def test_file_backend_restores_chain_head(tmp_path):
+    first_backend = FileAuditBackend(log_dir=str(tmp_path), compress=False)
+    try:
+        first = _event_with_id("evt-1")
+        assert first_backend.write(first) is True
+        first_hash = first.hash
+    finally:
+        first_backend.close()
+
+    second_backend = FileAuditBackend(log_dir=str(tmp_path), compress=False)
+    try:
+        second = _event_with_id("evt-2")
+        assert second_backend.write(second) is True
+        assert second.prev_hash == first_hash
+    finally:
+        second_backend.close()
+
+
+def test_database_backend_restores_chain_head(tmp_path):
+    db_path = str(tmp_path / "audit.db")
+    first_backend = DatabaseAuditBackend(db_path)
+    try:
+        first = _event_with_id("evt-1")
+        assert first_backend.write(first) is True
+        first_hash = first.hash
+    finally:
+        first_backend.close()
+
+    second_backend = DatabaseAuditBackend(db_path)
+    try:
+        second = _event_with_id("evt-2")
+        assert second_backend.write(second) is True
+        assert second.prev_hash == first_hash
+    finally:
+        second_backend.close()
