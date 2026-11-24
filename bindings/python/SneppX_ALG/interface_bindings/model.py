@@ -4,6 +4,7 @@ import os
 from typing import List, Optional
 from .. import _neural_engine_bridge
 from .tensor import Tensor, _HAS_C_BACKEND
+from .safe_pickle import safe_pickle_load
 
 
 class ModelConfig:
@@ -85,11 +86,9 @@ class Model:
         with open(path, "wb") as f:
             pickle.dump(data, f)
 
-    def load_checkpoint(self, path: str):
-        import pickle
-
+    def load_checkpoint(self, path: str, allow_unsafe: bool = False):
         with open(path, "rb") as f:
-            pickle.load(f)
+            safe_pickle_load(f, "model checkpoint", allow_unsafe)
 
 
 # ---- HSS Model ----

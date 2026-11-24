@@ -352,8 +352,8 @@ class Trainer:
     def save_checkpoint(self, path: str):
         self._model.save_checkpoint(path)
 
-    def load_checkpoint(self, path: str):
-        self._model.load_checkpoint(path)
+    def load_checkpoint(self, path: str, allow_unsafe: bool = False):
+        self._model.load_checkpoint(path, allow_unsafe=allow_unsafe)
 
     def train(self, *args, **kwargs):
         return self.fit(*args, **kwargs)

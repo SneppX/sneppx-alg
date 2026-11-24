@@ -76,7 +76,7 @@ def test_trainer_save_load_checkpoints():
     try:
         trainer.save_checkpoint(path)
         assert os.path.exists(path)
-        trainer.load_checkpoint(path)
+        trainer.load_checkpoint(path, allow_unsafe=True)
     finally:
         if os.path.exists(path):
             os.unlink(path)

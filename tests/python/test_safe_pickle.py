@@ -74,3 +74,33 @@ def test_fsdp_loader_honours_opt_in(tmp_path):
         )
     assert model.loaded == {"w": 1}
     assert optimizer == {"step": 7}
+
+
+def _make_model_checkpoint(tmp_path):
+    from SneppX_ALG.interface_bindings.model import Model, ModelConfig
+
+    model = Model(ModelConfig())
+    path = tmp_path / "model.ckpt"
+    model.save_checkpoint(str(path))
+    return model, str(path)
+
+
+def test_model_loader_refuses_without_opt_in(tmp_path):
+    model, path = _make_model_checkpoint(tmp_path)
+    with pytest.raises(UnsafeDeserializationError, match="model checkpoint"):
+        model.load_checkpoint(path)
+
+
+def test_model_loader_honours_opt_in(tmp_path):
+    model, path = _make_model_checkpoint(tmp_path)
+    with pytest.warns(RuntimeWarning):
+        model.load_checkpoint(path, allow_unsafe=True)
+
+
+def test_trainer_passthrough_refuses_without_opt_in(tmp_path):
+    from SneppX_ALG.interface_bindings.train import Trainer, TrainConfig
+
+    model, path = _make_model_checkpoint(tmp_path)
+    trainer = Trainer(model, TrainConfig())
+    with pytest.raises(UnsafeDeserializationError):
+        trainer.load_checkpoint(path)
