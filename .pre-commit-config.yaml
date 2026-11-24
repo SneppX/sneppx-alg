@@ -132,6 +132,13 @@ repos:
         language: system
         types: [go]
 
+  # M-19: scan staged changes with gitleaks; CI runs a full-history scan.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        args: [--config, .gitleaks.toml, --redact, --no-banner]
+
   # Local hook: SNEPPX documentation coverage (docs/COMMENTING.md Layers 1 & 4).
   - repo: local
     hooks:

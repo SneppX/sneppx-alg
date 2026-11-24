@@ -1,0 +1,23 @@
+title = "SneppX-ALG secret scan"
+
+[extend]
+useDefault = true
+
+# Fake credentials are intentionally embedded in documentation (curl examples)
+# and regression fixtures for the scanners themselves.  Those paths are public
+# test data, not deployable secrets, so exclude them from the scan.  Everything
+# else (including all source and configuration files) uses the default rules.
+[allowlist]
+description = "Documentation examples and scanner regression fixtures"
+paths = [
+  '''^docs/API_REFERENCE\.md$''',
+  '''^sonar-project\.properties$''',
+  '''^tests/python/test_scan_secrets\.py$''',
+  '''^tests/python/test_secrets_redact\.py$''',
+  '''^tests/python/test_security_integrity\.py$''',
+  '''^tests/python/test_ai_safety_ext\.py$''',
+  '''^tests/python/test_model_hub_bootstrap\.py$''',
+  '''^tests/python/test_model_hub_cors\.py$''',
+  '''(^|/)(__pycache__|build|dist|site)/''',
+  '''\.(pyc|pyd|so|dll|exe|zip|tar|gz|whl|png|jpg|jpeg|gif|pdf|bin)$''',
+]
