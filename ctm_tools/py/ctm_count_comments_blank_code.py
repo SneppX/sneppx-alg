@@ -40,7 +40,12 @@ def count_lines(root="."):
             s = line.strip()
             if not s:
                 blank += 1
-            elif s.startswith("//") or s.startswith("#") or s.startswith("/*") or s.startswith("*"):
+            elif (
+                s.startswith("//")
+                or s.startswith("#")
+                or s.startswith("/*")
+                or s.startswith("*")
+            ):
                 comments += 1
             else:
                 code += 1
@@ -77,7 +82,9 @@ def main():
         out = json.dumps(result, indent=2)
     elif fmt == "csv":
         out = "total,blank,comments,code\n"
-        out += f"{stats['total']},{stats['blank']},{stats['comments']},{stats['code']}\n"
+        out += (
+            f"{stats['total']},{stats['blank']},{stats['comments']},{stats['code']}\n"
+        )
     else:
         out = f"Total: {stats['total']}\nBlank: {stats['blank']}\nComments: {stats['comments']}\nCode: {stats['code']}\n"
 
