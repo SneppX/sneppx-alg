@@ -2,9 +2,7 @@
 
 import sys, os
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings import LTLProperty, ModelChecker, StateGraph
 
@@ -42,6 +40,8 @@ def test_model_checker_single_prop():
     mc.add_property(LTLProperty("only_one", "formula"))
     results = mc.check("only_one")
     assert len(results) == 1
+    # Unsupported LTL fragments must fail closed, not report a false pass.
+    assert results["only_one"] is False
 
 
 def test_model_checker_no_props():

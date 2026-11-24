@@ -40,6 +40,11 @@ class ModelChecker:
     records the counterexample trace.  For liveness properties (``eventually``
     / ``F`` / ``<>``) it reports a violation when no matching state is
     reachable.
+
+    Only the ``always`` / ``G`` / ``[]`` safety and ``eventually`` / ``F`` /
+    ``<>`` liveness fragments are actually evaluated. Any other formula fails
+    closed (check returns ``False``) rather than reporting a false pass for a
+    property that was never verified.
     """
 
     def __init__(self):
@@ -147,9 +152,16 @@ class ModelChecker:
                 self._counterexamples[prop.name] = None
             return False
 
+        if is_safety:
+            with self._lock:
+                self._counterexamples[prop.name] = None
+            return True
+
+        # Unsupported formula: fail closed instead of reporting a pass for a
+        # property that was never actually evaluated.
         with self._lock:
             self._counterexamples[prop.name] = None
-        return True
+        return False
 
     @staticmethod
     def _extract_target(formula: str) -> Optional[str]:
@@ -166,9 +178,7 @@ class ModelChecker:
     def check(self, property_name: Optional[str] = None) -> Dict[str, bool]:
         with self._lock:
             props = [
-                p
-                for p in self._properties
-                if property_name is None or p.name == property_name
+                p for p in self._properties if property_name is None or p.name == property_name
             ]
         for prop in props:
             result = self._check_property(prop)
