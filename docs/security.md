@@ -6,7 +6,7 @@ description: "Architecture and implementation status of SneppX-ALG security comp
 
 ## Overview
 
-SNEPPX-Algo organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.
+SneppX-ALG organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.
 
 Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.
 
