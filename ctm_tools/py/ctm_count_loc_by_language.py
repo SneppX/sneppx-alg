@@ -87,7 +87,9 @@ def main():
         "languages": [],
     }
     for lang, lines in sorted(stats.items(), key=lambda x: x[1], reverse=True):
-        result["languages"].append({"language": lang, "files": files[lang], "loc": lines})
+        result["languages"].append(
+            {"language": lang, "files": files[lang], "loc": lines}
+        )
 
     if fmt == "json":
         out = json.dumps(result, indent=2)
