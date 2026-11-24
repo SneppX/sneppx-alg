@@ -68,7 +68,9 @@ def main():
         help="Bind address (default: 127.0.0.1)",
     )
     parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
-    parser.add_argument("--reload", action="store_true", help="Auto-reload on code changes (dev)")
+    parser.add_argument(
+        "--reload", action="store_true", help="Auto-reload on code changes (dev)"
+    )
     parser.add_argument(
         "--log-level",
         type=str,
@@ -100,7 +102,9 @@ def main():
         default=None,
         help="Path to tokenizer.json file or directory",
     )
-    parser.add_argument("--workers", type=int, default=1, help="Number of uvicorn workers")
+    parser.add_argument(
+        "--workers", type=int, default=1, help="Number of uvicorn workers"
+    )
     parser.add_argument(
         "--auth-mode",
         type=str,
@@ -218,7 +222,9 @@ def main():
 
     auth_mode = args.auth_mode or os.environ.get("SNEPPX_AUTH_MODE", DEFAULT_AUTH_MODE)
     try:
-        _validate_auth_settings(args.host, auth_mode, args.api_keys, args.key_store_path)
+        _validate_auth_settings(
+            args.host, auth_mode, args.api_keys, args.key_store_path
+        )
     except ValueError as exc:
         parser.error(str(exc))
 
@@ -250,9 +256,13 @@ def main():
     if args.tls_cafile:
         firewall_overrides["cafile"] = args.tls_cafile
     if args.firewall_allowlist:
-        firewall_overrides["allowlist"] = [x.strip() for x in args.firewall_allowlist.split(",")]
+        firewall_overrides["allowlist"] = [
+            x.strip() for x in args.firewall_allowlist.split(",")
+        ]
     if args.firewall_denylist:
-        firewall_overrides["denylist"] = [x.strip() for x in args.firewall_denylist.split(",")]
+        firewall_overrides["denylist"] = [
+            x.strip() for x in args.firewall_denylist.split(",")
+        ]
     if args.firewall_rate_limit:
         firewall_overrides["rate_limit_max"] = args.firewall_rate_limit
     if args.firewall_knock_ports:
@@ -265,7 +275,9 @@ def main():
         api_keys=(_parse_api_keys(args.api_keys)),
     )
     try:
-        rate_limit_enabled, requests_per_minute = _resolve_rate_limit(args.rate_limit_rpm)
+        rate_limit_enabled, requests_per_minute = _resolve_rate_limit(
+            args.rate_limit_rpm
+        )
     except ValueError as exc:
         parser.error(str(exc))
     rate_limit = RateLimitConfig(
@@ -349,7 +361,9 @@ def _load_model(args):
         tokenizer = Tokenizer(args.tokenizer)
 
     gen_config = GenerationConfig(
-        max_new_tokens=config.get("max_new_tokens", 256) if isinstance(config, dict) else 256,
+        max_new_tokens=config.get("max_new_tokens", 256)
+        if isinstance(config, dict)
+        else 256,
         temperature=config.get("temperature", 1.0) if isinstance(config, dict) else 1.0,
         top_k=config.get("top_k", 0) if isinstance(config, dict) else 0,
         top_p=config.get("top_p", 1.0) if isinstance(config, dict) else 1.0,

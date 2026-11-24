@@ -93,7 +93,9 @@ class RLHFSafety:
             self._bias_scores = scores
         return scores
 
-    def detect_semantic_injection(self, text: str, base_embedding: List[float]) -> float:
+    def detect_semantic_injection(
+        self, text: str, base_embedding: List[float]
+    ) -> float:
         """Advisory cosine-distance signal between ``text`` and a baseline.
 
         A stable bag-of-tokens projection of ``text`` is compared against the
@@ -106,7 +108,9 @@ class RLHFSafety:
         dim = len(base_embedding)
         vec = [0.0] * dim
         for token in re.findall(r"[a-z0-9]+", (text or "").lower()):
-            slot = int.from_bytes(hashlib.md5(token.encode()).digest()[:4], "little") % dim
+            slot = (
+                int.from_bytes(hashlib.md5(token.encode()).digest()[:4], "little") % dim
+            )
             vec[slot] += 1.0
         norm_vec = math.sqrt(sum(x * x for x in vec))
         norm_base = math.sqrt(sum(x * x for x in base_embedding))
@@ -129,7 +133,9 @@ class RLHFSafety:
         for byte in model_output:
             counts[byte] = counts.get(byte, 0) + 1
         total = len(model_output)
-        entropy = -sum((count / total) * math.log2(count / total) for count in counts.values())
+        entropy = -sum(
+            (count / total) * math.log2(count / total) for count in counts.values()
+        )
         max_entropy = math.log2(min(total, 256)) or 1.0
         return float(max(0.0, min(1.0, 1.0 - entropy / max_entropy)))
 
@@ -238,7 +244,9 @@ class OutputVerifier:
 
     def detect_secrets(self, text: str) -> List[Tuple[str, str]]:
         secrets = []
-        api_key = r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
+        api_key = (
+            r'(?:api[_-]?key|secret|token)\s*[:=]\s*["\']?([A-Za-z0-9_\-]{16,})["\']?'
+        )
         for match in re.finditer(api_key, text, re.IGNORECASE):
             secrets.append(("api_key", match.group(1)))
         return secrets
@@ -291,5 +299,7 @@ class DataPoisoningDefense:
         return data[~outliers], labels[~outliers]
 
     @staticmethod
-    def gradient_norm_detection(gradients: List[np.ndarray], threshold: float = 10.0) -> List[bool]:
+    def gradient_norm_detection(
+        gradients: List[np.ndarray], threshold: float = 10.0
+    ) -> List[bool]:
         return [float(np.linalg.norm(g)) > threshold for g in gradients]

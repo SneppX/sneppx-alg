@@ -2,7 +2,9 @@
 
 import sys, os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
+)
 
 import numpy as np
 from SneppX_ALG.interface_bindings import (
@@ -126,7 +128,9 @@ def test_dp_sanitize():
 
 def test_factuality_uses_context_and_is_not_constant():
     rlhf = RLHFSafety()
-    supported = rlhf.check_factuality("the sky is blue", "the sky appears blue during the day")
+    supported = rlhf.check_factuality(
+        "the sky is blue", "the sky appears blue during the day"
+    )
     unsupported = rlhf.check_factuality("the sky is blue", "unrelated banana recipes")
     negated = rlhf.check_factuality("the sky is blue", "the sky is not blue at all")
     assert supported > unsupported

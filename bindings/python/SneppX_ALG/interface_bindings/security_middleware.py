@@ -274,7 +274,9 @@ class PromptFilter:
         if pattern not in self._config.patterns:
             self._config.patterns.append(pattern)
         try:
-            self._compiled.append((re.compile(re.escape(pattern), re.IGNORECASE), pattern))
+            self._compiled.append(
+                (re.compile(re.escape(pattern), re.IGNORECASE), pattern)
+            )
         except re.error:
             pass
         if self._s5 is not None:
