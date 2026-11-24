@@ -1,4 +1,4 @@
-# SNEPPX-ALG API Quick Reference
+# SneppX-ALG API Quick Reference
 
 ## C API (Core Engine)
 
