@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- **CMake** 3.24+
+- **CMake** 3.16+
 - **C11 compiler** (MSVC 2022, GCC 11+, Clang 14+)
-- **C++20** for S2 obfuscation (optional)
+- **C++20** compiler (required by the native build)
 - **Python 3.11+** for bindings and test runner (optional)
 - **Git** with GPG or Ed25519 signing configured
 
