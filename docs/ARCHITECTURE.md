@@ -1,4 +1,4 @@
-# SNEPPX-Algo Architecture
+# SneppX-ALG Architecture
 
 > [!WARNING]
 > **Alpha software.** The security layers below have uneven maturity and none
@@ -14,7 +14,7 @@ This project uses a four-layer commenting standard defined in [COMMENTING.md](CO
 
 ## Overview
 
-SNEPPX-Algo implements a composite AI algorithm with cryptographic integrity. The system processes inputs through five sequential algorithm components, each wrapped in ten security layers.
+SneppX-ALG implements a composite AI algorithm with cryptographic integrity. The system processes inputs through five sequential algorithm components, each wrapped in ten security layers.
 
 ```
                      ┌──────────────────────────────────────┐
