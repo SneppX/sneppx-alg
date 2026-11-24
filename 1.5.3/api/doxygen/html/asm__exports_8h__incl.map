@@ -1,7 +1,7 @@
 <map id="include/neural_core/security/asm_exports.h" name="include/neural_core/security/asm_exports.h">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,5,183,50"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="11,98,81,126"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="9,98,83,126"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,49,64,86,59,83,79,52"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="105,98,179,126"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="107,98,177,126"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="108,48,129,84,124,84,105,53"/>
 </map>

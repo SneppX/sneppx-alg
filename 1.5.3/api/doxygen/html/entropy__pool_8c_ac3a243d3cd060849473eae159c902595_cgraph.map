@@ -1,17 +1,23 @@
 <map id="SNEPPX_entropy_pool_add" name="SNEPPX_entropy_pool_add">
-<area shape="rect" id="Node000001" title="Add Entropy Pool." alt="" coords="5,57,201,85"/>
-<area shape="rect" id="Node000002" href="$siphash_8c.html#a220923dc0e0333768ec53729345453aa" title="Compute SipHash 2&#45;4 of input." alt="" coords="249,5,432,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,54,261,36,256,38,170,59"/>
-<area shape="rect" id="Node000005" href="$siphash_8c.html#a9c2503c774f2c5c99006b89363732f68" title="Initialize Siphash." alt="" coords="262,109,419,137"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="170,83,261,105,256,106,169,88"/>
-<area shape="rect" id="Node000007" href="$siphash_8c.html#aa02b4099e59778a97900f246fdd3666f" title="Update Siphash." alt="" coords="250,57,431,85"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="201,69,237,71,231,72,201,74"/>
-<area shape="rect" id="Node000003" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="484,19,561,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="432,23,470,28,465,29,432,29"/>
-<area shape="rect" id="Node000004" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="612,19,672,46"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="561,30,599,32,594,33,561,35"/>
-<area shape="rect" id="Node000006" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="480,84,564,112"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="419,110,462,106,467,106,419,115"/>
-<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="408,54,466,44,471,43,409,59"/>
-<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="431,82,467,89,462,89,431,87"/>
+<area shape="rect" id="Node000001" title="Add Entropy Pool." alt="" coords="5,84,201,112"/>
+<area shape="rect" id="Node000002" href="$entropy__pool_8c.html#a8dab4a4e64c86efdebb4a9ef65b1cbbb" title=" " alt="" coords="249,84,371,112"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,95,236,98,231,98,201,100"/>
+<area shape="rect" id="Node000003" href="$siphash_8c.html#a353e8e9dfd1316d04452d2b31152d1d7" title="Compute SipHash 2&#45;4 of input." alt="" coords="419,57,548,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="371,86,401,84,406,83,372,91"/>
+<area shape="rect" id="Node000010" href="$entropy__pool_8c.html#ad3dadfc029e8015871493204ed27c7bf" title=" " alt="" coords="439,109,528,137"/>
+<area shape="poly" id="edge11_Node000002_Node000010" title=" " alt="" coords="372,104,426,115,421,114,371,109"/>
+<area shape="rect" id="Node000004" href="$siphash_8c.html#a220923dc0e0333768ec53729345453aa" title="Perform Siphash Finalize." alt="" coords="596,5,780,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="541,54,613,38,618,37,542,59"/>
+<area shape="rect" id="Node000007" href="$siphash_8c.html#a9c2503c774f2c5c99006b89363732f68" title="Initialize Siphash." alt="" coords="609,109,767,137"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="541,83,618,105,613,105,541,88"/>
+<area shape="rect" id="Node000009" href="$siphash_8c.html#aa02b4099e59778a97900f246fdd3666f" title="Update Siphash." alt="" coords="597,57,779,85"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="549,69,584,71,579,71,549,74"/>
+<area shape="rect" id="Node000005" href="$siphash_8c.html#aaeb3f56f97f46bbddb06d06a949da4dd" title=" " alt="" coords="831,19,908,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="780,23,818,28,813,29,780,29"/>
+<area shape="rect" id="Node000006" href="$siphash_8c.html#a6f476462ad749f36acbdb86eaeff342e" title=" " alt="" coords="960,19,1019,46"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="909,30,947,32,942,33,909,35"/>
+<area shape="rect" id="Node000008" href="$siphash_8c.html#a9984afe714f0fc295b38af55b08a7749" title=" " alt="" coords="828,84,912,112"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="767,110,810,106,815,106,767,115"/>
+<area shape="poly" id="edge10_Node000009_Node000005" title=" " alt="" coords="756,54,814,44,819,43,756,59"/>
+<area shape="poly" id="edge9_Node000009_Node000008" title=" " alt="" coords="779,82,815,90,810,89,779,87"/>
 </map>

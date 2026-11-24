@@ -2,4 +2,8 @@
 <area shape="rect" id="Node000001" title="Perform Membership Inference Defense Apply Batch." alt="" coords="5,5,235,50"/>
 <area shape="rect" id="Node000002" href="$s5__extensions_8c.html#a5a948f9f111ae9a150f864024e5ff174" title="Apply Membership Inference Defense." alt="" coords="283,5,512,50"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,25,270,28,265,28,235,30"/>
+<area shape="rect" id="Node000003" href="$s5__extensions_8c.html#a3ebaa7034e0ee5f859e1e3a4903af0fc" title=" " alt="" coords="560,14,685,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="513,25,547,28,542,28,513,30"/>
+<area shape="rect" id="Node000004" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="733,14,906,42"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="686,25,720,28,715,28,686,30"/>
 </map>

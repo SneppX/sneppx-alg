@@ -93,27 +93,32 @@ $(function(){initNavTree('rlhf__safety_8c.html','',''); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="rlhf__safety_8h_source.html">rlhf_safety.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="cryptographic__random__generator_8h_source.html">cryptographic_random_generator.h</a>&quot;</code><br />
+<code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;math.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for rlhf_safety.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="rlhf__safety_8c__incl.png" border="0" usemap="#asecurity_2ai_2rlhf__safety_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2ai_2rlhf__safety_8c" id="asecurity_2ai_2rlhf__safety_8c">
-<area shape="rect" title=" " alt="" coords="156,5,328,33"/>
-<area shape="rect" href="rlhf__safety_8h.html" title=" " alt="" coords="38,81,139,109"/>
-<area shape="poly" title=" " alt="" coords="212,35,131,76,128,72,216,32"/>
-<area shape="rect" title=" " alt="" coords="164,81,229,109"/>
-<area shape="poly" title=" " alt="" coords="236,32,215,69,211,66,232,35"/>
-<area shape="rect" title=" " alt="" coords="253,81,324,109"/>
-<area shape="poly" title=" " alt="" coords="251,31,275,68,270,68,249,36"/>
-<area shape="rect" title=" " alt="" coords="348,81,416,109"/>
-<area shape="poly" title=" " alt="" coords="267,31,346,73,341,74,266,36"/>
-<area shape="rect" title=" " alt="" coords="5,157,76,184"/>
-<area shape="poly" title=" " alt="" coords="82,108,59,145,55,142,78,111"/>
-<area shape="rect" title=" " alt="" coords="100,157,173,184"/>
-<area shape="poly" title=" " alt="" coords="98,107,122,144,117,144,96,112"/>
+<area shape="rect" title=" " alt="" coords="270,5,442,33"/>
+<area shape="rect" href="rlhf__safety_8h.html" title=" " alt="" coords="197,90,298,117"/>
+<area shape="poly" title=" " alt="" coords="341,32,278,82,275,78,336,35"/>
+<area shape="rect" href="cryptographic__random__generator_8h.html" title=" " alt="" coords="5,81,173,126"/>
+<area shape="poly" title=" " alt="" coords="311,35,175,78,174,73,315,32"/>
+<area shape="rect" title=" " alt="" coords="322,90,389,117"/>
+<area shape="poly" title=" " alt="" coords="357,31,358,75,353,73,354,36"/>
+<area shape="rect" title=" " alt="" coords="414,90,479,117"/>
+<area shape="poly" title=" " alt="" coords="371,31,424,80,418,79,369,36"/>
+<area shape="rect" title=" " alt="" coords="503,90,574,117"/>
+<area shape="poly" title=" " alt="" coords="385,31,493,79,498,83,493,82,491,83,384,36"/>
+<area shape="rect" title=" " alt="" coords="83,174,156,201"/>
+<area shape="poly" title=" " alt="" coords="230,117,154,167,152,163,224,118"/>
+<area shape="rect" title=" " alt="" coords="196,174,267,201"/>
+<area shape="poly" title=" " alt="" coords="247,116,239,160,235,157,243,119"/>
+<area shape="poly" title=" " alt="" coords="98,124,112,159,107,158,96,128"/>
+<area shape="poly" title=" " alt="" coords="128,124,198,165,193,167,126,129"/>
 </map>
 </div>
 </div>
@@ -181,7 +186,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00008">8</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00009">9</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -197,7 +202,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00007">7</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00008">8</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -213,7 +218,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00006">6</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00007">7</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -245,7 +250,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00098">98</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00122">122</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -290,7 +295,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00081">81</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00104">104</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -371,7 +376,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Rlhf Add Default Policies. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00327">327</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00392">392</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -425,7 +430,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00121">121</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00145">145</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -473,7 +478,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00176">176</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00207">207</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -525,7 +530,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00257">257</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00310">310</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -563,7 +568,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00231">231</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00281">281</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -615,7 +620,21 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00209">209</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00255">255</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="rlhf__safety_8c_a6278fc045692b0f461fe6e7bf2ce8277_cgraph.png" border="0" usemap="#arlhf__safety_8c_a6278fc045692b0f461fe6e7bf2ce8277_cgraph" loading="lazy" alt=""/></div>
+<map name="arlhf__safety_8c_a6278fc045692b0f461fe6e7bf2ce8277_cgraph" id="arlhf__safety_8c_a6278fc045692b0f461fe6e7bf2ce8277_cgraph">
+<area shape="rect" title="Perform Rlhf Generate Refusal." alt="" coords="5,5,172,50"/>
+<area shape="rect" href="random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="220,5,407,50"/>
+<area shape="poly" title=" " alt="" coords="172,25,207,27,201,28,172,30"/>
+<area shape="rect" href="random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Perform Random Uint32." alt="" coords="455,5,632,50"/>
+<area shape="poly" title=" " alt="" coords="407,25,442,28,437,28,407,30"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="680,14,853,42"/>
+<area shape="poly" title=" " alt="" coords="633,25,668,28,662,28,633,30"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -637,7 +656,7 @@ Here is the call graph for this function:</div>
 <p>Perform Rlhf Get Config. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00284">284</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00342">342</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -659,7 +678,7 @@ Here is the call graph for this function:</div>
 <p>Perform Rlhf Get Stats. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00295">295</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00355">355</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -681,7 +700,7 @@ Here is the call graph for this function:</div>
 <p>Perform Rlhf Remove Policy. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00137">137</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00163">163</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -703,7 +722,7 @@ Here is the call graph for this function:</div>
 <p>Reset Rlhf. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00314">314</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00378">378</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -741,7 +760,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00151">151</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00179">179</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -777,7 +796,7 @@ Here is the call graph for this function:</div>
 <p>Perform Rlhf Update Config. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00273">273</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00329">329</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -802,7 +821,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00045">45</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00047">47</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -826,7 +845,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00046">46</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00048">48</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>
@@ -849,20 +868,18 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    .harm_threshold = 0.7,</div>
-<div class="line">    .bias_threshold = 0.6,</div>
-<div class="line">    .factual_threshold = 0.4,</div>
-<div class="line">    .helpfulness_weight = 0.3,</div>
-<div class="line">    .harmlessness_weight = 0.4,</div>
-<div class="line">    .honesty_weight = 0.2,</div>
-<div class="line">    .helpfulness_weight = 0.1,</div>
-<div class="line">    .enable_refusal = 1,</div>
-<div class="line">    .enable_critique = 1,</div>
-<div class="line">    .enable_correction = 1</div>
-<div class="line">}</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= {.harm_threshold = 0.7,</div>
+<div class="line">                                    .bias_threshold = 0.6,</div>
+<div class="line">                                    .factual_threshold = 0.4,</div>
+<div class="line">                                    .helpfulness_weight = 0.3,</div>
+<div class="line">                                    .harmlessness_weight = 0.4,</div>
+<div class="line">                                    .honesty_weight = 0.2,</div>
+<div class="line">                                    .helpfulness_weight = 0.1,</div>
+<div class="line">                                    .enable_refusal = 1,</div>
+<div class="line">                                    .enable_critique = 1,</div>
+<div class="line">                                    .enable_correction = 1}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00047">47</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="rlhf__safety_8c_source.html#l00049">49</a> of file <a class="el" href="rlhf__safety_8c_source.html">rlhf_safety.c</a>.</p>
 
 </div>
 </div>

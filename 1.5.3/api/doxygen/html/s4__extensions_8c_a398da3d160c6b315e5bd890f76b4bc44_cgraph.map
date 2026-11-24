@@ -1,5 +1,7 @@
 <map id="SNEPPX_ct_verify_all_scts" name="SNEPPX_ct_verify_all_scts">
-<area shape="rect" id="Node000001" title="Perform Ct Verify All Scts." alt="" coords="5,5,197,33"/>
-<area shape="rect" id="Node000002" href="$s4__extensions_8c.html#a9ae3b8e81bfcbb62d41da692e6b87549" title=" " alt="" coords="245,5,394,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="197,17,232,19,226,19,197,22"/>
+<area shape="rect" id="Node000001" title="Perform Ct Verify All Scts." alt="" coords="5,32,197,60"/>
+<area shape="rect" id="Node000002" href="$s4__extensions_8c.html#a9ae3b8e81bfcbb62d41da692e6b87549" title=" " alt="" coords="256,5,406,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,32,243,29,238,30,197,37"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="245,57,417,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="197,54,232,60,226,60,197,59"/>
 </map>

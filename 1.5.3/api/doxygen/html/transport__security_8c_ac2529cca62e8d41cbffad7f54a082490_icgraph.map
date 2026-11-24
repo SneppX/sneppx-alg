@@ -1,0 +1,7 @@
+<map id="transport_reset_all_sequences" name="transport_reset_all_sequences">
+<area shape="rect" id="Node000001" title=" " alt="" coords="262,36,405,81"/>
+<area shape="rect" id="Node000002" href="$transport__security_8c.html#a1ad19624c7e4a2bdeb1cb2ff7b3b13d8" title="Perform Transport Reset Session Counters." alt="" coords="20,5,199,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="244,47,199,43,199,37,249,46"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#a115d47d42173b73e4ae57c549b843337" title="Perform Transport Shutdown." alt="" coords="5,74,214,102"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="249,69,215,77,214,71,244,70"/>
+</map>

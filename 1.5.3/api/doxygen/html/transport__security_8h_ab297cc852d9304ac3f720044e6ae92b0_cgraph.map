@@ -1,5 +1,7 @@
 <map id="SNEPPX_transport_new_session" name="SNEPPX_transport_new_session">
-<area shape="rect" id="Node000001" title="Perform Transport New Session." alt="" coords="5,5,178,50"/>
-<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="226,14,398,42"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,25,213,27,208,28,178,30"/>
+<area shape="rect" id="Node000001" title="Perform Transport New Session." alt="" coords="5,24,178,68"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="238,5,410,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,33,225,30,219,31,178,39"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#abd924a37f844503b8577e1bdfc922088" title=" " alt="" coords="226,57,422,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="178,53,213,59,208,59,178,58"/>
 </map>

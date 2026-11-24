@@ -1,21 +1,21 @@
 <map id="security/crypto/c/timing.c" name="security/crypto/c/timing.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="335,5,521,33"/>
-<area shape="rect" id="Node000002" href="$timing__attack__countermeasure_8h.html" title=" " alt="" coords="423,90,659,117"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="447,31,514,80,508,80,445,36"/>
-<area shape="rect" id="Node000005" href="$side__channel__resistant__primitives_8h.html" title=" " alt="" coords="684,81,854,126"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="483,31,672,78,666,79,482,36"/>
-<area shape="rect" id="Node000006" href="$constant__time__operations_8h.html" title=" " alt="" coords="5,90,208,117"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="375,36,174,88,172,83,377,31"/>
-<area shape="rect" id="Node000007" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="232,81,400,126"/>
-<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="412,32,359,74,356,69,407,35"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="343,174,416,201"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="518,117,420,169,418,164,513,118"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="473,174,543,201"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="538,116,520,162,517,158,534,119"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="686,123,672,128,432,178,431,173,671,123,681,124"/>
-<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="702,126,558,173,557,168,697,127"/>
-<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="151,115,330,169,326,173,150,120"/>
-<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="171,115,459,174,456,178,171,120"/>
-<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="334,124,363,162,358,160,331,128"/>
-<area shape="poly" id="edge12_Node000007_Node000004" title=" " alt="" coords="367,124,466,167,461,167,366,129"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="347,5,533,33"/>
+<area shape="rect" id="Node000002" href="$constant__time__operations_8h.html" title=" " alt="" coords="461,90,664,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="460,31,533,81,528,81,459,36"/>
+<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="688,81,856,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="493,31,675,77,670,78,493,36"/>
+<area shape="rect" id="Node000006" href="$side__channel__resistant__primitives_8h.html" title=" " alt="" coords="5,81,176,126"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="382,36,192,81,190,76,385,31"/>
+<area shape="rect" id="Node000007" href="$timing__attack__countermeasure_8h.html" title=" " alt="" coords="200,90,437,117"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="423,32,351,83,349,78,418,35"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="355,174,428,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="538,117,434,169,432,164,532,118"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="490,174,560,201"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="559,116,539,162,536,157,554,119"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="690,123,676,128,444,178,443,173,675,123,685,124"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="709,126,576,172,574,167,704,127"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="171,124,342,171,338,174,170,129"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="176,121,188,123,476,175,473,180,187,128,176,126"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="331,115,373,163,368,162,329,120"/>
+<area shape="poly" id="edge12_Node000007_Node000004" title=" " alt="" coords="352,115,481,167,475,168,351,120"/>
 </map>

@@ -203,7 +203,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a5d0026ac40c4f773bb0307d6f32883ada74f92be195123337fc482394b3162d4e" name="a5d0026ac40c4f773bb0307d6f32883ada74f92be195123337fc482394b3162d4e"></a>SNEPPX_TEE_PSP&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="tee__interface_8h_source.html#l00025">25</a> of file <a class="el" href="tee__interface_8h_source.html">tee_interface.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tee__interface_8h_source.html#l00024">24</a> of file <a class="el" href="tee__interface_8h_source.html">tee_interface.h</a>.</p>
 
 </div>
 </div>
@@ -266,7 +266,17 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00090">90</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00103">103</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="tee__interface_8h_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph.png" border="0" usemap="#atee__interface_8h_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph" loading="lazy" alt=""/></div>
+<map name="atee__interface_8h_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph" id="atee__interface_8h_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph">
+<area shape="rect" title="Perform Hsm Get Random." alt="" coords="5,5,198,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="246,5,418,33"/>
+<area shape="poly" title=" " alt="" coords="198,17,232,19,227,19,198,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -320,7 +330,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00044">44</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00045">45</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>
@@ -374,7 +384,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00061">61</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00065">65</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>
@@ -406,15 +416,17 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error.</dd></dl>
+<p>No TEE/HSM measurement source is available to this reference shim, so an attestation cannot be verified. Previously this returned success for any non-empty input, which produced false assurance. It now fails closed; use a platform attestation service (SGX/TDX/SEV quote verification) instead.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">expected</td><td>[in] Expected value.</td></tr>
+    <tr><td class="paramname">expected</td><td>[in] Expected value (unused). </td></tr>
+    <tr><td class="paramname">len</td><td>[in] Len value (unused).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>always -1 (unsupported). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00076">76</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00089">89</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>

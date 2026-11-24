@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="FAQ | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/FAQ/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="FAQ | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="FAQ |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/FAQ/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="FAQ |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -5281,16 +5284,16 @@
 <h3 id="does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda">"Does SNEPPX-Alg require a GPU or CUDA?"<a class="headerlink" href="#does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda" title="Permanent link">&para;</a></h3>
 <p><strong>No.</strong> All core tensor operations, autograd, optimizers, neural layers, and quantization algorithms run on pure CPU with the NumPy-backed engine. GPU acceleration (CUDA, ROCm, Vulkan) is strictly opt-in.</p>
 <h3 id="how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine">"How do I run tests safely on a local CPU machine?"<a class="headerlink" href="#how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine" title="Permanent link">&para;</a></h3>
-<p>Run tests <strong>per-file</strong> using <code>pytest</code> without cache provider:
+<p>Run tests <strong>per-file</strong> using <code>pytest</code> without cache provider:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_tensor</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span> <span class="n">-p</span> <span class="n">no</span><span class="p">:</span><span class="n">cacheprovider</span>
 </code></pre></div>
-Never execute the entire <code>tests/</code> directory in a single command on memory-constrained machines, and skip GPU/LLM tests (<code>test_llama_models.py</code>, <code>test_cuda.py</code>).</p>
+<p>Never execute the entire <code>tests/</code> directory in a single command on memory-constrained machines, and skip GPU/LLM tests (<code>test_llama_models.py</code>, <code>test_cuda.py</code>).</p>
 <h3 id="what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f">"What is the difference between <code>sx.functional</code> and <code>F</code>?"<a class="headerlink" href="#what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f" title="Permanent link">&para;</a></h3>
-<p><code>sx.functional</code> is reserved by the core autograd engine for forward/reverse mode derivatives (<code>jvp</code>, <code>vjp</code>). For neural network activations and loss functions, import <code>F</code> instead:
+<p><code>sx.functional</code> is reserved by the core autograd engine for forward/reverse mode derivatives (<code>jvp</code>, <code>vjp</code>). For neural network activations and loss functions, import <code>F</code> instead:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">F</span>
 <span class="c1"># F.relu, F.mse_loss, F.cross_entropy, F.layer_norm</span>
-</code></pre></div></p>
+</code></pre></div>
 <h3 id="can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch">"Can I migrate models from PyTorch?"<a class="headerlink" href="#can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch" title="Permanent link">&para;</a></h3>
 <p>Yes. SNEPPX-Alg supports <code>state_dict</code> weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See <a href="../migration/from_pytorch/"><code>migration/from_pytorch.md</code></a>.</p>
 <h2 id="installation&#702;build">Installation &amp; Build<a class="headerlink" href="#installation&#702;build" title="Permanent link">&para;</a></h2>
@@ -5314,10 +5317,10 @@ Never execute the entire <code>tests/</code> directory in a single command on me
 <span class="n">from</span> <span class="n">SneppX_ALG</span><span class="p">.</span><span class="n">interface_bindings</span><span class="p">.</span><span class="n">generation</span> <span class="n">import</span> <span class="n">GenerationConfig</span><span class="p">,</span> <span class="n">generate</span>
 </code></pre></div>
 <h3 id="runtimeerror&#702;c&#702;backend&#702;not&#702;available">"RuntimeError: C backend not available"<a class="headerlink" href="#runtimeerror&#702;c&#702;backend&#702;not&#702;available" title="Permanent link">&para;</a></h3>
-<p>This indicates compiled extension binaries (<code>_SNEPPX_c*.pyd</code> or <code>.so</code>) were not linked. The pure-Python/NumPy fallback handles tensors and basic modules seamlessly without needing C compilation:
+<p>This indicates compiled extension binaries (<code>_SNEPPX_c*.pyd</code> or <code>.so</code>) were not linked. The pure-Python/NumPy fallback handles tensors and basic modules seamlessly without needing C compilation:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">s</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_HAS_C_BACKEND</span><span class="p">)</span>   <span class="c1"># False = Pure-Python mode; True = Native C acceleration</span>
-</code></pre></div></p>
+</code></pre></div>
 <h3 id="cuda&#702;not&#702;available">"CUDA not available"<a class="headerlink" href="#cuda&#702;not&#702;available" title="Permanent link">&para;</a></h3>
 <p>If you do not have an NVIDIA GPU, keep <code>SNEPPX_BUILD_CUDA=OFF</code> (the default). The engine operates natively in CPU mode.</p>
 <h2 id="quantization">Quantization<a class="headerlink" href="#quantization" title="Permanent link">&para;</a></h2>
@@ -5331,10 +5334,10 @@ Never execute the entire <code>tests/</code> directory in a single command on me
 <p>Ensure the quantizer and dequantizer specify the exact <code>n</code> (total element count): <code>dequantize_int4_sym(qw, scale, n)</code> requires the original element count rather than packed byte size.</p>
 <h2 id="distributed&#702;training">Distributed Training<a class="headerlink" href="#distributed&#702;training" title="Permanent link">&para;</a></h2>
 <h3 id="training&#702;hangs&#702;after&#702;initprocessgroup">"Training hangs after init<em>process</em>group"<a class="headerlink" href="#training&#702;hangs&#702;after&#702;initprocessgroup" title="Permanent link">&para;</a></h3>
-<p>On CPU machines without NCCL, verify that every rank specifies matching <code>MASTER_ADDR</code> and <code>MASTER_PORT</code>:
+<p>On CPU machines without NCCL, verify that every rank specifies matching <code>MASTER_ADDR</code> and <code>MASTER_PORT</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:MASTER_ADDR</span><span class="p">=</span><span class="s2">"127.0.0.1"</span><span class="p">;</span> <span class="nv">$env:MASTER_PORT</span><span class="p">=</span><span class="s2">"29500"</span>
 <span class="nv">$env:WORLD_SIZE</span><span class="p">=</span><span class="n">2</span><span class="p">;</span> <span class="nv">$env:RANK</span><span class="p">=</span><span class="n">0</span><span class="p">;</span> <span class="nv">$env:LOCAL_RANK</span><span class="p">=</span><span class="n">0</span>
-</code></pre></div></p>
+</code></pre></div>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <h3 id="how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability">"How do I report a security vulnerability?"<a class="headerlink" href="#how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability" title="Permanent link">&para;</a></h3>
 <p>See <a href="https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md">repository security policy</a>. Do <strong>not</strong> open public issues for security vulnerabilities — report them privately via GitHub Security Advisories or email <code>algoSNEPPX@gmail.com</code>.</p>

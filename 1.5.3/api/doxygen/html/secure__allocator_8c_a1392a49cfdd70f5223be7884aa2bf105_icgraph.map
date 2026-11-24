@@ -1,17 +1,21 @@
 <map id="freed_set_hash" name="freed_set_hash">
-<area shape="rect" id="Node000001" title=" " alt="" coords="630,70,751,98"/>
-<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="456,70,569,98"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="612,84,570,86,570,81,618,83"/>
-<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="449,18,576,46"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="624,65,562,49,563,43,629,65"/>
-<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="443,122,582,150"/>
-<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="629,102,563,124,562,119,624,103"/>
-<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="444,65,368,45,369,39,450,65"/>
-<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,65,395,110"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="438,85,396,89,395,83,443,85"/>
-<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="221,29,193,30,192,25,227,27"/>
-<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="431,30,396,32,395,27,436,30"/>
-<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="450,50,396,68,395,63,444,51"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="630,74,751,102"/>
+<area shape="rect" id="Node000002" href="$secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="456,74,569,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="612,88,570,90,570,85,618,87"/>
+<area shape="rect" id="Node000006" href="$secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="449,22,576,50"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="624,69,562,53,563,47,629,69"/>
+<area shape="rect" id="Node000007" href="$secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="443,126,582,154"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="629,106,563,128,562,123,624,107"/>
+<area shape="rect" id="Node000003" href="$secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,74,395,102"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="438,88,396,90,395,85,443,87"/>
+<area shape="rect" id="Node000005" href="$secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,5,395,50"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="448,69,392,53,392,48,453,69"/>
+<area shape="rect" id="Node000004" href="$secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,63,192,107"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="221,87,193,89,192,83,227,86"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="445,54,373,76,372,71,440,55"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="431,33,396,34,395,28,436,32"/>
+<area shape="rect" id="Node000008" href="$secure__allocator_8c.html#a9f0378c2b6dedc00980aab2ead529da0" title=" " alt="" coords="271,127,364,155"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="425,140,365,143,365,138,431,140"/>
+<area shape="rect" id="Node000009" href="$secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="18,131,179,159"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="252,142,179,146,179,141,258,142"/>
 </map>

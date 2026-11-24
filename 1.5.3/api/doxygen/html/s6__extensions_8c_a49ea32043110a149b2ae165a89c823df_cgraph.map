@@ -1,13 +1,15 @@
 <map id="SNEPPX_shamir_split_5_of_9" name="SNEPPX_shamir_split_5_of_9">
-<area shape="rect" id="Node000001" title="Perform Shamir Split 5 Of 9." alt="" coords="5,24,165,68"/>
-<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#afc6fe2d8b07c73865d074fb62746ecab" title="Perform Shamir Split." alt="" coords="213,32,372,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,43,200,45,195,46,165,48"/>
-<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#aa65931cf1992469f14274e23b39050bb" title=" " alt="" coords="441,5,503,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="372,31,429,25,423,26,373,37"/>
-<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#afb6baabcf7a1dfccc705357f10f1aea1" title=" " alt="" coords="420,57,524,85"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="372,54,407,62,402,62,372,60"/>
-<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#aba76d0071c81d00029fb56a39967161d" title=" " alt="" coords="573,31,638,58"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="524,58,555,54,560,54,525,63"/>
-<area shape="rect" id="Node000006" href="$s6__extensions_8c.html#a0332783cb66261ee3ab240e4f925906d" title=" " alt="" coords="572,83,639,110"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="525,78,560,88,554,87,525,84"/>
+<area shape="rect" id="Node000001" title="Perform Shamir Split 5 Of 9." alt="" coords="5,49,165,94"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#afc6fe2d8b07c73865d074fb62746ecab" title="Perform Shamir Split." alt="" coords="213,57,372,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,69,200,71,195,72,165,74"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#aa65931cf1992469f14274e23b39050bb" title=" " alt="" coords="475,5,537,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="352,54,457,31,463,30,353,59"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#afb6baabcf7a1dfccc705357f10f1aea1" title=" " alt="" coords="454,57,558,85"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="372,69,441,71,436,71,372,74"/>
+<area shape="rect" id="Node000007" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="420,109,592,137"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="353,83,434,105,429,105,352,88"/>
+<area shape="rect" id="Node000005" href="$s6__extensions_8c.html#aba76d0071c81d00029fb56a39967161d" title=" " alt="" coords="641,32,706,60"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="558,61,623,53,628,53,559,66"/>
+<area shape="rect" id="Node000006" href="$s6__extensions_8c.html#a0332783cb66261ee3ab240e4f925906d" title=" " alt="" coords="640,84,707,112"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="559,77,627,90,622,90,559,82"/>
 </map>

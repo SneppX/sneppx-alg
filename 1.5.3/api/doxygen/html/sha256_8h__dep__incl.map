@@ -1,11 +1,13 @@
 <map id="include/neural_core/security/sha256.h" name="include/neural_core/security/sha256.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="336,5,485,50"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="426,5,574,50"/>
 <area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,98,176,160"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="323,56,177,104,175,99,328,54"/>
-<area shape="rect" id="Node000003" href="$sha256_8c.html" title=" " alt="" coords="200,115,392,143"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="377,59,312,117,309,113,372,61"/>
-<area shape="rect" id="Node000004" href="$sphincsplus_8c.html" title=" " alt="" coords="415,115,635,143"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="448,58,513,115,508,114,446,63"/>
-<area shape="rect" id="Node000005" href="$container__security_8c.html" title=" " alt="" coords="660,106,854,151"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="500,52,684,106,679,106,500,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="410,50,188,101,177,104,175,99,187,95,410,44"/>
+<area shape="rect" id="Node000003" href="$hmac_8c.html" title=" " alt="" coords="200,115,381,143"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="443,57,319,117,317,112,438,58"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html" title=" " alt="" coords="404,115,596,143"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="502,64,502,116,498,113,498,67"/>
+<area shape="rect" id="Node000005" href="$sphincsplus_8c.html" title=" " alt="" coords="619,115,839,143"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="565,54,701,114,696,114,563,59"/>
+<area shape="rect" id="Node000006" href="$container__security_8c.html" title=" " alt="" coords="864,106,1058,151"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="590,42,852,95,886,106,881,106,851,101,589,47"/>
 </map>

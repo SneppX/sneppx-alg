@@ -2,6 +2,7 @@ var differential__privacy_8c =
 [
     [ "DP_MAX_COMPOSITIONS", "differential__privacy_8c.html#a4aa21fbf68e9c95d34747c081696fcd5", null ],
     [ "DP_MAX_MECHANISMS", "differential__privacy_8c.html#a963cc0a13733e93880fdb2074d08dbc9", null ],
+    [ "dp_random_unit", "differential__privacy_8c.html#a97303f42b28762150cfa4820e05debc6", null ],
     [ "SNEPPX_dp_advanced_compose", "differential__privacy_8c.html#a4a8892d130b4533b15e9e22b4644b1e1", null ],
     [ "SNEPPX_dp_check_budget", "differential__privacy_8c.html#aeb9bd0e8dd9c7026c3e923b6ed9bd7b5", null ],
     [ "SNEPPX_dp_compose", "differential__privacy_8c.html#a3fd2ca0e5ca72f5cf14867cdd1a357d1", null ],

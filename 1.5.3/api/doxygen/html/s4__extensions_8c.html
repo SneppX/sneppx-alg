@@ -93,30 +93,35 @@ $(function(){initNavTree('s4__extensions_8c.html','',''); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="s4__extensions_8h_source.html">s4_extensions.h</a>&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="cryptographic__random__generator_8h_source.html">cryptographic_random_generator.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for s4_extensions.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="s4__extensions_8c__incl.png" border="0" usemap="#asecurity_2network_2s4__extensions_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2network_2s4__extensions_8c" id="asecurity_2network_2s4__extensions_8c">
-<area shape="rect" title=" " alt="" coords="231,5,381,50"/>
-<area shape="rect" href="s4__extensions_8h.html" title=" " alt="" coords="27,98,153,126"/>
-<area shape="poly" title=" " alt="" coords="247,53,140,95,138,90,251,49"/>
-<area shape="rect" title=" " alt="" coords="178,98,248,126"/>
-<area shape="poly" title=" " alt="" coords="284,49,241,90,237,85,279,52"/>
-<area shape="rect" title=" " alt="" coords="271,98,341,126"/>
-<area shape="poly" title=" " alt="" coords="308,48,308,84,304,81,304,53"/>
-<area shape="rect" title=" " alt="" coords="365,98,431,126"/>
-<area shape="poly" title=" " alt="" coords="331,48,375,88,369,87,329,53"/>
-<area shape="rect" title=" " alt="" coords="454,98,518,126"/>
-<area shape="poly" title=" " alt="" coords="354,48,446,91,441,92,353,53"/>
-<area shape="rect" title=" " alt="" coords="5,174,79,201"/>
-<area shape="poly" title=" " alt="" coords="84,125,61,162,57,159,79,128"/>
-<area shape="rect" title=" " alt="" coords="103,174,173,201"/>
-<area shape="poly" title=" " alt="" coords="100,124,124,161,119,161,97,129"/>
+<area shape="rect" title=" " alt="" coords="350,5,499,50"/>
+<area shape="rect" href="s4__extensions_8h.html" title=" " alt="" coords="5,106,132,134"/>
+<area shape="poly" title=" " alt="" coords="349,49,144,101,130,104,128,99,142,95,350,44"/>
+<area shape="rect" href="cryptographic__random__generator_8h.html" title=" " alt="" coords="156,98,323,143"/>
+<area shape="poly" title=" " alt="" coords="383,49,298,93,296,89,378,52"/>
+<area shape="rect" title=" " alt="" coords="346,106,412,134"/>
+<area shape="poly" title=" " alt="" coords="416,49,395,94,391,90,412,52"/>
+<area shape="rect" title=" " alt="" coords="436,106,506,134"/>
+<area shape="poly" title=" " alt="" coords="437,48,460,93,455,92,434,53"/>
+<area shape="rect" title=" " alt="" coords="529,106,600,134"/>
+<area shape="poly" title=" " alt="" coords="459,48,534,98,529,98,457,53"/>
+<area shape="rect" title=" " alt="" coords="624,106,687,134"/>
+<area shape="poly" title=" " alt="" coords="488,48,612,96,618,100,612,99,610,100,487,53"/>
+<area shape="rect" title=" " alt="" coords="69,191,142,218"/>
+<area shape="poly" title=" " alt="" coords="76,133,96,176,91,177,73,137"/>
+<area shape="rect" title=" " alt="" coords="185,191,256,218"/>
+<area shape="poly" title=" " alt="" coords="94,132,185,182,181,184,92,137"/>
+<area shape="poly" title=" " alt="" coords="206,143,141,185,139,180,201,144"/>
+<area shape="poly" title=" " alt="" coords="236,141,229,177,225,174,232,145"/>
 </map>
 </div>
 </div>
@@ -332,16 +337,16 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:a3f4dde410d9d21e1af004b2307134169" id="r_a3f4dde410d9d21e1af004b2307134169"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f4dde410d9d21e1af004b2307134169">tls13_cipher_preference</a> [3] = {0x1301, 0x1302, 0x1303}</td></tr>
 <tr class="memitem:a7a2ee4195b70df98400710403c6e10a0" id="r_a7a2ee4195b70df98400710403c6e10a0"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a2ee4195b70df98400710403c6e10a0">tls13_supported_groups</a> [4] = {29, 23, 24, 25}</td></tr>
-<tr class="memitem:a4fcd4ca37be75e73261a2a7bb943c268" id="r_a4fcd4ca37be75e73261a2a7bb943c268"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fcd4ca37be75e73261a2a7bb943c268">tls13_hkdf_label_early</a> [12] = {'t','l','s','1','3',' ','e','a','r','l','y',' '}</td></tr>
-<tr class="memitem:ac2f288c3715d5185b6c727745f89d938" id="r_ac2f288c3715d5185b6c727745f89d938"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2f288c3715d5185b6c727745f89d938">tls13_hkdf_label_hs</a> [14] = {'t','l','s','1','3',' ','h','s',' ','t','r','a','f','f'}</td></tr>
-<tr class="memitem:a5c1040cb15a0cfb7b136e4e27a7b3d25" id="r_a5c1040cb15a0cfb7b136e4e27a7b3d25"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c1040cb15a0cfb7b136e4e27a7b3d25">tls13_hkdf_label_app</a> [14] = {'t','l','s','1','3',' ','a','p',' ','t','r','a','f','f'}</td></tr>
+<tr class="memitem:a4fcd4ca37be75e73261a2a7bb943c268" id="r_a4fcd4ca37be75e73261a2a7bb943c268"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fcd4ca37be75e73261a2a7bb943c268">tls13_hkdf_label_early</a> [12] = {'t', 'l', 's', '1', '3', ' ', 'e', 'a', 'r', 'l', 'y', ' '}</td></tr>
+<tr class="memitem:ac2f288c3715d5185b6c727745f89d938" id="r_ac2f288c3715d5185b6c727745f89d938"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2f288c3715d5185b6c727745f89d938">tls13_hkdf_label_hs</a> [14] = {'t', 'l', 's', '1', '3', ' ', 'h', 's', ' ', 't', 'r', 'a', 'f', 'f'}</td></tr>
+<tr class="memitem:a5c1040cb15a0cfb7b136e4e27a7b3d25" id="r_a5c1040cb15a0cfb7b136e4e27a7b3d25"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c1040cb15a0cfb7b136e4e27a7b3d25">tls13_hkdf_label_app</a> [14] = {'t', 'l', 's', '1', '3', ' ', 'a', 'p', ' ', 't', 'r', 'a', 'f', 'f'}</td></tr>
 <tr class="memitem:af09e0701e5937949116b651d4c2f7c7c" id="r_af09e0701e5937949116b651d4c2f7c7c"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af09e0701e5937949116b651d4c2f7c7c">default_ports_blacklist</a> [8] = {666, 1337, 31337, 4444, 5555, 6666, 7777, 8888}</td></tr>
-<tr class="memitem:a80c9972e0bd678ea62ccca68e12da9b8" id="r_a80c9972e0bd678ea62ccca68e12da9b8"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80c9972e0bd678ea62ccca68e12da9b8">noise_static_labels</a> [4][8] = {{'N','N'},{'N','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'},{'X','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'},{'I','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}}</td></tr>
-<tr class="memitem:a5b7d94a14116a4cceb18fb9d503352fc" id="r_a5b7d94a14116a4cceb18fb9d503352fc"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b7d94a14116a4cceb18fb9d503352fc">ct_log_key_ids</a> [3][4] = {{0x67,0x45,0x23,0x01},{0x89,0xab,0xcd,0xef},{0x01,0x23,0x45,0x67}}</td></tr>
+<tr class="memitem:a80c9972e0bd678ea62ccca68e12da9b8" id="r_a80c9972e0bd678ea62ccca68e12da9b8"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80c9972e0bd678ea62ccca68e12da9b8">noise_static_labels</a> [4][8] = {{'N', 'N'}, {'N', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}, {'X', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}, {'I', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}}</td></tr>
+<tr class="memitem:a5b7d94a14116a4cceb18fb9d503352fc" id="r_a5b7d94a14116a4cceb18fb9d503352fc"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b7d94a14116a4cceb18fb9d503352fc">ct_log_key_ids</a> [3][4]</td></tr>
 <tr class="memitem:ad7b64e105b79a0f410f46830cc6f8ce8" id="r_ad7b64e105b79a0f410f46830cc6f8ce8"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7b64e105b79a0f410f46830cc6f8ce8">aes_sbox</a> [256]</td></tr>
 <tr class="memitem:a3903ffbcbe898739e66fbcc11addee5f" id="r_a3903ffbcbe898739e66fbcc11addee5f"><td class="memItemLeft" align="right" valign="top">static const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3903ffbcbe898739e66fbcc11addee5f">ct_log_operators</a> [4] = {0x12345678, 0x9abcdef0, 0x0fedcba9, 0x87654321}</td></tr>
 <tr class="memitem:a1c25bf67a1f27c935c088bae73916ce0" id="r_a1c25bf67a1f27c935c088bae73916ce0"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c25bf67a1f27c935c088bae73916ce0">tls13_key_shares</a> [3] = {29, 23, 24}</td></tr>
-<tr class="memitem:aceedfc69e1b1d49350329ba989e5d01c" id="r_aceedfc69e1b1d49350329ba989e5d01c"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceedfc69e1b1d49350329ba989e5d01c">noise_pattern_names</a> [4][4] = {{'N','N',0,0},{'N','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0},{'X','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0},{'I','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0}}</td></tr>
+<tr class="memitem:aceedfc69e1b1d49350329ba989e5d01c" id="r_aceedfc69e1b1d49350329ba989e5d01c"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceedfc69e1b1d49350329ba989e5d01c">noise_pattern_names</a> [4][4]</td></tr>
 <tr class="memitem:a87d720734c11bf61016511316ec53e30" id="r_a87d720734c11bf61016511316ec53e30"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87d720734c11bf61016511316ec53e30">ct_sct_extensions_default</a> [4] = {0x00, 0x01, 0x02, 0x03}</td></tr>
 <tr class="memitem:ae8f38670bb57d1bb21eb3718132b7ce4" id="r_ae8f38670bb57d1bb21eb3718132b7ce4"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8f38670bb57d1bb21eb3718132b7ce4">wireguard_allowed_ports</a> [4] = {51820, 51821, 51822, 51823}</td></tr>
 <tr class="memitem:a89fa35c0c01d51b27d3bd0646d602e78" id="r_a89fa35c0c01d51b27d3bd0646d602e78"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89fa35c0c01d51b27d3bd0646d602e78">g_doh_resolver_url</a> [256] = {0}</td></tr>
@@ -391,7 +396,7 @@ Variables</h2></td></tr>
 <tr class="memitem:ab4deed3bf8027f6bdc9ec6156caeead1" id="r_ab4deed3bf8027f6bdc9ec6156caeead1"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4deed3bf8027f6bdc9ec6156caeead1">g_ct_verify_batch_ok</a> = 0</td></tr>
 <tr class="memitem:a41b674e42508420799ffa43b293ecb3e" id="r_a41b674e42508420799ffa43b293ecb3e"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41b674e42508420799ffa43b293ecb3e">g_ocsp_temp_response</a> [256] = {0}</td></tr>
 <tr class="memitem:ab6ad7851821c718bb4fed941b87d5c13" id="r_ab6ad7851821c718bb4fed941b87d5c13"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6ad7851821c718bb4fed941b87d5c13">g_noise_handshake_done</a> = 0</td></tr>
-<tr class="memitem:aa706588c636e24856c66af1ba328b1a1" id="r_aa706588c636e24856c66af1ba328b1a1"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa706588c636e24856c66af1ba328b1a1">g_quic_version_label</a> [8] = {'Q','U','I','C','v','1',0,0}</td></tr>
+<tr class="memitem:aa706588c636e24856c66af1ba328b1a1" id="r_aa706588c636e24856c66af1ba328b1a1"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa706588c636e24856c66af1ba328b1a1">g_quic_version_label</a> [8] = {'Q', 'U', 'I', 'C', 'v', '1', 0, 0}</td></tr>
 <tr class="memitem:a007d33a3326652f4a971b18198a2839e" id="r_a007d33a3326652f4a971b18198a2839e"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a007d33a3326652f4a971b18198a2839e">g_tls13_key_generation</a> = 0</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
@@ -422,7 +427,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00120">120</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00124">124</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -461,7 +466,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00141">141</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00156">156</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -519,7 +524,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00412">412</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00475">475</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -584,7 +589,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00030">30</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00032">32</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -616,7 +621,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Ct Get Sct Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01041">1041</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01333">1333</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -660,15 +665,17 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01054">1054</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01347">1347</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s4__extensions_8c_a398da3d160c6b315e5bd890f76b4bc44_cgraph.png" border="0" usemap="#as4__extensions_8c_a398da3d160c6b315e5bd890f76b4bc44_cgraph" loading="lazy" alt=""/></div>
 <map name="as4__extensions_8c_a398da3d160c6b315e5bd890f76b4bc44_cgraph" id="as4__extensions_8c_a398da3d160c6b315e5bd890f76b4bc44_cgraph">
-<area shape="rect" title="Perform Ct Verify All Scts." alt="" coords="5,5,197,33"/>
-<area shape="rect" href="s4__extensions_8c.html#a9ae3b8e81bfcbb62d41da692e6b87549" title=" " alt="" coords="245,5,394,33"/>
-<area shape="poly" title=" " alt="" coords="197,17,232,19,226,19,197,22"/>
+<area shape="rect" title="Perform Ct Verify All Scts." alt="" coords="5,32,197,60"/>
+<area shape="rect" href="s4__extensions_8c.html#a9ae3b8e81bfcbb62d41da692e6b87549" title=" " alt="" coords="256,5,406,33"/>
+<area shape="poly" title=" " alt="" coords="196,32,243,29,238,30,197,37"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="245,57,417,85"/>
+<area shape="poly" title=" " alt="" coords="197,54,232,60,226,60,197,59"/>
 </map>
 </div>
 
@@ -714,7 +721,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01031">1031</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01321">1321</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -762,7 +769,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01080">1080</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01385">1385</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -810,7 +817,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01112">1112</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01421">1421</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -842,7 +849,7 @@ Here is the call graph for this function:</div>
 <p>Perform Doh Set Resolver. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01096">1096</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01403">1403</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -880,7 +887,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01689">1689</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02147">2147</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -902,7 +909,7 @@ Here is the call graph for this function:</div>
 <p>Perform Grpc Auth Get Token Len. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01722">1722</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02187">2187</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -924,7 +931,7 @@ Here is the call graph for this function:</div>
 <p>Perform Grpc Auth Has Token. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01712">1712</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02175">2175</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -962,7 +969,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01644">1644</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02096">2096</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -984,7 +991,17 @@ Here is the call graph for this function:</div>
 <p>Perform Grpc Auth Renew. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01700">1700</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02160">2160</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a54f9f4a25c6b8be004dfd75efbbb3f75_cgraph.png" border="0" usemap="#as4__extensions_8c_a54f9f4a25c6b8be004dfd75efbbb3f75_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a54f9f4a25c6b8be004dfd75efbbb3f75_cgraph" id="as4__extensions_8c_a54f9f4a25c6b8be004dfd75efbbb3f75_cgraph">
+<area shape="rect" title="Perform Grpc Auth Renew." alt="" coords="5,5,196,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="244,5,416,33"/>
+<area shape="poly" title=" " alt="" coords="196,17,231,19,226,19,196,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -1022,7 +1039,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01673">1673</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02129">2129</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1077,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01660">1660</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02114">2114</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1092,7 +1109,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01223">1223</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01555">1555</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1124,7 +1141,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01243">1243</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01581">1581</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1146,7 +1163,7 @@ Here is the call graph for this function:</div>
 <p>Clear Ip Blocklist. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01281">1281</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01634">1634</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1168,7 +1185,7 @@ Here is the call graph for this function:</div>
 <p>Perform Ip Blocklist Get Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01295">1295</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01650">1650</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1190,7 +1207,7 @@ Here is the call graph for this function:</div>
 <p>Initialize Ip Blocklist. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01210">1210</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01540">1540</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1222,7 +1239,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01258">1258</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01600">1600</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1266,7 +1283,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00784">784</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00953">953</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1298,7 +1315,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00821">821</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01030">1030</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a58240d7fcdfa51b2c5573ba94972e2d7_cgraph.png" border="0" usemap="#as4__extensions_8c_a58240d7fcdfa51b2c5573ba94972e2d7_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a58240d7fcdfa51b2c5573ba94972e2d7_cgraph" id="as4__extensions_8c_a58240d7fcdfa51b2c5573ba94972e2d7_cgraph">
+<area shape="rect" title="Perform Mtls Get Peer Cert." alt="" coords="5,5,210,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="258,5,430,33"/>
+<area shape="poly" title=" " alt="" coords="210,17,245,19,239,19,210,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -1332,17 +1359,18 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Perform Mtls Verify Chain. </p>
+<p>This entry point has no certificate-buffer length parameter and no X.509 parser; the previous fixed-stride 8-byte prefix comparison both read past the caller's buffer for long chains and reported success for untrusted chains. It is therefore unsupported and fails closed. Use a real TLS stack (for example OpenSSL's chain verification) for mTLS authentication.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cert_chain</td><td>[in] Cert Chain value. </td></tr>
-    <tr><td class="paramname">chain_len</td><td>[in] Chain Len value. </td></tr>
-    <tr><td class="paramname">trusted_ca</td><td>[in] Trusted Ca value.</td></tr>
+    <tr><td class="paramname">cert_chain</td><td>[in] Cert Chain value (unused). </td></tr>
+    <tr><td class="paramname">chain_len</td><td>[in] Chain Len value (unused). </td></tr>
+    <tr><td class="paramname">trusted_ca</td><td>[in] Trusted Ca value (unused).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>always -1 (unsupported). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00841">841</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01060">1060</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1364,7 +1392,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Add Port Blacklist. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01415">1415</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01812">1812</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1396,7 +1424,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01326">1326</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01684">1684</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1418,7 +1446,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Clear Alerts. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01393">1393</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01788">1788</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1440,7 +1468,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Get Alert Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01384">1384</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01778">1778</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1462,7 +1490,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Get Alert Timestamp. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01443">1443</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01845">1845</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1484,7 +1512,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Get Packet Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01406">1406</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01802">1802</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1506,7 +1534,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Get Port Blacklist Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01915">1915</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02413">2413</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1528,7 +1556,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Get Total Packets. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01906">1906</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02403">2403</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1550,7 +1578,7 @@ Here is the call graph for this function:</div>
 <p>Initialize Nids. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01306">1306</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01663">1663</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1572,7 +1600,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Remove Port Blacklist. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01426">1426</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01825">1825</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1594,7 +1622,7 @@ Here is the call graph for this function:</div>
 <p>Perform Nids Set Rules. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01371">1371</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01763">1763</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1650,7 +1678,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00547">547</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00655">655</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1706,7 +1734,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00523">523</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00625">625</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1738,7 +1766,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01816">1816</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02300">2300</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1776,7 +1804,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00570">570</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00685">685</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1808,7 +1836,7 @@ Here is the call graph for this function:</div>
 <p>Perform Noise Get Rekey Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01851">1851</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02340">2340</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1830,7 +1858,7 @@ Here is the call graph for this function:</div>
 <p>Perform Noise Get Step. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01873">1873</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02365">2365</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1868,7 +1896,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00396">396</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00459">459</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_af80f1fd92589e841ec6210eed49dc135_cgraph.png" border="0" usemap="#as4__extensions_8c_af80f1fd92589e841ec6210eed49dc135_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_af80f1fd92589e841ec6210eed49dc135_cgraph" id="as4__extensions_8c_af80f1fd92589e841ec6210eed49dc135_cgraph">
+<area shape="rect" title="Initialize Noise." alt="" coords="5,5,148,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="196,5,368,33"/>
+<area shape="poly" title=" " alt="" coords="148,17,183,19,177,19,148,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -1930,7 +1968,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00499">499</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00598">598</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -1968,7 +2006,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00468">468</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00556">556</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2010,7 +2048,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01802">1802</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02284">2284</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2042,7 +2080,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01862">1862</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02352">2352</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2074,7 +2112,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01839">1839</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02326">2326</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2096,7 +2134,7 @@ Here is the call graph for this function:</div>
 <p>Set Noise Transport Key. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01827">1827</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02313">2313</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2134,7 +2172,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00438">438</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00515">515</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2166,7 +2204,7 @@ Here is the call graph for this function:</div>
 <p>Clear Ocsp Cache. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00985">985</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01269">1269</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2198,7 +2236,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01002">1002</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01287">1287</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2230,7 +2268,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00929">929</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01205">1205</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2252,7 +2290,7 @@ Here is the call graph for this function:</div>
 <p>Perform Ocsp Cache Is Expired. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01014">1014</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01301">1301</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2290,7 +2328,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00949">949</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01226">1226</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2328,7 +2366,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00970">970</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01252">1252</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2384,7 +2422,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00865">865</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01081">1081</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2416,7 +2454,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00898">898</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01155">1155</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2448,7 +2486,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01614">1614</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02061">2061</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2492,7 +2530,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01629">1629</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02077">2077</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2524,7 +2562,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00710">710</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00865">865</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2562,7 +2600,21 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00599">599</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00723">723</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a1ae8235e8adca29796940a80f313d822_cgraph.png" border="0" usemap="#as4__extensions_8c_a1ae8235e8adca29796940a80f313d822_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a1ae8235e8adca29796940a80f313d822_cgraph" id="as4__extensions_8c_a1ae8235e8adca29796940a80f313d822_cgraph">
+<area shape="rect" title="Perform Quic Conn Handshake." alt="" coords="5,14,227,42"/>
+<area shape="rect" href="random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="275,5,462,50"/>
+<area shape="poly" title=" " alt="" coords="227,25,262,28,256,28,227,30"/>
+<area shape="rect" href="random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Perform Random Uint32." alt="" coords="510,5,687,50"/>
+<area shape="poly" title=" " alt="" coords="462,25,497,28,492,28,462,30"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="735,14,908,42"/>
+<area shape="poly" title=" " alt="" coords="688,25,723,28,717,28,688,30"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -2584,7 +2636,21 @@ Here is the call graph for this function:</div>
 <p>Initialize Quic Conn. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00582">582</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00699">699</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_af416ab859621b827cfd50ab5bde9152c_cgraph.png" border="0" usemap="#as4__extensions_8c_af416ab859621b827cfd50ab5bde9152c_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_af416ab859621b827cfd50ab5bde9152c_cgraph" id="as4__extensions_8c_af416ab859621b827cfd50ab5bde9152c_cgraph">
+<area shape="rect" title="Initialize Quic Conn." alt="" coords="5,14,178,42"/>
+<area shape="rect" href="random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="226,5,413,50"/>
+<area shape="poly" title=" " alt="" coords="178,25,213,27,207,28,178,30"/>
+<area shape="rect" href="random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Perform Random Uint32." alt="" coords="461,5,638,50"/>
+<area shape="poly" title=" " alt="" coords="413,25,448,28,443,28,413,30"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="686,14,859,42"/>
+<area shape="poly" title=" " alt="" coords="639,25,674,28,668,28,639,30"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -2606,7 +2672,7 @@ Here is the call graph for this function:</div>
 <p>Perform Quic Create Stream. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00686">686</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00835">835</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2644,7 +2710,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00756">756</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00920">920</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2676,7 +2742,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01788">1788</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02268">2268</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2698,7 +2764,7 @@ Here is the call graph for this function:</div>
 <p>Perform Quic Get Stream Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00726">726</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00885">885</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2720,7 +2786,7 @@ Here is the call graph for this function:</div>
 <p>Perform Quic Reset Conn. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01772">1772</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02245">2245</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2752,7 +2818,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01760">1760</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02231">2231</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2784,7 +2850,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00738">738</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00899">899</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2828,7 +2894,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00657">657</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00798">798</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2872,7 +2938,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00621">621</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00754">754</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2904,7 +2970,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01590">1590</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02033">2033</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2936,7 +3002,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01532">1532</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01959">1959</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2968,7 +3034,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01560">1560</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01995">1995</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -2990,7 +3056,7 @@ Here is the call graph for this function:</div>
 <p>Perform Rate Limiter Get Limit. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01601">1601</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02046">2046</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3022,7 +3088,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01518">1518</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01943">1943</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3044,7 +3110,7 @@ Here is the call graph for this function:</div>
 <p>Reset Rate Limiter. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01546">1546</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01979">1979</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3082,7 +3148,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01576">1576</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02017">2017</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3126,7 +3192,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00358">358</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00414">414</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3148,7 +3214,17 @@ Here is the call graph for this function:</div>
 <p>Initialize Tls13 Client Hello. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00158">158</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00175">175</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a72277643e4c395ade3423d27641e40fa_cgraph.png" border="0" usemap="#as4__extensions_8c_a72277643e4c395ade3423d27641e40fa_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a72277643e4c395ade3423d27641e40fa_cgraph" id="as4__extensions_8c_a72277643e4c395ade3423d27641e40fa_cgraph">
+<area shape="rect" title="Initialize Tls13 Client Hello." alt="" coords="5,5,160,50"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="208,14,380,42"/>
+<area shape="poly" title=" " alt="" coords="160,25,195,27,189,28,160,30"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -3186,7 +3262,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00218">218</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00248">248</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3242,7 +3318,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00376">376</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00435">435</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3264,7 +3340,7 @@ Here is the call graph for this function:</div>
 <p>Perform Tls13 Get Key Generation. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01747">1747</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02216">2216</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3308,7 +3384,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00340">340</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00393">393</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3358,15 +3434,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00246">246</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00279">279</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="s4__extensions_8c_ac9b19946a90d8ee803aeba1762f5ef15_cgraph.png" border="0" usemap="#as4__extensions_8c_ac9b19946a90d8ee803aeba1762f5ef15_cgraph" loading="lazy" alt=""/></div>
 <map name="as4__extensions_8c_ac9b19946a90d8ee803aeba1762f5ef15_cgraph" id="as4__extensions_8c_ac9b19946a90d8ee803aeba1762f5ef15_cgraph">
-<area shape="rect" title="Perform Tls13 Init Server." alt="" coords="5,5,193,33"/>
-<area shape="rect" href="s4__extensions_8c.html#af8f06f5874c18571ccf870b57dcd767f" title=" " alt="" coords="241,5,325,33"/>
-<area shape="poly" title=" " alt="" coords="193,17,228,19,222,19,193,22"/>
+<area shape="rect" title="Perform Tls13 Init Server." alt="" coords="5,32,193,60"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="241,5,413,33"/>
+<area shape="poly" title=" " alt="" coords="193,32,228,31,223,32,194,37"/>
+<area shape="rect" href="s4__extensions_8c.html#af8f06f5874c18571ccf870b57dcd767f" title=" " alt="" coords="285,57,369,85"/>
+<area shape="poly" title=" " alt="" coords="193,54,272,65,267,65,193,59"/>
 </map>
 </div>
 
@@ -3400,7 +3478,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00273">273</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00313">313</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3438,7 +3516,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00291">291</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00336">336</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3476,7 +3554,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00181">181</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00201">201</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3508,7 +3586,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00325">325</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00376">376</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3546,7 +3624,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01735">1735</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02202">2202</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3584,7 +3662,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00309">309</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00357">357</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3628,7 +3706,22 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01493">1493</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01904">1904</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a28bc8bf8b3b003755fb625e963dfa864_cgraph.png" border="0" usemap="#as4__extensions_8c_a28bc8bf8b3b003755fb625e963dfa864_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a28bc8bf8b3b003755fb625e963dfa864_cgraph" id="as4__extensions_8c_a28bc8bf8b3b003755fb625e963dfa864_cgraph">
+<area shape="rect" title="Perform Traffic Mtu Obfuscate." alt="" coords="5,5,156,50"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="664,14,837,42"/>
+<area shape="poly" title=" " alt="" coords="156,21,204,20,410,17,616,20,651,23,646,23,616,25,410,22,204,25,156,27"/>
+<area shape="rect" href="random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="204,35,391,79"/>
+<area shape="poly" title=" " alt="" coords="156,35,191,42,186,43,156,41"/>
+<area shape="rect" href="random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Perform Random Uint32." alt="" coords="439,35,616,79"/>
+<area shape="poly" title=" " alt="" coords="391,54,426,57,421,57,391,60"/>
+<area shape="poly" title=" " alt="" coords="616,43,646,41,652,41,617,48"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -3672,7 +3765,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01459">1459</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01863">1863</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a06c9883911c3d9acf93e55a373fe1df0_cgraph.png" border="0" usemap="#as4__extensions_8c_a06c9883911c3d9acf93e55a373fe1df0_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a06c9883911c3d9acf93e55a373fe1df0_cgraph" id="as4__extensions_8c_a06c9883911c3d9acf93e55a373fe1df0_cgraph">
+<area shape="rect" title="Perform Traffic Pad." alt="" coords="5,5,154,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="202,5,374,33"/>
+<area shape="poly" title=" " alt="" coords="154,17,189,19,183,19,154,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -3716,7 +3819,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01477">1477</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01885">1885</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_a37c21b4fbca798af8f55712493ee994a_cgraph.png" border="0" usemap="#as4__extensions_8c_a37c21b4fbca798af8f55712493ee994a_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_a37c21b4fbca798af8f55712493ee994a_cgraph" id="as4__extensions_8c_a37c21b4fbca798af8f55712493ee994a_cgraph">
+<area shape="rect" title="Perform Traffic Pad To." alt="" coords="5,5,174,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="222,5,394,33"/>
+<area shape="poly" title=" " alt="" coords="174,17,209,19,204,19,174,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -3754,7 +3867,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01197">1197</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01525">1525</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3786,7 +3899,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01894">1894</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02389">2389</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3824,7 +3937,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01148">1148</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01467">1467</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3846,7 +3959,17 @@ Here is the call graph for this function:</div>
 <p>Initialize Wireguard. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01128">1128</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01444">1444</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="s4__extensions_8c_aaafdc51b2d31fd121db40cf49a272834_cgraph.png" border="0" usemap="#as4__extensions_8c_aaafdc51b2d31fd121db40cf49a272834_cgraph" loading="lazy" alt=""/></div>
+<map name="as4__extensions_8c_aaafdc51b2d31fd121db40cf49a272834_cgraph" id="as4__extensions_8c_aaafdc51b2d31fd121db40cf49a272834_cgraph">
+<area shape="rect" title="Initialize Wireguard." alt="" coords="5,5,178,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="226,5,398,33"/>
+<area shape="poly" title=" " alt="" coords="178,17,213,19,208,19,178,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -3868,7 +3991,7 @@ Here is the call graph for this function:</div>
 <p>Perform Wireguard Is Established. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01883">1883</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l02377">2377</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3906,7 +4029,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01182">1182</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01507">1507</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -3944,7 +4067,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01167">1167</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l01489">1489</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4032,25 +4155,22 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,</div>
-<div class="line">    0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,</div>
-<div class="line">    0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,</div>
-<div class="line">    0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,</div>
-<div class="line">    0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,</div>
-<div class="line">    0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,</div>
-<div class="line">    0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,</div>
-<div class="line">    0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,</div>
-<div class="line">    0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,</div>
-<div class="line">    0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,</div>
-<div class="line">    0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,</div>
-<div class="line">    0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,</div>
-<div class="line">    0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,</div>
-<div class="line">    0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,</div>
-<div class="line">    0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,</div>
-<div class="line">    0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16</div>
-<div class="line">}</div>
+<div class="line">    0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9,</div>
+<div class="line">    0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f,</div>
+<div class="line">    0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07,</div>
+<div class="line">    0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3,</div>
+<div class="line">    0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58,</div>
+<div class="line">    0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3,</div>
+<div class="line">    0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c, 0x13, 0xec, 0x5f,</div>
+<div class="line">    0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88,</div>
+<div class="line">    0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac,</div>
+<div class="line">    0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a,</div>
+<div class="line">    0xae, 0x08, 0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, 0x70,</div>
+<div class="line">    0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11,</div>
+<div class="line">    0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42,</div>
+<div class="line">    0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00045">45</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00051">51</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4064,7 +4184,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t ct_log_key_ids[3][4] = {{0x67,0x45,0x23,0x01},{0x89,0xab,0xcd,0xef},{0x01,0x23,0x45,0x67}}</td>
+          <td class="memname">const uint8_t ct_log_key_ids[3][4]</td>
         </tr>
       </table>
   </td>
@@ -4073,8 +4193,10 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00043">43</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">    {0x67, 0x45, 0x23, 0x01}, {0x89, 0xab, 0xcd, 0xef}, {0x01, 0x23, 0x45, 0x67}}</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00048">48</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4098,7 +4220,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00064">64</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00067">67</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4122,7 +4244,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00067">67</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00071">71</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4146,7 +4268,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00041">41</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00046">46</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4170,7 +4292,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00093">93</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00097">97</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4194,7 +4316,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00071">71</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00075">75</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4218,7 +4340,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00114">114</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00118">118</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4242,7 +4364,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00113">113</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00117">117</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4266,7 +4388,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00098">98</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00102">102</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4290,7 +4412,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00070">70</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00074">74</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4314,7 +4436,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00103">103</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00107">107</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4338,7 +4460,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00110">110</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00114">114</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4362,7 +4484,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00111">111</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00115">115</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4386,7 +4508,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00072">72</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00076">76</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4410,7 +4532,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00088">88</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00092">92</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4434,7 +4556,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00087">87</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00091">91</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4458,7 +4580,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00094">94</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00098">98</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4482,7 +4604,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00095">95</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00099">99</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4506,7 +4628,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00099">99</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00103">103</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4530,7 +4652,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00100">100</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00104">104</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4554,7 +4676,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00116">116</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00120">120</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4578,7 +4700,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00096">96</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00100">100</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4602,7 +4724,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00101">101</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00105">105</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4626,7 +4748,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00102">102</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00106">106</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4650,7 +4772,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00115">115</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00119">119</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4674,7 +4796,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00086">86</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00090">90</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4698,7 +4820,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00084">84</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00088">88</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4722,7 +4844,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00085">85</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00089">89</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4746,7 +4868,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00107">107</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00111">111</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4770,7 +4892,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00097">97</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00101">101</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4794,7 +4916,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00106">106</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00110">110</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4818,7 +4940,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00105">105</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00109">109</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4832,7 +4954,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t g_quic_version_label[8] = {'Q','U','I','C','v','1',0,0}</td>
+          <td class="memname">uint8_t g_quic_version_label[8] = {'Q', 'U', 'I', 'C', 'v', '1', 0, 0}</td>
         </tr>
       </table>
   </td>
@@ -4842,7 +4964,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00117">117</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00121">121</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4866,7 +4988,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00109">109</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00113">113</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4890,7 +5012,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00108">108</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00112">112</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4914,7 +5036,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00118">118</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00122">122</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4938,7 +5060,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00079">79</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00083">83</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4962,7 +5084,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00080">80</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00084">84</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -4986,7 +5108,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00083">83</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00087">87</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5010,7 +5132,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00081">81</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00085">85</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5034,7 +5156,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00082">82</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00086">86</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5058,7 +5180,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00112">112</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00116">116</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5082,7 +5204,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00091">91</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00095">95</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5106,7 +5228,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00092">92</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00096">96</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5130,7 +5252,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00104">104</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00108">108</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5154,7 +5276,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00090">90</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00094">94</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5178,7 +5300,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00089">89</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00093">93</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5192,7 +5314,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t noise_pattern_names[4][4] = {{'N','N',0,0},{'N','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0},{'X','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0},{'I','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>',0,0}}</td>
+          <td class="memname">const uint8_t noise_pattern_names[4][4]</td>
         </tr>
       </table>
   </td>
@@ -5201,8 +5323,10 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00066">66</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">    {<span class="charliteral">&#39;N&#39;</span>, <span class="charliteral">&#39;N&#39;</span>, 0, 0}, {<span class="charliteral">&#39;N&#39;</span>, <span class="charliteral">&#39;K&#39;</span>, 0, 0}, {<span class="charliteral">&#39;X&#39;</span>, <span class="charliteral">&#39;K&#39;</span>, 0, 0}, {<span class="charliteral">&#39;I&#39;</span>, <span class="charliteral">&#39;K&#39;</span>, 0, 0}}</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00069">69</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5216,7 +5340,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t noise_static_labels[4][8] = {{'N','N'},{'N','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'},{'X','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'},{'I','<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}}</td>
+          <td class="memname">const uint8_t noise_static_labels[4][8] = {{'N', 'N'}, {'N', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}, {'X', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}, {'I', '<a class="el" href="sha256_8c.html#a22c6551e88df4c5c42fce3d0641adb64">K</a>'}}</td>
         </tr>
       </table>
   </td>
@@ -5226,7 +5350,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00042">42</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00047">47</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5250,7 +5374,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00073">73</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00077">77</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5274,7 +5398,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00074">74</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00078">78</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5298,7 +5422,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00075">75</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00079">79</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5322,7 +5446,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00077">77</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00081">81</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5346,7 +5470,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00076">76</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00080">80</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5370,7 +5494,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00078">78</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00082">82</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5394,7 +5518,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00036">36</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00041">41</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5408,7 +5532,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t tls13_hkdf_label_app[14] = {'t','l','s','1','3',' ','a','p',' ','t','r','a','f','f'}</td>
+          <td class="memname">const uint8_t tls13_hkdf_label_app[14] = {'t', 'l', 's', '1', '3', ' ', 'a', 'p', ' ', 't', 'r', 'a', 'f', 'f'}</td>
         </tr>
       </table>
   </td>
@@ -5418,7 +5542,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00040">40</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00045">45</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5432,7 +5556,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t tls13_hkdf_label_early[12] = {'t','l','s','1','3',' ','e','a','r','l','y',' '}</td>
+          <td class="memname">const uint8_t tls13_hkdf_label_early[12] = {'t', 'l', 's', '1', '3', ' ', 'e', 'a', 'r', 'l', 'y', ' '}</td>
         </tr>
       </table>
   </td>
@@ -5442,7 +5566,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00038">38</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00043">43</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5456,7 +5580,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint8_t tls13_hkdf_label_hs[14] = {'t','l','s','1','3',' ','h','s',' ','t','r','a','f','f'}</td>
+          <td class="memname">const uint8_t tls13_hkdf_label_hs[14] = {'t', 'l', 's', '1', '3', ' ', 'h', 's', ' ', 't', 'r', 'a', 'f', 'f'}</td>
         </tr>
       </table>
   </td>
@@ -5466,7 +5590,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00039">39</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00044">44</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5490,7 +5614,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00065">65</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00068">68</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5514,7 +5638,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00037">37</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00042">42</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>
@@ -5538,7 +5662,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00068">68</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="s4__extensions_8c_source.html#l00072">72</a> of file <a class="el" href="s4__extensions_8c_source.html">s4_extensions.c</a>.</p>
 
 </div>
 </div>

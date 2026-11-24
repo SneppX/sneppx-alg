@@ -1,0 +1,9 @@
+<map id="SNEPPX_quic_conn_init" name="SNEPPX_quic_conn_init">
+<area shape="rect" id="Node000001" title="Initialize Quic Conn." alt="" coords="5,14,178,42"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#a85c65d70a4cac8d757384ae955c507ca" title="Generate a bounded uniform integer with explicit error reporting." alt="" coords="226,5,413,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,25,213,27,207,28,178,30"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#a6e0961410491fbb74610a13d8463120d" title="Perform Random Uint32." alt="" coords="461,5,638,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="413,25,448,28,443,28,413,30"/>
+<area shape="rect" id="Node000004" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="686,14,859,42"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="639,25,674,28,668,28,639,30"/>
+</map>

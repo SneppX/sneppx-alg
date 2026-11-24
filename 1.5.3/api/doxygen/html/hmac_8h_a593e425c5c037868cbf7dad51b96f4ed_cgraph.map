@@ -1,13 +1,19 @@
 <map id="SNEPPX_hmac_compute" name="SNEPPX_hmac_compute">
-<area shape="rect" id="Node000001" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="5,57,185,85"/>
-<area shape="rect" id="Node000002" href="$hmac_8c.html#a8d0bf8919b85d5a7d50157e76e775c16" title=" " alt="" coords="233,57,354,85"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,69,220,71,215,72,185,74"/>
-<area shape="rect" id="Node000003" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="407,5,575,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="348,54,418,38,423,37,350,59"/>
-<area shape="rect" id="Node000004" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="414,57,568,85"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="354,69,401,71,396,71,354,74"/>
-<area shape="rect" id="Node000005" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="402,109,580,137"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="349,83,423,105,418,105,349,88"/>
-<area shape="rect" id="Node000006" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="628,109,768,137"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="581,121,615,123,610,123,581,126"/>
+<area shape="rect" id="Node000001" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="5,84,185,112"/>
+<area shape="rect" id="Node000002" href="$hmac_8c.html#a1b4b67b9cfac83e47b9de2faa25ae89b" title=" " alt="" coords="233,84,354,112"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,95,220,97,215,99,185,100"/>
+<area shape="rect" id="Node000003" href="$hmac_8c.html#a7d5cd93ef890063a152c575825c6dd09" title=" " alt="" coords="404,5,579,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="320,81,401,43,425,37,420,39,403,48,323,86"/>
+<area shape="rect" id="Node000006" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="407,57,575,85"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="354,87,394,84,389,85,355,92"/>
+<area shape="rect" id="Node000007" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="414,109,568,137"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="354,103,401,111,396,112,354,108"/>
+<area shape="rect" id="Node000008" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="402,161,580,189"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="323,110,403,146,426,157,421,156,401,151,322,115"/>
+<area shape="rect" id="Node000004" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="635,5,761,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="579,17,622,19,617,20,579,22"/>
+<area shape="rect" id="Node000005" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="816,5,955,33"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="761,17,803,19,798,19,762,22"/>
+<area shape="rect" id="Node000009" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="628,161,768,189"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="581,173,615,175,610,175,581,178"/>
 </map>

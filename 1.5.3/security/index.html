@@ -75,34 +75,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Security Overview | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Security Overview | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Security Overview |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Security Overview |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -114,7 +117,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -5681,7 +5684,7 @@
 
 <h1 id="security&#702;architecture">Security Architecture<a class="headerlink" href="#security&#702;architecture" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>SNEPPX-Algo organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.</p>
+<p>SneppX-ALG organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.</p>
 <p>Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.</p>
 <div class="highlight"><pre><span></span><code>S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
 │     │     │     │     │     │     │     │     │     │

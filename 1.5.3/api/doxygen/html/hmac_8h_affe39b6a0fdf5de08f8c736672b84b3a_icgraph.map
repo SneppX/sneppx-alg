@@ -1,12 +1,26 @@
 <map id="SNEPPX_hmac_sha256" name="SNEPPX_hmac_sha256">
-<area shape="rect" id="Node000001" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="377,57,546,85"/>
-<area shape="rect" id="Node000002" href="$hkdf_8c.html#a0e79eab9b1905d28f57c5a5729e792eb" title="HKDF expand phase." alt="" coords="164,5,327,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="384,54,306,36,306,31,389,53"/>
-<area shape="rect" id="Node000004" href="$hkdf_8c.html#a0ca09d33218573e26fff3578f8c5ed59" title="HKDF extract phase." alt="" coords="165,57,326,85"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="359,72,327,74,326,69,364,71"/>
-<area shape="rect" id="Node000005" href="$pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="162,109,329,154"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="397,89,329,111,328,106,392,90"/>
-<area shape="rect" id="Node000003" href="$hkdf_8c.html#a95515da12759c22f8c1b18f88fa51ff4" title="Perform Hkdf." alt="" coords="5,32,114,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="146,35,115,41,113,36,150,32"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="147,59,114,56,114,51,151,57"/>
+<area shape="rect" id="Node000001" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="538,117,707,145"/>
+<area shape="rect" id="Node000002" href="$hkdf_8c.html#a0e79eab9b1905d28f57c5a5729e792eb" title="HKDF expand phase." alt="" coords="307,57,470,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="550,113,489,99,448,88,447,83,491,94,555,112"/>
+<area shape="rect" id="Node000004" href="$hkdf_8c.html#a0ca09d33218573e26fff3578f8c5ed59" title="HKDF extract phase." alt="" coords="308,5,469,33"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="588,108,543,78,489,48,456,36,456,31,491,43,546,73,594,108"/>
+<area shape="rect" id="Node000005" href="$pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e" title="PBKDF2&#45;HMAC&#45;SHA256 key derivation." alt="" coords="305,109,472,154"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="520,132,473,134,472,129,525,130"/>
+<area shape="rect" id="Node000006" href="$transport__security_8c.html#ad50cfdf71952f78d6ce5db0b917b4f25" title=" " alt="" coords="287,177,490,205"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="550,150,491,168,448,179,447,174,489,163,555,149"/>
+<area shape="rect" id="Node000009" href="$transport__security_8c.html#aff7dc78ddc789338e180ef2533a6881a" title=" " alt="" coords="309,229,468,274"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="593,153,545,188,491,219,464,231,462,226,489,214,543,184,588,156"/>
+<area shape="rect" id="Node000003" href="$hkdf_8c.html#a95515da12759c22f8c1b18f88fa51ff4" title="Perform Hkdf." alt="" coords="68,31,176,58"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="289,63,177,52,176,47,293,60"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="290,30,178,42,176,37,294,26"/>
+<area shape="rect" id="Node000007" href="$transport__security_8c.html#acdf06f4a478b446812cc2fd2dd66d444" title="Perform Transport Decrypt With Aad And HMAC Tag." alt="" coords="5,203,239,230"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="269,203,240,208,238,203,274,201"/>
+<area shape="rect" id="Node000008" href="$transport__security_8c.html#aa8dfe619e0aa8750d3a97746a38a7efd" title="Perform Transport Encrypt With Aad And HMAC Tag." alt="" coords="5,151,239,178"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="269,180,240,179,238,174,274,179"/>
+<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="290,240,234,234,233,228,296,238"/>
+<area shape="poly" id="edge12_Node000009_Node000008" title=" " alt="" coords="300,223,286,219,262,206,238,194,199,182,198,176,240,189,264,201,288,214,305,223"/>
+<area shape="rect" id="Node000010" href="$transport__security_8c.html#a936cc0cd5e73d0b22d33737a70a66ed4" title="Perform Transport Decrypt With Aad." alt="" coords="25,324,219,368"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="322,279,240,314,204,325,202,320,238,309,317,281"/>
+<area shape="rect" id="Node000011" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="25,254,219,299"/>
+<area shape="poly" id="edge13_Node000009_Node000011" title=" " alt="" coords="291,261,220,270,219,265,296,259"/>
 </map>

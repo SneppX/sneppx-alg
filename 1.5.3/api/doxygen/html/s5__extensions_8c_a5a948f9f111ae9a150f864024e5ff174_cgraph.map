@@ -1,0 +1,7 @@
+<map id="SNEPPX_membership_inference_defense_apply" name="SNEPPX_membership_inference_defense_apply">
+<area shape="rect" id="Node000001" title="Apply Membership Inference Defense." alt="" coords="5,5,235,50"/>
+<area shape="rect" id="Node000002" href="$s5__extensions_8c.html#a3ebaa7034e0ee5f859e1e3a4903af0fc" title=" " alt="" coords="283,14,408,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,25,270,28,265,28,235,30"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="456,14,628,42"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="409,25,443,28,438,28,409,30"/>
+</map>

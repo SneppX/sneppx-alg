@@ -4,7 +4,7 @@ var virtualized__code__execution_8h =
     [ "SNEPPX::SNEPPXObfHandler", "structSNEPPX_1_1SNEPPXObfHandler.html", "structSNEPPX_1_1SNEPPXObfHandler" ],
     [ "SNEPPX::SNEPPXObfVM", "classSNEPPX_1_1SNEPPXObfVM.html", "classSNEPPX_1_1SNEPPXObfVM" ],
     [ "SNEPPX_OBF_VM_H", "virtualized__code__execution_8h.html#aead083d18061508665316569d0b04792", null ],
-    [ "SNEPPX::SNEPPXObfHandlerFunc", "namespaceSNEPPX.html#aa3a854269eefb4420f37601a253fdb37", null ],
+    [ "SNEPPX::SNEPPXObfHandlerFunc", "namespaceSNEPPX.html#ae924701e4d717b6706eff0c2ddc4e8e8", null ],
     [ "SNEPPX::SNEPPXObfBytecode", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6", [
       [ "SNEPPX::SNEPPXObfBytecode::NOP", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a1a004f5abe2b334db21328be1ea6b593", null ],
       [ "SNEPPX::SNEPPXObfBytecode::ADD", "namespaceSNEPPX.html#a4cdebd9713f9cff1ef55344f62d832e6a9eeb52badb613229884838847294b90d", null ],

@@ -152,7 +152,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00055">55</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00060">60</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -168,7 +168,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00054">54</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00059">59</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -184,7 +184,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00056">56</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00061">61</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -200,7 +200,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00057">57</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00062">62</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -242,12 +242,21 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span> { \</div>
-<div class="line">    a += b + x; d ^= a; d = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(d, 16); \</div>
-<div class="line">    c += d; b ^= c; b = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(b, 12); \</div>
-<div class="line">    a += b + y; d ^= a; d = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(d, 8); \</div>
-<div class="line">    c += d; b ^= c; b = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(b, 7); \</div>
-<div class="line">} <span class="keywordflow">while</span>(0)</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                                                 \</div>
+<div class="line">    {                                                                                                                  \</div>
+<div class="line">        a += b + x;                                                                                                    \</div>
+<div class="line">        d ^= a;                                                                                                        \</div>
+<div class="line">        d = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(d, 16);                                                                                             \</div>
+<div class="line">        c += d;                                                                                                        \</div>
+<div class="line">        b ^= c;                                                                                                        \</div>
+<div class="line">        b = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(b, 12);                                                                                             \</div>
+<div class="line">        a += b + y;                                                                                                    \</div>
+<div class="line">        d ^= a;                                                                                                        \</div>
+<div class="line">        d = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(d, 8);                                                                                              \</div>
+<div class="line">        c += d;                                                                                                        \</div>
+<div class="line">        b ^= c;                                                                                                        \</div>
+<div class="line">        b = <a class="code hl_define" href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a>(b, 7);                                                                                              \</div>
+<div class="line">    } <span class="keywordflow">while</span> (0)</div>
 <div class="ttc" id="ablake3_8c_html_a4b0e17ca4e86b51c122d174c3e0ab483"><div class="ttname"><a href="#a4b0e17ca4e86b51c122d174c3e0ab483">ROTR32</a></div><div class="ttdeci">#define ROTR32(x, n)</div><div class="ttdef"><b>Definition</b> <a href="blake3_8c_source.html#l00004">blake3.c:4</a></div></div>
 </div><!-- fragment -->
 <p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00005">5</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
@@ -292,18 +301,19 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span> { \</div>
-<div class="line">    G(v[0], v[4], v[8],  v[12], msg[r[0]], msg[r[1]]); \</div>
-<div class="line">    G(v[1], v[5], v[9],  v[13], msg[r[2]], msg[r[3]]); \</div>
-<div class="line">    G(v[2], v[6], v[10], v[14], msg[r[4]], msg[r[5]]); \</div>
-<div class="line">    G(v[3], v[7], v[11], v[15], msg[r[6]], msg[r[7]]); \</div>
-<div class="line">    G(v[0], v[5], v[10], v[15], msg[r[8]], msg[r[9]]); \</div>
-<div class="line">    G(v[1], v[6], v[11], v[12], msg[r[10]], msg[r[11]]); \</div>
-<div class="line">    G(v[2], v[7], v[8],  v[13], msg[r[12]], msg[r[13]]); \</div>
-<div class="line">    G(v[3], v[4], v[9],  v[14], msg[r[14]], msg[r[15]]); \</div>
-<div class="line">} <span class="keywordflow">while</span>(0)</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                                                 \</div>
+<div class="line">    {                                                                                                                  \</div>
+<div class="line">        G(v[0], v[4], v[8], v[12], msg[r[0]], msg[r[1]]);                                                              \</div>
+<div class="line">        G(v[1], v[5], v[9], v[13], msg[r[2]], msg[r[3]]);                                                              \</div>
+<div class="line">        G(v[2], v[6], v[10], v[14], msg[r[4]], msg[r[5]]);                                                             \</div>
+<div class="line">        G(v[3], v[7], v[11], v[15], msg[r[6]], msg[r[7]]);                                                             \</div>
+<div class="line">        G(v[0], v[5], v[10], v[15], msg[r[8]], msg[r[9]]);                                                             \</div>
+<div class="line">        G(v[1], v[6], v[11], v[12], msg[r[10]], msg[r[11]]);                                                           \</div>
+<div class="line">        G(v[2], v[7], v[8], v[13], msg[r[12]], msg[r[13]]);                                                            \</div>
+<div class="line">        G(v[3], v[4], v[9], v[14], msg[r[14]], msg[r[15]]);                                                            \</div>
+<div class="line">    } <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00012">12</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00022">22</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -350,7 +360,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00076">76</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00079">79</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -497,7 +507,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00091">91</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00108">108</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -632,7 +642,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00145">145</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00175">175</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -738,7 +748,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00111">111</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00134">134</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -842,7 +852,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00124">124</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00148">148</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -951,12 +961,10 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,</div>
-<div class="line">    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19</div>
-<div class="line">}</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,</div>
+<div class="line">                               0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00039">39</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00050">50</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>
@@ -980,16 +988,12 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},</div>
-<div class="line">    {2,6,3,10,7,0,4,13,1,11,12,5,9,14,15,8},</div>
-<div class="line">    {3,4,10,12,13,2,7,14,6,5,9,0,11,15,8,1},</div>
-<div class="line">    {10,7,12,11,14,3,13,15,4,0,5,2,8,1,9,6},</div>
-<div class="line">    {12,13,14,15,11,10,3,8,7,2,0,4,1,9,6,5},</div>
-<div class="line">    {14,15,8,9,13,12,11,10,3,4,7,6,2,5,1,0},</div>
-<div class="line">    {8,9,1,0,15,14,13,12,11,10,3,4,7,6,5,2}</div>
-<div class="line">}</div>
+<div class="line">    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, {2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8},</div>
+<div class="line">    {3, 4, 10, 12, 13, 2, 7, 14, 6, 5, 9, 0, 11, 15, 8, 1}, {10, 7, 12, 11, 14, 3, 13, 15, 4, 0, 5, 2, 8, 1, 9, 6},</div>
+<div class="line">    {12, 13, 14, 15, 11, 10, 3, 8, 7, 2, 0, 4, 1, 9, 6, 5}, {14, 15, 8, 9, 13, 12, 11, 10, 3, 4, 7, 6, 2, 5, 1, 0},</div>
+<div class="line">    {8, 9, 1, 0, 15, 14, 13, 12, 11, 10, 3, 4, 7, 6, 5, 2}}</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00044">44</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blake3_8c_source.html#l00053">53</a> of file <a class="el" href="blake3_8c_source.html">blake3.c</a>.</p>
 
 </div>
 </div>

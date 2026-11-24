@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Build System | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/build/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Build System | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Build System |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/build/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Build System |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -4958,28 +4961,32 @@
 
 <h1 id="build&#702;instructions">Build Instructions<a class="headerlink" href="#build&#702;instructions" title="Permanent link">&para;</a></h1>
 <h2 id="1&#702;prerequisites">1. Prerequisites<a class="headerlink" href="#1&#702;prerequisites" title="Permanent link">&para;</a></h2>
-<p><strong>Required:</strong>
-- CMake 3.16+
-- C11/C++20 compiler (MSVC 19.44+, GCC 11+, Clang 14+)
-- Python 3.9+ (for bindings)</p>
-<p><strong>Optional:</strong>
-- CUDA 12.0+ (GPU optimizer acceleration, <code>SNEPPX_BUILD_CUDA=ON</code>)
-- Doxygen (API docs)</p>
+<p><strong>Required:</strong></p>
+<ul>
+<li>CMake 3.16+</li>
+<li>C11/C++20 compiler (MSVC 19.44+, GCC 11+, Clang 14+)</li>
+<li>Python 3.9+ (for bindings)</li>
+</ul>
+<p><strong>Optional:</strong></p>
+<ul>
+<li>CUDA 12.0+ (GPU optimizer acceleration, <code>SNEPPX_BUILD_CUDA=ON</code>)</li>
+<li>Doxygen (API docs)</li>
+</ul>
 <h2 id="&#702;quick&#702;build&#702;all&#702;targets">2. Quick Build (All Targets)<a class="headerlink" href="#&#702;quick&#702;build&#702;all&#702;targets" title="Permanent link">&para;</a></h2>
 <p>This project is Ninja-based. Use the CMake presets (see <code>CMakePresets.json</code>),
 which select the Ninja generator and write to per-config binary directories.</p>
-<p><strong>Windows (MSVC):</strong>
+<p><strong>Windows (MSVC):</strong></p>
 <div class="highlight"><pre><span></span><code><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">://</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">SneppX</span><span class="p">/</span><span class="n">sneppx-alg</span><span class="p">.</span><span class="n">git</span>
 <span class="nb">cd </span><span class="n">sneppx-alg</span>
 <span class="n">cmake</span> <span class="p">-</span><span class="n">-preset</span> <span class="n">release</span>
 <span class="n">cmake</span> <span class="p">-</span><span class="n">-build</span> <span class="p">-</span><span class="n">-preset</span> <span class="n">release</span>
-</code></pre></div></p>
-<p><strong>Linux/Mac (GCC/Clang):</strong>
+</code></pre></div>
+<p><strong>Linux/Mac (GCC/Clang):</strong></p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SneppX/sneppx-alg.git
 <span class="nb">cd</span><span class="w"> </span>sneppx-alg
 cmake<span class="w"> </span>--preset<span class="w"> </span>release
 cmake<span class="w"> </span>--build<span class="w"> </span>--preset<span class="w"> </span>release<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
-</code></pre></div></p>
+</code></pre></div>
 <p>The <code>release</code> preset configures <code>Release</code> + LTO + tests; <code>debug</code>, <code>asan</code>,
 <code>cuda</code>, <code>python</code>, and <code>minimal</code> presets are also available.</p>
 <h2 id="3&#702;build&#702;individual&#702;targets">3. Build Individual Targets<a class="headerlink" href="#3&#702;build&#702;individual&#702;targets" title="Permanent link">&para;</a></h2>
@@ -5095,10 +5102,10 @@ cmake<span class="w"> </span>--build<span class="w"> </span>--preset<span class=
 <span class="c"># Sanitizer tests (Windows)</span>
 <span class="n">powershell</span> <span class="o">-File</span> <span class="n">scripts</span><span class="p">/</span><span class="n">run_sanitizers</span><span class="p">.</span><span class="n">ps1</span>
 </code></pre></div>
-<p>For Python-only tests (no build required):
+<p>For Python-only tests (no build required):</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span> <span class="n">-v</span>
-</code></pre></div></p>
+</code></pre></div>
 <h2 id="8&#702;common&#702;issues">8. Common Issues<a class="headerlink" href="#8&#702;common&#702;issues" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

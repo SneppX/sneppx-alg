@@ -1,7 +1,7 @@
 <map id="include/neural_core/architecture/graph_convolutional_network.h" name="include/neural_core/architecture/graph_convolutional_network.h">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,5,194,67"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="12,115,86,143"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="8,115,90,143"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,66,66,103,61,100,80,69"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="110,115,191,143"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="114,115,187,143"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="118,65,138,102,133,101,115,70"/>
 </map>

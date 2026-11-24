@@ -1,7 +1,9 @@
 <map id="SNEPPX_transport_session_rekey" name="SNEPPX_transport_session_rekey">
-<area shape="rect" id="Node000001" title="Perform Transport Session Rekey." alt="" coords="5,24,200,68"/>
-<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="248,5,420,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,32,235,30,230,31,201,37"/>
-<area shape="rect" id="Node000003" href="$transport__security_8c.html#a64402c567ab2ca68ed4c5fb68e03f29f" title=" " alt="" coords="259,57,408,85"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="200,54,246,61,241,61,200,59"/>
+<area shape="rect" id="Node000001" title="Perform Transport Session Rekey." alt="" coords="5,49,200,94"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="260,5,432,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="199,48,266,36,261,38,201,53"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#abd924a37f844503b8577e1bdfc922088" title=" " alt="" coords="248,57,444,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="200,69,235,71,230,72,200,74"/>
+<area shape="rect" id="Node000004" href="$transport__security_8c.html#a64402c567ab2ca68ed4c5fb68e03f29f" title=" " alt="" coords="271,109,420,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="200,89,266,105,261,106,200,95"/>
 </map>

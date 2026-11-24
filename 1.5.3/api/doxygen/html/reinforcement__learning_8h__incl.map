@@ -1,7 +1,7 @@
 <map id="include/neural_core/architecture/reinforcement_learning.h" name="include/neural_core/architecture/reinforcement_learning.h">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,5,205,67"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="18,115,91,143"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="14,115,95,143"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,66,71,103,67,100,86,69"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="115,115,196,143"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="119,115,192,143"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="123,65,144,102,138,101,121,70"/>
 </map>

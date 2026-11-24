@@ -1,0 +1,7 @@
+<map id="random_u64" name="random_u64">
+<area shape="rect" id="Node000001" title=" " alt="" coords="263,32,365,60"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#a08e9bd2e621fcef84788e2a771a37508" title="Initialize Pac." alt="" coords="45,5,175,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="245,38,176,30,176,25,250,37"/>
+<area shape="rect" id="Node000003" href="$memory__hardening_8c.html#af64241cbbd831c10d9176137d9629cdf" title="Initialize Tls Canary Pool." alt="" coords="5,57,215,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="245,54,215,61,215,55,250,54"/>
+</map>

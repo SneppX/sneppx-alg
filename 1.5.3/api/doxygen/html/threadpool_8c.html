@@ -93,32 +93,32 @@ $(function(){initNavTree('threadpool_8c.html','',''); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="concurrent__workload__dispatch_8h_source.html">concurrent_workload_dispatch.h</a>&quot;</code><br />
+<code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;errno.h&gt;</code><br />
 <code>#include &lt;pthread.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
-<code>#include &lt;errno.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for threadpool.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="threadpool_8c__incl.png" border="0" usemap="#akernel_2thread_2threadpool_8c" loading="lazy" alt=""/></div>
 <map name="akernel_2thread_2threadpool_8c" id="akernel_2thread_2threadpool_8c">
-<area shape="rect" title=" " alt="" coords="313,5,506,33"/>
+<area shape="rect" title=" " alt="" coords="312,5,504,33"/>
 <area shape="rect" href="concurrent__workload__dispatch_8h.html" title=" " alt="" coords="5,81,163,126"/>
-<area shape="poly" title=" " alt="" coords="356,36,179,81,177,76,359,31"/>
-<area shape="rect" title=" " alt="" coords="187,90,256,117"/>
-<area shape="poly" title=" " alt="" coords="376,35,269,83,265,85,262,81,267,79,381,32"/>
-<area shape="rect" title=" " alt="" coords="280,90,350,117"/>
-<area shape="poly" title=" " alt="" coords="396,32,342,82,340,77,392,35"/>
-<area shape="rect" title=" " alt="" coords="374,90,444,117"/>
-<area shape="poly" title=" " alt="" coords="411,32,412,75,407,73,408,36"/>
-<area shape="rect" title=" " alt="" coords="469,90,552,117"/>
-<area shape="poly" title=" " alt="" coords="426,31,486,80,480,80,425,36"/>
-<area shape="rect" title=" " alt="" coords="577,90,650,117"/>
-<area shape="poly" title=" " alt="" coords="444,31,565,79,572,83,567,83,563,83,443,36"/>
-<area shape="rect" title=" " alt="" coords="674,90,742,117"/>
-<area shape="poly" title=" " alt="" coords="481,31,569,51,664,78,671,83,665,83,662,84,568,56,481,36"/>
+<area shape="poly" title=" " alt="" coords="354,36,179,81,177,76,358,31"/>
+<area shape="rect" title=" " alt="" coords="186,90,256,117"/>
+<area shape="poly" title=" " alt="" coords="375,35,269,83,265,85,262,81,267,79,380,32"/>
+<area shape="rect" title=" " alt="" coords="280,90,349,117"/>
+<area shape="poly" title=" " alt="" coords="395,32,342,82,339,77,391,35"/>
+<area shape="rect" title=" " alt="" coords="373,90,443,117"/>
+<area shape="poly" title=" " alt="" coords="410,32,410,75,406,73,406,36"/>
+<area shape="rect" title=" " alt="" coords="468,90,535,117"/>
+<area shape="poly" title=" " alt="" coords="424,31,478,80,473,79,422,36"/>
+<area shape="rect" title=" " alt="" coords="560,90,643,117"/>
+<area shape="poly" title=" " alt="" coords="439,31,559,83,554,83,439,36"/>
+<area shape="rect" title=" " alt="" coords="667,90,741,117"/>
+<area shape="poly" title=" " alt="" coords="474,31,561,51,655,78,665,84,659,83,654,84,560,56,474,36"/>
 <area shape="rect" title=" " alt="" coords="47,174,121,201"/>
 <area shape="poly" title=" " alt="" coords="86,124,87,159,81,157,82,128"/>
 </map>
@@ -224,7 +224,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_cond_broadcast(c)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00078">78</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00077">77</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -244,7 +244,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_cond_destroy(c)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00075">75</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00074">74</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -264,7 +264,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_cond_init((c), NULL)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00074">74</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00073">73</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -284,7 +284,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_cond_signal(c)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00077">77</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00076">76</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -308,7 +308,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_cond_wait((c), (m))</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00076">76</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00075">75</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -328,7 +328,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_mutex_destroy(m)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00070">70</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00069">69</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -348,7 +348,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_mutex_init((m), NULL)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00069">69</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00068">68</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -368,7 +368,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_mutex_lock(m)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00071">71</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00070">70</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">pthread_mutex_unlock(m)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00072">72</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00071">71</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -415,9 +415,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">pthread_create((pthread_t*)(t), NULL, (func), (arg))</div>
+<b>Value:</b><div class="fragment"><div class="line">pthread_create((pthread_t*) (t), NULL, (func), (arg))</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00080">80</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00079">79</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -435,9 +435,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">pthread_join((pthread_t)(t), NULL)</div>
+<b>Value:</b><div class="fragment"><div class="line">pthread_join((pthread_t) (t), NULL)</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00081">81</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00080">80</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -453,7 +453,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00268">268</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00311">311</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -470,7 +470,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00034">34</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00033">33</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -486,7 +486,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00033">33</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00032">32</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -502,7 +502,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00035">35</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00034">34</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -544,7 +544,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00161">161</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00192">192</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -585,7 +585,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00105">105</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00107">107</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -624,7 +624,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00100">100</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00101">101</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -665,7 +665,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00133">133</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00146">146</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -708,7 +708,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00116">116</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00124">124</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -755,7 +755,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00148">148</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00173">173</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -794,7 +794,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00561">561</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00655">655</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -831,7 +831,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00461">461</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00544">544</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -878,7 +878,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00626">626</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00729">729</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -915,7 +915,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00278">278</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00321">321</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -949,7 +949,7 @@ Here is the caller graph for this function:</div>
 <p>Create Future. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00185">185</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00219">219</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -976,7 +976,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00198">198</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00234">234</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -998,7 +998,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Future Get Result. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00242">242</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00283">283</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1030,7 +1030,7 @@ Here is the call graph for this function:</div>
 <p>Perform Future Is Ready. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00233">233</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00273">273</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -1061,7 +1061,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00210">210</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00248">248</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1100,7 +1100,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00221">221</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00260">260</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1159,7 +1159,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00575">575</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00670">670</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1250,7 +1250,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00645">645</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00749">749</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1290,7 +1290,7 @@ Here is the call graph for this function:</div>
 <p>Perform Thread Id. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00284">284</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00330">330</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -1312,7 +1312,7 @@ Here is the call graph for this function:</div>
 <p>Create Threadpool. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00347">347</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00405">405</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1356,7 +1356,7 @@ Here is the call graph for this function:</div>
 <p>Perform Threadpool Default Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>The computed size/count, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00520">520</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00612">612</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1393,7 +1393,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00404">404</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00477">477</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1435,7 +1435,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00431">431</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00507">507</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1497,7 +1497,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00476">476</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00560">560</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1540,7 +1540,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00491">491</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00578">578</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1589,7 +1589,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00290">290</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00339">339</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1638,7 +1638,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00422">422</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00498">498</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>
@@ -1662,7 +1662,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00275">275</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="threadpool_8c_source.html#l00318">318</a> of file <a class="el" href="threadpool_8c_source.html">threadpool.c</a>.</p>
 
 </div>
 </div>

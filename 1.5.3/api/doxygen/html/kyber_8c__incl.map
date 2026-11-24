@@ -1,22 +1,22 @@
 <map id="security/crypto/c/kyber.c" name="security/crypto/c/kyber.c">
-<area shape="rect" id="Node000001" title=" " alt="" coords="181,5,360,33"/>
-<area shape="rect" id="Node000002" href="$kyber_8h.html" title=" " alt="" coords="26,90,94,117"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="231,36,106,83,102,85,99,81,104,79,233,31"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="47,174,118,201"/>
-<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="179,32,81,51,40,66,15,83,9,93,8,102,16,124,30,145,49,164,44,166,26,149,11,127,3,103,4,91,11,79,38,61,79,46,182,28"/>
-<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="118,81,285,126"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="262,32,231,71,228,67,257,35"/>
-<area shape="rect" id="Node000006" href="$drbg_8h.html" title=" " alt="" coords="309,90,371,117"/>
-<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="283,31,322,78,317,77,281,36"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="395,90,466,117"/>
-<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="297,31,394,82,389,82,296,36"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="489,90,559,117"/>
-<area shape="poly" id="edge12_Node000001_Node000008" title=" " alt="" coords="323,31,397,52,478,78,485,83,480,83,476,84,396,57,323,36"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="65,116,78,159,72,159,62,120"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="165,174,238,201"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="83,115,168,164,163,167,82,120"/>
-<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="173,125,115,167,113,162,168,127"/>
-<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="203,124,204,159,199,157,199,128"/>
-<area shape="poly" id="edge9_Node000006_Node000003" title=" " alt="" coords="318,117,298,128,212,157,134,177,132,172,210,152,296,123,313,119"/>
-<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="320,117,238,168,236,163,315,118"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="263,5,442,33"/>
+<area shape="rect" id="Node000002" href="$kyber_8h.html" title=" " alt="" coords="5,90,74,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="273,35,184,56,86,84,80,85,77,81,84,78,182,51,277,32"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="263,174,333,201"/>
+<area shape="poly" id="edge10_Node000001_Node000004" title=" " alt="" coords="359,31,370,75,371,101,365,127,351,148,332,166,330,162,347,145,360,125,365,101,365,76,356,36"/>
+<area shape="rect" id="Node000005" href="$cryptographic__random__generator_8h.html" title=" " alt="" coords="97,81,264,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="323,35,241,76,239,71,328,32"/>
+<area shape="rect" id="Node000006" href="$drbg_8h.html" title=" " alt="" coords="288,90,351,117"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="349,32,332,77,328,74,345,35"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="425,90,494,117"/>
+<area shape="poly" id="edge11_Node000001_Node000007" title=" " alt="" coords="371,31,433,80,428,80,369,36"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="518,90,588,117"/>
+<area shape="poly" id="edge12_Node000001_Node000008" title=" " alt="" coords="387,31,507,79,513,83,508,83,505,83,387,36"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="144,174,218,201"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="63,115,147,164,143,167,61,120"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="66,115,86,123,171,151,251,174,245,175,170,156,84,128,66,120"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="183,124,183,159,179,157,179,128"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="212,124,270,165,264,165,211,129"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="300,117,217,168,215,163,295,118"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="318,116,307,160,303,157,314,119"/>
 </map>

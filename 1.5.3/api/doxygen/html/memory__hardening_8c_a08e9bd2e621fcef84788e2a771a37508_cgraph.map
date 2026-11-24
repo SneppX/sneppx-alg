@@ -1,0 +1,7 @@
+<map id="SNEPPX_pac_init" name="SNEPPX_pac_init">
+<area shape="rect" id="Node000001" title="Initialize Pac." alt="" coords="5,5,136,33"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#aa535330e76846d1f5e4fa26a1bd3784b" title=" " alt="" coords="184,5,286,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,17,171,19,166,19,136,22"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="334,5,506,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="287,17,321,19,316,19,287,22"/>
+</map>

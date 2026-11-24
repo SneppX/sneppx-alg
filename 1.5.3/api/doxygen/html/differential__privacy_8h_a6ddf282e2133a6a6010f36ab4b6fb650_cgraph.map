@@ -1,0 +1,7 @@
+<map id="SNEPPX_dp_gaussian_mech" name="SNEPPX_dp_gaussian_mech">
+<area shape="rect" id="Node000001" title="Perform Dp Gaussian Mech." alt="" coords="5,5,209,33"/>
+<area shape="rect" id="Node000002" href="$differential__privacy_8c.html#a97303f42b28762150cfa4820e05debc6" title=" " alt="" coords="257,5,383,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,17,243,19,238,19,209,22"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="431,5,603,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="383,17,418,19,413,19,383,22"/>
+</map>

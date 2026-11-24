@@ -92,23 +92,29 @@ $(function(){initNavTree('side__channel__shield_8c.html','',''); });
   <div class="headertitle"><div class="title">side_channel_shield.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="tee__interface_8h_source.html">tee_interface.h</a>&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="cryptographic__random__generator_8h_source.html">neural_core/security/cryptographic_random_generator.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="tee__interface_8h_source.html">tee_interface.h</a>&quot;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for side_channel_shield.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="side__channel__shield_8c__incl.png" border="0" usemap="#asecurity_2hardware_2side__channel__shield_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2hardware_2side__channel__shield_8c" id="asecurity_2hardware_2side__channel__shield_8c">
-<area shape="rect" title=" " alt="" coords="99,5,268,50"/>
-<area shape="rect" href="tee__interface_8h.html" title=" " alt="" coords="5,98,125,126"/>
-<area shape="poly" title=" " alt="" coords="151,52,98,91,95,87,154,48"/>
-<area shape="rect" title=" " alt="" coords="148,98,219,126"/>
-<area shape="poly" title=" " alt="" coords="185,48,186,83,181,81,182,53"/>
-<area shape="rect" title=" " alt="" coords="242,98,312,126"/>
-<area shape="poly" title=" " alt="" coords="209,48,253,87,248,88,208,53"/>
-<area shape="rect" title=" " alt="" coords="30,174,100,201"/>
-<area shape="poly" title=" " alt="" coords="67,124,68,159,62,157,63,128"/>
+<area shape="rect" title=" " alt="" coords="234,5,404,50"/>
+<area shape="rect" href="cryptographic__random__generator_8h.html" title=" " alt="" coords="5,98,177,160"/>
+<area shape="poly" title=" " alt="" coords="267,52,176,94,173,89,271,49"/>
+<area shape="rect" href="tee__interface_8h.html" title=" " alt="" coords="201,115,320,143"/>
+<area shape="poly" title=" " alt="" coords="308,49,277,104,273,100,304,52"/>
+<area shape="rect" title=" " alt="" coords="344,115,414,143"/>
+<area shape="poly" title=" " alt="" coords="333,48,366,103,361,102,331,53"/>
+<area shape="rect" title=" " alt="" coords="437,115,508,143"/>
+<area shape="poly" title=" " alt="" coords="353,48,442,106,437,106,352,53"/>
+<area shape="rect" title=" " alt="" coords="54,208,128,235"/>
+<area shape="poly" title=" " alt="" coords="93,158,94,193,88,191,89,162"/>
+<area shape="rect" title=" " alt="" coords="188,208,258,235"/>
+<area shape="poly" title=" " alt="" coords="136,158,194,198,189,199,134,163"/>
+<area shape="poly" title=" " alt="" coords="257,142,236,195,232,192,253,144"/>
 </map>
 </div>
 </div>
@@ -148,7 +154,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00005">5</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00006">6</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>
@@ -203,7 +209,17 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00090">90</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00103">103</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="side__channel__shield_8c_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph.png" border="0" usemap="#aside__channel__shield_8c_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph" loading="lazy" alt=""/></div>
+<map name="aside__channel__shield_8c_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph" id="aside__channel__shield_8c_a3ca2ddb58e25a937aa43a8d64ec41a0a_cgraph">
+<area shape="rect" title="Perform Hsm Get Random." alt="" coords="5,5,198,33"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="246,5,418,33"/>
+<area shape="poly" title=" " alt="" coords="198,17,232,19,227,19,198,22"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -247,7 +263,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00044">44</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00045">45</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>
@@ -291,7 +307,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00061">61</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00065">65</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>
@@ -315,15 +331,17 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Perform Hsm Verify Measurement. </p>
+<p>No TEE/HSM measurement source is available to this reference shim, so an attestation cannot be verified. Previously this returned success for any non-empty input, which produced false assurance. It now fails closed; use a platform attestation service (SGX/TDX/SEV quote verification) instead.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">expected</td><td>[in] Expected value.</td></tr>
+    <tr><td class="paramname">expected</td><td>[in] Expected value (unused). </td></tr>
+    <tr><td class="paramname">len</td><td>[in] Len value (unused).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>always -1 (unsupported). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00076">76</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="side__channel__shield_8c_source.html#l00089">89</a> of file <a class="el" href="side__channel__shield_8c_source.html">side_channel_shield.c</a>.</p>
 
 </div>
 </div>

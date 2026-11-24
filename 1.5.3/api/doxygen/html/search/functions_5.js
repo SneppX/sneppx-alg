@@ -8,10 +8,12 @@ var searchData=
   ['ensure_5fbuffers_5',['ensure_buffers',['../gradient__optimization_8c.html#a0a3e861b56768f1db95d8dae9506b37a',1,'gradient_optimization.c']]],
   ['ensure_5fbufs_6',['ensure_bufs',['../optimizer_8c.html#ad0075591daa6ca983c82baca4692b1a2',1,'optimizer.c']]],
   ['ensure_5fstorage_7',['ensure_storage',['../tensor_8c.html#aba4b0d77f181bc4c558d44230dbc6fd1',1,'tensor.c']]],
-  ['eval_5fbinary_8',['eval_binary',['../tensor__expr_8c.html#a25100e07beff38cdd37a274e3b9685d6',1,'tensor_expr.c']]],
-  ['eval_5fnode_9',['eval_node',['../tensor__expr_8c.html#ab42abc395195007857c54a64ab504feb',1,'tensor_expr.c']]],
-  ['eval_5funary_10',['eval_unary',['../tensor__expr_8c.html#acace0b0a889e830871dcc486ad19d84f',1,'tensor_expr.c']]],
-  ['event_5ftype_5fget_5fbaseline_11',['event_type_get_baseline',['../integrity__monitor_8c.html#ae2a42f01a1c271ad3f98c16e249146bd',1,'integrity_monitor.c']]],
-  ['event_5ftype_5fget_5fcount_12',['event_type_get_count',['../integrity__monitor_8c.html#ac9ad2fc2ad032c703da874427cdb2a38',1,'integrity_monitor.c']]],
-  ['evict_5flru_13',['evict_lru',['../procedural_8c.html#a2511fb620da24e65c699a5c07b39f7f7',1,'procedural.c']]]
+  ['entropy_5fabsorb_8',['entropy_absorb',['../entropy__pool_8c.html#a8dab4a4e64c86efdebb4a9ef65b1cbbb',1,'entropy_pool.c']]],
+  ['entropy_5fextract_9',['entropy_extract',['../entropy__pool_8c.html#aacb1d876f5c9d8cab5b7381157a636bf',1,'entropy_pool.c']]],
+  ['eval_5fbinary_10',['eval_binary',['../tensor__expr_8c.html#a25100e07beff38cdd37a274e3b9685d6',1,'tensor_expr.c']]],
+  ['eval_5fnode_11',['eval_node',['../tensor__expr_8c.html#ab42abc395195007857c54a64ab504feb',1,'tensor_expr.c']]],
+  ['eval_5funary_12',['eval_unary',['../tensor__expr_8c.html#acace0b0a889e830871dcc486ad19d84f',1,'tensor_expr.c']]],
+  ['event_5ftype_5fget_5fbaseline_13',['event_type_get_baseline',['../integrity__monitor_8c.html#ae2a42f01a1c271ad3f98c16e249146bd',1,'integrity_monitor.c']]],
+  ['event_5ftype_5fget_5fcount_14',['event_type_get_count',['../integrity__monitor_8c.html#ac9ad2fc2ad032c703da874427cdb2a38',1,'integrity_monitor.c']]],
+  ['evict_5flru_15',['evict_lru',['../procedural_8c.html#a2511fb620da24e65c699a5c07b39f7f7',1,'procedural.c']]]
 ];

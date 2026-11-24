@@ -54,5 +54,6 @@ var searchData=
   ['dilithium_5fuse_5fhint_5fscalar_51',['dilithium_use_hint_scalar',['../dilithium_8c.html#ab6a47a8629e64c34725f890ea66f4272',1,'dilithium.c']]],
   ['dispatch_52',['dispatch',['../classSNEPPX_1_1SNEPPXObfVM.html#a1d8c9ceaa4e8dbb499aa5bf7acd8dc71',1,'SNEPPX::SNEPPXObfVM']]],
   ['djb2_5fhash_53',['djb2_hash',['../s9__extensions_8c.html#adb2fa93e724c99cc9c9786dc5d6fcfc3',1,'s9_extensions.c']]],
-  ['dtype_5fsize_54',['dtype_size',['../tensor__ops__impl_8c.html#a0f8ad94a410afc1f4ed2e4dc7536b2ec',1,'tensor_ops_impl.c']]]
+  ['dp_5frandom_5funit_54',['dp_random_unit',['../differential__privacy_8c.html#a97303f42b28762150cfa4820e05debc6',1,'differential_privacy.c']]],
+  ['dtype_5fsize_55',['dtype_size',['../tensor__ops__impl_8c.html#a0f8ad94a410afc1f4ed2e4dc7536b2ec',1,'tensor_ops_impl.c']]]
 ];

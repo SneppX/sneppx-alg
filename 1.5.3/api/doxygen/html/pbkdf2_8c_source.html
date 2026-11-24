@@ -110,61 +110,83 @@ $(function(){initNavTree('pbkdf2_8c_source.html','',''); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * REFERENCES</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> *   RFC 8018 (PKCS #5), NIST SP 800-132.</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="pbkdf2_8h.html#a4bafd603a0c906f3ee6f807bd5e55704">   34</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e">SNEPPX_pbkdf2_hmac_sha256</a>(<span class="keyword">const</span> uint8_t* pwd, <span class="keywordtype">size_t</span> pwd_len, <span class="keyword">const</span> uint8_t* salt, <span class="keywordtype">size_t</span> salt_len, uint32_t iter, uint8_t* out, <span class="keywordtype">size_t</span> out_len) {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (!pwd||!salt||!out) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">size_t</span> hlen=32;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    uint32_t blocks=(uint32_t)((out_len+hlen-1)/hlen);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">for</span> (uint32_t b=1;b&lt;=blocks;b++) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        uint8_t u[32],t[32],sblock[256];</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">size_t</span> sl=0;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (salt) { memcpy(sblock,salt,salt_len); sl=salt_len; }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        sblock[sl++]=(uint8_t)(b&gt;&gt;24); sblock[sl++]=(uint8_t)(b&gt;&gt;16);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        sblock[sl++]=(uint8_t)(b&gt;&gt;8);  sblock[sl++]=(uint8_t)b;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_function" href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a>(pwd,pwd_len,sblock,sl,u);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        memcpy(t,u,hlen);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">for</span> (uint32_t i=1;i&lt;iter;i++) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_function" href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a>(pwd,pwd_len,u,hlen,u);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j=0;j&lt;hlen;j++) t[j]^=u[j];</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        }</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">size_t</span> copy=(out_len-(b-1)*hlen&lt;hlen)?out_len-(b-1)*hlen:hlen;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        memcpy(out+(b-1)*hlen,t,copy);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="pbkdf2_8h.html#a4bafd603a0c906f3ee6f807bd5e55704">   32</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e">SNEPPX_pbkdf2_hmac_sha256</a>(<span class="keyword">const</span> uint8_t* pwd, <span class="keywordtype">size_t</span> pwd_len, <span class="keyword">const</span> uint8_t* salt, <span class="keywordtype">size_t</span> salt_len, uint32_t iter,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                              uint8_t* out, <span class="keywordtype">size_t</span> out_len)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>{</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (!pwd || !salt || !out)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">size_t</span> hlen = 32;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    uint32_t blocks = (uint32_t) ((out_len + hlen - 1) / hlen);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">for</span> (uint32_t b = 1; b &lt;= blocks; b++)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        uint8_t u[32], t[32], sblock[256];</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordtype">size_t</span> sl = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">if</span> (salt)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            memcpy(sblock, salt, salt_len);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            sl = salt_len;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 24);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 16);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 8);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        sblock[sl++] = (uint8_t) b;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_function" href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a>(pwd, pwd_len, sblock, sl, u);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        memcpy(t, u, hlen);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">for</span> (uint32_t i = 1; i &lt; iter; i++)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <a class="code hl_function" href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a>(pwd, pwd_len, u, hlen, u);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; hlen; j++)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                t[j] ^= u[j];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordtype">size_t</span> copy = (out_len - (b - 1) * hlen &lt; hlen) ? out_len - (b - 1) * hlen : hlen;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        memcpy(out + (b - 1) * hlen, t, copy);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
 </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
-<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="pbkdf2_8h.html#a80e2cd7a26cfaf05dc1122168eeac12a">   68</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d">SNEPPX_pbkdf2_hmac_sha512</a>(<span class="keyword">const</span> uint8_t* pwd, <span class="keywordtype">size_t</span> pwd_len, <span class="keyword">const</span> uint8_t* salt, <span class="keywordtype">size_t</span> salt_len, uint32_t iter, uint8_t* out, <span class="keywordtype">size_t</span> out_len) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (!pwd||!salt||!out) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">size_t</span> hlen=64;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    uint32_t blocks=(uint32_t)((out_len+hlen-1)/hlen);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (uint32_t b=1;b&lt;=blocks;b++) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        uint8_t u[64],t[64],sblock[256];</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordtype">size_t</span> sl=0;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> (salt) { memcpy(sblock,salt,salt_len); sl=salt_len; }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        sblock[sl++]=(uint8_t)(b&gt;&gt;24); sblock[sl++]=(uint8_t)(b&gt;&gt;16);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        sblock[sl++]=(uint8_t)(b&gt;&gt;8);  sblock[sl++]=(uint8_t)b;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_function" href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a>(pwd,pwd_len,sblock,sl,u);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        memcpy(t,u,hlen);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">for</span> (uint32_t i=1;i&lt;iter;i++) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <a class="code hl_function" href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a>(pwd,pwd_len,u,hlen,u);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j=0;j&lt;hlen;j++) t[j]^=u[j];</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordtype">size_t</span> copy=(out_len-(b-1)*hlen&lt;hlen)?out_len-(b-1)*hlen:hlen;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        memcpy(out+(b-1)*hlen,t,copy);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span></div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="pbkdf2_8h.html#a80e2cd7a26cfaf05dc1122168eeac12a">   78</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d">SNEPPX_pbkdf2_hmac_sha512</a>(<span class="keyword">const</span> uint8_t* pwd, <span class="keywordtype">size_t</span> pwd_len, <span class="keyword">const</span> uint8_t* salt, <span class="keywordtype">size_t</span> salt_len, uint32_t iter,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                              uint8_t* out, <span class="keywordtype">size_t</span> out_len)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>{</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">if</span> (!pwd || !salt || !out)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">size_t</span> hlen = 64;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    uint32_t blocks = (uint32_t) ((out_len + hlen - 1) / hlen);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">for</span> (uint32_t b = 1; b &lt;= blocks; b++)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        uint8_t u[64], t[64], sblock[256];</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordtype">size_t</span> sl = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (salt)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            memcpy(sblock, salt, salt_len);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            sl = salt_len;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 24);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 16);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        sblock[sl++] = (uint8_t) (b &gt;&gt; 8);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        sblock[sl++] = (uint8_t) b;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <a class="code hl_function" href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a>(pwd, pwd_len, sblock, sl, u);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        memcpy(t, u, hlen);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">for</span> (uint32_t i = 1; i &lt; iter; i++)</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <a class="code hl_function" href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a>(pwd, pwd_len, u, hlen, u);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; hlen; j++)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                t[j] ^= u[j];</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordtype">size_t</span> copy = (out_len - (b - 1) * hlen &lt; hlen) ? out_len - (b - 1) * hlen : hlen;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        memcpy(out + (b - 1) * hlen, t, copy);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
 </div>
 <div class="ttc" id="ahmac_8h_html"><div class="ttname"><a href="hmac_8h.html">hmac.h</a></div></div>
-<div class="ttc" id="ahmac_8h_html_a50098adea5a4335ad742e0f3f2d56823"><div class="ttname"><a href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a></div><div class="ttdeci">int SNEPPX_hmac_sha512(const uint8_t *key, size_t key_len, const uint8_t *data, size_t data_len, uint8_t out[64])</div><div class="ttdoc">Compute HMAC-SHA256 of input with key.</div><div class="ttdef"><b>Definition</b> <a href="hmac_8c_source.html#l00119">hmac.c:119</a></div></div>
-<div class="ttc" id="ahmac_8h_html_affe39b6a0fdf5de08f8c736672b84b3a"><div class="ttname"><a href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a></div><div class="ttdeci">int SNEPPX_hmac_sha256(const uint8_t *key, size_t key_len, const uint8_t *data, size_t data_len, uint8_t out[32])</div><div class="ttdoc">Compute HMAC-SHA256 of input with key.</div><div class="ttdef"><b>Definition</b> <a href="hmac_8c_source.html#l00103">hmac.c:103</a></div></div>
-<div class="ttc" id="apbkdf2_8c_html_a12ac3ecb959366776433e8fb5543d75e"><div class="ttname"><a href="pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e">SNEPPX_pbkdf2_hmac_sha256</a></div><div class="ttdeci">int SNEPPX_pbkdf2_hmac_sha256(const uint8_t *pwd, size_t pwd_len, const uint8_t *salt, size_t salt_len, uint32_t iter, uint8_t *out, size_t out_len)</div><div class="ttdoc">Perform Pbkdf2 Hmac Sha256.</div><div class="ttdef"><b>Definition</b> <a href="#l00034">pbkdf2.c:34</a></div></div>
-<div class="ttc" id="apbkdf2_8c_html_afab39a2819ad2fde2053af4de73e363d"><div class="ttname"><a href="pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d">SNEPPX_pbkdf2_hmac_sha512</a></div><div class="ttdeci">int SNEPPX_pbkdf2_hmac_sha512(const uint8_t *pwd, size_t pwd_len, const uint8_t *salt, size_t salt_len, uint32_t iter, uint8_t *out, size_t out_len)</div><div class="ttdoc">Perform Pbkdf2 Hmac Sha512.</div><div class="ttdef"><b>Definition</b> <a href="#l00068">pbkdf2.c:68</a></div></div>
+<div class="ttc" id="ahmac_8h_html_a50098adea5a4335ad742e0f3f2d56823"><div class="ttname"><a href="hmac_8h.html#a50098adea5a4335ad742e0f3f2d56823">SNEPPX_hmac_sha512</a></div><div class="ttdeci">int SNEPPX_hmac_sha512(const uint8_t *key, size_t key_len, const uint8_t *data, size_t data_len, uint8_t out[64])</div><div class="ttdoc">Compute HMAC-SHA256 of input with key.</div><div class="ttdef"><b>Definition</b> <a href="hmac_8c_source.html#l00196">hmac.c:196</a></div></div>
+<div class="ttc" id="ahmac_8h_html_affe39b6a0fdf5de08f8c736672b84b3a"><div class="ttname"><a href="hmac_8h.html#affe39b6a0fdf5de08f8c736672b84b3a">SNEPPX_hmac_sha256</a></div><div class="ttdeci">int SNEPPX_hmac_sha256(const uint8_t *key, size_t key_len, const uint8_t *data, size_t data_len, uint8_t out[32])</div><div class="ttdoc">Compute HMAC-SHA256 of input with key.</div><div class="ttdef"><b>Definition</b> <a href="hmac_8c_source.html#l00179">hmac.c:179</a></div></div>
+<div class="ttc" id="apbkdf2_8c_html_a12ac3ecb959366776433e8fb5543d75e"><div class="ttname"><a href="pbkdf2_8c.html#a12ac3ecb959366776433e8fb5543d75e">SNEPPX_pbkdf2_hmac_sha256</a></div><div class="ttdeci">int SNEPPX_pbkdf2_hmac_sha256(const uint8_t *pwd, size_t pwd_len, const uint8_t *salt, size_t salt_len, uint32_t iter, uint8_t *out, size_t out_len)</div><div class="ttdoc">Perform Pbkdf2 Hmac Sha256.</div><div class="ttdef"><b>Definition</b> <a href="#l00032">pbkdf2.c:32</a></div></div>
+<div class="ttc" id="apbkdf2_8c_html_afab39a2819ad2fde2053af4de73e363d"><div class="ttname"><a href="pbkdf2_8c.html#afab39a2819ad2fde2053af4de73e363d">SNEPPX_pbkdf2_hmac_sha512</a></div><div class="ttdeci">int SNEPPX_pbkdf2_hmac_sha512(const uint8_t *pwd, size_t pwd_len, const uint8_t *salt, size_t salt_len, uint32_t iter, uint8_t *out, size_t out_len)</div><div class="ttdoc">Perform Pbkdf2 Hmac Sha512.</div><div class="ttdef"><b>Definition</b> <a href="#l00078">pbkdf2.c:78</a></div></div>
 <div class="ttc" id="apbkdf2_8h_html"><div class="ttname"><a href="pbkdf2_8h.html">pbkdf2.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

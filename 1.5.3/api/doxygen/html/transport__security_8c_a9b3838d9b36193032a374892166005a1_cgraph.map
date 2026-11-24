@@ -1,13 +1,40 @@
 <map id="SNEPPX_transport_encrypt_with_aad" name="SNEPPX_transport_encrypt_with_aad">
-<area shape="rect" id="Node000001" title="Perform Transport Encrypt With Aad." alt="" coords="5,49,200,94"/>
-<area shape="rect" id="Node000002" href="$chacha20_8c.html#a003b65af22714817ea4b609b0e3df4b0" title="Encrypt/decrypt with ChaCha20 (XOR stream)." alt="" coords="248,5,445,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="199,48,266,36,261,38,201,53"/>
-<area shape="rect" id="Node000005" href="$chacha20_8c.html#a0470473dea2b9fc34e7d51297b400fdb" title="Initialize Chacha20." alt="" coords="262,57,431,85"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="200,69,249,71,244,72,200,74"/>
-<area shape="rect" id="Node000006" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="260,109,432,137"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="200,89,266,105,261,106,200,95"/>
-<area shape="rect" id="Node000003" href="$chacha20_8c.html#a5d8576d60f4c311b3c01de3e10609033" title="Perform Chacha20 Block." alt="" coords="493,5,676,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="445,17,480,19,475,20,446,22"/>
-<area shape="rect" id="Node000004" href="$chacha20_8c.html#a4428703d9ced5a11e93f93eb195eae9d" title=" " alt="" coords="724,5,763,33"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="677,17,712,19,706,19,677,22"/>
+<area shape="rect" id="Node000001" title="Perform Transport Encrypt With Aad." alt="" coords="5,117,200,162"/>
+<area shape="rect" id="Node000002" href="$chacha20_8c.html#a003b65af22714817ea4b609b0e3df4b0" title="Encrypt/decrypt with ChaCha20 (XOR stream)." alt="" coords="523,5,720,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,115,178,72,211,51,247,35,312,18,380,9,447,5,510,8,505,10,447,11,381,14,313,23,249,40,214,56,181,76,129,118"/>
+<area shape="rect" id="Node000005" href="$chacha20_8c.html#a0470473dea2b9fc34e7d51297b400fdb" title="Initialize Chacha20." alt="" coords="537,69,706,97"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="199,126,523,91,520,96,200,131"/>
+<area shape="rect" id="Node000006" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="274,201,446,229"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="178,159,248,181,296,196,291,197,247,186,178,165"/>
+<area shape="rect" id="Node000007" href="$transport__security_8c.html#aff7dc78ddc789338e180ef2533a6881a" title=" " alt="" coords="280,253,440,298"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="131,159,185,199,249,238,269,248,263,249,246,243,182,204,131,165"/>
+<area shape="rect" id="Node000017" href="$transport__security_8c.html#a8d14dde133c322a687b54e1c63a8c513" title=" " alt="" coords="248,49,472,77"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="177,114,247,93,295,80,291,83,248,98,179,119"/>
+<area shape="rect" id="Node000018" href="$transport__security_8c.html#aaf5f026d5369b44eca33e24c40477fc0" title=" " alt="" coords="520,145,723,173"/>
+<area shape="poly" id="edge20_Node000001_Node000018" title=" " alt="" coords="199,140,506,152,503,157,200,146"/>
+<area shape="rect" id="Node000003" href="$chacha20_8c.html#a5d8576d60f4c311b3c01de3e10609033" title="Perform Chacha20 Block." alt="" coords="771,5,955,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="720,17,758,19,753,20,721,22"/>
+<area shape="rect" id="Node000004" href="$chacha20_8c.html#a4428703d9ced5a11e93f93eb195eae9d" title=" " alt="" coords="1073,5,1111,33"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="955,17,1060,19,1055,20,955,22"/>
+<area shape="rect" id="Node000008" href="$hmac_8c.html#affe39b6a0fdf5de08f8c736672b84b3a" title="Compute HMAC&#45;SHA256 of input with key." alt="" coords="537,261,706,289"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="440,273,524,275,519,276,440,278"/>
+<area shape="rect" id="Node000009" href="$hmac_8c.html#a1b4b67b9cfac83e47b9de2faa25ae89b" title=" " alt="" coords="802,261,924,289"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="707,273,789,275,784,275,707,278"/>
+<area shape="rect" id="Node000010" href="$hmac_8c.html#a7d5cd93ef890063a152c575825c6dd09" title=" " alt="" coords="1004,339,1180,366"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="902,287,1004,323,1029,334,1024,333,1002,328,901,292"/>
+<area shape="rect" id="Node000013" href="$sha512__hashing__implementation_8h.html#aa8ee2776ad34b6d29c058cda57d39b67" title="Compute SHA&#45;512 hash of input." alt="" coords="1008,183,1176,210"/>
+<area shape="poly" id="edge12_Node000009_Node000013" title=" " alt="" coords="900,258,1002,221,1024,216,1029,215,1004,226,901,263"/>
+<area shape="rect" id="Node000014" href="$sha512_8c.html#a83ce3650029d22afeb2d9b907d0b0229" title="Initialize Sha512." alt="" coords="1015,235,1169,262"/>
+<area shape="poly" id="edge13_Node000009_Node000014" title=" " alt="" coords="923,266,996,260,1002,259,924,271"/>
+<area shape="rect" id="Node000015" href="$sha512_8c.html#aa45949b67a1004337c069d0dcb624528" title="Compute SHA&#45;512 hash of input." alt="" coords="1003,287,1181,314"/>
+<area shape="poly" id="edge14_Node000009_Node000015" title=" " alt="" coords="924,279,990,289,985,289,924,284"/>
+<area shape="rect" id="Node000011" href="$sha256_8c.html#ab187d1d2f8594b24ce987400bc0c5a03" title="Compute SHA&#45;256 hash of input." alt="" coords="1236,339,1362,366"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="1180,350,1223,352,1218,353,1180,355"/>
+<area shape="rect" id="Node000012" href="$sha256_8c.html#abec0b6b07a24ba6b0b02bdd37d79f587" title=" " alt="" coords="1416,339,1556,366"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="1362,350,1404,352,1398,353,1362,355"/>
+<area shape="rect" id="Node000016" href="$sha512_8c.html#a72fe9a3a390a374405999461c75de575" title=" " alt="" coords="1229,287,1368,314"/>
+<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="1181,298,1216,300,1211,301,1182,303"/>
+<area shape="poly" id="edge17_Node000017_Node000002" title=" " alt="" coords="445,46,523,35,518,37,447,51"/>
+<area shape="poly" id="edge18_Node000017_Node000005" title=" " alt="" coords="472,69,524,75,519,76,473,74"/>
+<area shape="poly" id="edge19_Node000017_Node000018" title=" " alt="" coords="400,75,570,139,565,140,400,80"/>
 </map>

@@ -92,9 +92,11 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <div class="textblock">Here is a list of all functions with links to the files they belong to:</div>
 
 <h3 class="doxsection"><a id="index_s" name="index_s"></a>- s -</h3><ul>
+<li>s5_random_unit()&#160;:&#160;<a class="el" href="s5__extensions_8c.html#a3ebaa7034e0ee5f859e1e3a4903af0fc">s5_extensions.c</a></li>
 <li>sc_mul256()&#160;:&#160;<a class="el" href="ed25519_8c.html#a4875c915b5012acdc3e68dcf80beccc1">ed25519.c</a></li>
 <li>sc_reduce64()&#160;:&#160;<a class="el" href="ed25519_8c.html#ab3c853739132cbae79f3a1a24778eafa">ed25519.c</a></li>
 <li>scalar_is_canonical()&#160;:&#160;<a class="el" href="ed25519_8c.html#af136f49afb80f1676f303e966e9e3f72">ed25519.c</a></li>
+<li>secure_layout()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86">secure_allocator.c</a></li>
 <li>secure_scrub()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187">secure_allocator.c</a></li>
 <li>secure_zero()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#ac1aac81267563ec22c5f50b392aaf893">secure_allocator.c</a></li>
 <li>set_flat()&#160;:&#160;<a class="el" href="gradient__optimization_8c.html#a7a063b9fda2e4a41462acb15b3b1d5d4">gradient_optimization.c</a></li>
@@ -111,6 +113,7 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>sliding_window_reset()&#160;:&#160;<a class="el" href="integrity__monitor_8c.html#abb96b0000f9c206b4559868b33c02129">integrity_monitor.c</a></li>
 <li>small_bin_destroy()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a461113b57e3675a1371cb222c6e68094">secure_allocator.c</a></li>
 <li>small_bin_find_free()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a21aef3f8a4b82ac57e7152acfc4539d5">secure_allocator.c</a></li>
+<li>small_bin_is_used()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a6bf0061c2e3b01a240ec68f666a9d727">secure_allocator.c</a></li>
 <li>small_bin_mark_free()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#afef6c3374621751dcb0772423edd80c3">secure_allocator.c</a></li>
 <li>small_bin_mark_used()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#a1a3221e87a48a7c52ec7f36a2bf91d57">secure_allocator.c</a></li>
 <li>small_bin_populate()&#160;:&#160;<a class="el" href="secure__allocator_8c.html#aabc69a9c6490a089c4e694cad56e3baf">secure_allocator.c</a></li>
@@ -2505,13 +2508,16 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>SNEPPX_transport_close_session()&#160;:&#160;<a class="el" href="transport__security_8h.html#a1204bf37a8a1661d521f40abfdef7326">transport_security.h</a>, <a class="el" href="transport__security_8c.html#a1204bf37a8a1661d521f40abfdef7326">transport_security.c</a></li>
 <li>SNEPPX_transport_count_sessions_with_key()&#160;:&#160;<a class="el" href="transport__security_8c.html#a56b1b48c4fcb392c72d2fc1c436ab0bc">transport_security.c</a></li>
 <li>SNEPPX_transport_decrypt()&#160;:&#160;<a class="el" href="transport__security_8h.html#a2b1996df5695ad361d37727e0dba8b72">transport_security.h</a>, <a class="el" href="transport__security_8c.html#a6431c0f7bbba2dc0eef679384321bf32">transport_security.c</a></li>
+<li>SNEPPX_transport_decrypt_aead()&#160;:&#160;<a class="el" href="transport__security_8h.html#a9a7527f8ee7500336317e3ab9bd2bc7a">transport_security.h</a>, <a class="el" href="transport__security_8c.html#acdf06f4a478b446812cc2fd2dd66d444">transport_security.c</a></li>
+<li>SNEPPX_transport_decrypt_with_aad()&#160;:&#160;<a class="el" href="transport__security_8h.html#af123215881becac28ed30ae1192dc13c">transport_security.h</a>, <a class="el" href="transport__security_8c.html#a936cc0cd5e73d0b22d33737a70a66ed4">transport_security.c</a></li>
 <li>SNEPPX_transport_encrypt()&#160;:&#160;<a class="el" href="transport__security_8h.html#acd337ec7bb26f2445cee15e430b7d5e0">transport_security.h</a>, <a class="el" href="transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab">transport_security.c</a></li>
+<li>SNEPPX_transport_encrypt_aead()&#160;:&#160;<a class="el" href="transport__security_8h.html#a418ecf46082ce13a3f062419fe6cc828">transport_security.h</a>, <a class="el" href="transport__security_8c.html#aa8dfe619e0aa8750d3a97746a38a7efd">transport_security.c</a></li>
 <li>SNEPPX_transport_encrypt_count()&#160;:&#160;<a class="el" href="transport__security_8c.html#a44b643838e63855ab8b0ec71329301f7">transport_security.c</a></li>
-<li>SNEPPX_transport_encrypt_with_aad()&#160;:&#160;<a class="el" href="transport__security_8c.html#a9b3838d9b36193032a374892166005a1">transport_security.c</a></li>
+<li>SNEPPX_transport_encrypt_with_aad()&#160;:&#160;<a class="el" href="transport__security_8h.html#a5f18c77d11dabc2ea798b3086d2030b7">transport_security.h</a>, <a class="el" href="transport__security_8c.html#a9b3838d9b36193032a374892166005a1">transport_security.c</a></li>
 <li>SNEPPX_transport_find_session_by_key_id()&#160;:&#160;<a class="el" href="transport__security_8c.html#a8d93831ae96dcfb4b4a9abd1a11f33a3">transport_security.c</a></li>
 <li>SNEPPX_transport_get_aad_key()&#160;:&#160;<a class="el" href="transport__security_8c.html#a93a91efce5fb6d288971bbebefe632e0">transport_security.c</a></li>
 <li>SNEPPX_transport_get_active_session_count()&#160;:&#160;<a class="el" href="transport__security_8c.html#af25185c5d3cc4c0cf80785f05c1b8527">transport_security.c</a></li>
-<li>SNEPPX_transport_get_cipher_type()&#160;:&#160;<a class="el" href="transport__security_8c.html#abcd0395091f04d96a9faa52087ea33e0">transport_security.c</a></li>
+<li>SNEPPX_transport_get_cipher_type()&#160;:&#160;<a class="el" href="transport__security_8h.html#abcd0395091f04d96a9faa52087ea33e0">transport_security.h</a>, <a class="el" href="transport__security_8c.html#abcd0395091f04d96a9faa52087ea33e0">transport_security.c</a></li>
 <li>SNEPPX_transport_get_default_timeout()&#160;:&#160;<a class="el" href="transport__security_8c.html#a78936c58110078ddc3cb3cecf06f8937">transport_security.c</a></li>
 <li>SNEPPX_transport_get_max_nonce()&#160;:&#160;<a class="el" href="transport__security_8c.html#a33a7bd1475112ef35a2d8dbd09831a20">transport_security.c</a></li>
 <li>SNEPPX_transport_get_max_session_keys()&#160;:&#160;<a class="el" href="transport__security_8c.html#aade018417ca0afcb74a665ff28f3e3b7">transport_security.c</a></li>
@@ -2559,8 +2565,8 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>SNEPPX_transport_session_rekey()&#160;:&#160;<a class="el" href="transport__security_8c.html#aeb9b3ddb52f9b6a336fec641c3f52bdd">transport_security.c</a></li>
 <li>SNEPPX_transport_session_timeout()&#160;:&#160;<a class="el" href="transport__security_8c.html#aea30f79fce14d06cc35510c396bb589f">transport_security.c</a></li>
 <li>SNEPPX_transport_set_all_timeouts()&#160;:&#160;<a class="el" href="transport__security_8c.html#a6af48eaeb3845c21773ffa3dd5181297">transport_security.c</a></li>
-<li>SNEPPX_transport_set_cipher()&#160;:&#160;<a class="el" href="transport__security_8c.html#addb10d8651a23807e8bd60a8b5422b94">transport_security.c</a></li>
-<li>SNEPPX_transport_set_cipher_type()&#160;:&#160;<a class="el" href="transport__security_8c.html#a32c1d5a89ec62e08d6d76f6f48fdefc0">transport_security.c</a></li>
+<li>SNEPPX_transport_set_cipher()&#160;:&#160;<a class="el" href="transport__security_8h.html#addb10d8651a23807e8bd60a8b5422b94">transport_security.h</a>, <a class="el" href="transport__security_8c.html#addb10d8651a23807e8bd60a8b5422b94">transport_security.c</a></li>
+<li>SNEPPX_transport_set_cipher_type()&#160;:&#160;<a class="el" href="transport__security_8h.html#a32c1d5a89ec62e08d6d76f6f48fdefc0">transport_security.h</a>, <a class="el" href="transport__security_8c.html#a32c1d5a89ec62e08d6d76f6f48fdefc0">transport_security.c</a></li>
 <li>SNEPPX_transport_set_noise_enabled()&#160;:&#160;<a class="el" href="transport__security_8c.html#a1ef2dc83451cd1e01fa99ed3b5d2d453">transport_security.c</a></li>
 <li>SNEPPX_transport_set_quic_enabled()&#160;:&#160;<a class="el" href="transport__security_8c.html#a43cba991783a8fa800ece86cc3f72156">transport_security.c</a></li>
 <li>SNEPPX_transport_set_rekey_interval()&#160;:&#160;<a class="el" href="transport__security_8c.html#a2b21b491dd4fcadb6764acf3daa5043e">transport_security.c</a></li>
@@ -3234,6 +3240,7 @@ $(function(){initNavTree('globals_func_s.html','',''); });
 <li>step_rmsprop()&#160;:&#160;<a class="el" href="optimizer_8c.html#af7c7c69805a4e67324935285f04df5ff">optimizer.c</a></li>
 <li>step_sgd()&#160;:&#160;<a class="el" href="optimizer_8c.html#ad1f5fcaa0742ec4668cae2d8c8d0613c">optimizer.c</a></li>
 <li>store32()&#160;:&#160;<a class="el" href="aes__gcm_8c.html#a7dc9650982f1b85ded81f757c40debb2">aes_gcm.c</a></li>
+<li>store64_le()&#160;:&#160;<a class="el" href="entropy__pool_8c.html#ad3dadfc029e8015871493204ed27c7bf">entropy_pool.c</a></li>
 <li>sub_sc_shifted()&#160;:&#160;<a class="el" href="ed25519_8c.html#a62b98f663b25488f34521ab6d1851149">ed25519.c</a></li>
 <li>sub_word()&#160;:&#160;<a class="el" href="aes__gcm_8c.html#a3877596edaa5da63ff2df2145e5a35c0">aes_gcm.c</a></li>
 <li>supply_chain_check_dependency_count()&#160;:&#160;<a class="el" href="s9__extensions_8c.html#ad344b24f2af68b7d09bba78662de7ff6">s9_extensions.c</a></li>

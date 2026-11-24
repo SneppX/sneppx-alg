@@ -94,28 +94,28 @@ $(function(){initNavTree('inference__engine_8c.html','',''); });
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="inference__engine_8h_source.html">inference_engine.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="polymorphic__memory__allocator_8h_source.html">polymorphic_memory_allocator.h</a>&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;math.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for inference_engine.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="inference__engine_8c__incl.png" border="0" usemap="#akernel_2inference_2inference__engine_8c" loading="lazy" alt=""/></div>
 <map name="akernel_2inference_2inference__engine_8c" id="akernel_2inference_2inference__engine_8c">
-<area shape="rect" title=" " alt="" coords="562,5,753,50"/>
+<area shape="rect" title=" " alt="" coords="560,5,752,50"/>
 <area shape="rect" href="inference__engine_8h.html" title=" " alt="" coords="267,98,413,126"/>
-<area shape="poly" title=" " alt="" coords="571,52,406,96,404,91,575,49"/>
+<area shape="poly" title=" " alt="" coords="570,52,406,96,404,91,574,49"/>
 <area shape="rect" href="polymorphic__memory__allocator_8h.html" title=" " alt="" coords="440,359,605,404"/>
-<area shape="poly" title=" " alt="" coords="618,49,590,73,567,99,552,130,541,162,527,229,522,292,522,345,517,342,516,292,521,228,535,160,547,127,563,97,586,69,613,52"/>
-<area shape="rect" title=" " alt="" coords="577,98,647,126"/>
-<area shape="poly" title=" " alt="" coords="647,48,628,86,624,82,643,52"/>
-<area shape="rect" title=" " alt="" coords="671,98,737,126"/>
-<area shape="poly" title=" " alt="" coords="670,48,691,85,686,84,669,53"/>
-<area shape="rect" title=" " alt="" coords="761,98,831,126"/>
-<area shape="poly" title=" " alt="" coords="694,48,763,90,758,90,694,53"/>
-<area shape="rect" title=" " alt="" coords="854,98,922,126"/>
-<area shape="poly" title=" " alt="" coords="718,48,842,93,837,94,718,53"/>
+<area shape="poly" title=" " alt="" coords="617,49,589,73,567,99,552,130,541,162,527,229,522,292,522,345,517,342,516,292,521,228,536,160,547,128,563,97,586,69,612,52"/>
+<area shape="rect" title=" " alt="" coords="577,98,644,126"/>
+<area shape="poly" title=" " alt="" coords="646,48,627,86,623,82,642,52"/>
+<area shape="rect" title=" " alt="" coords="669,98,734,126"/>
+<area shape="poly" title=" " alt="" coords="669,48,689,85,684,84,667,53"/>
+<area shape="rect" title=" " alt="" coords="759,98,828,126"/>
+<area shape="poly" title=" " alt="" coords="692,48,761,90,755,90,692,53"/>
+<area shape="rect" title=" " alt="" coords="851,98,922,126"/>
+<area shape="poly" title=" " alt="" coords="717,48,839,92,834,93,717,53"/>
 <area shape="rect" href="multi__head__attention__module_8h.html" title=" " alt="" coords="260,174,420,218"/>
 <area shape="poly" title=" " alt="" coords="341,124,342,159,337,157,339,129"/>
 <area shape="rect" href="multidimensional__tensor__engine_8h.html" title=" " alt="" coords="234,359,417,404"/>
@@ -124,14 +124,14 @@ Include dependency graph for inference_engine.c:</div>
 <area shape="poly" title=" " alt="" coords="265,126,203,143,133,170,99,189,68,211,41,237,18,268,9,294,12,320,24,345,45,369,99,411,155,444,150,445,96,415,41,373,20,348,7,322,4,294,13,265,37,234,65,207,96,184,131,166,201,138,269,122"/>
 <area shape="rect" href="subword__tokenization__pipeline_8h.html" title=" " alt="" coords="28,266,191,311"/>
 <area shape="poly" title=" " alt="" coords="317,128,249,176,147,258,143,254,246,172,320,124"/>
-<area shape="poly" title=" " alt="" coords="373,216,398,238,416,265,422,289,416,312,401,334,381,352,378,347,397,330,411,310,417,289,411,267,394,242,373,221"/>
 <area shape="rect" href="automatic__differentiation__framework_8h.html" title=" " alt="" coords="215,266,401,311"/>
 <area shape="poly" title=" " alt="" coords="334,217,323,254,318,251,331,221"/>
+<area shape="poly" title=" " alt="" coords="373,216,398,238,416,265,422,289,416,312,401,334,381,352,378,347,397,330,411,310,417,289,411,267,394,242,373,221"/>
+<area shape="poly" title=" " alt="" coords="313,309,321,345,316,343,311,314"/>
+<area shape="poly" title=" " alt="" coords="273,310,246,334,223,360,207,399,200,438,195,435,202,397,219,358,242,331,268,313"/>
 <area shape="poly" title=" " alt="" coords="293,404,230,445,228,441,288,405"/>
 <area shape="rect" title=" " alt="" coords="389,452,459,479"/>
 <area shape="poly" title=" " alt="" coords="352,402,399,442,394,441,350,407"/>
-<area shape="poly" title=" " alt="" coords="313,309,321,345,316,343,311,314"/>
-<area shape="poly" title=" " alt="" coords="273,310,246,334,223,360,207,399,200,438,195,435,202,397,219,358,242,331,268,313"/>
 <area shape="poly" title=" " alt="" coords="161,309,262,351,257,354,161,314"/>
 <area shape="poly" title=" " alt="" coords="122,309,185,437,180,438,118,313"/>
 <area shape="poly" title=" " alt="" coords="443,403,248,454,247,449,437,403"/>
@@ -195,7 +195,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00092">92</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00099">99</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -265,7 +265,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00297">297</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00369">369</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -471,7 +471,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00198">198</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00248">248</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -615,7 +615,7 @@ Here is the caller graph for this function:</div>
 <p>Perform Generation Config Default. </p>
 <dl class="section return"><dt>Returns</dt><dd>The result value, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00075">75</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00081">81</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 
 </div>
 </div>
@@ -637,7 +637,7 @@ Here is the caller graph for this function:</div>
 <p>Create Inference Engine. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00035">35</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00034">34</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -674,7 +674,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00045">45</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00046">46</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -713,7 +713,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00066">66</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00071">71</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 
 </div>
 </div>
@@ -745,7 +745,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00057">57</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00060">60</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -809,7 +809,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00109">109</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inference__engine_8c_source.html#l00120">120</a> of file <a class="el" href="inference__engine_8c_source.html">inference_engine.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

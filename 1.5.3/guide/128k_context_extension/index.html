@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="128K Context | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/guide/128k_context_extension/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="128K Context | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="128K Context |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/guide/128k_context_extension/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="128K Context |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -4891,20 +4894,20 @@
 
 
 <h1 id="1&#702;8k&#702;context&#702;extension">128K Context Extension<a class="headerlink" href="#1&#702;8k&#702;context&#702;extension" title="Permanent link">&para;</a></h1>
-<p><strong>Introduced:</strong> v1.0.0<br />
+<p><strong>Introduced:</strong> v1.0.0
 <strong>Scope:</strong> LLaMA 2, LLaMA 3, Mistral, Qwen 2, DeepSeek V2</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Extends a model's maximum context window to 128K tokens using NTK-aware RoPE scaling and YaRN (Yet another RoPE extensioN) interpolation. No fine-tuning is required — the extension is applied at the configuration level via the <code>SNEPPX_llm_config_extend_context()</code> API.</p>
 <h2 id="how&#702;it&#702;works">How it works<a class="headerlink" href="#how&#702;it&#702;works" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>max<em>position</em>embeddings</strong> is set to <code>target_len</code> (e.g. 131072).</li>
-<li><strong>rope_theta</strong> is scaled using the NTK-aware formula:
-   <div class="highlight"><pre><span></span><code>theta' = theta * scaling_factor^(head_dim / (head_dim - 2))
-</code></pre></div>
-   where <code>scaling_factor = target_len / base_len</code>.</li>
-<li><strong>rope<em>scaling</em>factor</strong> is set on architectures that support explicit scaling (Qwen 2).</li>
-<li>Attention types may be adjusted (e.g. sliding window disabled for extended contexts).</li>
+<li><strong>rope_theta</strong> is scaled using the NTK-aware formula:</li>
 </ol>
+<div class="highlight"><pre><span></span><code>theta' = theta * scaling_factor^(head_dim / (head_dim - 2))
+</code></pre></div>
+<p>where <code>scaling_factor = target_len / base_len</code>.
+3. <strong>rope<em>scaling</em>factor</strong> is set on architectures that support explicit scaling (Qwen 2).
+4. Attention types may be adjusted (e.g. sliding window disabled for extended contexts).</p>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_llm_config_extend_context</span><span class="p">(</span><span class="n">SNEPPXLLMConfig</span><span class="o">*</span><span class="w"> </span><span class="n">cfg</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">target_len</span><span class="p">);</span>
 </code></pre></div>
@@ -4972,11 +4975,13 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
 </code></pre></div>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
-<p>Test coverage is in <code>tests/test_context_extension.c</code> which validates:
-- All 5 architectures successfully extend to 128K
-- max<em>position</em>embeddings == target<em>len after extension
-- rope</em>theta is modified (not equal to original)
-- Error handling for invalid target lengths</p>
+<p>Test coverage is in <code>tests/test_context_extension.c</code> which validates:</p>
+<ul>
+<li>All 5 architectures successfully extend to 128K</li>
+<li>max<em>position</em>embeddings == target_len after extension</li>
+<li>rope_theta is modified (not equal to original)</li>
+<li>Error handling for invalid target lengths</li>
+</ul>
 
 
 

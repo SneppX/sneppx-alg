@@ -95,8 +95,8 @@ $(function(){initNavTree('sha256_8h_source.html','',''); });
 <a href="sha256_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef SNEPPX_SHA256_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define SNEPPX_SHA256_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">/*</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"> * SNEPPX - SHA-256 Cryptographic Hash</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> *</span></div>
@@ -112,13 +112,11 @@ $(function(){initNavTree('sha256_8h_source.html','',''); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * REFERENCES</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> *   FIPS 180-4 (SHA-256).</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">void</span> <a class="code hl_function" href="sha256_8h.html#ab187d1d2f8594b24ce987400bc0c5a03">SNEPPX_sha256</a>(uint8_t out[32], <span class="keyword">const</span> uint8_t *in, <span class="keywordtype">size_t</span> inlen);</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="asha256_8h_html_ab187d1d2f8594b24ce987400bc0c5a03"><div class="ttname"><a href="sha256_8h.html#ab187d1d2f8594b24ce987400bc0c5a03">SNEPPX_sha256</a></div><div class="ttdeci">void SNEPPX_sha256(uint8_t out[32], const uint8_t *in, size_t inlen)</div><div class="ttdoc">Compute SHA-256 hash of input.</div><div class="ttdef"><b>Definition</b> <a href="sha256_8c_source.html#l00079">sha256.c:79</a></div></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keywordtype">void</span> <a class="code hl_function" href="sha256_8h.html#ab187d1d2f8594b24ce987400bc0c5a03">SNEPPX_sha256</a>(uint8_t out[32], <span class="keyword">const</span> uint8_t* in, <span class="keywordtype">size_t</span> inlen);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="asha256_8h_html_ab187d1d2f8594b24ce987400bc0c5a03"><div class="ttname"><a href="sha256_8h.html#ab187d1d2f8594b24ce987400bc0c5a03">SNEPPX_sha256</a></div><div class="ttdeci">void SNEPPX_sha256(uint8_t out[32], const uint8_t *in, size_t inlen)</div><div class="ttdoc">Compute SHA-256 hash of input.</div><div class="ttdef"><b>Definition</b> <a href="sha256_8c_source.html#l00088">sha256.c:88</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

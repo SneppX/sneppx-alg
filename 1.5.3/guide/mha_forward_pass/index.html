@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="MHA Forward Pass | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/guide/mha_forward_pass/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="MHA Forward Pass | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="MHA Forward Pass |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/guide/mha_forward_pass/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MHA Forward Pass |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -4969,7 +4972,7 @@
 
 
 <h1 id="multi-head&#702;attention&#702;forward&#702;pass">Multi-Head Attention Forward Pass<a class="headerlink" href="#multi-head&#702;attention&#702;forward&#702;pass" title="Permanent link">&para;</a></h1>
-<p><strong>Introduced:</strong> v1.0.0<br />
+<p><strong>Introduced:</strong> v1.0.0
 <strong>Scope:</strong> LLaMA 2, LLaMA 3, Mistral, Qwen 2, DeepSeek V2</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Implements a full multi-head attention (MHA) forward pass with multi-head projection, RoPE application, scaled dot-product attention (Flash Attention compatible), and output projection. Supports GQA (grouped-query attention), sliding window attention, and MLA (DeepSeek V2).</p>
@@ -5061,10 +5064,12 @@
 <span class="c1"># output shape: [batch, seq_len, hidden_size]</span>
 </code></pre></div>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
-<p>See <code>tests/test_mha_forward.c</code> for comprehensive tests validating:
-- Output shape correctness for all architectures
-- GQA head count ratios
-- Flash Attention vs SDPA numerical equivalence</p>
+<p>See <code>tests/test_mha_forward.c</code> for comprehensive tests validating:</p>
+<ul>
+<li>Output shape correctness for all architectures</li>
+<li>GQA head count ratios</li>
+<li>Flash Attention vs SDPA numerical equivalence</li>
+</ul>
 
 
 

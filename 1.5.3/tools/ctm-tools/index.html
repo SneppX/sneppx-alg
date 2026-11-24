@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="CTM Tool Reference | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/tools/ctm-tools/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="CTM Tool Reference | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="CTM Tool Reference |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/tools/ctm-tools/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="CTM Tool Reference |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -3120,6 +3123,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM Tool Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -3136,6 +3157,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current&#702;tool&#702;surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current tool surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -4647,6 +4698,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current&#702;tool&#702;surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current tool surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -4715,9 +4785,91 @@
 
 <h1 id="ctm&#702;tools">CTM Tools<a class="headerlink" href="#ctm&#702;tools" title="Permanent link">&para;</a></h1>
 <p>CTM (Codebase Telemetry &amp; Metrics) provides a standard-library repository
-scanner plus legacy focused utilities.</p>
-<p>Start with the <a href="../../ctm_tools/">CTM guide</a> for installation, commands,
-metric definitions, output schema, exclusions, and regression tests.</p>
+scanner plus standalone focused utilities for codebase telemetry.</p>
+<p>The supported implementation is the dependency-free Python scanner:</p>
+<div class="highlight"><pre><span></span><code>sneppx-ctm<span class="w"> </span>/path/to/repo
+sneppx-ctm<span class="w"> </span>/path/to/repo<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span>ctm-report.json
+sneppx-ctm<span class="w"> </span>/path/to/repo<span class="w"> </span>--format<span class="w"> </span>csv
+sneppx-ctm<span class="w"> </span>/path/to/repo<span class="w"> </span>--format<span class="w"> </span>html<span class="w"> </span>--output<span class="w"> </span>ctm-report.html
+</code></pre></div>
+<h2 id="current&#702;tool&#702;surface">Current tool surface<a class="headerlink" href="#current&#702;tool&#702;surface" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Entry point</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sneppx-ctm</code></td>
+<td>Unified repository scanner (text/json/csv/html reports, schema v1)</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-functions</code></td>
+<td>Heuristic function-definition counts by language</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-headers</code></td>
+<td>C/C++ header and source file counts</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-diff</code></td>
+<td>Per-language LOC/bytes delta between two trees</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-large</code></td>
+<td>Largest included files with human-readable sizes</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-recent</code></td>
+<td>Most recently modified included files</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-todo</code></td>
+<td>TODO/FIXME/HACK/XXX marker scan</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-links</code></td>
+<td>Relative Markdown link checker</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-duplicates</code></td>
+<td>Byte-identical file duplicate detection</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-churn</code></td>
+<td>Git-history change frequency per file</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-license</code></td>
+<td>SPDX/heuristic license header + manifest inventory</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-schema</code></td>
+<td>Validate CTM JSON reports against schema v1</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-encoding</code></td>
+<td>BOM / invalid-UTF-8 / newline-style report</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-ignore</code></td>
+<td>Explain why files are excluded by the default filters</td>
+</tr>
+<tr>
+<td><code>sneppx-ctm-trend</code></td>
+<td>Record and chart successive CTM JSON reports</td>
+</tr>
+</tbody>
+</table>
+<p>All tools accept a root directory, <code>--format text|json|csv|html</code>, <code>--output</code>,
+and, where relevant, <code>--include-other-text</code>. The standalone Python sources live
+in <code>ctm_tools/py/</code> and the shipped behavior is shared through the
+<code>ctm_tools.py</code> import package plus <code>sneppx-ctm*</code> console scripts registered in
+<code>pyproject.toml</code>.</p>
+<p>The C prototypes under <code>ctm_tools/c/</code> are unbuilt legacy scaffolding and are
+not part of the supported tool surface.</p>
 
 
 

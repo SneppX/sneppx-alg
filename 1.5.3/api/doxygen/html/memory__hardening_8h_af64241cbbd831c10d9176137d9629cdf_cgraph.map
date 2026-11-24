@@ -1,0 +1,7 @@
+<map id="SNEPPX_tls_canary_pool_init" name="SNEPPX_tls_canary_pool_init">
+<area shape="rect" id="Node000001" title="Initialize Tls Canary Pool." alt="" coords="5,5,215,33"/>
+<area shape="rect" id="Node000002" href="$memory__hardening_8c.html#aa535330e76846d1f5e4fa26a1bd3784b" title=" " alt="" coords="263,5,365,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,17,250,19,245,19,215,22"/>
+<area shape="rect" id="Node000003" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="413,5,585,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="366,17,400,19,395,19,366,22"/>
+</map>

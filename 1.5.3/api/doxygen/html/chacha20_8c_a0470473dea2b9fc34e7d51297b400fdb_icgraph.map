@@ -1,24 +1,38 @@
 <map id="SNEPPX_chacha20_init" name="SNEPPX_chacha20_init">
-<area shape="rect" id="Node000001" title="Initialize Chacha20." alt="" coords="723,185,893,213"/>
-<area shape="rect" id="Node000002" href="$aead_8c.html#a285f6a1a2b62c5219bd0b2fef947f414" title=" " alt="" coords="498,5,641,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="787,172,741,113,709,81,674,53,637,36,637,31,677,49,713,77,745,110,792,173"/>
-<area shape="rect" id="Node000003" href="$aead_8c.html#a13c4f39b86c1ea1b956b5c6dc81eaa30" title="Encrypt Aead." alt="" coords="242,31,409,58"/>
-<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="780,174,734,134,705,114,674,98,607,75,537,60,469,51,410,47,409,42,470,46,538,54,609,69,676,93,708,110,738,130,786,174"/>
-<area shape="rect" id="Node000005" href="$aead_8c.html#a94018eba2cb3ac4308d2e4a4a88b1a96" title="Decrypt Aead." alt="" coords="486,107,653,134"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="757,179,674,150,633,138,633,132,676,145,762,179"/>
-<area shape="rect" id="Node000007" href="$c__binding__implementation_8c.html#a245d792f13845261785a96de2c898b90" title="Decrypt C Chacha20." alt="" coords="464,159,675,186"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="705,188,676,187,676,182,710,188"/>
-<area shape="rect" id="Node000008" href="$c__binding__implementation_8c.html#af6483683c5ea0d68b1c9a5e861a7aee0" title="Encrypt C Chacha20." alt="" coords="464,211,675,238"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="705,210,676,216,675,211,710,209"/>
-<area shape="rect" id="Node000009" href="$transport__security_8c.html#a6431c0f7bbba2dc0eef679384321bf32" title="Decrypt Transport." alt="" coords="472,263,667,290"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="761,219,676,252,633,265,632,259,675,247,756,220"/>
-<area shape="rect" id="Node000010" href="$transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab" title="Encrypt Transport." alt="" coords="472,315,667,342"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="784,223,736,266,677,304,644,317,643,312,674,299,733,262,779,225"/>
-<area shape="rect" id="Node000011" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="472,366,667,411"/>
-<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="793,225,746,292,713,326,677,356,655,368,653,363,674,352,710,322,742,288,788,227"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="481,29,411,38,409,33,486,27"/>
-<area shape="rect" id="Node000004" href="$c__binding__implementation_8c.html#a4ca5bc7d85cb5df1fda1486f8a6c1f2a" title="Encrypt C Aead." alt="" coords="5,31,187,58"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="224,46,188,47,186,42,229,43"/>
-<area shape="rect" id="Node000006" href="$c__binding__implementation_8c.html#ab071599ef2430b398e4928cba922380b" title="Decrypt C Aead." alt="" coords="235,107,416,134"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="468,121,417,123,416,118,473,120"/>
+<area shape="rect" id="Node000001" title="Initialize Chacha20." alt="" coords="788,289,958,317"/>
+<area shape="rect" id="Node000002" href="$aead_8c.html#a285f6a1a2b62c5219bd0b2fef947f414" title=" " alt="" coords="557,57,699,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="859,274,842,236,816,188,782,140,739,100,720,89,700,82,699,77,722,84,742,95,786,136,821,185,847,234,864,276"/>
+<area shape="rect" id="Node000003" href="$aead_8c.html#a13c4f39b86c1ea1b956b5c6dc81eaa30" title="Encrypt Aead." alt="" coords="268,32,435,59"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="864,273,852,222,828,159,812,127,791,96,767,70,739,48,697,28,652,15,606,9,559,8,470,18,401,33,398,29,470,13,558,3,606,4,653,10,699,23,742,43,771,66,796,93,816,124,833,157,857,221,869,275"/>
+<area shape="rect" id="Node000005" href="$aead_8c.html#a94018eba2cb3ac4308d2e4a4a88b1a96" title="Decrypt Aead." alt="" coords="544,109,712,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="853,275,807,213,776,180,739,152,712,139,712,134,742,147,779,176,812,210,859,276"/>
+<area shape="rect" id="Node000007" href="$c__binding__implementation_8c.html#a245d792f13845261785a96de2c898b90" title="Decrypt C Chacha20." alt="" coords="522,161,734,189"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="844,278,798,241,739,204,708,192,708,187,742,199,801,236,849,278"/>
+<area shape="rect" id="Node000008" href="$c__binding__implementation_8c.html#af6483683c5ea0d68b1c9a5e861a7aee0" title="Encrypt C Chacha20." alt="" coords="522,213,734,241"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="814,284,740,261,681,244,681,239,741,256,819,284"/>
+<area shape="rect" id="Node000009" href="$transport__security_8c.html#a6431c0f7bbba2dc0eef679384321bf32" title="Decrypt Transport." alt="" coords="254,273,448,301"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="770,301,449,293,449,287,775,298"/>
+<area shape="rect" id="Node000010" href="$transport__security_8c.html#acdf06f4a478b446812cc2fd2dd66d444" title="Perform Transport Decrypt With Aad And HMAC Tag." alt="" coords="235,325,468,353"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="770,311,469,333,468,328,775,308"/>
+<area shape="rect" id="Node000011" href="$transport__security_8c.html#a936cc0cd5e73d0b22d33737a70a66ed4" title="Perform Transport Decrypt With Aad." alt="" coords="254,377,448,421"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="793,321,741,335,450,386,448,381,740,330,798,320"/>
+<area shape="rect" id="Node000012" href="$transport__security_8c.html#ab865fd085ae830f1ce082ef1b08ef3ab" title="Encrypt Transport." alt="" coords="254,446,448,474"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="860,329,841,363,814,398,781,432,742,457,700,473,657,483,569,491,486,487,417,477,417,472,486,482,569,486,656,478,699,468,739,453,778,428,810,395,836,360,855,332"/>
+<area shape="rect" id="Node000013" href="$transport__security_8c.html#aa8dfe619e0aa8750d3a97746a38a7efd" title="Perform Transport Encrypt With Aad And HMAC Tag." alt="" coords="235,501,468,529"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="864,330,847,371,821,417,786,461,765,480,742,496,703,514,663,526,621,535,579,539,498,539,428,532,428,527,498,534,579,534,620,529,662,521,701,509,739,491,762,476,782,457,816,414,842,369,859,333"/>
+<area shape="rect" id="Node000014" href="$transport__security_8c.html#a9b3838d9b36193032a374892166005a1" title="Perform Transport Encrypt With Aad." alt="" coords="254,558,448,603"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="867,330,853,380,829,439,792,498,769,524,742,545,708,564,671,579,594,596,518,600,449,597,449,592,518,595,593,590,669,573,705,559,739,541,765,520,788,494,824,437,848,379,863,333"/>
+<area shape="rect" id="Node000015" href="$transport__security_8c.html#a8d14dde133c322a687b54e1c63a8c513" title=" " alt="" coords="516,416,740,443"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="847,326,799,365,741,400,694,418,693,413,739,395,796,361,842,328"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="539,64,436,56,435,51,544,62"/>
+<area shape="rect" id="Node000004" href="$c__binding__implementation_8c.html#a4ca5bc7d85cb5df1fda1486f8a6c1f2a" title="Encrypt C Aead." alt="" coords="5,32,187,59"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="250,47,189,48,186,43,254,44"/>
+<area shape="rect" id="Node000006" href="$c__binding__implementation_8c.html#ab071599ef2430b398e4928cba922380b" title="Decrypt C Aead." alt="" coords="261,109,442,137"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="527,124,443,125,441,120,532,122"/>
+<area shape="poly" id="edge16_Node000015_Node000009" title=" " alt="" coords="598,405,541,361,505,336,467,316,434,304,434,299,469,311,508,332,544,356,604,406"/>
+<area shape="poly" id="edge17_Node000015_Node000010" title=" " alt="" coords="580,409,527,388,467,367,428,356,427,351,469,362,529,383,585,409"/>
+<area shape="poly" id="edge18_Node000015_Node000011" title=" " alt="" coords="498,416,449,412,449,407,503,415"/>
+<area shape="poly" id="edge19_Node000015_Node000012" title=" " alt="" coords="498,444,450,452,448,447,503,443"/>
+<area shape="poly" id="edge20_Node000015_Node000013" title=" " alt="" coords="577,448,469,488,414,503,413,498,467,483,572,450"/>
+<area shape="poly" id="edge21_Node000015_Node000014" title=" " alt="" coords="600,452,541,499,469,543,429,560,428,555,467,538,538,494,595,454"/>
 </map>

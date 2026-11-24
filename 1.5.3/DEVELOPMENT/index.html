@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Development Workflow | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/DEVELOPMENT/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Development Workflow | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Development Workflow |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/DEVELOPMENT/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Development Workflow |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -5093,9 +5096,9 @@
 <h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>CMake</strong> 3.24+</li>
+<li><strong>CMake</strong> 3.16+</li>
 <li><strong>C11 compiler</strong> (MSVC 2022, GCC 11+, Clang 14+)</li>
-<li><strong>C++20</strong> for S2 obfuscation (optional)</li>
+<li><strong>C++20</strong> compiler (required by the native build)</li>
 <li><strong>Python 3.11+</strong> for bindings and test runner (optional)</li>
 <li><strong>Git</strong> with GPG or Ed25519 signing configured</li>
 </ul>
@@ -5172,10 +5175,12 @@ cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"
 <h3 id="track&#702;prefixes">Track Prefixes<a class="headerlink" href="#track&#702;prefixes" title="Permanent link">&para;</a></h3>
 <p>Features use track prefixes: <code>python</code>, <code>c-core</code>, <code>cuda</code>, <code>security</code>, <code>algo</code>, <code>infra</code>, <code>dist</code></p>
 <h2 id="commenting&#702;standard">Commenting Standard<a class="headerlink" href="#commenting&#702;standard" title="Permanent link">&para;</a></h2>
-<p>All source files must follow the four-layer commenting standard in <a href="../COMMENTING/">COMMENTING.md</a>. PRs that add or modify source files must include:
-- Layer 1 file header blocks (WHAT/CONCEPT/ROLE/REFERENCES)
-- Layer 4 Doxygen <code>@brief/@param/@return</code> on all public <code>SNEPPX_*</code> functions
-- Run <code>sneppx-format --docs</code> to verify before submitting</p>
+<p>All source files must follow the four-layer commenting standard in <a href="../COMMENTING/">COMMENTING.md</a>. PRs that add or modify source files must include:</p>
+<ul>
+<li>Layer 1 file header blocks (WHAT/CONCEPT/ROLE/REFERENCES)</li>
+<li>Layer 4 Doxygen <code>@brief/@param/@return</code> on all public <code>SNEPPX_*</code> functions</li>
+<li>Run <code>sneppx-format --docs</code> to verify before submitting</li>
+</ul>
 <h3 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Branch</strong>: <code>git checkout -b feature/&lt;track&gt;-&lt;name&gt; dev</code></li>
@@ -5315,11 +5320,13 @@ config/                   # Model zoo configs
 <li>Register in <code>CMakeLists.txt</code> (<code>.c</code> files picked up by <code>file(GLOB_RECURSE)</code>)</li>
 </ol>
 <h2 id="code&#702;review">Code Review<a class="headerlink" href="#code&#702;review" title="Permanent link">&para;</a></h2>
-<p>Patches are reviewed for:
-- Correctness: does the code do what it claims?
-- Style: does it follow STYLE_GUIDE.md?
-- Safety: are all allocations checked? No buffer overflows?
-- Tests: are new features adequately tested?</p>
+<p>Patches are reviewed for:</p>
+<ul>
+<li>Correctness: does the code do what it claims?</li>
+<li>Style: does it follow STYLE_GUIDE.md?</li>
+<li>Safety: are all allocations checked? No buffer overflows?</li>
+<li>Tests: are new features adequately tested?</li>
+</ul>
 <h2 id="sneppx&#702;dev&#702;tools">SNEPPX Dev Tools<a class="headerlink" href="#sneppx&#702;dev&#702;tools" title="Permanent link">&para;</a></h2>
 <p>The 7 standalone SNEPPX developer tools are integrated into the workflow
 (see <code>.sneppx-tools.json</code> and <code>scripts/dev-tools.{ps1,sh}</code>). Install:</p>

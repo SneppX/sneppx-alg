@@ -1,37 +1,49 @@
 <map id="include/neural_core/security/cryptographic_random_generator.h" name="include/neural_core/security/cryptographic_random_generator.h">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1664,5,1834,67"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="2311,5,2481,67"/>
 <area shape="rect" id="Node000002" href="$cryptographic__primitives__bundle_8h.html" title=" " alt="" coords="5,115,176,177"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1646,39,1334,49,912,64,493,86,320,101,188,118,177,120,176,115,187,112,319,95,493,81,912,58,1334,44,1651,39"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2293,38,1866,43,1256,53,938,63,639,77,382,95,188,118,177,120,176,115,187,112,382,89,639,71,937,58,1256,48,1866,38,2298,37"/>
 <area shape="rect" id="Node000003" href="$differential__privacy_8c.html" title=" " alt="" coords="200,124,365,168"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1646,40,1369,51,1001,66,639,88,490,102,376,118,344,126,343,120,375,112,489,97,639,83,1001,61,1368,46,1651,40"/>
-<area shape="rect" id="Node000004" href="$aslr_8c.html" title=" " alt="" coords="388,132,556,160"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1646,36,1449,41,1180,51,1030,61,875,75,720,93,568,118,508,134,507,129,567,112,719,88,874,69,1029,55,1179,45,1449,35,1651,36"/>
-<area shape="rect" id="Node000005" href="$canary_8c.html" title=" " alt="" coords="580,132,766,160"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1646,39,1482,48,1265,60,1022,83,899,98,779,118,713,134,712,129,778,112,898,93,1022,77,1265,55,1482,42,1651,39"/>
-<area shape="rect" id="Node000006" href="$dilithium_8c.html" title=" " alt="" coords="791,132,993,160"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1651,43,1359,70,1182,90,1006,118,936,134,935,129,1005,112,1181,85,1358,64,1646,43"/>
-<area shape="rect" id="Node000007" href="$kyber_8c.html" title=" " alt="" coords="1017,132,1196,160"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1651,47,1445,76,1326,95,1208,118,1147,134,1146,129,1207,112,1325,90,1444,71,1646,48"/>
-<area shape="rect" id="Node000008" href="$random_8c.html" title=" " alt="" coords="1220,132,1414,160"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1651,61,1427,118,1365,134,1364,129,1426,112,1646,61"/>
-<area shape="rect" id="Node000009" href="$secure__mem_8c.html" title=" " alt="" coords="1438,124,1615,168"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1675,74,1572,126,1571,120,1670,75"/>
-<area shape="rect" id="Node000010" href="$sphincsplus_8c.html" title=" " alt="" coords="1639,132,1859,160"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1751,80,1751,133,1747,130,1747,84"/>
-<area shape="rect" id="Node000011" href="$timing_8c.html" title=" " alt="" coords="1884,132,2070,160"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1827,71,1952,132,1947,131,1826,77"/>
-<area shape="rect" id="Node000012" href="$x25519_8c.html" title=" " alt="" coords="2094,132,2287,160"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1850,57,2083,112,2147,132,2142,131,2082,118,1849,62"/>
-<area shape="rect" id="Node000013" href="$secure__allocator_8c.html" title=" " alt="" coords="2310,124,2490,168"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="1850,45,2058,70,2179,89,2299,112,2333,123,2328,123,2298,118,2178,95,2057,76,1850,50"/>
-<area shape="rect" id="Node000014" href="$ddos__mitigation_8c.html" title=" " alt="" coords="2513,124,2678,168"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="1849,39,1980,47,2144,61,2323,82,2502,112,2535,123,2530,123,2501,118,2322,87,2143,66,1980,52,1849,44"/>
-<area shape="rect" id="Node000015" href="$transport__security_8c.html" title=" " alt="" coords="2703,124,2896,168"/>
-<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="1850,37,2012,44,2222,57,2456,79,2691,112,2730,123,2725,123,2690,118,2455,84,2221,62,2012,49,1850,42"/>
-<area shape="rect" id="Node000016" href="$network__fuzzer_8c.html" title=" " alt="" coords="2920,124,3104,168"/>
-<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="1850,34,2046,37,2310,48,2609,72,2761,90,2910,112,2947,123,2942,123,2909,118,2760,95,2608,77,2310,54,2046,43,1850,40"/>
-<area shape="rect" id="Node000017" href="$key__vault_8c.html" title=" " alt="" coords="3128,132,3296,160"/>
-<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="1850,37,2129,46,2494,61,2854,83,3003,97,3116,112,3179,132,3174,131,3115,118,3003,102,2854,89,2494,67,2129,51,1850,43"/>
-<area shape="rect" id="Node000018" href="$container__security_8c.html" title=" " alt="" coords="3320,124,3514,168"/>
-<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="1850,37,2164,45,2585,61,3003,83,3177,97,3308,112,3349,123,3343,123,3307,118,3176,102,3003,88,2585,66,2164,51,1850,42"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="2292,38,1898,44,1343,55,1054,65,784,78,552,96,376,118,343,126,342,120,375,112,551,90,784,73,1054,60,1343,50,1898,39,2298,38"/>
+<area shape="rect" id="Node000004" href="$rlhf__safety_8c.html" title=" " alt="" coords="388,132,561,160"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="2292,39,1933,47,1436,60,937,82,730,98,574,118,511,134,510,129,573,112,730,93,937,77,1435,54,1933,41,2298,38"/>
+<area shape="rect" id="Node000005" href="$s5__extensions_8c.html" title=" " alt="" coords="585,132,782,160"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="2292,40,1973,51,1540,65,1109,88,930,102,795,118,725,134,724,129,794,112,930,96,1109,82,1539,60,1973,45,2297,39"/>
+<area shape="rect" id="Node000006" href="$aslr_8c.html" title=" " alt="" coords="807,132,974,160"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="2292,40,2008,51,1631,66,1258,88,1104,102,987,118,926,134,925,129,986,112,1103,97,1258,83,1630,61,2008,46,2298,40"/>
+<area shape="rect" id="Node000007" href="$canary_8c.html" title=" " alt="" coords="999,132,1185,160"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="2292,37,2093,42,1820,53,1510,77,1352,95,1198,118,1131,134,1130,129,1197,112,1351,89,1509,71,1819,48,2093,37,2298,37"/>
+<area shape="rect" id="Node000008" href="$dilithium_8c.html" title=" " alt="" coords="1209,132,1412,160"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="2292,40,2129,49,1911,62,1668,84,1424,118,1354,134,1353,129,1423,112,1668,79,1911,57,2128,44,2298,40"/>
+<area shape="rect" id="Node000009" href="$kyber_8c.html" title=" " alt="" coords="1436,132,1615,160"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="2298,42,2162,53,1995,67,1811,88,1627,118,1564,134,1563,129,1626,112,1810,83,1994,61,2161,47,2292,42"/>
+<area shape="rect" id="Node000010" href="$random_8c.html" title=" " alt="" coords="1639,132,1833,160"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="2298,48,2087,77,1966,95,1846,118,1780,134,1779,129,1845,112,1965,90,2087,71,2293,48"/>
+<area shape="rect" id="Node000011" href="$secure__mem_8c.html" title=" " alt="" coords="1857,124,2033,168"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="2298,57,2046,118,2016,126,2016,120,2045,112,2293,58"/>
+<area shape="rect" id="Node000012" href="$sphincsplus_8c.html" title=" " alt="" coords="2058,132,2278,160"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="2321,73,2196,134,2195,129,2316,74"/>
+<area shape="rect" id="Node000013" href="$timing_8c.html" title=" " alt="" coords="2303,132,2489,160"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="2398,80,2398,133,2394,130,2394,84"/>
+<area shape="rect" id="Node000014" href="$x25519_8c.html" title=" " alt="" coords="2513,132,2705,160"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="2470,72,2586,132,2580,131,2469,77"/>
+<area shape="rect" id="Node000015" href="$side__channel__shield_8c.html" title=" " alt="" coords="2730,124,2899,168"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="2497,58,2718,112,2748,123,2742,123,2716,118,2496,63"/>
+<area shape="rect" id="Node000016" href="$memory__hardening_8c.html" title=" " alt="" coords="2923,124,3114,168"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="2496,46,2690,73,2912,112,2947,123,2942,123,2911,118,2689,78,2496,52"/>
+<area shape="rect" id="Node000017" href="$secure__allocator_8c.html" title=" " alt="" coords="3138,124,3318,168"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="2497,40,2781,63,2954,84,3127,112,3162,123,3157,123,3126,118,2954,89,2781,68,2496,45"/>
+<area shape="rect" id="Node000018" href="$ddos__mitigation_8c.html" title=" " alt="" coords="3341,124,3506,168"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="2497,36,2658,41,2866,54,3097,76,3215,93,3330,112,3364,123,3359,123,3329,118,3214,98,3097,82,2865,59,2657,47,2497,41"/>
+<area shape="rect" id="Node000019" href="$s4__extensions_8c.html" title=" " alt="" coords="3530,124,3680,168"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="2496,38,3024,64,3311,86,3429,98,3519,112,3551,123,3546,123,3518,118,3428,104,3310,91,3024,69,2496,44"/>
+<area shape="rect" id="Node000020" href="$transport__security_8c.html" title=" " alt="" coords="3704,124,3898,168"/>
+<area shape="poly" id="edge19_Node000001_Node000020" title=" " alt="" coords="2497,34,2714,36,3011,46,3178,56,3350,70,3523,88,3692,112,3732,123,3727,123,3691,118,3523,94,3350,75,3177,61,3011,51,2714,41,2497,39"/>
+<area shape="rect" id="Node000021" href="$network__fuzzer_8c.html" title=" " alt="" coords="3922,124,4105,168"/>
+<area shape="poly" id="edge20_Node000001_Node000021" title=" " alt="" coords="2497,37,2803,45,3211,60,3616,82,3784,96,3911,112,3949,123,3944,123,3910,118,3783,102,3615,88,3211,65,2802,51,2497,42"/>
+<area shape="rect" id="Node000022" href="$key__vault_8c.html" title=" " alt="" coords="4130,132,4297,160"/>
+<area shape="poly" id="edge21_Node000001_Node000022" title=" " alt="" coords="2496,36,2840,42,3309,55,3776,78,3971,94,4118,112,4181,132,4175,131,4117,118,3970,99,3776,83,3308,61,2840,47,2496,41"/>
+<area shape="rect" id="Node000023" href="$s6__extensions_8c.html" title=" " alt="" coords="4321,132,4518,160"/>
+<area shape="poly" id="edge22_Node000001_Node000023" title=" " alt="" coords="2497,36,2875,42,3399,56,3925,78,4144,94,4310,112,4382,132,4377,131,4309,118,4143,99,3924,84,3398,61,2875,48,2497,41"/>
+<area shape="rect" id="Node000024" href="$container__security_8c.html" title=" " alt="" coords="4543,124,4737,168"/>
+<area shape="poly" id="edge23_Node000001_Node000024" title=" " alt="" coords="2497,35,2913,40,3501,52,3808,62,4096,75,4344,92,4531,112,4572,123,4567,123,4530,118,4343,97,4096,81,3808,68,3501,58,2913,45,2497,41"/>
 </map>

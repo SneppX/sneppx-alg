@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Higher-Order AD | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/higher-order-ad/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Higher-Order AD | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Higher-Order AD |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/higher-order-ad/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Higher-Order AD |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -4864,12 +4867,14 @@
 <span class="n">hessian</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="exact&#702;hessian&#702;verification">Exact Hessian verification<a class="headerlink" href="#exact&#702;hessian&#702;verification" title="Permanent link">&para;</a></h2>
-<p>The higher-order AD is verified against exact Hessians for:
-- Linear functions: H = 2 A^T A
-- Quadratic forms
-- Conv1d (kernel and input)
-- LayerNorm, RMSNorm
-- All loss functions</p>
+<p>The higher-order AD is verified against exact Hessians for:</p>
+<ul>
+<li>Linear functions: H = 2 A^T A</li>
+<li>Quadratic forms</li>
+<li>Conv1d (kernel and input)</li>
+<li>LayerNorm, RMSNorm</li>
+<li>All loss functions</li>
+</ul>
 <h2 id="jvp&#702;forward-mode">jvp (forward-mode)<a class="headerlink" href="#jvp&#702;forward-mode" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG.interface_bindings.autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">jvp</span>
 
@@ -4899,14 +4904,16 @@
 <span class="n">out</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">(</span><span class="n">heavy</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>  <span class="c1"># saves memory</span>
 </code></pre></div>
 <h2 id="supported&#702;ops&#702;with&#702;create_graph">Supported ops with create_graph<a class="headerlink" href="#supported&#702;ops&#702;with&#702;create_graph" title="Permanent link">&para;</a></h2>
-<p>All 40+ ops support <code>create_graph=True</code>:
-- Arithmetic: Add, Sub, Mul, Div, Pow, MatMul
-- Activations: ReLU, Sigmoid, Tanh, GELU, SiLU
-- Norms: LayerNorm, RMSNorm, BatchNorm
-- Losses: MSE, CrossEntropy, BCE, KLDiv, NLL, SmoothL1, Huber
-- Conv: Conv1d, Conv2d, Conv3d
-- Pooling: MaxPool, AvgPool, AdaptiveAvgPool, AdaptiveMaxPool
-- And more...</p>
+<p>All 40+ ops support <code>create_graph=True</code>:</p>
+<ul>
+<li>Arithmetic: Add, Sub, Mul, Div, Pow, MatMul</li>
+<li>Activations: ReLU, Sigmoid, Tanh, GELU, SiLU</li>
+<li>Norms: LayerNorm, RMSNorm, BatchNorm</li>
+<li>Losses: MSE, CrossEntropy, BCE, KLDiv, NLL, SmoothL1, Huber</li>
+<li>Conv: Conv1d, Conv2d, Conv3d</li>
+<li>Pooling: MaxPool, AvgPool, AdaptiveAvgPool, AdaptiveMaxPool</li>
+<li>And more...</li>
+</ul>
 
 
 

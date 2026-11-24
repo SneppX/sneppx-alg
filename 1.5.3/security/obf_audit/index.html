@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Obfuscation Audit | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/obf_audit/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Obfuscation Audit | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Obfuscation Audit |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/obf_audit/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Obfuscation Audit |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -5023,10 +5026,10 @@
 
 
 <h1 id="s&#702;obfuscation&#702;layer&#702;security&#702;audit">S2 Obfuscation Layer Security Audit<a class="headerlink" href="#s&#702;obfuscation&#702;layer&#702;security&#702;audit" title="Permanent link">&para;</a></h1>
-<p><strong>Original audit date:</strong> 2026-08-16<br />
-<strong>Remediation review:</strong> 2026-11-13<br />
-<strong>Scope:</strong> <code>security/obfuscation/obfuscation_advanced.cpp</code>, <code>obfuscation_advanced.h</code><br />
-<strong>Classification:</strong> S2 — Obfuscation (Code transformation, string encryption, anti-debug)<br />
+<p><strong>Original audit date:</strong> 2026-08-16
+<strong>Remediation review:</strong> 2026-11-13
+<strong>Scope:</strong> <code>security/obfuscation/obfuscation_advanced.cpp</code>, <code>obfuscation_advanced.h</code>
+<strong>Classification:</strong> S2 — Obfuscation (Code transformation, string encryption, anti-debug)
 <strong>Auditor:</strong> Automated review of S2 layer</p>
 <hr />
 <h2 id="remediation&#702;update&#702;6-11-13">Remediation update (2026-11-13)<a class="headerlink" href="#remediation&#702;update&#702;6-11-13" title="Permanent link">&para;</a></h2>
@@ -5131,10 +5134,12 @@ of other obfuscation, string-encryption, or runtime-monitoring modules.</p>
 <span class="kt">uint8_t</span><span class="w"> </span><span class="n">v</span><span class="o">=</span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)(</span><span class="n">rand</span><span class="p">()</span><span class="o">&amp;</span><span class="mh">0xFF</span><span class="p">);</span><span class="w">  </span><span class="c1">// line 233</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">fake_idx</span><span class="o">=</span><span class="n">rand</span><span class="p">()</span><span class="o">%</span><span class="n">SNEPPX_bogus_int</span><span class="p">.</span><span class="n">count</span><span class="p">;</span><span class="w">  </span><span class="c1">// line 285</span>
 </code></pre></div>
-<p><strong>CWE-338 (Use of Cryptographically Weak PRNG):</strong> The entire S2 obfuscation layer uses <code>rand()</code> + <code>srand()</code> seeded with <code>std::chrono::steady_clock</code>. An attacker who can predict or brute-force the seed (1-second granularity via <code>time(NULL)</code> or ~1μs from steady_clock with ~2^32 range depending on implementation) can reproduce:
-- Which junk pattern is inserted (defeats anti-disassembly)
-- Which fake block is used for trampoline (defeats control flow obfuscation)
-- All pattern bytes for bogus CF blocks</p>
+<p><strong>CWE-338 (Use of Cryptographically Weak PRNG):</strong> The entire S2 obfuscation layer uses <code>rand()</code> + <code>srand()</code> seeded with <code>std::chrono::steady_clock</code>. An attacker who can predict or brute-force the seed (1-second granularity via <code>time(NULL)</code> or ~1μs from steady_clock with ~2^32 range depending on implementation) can reproduce:</p>
+<ul>
+<li>Which junk pattern is inserted (defeats anti-disassembly)</li>
+<li>Which fake block is used for trampoline (defeats control flow obfuscation)</li>
+<li>All pattern bytes for bogus CF blocks</li>
+</ul>
 <p>This makes the obfuscation <strong>deterministic and reproducible</strong>, completely defeating the purpose of S2. The seed is only set once (guarded by <code>seeded</code> flag), so all <code>rand()</code> calls throughout execution share the same PRNG state — a single prediction leaks all future obfuscation choices.</p>
 <p><strong>Recommendation:</strong> Replace <code>rand()</code> with <code>SNEPPX_S1_secure_random()</code> or a dedicated ChaCha20 DRBG from the S0 crypto layer. Never use <code>rand()</code> in security-sensitive code.</p>
 <hr />
@@ -5150,9 +5155,11 @@ of other obfuscation, string-encryption, or runtime-monitoring modules.</p>
 <span class="w">    </span><span class="n">code</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">^=</span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)((</span><span class="n">i</span><span class="o">*</span><span class="mh">0x5A</span><span class="p">)</span><span class="o">^</span><span class="p">(</span><span class="n">fake_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">));</span><span class="w">  </span><span class="c1">// XOR-encrypts body</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong>CWE-717 (Incorrect Code Transformation):</strong> The function saves <code>real_entry</code> pointer but <strong>immediately overwrites the start of the real code</strong> with a trampoline (jump to fake block → jump back). The XOR loop encrypts the <strong>rest</strong> of the code. However:
-1. There is <strong>no corresponding "restore" function</strong> — the encrypted code (<code>code[i] ^= ...</code>) can only be decrypted if <code>fake_idx</code> is known, which is stored only in <code>SNEPPX_bogus_int.count</code> (a global). If <code>bogus_int.count</code> changes between encrypt and decrypt, the code is <strong>permanently corrupted</strong>.
-2. <code>flen</code> (fake block length) ranges from 2-12 bytes. The trampoline overwrite is <code>copy_len = min(tp, code_len)</code> where <code>tp</code> includes the fake block + 5-byte JMP. If <code>code_len &lt; 5</code>, the trampoline is truncated and the JMP is incomplete → <strong>corrupted executable code</strong>.</p>
+<p><strong>CWE-717 (Incorrect Code Transformation):</strong> The function saves <code>real_entry</code> pointer but <strong>immediately overwrites the start of the real code</strong> with a trampoline (jump to fake block → jump back). The XOR loop encrypts the <strong>rest</strong> of the code. However:</p>
+<ol>
+<li>There is <strong>no corresponding "restore" function</strong> — the encrypted code (<code>code[i] ^= ...</code>) can only be decrypted if <code>fake_idx</code> is known, which is stored only in <code>SNEPPX_bogus_int.count</code> (a global). If <code>bogus_int.count</code> changes between encrypt and decrypt, the code is <strong>permanently corrupted</strong>.</li>
+<li><code>flen</code> (fake block length) ranges from 2-12 bytes. The trampoline overwrite is <code>copy_len = min(tp, code_len)</code> where <code>tp</code> includes the fake block + 5-byte JMP. If <code>code_len &lt; 5</code>, the trampoline is truncated and the JMP is incomplete → <strong>corrupted executable code</strong>.</li>
+</ol>
 <p><strong>Recommendation:</strong> Store decryption metadata alongside the <code>real_entry</code> pointer. Add <code>SNEPPX_bogus_cf_restore()</code>.</p>
 <hr />
 <h2 id="5&#702;sneppx_whitebox_aes_encrypt&#702;cwe-&#702;8&#702;timing&#702;side-channel&#702;disabled">5. <code>SNEPPX_whitebox_aes_encrypt</code> — <strong>CWE-208 Timing Side-Channel</strong> (disabled)<a class="headerlink" href="#5&#702;sneppx_whitebox_aes_encrypt&#702;cwe-&#702;8&#702;timing&#702;side-channel&#702;disabled" title="Permanent link">&para;</a></h2>

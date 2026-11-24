@@ -110,121 +110,141 @@ $(function(){initNavTree('workload__dispatch_8c_source.html','',''); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> *   None (internal kernel module).</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a9d404fb1c1fcb473f9e0916e315eb599">   19</a></span><span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a>)(<span class="keywordtype">void</span>* arg);</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a9d404fb1c1fcb473f9e0916e315eb599">   21</a></span><span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a>)(<span class="keywordtype">void</span>* arg);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structSNEPPXWorkload.html">   23</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a> {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">   24</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">dummy</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#aa4d1ad2c67ff7216bd01289e394e5da9">   25</a></span>} <a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>;</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structSNEPPXWorkload.html">   21</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">dummy</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#aa4d1ad2c67ff7216bd01289e394e5da9">   24</a></span>} <a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>;</div>
 </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structSNEPPXTaskGroup.html">   27</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structSNEPPXTaskGroup.html">   26</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structSNEPPXTaskGroup.html#a89a29586474ead4312f4a1917988e4c0">   28</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSNEPPXTaskGroup.html#a89a29586474ead4312f4a1917988e4c0">dummy</a>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#aa3a9405dec1345e26526b45589448b71">   29</a></span>} <a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>;</div>
 </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
 <div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a8a31e96b18292c8e087ae70fff982450">   36</a></span><a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* <a class="code hl_function" href="workload__dispatch_8c.html#a8a31e96b18292c8e087ae70fff982450">SNEPPX_workload_create</a>(<span class="keywordtype">size_t</span> max_tasks) {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    (void)max_tasks;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> (<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>*)calloc(1, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>));</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a8a31e96b18292c8e087ae70fff982450">   36</a></span><a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* <a class="code hl_function" href="workload__dispatch_8c.html#a8a31e96b18292c8e087ae70fff982450">SNEPPX_workload_create</a>(<span class="keywordtype">size_t</span> max_tasks)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    (void) max_tasks;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> (<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>*) calloc(1, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>));</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
-<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">   44</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">SNEPPX_workload_destroy</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    free(wl);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span></div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">   45</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">SNEPPX_workload_destroy</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>{</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    free(wl);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
 </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span></div>
-<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">   57</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">SNEPPX_workload_add_task</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name, <a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a> fn, <span class="keywordtype">void</span>* args) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    (void)wl; (void)name; (void)fn; (void)args;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span></div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">   59</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">SNEPPX_workload_add_task</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name, <a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a> fn, <span class="keywordtype">void</span>* args)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    (void) wl;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    (void) name;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    (void) fn;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    (void) args;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
 </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
-<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">   69</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">SNEPPX_workload_submit</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keywordtype">int</span> num_threads) {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    (void)wl; (void)num_threads;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">   75</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">SNEPPX_workload_submit</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keywordtype">int</span> num_threads)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    (void) wl;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    (void) num_threads;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
 </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
-<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">   81</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">SNEPPX_workload_wait</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keywordtype">int</span> timeout_ms) {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    (void)wl; (void)timeout_ms;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
-</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span></div>
-<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">   91</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">SNEPPX_workload_num_completed</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl) {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    (void)wl;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span></div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">   89</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">SNEPPX_workload_wait</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl, <span class="keywordtype">int</span> timeout_ms)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>{</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    (void) wl;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    (void) timeout_ms;</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
 </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span></div>
 <div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">  101</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">SNEPPX_workload_cancel</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl) {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    (void)wl;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">  101</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">SNEPPX_workload_num_completed</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>{</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    (void) wl;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
 </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span></div>
-<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">  111</a></span><a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* <a class="code hl_function" href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">SNEPPX_task_group_create</a>(<span class="keywordtype">size_t</span> num_tasks) {</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    (void)num_tasks;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> (<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>*)calloc(1, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>));</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span></div>
+<div class="foldopen" id="foldopen00112" data-start="{" data-end="}">
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">  112</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">SNEPPX_workload_cancel</a>(<a class="code hl_struct" href="structSNEPPXWorkload.html">SNEPPXWorkload</a>* wl)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>{</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    (void) wl;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
 </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span></div>
-<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">  119</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">SNEPPX_task_group_destroy</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group) {</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    free(group);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span></div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="}">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">  123</a></span><a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* <a class="code hl_function" href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">SNEPPX_task_group_create</a>(<span class="keywordtype">size_t</span> num_tasks)</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>{</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    (void) num_tasks;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">return</span> (<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>*) calloc(1, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>));</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
 </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span></div>
-<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">  131</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">SNEPPX_task_group_add</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group, <a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a> fn, <span class="keywordtype">void</span>* args) {</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    (void)group; (void)fn; (void)args;</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span></div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">  132</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">SNEPPX_task_group_destroy</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>{</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    free(group);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
 </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span></div>
-<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">  141</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">SNEPPX_task_group_run_all</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group) {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    (void)group;</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span></div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="}">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">  145</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">SNEPPX_task_group_add</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group, <a class="code hl_typedef" href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a> fn, <span class="keywordtype">void</span>* args)</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>{</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    (void) group;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    (void) fn;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    (void) args;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}</div>
 </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span></div>
-<div class="foldopen" id="foldopen00153" data-start="{" data-end="}">
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">  153</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">SNEPPX_task_group_wait_all</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group, <span class="keywordtype">int</span> timeout_ms) {</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    (void)group; (void)timeout_ms;</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span></div>
+<div class="foldopen" id="foldopen00158" data-start="{" data-end="}">
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">  158</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">SNEPPX_task_group_run_all</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group)</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>{</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    (void) group;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>}</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span></div>
+<div class="foldopen" id="foldopen00171" data-start="{" data-end="}">
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">  171</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">SNEPPX_task_group_wait_all</a>(<a class="code hl_struct" href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a>* group, <span class="keywordtype">int</span> timeout_ms)</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>{</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    (void) group;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    (void) timeout_ms;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}</div>
 </div>
 <div class="ttc" id="aconcurrent__workload__dispatch_8h_html"><div class="ttname"><a href="concurrent__workload__dispatch_8h.html">concurrent_workload_dispatch.h</a></div></div>
-<div class="ttc" id="astructSNEPPXTaskGroup_html"><div class="ttname"><a href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a></div><div class="ttdef"><b>Definition</b> <a href="#l00027">workload_dispatch.c:27</a></div></div>
+<div class="ttc" id="astructSNEPPXTaskGroup_html"><div class="ttname"><a href="structSNEPPXTaskGroup.html">SNEPPXTaskGroup</a></div><div class="ttdef"><b>Definition</b> <a href="#l00026">workload_dispatch.c:27</a></div></div>
 <div class="ttc" id="astructSNEPPXTaskGroup_html_a89a29586474ead4312f4a1917988e4c0"><div class="ttname"><a href="structSNEPPXTaskGroup.html#a89a29586474ead4312f4a1917988e4c0">SNEPPXTaskGroup::dummy</a></div><div class="ttdeci">int dummy</div><div class="ttdef"><b>Definition</b> <a href="#l00028">workload_dispatch.c:28</a></div></div>
-<div class="ttc" id="astructSNEPPXWorkload_html"><div class="ttname"><a href="structSNEPPXWorkload.html">SNEPPXWorkload</a></div><div class="ttdef"><b>Definition</b> <a href="#l00023">workload_dispatch.c:23</a></div></div>
-<div class="ttc" id="astructSNEPPXWorkload_html_a85550d3aa348ba5f65a9682ad308fb5d"><div class="ttname"><a href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">SNEPPXWorkload::dummy</a></div><div class="ttdeci">int dummy</div><div class="ttdef"><b>Definition</b> <a href="#l00024">workload_dispatch.c:24</a></div></div>
+<div class="ttc" id="astructSNEPPXWorkload_html"><div class="ttname"><a href="structSNEPPXWorkload.html">SNEPPXWorkload</a></div><div class="ttdef"><b>Definition</b> <a href="#l00021">workload_dispatch.c:22</a></div></div>
+<div class="ttc" id="astructSNEPPXWorkload_html_a85550d3aa348ba5f65a9682ad308fb5d"><div class="ttname"><a href="structSNEPPXWorkload.html#a85550d3aa348ba5f65a9682ad308fb5d">SNEPPXWorkload::dummy</a></div><div class="ttdeci">int dummy</div><div class="ttdef"><b>Definition</b> <a href="#l00023">workload_dispatch.c:23</a></div></div>
 <div class="ttc" id="athread__impl_8h_html_a9d404fb1c1fcb473f9e0916e315eb599"><div class="ttname"><a href="thread__impl_8h.html#a9d404fb1c1fcb473f9e0916e315eb599">SNEPPXTaskFn</a></div><div class="ttdeci">void(* SNEPPXTaskFn)(void *arg)</div><div class="ttdef"><b>Definition</b> <a href="thread__impl_8h_source.html#l00038">thread_impl.h:38</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a0187dd5cc5406fe51fbc09a5c17bbac4"><div class="ttname"><a href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">SNEPPX_task_group_destroy</a></div><div class="ttdeci">void SNEPPX_task_group_destroy(SNEPPXTaskGroup *group)</div><div class="ttdoc">Destroy Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00119">workload_dispatch.c:119</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a0caf319c260c220f4606f37f58c2339b"><div class="ttname"><a href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">SNEPPX_workload_add_task</a></div><div class="ttdeci">int SNEPPX_workload_add_task(SNEPPXWorkload *wl, const char *name, SNEPPXTaskFn fn, void *args)</div><div class="ttdoc">Perform Workload Add Task.</div><div class="ttdef"><b>Definition</b> <a href="#l00057">workload_dispatch.c:57</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a427e2aa795690f1e6b24f7008c3abe84"><div class="ttname"><a href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">SNEPPX_task_group_add</a></div><div class="ttdeci">int SNEPPX_task_group_add(SNEPPXTaskGroup *group, SNEPPXTaskFn fn, void *args)</div><div class="ttdoc">Add Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00131">workload_dispatch.c:131</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a42de4de985e1363098c86fe52acff8f8"><div class="ttname"><a href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">SNEPPX_workload_destroy</a></div><div class="ttdeci">void SNEPPX_workload_destroy(SNEPPXWorkload *wl)</div><div class="ttdoc">Destroy Workload.</div><div class="ttdef"><b>Definition</b> <a href="#l00044">workload_dispatch.c:44</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a5b7b5c181c41c6e42b43dd6a75d5fb9f"><div class="ttname"><a href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">SNEPPX_workload_submit</a></div><div class="ttdeci">int SNEPPX_workload_submit(SNEPPXWorkload *wl, int num_threads)</div><div class="ttdoc">Perform Workload Submit.</div><div class="ttdef"><b>Definition</b> <a href="#l00069">workload_dispatch.c:69</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a0187dd5cc5406fe51fbc09a5c17bbac4"><div class="ttname"><a href="workload__dispatch_8c.html#a0187dd5cc5406fe51fbc09a5c17bbac4">SNEPPX_task_group_destroy</a></div><div class="ttdeci">void SNEPPX_task_group_destroy(SNEPPXTaskGroup *group)</div><div class="ttdoc">Destroy Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00132">workload_dispatch.c:132</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a0caf319c260c220f4606f37f58c2339b"><div class="ttname"><a href="workload__dispatch_8c.html#a0caf319c260c220f4606f37f58c2339b">SNEPPX_workload_add_task</a></div><div class="ttdeci">int SNEPPX_workload_add_task(SNEPPXWorkload *wl, const char *name, SNEPPXTaskFn fn, void *args)</div><div class="ttdoc">Perform Workload Add Task.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">workload_dispatch.c:59</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a427e2aa795690f1e6b24f7008c3abe84"><div class="ttname"><a href="workload__dispatch_8c.html#a427e2aa795690f1e6b24f7008c3abe84">SNEPPX_task_group_add</a></div><div class="ttdeci">int SNEPPX_task_group_add(SNEPPXTaskGroup *group, SNEPPXTaskFn fn, void *args)</div><div class="ttdoc">Add Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00145">workload_dispatch.c:145</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a42de4de985e1363098c86fe52acff8f8"><div class="ttname"><a href="workload__dispatch_8c.html#a42de4de985e1363098c86fe52acff8f8">SNEPPX_workload_destroy</a></div><div class="ttdeci">void SNEPPX_workload_destroy(SNEPPXWorkload *wl)</div><div class="ttdoc">Destroy Workload.</div><div class="ttdef"><b>Definition</b> <a href="#l00045">workload_dispatch.c:45</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a5b7b5c181c41c6e42b43dd6a75d5fb9f"><div class="ttname"><a href="workload__dispatch_8c.html#a5b7b5c181c41c6e42b43dd6a75d5fb9f">SNEPPX_workload_submit</a></div><div class="ttdeci">int SNEPPX_workload_submit(SNEPPXWorkload *wl, int num_threads)</div><div class="ttdoc">Perform Workload Submit.</div><div class="ttdef"><b>Definition</b> <a href="#l00075">workload_dispatch.c:75</a></div></div>
 <div class="ttc" id="aworkload__dispatch_8c_html_a8a31e96b18292c8e087ae70fff982450"><div class="ttname"><a href="workload__dispatch_8c.html#a8a31e96b18292c8e087ae70fff982450">SNEPPX_workload_create</a></div><div class="ttdeci">SNEPPXWorkload * SNEPPX_workload_create(size_t max_tasks)</div><div class="ttdoc">Create Workload.</div><div class="ttdef"><b>Definition</b> <a href="#l00036">workload_dispatch.c:36</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_a9f3d00698c125d6f1391a888c7cd667f"><div class="ttname"><a href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">SNEPPX_task_group_create</a></div><div class="ttdeci">SNEPPXTaskGroup * SNEPPX_task_group_create(size_t num_tasks)</div><div class="ttdoc">Create Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00111">workload_dispatch.c:111</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_aa4f2ffc7b41e692f664c455ded0ba668"><div class="ttname"><a href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">SNEPPX_workload_cancel</a></div><div class="ttdeci">int SNEPPX_workload_cancel(SNEPPXWorkload *wl)</div><div class="ttdoc">Perform Workload Cancel.</div><div class="ttdef"><b>Definition</b> <a href="#l00101">workload_dispatch.c:101</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_ac6d0bb275996ffd65366c57def4aee70"><div class="ttname"><a href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">SNEPPX_workload_wait</a></div><div class="ttdeci">int SNEPPX_workload_wait(SNEPPXWorkload *wl, int timeout_ms)</div><div class="ttdoc">Perform Workload Wait.</div><div class="ttdef"><b>Definition</b> <a href="#l00081">workload_dispatch.c:81</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_ad3bbb1728639b2c3c43a7e3583bf51fb"><div class="ttname"><a href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">SNEPPX_workload_num_completed</a></div><div class="ttdeci">size_t SNEPPX_workload_num_completed(const SNEPPXWorkload *wl)</div><div class="ttdoc">Perform Workload Num Completed.</div><div class="ttdef"><b>Definition</b> <a href="#l00091">workload_dispatch.c:91</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_ae34c3a3ceb340c19a97aac185386e156"><div class="ttname"><a href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">SNEPPX_task_group_run_all</a></div><div class="ttdeci">int SNEPPX_task_group_run_all(SNEPPXTaskGroup *group)</div><div class="ttdoc">Perform Task Group Run All.</div><div class="ttdef"><b>Definition</b> <a href="#l00141">workload_dispatch.c:141</a></div></div>
-<div class="ttc" id="aworkload__dispatch_8c_html_ae4bb4c716163205d9b7f1a188d1f3740"><div class="ttname"><a href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">SNEPPX_task_group_wait_all</a></div><div class="ttdeci">int SNEPPX_task_group_wait_all(SNEPPXTaskGroup *group, int timeout_ms)</div><div class="ttdoc">Perform Task Group Wait All.</div><div class="ttdef"><b>Definition</b> <a href="#l00153">workload_dispatch.c:153</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_a9f3d00698c125d6f1391a888c7cd667f"><div class="ttname"><a href="workload__dispatch_8c.html#a9f3d00698c125d6f1391a888c7cd667f">SNEPPX_task_group_create</a></div><div class="ttdeci">SNEPPXTaskGroup * SNEPPX_task_group_create(size_t num_tasks)</div><div class="ttdoc">Create Task Group.</div><div class="ttdef"><b>Definition</b> <a href="#l00123">workload_dispatch.c:123</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_aa4f2ffc7b41e692f664c455ded0ba668"><div class="ttname"><a href="workload__dispatch_8c.html#aa4f2ffc7b41e692f664c455ded0ba668">SNEPPX_workload_cancel</a></div><div class="ttdeci">int SNEPPX_workload_cancel(SNEPPXWorkload *wl)</div><div class="ttdoc">Perform Workload Cancel.</div><div class="ttdef"><b>Definition</b> <a href="#l00112">workload_dispatch.c:112</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_ac6d0bb275996ffd65366c57def4aee70"><div class="ttname"><a href="workload__dispatch_8c.html#ac6d0bb275996ffd65366c57def4aee70">SNEPPX_workload_wait</a></div><div class="ttdeci">int SNEPPX_workload_wait(SNEPPXWorkload *wl, int timeout_ms)</div><div class="ttdoc">Perform Workload Wait.</div><div class="ttdef"><b>Definition</b> <a href="#l00089">workload_dispatch.c:89</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_ad3bbb1728639b2c3c43a7e3583bf51fb"><div class="ttname"><a href="workload__dispatch_8c.html#ad3bbb1728639b2c3c43a7e3583bf51fb">SNEPPX_workload_num_completed</a></div><div class="ttdeci">size_t SNEPPX_workload_num_completed(const SNEPPXWorkload *wl)</div><div class="ttdoc">Perform Workload Num Completed.</div><div class="ttdef"><b>Definition</b> <a href="#l00101">workload_dispatch.c:101</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_ae34c3a3ceb340c19a97aac185386e156"><div class="ttname"><a href="workload__dispatch_8c.html#ae34c3a3ceb340c19a97aac185386e156">SNEPPX_task_group_run_all</a></div><div class="ttdeci">int SNEPPX_task_group_run_all(SNEPPXTaskGroup *group)</div><div class="ttdoc">Perform Task Group Run All.</div><div class="ttdef"><b>Definition</b> <a href="#l00158">workload_dispatch.c:158</a></div></div>
+<div class="ttc" id="aworkload__dispatch_8c_html_ae4bb4c716163205d9b7f1a188d1f3740"><div class="ttname"><a href="workload__dispatch_8c.html#ae4bb4c716163205d9b7f1a188d1f3740">SNEPPX_task_group_wait_all</a></div><div class="ttdeci">int SNEPPX_task_group_wait_all(SNEPPXTaskGroup *group, int timeout_ms)</div><div class="ttdoc">Perform Task Group Wait All.</div><div class="ttdef"><b>Definition</b> <a href="#l00171">workload_dispatch.c:171</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

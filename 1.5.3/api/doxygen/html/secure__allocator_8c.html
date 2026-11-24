@@ -94,11 +94,11 @@ $(function(){initNavTree('secure__allocator_8c.html','',''); });
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="secure__allocator_8h_source.html">secure_allocator.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cryptographic__random__generator_8h_source.html">neural_core/security/cryptographic_random_generator.h</a>&quot;</code><br />
+<code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
-<code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;sys/mman.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -106,25 +106,25 @@ Include dependency graph for secure_allocator.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c__incl.png" border="0" usemap="#asecurity_2memory_2secure__allocator_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2memory_2secure__allocator_8c" id="asecurity_2memory_2secure__allocator_8c">
-<area shape="rect" title=" " alt="" coords="453,5,633,50"/>
+<area shape="rect" title=" " alt="" coords="451,5,630,50"/>
 <area shape="rect" href="secure__allocator_8h.html" title=" " alt="" coords="201,115,341,143"/>
-<area shape="poly" title=" " alt="" coords="481,52,322,112,320,107,486,50"/>
+<area shape="poly" title=" " alt="" coords="479,52,322,112,320,107,484,50"/>
 <area shape="rect" title=" " alt="" coords="236,208,306,235"/>
-<area shape="poly" title=" " alt="" coords="488,50,445,74,405,100,389,115,379,129,369,144,354,162,305,201,303,196,350,158,365,141,375,126,385,112,401,96,442,69,483,52"/>
+<area shape="poly" title=" " alt="" coords="488,50,446,74,406,100,390,115,380,130,354,162,304,201,302,196,350,158,375,126,386,112,403,96,443,69,483,52"/>
 <area shape="rect" href="cryptographic__random__generator_8h.html" title=" " alt="" coords="5,98,177,160"/>
-<area shape="poly" title=" " alt="" coords="450,45,333,69,193,100,191,95,332,64,455,43"/>
-<area shape="rect" title=" " alt="" coords="415,115,484,143"/>
-<area shape="poly" title=" " alt="" coords="525,49,473,106,470,102,520,52"/>
-<area shape="rect" title=" " alt="" coords="508,115,578,143"/>
-<area shape="poly" title=" " alt="" coords="545,48,545,101,541,98,541,52"/>
-<area shape="rect" title=" " alt="" coords="602,115,668,143"/>
-<area shape="poly" title=" " alt="" coords="564,48,616,105,611,104,562,53"/>
-<area shape="rect" title=" " alt="" coords="691,115,755,143"/>
-<area shape="poly" title=" " alt="" coords="590,48,682,96,695,106,690,105,679,100,589,53"/>
-<area shape="rect" title=" " alt="" coords="779,115,880,143"/>
-<area shape="poly" title=" " alt="" coords="623,48,768,96,794,108,788,108,766,100,622,53"/>
-<area shape="rect" title=" " alt="" coords="905,115,978,143"/>
-<area shape="poly" title=" " alt="" coords="633,36,759,57,827,74,893,96,913,107,908,106,891,100,826,79,758,62,633,41"/>
+<area shape="poly" title=" " alt="" coords="448,45,332,69,193,100,191,95,331,64,453,43"/>
+<area shape="rect" title=" " alt="" coords="416,115,481,143"/>
+<area shape="poly" title=" " alt="" coords="523,49,472,106,469,102,518,52"/>
+<area shape="rect" title=" " alt="" coords="506,115,575,143"/>
+<area shape="poly" title=" " alt="" coords="542,48,543,101,538,98,539,52"/>
+<area shape="rect" title=" " alt="" coords="598,115,669,143"/>
+<area shape="poly" title=" " alt="" coords="561,48,614,105,609,104,560,53"/>
+<area shape="rect" title=" " alt="" coords="693,115,756,143"/>
+<area shape="poly" title=" " alt="" coords="588,48,682,96,696,107,691,106,679,100,587,53"/>
+<area shape="rect" title=" " alt="" coords="780,115,882,143"/>
+<area shape="poly" title=" " alt="" coords="622,48,695,70,769,96,795,108,790,108,767,100,693,75,622,53"/>
+<area shape="rect" title=" " alt="" coords="906,115,980,143"/>
+<area shape="poly" title=" " alt="" coords="631,35,758,56,827,73,895,96,914,107,909,106,893,100,826,79,757,62,631,41"/>
 <area shape="rect" title=" " alt="" coords="97,208,170,235"/>
 <area shape="poly" title=" " alt="" coords="254,143,168,201,165,196,249,144"/>
 <area shape="poly" title=" " alt="" coords="273,141,273,194,269,191,269,145"/>
@@ -151,7 +151,8 @@ Macros</h2></td></tr>
 <tr class="memitem:a4f16b4eca1ae1b6fdda746fae048fb80" id="r_a4f16b4eca1ae1b6fdda746fae048fb80"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f16b4eca1ae1b6fdda746fae048fb80">SNEPPX_SECURE_GUARD_MAGIC</a>&#160;&#160;&#160;0x414E58</td></tr>
 <tr class="memitem:ad05bc1509681130c0a535ca55df52346" id="r_ad05bc1509681130c0a535ca55df52346"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad05bc1509681130c0a535ca55df52346">SNEPPX_SECURE_QUARANTINE_SIZE</a>&#160;&#160;&#160;64</td></tr>
 <tr class="memitem:aeacae894c93b9ff676f1cebface4f87d" id="r_aeacae894c93b9ff676f1cebface4f87d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeacae894c93b9ff676f1cebface4f87d">SNEPPX_SECURE_FREED_SET_SIZE</a>&#160;&#160;&#160;1024</td></tr>
-<tr class="memitem:a6211167bc6f0ea2536accb3ff99ea165" id="r_a6211167bc6f0ea2536accb3ff99ea165"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6211167bc6f0ea2536accb3ff99ea165">SNEPPX_SECURE_FREELIST_CANARY</a>&#160;&#160;&#160;((uint64_t)0xDEADFEEE)</td></tr>
+<tr class="memitem:aba777c793411849de1411c52e450575a" id="r_aba777c793411849de1411c52e450575a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba777c793411849de1411c52e450575a">SNEPPX_SECURE_FREED_SET_DELETED</a>&#160;&#160;&#160;((void*) 1)</td></tr>
+<tr class="memitem:a6211167bc6f0ea2536accb3ff99ea165" id="r_a6211167bc6f0ea2536accb3ff99ea165"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6211167bc6f0ea2536accb3ff99ea165">SNEPPX_SECURE_FREELIST_CANARY</a>&#160;&#160;&#160;((uint64_t) 0xDEADFEEE)</td></tr>
 <tr class="memitem:a9141083a5f2a5178a5e2bbc2eba65c15" id="r_a9141083a5f2a5178a5e2bbc2eba65c15"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9141083a5f2a5178a5e2bbc2eba65c15">SNEPPX_SMALL_OBJECT_MAX</a>&#160;&#160;&#160;64</td></tr>
 <tr class="memitem:a616f712445122c5a412cb696900b5ad9" id="r_a616f712445122c5a412cb696900b5ad9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a616f712445122c5a412cb696900b5ad9">SNEPPX_SMALL_BINS</a>&#160;&#160;&#160;7</td></tr>
 <tr class="memitem:aaeaab1255ea80d3dce2dc4c3a2144ec3" id="r_aaeaab1255ea80d3dce2dc4c3a2144ec3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaeaab1255ea80d3dce2dc4c3a2144ec3">SNEPPX_SMALL_BIN_CAPACITY</a>&#160;&#160;&#160;256</td></tr>
@@ -169,11 +170,16 @@ Functions</h2></td></tr>
 <tr class="memitem:ac1aac81267563ec22c5f50b392aaf893" id="r_ac1aac81267563ec22c5f50b392aaf893"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1aac81267563ec22c5f50b392aaf893">secure_zero</a> (void *ptr, size_t len)</td></tr>
 <tr class="memitem:a70bd30191a53fd051601022cf75b0187" id="r_a70bd30191a53fd051601022cf75b0187"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70bd30191a53fd051601022cf75b0187">secure_scrub</a> (void *ptr, size_t len)</td></tr>
 <tr class="memitem:a65bc4c7fca279945428b1ce7579165bd" id="r_a65bc4c7fca279945428b1ce7579165bd"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65bc4c7fca279945428b1ce7579165bd">round_up_page</a> (size_t bytes)</td></tr>
+<tr class="memitem:a4bc1cde9746e14bb95680be57fb52e86" id="r_a4bc1cde9746e14bb95680be57fb52e86"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bc1cde9746e14bb95680be57fb52e86">secure_layout</a> (size_t bytes, size_t guard_front, size_t guard_back, size_t *alloc_bytes, size_t *total, size_t *total_with_guards)</td></tr>
+<tr class="memitem:a86bfa4700e7eedafe36df9709726019f" id="r_a86bfa4700e7eedafe36df9709726019f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86bfa4700e7eedafe36df9709726019f">release_region</a> (void *base, size_t total_with_guards)</td></tr>
 <tr class="memitem:a1392a49cfdd70f5223be7884aa2bf105" id="r_a1392a49cfdd70f5223be7884aa2bf105"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1392a49cfdd70f5223be7884aa2bf105">freed_set_hash</a> (void *ptr)</td></tr>
 <tr class="memitem:ad6dedc717157a24cce13fbd999806777" id="r_ad6dedc717157a24cce13fbd999806777"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6dedc717157a24cce13fbd999806777">freed_set_check</a> (void *ptr)</td></tr>
 <tr class="memitem:ae571d92bc6cbff742dd4c756cd228941" id="r_ae571d92bc6cbff742dd4c756cd228941"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae571d92bc6cbff742dd4c756cd228941">freed_set_add</a> (void *ptr)</td></tr>
 <tr class="memitem:a6abb50173b2f398ff2bf0462e703b60b" id="r_a6abb50173b2f398ff2bf0462e703b60b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6abb50173b2f398ff2bf0462e703b60b">freed_set_remove</a> (void *ptr)</td></tr>
 <tr class="memitem:a997bdb69ca4692d7a4599d7943e5ab4a" id="r_a997bdb69ca4692d7a4599d7943e5ab4a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a997bdb69ca4692d7a4599d7943e5ab4a">freed_set_clear</a> (void)</td></tr>
+<tr class="memitem:a6ffef35303ffb4f20a5b3ba1d6e672c3" id="r_a6ffef35303ffb4f20a5b3ba1d6e672c3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structSNEPPXSecureAllocRecord.html">SNEPPXSecureAllocRecord</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ffef35303ffb4f20a5b3ba1d6e672c3">find_active_record</a> (void *ptr)</td></tr>
+<tr class="memitem:a720c54ee120bcf5c9c32ddec6cdc863b" id="r_a720c54ee120bcf5c9c32ddec6cdc863b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a720c54ee120bcf5c9c32ddec6cdc863b">trim_freed_records</a> (void)</td></tr>
+<tr class="memitem:aa42992e0df59cb7fdeca5ce5148161a2" id="r_aa42992e0df59cb7fdeca5ce5148161a2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa42992e0df59cb7fdeca5ce5148161a2">release_record</a> (<a class="el" href="structSNEPPXSecureAllocRecord.html">SNEPPXSecureAllocRecord</a> *r)</td></tr>
 <tr class="memitem:a9f0378c2b6dedc00980aab2ead529da0" id="r_a9f0378c2b6dedc00980aab2ead529da0"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f0378c2b6dedc00980aab2ead529da0">add_record</a> (void *addr, size_t size, size_t guard_f, size_t guard_b, uint64_t canary)</td></tr>
 <tr class="memitem:a3de4fa33429620907a86a6891cdbcc39" id="r_a3de4fa33429620907a86a6891cdbcc39"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structSNEPPXSecureFreeNode.html">SNEPPXSecureFreeNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3de4fa33429620907a86a6891cdbcc39">freelist_node_alloc</a> (void *base, size_t total)</td></tr>
 <tr class="memitem:a5be451c08439670df258ff6f295f232a" id="r_a5be451c08439670df258ff6f295f232a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5be451c08439670df258ff6f295f232a">freelist_insert</a> (<a class="el" href="structSNEPPXSecureFreeNode.html">SNEPPXSecureFreeNode</a> *node)</td></tr>
@@ -183,6 +189,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a3bc7f2d8892cdca08d22098b54ebcc20" id="r_a3bc7f2d8892cdca08d22098b54ebcc20"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bc7f2d8892cdca08d22098b54ebcc20">find_small_bin</a> (size_t size)</td></tr>
 <tr class="memitem:a1a3221e87a48a7c52ec7f36a2bf91d57" id="r_a1a3221e87a48a7c52ec7f36a2bf91d57"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a3221e87a48a7c52ec7f36a2bf91d57">small_bin_mark_used</a> (int bin_idx, int slot)</td></tr>
 <tr class="memitem:afef6c3374621751dcb0772423edd80c3" id="r_afef6c3374621751dcb0772423edd80c3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afef6c3374621751dcb0772423edd80c3">small_bin_mark_free</a> (int bin_idx, int slot)</td></tr>
+<tr class="memitem:a6bf0061c2e3b01a240ec68f666a9d727" id="r_a6bf0061c2e3b01a240ec68f666a9d727"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6bf0061c2e3b01a240ec68f666a9d727">small_bin_is_used</a> (int bin_idx, int slot)</td></tr>
 <tr class="memitem:a21aef3f8a4b82ac57e7152acfc4539d5" id="r_a21aef3f8a4b82ac57e7152acfc4539d5"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21aef3f8a4b82ac57e7152acfc4539d5">small_bin_find_free</a> (int bin_idx)</td></tr>
 <tr class="memitem:aa7c6dc6eb4ef454e4dc66b6cf4b3c21f" id="r_aa7c6dc6eb4ef454e4dc66b6cf4b3c21f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7c6dc6eb4ef454e4dc66b6cf4b3c21f">init_small_bins</a> (void)</td></tr>
 <tr class="memitem:a7e17af21a5f9be7e46e87a8b86293591" id="r_a7e17af21a5f9be7e46e87a8b86293591"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e17af21a5f9be7e46e87a8b86293591">SNEPPX_secure_allocator_init</a> (<a class="el" href="structSNEPPXSecureAllocator.html">SNEPPXSecureAllocator</a> *alloc)</td></tr>
@@ -286,7 +293,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00031">31</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00032">32</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -302,7 +309,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00032">32</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00033">33</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -318,7 +325,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00030">30</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00031">31</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -335,6 +342,22 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00017">17</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+
+</div>
+</div>
+<a id="aba777c793411849de1411c52e450575a" name="aba777c793411849de1411c52e450575a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba777c793411849de1411c52e450575a">&#9670;&#160;</a></span>SNEPPX_SECURE_FREED_SET_DELETED</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SNEPPX_SECURE_FREED_SET_DELETED&#160;&#160;&#160;((void*) 1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00023">23</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -361,12 +384,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define SNEPPX_SECURE_FREELIST_CANARY&#160;&#160;&#160;((uint64_t)0xDEADFEEE)</td>
+          <td class="memname">#define SNEPPX_SECURE_FREELIST_CANARY&#160;&#160;&#160;((uint64_t) 0xDEADFEEE)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00023">23</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00024">24</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -462,7 +485,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00027">27</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00028">28</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -478,7 +501,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00026">26</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00027">27</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -494,7 +517,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00028">28</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00029">29</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -510,7 +533,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00025">25</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00026">26</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -572,7 +595,19 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00156">156</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00253">253</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a9f0378c2b6dedc00980aab2ead529da0_cgraph.png" border="0" usemap="#asecure__allocator_8c_a9f0378c2b6dedc00980aab2ead529da0_cgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a9f0378c2b6dedc00980aab2ead529da0_cgraph" id="asecure__allocator_8c_a9f0378c2b6dedc00980aab2ead529da0_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,99,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="147,5,286,33"/>
+<area shape="poly" title=" " alt="" coords="99,17,133,19,128,19,99,22"/>
+<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="334,5,454,33"/>
+<area shape="poly" title=" " alt="" coords="286,17,321,19,316,19,286,22"/>
+</map>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -581,6 +616,45 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="214,5,307,33"/>
 <area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="5,5,166,33"/>
 <area shape="poly" title=" " alt="" coords="195,19,166,22,166,17,201,19"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a6ffef35303ffb4f20a5b3ba1d6e672c3" name="a6ffef35303ffb4f20a5b3ba1d6e672c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ffef35303ffb4f20a5b3ba1d6e672c3">&#9670;&#160;</a></span>find_active_record()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structSNEPPXSecureAllocRecord.html">SNEPPXSecureAllocRecord</a> * find_active_record </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00226">226</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a6ffef35303ffb4f20a5b3ba1d6e672c3_icgraph.png" border="0" usemap="#asecure__allocator_8c_a6ffef35303ffb4f20a5b3ba1d6e672c3_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a6ffef35303ffb4f20a5b3ba1d6e672c3_icgraph" id="asecure__allocator_8c_a6ffef35303ffb4f20a5b3ba1d6e672c3_icgraph">
+<area shape="rect" title=" " alt="" coords="443,14,583,42"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
+<area shape="poly" title=" " alt="" coords="425,28,395,30,395,25,430,28"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
+<area shape="poly" title=" " alt="" coords="221,28,192,30,192,25,227,27"/>
 </map>
 </div>
 
@@ -609,7 +683,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00245">245</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00389">389</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -646,7 +720,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00129">129</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00184">184</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -697,7 +771,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00119">119</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00170">170</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -748,7 +822,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00152">152</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00221">221</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -787,27 +861,31 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00115">115</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00165">165</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a1392a49cfdd70f5223be7884aa2bf105_icgraph.png" border="0" usemap="#asecure__allocator_8c_a1392a49cfdd70f5223be7884aa2bf105_icgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a1392a49cfdd70f5223be7884aa2bf105_icgraph" id="asecure__allocator_8c_a1392a49cfdd70f5223be7884aa2bf105_icgraph">
-<area shape="rect" title=" " alt="" coords="630,70,751,98"/>
-<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="456,70,569,98"/>
-<area shape="poly" title=" " alt="" coords="612,84,570,86,570,81,618,83"/>
-<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="449,18,576,46"/>
-<area shape="poly" title=" " alt="" coords="624,65,562,49,563,43,629,65"/>
-<area shape="rect" href="secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="443,122,582,150"/>
-<area shape="poly" title=" " alt="" coords="629,102,563,124,562,119,624,103"/>
-<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
-<area shape="poly" title=" " alt="" coords="444,65,368,45,369,39,450,65"/>
-<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,65,395,110"/>
-<area shape="poly" title=" " alt="" coords="438,85,396,89,395,83,443,85"/>
-<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
-<area shape="poly" title=" " alt="" coords="221,29,193,30,192,25,227,27"/>
-<area shape="poly" title=" " alt="" coords="431,30,396,32,395,27,436,30"/>
-<area shape="poly" title=" " alt="" coords="450,50,396,68,395,63,444,51"/>
+<area shape="rect" title=" " alt="" coords="630,74,751,102"/>
+<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="456,74,569,102"/>
+<area shape="poly" title=" " alt="" coords="612,88,570,90,570,85,618,87"/>
+<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="449,22,576,50"/>
+<area shape="poly" title=" " alt="" coords="624,69,562,53,563,47,629,69"/>
+<area shape="rect" href="secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="443,126,582,154"/>
+<area shape="poly" title=" " alt="" coords="629,106,563,128,562,123,624,107"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,74,395,102"/>
+<area shape="poly" title=" " alt="" coords="438,88,396,90,395,85,443,87"/>
+<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,5,395,50"/>
+<area shape="poly" title=" " alt="" coords="448,69,392,53,392,48,453,69"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,63,192,107"/>
+<area shape="poly" title=" " alt="" coords="221,87,193,89,192,83,227,86"/>
+<area shape="poly" title=" " alt="" coords="445,54,373,76,372,71,440,55"/>
+<area shape="poly" title=" " alt="" coords="431,33,396,34,395,28,436,32"/>
+<area shape="rect" href="secure__allocator_8c.html#a9f0378c2b6dedc00980aab2ead529da0" title=" " alt="" coords="271,127,364,155"/>
+<area shape="poly" title=" " alt="" coords="425,140,365,143,365,138,431,140"/>
+<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="18,131,179,159"/>
+<area shape="poly" title=" " alt="" coords="252,142,179,146,179,141,258,142"/>
 </map>
 </div>
 
@@ -836,7 +914,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00140">140</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00205">205</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -845,6 +923,18 @@ Here is the call graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="5,5,145,33"/>
 <area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="193,5,313,33"/>
 <area shape="poly" title=" " alt="" coords="145,17,180,19,174,19,145,22"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a6abb50173b2f398ff2bf0462e703b60b_icgraph.png" border="0" usemap="#asecure__allocator_8c_a6abb50173b2f398ff2bf0462e703b60b_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a6abb50173b2f398ff2bf0462e703b60b_icgraph" id="asecure__allocator_8c_a6abb50173b2f398ff2bf0462e703b60b_icgraph">
+<area shape="rect" title=" " alt="" coords="355,5,494,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a9f0378c2b6dedc00980aab2ead529da0" title=" " alt="" coords="214,5,307,33"/>
+<area shape="poly" title=" " alt="" coords="337,19,307,22,307,17,342,19"/>
+<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="5,5,166,33"/>
+<area shape="poly" title=" " alt="" coords="195,19,166,22,166,17,201,19"/>
 </map>
 </div>
 
@@ -873,7 +963,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00837">837</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01173">1173</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -910,7 +1000,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00235">235</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00377">377</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -949,7 +1039,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00225">225</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00363">363</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -976,7 +1066,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00175">175</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00294">294</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1021,7 +1111,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00164">164</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00281">281</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1068,7 +1158,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00217">217</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00350">350</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1099,7 +1189,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00822">822</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01153">1153</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1146,7 +1236,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00844">844</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01185">1185</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1183,7 +1273,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00943">943</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01308">1308</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1220,7 +1310,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00281">281</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00447">447</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1257,7 +1347,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00861">861</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01210">1210</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1284,7 +1374,99 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00851">851</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01197">1197</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+
+</div>
+</div>
+<a id="aa42992e0df59cb7fdeca5ce5148161a2" name="aa42992e0df59cb7fdeca5ce5148161a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa42992e0df59cb7fdeca5ce5148161a2">&#9670;&#160;</a></span>release_record()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void release_record </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structSNEPPXSecureAllocRecord.html">SNEPPXSecureAllocRecord</a> *</td>          <td class="paramname"><span class="paramname"><em>r</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00245">245</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_cgraph.png" border="0" usemap="#asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_cgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_cgraph" id="asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,123,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a720c54ee120bcf5c9c32ddec6cdc863b" title=" " alt="" coords="171,5,315,33"/>
+<area shape="poly" title=" " alt="" coords="123,17,158,19,152,19,123,22"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_icgraph.png" border="0" usemap="#asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_icgraph" id="asecure__allocator_8c_aa42992e0df59cb7fdeca5ce5148161a2_icgraph">
+<area shape="rect" title=" " alt="" coords="443,44,560,72"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
+<area shape="poly" title=" " alt="" coords="425,46,395,43,395,38,430,46"/>
+<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,65,395,110"/>
+<area shape="poly" title=" " alt="" coords="430,70,396,78,395,73,425,70"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
+<area shape="poly" title=" " alt="" coords="221,28,193,30,192,25,227,27"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a86bfa4700e7eedafe36df9709726019f" name="a86bfa4700e7eedafe36df9709726019f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86bfa4700e7eedafe36df9709726019f">&#9670;&#160;</a></span>release_region()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void release_region </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>base</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>total_with_guards</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00156">156</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a86bfa4700e7eedafe36df9709726019f_icgraph.png" border="0" usemap="#asecure__allocator_8c_a86bfa4700e7eedafe36df9709726019f_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a86bfa4700e7eedafe36df9709726019f_icgraph" id="asecure__allocator_8c_a86bfa4700e7eedafe36df9709726019f_icgraph">
+<area shape="rect" title=" " alt="" coords="214,5,331,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="5,5,166,33"/>
+<area shape="poly" title=" " alt="" coords="196,19,166,22,166,17,201,19"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -1311,27 +1493,110 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00111">111</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00125">125</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a65bc4c7fca279945428b1ce7579165bd_icgraph.png" border="0" usemap="#asecure__allocator_8c_a65bc4c7fca279945428b1ce7579165bd_icgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a65bc4c7fca279945428b1ce7579165bd_icgraph" id="asecure__allocator_8c_a65bc4c7fca279945428b1ce7579165bd_icgraph">
-<area shape="rect" title=" " alt="" coords="461,140,581,168"/>
-<area shape="rect" href="secure__allocator_8c.html#aabc69a9c6490a089c4e694cad56e3baf" title=" " alt="" coords="252,5,400,33"/>
-<area shape="poly" title=" " alt="" coords="497,127,461,87,437,66,412,48,387,36,387,31,414,44,440,62,464,84,503,128"/>
-<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="246,57,406,85"/>
-<area shape="poly" title=" " alt="" coords="480,132,412,100,379,88,379,83,414,95,485,132"/>
-<area shape="rect" href="secure__allocator_8c.html#a09ee8e95b121f2050e7193ca92410678" title="Perform Secure Audit." alt="" coords="245,109,408,137"/>
-<area shape="poly" title=" " alt="" coords="443,142,408,139,408,133,448,142"/>
-<area shape="rect" href="secure__allocator_8c.html#a8fbc616854e79e5e9cbb26a3e1963135" title="Perform Secure Canary Check." alt="" coords="240,161,413,206"/>
-<area shape="poly" title=" " alt="" coords="443,166,414,173,413,167,448,164"/>
-<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="249,229,404,257"/>
-<area shape="poly" title=" " alt="" coords="489,175,453,200,414,220,384,231,383,226,412,215,451,196,485,178"/>
-<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="249,281,404,326"/>
-<area shape="poly" title=" " alt="" coords="503,179,465,226,415,271,394,283,392,278,411,266,461,223,499,181"/>
-<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,221,192,266"/>
-<area shape="poly" title=" " alt="" coords="231,244,193,246,192,241,236,242"/>
+<area shape="rect" title=" " alt="" coords="657,144,778,172"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="479,117,591,145"/>
+<area shape="poly" title=" " alt="" coords="639,147,592,142,591,137,644,147"/>
+<area shape="rect" href="secure__allocator_8c.html#aabc69a9c6490a089c4e694cad56e3baf" title=" " alt="" coords="461,169,609,197"/>
+<area shape="poly" title=" " alt="" coords="639,169,610,176,609,170,645,168"/>
+<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="246,5,406,33"/>
+<area shape="poly" title=" " alt="" coords="503,107,462,78,412,48,383,36,383,31,414,43,465,74,508,107"/>
+<area shape="rect" href="secure__allocator_8c.html#a09ee8e95b121f2050e7193ca92410678" title="Perform Secure Audit." alt="" coords="245,57,408,85"/>
+<area shape="poly" title=" " alt="" coords="467,113,377,88,377,83,472,112"/>
+<area shape="rect" href="secure__allocator_8c.html#a8fbc616854e79e5e9cbb26a3e1963135" title="Perform Secure Canary Check." alt="" coords="240,109,413,154"/>
+<area shape="poly" title=" " alt="" coords="461,132,414,134,413,129,466,131"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="249,177,404,205"/>
+<area shape="poly" title=" " alt="" coords="472,149,378,179,377,174,467,150"/>
+<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="249,229,404,274"/>
+<area shape="poly" title=" " alt="" coords="472,151,463,160,448,174,439,188,430,203,415,219,395,231,393,226,411,214,426,200,435,186,444,171,459,156,467,153"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,169,192,214"/>
+<area shape="poly" title=" " alt="" coords="231,192,193,194,192,189,236,190"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4bc1cde9746e14bb95680be57fb52e86" name="a4bc1cde9746e14bb95680be57fb52e86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc1cde9746e14bb95680be57fb52e86">&#9670;&#160;</a></span>secure_layout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int secure_layout </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>bytes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>guard_front</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>guard_back</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>alloc_bytes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>total</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>total_with_guards</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00130">130</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_cgraph.png" border="0" usemap="#asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_cgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_cgraph" id="asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,118,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="166,5,286,33"/>
+<area shape="poly" title=" " alt="" coords="118,17,153,19,147,19,118,22"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_icgraph.png" border="0" usemap="#asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_icgraph" id="asecure__allocator_8c_a4bc1cde9746e14bb95680be57fb52e86_icgraph">
+<area shape="rect" title=" " alt="" coords="461,117,573,145"/>
+<area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="246,5,406,33"/>
+<area shape="poly" title=" " alt="" coords="489,106,454,77,412,48,385,36,385,31,414,43,458,73,494,107"/>
+<area shape="rect" href="secure__allocator_8c.html#a09ee8e95b121f2050e7193ca92410678" title="Perform Secure Audit." alt="" coords="245,57,408,85"/>
+<area shape="poly" title=" " alt="" coords="458,112,412,99,377,88,377,83,414,94,463,112"/>
+<area shape="rect" href="secure__allocator_8c.html#a8fbc616854e79e5e9cbb26a3e1963135" title="Perform Secure Canary Check." alt="" coords="240,109,413,154"/>
+<area shape="poly" title=" " alt="" coords="442,132,414,134,413,129,448,131"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="249,177,404,205"/>
+<area shape="poly" title=" " alt="" coords="463,150,414,168,378,179,377,174,412,163,458,151"/>
+<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="249,229,404,274"/>
+<area shape="poly" title=" " alt="" coords="493,155,457,189,414,219,391,231,389,226,412,214,453,185,488,157"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,169,192,214"/>
+<area shape="poly" title=" " alt="" coords="231,192,193,194,192,189,236,190"/>
 </map>
 </div>
 
@@ -1364,7 +1629,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00100">100</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00106">106</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1419,7 +1684,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00095">95</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00099">99</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1446,7 +1711,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00869">869</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01220">1220</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1473,7 +1738,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00266">266</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00426">426</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1482,6 +1747,49 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="214,5,362,33"/>
 <area shape="rect" href="secure__allocator_8c.html#a9433a94a0e47032f43af58d002cdb338" title="Perform Secure Alloc." alt="" coords="5,5,166,33"/>
 <area shape="poly" title=" " alt="" coords="196,19,166,22,166,17,201,19"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a6bf0061c2e3b01a240ec68f666a9d727" name="a6bf0061c2e3b01a240ec68f666a9d727"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf0061c2e3b01a240ec68f666a9d727">&#9670;&#160;</a></span>small_bin_is_used()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int small_bin_is_used </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>bin_idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>slot</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00417">417</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a6bf0061c2e3b01a240ec68f666a9d727_icgraph.png" border="0" usemap="#asecure__allocator_8c_a6bf0061c2e3b01a240ec68f666a9d727_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a6bf0061c2e3b01a240ec68f666a9d727_icgraph" id="asecure__allocator_8c_a6bf0061c2e3b01a240ec68f666a9d727_icgraph">
+<area shape="rect" title=" " alt="" coords="443,14,583,42"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
+<area shape="poly" title=" " alt="" coords="425,28,395,30,395,25,430,28"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
+<area shape="poly" title=" " alt="" coords="221,28,192,30,192,25,227,27"/>
 </map>
 </div>
 
@@ -1514,7 +1822,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00259">259</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00408">408</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1557,7 +1865,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00252">252</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00399">399</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1594,7 +1902,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00773">773</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01086">1086</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1642,25 +1950,33 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer on success, NULL on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00347">347</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00522">522</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a9433a94a0e47032f43af58d002cdb338_cgraph.png" border="0" usemap="#asecure__allocator_8c_a9433a94a0e47032f43af58d002cdb338_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a9433a94a0e47032f43af58d002cdb338_cgraph" id="asecure__allocator_8c_a9433a94a0e47032f43af58d002cdb338_cgraph">
-<area shape="rect" title="Perform Secure Alloc." alt="" coords="5,136,166,164"/>
+<area shape="rect" title="Perform Secure Alloc." alt="" coords="5,161,166,189"/>
 <area shape="rect" href="secure__allocator_8c.html#a9f0378c2b6dedc00980aab2ead529da0" title=" " alt="" coords="254,5,347,33"/>
-<area shape="poly" title=" " alt="" coords="98,134,146,90,178,65,212,43,241,33,237,36,215,48,181,69,150,94,102,137"/>
+<area shape="poly" title=" " alt="" coords="95,159,141,103,175,71,212,44,241,32,237,35,215,48,178,75,145,107,99,162"/>
 <area shape="rect" href="secure__allocator_8c.html#a3bc7f2d8892cdca08d22098b54ebcc20" title=" " alt="" coords="243,57,358,85"/>
-<area shape="poly" title=" " alt="" coords="119,133,213,95,238,89,234,92,215,100,121,138"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="240,109,360,137"/>
-<area shape="poly" title=" " alt="" coords="165,137,227,131,223,134,167,142"/>
-<area shape="rect" href="secure__allocator_8c.html#a21aef3f8a4b82ac57e7152acfc4539d5" title=" " alt="" coords="226,161,374,189"/>
-<area shape="poly" title=" " alt="" coords="165,157,213,164,208,166,166,162"/>
-<area shape="rect" href="secure__allocator_8c.html#a1a3221e87a48a7c52ec7f36a2bf91d57" title=" " alt="" coords="219,213,382,241"/>
-<area shape="poly" title=" " alt="" coords="121,162,215,198,239,208,233,208,213,203,121,167"/>
-<area shape="rect" href="secure__allocator_8c.html#a725622fd07637a8d12669829e4e659f1" title="Perform Secure Canary Generate." alt="" coords="214,265,387,310"/>
-<area shape="poly" title=" " alt="" coords="102,161,151,204,215,250,225,258,220,257,212,255,148,209,101,167"/>
+<area shape="poly" title=" " alt="" coords="105,159,153,127,213,95,234,89,229,92,215,100,156,132,109,163"/>
+<area shape="rect" href="secure__allocator_8c.html#a86bfa4700e7eedafe36df9709726019f" title=" " alt="" coords="242,109,359,137"/>
+<area shape="poly" title=" " alt="" coords="145,158,229,139,225,143,147,163"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="244,161,356,189"/>
+<area shape="poly" title=" " alt="" coords="165,173,231,174,226,177,167,178"/>
+<area shape="rect" href="secure__allocator_8c.html#a21aef3f8a4b82ac57e7152acfc4539d5" title=" " alt="" coords="226,213,374,241"/>
+<area shape="poly" title=" " alt="" coords="146,187,227,208,223,210,146,192"/>
+<area shape="rect" href="secure__allocator_8c.html#a1a3221e87a48a7c52ec7f36a2bf91d57" title=" " alt="" coords="219,265,382,293"/>
+<area shape="poly" title=" " alt="" coords="107,187,156,218,215,250,234,260,229,260,213,255,153,223,107,192"/>
+<area shape="rect" href="secure__allocator_8c.html#a725622fd07637a8d12669829e4e659f1" title="Perform Secure Canary Generate." alt="" coords="214,317,387,362"/>
+<area shape="poly" title=" " alt="" coords="98,187,146,242,179,274,215,302,224,310,219,309,212,307,176,278,143,246,97,192"/>
+<area shape="rect" href="secure__allocator_8c.html#a6abb50173b2f398ff2bf0462e703b60b" title=" " alt="" coords="435,5,574,33"/>
+<area shape="poly" title=" " alt="" coords="347,17,422,18,417,20,348,22"/>
+<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="622,5,743,33"/>
+<area shape="poly" title=" " alt="" coords="574,17,609,18,604,20,575,22"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="444,161,565,189"/>
+<area shape="poly" title=" " alt="" coords="356,173,431,174,426,176,357,178"/>
 </map>
 </div>
 
@@ -1684,7 +2000,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Defragment. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00724">724</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01024">1024</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1711,38 +2027,48 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00319">319</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00490">490</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a4ee015bcf3c3f6305a76e4973020070b_cgraph.png" border="0" usemap="#asecure__allocator_8c_a4ee015bcf3c3f6305a76e4973020070b_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a4ee015bcf3c3f6305a76e4973020070b_cgraph" id="asecure__allocator_8c_a4ee015bcf3c3f6305a76e4973020070b_cgraph">
-<area shape="rect" title="Destroy Secure Allocator." alt="" coords="5,101,192,146"/>
-<area shape="rect" href="secure__allocator_8c.html#a997bdb69ca4692d7a4599d7943e5ab4a" title=" " alt="" coords="257,57,378,85"/>
-<area shape="poly" title=" " alt="" coords="191,99,244,87,239,91,193,103"/>
-<area shape="rect" href="secure__allocator_8c.html#a910ba46fd3e9e4ff69c630fbf43cbf7f" title=" " alt="" coords="256,109,379,137"/>
-<area shape="poly" title=" " alt="" coords="191,121,242,122,238,124,193,126"/>
-<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,161,395,189"/>
-<area shape="poly" title=" " alt="" coords="192,143,244,156,239,158,193,148"/>
-<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="466,5,579,33"/>
-<area shape="poly" title=" " alt="" coords="375,158,393,146,404,134,410,122,416,97,422,70,430,57,441,44,450,41,454,38,445,48,434,60,427,72,422,98,415,124,408,137,397,151,378,163"/>
-<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="458,57,586,85"/>
-<area shape="poly" title=" " alt="" coords="370,158,394,146,408,134,417,122,426,109,441,96,451,93,456,90,445,100,430,112,421,125,412,138,396,151,372,163"/>
-<area shape="rect" href="secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="466,109,578,137"/>
-<area shape="poly" title=" " alt="" coords="374,158,454,140,449,142,376,163"/>
-<area shape="rect" href="secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="450,161,594,189"/>
-<area shape="poly" title=" " alt="" coords="395,173,437,175,432,176,396,178"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="462,213,582,241"/>
-<area shape="poly" title=" " alt="" coords="375,187,452,208,447,209,375,192"/>
-<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="469,265,575,293"/>
-<area shape="poly" title=" " alt="" coords="339,187,387,218,444,250,462,260,457,259,442,255,384,223,338,192"/>
-<area shape="rect" href="secure__allocator_8c.html#afef6c3374621751dcb0772423edd80c3" title=" " alt="" coords="443,317,601,345"/>
-<area shape="poly" title=" " alt="" coords="330,187,376,243,408,275,444,302,456,311,451,310,442,307,405,279,372,247,328,192"/>
-<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="675,32,796,60"/>
-<area shape="poly" title=" " alt="" coords="579,24,662,36,657,37,580,29"/>
-<area shape="poly" title=" " alt="" coords="585,61,663,54,657,56,587,66"/>
-<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="649,265,822,293"/>
-<area shape="poly" title=" " alt="" coords="575,277,636,279,631,279,576,282"/>
+<area shape="rect" title="Destroy Secure Allocator." alt="" coords="5,180,192,224"/>
+<area shape="rect" href="secure__allocator_8c.html#a997bdb69ca4692d7a4599d7943e5ab4a" title=" " alt="" coords="257,136,378,164"/>
+<area shape="poly" title=" " alt="" coords="191,177,244,166,240,169,194,182"/>
+<area shape="rect" href="secure__allocator_8c.html#a910ba46fd3e9e4ff69c630fbf43cbf7f" title=" " alt="" coords="256,188,379,216"/>
+<area shape="poly" title=" " alt="" coords="191,199,242,200,238,203,193,204"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,240,395,268"/>
+<area shape="poly" title=" " alt="" coords="191,221,244,235,239,237,193,227"/>
+<area shape="rect" href="secure__allocator_8c.html#a6ffef35303ffb4f20a5b3ba1d6e672c3" title=" " alt="" coords="452,5,592,33"/>
+<area shape="poly" title=" " alt="" coords="377,237,393,225,409,203,416,181,416,136,417,91,425,67,441,44,448,40,445,44,445,48,429,70,422,92,422,136,421,182,413,206,397,229,380,242"/>
+<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="466,57,579,85"/>
+<area shape="poly" title=" " alt="" coords="376,237,393,225,406,210,412,194,416,162,421,129,428,113,441,96,454,89,450,93,445,100,432,115,426,131,422,163,417,196,410,212,397,229,379,242"/>
+<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="458,109,586,137"/>
+<area shape="poly" title=" " alt="" coords="373,237,393,225,409,207,416,187,424,168,441,148,452,143,448,146,445,152,429,170,421,189,414,209,397,229,376,242"/>
+<area shape="rect" href="secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="466,161,578,189"/>
+<area shape="poly" title=" " alt="" coords="362,237,394,225,442,199,463,193,458,196,444,204,396,230,365,242"/>
+<area shape="rect" href="secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="450,213,594,241"/>
+<area shape="poly" title=" " alt="" coords="394,241,437,238,432,240,396,246"/>
+<area shape="rect" href="secure__allocator_8c.html#aa42992e0df59cb7fdeca5ce5148161a2" title=" " alt="" coords="464,265,581,293"/>
+<area shape="poly" title=" " alt="" coords="395,261,451,269,446,271,395,266"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="466,317,578,345"/>
+<area shape="poly" title=" " alt="" coords="352,265,444,302,466,312,461,312,442,307,352,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="469,369,575,397"/>
+<area shape="poly" title=" " alt="" coords="333,265,381,309,411,333,444,354,459,363,454,363,442,359,408,337,377,313,332,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a6bf0061c2e3b01a240ec68f666a9d727" title=" " alt="" coords="452,421,592,449"/>
+<area shape="poly" title=" " alt="" coords="327,266,372,333,405,372,445,406,455,415,450,414,441,411,402,376,368,336,325,270"/>
+<area shape="rect" href="secure__allocator_8c.html#afef6c3374621751dcb0772423edd80c3" title=" " alt="" coords="443,473,601,501"/>
+<area shape="poly" title=" " alt="" coords="324,266,341,305,365,357,400,411,421,436,445,458,453,466,448,465,441,463,417,440,396,414,361,359,336,307,322,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="675,84,796,112"/>
+<area shape="poly" title=" " alt="" coords="579,76,662,88,657,89,580,81"/>
+<area shape="poly" title=" " alt="" coords="585,113,662,106,657,108,587,118"/>
+<area shape="rect" href="secure__allocator_8c.html#a720c54ee120bcf5c9c32ddec6cdc863b" title=" " alt="" coords="663,265,808,293"/>
+<area shape="poly" title=" " alt="" coords="581,277,650,279,645,280,581,282"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="675,317,796,345"/>
+<area shape="poly" title=" " alt="" coords="579,329,662,331,657,332,579,334"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="649,369,822,397"/>
+<area shape="poly" title=" " alt="" coords="575,381,636,383,631,383,576,386"/>
 </map>
 </div>
 
@@ -1775,7 +2101,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00940">940</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01303">1303</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1806,7 +2132,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00931">931</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01292">1292</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1828,7 +2154,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Fragmentation. </p>
 <dl class="section return"><dt>Returns</dt><dd>The result value, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00703">703</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00998">998</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1850,7 +2176,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Freelist Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00913">913</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01272">1272</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1882,7 +2208,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Freelist Total. </p>
 <dl class="section return"><dt>Returns</dt><dd>The computed size/count, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00922">922</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01282">1282</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1914,7 +2240,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Initialized. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01023">1023</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01411">1411</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1936,7 +2262,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Num Allocations. </p>
 <dl class="section return"><dt>Returns</dt><dd>The computed size/count, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00903">903</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01260">1260</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1958,7 +2284,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Peak Allocated. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00893">893</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01248">1248</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -1980,7 +2306,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Quarantine Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00769">769</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01081">1081</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2002,7 +2328,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Record Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01017">1017</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01402">1402</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2024,7 +2350,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Small Bin Count. </p>
 <dl class="section return"><dt>Returns</dt><dd>The computed size/count, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00998">998</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01379">1379</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2046,7 +2372,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Small Bin Size. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01008">1008</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01391">1391</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2068,7 +2394,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Stats. </p>
 <dl class="section return"><dt>Returns</dt><dd>The result value, or 0 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00677">677</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00969">969</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2090,7 +2416,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Get Total Allocated. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00883">883</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01236">1236</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2112,7 +2438,7 @@ Here is the call graph for this function:</div>
 <p>Initialize Secure Allocator. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00297">297</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00466">466</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2147,7 +2473,7 @@ Here is the call graph for this function:</div>
 
 <p>Perform Secure Allocator Reset Stats. </p>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01031">1031</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01425">1425</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2168,7 +2494,7 @@ Here is the call graph for this function:</div>
 
 <p>Perform Secure Allocator Set Initialized. </p>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01027">1027</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01418">1418</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2189,7 +2515,7 @@ Here is the call graph for this function:</div>
 
 <p>Perform Secure Allocator Set Quarantine Max. </p>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00759">759</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01070">1070</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2210,7 +2536,7 @@ Here is the call graph for this function:</div>
 
 <p>Perform Secure Allocator Set Scrub Pattern. </p>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00693">693</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00987">987</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2232,7 +2558,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Allocator Trim Pool. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00970">970</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01344">1344</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2263,7 +2589,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00744">744</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l01051">1051</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2290,15 +2616,17 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00489">489</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00723">723</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a09ee8e95b121f2050e7193ca92410678_cgraph.png" border="0" usemap="#asecure__allocator_8c_a09ee8e95b121f2050e7193ca92410678_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a09ee8e95b121f2050e7193ca92410678_cgraph" id="asecure__allocator_8c_a09ee8e95b121f2050e7193ca92410678_cgraph">
 <area shape="rect" title="Perform Secure Audit." alt="" coords="5,5,168,33"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="216,5,336,33"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="216,5,328,33"/>
 <area shape="poly" title=" " alt="" coords="168,17,203,19,197,19,168,22"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="376,5,496,33"/>
+<area shape="poly" title=" " alt="" coords="328,17,363,19,358,19,328,22"/>
 </map>
 </div>
 
@@ -2332,15 +2660,17 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00547">547</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00798">798</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_a8fbc616854e79e5e9cbb26a3e1963135_cgraph.png" border="0" usemap="#asecure__allocator_8c_a8fbc616854e79e5e9cbb26a3e1963135_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_a8fbc616854e79e5e9cbb26a3e1963135_cgraph" id="asecure__allocator_8c_a8fbc616854e79e5e9cbb26a3e1963135_cgraph">
 <area shape="rect" title="Perform Secure Canary Check." alt="" coords="5,5,179,50"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="227,14,347,42"/>
-<area shape="poly" title=" " alt="" coords="179,25,213,27,208,28,179,30"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="227,14,339,42"/>
+<area shape="poly" title=" " alt="" coords="179,25,214,27,209,28,179,30"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="387,14,507,42"/>
+<area shape="poly" title=" " alt="" coords="339,25,374,28,369,28,339,30"/>
 </map>
 </div>
 
@@ -2364,7 +2694,7 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Canary Generate. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00534">534</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00784">784</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2405,32 +2735,42 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00418">418</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00617">617</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_ac3b5ca406ca65bb48b8eea66c089bf63_cgraph.png" border="0" usemap="#asecure__allocator_8c_ac3b5ca406ca65bb48b8eea66c089bf63_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_ac3b5ca406ca65bb48b8eea66c089bf63_cgraph" id="asecure__allocator_8c_ac3b5ca406ca65bb48b8eea66c089bf63_cgraph">
-<area shape="rect" title="Free Secure." alt="" coords="5,161,161,189"/>
-<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="231,5,344,33"/>
-<area shape="poly" title=" " alt="" coords="92,159,138,104,170,72,207,44,221,38,218,42,210,48,174,76,142,107,96,163"/>
-<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="224,57,352,85"/>
-<area shape="poly" title=" " alt="" coords="102,159,149,128,207,95,227,89,223,92,210,100,152,132,106,163"/>
-<area shape="rect" href="secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="232,109,344,137"/>
-<area shape="poly" title=" " alt="" coords="139,158,219,139,215,143,142,163"/>
-<area shape="rect" href="secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="216,161,360,189"/>
-<area shape="poly" title=" " alt="" coords="160,173,202,174,198,176,162,178"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="228,213,348,241"/>
-<area shape="poly" title=" " alt="" coords="140,187,218,208,213,210,141,192"/>
-<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="235,265,341,293"/>
-<area shape="poly" title=" " alt="" coords="104,187,152,218,210,250,228,259,222,260,207,255,149,223,104,192"/>
-<area shape="rect" href="secure__allocator_8c.html#afef6c3374621751dcb0772423edd80c3" title=" " alt="" coords="209,317,367,345"/>
-<area shape="poly" title=" " alt="" coords="95,187,142,243,174,275,210,302,222,311,217,310,207,307,170,279,138,247,93,192"/>
-<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="441,32,561,60"/>
-<area shape="poly" title=" " alt="" coords="345,24,428,35,423,37,346,29"/>
-<area shape="poly" title=" " alt="" coords="351,61,428,54,423,56,353,66"/>
-<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="415,265,587,293"/>
-<area shape="poly" title=" " alt="" coords="341,277,402,279,396,279,341,282"/>
+<area shape="rect" title="Free Secure." alt="" coords="5,240,161,268"/>
+<area shape="rect" href="secure__allocator_8c.html#a6ffef35303ffb4f20a5b3ba1d6e672c3" title=" " alt="" coords="218,5,358,33"/>
+<area shape="poly" title=" " alt="" coords="86,238,101,200,126,148,161,92,183,66,207,44,218,39,214,43,210,48,187,70,166,95,131,150,106,202,92,240"/>
+<area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="231,57,344,85"/>
+<area shape="poly" title=" " alt="" coords="90,238,134,170,167,130,207,96,220,90,216,94,210,100,171,134,138,174,94,241"/>
+<area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="224,109,352,137"/>
+<area shape="poly" title=" " alt="" coords="96,238,143,194,174,169,207,148,223,142,219,145,210,152,177,174,146,198,100,241"/>
+<area shape="rect" href="secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="232,161,344,189"/>
+<area shape="poly" title=" " alt="" coords="115,237,208,199,230,193,226,196,210,204,118,242"/>
+<area shape="rect" href="secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="216,213,360,241"/>
+<area shape="poly" title=" " alt="" coords="160,241,202,237,198,240,162,246"/>
+<area shape="rect" href="secure__allocator_8c.html#aa42992e0df59cb7fdeca5ce5148161a2" title=" " alt="" coords="229,265,346,293"/>
+<area shape="poly" title=" " alt="" coords="160,261,216,269,212,271,162,266"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="232,317,344,345"/>
+<area shape="poly" title=" " alt="" coords="118,265,210,302,232,311,227,313,208,307,118,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="235,369,341,397"/>
+<area shape="poly" title=" " alt="" coords="98,265,146,309,177,333,210,354,225,363,219,363,207,359,174,337,143,313,98,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a6bf0061c2e3b01a240ec68f666a9d727" title=" " alt="" coords="218,421,358,449"/>
+<area shape="poly" title=" " alt="" coords="93,265,138,333,171,372,210,406,221,414,215,414,207,411,167,376,134,336,91,271"/>
+<area shape="rect" href="secure__allocator_8c.html#afef6c3374621751dcb0772423edd80c3" title=" " alt="" coords="209,473,367,501"/>
+<area shape="poly" title=" " alt="" coords="89,266,106,305,131,357,166,411,187,436,210,458,219,466,213,465,207,463,183,440,161,414,126,359,101,307,89,271"/>
+<area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="441,84,561,112"/>
+<area shape="poly" title=" " alt="" coords="344,76,428,87,423,90,346,81"/>
+<area shape="poly" title=" " alt="" coords="351,113,428,105,423,108,353,118"/>
+<area shape="rect" href="secure__allocator_8c.html#a720c54ee120bcf5c9c32ddec6cdc863b" title=" " alt="" coords="429,265,573,293"/>
+<area shape="poly" title=" " alt="" coords="346,277,416,278,411,280,347,282"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="441,317,561,345"/>
+<area shape="poly" title=" " alt="" coords="344,329,428,330,423,332,345,334"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="415,369,587,397"/>
+<area shape="poly" title=" " alt="" coords="341,381,402,383,396,384,342,386"/>
 </map>
 </div>
 <div class="dynheader">
@@ -2469,7 +2809,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00657">657</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00946">946</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2511,32 +2851,38 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00603">603</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00872">872</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="secure__allocator_8c_aef2b31d0d0923e2138258fb30693d814_cgraph.png" border="0" usemap="#asecure__allocator_8c_aef2b31d0d0923e2138258fb30693d814_cgraph" loading="lazy" alt=""/></div>
 <map name="asecure__allocator_8c_aef2b31d0d0923e2138258fb30693d814_cgraph" id="asecure__allocator_8c_aef2b31d0d0923e2138258fb30693d814_cgraph">
-<area shape="rect" title="Perform Secure Free Quarantine." alt="" coords="5,153,161,198"/>
+<area shape="rect" title="Perform Secure Free Quarantine." alt="" coords="5,180,161,224"/>
 <area shape="rect" href="secure__allocator_8c.html#ae571d92bc6cbff742dd4c756cd228941" title=" " alt="" coords="230,5,343,33"/>
-<area shape="poly" title=" " alt="" coords="99,151,144,97,174,69,207,44,221,38,217,42,210,48,177,73,148,101,103,154"/>
+<area shape="poly" title=" " alt="" coords="95,178,139,112,171,75,207,44,220,38,216,42,210,48,174,79,143,115,99,180"/>
 <area shape="rect" href="secure__allocator_8c.html#ad6dedc717157a24cce13fbd999806777" title=" " alt="" coords="223,57,350,85"/>
-<area shape="poly" title=" " alt="" coords="115,150,158,122,207,95,226,89,222,93,210,100,161,127,118,154"/>
+<area shape="poly" title=" " alt="" coords="104,177,150,136,207,96,223,90,219,93,210,100,153,140,108,181"/>
 <area shape="rect" href="secure__allocator_8c.html#a5be451c08439670df258ff6f295f232a" title=" " alt="" coords="231,109,342,137"/>
-<area shape="poly" title=" " alt="" coords="160,153,218,139,214,143,162,158"/>
+<area shape="poly" title=" " alt="" coords="136,177,208,147,230,141,226,144,210,152,139,181"/>
 <area shape="rect" href="secure__allocator_8c.html#a3de4fa33429620907a86a6891cdbcc39" title=" " alt="" coords="214,161,358,189"/>
-<area shape="poly" title=" " alt="" coords="160,173,201,174,196,176,162,178"/>
-<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="226,213,346,241"/>
-<area shape="poly" title=" " alt="" coords="160,192,217,208,213,210,161,198"/>
-<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="233,265,340,293"/>
-<area shape="poly" title=" " alt="" coords="117,195,161,223,210,250,227,259,222,259,207,255,158,228,116,201"/>
-<area shape="rect" href="secure__allocator_8c.html#a9a34169f219090c1f0f8537f4de2a3be" title="Perform Secure Free Flush Quarantine." alt="" coords="209,317,364,362"/>
-<area shape="poly" title=" " alt="" coords="102,195,149,248,178,277,210,302,218,309,212,308,207,307,175,281,145,252,101,200"/>
+<area shape="poly" title=" " alt="" coords="160,189,201,185,197,188,162,194"/>
+<area shape="rect" href="secure__allocator_8c.html#aa42992e0df59cb7fdeca5ce5148161a2" title=" " alt="" coords="228,213,345,241"/>
+<area shape="poly" title=" " alt="" coords="160,209,215,217,210,219,161,214"/>
+<area shape="rect" href="secure__allocator_8c.html#a4bc1cde9746e14bb95680be57fb52e86" title=" " alt="" coords="230,265,342,293"/>
+<area shape="poly" title=" " alt="" coords="138,222,210,250,231,259,226,260,208,255,139,227"/>
+<area shape="rect" href="secure__allocator_8c.html#a70bd30191a53fd051601022cf75b0187" title=" " alt="" coords="233,317,340,345"/>
+<area shape="poly" title=" " alt="" coords="107,222,153,263,210,302,224,311,219,311,207,307,150,267,106,227"/>
+<area shape="rect" href="secure__allocator_8c.html#a9a34169f219090c1f0f8537f4de2a3be" title="Perform Secure Free Flush Quarantine." alt="" coords="209,369,364,414"/>
+<area shape="poly" title=" " alt="" coords="99,222,145,287,175,323,210,354,217,361,211,360,207,359,172,326,140,290,97,227"/>
 <area shape="rect" href="secure__allocator_8c.html#a1392a49cfdd70f5223be7884aa2bf105" title=" " alt="" coords="438,32,558,60"/>
-<area shape="poly" title=" " alt="" coords="343,24,425,35,420,37,344,29"/>
-<area shape="poly" title=" " alt="" coords="350,61,425,54,420,56,351,66"/>
-<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="412,265,584,293"/>
-<area shape="poly" title=" " alt="" coords="340,277,399,279,394,280,340,282"/>
+<area shape="poly" title=" " alt="" coords="342,24,425,35,420,37,344,29"/>
+<area shape="poly" title=" " alt="" coords="349,61,425,54,420,56,351,66"/>
+<area shape="rect" href="secure__allocator_8c.html#a720c54ee120bcf5c9c32ddec6cdc863b" title=" " alt="" coords="426,213,570,241"/>
+<area shape="poly" title=" " alt="" coords="345,225,413,226,408,228,346,230"/>
+<area shape="rect" href="secure__allocator_8c.html#a65bc4c7fca279945428b1ce7579165bd" title=" " alt="" coords="438,265,558,293"/>
+<area shape="poly" title=" " alt="" coords="342,277,425,279,420,280,343,282"/>
+<area shape="rect" href="random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="412,317,584,345"/>
+<area shape="poly" title=" " alt="" coords="340,329,399,331,394,332,340,334"/>
 </map>
 </div>
 
@@ -2560,7 +2906,50 @@ Here is the call graph for this function:</div>
 <p>Perform Secure Freelist Check. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00565">565</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00825">825</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+
+</div>
+</div>
+<a id="a720c54ee120bcf5c9c32ddec6cdc863b" name="a720c54ee120bcf5c9c32ddec6cdc863b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a720c54ee120bcf5c9c32ddec6cdc863b">&#9670;&#160;</a></span>trim_freed_records()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void trim_freed_records </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00236">236</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="secure__allocator_8c_a720c54ee120bcf5c9c32ddec6cdc863b_icgraph.png" border="0" usemap="#asecure__allocator_8c_a720c54ee120bcf5c9c32ddec6cdc863b_icgraph" loading="lazy" alt=""/></div>
+<map name="asecure__allocator_8c_a720c54ee120bcf5c9c32ddec6cdc863b_icgraph" id="asecure__allocator_8c_a720c54ee120bcf5c9c32ddec6cdc863b_icgraph">
+<area shape="rect" title=" " alt="" coords="608,44,753,72"/>
+<area shape="rect" href="secure__allocator_8c.html#aa42992e0df59cb7fdeca5ce5148161a2" title=" " alt="" coords="443,44,560,72"/>
+<area shape="poly" title=" " alt="" coords="590,58,561,61,561,56,595,58"/>
+<area shape="rect" href="secure__allocator_8c.html#ac3b5ca406ca65bb48b8eea66c089bf63" title="Free Secure." alt="" coords="240,14,395,42"/>
+<area shape="poly" title=" " alt="" coords="425,46,395,43,395,38,430,46"/>
+<area shape="rect" href="secure__allocator_8c.html#aef2b31d0d0923e2138258fb30693d814" title="Perform Secure Free Quarantine." alt="" coords="240,65,395,110"/>
+<area shape="poly" title=" " alt="" coords="430,70,396,78,395,73,425,70"/>
+<area shape="rect" href="secure__allocator_8c.html#a4ee015bcf3c3f6305a76e4973020070b" title="Destroy Secure Allocator." alt="" coords="5,5,192,50"/>
+<area shape="poly" title=" " alt="" coords="221,28,193,30,192,25,227,27"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -2585,7 +2974,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00083">83</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00087">87</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2609,7 +2998,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00082">82</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00086">86</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2633,7 +3022,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00081">81</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00085">85</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2657,7 +3046,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00084">84</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00088">88</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2681,7 +3070,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00085">85</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00089">89</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2729,7 +3118,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00080">80</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00084">84</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2753,7 +3142,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00079">79</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00083">83</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2801,7 +3190,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00090">90</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00094">94</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2825,7 +3214,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00091">91</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00095">95</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2849,7 +3238,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00093">93</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00097">97</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2873,7 +3262,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00088">88</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00092">92</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2897,7 +3286,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00087">87</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00091">91</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>
@@ -2921,7 +3310,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00086">86</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="secure__allocator_8c_source.html#l00090">90</a> of file <a class="el" href="secure__allocator_8c_source.html">secure_allocator.c</a>.</p>
 
 </div>
 </div>

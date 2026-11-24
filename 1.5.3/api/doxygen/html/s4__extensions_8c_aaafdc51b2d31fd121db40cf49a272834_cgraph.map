@@ -1,0 +1,5 @@
+<map id="SNEPPX_wireguard_init" name="SNEPPX_wireguard_init">
+<area shape="rect" id="Node000001" title="Initialize Wireguard." alt="" coords="5,5,178,33"/>
+<area shape="rect" id="Node000002" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="226,5,398,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,17,213,19,208,19,178,22"/>
+</map>

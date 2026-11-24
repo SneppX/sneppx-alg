@@ -96,52 +96,51 @@ $(function(){initNavTree('cryptographic__random__generator_8h_source.html','',''
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define SNEPPX_RANDOM_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">/*</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> * SNEPPX - Cryptographic Random Generator</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> * WHAT</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> *   Cryptographic Random Generator.</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> * CONCEPT</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> *   Provides randomness generation.</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * ROLE</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> *   SNEPPX-Algo core component. See docs/COMMENTING.md for the</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> *   four-layer commenting standard used across this codebase.</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="comment">/*</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">     * SNEPPX - Cryptographic Random Generator</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">     * WHAT</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">     *   Cryptographic Random Generator.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">     * CONCEPT</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">     *   Provides randomness generation.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">     * ROLE</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">     *   SNEPPX-Algo core component. See docs/COMMENTING.md for the</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">     *   four-layer commenting standard used across this codebase.</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">     */</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#ad67f0bfefe50eb90169a001f7d98625f">SNEPPX_random_bytes</a>(uint8_t* buffer, <span class="keywordtype">size_t</span> len);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#ad67f0bfefe50eb90169a001f7d98625f">SNEPPX_random_bytes</a>(uint8_t* buffer, <span class="keywordtype">size_t</span> len);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#ifdef SNEPPX_ENABLE_TEST_RNG</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keywordtype">void</span> SNEPPX_random_bytes_set_seed(<span class="keyword">const</span> uint8_t seed[32]);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keywordtype">void</span> SNEPPX_random_bytes_clear_seed(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> SNEPPX_random_bytes_set_seed(<span class="keyword">const</span> uint8_t seed[32]);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> SNEPPX_random_bytes_clear_seed(<span class="keywordtype">void</span>);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#endif</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#a6e0961410491fbb74610a13d8463120d">SNEPPX_random_uint32_checked</a>(uint32_t* value);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#a6e0961410491fbb74610a13d8463120d">SNEPPX_random_uint32_checked</a>(uint32_t* value);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#a85c65d70a4cac8d757384ae955c507ca">SNEPPX_random_uniform_checked</a>(uint32_t upper_bound, uint32_t* value);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="cryptographic__random__generator_8h.html#a85c65d70a4cac8d757384ae955c507ca">SNEPPX_random_uniform_checked</a>(uint32_t upper_bound, uint32_t* value);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>uint32_t <a class="code hl_function" href="cryptographic__random__generator_8h.html#a05cbced9303416a64c246ed28ce2e9db">SNEPPX_random_uint32</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    uint32_t <a class="code hl_function" href="cryptographic__random__generator_8h.html#a05cbced9303416a64c246ed28ce2e9db">SNEPPX_random_uint32</a>(<span class="keywordtype">void</span>);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>uint32_t <a class="code hl_function" href="cryptographic__random__generator_8h.html#af8cd085e61d03a97456dad67182bd463">SNEPPX_random_uniform</a>(uint32_t upper_bound);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    uint32_t <a class="code hl_function" href="cryptographic__random__generator_8h.html#af8cd085e61d03a97456dad67182bd463">SNEPPX_random_uniform</a>(uint32_t upper_bound);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="acryptographic__random__generator_8h_html_a05cbced9303416a64c246ed28ce2e9db"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a05cbced9303416a64c246ed28ce2e9db">SNEPPX_random_uint32</a></div><div class="ttdeci">uint32_t SNEPPX_random_uint32(void)</div><div class="ttdoc">Compatibility wrapper; returns zero if entropy retrieval fails.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00139">random.c:139</a></div></div>
-<div class="ttc" id="acryptographic__random__generator_8h_html_a6e0961410491fbb74610a13d8463120d"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a6e0961410491fbb74610a13d8463120d">SNEPPX_random_uint32_checked</a></div><div class="ttdeci">int SNEPPX_random_uint32_checked(uint32_t *value)</div><div class="ttdoc">Generate a random uint32_t with explicit error reporting.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00134">random.c:134</a></div></div>
-<div class="ttc" id="acryptographic__random__generator_8h_html_a85c65d70a4cac8d757384ae955c507ca"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a85c65d70a4cac8d757384ae955c507ca">SNEPPX_random_uniform_checked</a></div><div class="ttdeci">int SNEPPX_random_uniform_checked(uint32_t upper_bound, uint32_t *value)</div><div class="ttdoc">Generate a bounded uniform integer with explicit error reporting.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00153">random.c:153</a></div></div>
-<div class="ttc" id="acryptographic__random__generator_8h_html_ad67f0bfefe50eb90169a001f7d98625f"><div class="ttname"><a href="cryptographic__random__generator_8h.html#ad67f0bfefe50eb90169a001f7d98625f">SNEPPX_random_bytes</a></div><div class="ttdeci">int SNEPPX_random_bytes(uint8_t *buffer, size_t len)</div><div class="ttdoc">Perform Random Bytes.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00081">random.c:81</a></div></div>
-<div class="ttc" id="acryptographic__random__generator_8h_html_af8cd085e61d03a97456dad67182bd463"><div class="ttname"><a href="cryptographic__random__generator_8h.html#af8cd085e61d03a97456dad67182bd463">SNEPPX_random_uniform</a></div><div class="ttdeci">uint32_t SNEPPX_random_uniform(uint32_t upper_bound)</div><div class="ttdoc">Compatibility wrapper; returns zero for invalid bounds or entropy failure.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00172">random.c:172</a></div></div>
+<div class="ttc" id="acryptographic__random__generator_8h_html_a05cbced9303416a64c246ed28ce2e9db"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a05cbced9303416a64c246ed28ce2e9db">SNEPPX_random_uint32</a></div><div class="ttdeci">uint32_t SNEPPX_random_uint32(void)</div><div class="ttdoc">Compatibility wrapper; returns zero if entropy retrieval fails.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00156">random.c:156</a></div></div>
+<div class="ttc" id="acryptographic__random__generator_8h_html_a6e0961410491fbb74610a13d8463120d"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a6e0961410491fbb74610a13d8463120d">SNEPPX_random_uint32_checked</a></div><div class="ttdeci">int SNEPPX_random_uint32_checked(uint32_t *value)</div><div class="ttdoc">Generate a random uint32_t with explicit error reporting.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00149">random.c:149</a></div></div>
+<div class="ttc" id="acryptographic__random__generator_8h_html_a85c65d70a4cac8d757384ae955c507ca"><div class="ttname"><a href="cryptographic__random__generator_8h.html#a85c65d70a4cac8d757384ae955c507ca">SNEPPX_random_uniform_checked</a></div><div class="ttdeci">int SNEPPX_random_uniform_checked(uint32_t upper_bound, uint32_t *value)</div><div class="ttdoc">Generate a bounded uniform integer with explicit error reporting.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00171">random.c:171</a></div></div>
+<div class="ttc" id="acryptographic__random__generator_8h_html_ad67f0bfefe50eb90169a001f7d98625f"><div class="ttname"><a href="cryptographic__random__generator_8h.html#ad67f0bfefe50eb90169a001f7d98625f">SNEPPX_random_bytes</a></div><div class="ttdeci">int SNEPPX_random_bytes(uint8_t *buffer, size_t len)</div><div class="ttdoc">Perform Random Bytes.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00086">random.c:86</a></div></div>
+<div class="ttc" id="acryptographic__random__generator_8h_html_af8cd085e61d03a97456dad67182bd463"><div class="ttname"><a href="cryptographic__random__generator_8h.html#af8cd085e61d03a97456dad67182bd463">SNEPPX_random_uniform</a></div><div class="ttdeci">uint32_t SNEPPX_random_uniform(uint32_t upper_bound)</div><div class="ttdoc">Compatibility wrapper; returns zero for invalid bounds or entropy failure.</div><div class="ttdef"><b>Definition</b> <a href="random_8c_source.html#l00195">random.c:195</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

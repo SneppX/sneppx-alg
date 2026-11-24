@@ -1,9 +1,11 @@
 <map id="SNEPPX_hsm_unwrap_key" name="SNEPPX_hsm_unwrap_key">
-<area shape="rect" id="Node000001" title="Perform Hsm Unwrap Key." alt="" coords="5,32,198,60"/>
-<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a514b3da3563f5011b88e9b2916aff483" title=" " alt="" coords="248,5,360,33"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="198,31,235,28,230,29,198,36"/>
-<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#af58907ecea6436a463dc52ece4ff8a28" title=" " alt="" coords="246,57,362,85"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="198,55,233,62,227,62,198,61"/>
-<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#a9c1752c29e2210043068aada292bc856" title=" " alt="" coords="410,5,527,33"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="360,17,397,19,392,19,360,22"/>
+<area shape="rect" id="Node000001" title="Perform Hsm Unwrap Key." alt="" coords="5,57,198,85"/>
+<area shape="rect" id="Node000002" href="$s6__extensions_8c.html#a514b3da3563f5011b88e9b2916aff483" title=" " alt="" coords="276,5,388,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,54,263,34,258,36,167,59"/>
+<area shape="rect" id="Node000004" href="$s6__extensions_8c.html#af58907ecea6436a463dc52ece4ff8a28" title=" " alt="" coords="274,57,390,85"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="198,69,261,71,256,72,198,74"/>
+<area shape="rect" id="Node000005" href="$random_8c.html#ad67f0bfefe50eb90169a001f7d98625f" title="Perform Random Bytes." alt="" coords="246,109,418,137"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="167,83,255,105,250,106,166,88"/>
+<area shape="rect" id="Node000003" href="$s6__extensions_8c.html#a9c1752c29e2210043068aada292bc856" title=" " alt="" coords="466,5,583,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="387,17,453,19,448,20,388,22"/>
 </map>

@@ -1,5 +1,7 @@
 <map id="SNEPPX_transport_cipher_ctx_reset" name="SNEPPX_transport_cipher_ctx_reset">
-<area shape="rect" id="Node000001" title="Reset Transport Cipher Ctx." alt="" coords="5,5,191,50"/>
-<area shape="rect" id="Node000002" href="$transport__security_8c.html#a64402c567ab2ca68ed4c5fb68e03f29f" title=" " alt="" coords="239,14,388,42"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,25,226,27,221,28,191,30"/>
+<area shape="rect" id="Node000001" title="Reset Transport Cipher Ctx." alt="" coords="5,24,191,68"/>
+<area shape="rect" id="Node000002" href="$transport__security_8c.html#abd924a37f844503b8577e1bdfc922088" title=" " alt="" coords="239,5,435,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,33,226,31,221,32,192,38"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#a64402c567ab2ca68ed4c5fb68e03f29f" title=" " alt="" coords="262,57,412,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="191,53,249,61,244,62,191,58"/>
 </map>

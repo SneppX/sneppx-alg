@@ -2,17 +2,17 @@
 <area shape="rect" id="Node000001" title=" " alt="" coords="258,5,404,50"/>
 <area shape="rect" id="Node000002" href="$quantization_8h.html" title=" " alt="" coords="102,98,216,126"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="283,52,202,93,199,89,287,49"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="211,266,281,294"/>
-<area shape="poly" id="edge9_Node000001_Node000004" title=" " alt="" coords="326,50,257,253,253,250,321,51"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="211,266,281,294"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="326,50,257,253,253,250,321,51"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="333,98,401,126"/>
 <area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="341,48,358,84,352,83,340,53"/>
 <area shape="rect" id="Node000007" title=" " alt="" coords="425,98,496,126"/>
-<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="366,48,429,89,424,90,365,53"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="16,266,89,294"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="100,123,54,142,32,156,15,175,8,194,11,214,21,235,33,254,28,255,16,237,6,216,3,194,10,172,28,152,51,137,103,119"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="177,123,202,145,223,172,238,212,246,252,241,250,233,214,218,175,198,149,176,129"/>
-<area shape="rect" id="Node000005" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="25,174,208,218"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="154,124,137,161,132,158,151,128"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="102,217,74,255,70,252,97,220"/>
-<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="151,216,215,257,210,258,150,222"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="366,48,429,89,424,90,365,53"/>
+<area shape="rect" id="Node000003" href="$multidimensional__tensor__engine_8h.html" title=" " alt="" coords="25,174,208,218"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="154,124,137,161,132,158,151,128"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="16,266,89,294"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="100,123,54,142,32,156,15,175,8,194,11,214,21,235,33,254,28,255,16,237,6,216,3,194,10,172,28,152,51,137,103,119"/>
+<area shape="poly" id="edge6_Node000002_Node000005" title=" " alt="" coords="177,123,202,145,223,172,238,212,246,252,241,250,233,214,218,175,198,149,176,129"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="102,217,74,255,70,252,97,220"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="151,216,215,257,210,258,150,222"/>
 </map>

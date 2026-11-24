@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Architecture Overview | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/ARCHITECTURE/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Architecture Overview | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Architecture Overview |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/ARCHITECTURE/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Architecture Overview |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -151,7 +154,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sneppx-algo&#702;architecture" class="md-skip">
+        <a href="#sneppx-alg&#702;architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -5878,11 +5881,20 @@
   
 
 
-<h1 id="sneppx-algo&#702;architecture">SNEPPX-Algo Architecture<a class="headerlink" href="#sneppx-algo&#702;architecture" title="Permanent link">&para;</a></h1>
+<h1 id="sneppx-alg&#702;architecture">SneppX-ALG Architecture<a class="headerlink" href="#sneppx-alg&#702;architecture" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>[!WARNING]
+<strong>Alpha software.</strong> The security layers below have uneven maturity and none
+is independently audited or certified. Do not treat any layer as a security
+boundary without reviewing the authoritative
+<a href="https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md#security-status">security status table</a> and the component
+tests. This document describes current partial implementations, not
+guarantees of completeness or assurance.</p>
+</blockquote>
 <h2 id="documentation&#702;standards">Documentation Standards<a class="headerlink" href="#documentation&#702;standards" title="Permanent link">&para;</a></h2>
 <p>This project uses a four-layer commenting standard defined in <a href="../COMMENTING/">COMMENTING.md</a>. All source files must have Layer 1 file headers and public <code>SNEPPX_*</code> functions must have Layer 4 Doxygen docs. See <a href="../STYLE_GUIDE/">STYLE_GUIDE.md</a> for code formatting rules.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>SNEPPX-Algo implements a composite AI algorithm with cryptographic integrity. The system processes inputs through five sequential algorithm components, each wrapped in ten security layers.</p>
+<p>SneppX-ALG implements a composite AI algorithm with cryptographic integrity. The system processes inputs through five sequential algorithm components, each wrapped in ten security layers.</p>
 <div class="highlight"><pre><span></span><code>                     ┌──────────────────────────────────────┐
                      |         Security Layer (S0-S9)        |
                      |  Crypto · Secure Mem · Obfuscation   |
@@ -5968,17 +5980,17 @@ weights = Softmax(r(x)[indices])
 Output:
 y = Sum_{i=1}^{k} weights_i * E_{indices_i}(x)
 </code></pre></div>
-<p><strong>Learned MLP Gater</strong> (opt-in, <code>use_mlp_gater=1</code>): replaces the linear router with a 2-layer MLP:
+<p><strong>Learned MLP Gater</strong> (opt-in, <code>use_mlp_gater=1</code>): replaces the linear router with a 2-layer MLP:</p>
 <div class="highlight"><pre><span></span><code>r(x) = Softmax(W2 * ReLU(W1 * x + b1) + b2)
-</code></pre></div></p>
-<p>Load-balancing loss:
+</code></pre></div>
+<p>Load-balancing loss:</p>
 <div class="highlight"><pre><span></span><code>L_balance = alpha * n * Sum_{i=1}^{n} f_i * P_i
 
 where:
 f_i = fraction of tokens routed to expert i
 P_i = average router probability for expert i
 alpha = balancing coefficient (default: 0.01)
-</code></pre></div></p>
+</code></pre></div>
 <h4 id="code&#702;structure_1">Code Structure<a class="headerlink" href="#code&#702;structure_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">d_model</span><span class="p">;</span><span class="w">          </span><span class="c1">// Input/output dimension</span>
@@ -6026,16 +6038,20 @@ alpha = balancing coefficient (default: 0.01)
 <span class="n">y_smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_hat</span><span class="w">     </span><span class="c1">// with beta in [0.7, 0.99]</span>
 </code></pre></div>
 <h4 id="attack&#702;simulation">Attack Simulation<a class="headerlink" href="#attack&#702;simulation" title="Permanent link">&para;</a></h4>
-<p>ARC includes simulation for:
-- <strong>FGSM</strong> (Fast Gradient Sign Method): <code>x_adv = x + eps * sign(grad_x L(x, y))</code>
-- <strong>PGD</strong> (Projected Gradient Descent): Multi-step FGSM with projection
-- <strong>C&amp;W</strong> (Carlini-Wagner): Optimization-based attack: <code>min ||delta|| + c * f(x + delta)</code></p>
+<p>ARC includes simulation for:</p>
+<ul>
+<li><strong>FGSM</strong> (Fast Gradient Sign Method): <code>x_adv = x + eps * sign(grad_x L(x, y))</code></li>
+<li><strong>PGD</strong> (Projected Gradient Descent): Multi-step FGSM with projection</li>
+<li><strong>C&amp;W</strong> (Carlini-Wagner): Optimization-based attack: <code>min ||delta|| + c * f(x + delta)</code></li>
+</ul>
 <h4 id="adversarial&#702;training&#702;graph">Adversarial Training Graph<a class="headerlink" href="#adversarial&#702;training&#702;graph" title="Permanent link">&para;</a></h4>
-<p><code>SNEPPX_arc_build_adversarial_train_graph</code> constructs a shared-weight dual forward graph:
-1. Clean forward on original input (requires<em>grad=1)
-2. FGSM perturbation generated from clean loss gradients
-3. Adversarial forward on perturbed input (adversarial variable requires</em>grad=0)
-4. Combined loss = clean<em>loss + lambda * adv</em>loss</p>
+<p><code>SNEPPX_arc_build_adversarial_train_graph</code> constructs a shared-weight dual forward graph:</p>
+<ol>
+<li>Clean forward on original input (requires_grad=1)</li>
+<li>FGSM perturbation generated from clean loss gradients</li>
+<li>Adversarial forward on perturbed input (adversarial variable requires_grad=0)</li>
+<li>Combined loss = clean<em>loss + lambda * adv</em>loss</li>
+</ol>
 <h4 id="code&#702;structure_2">Code Structure<a class="headerlink" href="#code&#702;structure_2" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">z_threshold</span><span class="p">;</span><span class="w">        </span><span class="c1">// Z-score anomaly threshold (default: 3.0)</span>
@@ -6142,10 +6158,12 @@ Optimized Program
 <strong>Files</strong>: <code>fm.c</code>, <code>sync.c</code>, <code>cuda/fm_cuda.cu</code></p>
 <p>FM provides distributed memory with per-node memory banks, trust-weighted synchronization, and NCCL sync bridge.</p>
 <h4 id="memory&#702;bank">Memory Bank<a class="headerlink" href="#memory&#702;bank" title="Permanent link">&para;</a></h4>
-<p>Each node maintains a fixed-size memory bank with:
-- <strong>Euclidean similarity</strong> for nearest-neighbor retrieval
-- <strong>LRU eviction</strong> when the bank is full
-- <strong>Learnable read/write</strong> operations</p>
+<p>Each node maintains a fixed-size memory bank with:</p>
+<ul>
+<li><strong>Euclidean similarity</strong> for nearest-neighbor retrieval</li>
+<li><strong>LRU eviction</strong> when the bank is full</li>
+<li><strong>Learnable read/write</strong> operations</li>
+</ul>
 <h4 id="synchronization&#702;protocol">Synchronization Protocol<a class="headerlink" href="#synchronization&#702;protocol" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Trust-weighted all-reduce:
 theta_global = Sum_i trust_score_i * theta_i / Sum_j trust_score_j
@@ -6213,10 +6231,13 @@ Select top-k gradients by magnitude (random sampling fallback)
 </code></pre></div>
 <p>When <code>SNEPPX_HAS_CUDA</code> is not defined, all <code>trainer_cuda</code> functions return clean stubs (error codes / 0), and the trainer falls back to CPU optimization.</p>
 <h2 id="security&#702;layers">Security Layers<a class="headerlink" href="#security&#702;layers" title="Permanent link">&para;</a></h2>
+<p>Maturity statements below are aligned with the authoritative table in
+<a href="https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md#security-status">SECURITY.md</a>; "files exist" does not mean a
+layer is complete, validated, or independently audited.</p>
 <h3 id="s&#702;cryptographic&#702;core">S0 — Cryptographic Core<a class="headerlink" href="#s&#702;cryptographic&#702;core" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Experimental / partial (no FIPS validation claimed)</strong>
 <strong>Files</strong>: <code>security/crypto/c/</code> and <code>include/neural_core/security/</code></p>
-<p>Production-grade cryptographic primitives:</p>
+<p>Cryptographic primitives (maturity varies; PQC interoperability is incomplete):</p>
 <table>
 <thead>
 <tr>
@@ -6268,23 +6289,28 @@ Select top-k gradients by magnitude (random sampling fallback)
 </tr>
 <tr>
 <td>Kyber-512/768/1024</td>
-<td>FIPS 203 (ML-KEM)</td>
-<td>PQ key encapsulation</td>
+<td>round-3 Kyber (ML-KEM lineage), not validated</td>
+<td>PQ key encapsulation; experimental</td>
 </tr>
 <tr>
 <td>Dilithium-2/3/5</td>
-<td>FIPS 204 (ML-DSA)</td>
-<td>PQ digital signatures</td>
+<td>round-3 Dilithium (ML-DSA lineage), not validated</td>
+<td>PQ digital signatures; experimental</td>
 </tr>
 <tr>
 <td>SPHINCS+-128/192/256</td>
-<td>FIPS 205 (SLH-DSA)</td>
-<td>Stateless PQ signatures</td>
+<td>round-3 SPHINCS+ (SLH-DSA lineage), not validated</td>
+<td>Stateless PQ signatures; experimental</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p>These implementations are not FIPS-validated and are not byte-compatible with
+the finalized FIPS 203/204/205 formats. See the
+<a href="../pqc_kat/">PQC KAT report</a> for the measured limitations.</p>
+</blockquote>
 <h3 id="s1&#702;secure&#702;memory">S1 — Secure Memory<a class="headerlink" href="#s1&#702;secure&#702;memory" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Partial; independent audit required</strong>
 <strong>Files</strong>: <code>security/memory/</code> and <code>include/neural_core/security/</code></p>
 <table>
 <thead>
@@ -6325,35 +6351,35 @@ Select top-k gradients by magnitude (random sampling fallback)
 </tbody>
 </table>
 <h3 id="s&#702;obfuscation&#702;engine">S2 — Obfuscation Engine<a class="headerlink" href="#s&#702;obfuscation&#702;engine" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Experimental; do not rely on as a security boundary</strong>
 <strong>Files</strong>: <code>security/cpp/</code> and <code>security/obfuscation/</code></p>
 <p>Control flow flattening, string encryption, instruction substitution, opaque predicates, code virtualization, anti-debug, binary substitution, junk code insertion, constant unfolding, IAT protection, SEH/VEH obfuscation, TLS callback obfuscation, anti-dump, multi-VM diversity, instruction scheduling randomization.</p>
 <h3 id="s3&#702;behavioral&#702;monitor">S3 — Behavioral Monitor<a class="headerlink" href="#s3&#702;behavioral&#702;monitor" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Partial</strong>
 <strong>Files</strong>: <code>security/monitor/</code></p>
 <p>Integrity monitoring (CRC32), container breakout detection, frequency analysis, timing analysis, anomaly detection (statistical baseline comparison).</p>
 <h3 id="s4&#702;network&#702;security">S4 — Network Security<a class="headerlink" href="#s4&#702;network&#702;security" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Experimental / partial; deployment hardening requires review</strong>
 <strong>Files</strong>: <code>security/network/</code></p>
 <p>DDoS mitigation (SYN flood detection, rate limiting, connection tracking, IP blacklisting), transport security (TLS-compatible handshake padding, traffic analysis resistance), identity management (certificate pinning, peer fingerprint verification).</p>
 <h3 id="s5&#702;ai&#702;sanitizer">S5 — AI Sanitizer<a class="headerlink" href="#s5&#702;ai&#702;sanitizer" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Partial</strong>
 <strong>Files</strong>: <code>security/ai/</code></p>
 <p>Prompt injection detection, differential privacy (Laplace mechanism), data poisoning defense (gradient outlier detection), RLHF safety (reward model validation, preference alignment checking, harmful output filtering).</p>
 <h3 id="s6&#702;security&#702;ui&#702;key&#702;vault">S6 — Security UI / Key Vault<a class="headerlink" href="#s6&#702;security&#702;ui&#702;key&#702;vault" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Incomplete / verify per component</strong>
 <strong>Files</strong>: <code>security/ui/</code></p>
 <p>Audit logging (structured JSON), key vault (in-memory encrypted store with PIN protection).</p>
 <h3 id="s&#702;secure&#702;updates">S7 — Secure Updates<a class="headerlink" href="#s&#702;secure&#702;updates" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Incomplete / verify per component</strong>
 <strong>Files</strong>: <code>security/updates/</code></p>
 <p>Container security (OCI layer verification), signed update bundles (Ed25519), rollback protection (monotonic version counter), staged rollout.</p>
 <h3 id="s8&#702;formal&#702;verification">S8 — Formal Verification<a class="headerlink" href="#s8&#702;formal&#702;verification" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Not formally verified</strong>
 <strong>Files</strong>: <code>security/formal/</code></p>
 <p>Model checking (bounded state-space exploration), invariant verification (pre/post-condition checking), symbolic execution (NPE bytecode), container breakout detection (state-machine rules).</p>
 <h3 id="s9&#702;penetration&#702;testing">S9 — Penetration Testing<a class="headerlink" href="#s9&#702;penetration&#702;testing" title="Permanent link">&para;</a></h3>
-<p><strong>Status: Complete</strong>
+<p><strong>Status: Not independently audited</strong>
 <strong>Files</strong>: <code>security/pentest/</code></p>
 <p>Network fuzzer (protocol-aware, mutation strategies), self-audit (internal consistency checks), security report generation, CTF utilities.</p>
 <h2 id="foundation&#702;components">Foundation Components<a class="headerlink" href="#foundation&#702;components" title="Permanent link">&para;</a></h2>
@@ -6376,15 +6402,17 @@ Select top-k gradients by magnitude (random sampling fallback)
 <span class="w">    </span><span class="n">SNEPPX_COMPLEX128</span><span class="p">,</span><span class="w"> </span><span class="c1">// sizeof(double) * 2</span>
 <span class="p">}</span><span class="w"> </span><span class="n">SNEPPXDType</span><span class="p">;</span>
 </code></pre></div>
-<p><strong>Supported ops (50+):</strong>
-- Creation: zeros, ones, full, randn, arange, identity, from<em>buffer, copy
-- Shape: reshape, transpose, permute, expand, squeeze, unsqueeze, slice, pad
-- Arithmetic: add, sub, mul, div, pow, sqrt, neg, abs
-- Matmul: matmul, batch</em>matmul
-- Reduction: sum, mean, var, max, min, argmax, argmin
-- Comparison: eq, ne, lt, gt, le, ge
-- Unary: exp, log, sin, cos, tan, sigmoid, relu, softmax, gelu, layer_norm
-- Format I/O: safetensors, numpy (.npy/.npz), PyTorch (.pth), ONNX</p>
+<p><strong>Supported ops (50+):</strong></p>
+<ul>
+<li>Creation: zeros, ones, full, randn, arange, identity, from_buffer, copy</li>
+<li>Shape: reshape, transpose, permute, expand, squeeze, unsqueeze, slice, pad</li>
+<li>Arithmetic: add, sub, mul, div, pow, sqrt, neg, abs</li>
+<li>Matmul: matmul, batch_matmul</li>
+<li>Reduction: sum, mean, var, max, min, argmax, argmin</li>
+<li>Comparison: eq, ne, lt, gt, le, ge</li>
+<li>Unary: exp, log, sin, cos, tan, sigmoid, relu, softmax, gelu, layer_norm</li>
+<li>Format I/O: safetensors, numpy (.npy/.npz), PyTorch (.pth), ONNX</li>
+</ul>
 <h3 id="autodiff">Autodiff<a class="headerlink" href="#autodiff" title="Permanent link">&para;</a></h3>
 <p><strong>Files</strong>: <code>kernel/autodiff/</code> and <code>include/neural_core/kernel/</code></p>
 <p>Tape-based reverse-mode automatic differentiation. Builds a computation graph of operations, then traverses it in reverse topological order to compute gradients.</p>

@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="PQC Interoperability | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/pqc_kat/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="PQC Interoperability | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="PQC Interoperability |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/pqc_kat/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="PQC Interoperability |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -4919,17 +4922,19 @@ decisions against NIST's <code>testPassed</code> flags.</p>
   finalized FIPS signatures are not fully interoperable with the current C
   wire formats. These implementations remain experimental.</li>
 </ul>
-<p>Keygen coverage:
-- <strong>ML-KEM keyGen</strong>: <code>run_mlkem_keygen()</code> seeds the C test RNG with each
+<p>Keygen coverage:</p>
+<ul>
+<li><strong>ML-KEM keyGen</strong>: <code>run_mlkem_keygen()</code> seeds the C test RNG with each
   vector's <code>d</code> value and compares <code>ek</code>/<code>dk</code> byte-for-byte against FIPS 203
-  expected values.
-- <strong>ML-DSA keyGen</strong>: <code>run_mldsa_keygen()</code> seeds the C test RNG with each
+  expected values.</li>
+<li><strong>ML-DSA keyGen</strong>: <code>run_mldsa_keygen()</code> seeds the C test RNG with each
   vector's <code>seed</code> value and compares <code>pk</code>/<code>sk</code> against FIPS 204 expected
-  values.
-- <strong>SLH-DSA keyGen</strong>: explicitly marked unsupported by the harness because
+  values.</li>
+<li><strong>SLH-DSA keyGen</strong>: explicitly marked unsupported by the harness because
   the vendored sample set does not provide reproducible entropy inputs that
   can be passed to the current key-generation API. Those vectors are counted
-  as skipped, not as successful interoperability.</p>
+  as skipped, not as successful interoperability.</li>
+</ul>
 <p>The harness reports unsupported suites as skipped. It is a regression and
 interoperability tool, not a FIPS validation certificate. No invalid signature
 is accepted by the tested signature-verification paths.</p>

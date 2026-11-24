@@ -10,6 +10,7 @@ var memory__hardening_8c =
     [ "SNEPPX_MEM_POOL_MAX_BLOCKS", "memory__hardening_8c.html#a36511ffaf4b4e739efee5d75a7cb06ac", null ],
     [ "SNEPPX_POOL_SCRUB_BYTE", "memory__hardening_8c.html#acd4c79a31a08e12461056cc550f5d1ea", null ],
     [ "SNEPPX_SCRUB_PASSES", "memory__hardening_8c.html#ab2e9815ddcae0038b6fc9fd81562e751", null ],
+    [ "random_u64", "memory__hardening_8c.html#aa535330e76846d1f5e4fa26a1bd3784b", null ],
     [ "SNEPPX_cfg_add_target", "memory__hardening_8c.html#a0194051609248c3c1dbb634b489672d1", null ],
     [ "SNEPPX_cfg_clear", "memory__hardening_8c.html#a82de3adfbce2206bafb0a434d10b0d20", null ],
     [ "SNEPPX_cfg_init", "memory__hardening_8c.html#af35bc8dfd2891c46910bbae4b18fdd5e", null ],

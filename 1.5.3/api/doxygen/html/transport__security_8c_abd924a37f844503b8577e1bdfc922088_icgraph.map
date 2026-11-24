@@ -1,0 +1,17 @@
+<map id="transport_reset_sequences" name="transport_reset_sequences">
+<area shape="rect" id="Node000001" title=" " alt="" coords="250,222,446,250"/>
+<area shape="rect" id="Node000002" href="$transport__security_8c.html#a265582ef619d7eb72a5d7cec9c825a78" title="Reset Transport Cipher Ctx." alt="" coords="11,5,196,50"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="328,209,277,138,241,99,200,65,182,53,181,48,203,60,244,95,281,135,333,208"/>
+<area shape="rect" id="Node000003" href="$transport__security_8c.html#a93b9cf570f6a4e891d6232820aa8ab34" title="Perform Transport Cleanup Expired." alt="" coords="5,75,202,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="315,212,264,174,200,134,177,123,175,117,203,129,267,169,321,211"/>
+<area shape="rect" id="Node000004" href="$transport__security_8c.html#a1204bf37a8a1661d521f40abfdef7326" title="Perform Transport Close Session." alt="" coords="14,144,193,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="280,218,185,192,185,187,284,216"/>
+<area shape="rect" id="Node000005" href="$transport__security_8c.html#ab297cc852d9304ac3f720044e6ae92b0" title="Perform Transport New Session." alt="" coords="17,213,190,258"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="232,237,191,238,189,233,236,234"/>
+<area shape="rect" id="Node000006" href="$transport__security_8c.html#ab6e4248d3cd03d05c493996fe09e9bd9" title="Perform Transport Rekey." alt="" coords="13,282,194,310"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="272,256,164,284,162,279,276,252"/>
+<area shape="rect" id="Node000007" href="$transport__security_8c.html#aeb9b3ddb52f9b6a336fec641c3f52bdd" title="Perform Transport Session Rekey." alt="" coords="6,333,201,378"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="310,260,262,292,203,323,175,335,173,330,201,319,260,287,315,257"/>
+<area shape="rect" id="Node000008" href="$transport__security_8c.html#a444cdf04741617c9cd41cc53cffb6c3d" title="Perform Transport Set Session Key." alt="" coords="21,403,186,447"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="330,260,278,327,242,362,203,393,181,405,179,400,200,388,239,358,274,324,326,263"/>
+</map>

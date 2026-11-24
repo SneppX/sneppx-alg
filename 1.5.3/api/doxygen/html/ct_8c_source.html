@@ -108,53 +108,62 @@ $(function(){initNavTree('ct_8c_source.html','',''); });
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> * REFERENCES</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> *   None (internal utility).</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
-<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a5b2974f37cb63b8d694c3feee2e6c1e3">   28</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3">SNEPPX_ct_equal</a>(<span class="keyword">const</span> uint8_t* a, <span class="keyword">const</span> uint8_t* b, <span class="keywordtype">size_t</span> len) {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    uint8_t diff = 0;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++) diff |= a[i] ^ b[i];</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)((diff == 0) ? 1 : 0);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a5b2974f37cb63b8d694c3feee2e6c1e3">   26</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3">SNEPPX_ct_equal</a>(<span class="keyword">const</span> uint8_t* a, <span class="keyword">const</span> uint8_t* b, <span class="keywordtype">size_t</span> len)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    uint8_t diff = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        diff |= a[i] ^ b[i];</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>) ((diff == 0) ? 1 : 0);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
 </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
 <div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a1cc10112b86dda4b33978f112c98ead2">   42</a></span>uint8_t <a class="code hl_function" href="ct_8c.html#a1cc10112b86dda4b33978f112c98ead2">SNEPPX_ct_select</a>(uint8_t mask, uint8_t a, uint8_t b) {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> (uint8_t)(b ^ (mask &amp; (a ^ b)));</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a1cc10112b86dda4b33978f112c98ead2">   42</a></span>uint8_t <a class="code hl_function" href="ct_8c.html#a1cc10112b86dda4b33978f112c98ead2">SNEPPX_ct_select</a>(uint8_t mask, uint8_t a, uint8_t b)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> (uint8_t) (b ^ (mask &amp; (a ^ b)));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
 </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
-<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a15662e5fe6dab1f862d16bf11c7ab946">   53</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="ct_8c.html#a15662e5fe6dab1f862d16bf11c7ab946">SNEPPX_ct_copy</a>(uint8_t* dst, <span class="keyword">const</span> uint8_t* src, <span class="keywordtype">size_t</span> len, uint8_t condition) {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    uint16_t m = condition | ((uint16_t)condition &lt;&lt; 8);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    m |= m &gt;&gt; 4; m |= m &gt;&gt; 2; m |= m &gt;&gt; 1;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    uint8_t mask = (uint8_t)(uint8_t)m;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++) dst[i] = (uint8_t)(dst[i] ^ (mask &amp; (dst[i] ^ src[i])));</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a15662e5fe6dab1f862d16bf11c7ab946">   54</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="ct_8c.html#a15662e5fe6dab1f862d16bf11c7ab946">SNEPPX_ct_copy</a>(uint8_t* dst, <span class="keyword">const</span> uint8_t* src, <span class="keywordtype">size_t</span> len, uint8_t condition)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    uint16_t m = condition | ((uint16_t) condition &lt;&lt; 8);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    m |= m &gt;&gt; 4;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    m |= m &gt;&gt; 2;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    m |= m &gt;&gt; 1;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    uint8_t mask = (uint8_t) (uint8_t) m;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        dst[i] = (uint8_t) (dst[i] ^ (mask &amp; (dst[i] ^ src[i])));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
 </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span></div>
-<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a2441514c694de8a7af84d815e1da2b44">   67</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="ct_8c.html#a2441514c694de8a7af84d815e1da2b44">SNEPPX_ct_is_zero</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> len) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    uint8_t acc = 0;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++) acc |= data[i];</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)((acc == 0) ? 1 : 0);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span></div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a2441514c694de8a7af84d815e1da2b44">   72</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="ct_8c.html#a2441514c694de8a7af84d815e1da2b44">SNEPPX_ct_is_zero</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> len)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>{</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    uint8_t acc = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        acc |= data[i];</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>) ((acc == 0) ? 1 : 0);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
 </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span></div>
-<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a34ca982a48e900d6cb14e825739bcdfe">   81</a></span>uint32_t <a class="code hl_function" href="ct_8c.html#a34ca982a48e900d6cb14e825739bcdfe">SNEPPX_ct_compare_32</a>(<span class="keyword">const</span> uint32_t* a, <span class="keyword">const</span> uint32_t* b, <span class="keywordtype">size_t</span> len) {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    uint32_t diff = 0;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++) diff |= a[i] ^ b[i];</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> diff;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span></div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="constant__time__operations_8h.html#a34ca982a48e900d6cb14e825739bcdfe">   88</a></span>uint32_t <a class="code hl_function" href="ct_8c.html#a34ca982a48e900d6cb14e825739bcdfe">SNEPPX_ct_compare_32</a>(<span class="keyword">const</span> uint32_t* a, <span class="keyword">const</span> uint32_t* b, <span class="keywordtype">size_t</span> len)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    uint32_t diff = 0;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; len; i++)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        diff |= a[i] ^ b[i];</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> diff;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
 </div>
 <div class="ttc" id="aconstant__time__operations_8h_html"><div class="ttname"><a href="constant__time__operations_8h.html">constant_time_operations.h</a></div></div>
-<div class="ttc" id="act_8c_html_a15662e5fe6dab1f862d16bf11c7ab946"><div class="ttname"><a href="ct_8c.html#a15662e5fe6dab1f862d16bf11c7ab946">SNEPPX_ct_copy</a></div><div class="ttdeci">void SNEPPX_ct_copy(uint8_t *dst, const uint8_t *src, size_t len, uint8_t condition)</div><div class="ttdoc">Perform Ct Copy.</div><div class="ttdef"><b>Definition</b> <a href="#l00053">ct.c:53</a></div></div>
+<div class="ttc" id="act_8c_html_a15662e5fe6dab1f862d16bf11c7ab946"><div class="ttname"><a href="ct_8c.html#a15662e5fe6dab1f862d16bf11c7ab946">SNEPPX_ct_copy</a></div><div class="ttdeci">void SNEPPX_ct_copy(uint8_t *dst, const uint8_t *src, size_t len, uint8_t condition)</div><div class="ttdoc">Perform Ct Copy.</div><div class="ttdef"><b>Definition</b> <a href="#l00054">ct.c:54</a></div></div>
 <div class="ttc" id="act_8c_html_a1cc10112b86dda4b33978f112c98ead2"><div class="ttname"><a href="ct_8c.html#a1cc10112b86dda4b33978f112c98ead2">SNEPPX_ct_select</a></div><div class="ttdeci">uint8_t SNEPPX_ct_select(uint8_t mask, uint8_t a, uint8_t b)</div><div class="ttdoc">Perform Ct Select.</div><div class="ttdef"><b>Definition</b> <a href="#l00042">ct.c:42</a></div></div>
-<div class="ttc" id="act_8c_html_a2441514c694de8a7af84d815e1da2b44"><div class="ttname"><a href="ct_8c.html#a2441514c694de8a7af84d815e1da2b44">SNEPPX_ct_is_zero</a></div><div class="ttdeci">int SNEPPX_ct_is_zero(const uint8_t *data, size_t len)</div><div class="ttdoc">Perform Ct Is Zero.</div><div class="ttdef"><b>Definition</b> <a href="#l00067">ct.c:67</a></div></div>
-<div class="ttc" id="act_8c_html_a34ca982a48e900d6cb14e825739bcdfe"><div class="ttname"><a href="ct_8c.html#a34ca982a48e900d6cb14e825739bcdfe">SNEPPX_ct_compare_32</a></div><div class="ttdeci">uint32_t SNEPPX_ct_compare_32(const uint32_t *a, const uint32_t *b, size_t len)</div><div class="ttdoc">Perform Ct Compare 32.</div><div class="ttdef"><b>Definition</b> <a href="#l00081">ct.c:81</a></div></div>
-<div class="ttc" id="act_8c_html_a5b2974f37cb63b8d694c3feee2e6c1e3"><div class="ttname"><a href="ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3">SNEPPX_ct_equal</a></div><div class="ttdeci">int SNEPPX_ct_equal(const uint8_t *a, const uint8_t *b, size_t len)</div><div class="ttdoc">Perform Ct Equal.</div><div class="ttdef"><b>Definition</b> <a href="#l00028">ct.c:28</a></div></div>
+<div class="ttc" id="act_8c_html_a2441514c694de8a7af84d815e1da2b44"><div class="ttname"><a href="ct_8c.html#a2441514c694de8a7af84d815e1da2b44">SNEPPX_ct_is_zero</a></div><div class="ttdeci">int SNEPPX_ct_is_zero(const uint8_t *data, size_t len)</div><div class="ttdoc">Perform Ct Is Zero.</div><div class="ttdef"><b>Definition</b> <a href="#l00072">ct.c:72</a></div></div>
+<div class="ttc" id="act_8c_html_a34ca982a48e900d6cb14e825739bcdfe"><div class="ttname"><a href="ct_8c.html#a34ca982a48e900d6cb14e825739bcdfe">SNEPPX_ct_compare_32</a></div><div class="ttdeci">uint32_t SNEPPX_ct_compare_32(const uint32_t *a, const uint32_t *b, size_t len)</div><div class="ttdoc">Perform Ct Compare 32.</div><div class="ttdef"><b>Definition</b> <a href="#l00088">ct.c:88</a></div></div>
+<div class="ttc" id="act_8c_html_a5b2974f37cb63b8d694c3feee2e6c1e3"><div class="ttname"><a href="ct_8c.html#a5b2974f37cb63b8d694c3feee2e6c1e3">SNEPPX_ct_equal</a></div><div class="ttdeci">int SNEPPX_ct_equal(const uint8_t *a, const uint8_t *b, size_t len)</div><div class="ttdoc">Perform Ct Equal.</div><div class="ttdef"><b>Definition</b> <a href="#l00026">ct.c:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

@@ -92,30 +92,30 @@ $(function(){initNavTree('argon2_8c.html','',''); });
   <div class="headertitle"><div class="title">argon2.c File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="memory__hard__key__derivation_8h_source.html">memory_hard_key_derivation.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="constant__time__operations_8h_source.html">constant_time_operations.h</a>&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="constant__time__operations_8h_source.html">constant_time_operations.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="memory__hard__key__derivation_8h_source.html">memory_hard_key_derivation.h</a>&quot;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for argon2.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="argon2_8c__incl.png" border="0" usemap="#asecurity_2crypto_2c_2argon2_8c" loading="lazy" alt=""/></div>
 <map name="asecurity_2crypto_2c_2argon2_8c" id="asecurity_2crypto_2c_2argon2_8c">
-<area shape="rect" title=" " alt="" coords="343,5,532,33"/>
-<area shape="rect" href="memory__hard__key__derivation_8h.html" title=" " alt="" coords="5,81,233,109"/>
-<area shape="poly" title=" " alt="" coords="379,36,192,80,190,74,382,32"/>
-<area shape="rect" href="constant__time__operations_8h.html" title=" " alt="" coords="256,81,459,109"/>
-<area shape="poly" title=" " alt="" coords="426,32,385,72,382,68,421,35"/>
-<area shape="rect" title=" " alt="" coords="482,81,553,109"/>
-<area shape="poly" title=" " alt="" coords="453,31,495,71,490,70,451,36"/>
-<area shape="rect" title=" " alt="" coords="576,81,646,109"/>
-<area shape="poly" title=" " alt="" coords="469,31,569,75,564,75,468,36"/>
-<area shape="rect" title=" " alt="" coords="153,157,226,184"/>
-<area shape="poly" title=" " alt="" coords="133,107,169,145,164,146,131,112"/>
-<area shape="rect" title=" " alt="" coords="286,157,357,184"/>
-<area shape="poly" title=" " alt="" coords="156,107,274,150,270,152,155,112"/>
-<area shape="poly" title=" " alt="" coords="330,109,234,153,232,148,325,110"/>
-<area shape="poly" title=" " alt="" coords="353,108,337,145,333,140,349,111"/>
+<area shape="rect" title=" " alt="" coords="336,5,525,33"/>
+<area shape="rect" href="constant__time__operations_8h.html" title=" " alt="" coords="5,81,208,109"/>
+<area shape="poly" title=" " alt="" coords="371,36,180,80,179,74,374,31"/>
+<area shape="rect" href="memory__hard__key__derivation_8h.html" title=" " alt="" coords="232,81,459,109"/>
+<area shape="poly" title=" " alt="" coords="418,32,373,73,371,68,413,35"/>
+<area shape="rect" title=" " alt="" coords="482,81,552,109"/>
+<area shape="poly" title=" " alt="" coords="447,31,493,71,488,71,445,36"/>
+<area shape="rect" title=" " alt="" coords="575,81,646,109"/>
+<area shape="poly" title=" " alt="" coords="463,31,567,75,562,75,462,36"/>
+<area shape="rect" title=" " alt="" coords="140,157,214,184"/>
+<area shape="poly" title=" " alt="" coords="120,107,157,145,152,146,118,112"/>
+<area shape="rect" title=" " alt="" coords="274,157,344,184"/>
+<area shape="poly" title=" " alt="" coords="143,107,262,150,257,153,142,112"/>
+<area shape="poly" title=" " alt="" coords="318,109,222,153,220,148,313,110"/>
+<area shape="poly" title=" " alt="" coords="341,108,324,145,321,140,336,111"/>
 </map>
 </div>
 </div>
@@ -174,12 +174,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">        <span class="keywordflow">do</span> { \</div>
-<div class="line">        v[a] += v[b] + x; v[d] ^= v[a]; v[d] = (v[d] &gt;&gt; 32) | (v[d] &lt;&lt; 32); \</div>
-<div class="line">        v[c] += v[d]; v[b] ^= v[c]; v[b] = (v[b] &gt;&gt; 24) | (v[b] &lt;&lt; 40); \</div>
-<div class="line">        v[a] += v[b] + y; v[d] ^= v[a]; v[d] = (v[d] &gt;&gt; 16) | (v[d] &lt;&lt; 48); \</div>
-<div class="line">        v[c] += v[d]; v[b] ^= v[c]; v[b] = (v[b] &gt;&gt; 63) | (v[b] &lt;&lt; 1); \</div>
-<div class="line">    } <span class="keywordflow">while</span>(0)</div>
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span>                                                                                                                 \</div>
+<div class="line">    {                                                                                                                  \</div>
+<div class="line">        v[a] += v[b] + x;                                                                                              \</div>
+<div class="line">        v[d] ^= v[a];                                                                                                  \</div>
+<div class="line">        v[d] = (v[d] &gt;&gt; 32) | (v[d] &lt;&lt; 32);                                                                            \</div>
+<div class="line">        v[c] += v[d];                                                                                                  \</div>
+<div class="line">        v[b] ^= v[c];                                                                                                  \</div>
+<div class="line">        v[b] = (v[b] &gt;&gt; 24) | (v[b] &lt;&lt; 40);                                                                            \</div>
+<div class="line">        v[a] += v[b] + y;                                                                                              \</div>
+<div class="line">        v[d] ^= v[a];                                                                                                  \</div>
+<div class="line">        v[d] = (v[d] &gt;&gt; 16) | (v[d] &lt;&lt; 48);                                                                            \</div>
+<div class="line">        v[c] += v[d];                                                                                                  \</div>
+<div class="line">        v[b] ^= v[c];                                                                                                  \</div>
+<div class="line">        v[b] = (v[b] &gt;&gt; 63) | (v[b] &lt;&lt; 1);                                                                             \</div>
+<div class="line">    } <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -216,7 +225,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00039">39</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00050">50</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -335,7 +344,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00055">55</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00071">71</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -417,7 +426,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00073">73</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00097">97</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -501,7 +510,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00154">154</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="argon2_8c_source.html#l00196">196</a> of file <a class="el" href="argon2_8c_source.html">argon2.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

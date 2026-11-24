@@ -76,34 +76,37 @@
       
 
     
-    
-  
-  <link rel="alternate" type="application/rss+xml"
-        title="SneppX-ALG changelog" href="../feed_rss_updated.xml">
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../feed_rss_updated.xml"
+/>
 
-  
-  
     
-    
-  
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="SneppX-ALG">
-  <meta property="og:title" content="Security Layers (S0-S9) | SneppX-ALG">
-  <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security_layers/">
-  <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1280">
-  <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="SneppX-ALG documentation">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Security Layers (S0-S9) | SneppX-ALG">
-  <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python bindings.">
-  <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="SneppX-ALG documentation">
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="Security Layers (S0-S9) |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security_layers/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Security Layers (S0-S9) |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
 
-  <script type="application/ld+json">
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -115,7 +118,7 @@
     "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
     "inLanguage": "en"
   }
-  </script>
+</script>
 
   
 <meta property="og:type" content="website" />
@@ -5003,18 +5006,20 @@
 <h1 id="security&#702;layers&#702;deep&#702;dive&#702;s&#702;s9">Security Layers Deep Dive (S0–S9)<a class="headerlink" href="#security&#702;layers&#702;deep&#702;dive&#702;s&#702;s9" title="Permanent link">&para;</a></h1>
 <h2 id="s&#702;cryptographic&#702;core">S0 — Cryptographic Core<a class="headerlink" href="#s&#702;cryptographic&#702;core" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Experimental cryptographic primitives for signing, encryption, hashing, and key exchange. Presence of an implementation does not establish production readiness, constant-time behavior, certification, or independent review.</p>
-<p><strong>Components:</strong>
-- Ed25519 (RFC 8032) signatures: historical documentation reports 304/306 vectors passing; current vector coverage must be reconciled before claiming full conformance
-- X25519 (RFC 7748) key exchange: Full DH exchange
-- ChaCha20-Poly1305 (RFC 8439) AEAD: encrypt/decrypt
-- SHA-3 (FIPS 202): 224/256/384/512
-- SHA-256 (FIPS 180-4): General-purpose hashing
-- BLAKE3: Fast hashing
-- Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation
-- Secure Random: OS CPRNG (Windows CNG / Linux getrandom)
-- Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation
-- Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures
-- SPHINCS+-128/192/256 (FIPS 205 SLH-DSA): Stateless PQ signatures</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Ed25519 (RFC 8032) signatures: historical documentation reports 304/306 vectors passing; current vector coverage must be reconciled before claiming full conformance</li>
+<li>X25519 (RFC 7748) key exchange: Full DH exchange</li>
+<li>ChaCha20-Poly1305 (RFC 8439) AEAD: encrypt/decrypt</li>
+<li>SHA-3 (FIPS 202): 224/256/384/512</li>
+<li>SHA-256 (FIPS 180-4): General-purpose hashing</li>
+<li>BLAKE3: Fast hashing</li>
+<li>Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation</li>
+<li>Secure Random: OS CPRNG (Windows CNG / Linux getrandom)</li>
+<li>Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation</li>
+<li>Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures</li>
+<li>SPHINCS+-128/192/256 (FIPS 205 SLH-DSA): Stateless PQ signatures</li>
+</ul>
 <p><strong>Files:</strong> <code>security/crypto/c/</code></p>
 <p><strong>PQC ACVP status:</strong> Official NIST ACVP sample vectors are vendored under
 <code>tests/data/acvp/</code> and exercised through
@@ -5028,14 +5033,16 @@ experimental until those gaps are closed and independently reviewed.</p>
 <hr />
 <h2 id="s1&#702;memory&#702;hardening">S1 — Memory Hardening<a class="headerlink" href="#s1&#702;memory&#702;hardening" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Runtime memory protection against corruption, leakage, and exploitation.</p>
-<p><strong>Components:</strong>
-- Guard pages: Inaccessible pages placed before/after heap allocations
-- Stack canaries: Random values on stack, checked before function return
-- ASLR: Random base addresses for heap/mmap allocations
-- Locked memory: <code>mlock()</code> / <code>VirtualLock</code> to prevent swapping of secrets
-- Secure wipe: <code>memset</code> with compiler barrier (prevents optimizer removal)
-- Constant-time comparison: Timing-attack-resistant memcmp
-- Memory leak detector: Tracks allocations, reports unfreed blocks</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Guard pages: Inaccessible pages placed before/after heap allocations</li>
+<li>Stack canaries: Random values on stack, checked before function return</li>
+<li>ASLR: Random base addresses for heap/mmap allocations</li>
+<li>Locked memory: <code>mlock()</code> / <code>VirtualLock</code> to prevent swapping of secrets</li>
+<li>Secure wipe: <code>memset</code> with compiler barrier (prevents optimizer removal)</li>
+<li>Constant-time comparison: Timing-attack-resistant memcmp</li>
+<li>Memory leak detector: Tracks allocations, reports unfreed blocks</li>
+</ul>
 <p><strong>Files:</strong> <code>security/memory/</code></p>
 <hr />
 <h2 id="s&#702;obfuscation&#702;engine">S2 — Obfuscation Engine<a class="headerlink" href="#s&#702;obfuscation&#702;engine" title="Permanent link">&para;</a></h2>
@@ -5043,96 +5050,114 @@ experimental until those gaps are closed and independently reviewed.</p>
 <p><strong>Security warning:</strong> The S2 audit records unresolved RNG, timing-side-channel, code-transformation, and memory-safety findings. Do not rely on obfuscation as a security boundary or as protection for secrets. See <a href="../security/obf_audit/">the detailed audit</a>.</p>
 </blockquote>
 <p><strong>Purpose:</strong> Protect against reverse engineering and static analysis.</p>
-<p><strong>Components:</strong>
-- Control flow flattening: switch-based dispatch replaces natural control flow
-- String encryption: XOR-based compile-time obfuscation with rotating keys
-- Instruction substitution: NAND-gate equivalent sequences
-- Opaque predicates: always-true/false branches
-- Code virtualization: basic-block bytecode with encrypted dispatch table
-- Anti-debug: ptrace, NtGlobalFlag, timing anomaly, breakpoint scanning
-- Binary substitution: opcode-level replacement with prefix/suffix bytes
-- Junk code insertion: NOP slides, dead-store MOVs, identity XORs
-- Constant unfolding: integer constants as <code>(a + b)</code> with random splits
-- IAT protection: hash-based import resolution, integrity scanning
-- SEH/VEH obfuscation: exception-based control flow
-- TLS callback obfuscation: runtime function pointer encoding
-- Anti-dump: PE/ELF header XOR encryption with CRC integrity
-- Multi-VM diversity: multiple bytecode handlers with slot switching
-- Instruction scheduling randomization: basic-block-level reordering</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Control flow flattening: switch-based dispatch replaces natural control flow</li>
+<li>String encryption: XOR-based compile-time obfuscation with rotating keys</li>
+<li>Instruction substitution: NAND-gate equivalent sequences</li>
+<li>Opaque predicates: always-true/false branches</li>
+<li>Code virtualization: basic-block bytecode with encrypted dispatch table</li>
+<li>Anti-debug: ptrace, NtGlobalFlag, timing anomaly, breakpoint scanning</li>
+<li>Binary substitution: opcode-level replacement with prefix/suffix bytes</li>
+<li>Junk code insertion: NOP slides, dead-store MOVs, identity XORs</li>
+<li>Constant unfolding: integer constants as <code>(a + b)</code> with random splits</li>
+<li>IAT protection: hash-based import resolution, integrity scanning</li>
+<li>SEH/VEH obfuscation: exception-based control flow</li>
+<li>TLS callback obfuscation: runtime function pointer encoding</li>
+<li>Anti-dump: PE/ELF header XOR encryption with CRC integrity</li>
+<li>Multi-VM diversity: multiple bytecode handlers with slot switching</li>
+<li>Instruction scheduling randomization: basic-block-level reordering</li>
+</ul>
 <p><strong>Files:</strong> <code>security/cpp/</code>, <code>security/obfuscation/</code></p>
 <hr />
 <h2 id="s3&#702;behavioral&#702;monitor">S3 — Behavioral Monitor<a class="headerlink" href="#s3&#702;behavioral&#702;monitor" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Runtime monitoring and anomaly detection for security events.</p>
-<p><strong>Components:</strong>
-- Integrity monitoring: CRC32-based memory region verification
-- Container breakout detection: cgroup/namespace/mount inspection
-- Frequency analysis: unusual API call pattern detection
-- Timing analysis: side-channel probing via rdtsc measurement
-- Anomaly detection: statistical baseline comparison for runtime behavior</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Integrity monitoring: CRC32-based memory region verification</li>
+<li>Container breakout detection: cgroup/namespace/mount inspection</li>
+<li>Frequency analysis: unusual API call pattern detection</li>
+<li>Timing analysis: side-channel probing via rdtsc measurement</li>
+<li>Anomaly detection: statistical baseline comparison for runtime behavior</li>
+</ul>
 <p><strong>Files:</strong> <code>security/monitor/</code></p>
 <hr />
 <h2 id="s4&#702;network&#702;security">S4 — Network Security<a class="headerlink" href="#s4&#702;network&#702;security" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Protect network communication against attacks.</p>
-<p><strong>Components:</strong>
-- DDoS mitigation: SYN flood detection, rate limiting, connection tracking, IP blacklisting
-- Transport security: TLS handshake padding, traffic analysis resistance
-- Identity management: certificate pinning, peer fingerprint verification
-- Certificate validation: chain-of-trust with expiry checking</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>DDoS mitigation: SYN flood detection, rate limiting, connection tracking, IP blacklisting</li>
+<li>Transport security: TLS handshake padding, traffic analysis resistance</li>
+<li>Identity management: certificate pinning, peer fingerprint verification</li>
+<li>Certificate validation: chain-of-trust with expiry checking</li>
+</ul>
 <p><strong>Files:</strong> <code>security/network/</code></p>
 <hr />
 <h2 id="s5&#702;ai&#702;sanitizer">S5 — AI Sanitizer<a class="headerlink" href="#s5&#702;ai&#702;sanitizer" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Protect model from adversarial inputs and data poisoning.</p>
-<p><strong>Components:</strong>
-- Prompt injection detection: regex + embedded pattern scanning
-- Differential privacy: Laplace mechanism with configurable epsilon
-- Data poisoning defense: gradient outlier detection, loss spike monitoring
-- RLHF safety: reward model validation, preference alignment, harmful output filtering
-- Output verifier: constraint checking against allow/deny lists</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Prompt injection detection: regex + embedded pattern scanning</li>
+<li>Differential privacy: Laplace mechanism with configurable epsilon</li>
+<li>Data poisoning defense: gradient outlier detection, loss spike monitoring</li>
+<li>RLHF safety: reward model validation, preference alignment, harmful output filtering</li>
+<li>Output verifier: constraint checking against allow/deny lists</li>
+</ul>
 <p><strong>Files:</strong> <code>security/ai/</code></p>
 <hr />
 <h2 id="s6&#702;security&#702;ui&#702;key&#702;vault">S6 — Security UI / Key Vault<a class="headerlink" href="#s6&#702;security&#702;ui&#702;key&#702;vault" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Secure key management and audit logging.</p>
-<p><strong>Components:</strong>
-- Audit logging: structured JSON entries with severity, timestamps, source
-- Key vault: in-memory encrypted key store with PIN-protected access</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Audit logging: structured JSON entries with severity, timestamps, source</li>
+<li>Key vault: in-memory encrypted key store with PIN-protected access</li>
+</ul>
 <p><strong>Files:</strong> <code>security/ui/</code></p>
 <hr />
 <h2 id="s&#702;secure&#702;updates">S7 — Secure Updates<a class="headerlink" href="#s&#702;secure&#702;updates" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Ensure software updates are authentic and tamper-proof.</p>
-<p><strong>Components:</strong>
-- Container security: OCI layer verification, manifest integrity, image signing
-- Signed update bundles: Ed25519-signed payloads (signature over BLAKE3 update hash) with version rolling
-- Rollback protection: monotonic version/min-version checks preventing downgrade attacks
-- Staged rollout: gradual distribution with health-check gating</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Container security: OCI layer verification, manifest integrity, image signing</li>
+<li>Signed update bundles: Ed25519-signed payloads (signature over BLAKE3 update hash) with version rolling</li>
+<li>Rollback protection: monotonic version/min-version checks preventing downgrade attacks</li>
+<li>Staged rollout: gradual distribution with health-check gating</li>
+</ul>
 <p><strong>Status notes:</strong> <code>SNEPPX_update_verifier_check</code> is fail-closed when no trusted public key is configured and verifies Ed25519 signatures against the configured trusted key. Production key provisioning, trust distribution, and rollout policy remain review items (see maturity notes in README).</p>
 <p><strong>Files:</strong> <code>security/updates/</code></p>
 <hr />
 <h2 id="s8&#702;formal&#702;verification">S8 — Formal Verification<a class="headerlink" href="#s8&#702;formal&#702;verification" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Mathematical guarantees of critical algorithm properties (bounded/pragmatic).</p>
-<p><strong>Components:</strong>
-- Model checking: bounded state-space exploration for critical paths
-- Invariant verification: pre/post-condition checking on memory safety
-- LTL/safety checks: bounded safety-oriented handling (e.g., deadlock-oriented properties); unsupported/full LTL formulas are not claimed as verified
-- State reduction: <code>SNEPPX_model_minimize</code> performs reachable-state reduction (not full bisimulation minimization)</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Model checking: bounded state-space exploration for critical paths</li>
+<li>Invariant verification: pre/post-condition checking on memory safety</li>
+<li>LTL/safety checks: bounded safety-oriented handling (e.g., deadlock-oriented properties); unsupported/full LTL formulas are not claimed as verified</li>
+<li>State reduction: <code>SNEPPX_model_minimize</code> performs reachable-state reduction (not full bisimulation minimization)</li>
+</ul>
 <p><strong>Status notes:</strong> S8 provides bounded, fail-closed-oriented checks for supported properties; it is not a complete formal proof system for all LTL/properties.</p>
 <p><strong>Files:</strong> <code>security/formal/</code></p>
 <hr />
 <h2 id="s9&#702;penetration&#702;testing">S9 — Penetration Testing<a class="headerlink" href="#s9&#702;penetration&#702;testing" title="Permanent link">&para;</a></h2>
 <p><strong>Purpose:</strong> Proactive security assessment and vulnerability discovery.</p>
-<p><strong>Components:</strong>
-- Network fuzzer: protocol-aware engine with mutation strategies
-- Self-audit: comprehensive internal consistency checks
-- Security report generation: structured output of audit findings
-- CTF utilities: challenge scaffolding for red-team exercises</p>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Network fuzzer: protocol-aware engine with mutation strategies</li>
+<li>Self-audit: comprehensive internal consistency checks</li>
+<li>Security report generation: structured output of audit findings</li>
+<li>CTF utilities: challenge scaffolding for red-team exercises</li>
+</ul>
 <p><strong>Files:</strong> <code>security/pentest/</code></p>
 <hr />
 <h2 id="threat&#702;model">Threat Model<a class="headerlink" href="#threat&#702;model" title="Permanent link">&para;</a></h2>
-<p><strong>Assumptions:</strong>
-- Hardware is trusted (no side-channel attacks on CPU)
-- OS is trusted (no kernel-level compromise)
-- Network is untrusted
-- Other AI models are untrusted and potentially adversarial
-- Supply chain is trusted (verified commits, signed releases)</p>
+<p><strong>Assumptions:</strong></p>
+<ul>
+<li>Hardware is trusted (no side-channel attacks on CPU)</li>
+<li>OS is trusted (no kernel-level compromise)</li>
+<li>Network is untrusted</li>
+<li>Other AI models are untrusted and potentially adversarial</li>
+<li>Supply chain is trusted (verified commits, signed releases)</li>
+</ul>
 <p><strong>Defenses:</strong></p>
 <table>
 <thead>

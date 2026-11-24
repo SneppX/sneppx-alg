@@ -18,7 +18,7 @@ var namespaceSNEPPX =
     [ "SecureBuffer", "classSNEPPX_1_1SecureBuffer.html", "classSNEPPX_1_1SecureBuffer" ],
     [ "AEADCipher", "classSNEPPX_1_1AEADCipher.html", "classSNEPPX_1_1AEADCipher" ],
     [ "Hasher", "classSNEPPX_1_1Hasher.html", "classSNEPPX_1_1Hasher" ],
-    [ "SNEPPXObfHandlerFunc", "namespaceSNEPPX.html#aa3a854269eefb4420f37601a253fdb37", null ],
+    [ "SNEPPXObfHandlerFunc", "namespaceSNEPPX.html#ae924701e4d717b6706eff0c2ddc4e8e8", null ],
     [ "SNEPPXAntiDebugAction", "namespaceSNEPPX.html#a1666b35c6c639d1e4882130045e9120f", [
       [ "CRASH", "namespaceSNEPPX.html#a1666b35c6c639d1e4882130045e9120facef2f26f7da88da7db20faa12bd436c4", null ],
       [ "FAKE_DATA", "namespaceSNEPPX.html#a1666b35c6c639d1e4882130045e9120fabce593a5422a8620657d76bb0518c4b0", null ],

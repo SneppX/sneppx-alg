@@ -8,6 +8,7 @@ var s5__extensions_8c =
     [ "is_base64", "s5__extensions_8c.html#a2baf8d1b0a2d4467154b7ad61da55a90", null ],
     [ "is_hex", "s5__extensions_8c.html#ad38a72773bf4fb1ddd334350d0733c54", null ],
     [ "rot13_decode", "s5__extensions_8c.html#ad91d00dd870a0a3ef765442ee79f8ae2", null ],
+    [ "s5_random_unit", "s5__extensions_8c.html#a3ebaa7034e0ee5f859e1e3a4903af0fc", null ],
     [ "SNEPPX_adversarial_smooth", "s5__extensions_8c.html#a803ab1c5b63498ff622f1b4a3af933de", null ],
     [ "SNEPPX_adversarial_smooth_apply", "s5__extensions_8c.html#af86a703c61a55ae8b1ec2a329b1ca5d3", null ],
     [ "SNEPPX_adversarial_smooth_batch", "s5__extensions_8c.html#acc1dc8d5fa982db80c21f4d97a1c4080", null ],
