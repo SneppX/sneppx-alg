@@ -12,6 +12,58 @@ from .c_loader import load_library
 
 _LIB, _HAS_C = load_library("neural_drivers")
 
+# The Python fallbacks emulate device memory with host bytearrays. Keep the
+# allocations alive and keyed by their identity: returning ``id(bytearray)``
+# without retaining the buffer hands callers a dangling pointer.
+_buffers_lock = threading.Lock()
+_buffers = {}
+
+
+def _alloc_buffer(size_bytes: int) -> int:
+    if not isinstance(size_bytes, int) or isinstance(size_bytes, bool):
+        raise TypeError("allocation size must be an integer")
+    if size_bytes < 0:
+        raise ValueError("allocation size must be non-negative")
+    buf = bytearray(size_bytes)
+    ptr = id(buf)
+    with _buffers_lock:
+        _buffers[ptr] = buf
+    return ptr
+
+
+def _get_buffer(ptr: int) -> bytearray:
+    if not isinstance(ptr, int):
+        raise TypeError("device pointer must be an integer")
+    with _buffers_lock:
+        buf = _buffers.get(ptr)
+    if buf is None:
+        raise ValueError("invalid or freed device pointer")
+    return buf
+
+
+def _free_buffer(ptr: int) -> bool:
+    with _buffers_lock:
+        return _buffers.pop(ptr, None) is not None
+
+
+def _as_bytes(src) -> bytes:
+    if isinstance(src, (bytes, bytearray, memoryview)):
+        return bytes(src)
+    if isinstance(src, np.ndarray):
+        return np.ascontiguousarray(src).view(np.uint8).tobytes()
+    raise TypeError("source must be bytes-like or a numpy array")
+
+
+def _write_bytes(dst, data: bytes) -> None:
+    if isinstance(dst, (bytearray, memoryview)):
+        dst[: len(data)] = data
+        return
+    if isinstance(dst, np.ndarray):
+        view = np.ascontiguousarray(dst).view(np.uint8).reshape(-1)
+        view[: len(data)] = np.frombuffer(data, dtype=np.uint8)
+        return
+    raise TypeError("destination must be bytes-like or a numpy array")
+
 
 class CUDADeviceProps:
     """CUDA device properties queried at runtime."""
@@ -111,21 +163,39 @@ class CUDADriver:
     # ---- Memory ----
 
     def mem_alloc(self, bytes: int) -> Optional[int]:
-        return id(bytearray(bytes))
+        return _alloc_buffer(bytes)
 
     def mem_free(self, dev_ptr: int):
-        pass
+        _free_buffer(dev_ptr)
 
     def mem_htod(self, dev_dst: int, host_src: np.ndarray, bytes: int) -> int:
+        buf = _get_buffer(dev_dst)
+        data = _as_bytes(host_src)[:bytes]
+        if len(data) != bytes or bytes > len(buf):
+            return -1
+        buf[:bytes] = data
         return 0
 
     def mem_dtoh(self, host_dst: np.ndarray, dev_src: int, bytes: int) -> int:
+        buf = _get_buffer(dev_src)
+        if bytes > len(buf):
+            return -1
+        _write_bytes(host_dst, buf[:bytes])
         return 0
 
     def mem_dtod(self, dev_dst: int, dev_src: int, bytes: int) -> int:
+        dst = _get_buffer(dev_dst)
+        src = _get_buffer(dev_src)
+        if bytes > len(dst) or bytes > len(src):
+            return -1
+        dst[:bytes] = src[:bytes]
         return 0
 
     def mem_set(self, dev_ptr: int, value: int, bytes: int) -> int:
+        buf = _get_buffer(dev_ptr)
+        if bytes > len(buf) or not 0 <= value <= 255:
+            return -1
+        buf[:bytes] = bytearray([value]) * bytes
         return 0
 
     # ---- Kernel dispatch ----
@@ -212,18 +282,32 @@ class ROCmDriver:
         return 0
 
     def mem_alloc(self, bytes: int) -> Optional[int]:
-        return id(bytearray(bytes))
+        return _alloc_buffer(bytes)
 
     def mem_free(self, dev_ptr: int):
-        pass
+        _free_buffer(dev_ptr)
 
     def mem_htod(self, dev_dst: int, host_src: np.ndarray, bytes: int) -> int:
+        buf = _get_buffer(dev_dst)
+        data = _as_bytes(host_src)[:bytes]
+        if len(data) != bytes or bytes > len(buf):
+            return -1
+        buf[:bytes] = data
         return 0
 
     def mem_dtoh(self, host_dst: np.ndarray, dev_src: int, bytes: int) -> int:
+        buf = _get_buffer(dev_src)
+        if bytes > len(buf):
+            return -1
+        _write_bytes(host_dst, buf[:bytes])
         return 0
 
     def mem_dtod(self, dev_dst: int, dev_src: int, bytes: int) -> int:
+        dst = _get_buffer(dev_dst)
+        src = _get_buffer(dev_src)
+        if bytes > len(dst) or bytes > len(src):
+            return -1
+        dst[:bytes] = src[:bytes]
         return 0
 
     def launch_kernel(
@@ -266,19 +350,24 @@ class TPUDriver:
         pass
 
     def mem_alloc(self, bytes: int, ctx: dict) -> Optional[int]:
-        return id(bytearray(bytes))
+        return _alloc_buffer(bytes)
 
     def mem_free(self, dev_ptr: int, ctx: dict):
-        pass
+        _free_buffer(dev_ptr)
 
-    def mem_htod(
-        self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict
-    ) -> int:
+    def mem_htod(self, dev_dst: int, host_src: np.ndarray, bytes: int, ctx: dict) -> int:
+        buf = _get_buffer(dev_dst)
+        data = _as_bytes(host_src)[:bytes]
+        if len(data) != bytes or bytes > len(buf):
+            return -1
+        buf[:bytes] = data
         return 0
 
-    def mem_dtoh(
-        self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict
-    ) -> int:
+    def mem_dtoh(self, host_dst: np.ndarray, dev_src: int, bytes: int, ctx: dict) -> int:
+        buf = _get_buffer(dev_src)
+        if bytes > len(buf):
+            return -1
+        _write_bytes(host_dst, buf[:bytes])
         return 0
 
     def compile(self, hlo_module: str, ctx: dict) -> Optional[dict]:
