@@ -85,7 +85,11 @@ class ASLR:
 class MemoryHardening:
     """Memory hardening operations — W^X, guard pages, seccomp.
 
-    Many operations are OS-specific and are no-ops in the fallback.
+    These are pure-Python *simulations*: they do not change OS memory
+    protections or install kernel filters. They return honest status values
+    (never claiming a protection was applied) and exist only for API
+    compatibility and layout planning. Use the C layer in ``security/memory/``
+    for real hardening.
     """
 
     def __init__(self):
@@ -93,16 +97,31 @@ class MemoryHardening:
 
     @staticmethod
     def w_xor_x(enable: bool = True) -> bool:
-        return True
+        """Return whether W^X is enforced — always False in this fallback.
+
+        A pure-Python method cannot flip page protection bits, so it must not
+        report success. The ``enable`` argument is accepted for API symmetry.
+        """
+        return False
 
     @staticmethod
     def guard_page(size: int) -> Tuple[int, int]:
+        """Return a *symbolic* (address, size) layout, not a mapped page.
+
+        No guard page is allocated and the address is an arbitrary marker; the
+        value is suitable only for planning/layout tests, never as a real
+        protected mapping.
+        """
         total = size + 4096
         addr = int.from_bytes(os.urandom(4), "little")
         return addr, total
 
     @staticmethod
     def seccomp_filter(allow_list: Optional[list] = None) -> bool:
+        """Return whether a seccomp filter was installed — always False here.
+
+        This fallback cannot install kernel filters; no filter is applied.
+        """
         return False
 
 

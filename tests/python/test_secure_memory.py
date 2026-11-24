@@ -2,9 +2,7 @@
 
 import sys, os
 
-sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python"))
 
 from SneppX_ALG.interface_bindings import (
     SecureAllocator,
@@ -68,7 +66,12 @@ def test_aslr_randomize():
 
 def test_memory_hardening():
     m = MemoryHardening()
-    assert m.w_xor_x(True)
+    # Pure-Python fallback cannot enforce OS-level protections; it must not
+    # report success (false assurance) for W^X or seccomp.
+    assert m.w_xor_x(True) is False
+    assert m.seccomp_filter([]) is False
+    addr, total = m.guard_page(64)
+    assert total == 64 + 4096
 
 
 def test_leak_detector():
