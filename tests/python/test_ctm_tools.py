@@ -20,9 +20,7 @@ ctm = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ctm)
 
 LARGE_MODULE_PATH = MODULE_PATH.parent / "ctm_find_large_files.py"
-LARGE_SPEC = importlib.util.spec_from_file_location(
-    "ctm_large_files", LARGE_MODULE_PATH
-)
+LARGE_SPEC = importlib.util.spec_from_file_location("ctm_large_files", LARGE_MODULE_PATH)
 ctm_large_files = importlib.util.module_from_spec(LARGE_SPEC)
 LARGE_SPEC.loader.exec_module(ctm_large_files)
 
@@ -33,9 +31,7 @@ def test_scan_counts_source_and_blank_lines_but_skips_generated_and_binary(tmp_p
     (tmp_path / "src" / "main.py").write_text("x = 1\n\nprint(x)\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("# Title\n", encoding="utf-8")
     (tmp_path / "src" / "blob.py").write_bytes(b"\x00\x01\x02")
-    (tmp_path / "node_modules" / "ignored.py").write_text(
-        "bad = True\n", encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "ignored.py").write_text("bad = True\n", encoding="utf-8")
 
     report = ctm.scan(tmp_path)
 
@@ -228,18 +224,27 @@ def test_legacy_count_by_ext_uses_unified_filters(tmp_path):
 def test_legacy_count_includes_uses_unified_filters(tmp_path):
     import ctm_count_includes
 
-    (tmp_path / "a.c").write_text(
-        '#include <stdio.h>\n#include "local.h"\n', encoding="utf-8"
-    )
+    (tmp_path / "a.c").write_text('#include <stdio.h>\n#include "local.h"\n', encoding="utf-8")
     (tmp_path / "notes.py").write_text('#include "ignored.h"\n', encoding="utf-8")
     (tmp_path / "node_modules").mkdir()
-    (tmp_path / "node_modules" / "b.h").write_text(
-        '#include "ignored.h"\n', encoding="utf-8"
-    )
+    (tmp_path / "node_modules" / "b.h").write_text('#include "ignored.h"\n', encoding="utf-8")
 
     report = ctm_count_includes.count_includes(tmp_path)
 
     assert report == {"#include <stdio.h>": 1, '#include "local.h"': 1}
+
+
+def test_legacy_comments_blank_code_uses_unified_filters(tmp_path):
+    import ctm_count_comments_blank_code
+
+    (tmp_path / "a.py").write_text("\n# a comment\nx = 1\n", encoding="utf-8")
+    (tmp_path / "notes.custom").write_text("# ignored\n", encoding="utf-8")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "b.py").write_text("# ignored\n", encoding="utf-8")
+
+    report = ctm_count_comments_blank_code.count_lines(tmp_path)
+
+    assert report == {"total": 3, "blank": 1, "comments": 1, "code": 1}
 
 
 def test_symlink_files_are_not_followed_when_supported(tmp_path):

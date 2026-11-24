@@ -1,36 +1,11 @@
 #!/usr/bin/env python3
-import os
+"""Count blank, comment and code lines via the unified CTM text-file filters."""
+
 import sys
 import json
 from pathlib import Path
 
-IGNORE_DIRS = {
-    ".git",
-    ".svn",
-    ".hg",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    ".next",
-    ".cache",
-    ".pytest_cache",
-    ".ruff_cache",
-}
-IGNORE_EXTS = {
-    ".pyc",
-    ".pyo",
-    ".o",
-    ".obj",
-    ".exe",
-    ".dll",
-    ".so",
-    ".dylib",
-    ".class",
-    ".jar",
-}
+import ctm
 
 CODE_EXTS = {
     ".c",
@@ -51,47 +26,24 @@ CODE_EXTS = {
 }
 
 
-def should_ignore(path):
-    parts = Path(path).parts
-    for p in parts:
-        if p in IGNORE_DIRS:
-            return True
-    return False
-
-
 def count_lines(root="."):
-    root = Path(root).resolve()
     total = blank = comments = code = 0
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
-        if should_ignore(dirpath):
+    for path in ctm.text_files(root):
+        if path.suffix.lower() not in CODE_EXTS:
             continue
-        for fn in filenames:
-            full = Path(dirpath) / fn
-            if should_ignore(str(full)):
-                continue
-            if full.suffix.lower() in IGNORE_EXTS:
-                continue
-            if full.suffix.lower() not in CODE_EXTS:
-                continue
-            try:
-                with open(full, "r", encoding="utf-8", errors="ignore") as f:
-                    for line in f:
-                        total += 1
-                        s = line.strip()
-                        if not s:
-                            blank += 1
-                        elif (
-                            s.startswith("//")
-                            or s.startswith("#")
-                            or s.startswith("/*")
-                            or s.startswith("*")
-                        ):
-                            comments += 1
-                        else:
-                            code += 1
-            except:
-                continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for line in text.splitlines():
+            total += 1
+            s = line.strip()
+            if not s:
+                blank += 1
+            elif s.startswith("//") or s.startswith("#") or s.startswith("/*") or s.startswith("*"):
+                comments += 1
+            else:
+                code += 1
     return {"total": total, "blank": blank, "comments": comments, "code": code}
 
 
@@ -125,11 +77,9 @@ def main():
         out = json.dumps(result, indent=2)
     elif fmt == "csv":
         out = "total,blank,comments,code\n"
-        out += (
-            f'{stats["total"]},{stats["blank"]},{stats["comments"]},{stats["code"]}\n'
-        )
+        out += f"{stats['total']},{stats['blank']},{stats['comments']},{stats['code']}\n"
     else:
-        out = f'Total: {stats["total"]}\nBlank: {stats["blank"]}\nComments: {stats["comments"]}\nCode: {stats["code"]}\n'
+        out = f"Total: {stats['total']}\nBlank: {stats['blank']}\nComments: {stats['comments']}\nCode: {stats['code']}\n"
 
     if output:
         with open(output, "w", encoding="utf-8") as f:
