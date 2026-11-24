@@ -5,6 +5,20 @@ import pytest
 from SneppX_ALG.interface_bindings import acvp_kat as kat
 
 
+def test_load_kat_rejects_path_traversal():
+    for name in ("../secrets.json", "subdir/vectors.json", "..", "/etc/passwd", "C:\\x\\y.json"):
+        with pytest.raises(ValueError, match="invalid vector set name"):
+            kat.load_kat(name)
+
+
+def test_load_kat_rejects_non_json_and_accepts_known_vectors():
+    with pytest.raises(ValueError, match="invalid vector set name"):
+        kat.load_kat("sha3_256_kat.txt")
+    doc = kat.load_kat("sha3_256_kat.json")
+    assert doc.get("algorithm") == "SHA3-256"
+    assert doc.get("vectors")
+
+
 def test_interop_report_distinguishes_errors_mismatches_and_skips():
     vectors = [
         {"tcId": 101, "testPassed": True},
