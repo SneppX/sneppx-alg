@@ -179,7 +179,9 @@ def mldsa_sigver_vectors() -> List[Dict[str, Any]]:
 
 def ml_dsa_variant_for_pk(pk: bytes) -> Optional[int]:
     """Map the public-key length used by ML-DSA sigVer vectors to a variant id."""
-    return {"ML-DSA-44": 2, "ML-DSA-65": 3, "ML-DSA-87": 5}.get(_SIZE_TO_ML_DSA.get(len(pk), ""))
+    return {"ML-DSA-44": 2, "ML-DSA-65": 3, "ML-DSA-87": 5}.get(
+        _SIZE_TO_ML_DSA.get(len(pk), "")
+    )
 
 
 def ml_dsa_variant_for_parameter_set(parameter_set: str) -> Optional[int]:
@@ -196,7 +198,9 @@ def run_mldsa_sigver(crypto: Any, vector: Dict[str, Any]) -> Optional[bool]:
     variant = ml_dsa_variant_for_pk(h2b(vector["pk"]))
     if variant is None:
         return None
-    ok = crypto.dilithium_verify(h2b(vector["sig"]), h2b(vector["msg"]), h2b(vector["pk"]), variant)
+    ok = crypto.dilithium_verify(
+        h2b(vector["sig"]), h2b(vector["msg"]), h2b(vector["pk"]), variant
+    )
     return bool(ok == 0)
 
 
@@ -216,7 +220,9 @@ def slhdsa_sigver_vectors() -> List[Dict[str, Any]]:
 def run_slhdsa_sigver(crypto: Any, vector: Dict[str, Any], variant: int) -> bool:
     """Run one SLH-DSA sigVer vector through the C verifier (fixed parameter set)."""
     return bool(
-        crypto.sphincs_verify(h2b(vector["sig"]), h2b(vector["msg"]), h2b(vector["pk"]), variant)
+        crypto.sphincs_verify(
+            h2b(vector["sig"]), h2b(vector["msg"]), h2b(vector["pk"]), variant
+        )
     )
 
 
@@ -354,7 +360,9 @@ def run_mlkem_encaps_decaps_roundtrip(crypto: Any, vector: Dict[str, Any]) -> bo
     return ss1 == ss2
 
 
-def interop_report(crypto: Any, vectors: List[Dict[str, Any]], runner: Any) -> Dict[str, Any]:
+def interop_report(
+    crypto: Any, vectors: List[Dict[str, Any]], runner: Any
+) -> Dict[str, Any]:
     """Summarise agreement between a verifier and NIST's expected decisions.
 
     Returns ``{"total", "agreed", "mismatches", "skipped", "agreement"}``

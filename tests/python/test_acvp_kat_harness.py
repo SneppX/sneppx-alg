@@ -6,7 +6,13 @@ from SneppX_ALG.interface_bindings import acvp_kat as kat
 
 
 def test_load_kat_rejects_path_traversal():
-    for name in ("../secrets.json", "subdir/vectors.json", "..", "/etc/passwd", "C:\\x\\y.json"):
+    for name in (
+        "../secrets.json",
+        "subdir/vectors.json",
+        "..",
+        "/etc/passwd",
+        "C:\\x\\y.json",
+    ):
         with pytest.raises(ValueError, match="invalid vector set name"):
             kat.load_kat(name)
 
