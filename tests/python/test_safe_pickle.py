@@ -69,6 +69,8 @@ def test_fsdp_loader_honours_opt_in(tmp_path):
 
     model = _DummyFSDP()
     with pytest.warns(RuntimeWarning):
-        optimizer = fsdp_load_checkpoint(model, _write_ckpt(tmp_path), allow_unsafe=True)
+        optimizer = fsdp_load_checkpoint(
+            model, _write_ckpt(tmp_path), allow_unsafe=True
+        )
     assert model.loaded == {"w": 1}
     assert optimizer == {"step": 7}
