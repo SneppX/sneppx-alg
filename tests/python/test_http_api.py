@@ -268,6 +268,26 @@ def test_static_file_parent_traversal_is_blocked(static_server):
     assert outside.read_text(encoding="utf-8").encode() not in response
 
 
+def test_static_file_encoded_parent_traversal_is_blocked(static_server):
+    port, _, outside = static_server
+    response = _raw_http_request(
+        port,
+        b"GET /static/%2e%2e%2fsecret.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
+    )
+    assert not response.startswith(b"HTTP/1.1 200")
+    assert outside.read_text(encoding="utf-8").encode() not in response
+
+
+def test_static_file_empty_path_component_is_rejected(static_server):
+    port, _, outside = static_server
+    response = _raw_http_request(
+        port,
+        b"GET /static//secret.txt HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer sk-sneppx-test-token-2026\r\n\r\n",
+    )
+    assert not response.startswith(b"HTTP/1.1 200")
+    assert outside.read_text(encoding="utf-8").encode() not in response
+
+
 def test_static_file_symlink_escape_is_blocked(static_server):
     port, static_root, outside = static_server
     link = static_root / "outside.txt"

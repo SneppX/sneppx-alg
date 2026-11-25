@@ -7,6 +7,9 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <fcntl.h>
+#include <io.h>
+#include <stdint.h>
 #pragma comment(lib, "ws2_32.lib")
 /*
  * SNEPPX - Http Server
@@ -272,51 +275,137 @@ static int str_starts_with(const char* s, const char* prefix)
     return 1;
 }
 
-/* Resolve both paths before comparing them so traversal and symlink escapes
- * cannot expose files outside a configured static directory. */
-static int path_is_within_directory(const char* root, const char* candidate)
+/* Validate URL path components before any filesystem operation. */
+static int static_path_is_local(const char* relative)
 {
-#ifdef _WIN32
-    char resolved_root[MAX_PATH * 4];
-    char resolved_candidate[MAX_PATH * 4];
-    HANDLE root_handle = CreateFileA(root, FILE_READ_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                                     NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
-    if (root_handle == INVALID_HANDLE_VALUE)
+    if (!relative || !relative[0] || relative[0] == '/' || relative[0] == '\\')
         return 0;
-    HANDLE candidate_handle =
-        CreateFileA(candidate, FILE_READ_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL,
-                    OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
-    if (candidate_handle == INVALID_HANDLE_VALUE)
+    const char* segment = relative;
+    for (const char* p = relative;; p++)
+    {
+        if (*p == '\\' || *p == ':')
+            return 0;
+        if (*p == '/' || *p == '\0')
+        {
+            size_t segment_len = (size_t) (p - segment);
+            if (segment_len == 0 || (segment_len == 1 && segment[0] == '.') ||
+                (segment_len == 2 && segment[0] == '.' && segment[1] == '.'))
+                return 0;
+            if (*p == '\0')
+                break;
+            segment = p + 1;
+        }
+    }
+    return 1;
+}
+
+/*
+ * Open the requested file beneath the configured static root and keep the
+ * validated file handle open for the entire read. Validating a pathname and
+ * reopening it later with fopen() creates a symlink-swap TOCTOU window.
+ */
+static FILE* open_static_file(const char* root, const char* relative)
+{
+    if (!root || !root[0] || !static_path_is_local(relative))
+        return NULL;
+
+#ifdef _WIN32
+    char candidate[MAX_PATH * 8];
+    char resolved_root[MAX_PATH * 8];
+    char resolved_candidate[MAX_PATH * 8];
+    int path_len = snprintf(candidate, sizeof(candidate), "%s\\%s", root, relative);
+    if (path_len < 0 || (size_t) path_len >= sizeof(candidate))
+        return NULL;
+
+    HANDLE root_handle = CreateFileA(root, FILE_READ_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                                     OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    if (root_handle == INVALID_HANDLE_VALUE)
+        return NULL;
+
+    HANDLE file_handle = CreateFileA(candidate, GENERIC_READ | FILE_READ_ATTRIBUTES, FILE_SHARE_READ, NULL,
+                                     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file_handle == INVALID_HANDLE_VALUE)
     {
         CloseHandle(root_handle);
-        return 0;
+        return NULL;
     }
+
     DWORD root_len = GetFinalPathNameByHandleA(root_handle, resolved_root, (DWORD) sizeof(resolved_root),
                                                FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
-    DWORD candidate_len =
-        GetFinalPathNameByHandleA(candidate_handle, resolved_candidate, (DWORD) sizeof(resolved_candidate),
-                                  FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
-    CloseHandle(candidate_handle);
+    DWORD candidate_len = GetFinalPathNameByHandleA(file_handle, resolved_candidate,
+                                                    (DWORD) sizeof(resolved_candidate),
+                                                    FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+    BY_HANDLE_FILE_INFORMATION info;
+    int valid = root_len > 0 && candidate_len > root_len && root_len < sizeof(resolved_root) &&
+                candidate_len < sizeof(resolved_candidate) &&
+                _strnicmp(resolved_root, resolved_candidate, root_len) == 0 &&
+                (resolved_root[root_len - 1] == '\\' || resolved_root[root_len - 1] == '/' ||
+                 resolved_candidate[root_len] == '\\' || resolved_candidate[root_len] == '/') &&
+                GetFileInformationByHandle(file_handle, &info) &&
+                !(info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && GetFileType(file_handle) == FILE_TYPE_DISK;
     CloseHandle(root_handle);
-    if (root_len == 0 || candidate_len == 0 || root_len >= sizeof(resolved_root) ||
-        candidate_len >= sizeof(resolved_candidate) || candidate_len <= root_len)
-        return 0;
-    if (_strnicmp(resolved_root, resolved_candidate, root_len) != 0)
-        return 0;
-    return resolved_root[root_len - 1] == '\\' || resolved_root[root_len - 1] == '/' ||
-           resolved_candidate[root_len] == '\\' || resolved_candidate[root_len] == '/';
+    if (!valid)
+    {
+        CloseHandle(file_handle);
+        return NULL;
+    }
+
+    int fd = _open_osfhandle((intptr_t) file_handle, _O_RDONLY | _O_BINARY);
+    if (fd < 0)
+    {
+        CloseHandle(file_handle);
+        return NULL;
+    }
+    FILE* file = _fdopen(fd, "rb");
+    if (!file)
+        _close(fd);
+    return file;
 #else
-    char resolved_root[PATH_MAX];
-    char resolved_candidate[PATH_MAX];
-    if (!realpath(root, resolved_root) || !realpath(candidate, resolved_candidate))
-        return 0;
-    size_t root_len = strlen(resolved_root);
-    size_t candidate_len = strlen(resolved_candidate);
-    if (candidate_len <= root_len || strncmp(resolved_root, resolved_candidate, root_len) != 0)
-        return 0;
-    if (root_len == 1 && resolved_root[0] == '/')
-        return resolved_candidate[0] == '/';
-    return resolved_candidate[root_len] == '/';
+    int dir_fd = open(root, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (dir_fd < 0)
+        return NULL;
+
+    const char* segment = relative;
+    for (;;)
+    {
+        const char* separator = strchr(segment, '/');
+        size_t segment_len = separator ? (size_t) (separator - segment) : strlen(segment);
+        char component[512];
+        if (segment_len == 0 || segment_len >= sizeof(component))
+        {
+            close(dir_fd);
+            return NULL;
+        }
+        memcpy(component, segment, segment_len);
+        component[segment_len] = '\0';
+
+        if (separator)
+        {
+            int next_fd = openat(dir_fd, component, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+            close(dir_fd);
+            if (next_fd < 0)
+                return NULL;
+            dir_fd = next_fd;
+            segment = separator + 1;
+            continue;
+        }
+
+        int file_fd = openat(dir_fd, component, O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
+        close(dir_fd);
+        if (file_fd < 0)
+            return NULL;
+
+        struct stat info;
+        if (fstat(file_fd, &info) != 0 || !S_ISREG(info.st_mode))
+        {
+            close(file_fd);
+            return NULL;
+        }
+        FILE* file = fdopen(file_fd, "rb");
+        if (!file)
+            close(file_fd);
+        return file;
+    }
 #endif
 }
 
@@ -913,14 +1002,13 @@ static void handle_connection(sock_t client_fd, SNEPPX_HttpServer* srv)
             }
             char filepath[512];
             int path_len = snprintf(filepath, sizeof(filepath), "%s/%s", srv->static_dirs[i][1], rel);
-            if (path_len < 0 || (size_t) path_len >= sizeof(filepath) ||
-                !path_is_within_directory(srv->static_dirs[i][1], filepath))
+            if (path_len < 0 || (size_t) path_len >= sizeof(filepath))
             {
                 resp.status_code = 404;
                 SNEPPX_http_response_set_body_str(&resp, "Not Found");
                 break;
             }
-            FILE* f = fopen(filepath, "rb");
+            FILE* f = open_static_file(srv->static_dirs[i][1], rel);
             if (!f)
             {
                 resp.status_code = 404;
