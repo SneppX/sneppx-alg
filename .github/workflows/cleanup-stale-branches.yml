@@ -1,0 +1,71 @@
+name: Cleanup merged automation branches
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cleanup-merged-automation-branches
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Remove obsolete merged validation and formatter branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Delete only merged, disposable automation branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          main_ref="origin/main"
+          now="$(date +%s)"
+
+          while IFS=$'\t' read -r branch sha; do
+            [ -n "$branch" ] || continue
+            case "$branch" in
+              validation/*)
+                delete_when_merged=true
+                ;;
+              automation/format-*)
+                delete_when_merged=false
+                ;;
+              *)
+                continue
+                ;;
+            esac
+
+            git fetch --no-tags origin "+refs/heads/$branch:refs/remotes/origin/$branch"
+            if ! git merge-base --is-ancestor "$sha" "$main_ref"; then
+              echo "Keeping $branch: its tip is not contained in main."
+              continue
+            fi
+
+            if [ "$delete_when_merged" = false ]; then
+              committed_at="$(git show -s --format=%ct "$sha")"
+              age_seconds=$((now - committed_at))
+              if [ "$age_seconds" -lt 604800 ]; then
+                echo "Keeping $branch: formatter branch is less than seven days old."
+                continue
+              fi
+            fi
+
+            encoded_branch="${branch//\//%2F}"
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$encoded_branch"
+            echo "Deleted merged automation branch: $branch"
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100" --jq '.[] | select((.name | startswith("validation/")) or (.name | startswith("automation/format-"))) | [.name, .commit.sha] | @tsv')
