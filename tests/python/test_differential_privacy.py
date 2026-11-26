@@ -110,6 +110,40 @@ def test_dpsgd_budget_only_configuration_enforces_and_tracks_budget():
     assert budget.remaining[0] < 1000.0
 
 
+def test_dpsgd_state_dict_restores_accountant_and_budget():
+    linear = Linear(2, 1)
+    budget = PrivacyBudget(epsilon=1000.0, delta=1e-5)
+    trainer = DPSGD(
+        SGD(linear.parameters(), lr=0.01),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        budget=budget,
+    )
+    inputs = Tensor.randn((4, 2))
+    targets = Tensor.ones((4, 1))
+    outputs = linear(inputs)
+    losses = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(4)]
+    trainer.step(losses)
+    state = trainer.state_dict()
+    expected_epsilon = trainer.privacy_spent()["epsilon"]
+    expected_budget_spent = trainer._budget.spent[0]
+
+    restored_linear = Linear(2, 1)
+    restored = DPSGD(
+        SGD(restored_linear.parameters(), lr=0.01),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        budget=PrivacyBudget(epsilon=1000.0, delta=1e-5),
+    )
+    restored.load_state_dict(state)
+
+    assert restored.privacy_spent()["epsilon"] == pytest.approx(expected_epsilon)
+    assert restored._budget.spent[0] == pytest.approx(expected_budget_spent)
+    assert restored._accountant_spent_epsilon == pytest.approx(expected_epsilon)
+
+
 def test_dpsgd_preflights_the_tightest_budget_before_parameter_update():
     linear = Linear(2, 1)
     before = [parameter.data.copy() for parameter in linear.parameters()]
