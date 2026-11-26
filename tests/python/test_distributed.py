@@ -102,6 +102,7 @@ def test_context_env_override():
     del os.environ["LOCAL_RANK"]
     print("  test_context_env_override PASS")
 
+
 def test_multi_rank_context_fails_closed(monkeypatch):
     monkeypatch.setenv("WORLD_SIZE", "2")
     monkeypatch.setenv("RANK", "0")
