@@ -15,6 +15,8 @@ The [full historical audit](2026-11-22-security-and-correctness-audit.md) record
 | Medium / Low | 25 | Additional security and assurance findings |
 | Correctness | 19 | Numerical, training, and API correctness findings |
 
+The detailed audit numbers its Medium/Low entries M-1 through M-26, while its executive summary reports 25 Medium/Low findings. That one-entry counting discrepancy is preserved here rather than silently reconciled. The 67 total is the audit's own executive-summary count (7 Critical + 16 High + 25 Medium/Low + 19 correctness).
+
 The 2026-11-24 addendum documents further work to remove or fail closed on several placeholder implementations that could otherwise create false security assurance. These addenda are important remediation evidence, but they are not proof that every item in the original audit is fixed on the current `main` branch.
 
 ## Current interpretation

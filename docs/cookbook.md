@@ -1,3 +1,7 @@
+---
+description: "Copyable SneppX-ALG Python recipes for tensors, neural-network layers, training utilities, and browser-based execution."
+---
+
 # Cookbook — common recipes
 
 Small, copy-pasteable recipes. Every Python block has a **▶ Run** button that

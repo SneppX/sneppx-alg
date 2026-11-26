@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG model-zoo architecture configuration presets, supported model families, and current pretrained-weight limitations."
+---
+
 # Model Zoo Browser
 
 SNEPPX-Alg provides architecture presets for popular LLM families.

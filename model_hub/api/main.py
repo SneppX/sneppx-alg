@@ -316,8 +316,8 @@ class HubDatabase:
         """Create the initial admin user + API key if none exist.
 
         Returns the raw API key if it was freshly created, else None.
-        Uses SNEPPX_HUB_ADMIN_USER / SNEPPX_HUB_ADMIN_PASSWORD env vars
-        (defaults: admin / admin).
+        Uses SNEPPX_HUB_ADMIN_USER (default: admin) and requires an explicitly
+        configured, non-weak SNEPPX_HUB_ADMIN_PASSWORD.
         """
         import os
         from ..utils import hash_password

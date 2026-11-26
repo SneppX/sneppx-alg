@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG sparse tensor APIs and examples for COO, CSR, CSC, and BSR layouts, including conversion and operation coverage."
+---
+
 # Sparse Tensors
 
 SNEPPX-Alg supports sparse tensors in COO, CSR, CSC, and BSR formats.

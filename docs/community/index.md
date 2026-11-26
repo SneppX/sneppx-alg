@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG community showcase, contributor projects, verification criteria, and ways to share integrations."
+---
+
 # Community Showcase
 
 Real projects built on **SNEPPX-Alg**. Each entry is submitted by the

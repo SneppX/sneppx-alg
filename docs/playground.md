@@ -1,3 +1,7 @@
+---
+description: "Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits."
+---
+
 # In-browser Playground
 
 Run **real SneppX-Alg Python** directly in your browser — powered by

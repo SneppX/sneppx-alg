@@ -22,6 +22,10 @@ Core  Secure Engine  Engine  Sec   San    Sec   Sec    Verif  Report
 
 The repository maintains a [historical security and correctness self-audit](audits/index.md). Its addenda record remediation of the seven initial Critical findings and closure of several false-assurance stubs; they do not mean every High, Medium, Low, or correctness finding was resolved. This is an internal engineering record, not an independent security review or certification.
 
+## Audit-log integrity configuration
+
+The audit logger recomputes event hashes and verifies chain links. **Deliberate tamper resistance requires an HMAC secret held outside the log** (`SNEPPX_AUDIT_HMAC_KEY` or an explicit `hmac_key`). Without a configured key, the compatibility path uses unkeyed SHA-256: it can detect accidental corruption but an attacker who can rewrite the log can recompute the chain. For security-sensitive use, configure the same external key for the logger and its backend, enable strict write handling, and send records to access-controlled append-only storage. The in-process hash chain alone is not an immutable audit archive.
+
 ## S0 — Cryptographic Core (experimental)
 
 **Status**: Experimental / partial

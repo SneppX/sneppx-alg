@@ -1,6 +1,10 @@
-"""Audit Logger — Security event audit logging with tamper-evident chains.
+"""Audit Logger — structured security event logging with hash-chain checks.
 
-Provides structured, tamper-evident audit logging with:
+A configured out-of-log HMAC key is required to detect deliberate rewriting of
+persisted events. Without that key, the legacy unkeyed SHA-256 chain can detect
+accidental corruption but is forgeable by anyone who can rewrite the log.
+
+Provides structured audit logging with:
 - Cryptographic hash chaining (hash of each entry includes previous hash)
 - Structured event schema with severity, actor, action, resource, result
 - Multiple output backends (file, syslog, remote API, database)
@@ -52,8 +56,9 @@ def _resolve_audit_key(hmac_key: Optional[bytes] = None) -> Optional[bytes]:
 def _event_digest(event_data: Dict[str, Any], hmac_key: Optional[bytes] = None) -> str:
     """Hash an audit entry with HMAC-SHA256 when a secret key is configured.
 
-    Unkeyed SHA-256 is retained only for backwards compatibility with logs
-    written before the key was configured.
+    If no key is configured, the legacy unkeyed SHA-256 format is still used
+    for compatibility. That detects accidental changes but does not prevent
+    deliberate chain rewriting; it must not be described as tamper-evident.
     """
     payload = {k: v for k, v in event_data.items() if k != "hash"}
     data = json.dumps(
