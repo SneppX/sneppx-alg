@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sneppx-alg"
 version = "1.5.3"
-description = "Open-source AI and machine-learning framework with a native C/C++ core and Python bindings for tensor operations, autograd, and neural-network components"
+description = "Experimental native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -23,13 +23,6 @@ keywords = [
   "numpy",
   "scientific-computing",
   "quantization",
-  "cryptography",
-  "ai-security",
-  "distributed-training",
-  "transformer",
-  "mixture-of-experts",
-  "state-space",
-  "cuda",
   "open-source",
 ]
 
@@ -43,13 +36,12 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
-  "Topic :: Security :: Cryptography",
 ]
 
 dependencies = ["numpy>=1.21.0", "pyyaml>=5.1", "cryptography>=40.0.0"]
 
 [project.urls]
-Homepage = "https://sneppx.github.io/sneppxov/"
+Homepage = "https://sneppx.github.io/sneppx-alg/"
 Repository = "https://github.com/SneppX/sneppx-alg"
 Documentation = "https://sneppx.github.io/sneppx-alg/"
 "Bug Tracker" = "https://github.com/SneppX/sneppx-alg/issues"
