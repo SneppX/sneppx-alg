@@ -2,7 +2,7 @@ name: Code Formatting Check
 
 on:
   push:
-    branches: [main, "validation/**"]
+    branches: [main, "validation/**", "automation/format-*"]
   pull_request:
   workflow_dispatch:
 
