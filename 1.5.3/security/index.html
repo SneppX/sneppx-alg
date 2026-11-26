@@ -5864,10 +5864,6 @@
 see the <a href="audits/">November 22, 2026 audit archive</a>. That audit
 records findings at its audited commit and includes a remediation-commit
 ledger; its original counts are not a statement of current open vulnerabilities.</p>
-<p>For a time-stamped review of historical security and correctness findings,
-see the <a href="audits/">November 22, 2026 audit archive</a>. That audit
-records findings at its audited commit and includes a remediation-commit
-ledger; its original counts are not a statement of current open vulnerabilities.</p>
 <div class="highlight"><pre><span></span><code>S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
 │     │     │     │     │     │     │     │     │     │
 Crypto Memory Obfusc Monitor Network AI    UI    Update Formal Pentest
@@ -6200,7 +6196,7 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <li>Applying an already-current version is rejected to prevent same-version replay. Downgrade rejection still depends on the verifier's rollback-protection setting and its in-memory state.</li>
 <li>The integrity-verification helper requires exactly a 32-byte Ed25519 public key and a 64-byte signature; truncated or trailing key/signature bytes are rejected.</li>
 <li>Signed update bundles: Ed25519-signed update payloads with version rolling</li>
-<li>Rollback protection: monotonic version counter preventing downgrade attacks</li>
+<li>Rollback rejection: process-local version/history checks; state is not durable across restarts or backed by a hardware monotonic counter</li>
 <li>Staged rollout: gradual update distribution with health-check gating</li>
 </ul>
 <h3 id="api_4">API<a class="headerlink" href="#api_4" title="Permanent link">&para;</a></h3>
@@ -6265,73 +6261,74 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <span class="n">SNEPPX_fuzzer_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fz</span><span class="p">,</span><span class="w"> </span><span class="n">duration_sec</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">report</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="threat-model">Threat Model<a class="headerlink" href="#threat-model" title="Permanent link">&para;</a></h2>
+<p>The controls below are implementation areas, not guarantees that the corresponding threat is fully mitigated. Validation varies by component; see the known issues and phase status above.</p>
 <h3 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The hardware is trusted (no side-channel attacks on CPU)</li>
 <li>The OS is trusted (no kernel-level compromise)</li>
 <li>The network is untrusted</li>
 <li>Other AI models are untrusted and potentially adversarial</li>
-<li>Supply chain is trusted (verified commits, signed releases)</li>
+<li>Supply-chain integrity must be verified by the deployment process; repository commits are not guaranteed to be signed</li>
 </ul>
 <h3 id="defenses">Defenses<a class="headerlink" href="#defenses" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Threat</th>
-<th>Defense</th>
+<th>Defense area</th>
 <th>Status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Signature forgery</td>
-<td>Ed25519</td>
-<td>✅</td>
+<td>Ed25519 verification and trusted-key configuration</td>
+<td>Partial; caller and key-management paths require validation</td>
 </tr>
 <tr>
 <td>Data breach at rest</td>
-<td>ChaCha20-Poly1305</td>
-<td>✅</td>
+<td>ChaCha20-Poly1305 authenticated encryption</td>
+<td>Partial; backend availability and integration must be checked</td>
 </tr>
 <tr>
 <td>Side-channel timing</td>
-<td>Constant-time ops</td>
-<td>✅</td>
+<td>Constant-time primitives</td>
+<td>Not fully verified; timing concerns remain</td>
 </tr>
 <tr>
 <td>Memory scraping</td>
-<td>Locked memory + guard pages</td>
-<td>✅</td>
+<td>Locked memory and guard pages</td>
+<td>Platform-dependent; independent validation required</td>
 </tr>
 <tr>
-<td>Swap forensic</td>
-<td>mlock/VirtualLock</td>
-<td>✅</td>
+<td>Swap forensics</td>
+<td>mlock / VirtualLock</td>
+<td>Platform-dependent; OS permissions and limits apply</td>
 </tr>
 <tr>
 <td>Reverse engineering</td>
-<td>CF flattening + string encryption</td>
-<td>⚠️ Partial</td>
+<td>Control-flow flattening and string obfuscation</td>
+<td>Partial</td>
 </tr>
 <tr>
 <td>Runtime tampering</td>
 <td>Behavioral monitor</td>
-<td>⚠️ Partial</td>
+<td>Partial</td>
 </tr>
 <tr>
 <td>Adversarial input</td>
 <td>ARC input guard</td>
-<td>✅</td>
+<td>Partial; not a complete policy boundary</td>
 </tr>
 <tr>
 <td>Gradient leakage</td>
 <td>ARC gradient obfuscation</td>
-<td>✅</td>
+<td>Experimental; efficacy not independently evaluated</td>
 </tr>
 <tr>
 <td>Model inversion</td>
 <td>ARC output verifier</td>
-<td>✅</td>
+<td>Experimental; not independently validated</td>
 </tr>
 </tbody>
 </table>
