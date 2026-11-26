@@ -4,9 +4,9 @@
 
 | Tool | Minimum Version | Notes |
 |------|----------------|-------|
-| CMake | 3.24 | Build system (4.x recommended for CUDA) |
+| CMake | 3.16+ direct builds; 3.25+ presets | CMakePresets.json uses schema version 6 |
 | C compiler | C11 | MSVC 2022, GCC 11+, Clang 14+ |
-| C++ compiler | C++20 | Only needed for S2 obfuscation engine |
+| C++ compiler | C++20 | Required by the native C++ components |
 | Python | 3.11+ | Optional (for bindings + test runner) |
 | CUDA Toolkit | 12.x | Optional (for CUDA optimizer, `SNEPPX_BUILD_CUDA=ON`) |
 
@@ -160,13 +160,21 @@ MSVC parallel build issue. The CMakeLists.txt includes `/FS` flag. If still fail
 cmake --build . --config Release -j1
 ```
 
-### Test fails: "Ed25519 verify" or "Argon2 timing"
+### Cryptographic validation warnings
 
-Pre-existing S0 edge case failures (2/306 Ed25519 vectors, 1/4 Argon2 timing). Not security vulnerabilities.
+The historical security audit recorded incomplete Ed25519 vector coverage
+(304/306) and platform-dependent Argon2 timing. These are cryptographic
+conformance and side-channel validation limitations; do not dismiss them as
+benign or treat the affected primitives as independently validated. Review
+[the security overview](security.md) and [PQC interoperability report](pqc_kat.md)
+before relying on these components.
 
-### CMake 4.x version error
+### CMake preset version is unsupported
 
-If CMake fails with `invalid version string`, ensure you have the v1.0.0 tag checked out.
+`CMakePresets.json` uses preset schema version 6, which requires CMake 3.25
+or newer. For CMake 3.16–3.24, configure directly with
+`cmake -S . -B build -DCMAKE_BUILD_TYPE=Release` instead of using
+`cmake --preset`.
 
 ### Python import fails
 

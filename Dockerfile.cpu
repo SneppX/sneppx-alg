@@ -37,10 +37,12 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "import sneppx_alg; print('SNEPPX-ALG CPU ready')" || exit 1
 
 LABEL org.opencontainers.image.title="SNEPPX-ALG CPU"
-LABEL org.opencontainers.image.description="SNEPPX-ALG CPU-only runtime for inference and training"
-LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.description="Experimental CPU-only runtime for the SneppX-ALG Python API"
+ARG SNEPPX_VERSION=1.5.3
+LABEL org.opencontainers.image.version="${SNEPPX_VERSION}"
 LABEL org.opencontainers.image.authors="Ammar [SNEPPX] <algoSNEPPX@gmail.com>"
-LABEL org.opencontainers.image.source="https://github.com/ammar49-cyber/sneppx-alg"
+LABEL org.opencontainers.image.source="https://github.com/SneppX/sneppx-alg"
+LABEL org.opencontainers.image.documentation="https://sneppx.github.io/sneppx-alg/"
 LABEL org.opencontainers.image.licenses="MIT"
 
 ENTRYPOINT ["python3", "-c", "import sneppx_alg; print(f'SNEPPX-ALG v{sneppx_alg.__version__} ready')"]
