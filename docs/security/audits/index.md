@@ -10,8 +10,8 @@ branch.
 
 ## November 22, 2026 — Security and correctness audit
 
-The [full audit snapshot](2026-11-22.md) records 67 findings at commit
-`db256e27`: 7 Critical, 16 High, 25 Medium/Low, and 19 correctness bugs.
+The [full audit snapshot](2026-11-22.md) records 68 findings at commit
+`db256e27`: 7 Critical, 16 High, 26 Medium/Low, and 19 correctness bugs.
 
 The November 23 addendum in that report records all seven Critical findings
 as resolved. The file also maps C-1 through C-7 and H-1 through H-16 to

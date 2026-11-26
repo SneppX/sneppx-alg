@@ -1,3 +1,7 @@
+---
+description: "Quick reference to the SneppX-ALG Python tensor, neural-network, and utility APIs with links to interactive visualizers."
+---
+
 # API Explorer
 
 Quick reference for SNEPPX-Alg's Python API.

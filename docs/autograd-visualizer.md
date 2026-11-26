@@ -1,3 +1,7 @@
+---
+description: "Interactive SneppX-ALG autograd visualizer showing forward values and reverse-mode gradient propagation for scalar expressions."
+---
+
 # Autograd visualizer
 
 Type a scalar expression, then watch the **forward values** appear and the
