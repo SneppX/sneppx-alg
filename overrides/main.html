@@ -9,13 +9,13 @@
 {% set sx_card = "https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" %}
 {% if page and page.is_homepage %}
   {% set sx_title = "SneppX-ALG — Native C/C++ Machine Learning" %}
-  {% set sx_desc = "Experimental native C/C++ machine-learning framework with Python bindings for tensor operations, autograd, and neural-network components. Alpha software with documented distributed and security limitations." %}
+  {% set sx_desc = "Experimental C/C++ machine-learning framework with Python tensor and autograd APIs." %}
 {% elif page and page.title %}
   {% set sx_title = page.title ~ " | SneppX-ALG" %}
-  {% set sx_desc = page.description or "SneppX-ALG documentation for an experimental native C/C++ machine-learning framework and its Python bindings. Feature maturity varies by subsystem." %}
+  {% set sx_desc = page.description or "SneppX-ALG technical documentation. APIs and maturity vary by subsystem." %}
 {% else %}
   {% set sx_title = "SneppX-ALG — Native C/C++ Machine Learning" %}
-  {% set sx_desc = "Experimental native C/C++ machine-learning framework with Python bindings for tensor operations, autograd, and neural-network components." %}
+  {% set sx_desc = "Experimental C/C++ machine-learning framework with Python tensor and autograd APIs." %}
 {% endif %}
 
 <meta property="og:type" content="website" />
@@ -49,7 +49,7 @@
       "@type": "SoftwareSourceCode",
       "@id": "https://github.com/SneppX/sneppx-alg#source",
       "name": "SneppX-ALG",
-      "description": "Experimental native C/C++ machine-learning framework with Python bindings for tensor operations, automatic differentiation, and neural-network components.",
+      "description": "Experimental native C/C++ machine-learning framework with Python bindings.",
       "codeRepository": "https://github.com/SneppX/sneppx-alg",
       "url": "https://sneppx.github.io/sneppx-alg/",
       "programmingLanguage": ["C", "C++", "Python"],
@@ -69,7 +69,7 @@
         "priceCurrency": "USD"
       },
       "url": "https://sneppx.github.io/sneppx-alg/",
-      "description": "Alpha-stage open-source machine-learning software. The 1.5.3-rc.1 source candidate is not yet a published PyPI release; multi-rank distributed training and security components have documented limitations."
+      "description": "Alpha-stage ML software; release candidate not published to PyPI."
     }
   ]
 }

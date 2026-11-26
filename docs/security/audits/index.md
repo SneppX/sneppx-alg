@@ -31,4 +31,3 @@ The 2026-11-24 addendum documents further work to remove or fail closed on sever
 - [PQC known-answer and interoperability status](../../pqc_kat.md)
 - [Distributed-training implementation status](../../distributed-guide.md)
 - [Framework parity roadmap](../../roadmap/tensorflow-pytorch-parity.md)
-

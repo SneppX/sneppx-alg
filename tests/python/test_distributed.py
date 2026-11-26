@@ -125,14 +125,18 @@ def test_multi_rank_apis_fail_closed():
             except RuntimeError:
                 pass
             else:
-                raise AssertionError(f"{name} must fail for unsupported multi-rank execution")
+                raise AssertionError(
+                    f"{name} must fail for unsupported multi-rank execution"
+                )
 
         try:
             FullyShardedDataParallel(Linear(4, 3))
         except RuntimeError as exc:
             assert "multi-rank fsdp is not supported" in str(exc).lower()
         else:
-            raise AssertionError("FSDP must not silently run without a multi-rank backend")
+            raise AssertionError(
+                "FSDP must not silently run without a multi-rank backend"
+            )
     finally:
         for name, value in previous.items():
             if value is None:

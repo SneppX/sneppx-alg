@@ -1,8 +1,8 @@
 site_name: SneppX-ALG
-site_description: Experimental native C/C++ machine-learning framework with Python bindings for tensor operations, autograd, and neural-network components. Alpha software; distributed and security subsystems have documented limitations.
-  Documentation for the SneppX-ALG C/C++ project and its Python bindings.
-  Includes installation, API references, architecture notes, security
-  limitations, and development guides.
+site_description: >-
+  Experimental native C/C++ machine-learning framework with Python bindings for
+  tensor operations, autograd, and neural-network components. Alpha software;
+  distributed and security subsystems have documented limitations.
 site_author: Ammar [SNEPPX]
 site_url: https://sneppx.github.io/sneppx-alg/
 

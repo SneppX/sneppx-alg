@@ -102,6 +102,7 @@ Ensure the quantizer and dequantizer specify the exact `n` (total element count)
 ### "Can I run multi-rank distributed training?"
 
 Not with the current Python distributed API. When `WORLD_SIZE` is greater than 1, process-group initialization and collectives fail explicitly because a validated multi-rank backend is not integrated. `DistributedSampler` can partition indices locally, but it does not communicate between workers. DDP, FSDP, and ZeRO should be treated as experimental API work, not functioning multi-rank training. See the [distributed-training status](distributed-guide.md).
+
 ## Security
 
 ### "How do I report a security vulnerability?"
