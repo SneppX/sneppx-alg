@@ -1,5 +1,7 @@
 """Tests for quantization module — INT8/FP8/AWQ/GPTQ."""
 
+import warnings
+
 import numpy as np
 from SneppX_ALG.interface_bindings import Tensor
 from SneppX_ALG.interface_bindings.quantization import (
@@ -21,6 +23,8 @@ from SneppX_ALG.interface_bindings.quantization import (
     gptq_quantize,
     QuantizedLinear,
     quantize_error,
+    _fp8_e4m3_to_float,
+    _fp8_e5m2_to_float,
 )
 
 
@@ -122,6 +126,24 @@ def test_fp8_special_values():
     assert np.isinf(dq_e4m3.data[1])
     assert np.isinf(dq_e4m3.data[2])
     print("  test_fp8_special_values PASS")
+
+
+def test_fp8_subnormals_flush_to_signed_zero_without_overflow():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        for code in range(256):
+            _fp8_e4m3_to_float(np.uint8(code))
+            _fp8_e5m2_to_float(np.uint8(code))
+
+    for sign in (0, 0x80):
+        for mantissa in range(1, 8):
+            decoded = _fp8_e4m3_to_float(np.uint8(sign | mantissa))
+            assert decoded == 0.0
+            assert bool(np.signbit(decoded)) == bool(sign)
+        for mantissa in range(1, 4):
+            decoded = _fp8_e5m2_to_float(np.uint8(sign | mantissa))
+            assert decoded == 0.0
+            assert bool(np.signbit(decoded)) == bool(sign)
 
 
 def test_awq_scale():
@@ -246,6 +268,7 @@ if __name__ == "__main__":
     test_fp8_e4m3_roundtrip()
     test_fp8_e5m2_roundtrip()
     test_fp8_special_values()
+    test_fp8_subnormals_flush_to_signed_zero_without_overflow()
     test_awq_scale()
     test_awq_quantize()
     test_gptq_hessian()

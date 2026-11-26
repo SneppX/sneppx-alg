@@ -92,9 +92,10 @@ float SNEPPX_fp8_e4m3_to_float(uint8_t fp8)
         }
         return NAN;
     }
-    if (e4m3_exp == 0 && e4m3_mant == 0)
+    if (e4m3_exp == 0)
     {
-        return 0.0f;
+        /* Subnormals are flushed to signed zero by the matching encoder. */
+        return sign ? -0.0f : 0.0f;
     }
     int32_t exp = (int32_t) e4m3_exp - 7;
     uint32_t f32_exp = (uint32_t) (exp + 127);
@@ -204,9 +205,10 @@ float SNEPPX_fp8_e5m2_to_float(uint8_t fp8)
         }
         return NAN;
     }
-    if (e5m2_exp == 0 && e5m2_mant == 0)
+    if (e5m2_exp == 0)
     {
-        return 0.0f;
+        /* Subnormals are flushed to signed zero by the matching encoder. */
+        return sign ? -0.0f : 0.0f;
     }
     int32_t exp = (int32_t) e5m2_exp - 15;
     uint32_t f32_exp = (uint32_t) (exp + 127);

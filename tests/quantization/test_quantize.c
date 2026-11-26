@@ -137,6 +137,22 @@ static int test_fp8_e5m2_encdec(void)
     return 0;
 }
 
+static int test_fp8_subnormal_flush_to_signed_zero(void)
+{
+    for (uint8_t mantissa = 1; mantissa <= 7; ++mantissa)
+    {
+        assert(SNEPPX_fp8_e4m3_to_float(mantissa) == 0.0f);
+        assert(signbit(SNEPPX_fp8_e4m3_to_float((uint8_t) (0x80 | mantissa))));
+    }
+    for (uint8_t mantissa = 1; mantissa <= 3; ++mantissa)
+    {
+        assert(SNEPPX_fp8_e5m2_to_float(mantissa) == 0.0f);
+        assert(signbit(SNEPPX_fp8_e5m2_to_float((uint8_t) (0x80 | mantissa))));
+    }
+    printf("  FP8 subnormal flush-to-zero PASS\n");
+    return 0;
+}
+
 static int test_awq_quantize(void)
 {
     float weights[8] = {1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f};
@@ -180,6 +196,7 @@ int main(void)
     test_int4_roundtrip();
     test_fp8_e4m3_encdec();
     test_fp8_e5m2_encdec();
+    test_fp8_subnormal_flush_to_signed_zero();
     test_awq_quantize();
     test_gptq_hessian();
     test_quant_mode_names();

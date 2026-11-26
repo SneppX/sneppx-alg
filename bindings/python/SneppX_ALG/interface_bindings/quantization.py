@@ -151,7 +151,8 @@ def _float_to_fp8_e4m3(value: float) -> int:
 
 
 def _fp8_e4m3_to_float(fp8: int) -> float:
-    """Decode a single FP8 E4M3 to float32."""
+    """Decode FP8 E4M3; subnormals follow the encoder's flush-to-zero policy."""
+    fp8 = int(fp8)
     sign = (fp8 >> 7) & 1
     e4m3_exp = (fp8 >> 3) & 0x0F
     e4m3_mant = fp8 & 0x07
@@ -159,8 +160,8 @@ def _fp8_e4m3_to_float(fp8: int) -> float:
         if e4m3_mant == 0:
             return float("inf") if sign == 0 else float("-inf")
         return float("nan")
-    if e4m3_exp == 0 and e4m3_mant == 0:
-        return 0.0
+    if e4m3_exp == 0:
+        return -0.0 if sign else 0.0
     exp = e4m3_exp - 7
     f32_exp = exp + 127
     if f32_exp <= 0:
@@ -191,7 +192,8 @@ def _float_to_fp8_e5m2(value: float) -> int:
 
 
 def _fp8_e5m2_to_float(fp8: int) -> float:
-    """Decode a single FP8 E5M2 to float32."""
+    """Decode FP8 E5M2; subnormals follow the encoder's flush-to-zero policy."""
+    fp8 = int(fp8)
     sign = (fp8 >> 7) & 1
     e5m2_exp = (fp8 >> 2) & 0x1F
     e5m2_mant = fp8 & 0x03
@@ -199,14 +201,14 @@ def _fp8_e5m2_to_float(fp8: int) -> float:
         if e5m2_mant == 0:
             return float("inf") if sign == 0 else float("-inf")
         return float("nan")
-    if e5m2_exp == 0 and e5m2_mant == 0:
-        return 0.0
+    if e5m2_exp == 0:
+        return -0.0 if sign else 0.0
     exp = e5m2_exp - 15
     f32_exp = exp + 127
     if f32_exp <= 0:
         return 0.0
     if f32_exp >= 255:
-        return float("inf") if sign == 0 else float("-float")
+        return float("inf") if sign == 0 else float("-inf")
     f32 = int((sign << 31) | (f32_exp << 23) | (e5m2_mant << 21))
     return np.uint32(f32).view(np.float32).item()
 
