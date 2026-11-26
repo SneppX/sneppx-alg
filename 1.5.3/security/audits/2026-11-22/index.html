@@ -4889,6 +4889,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mediumlow-follow-up-recorded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medium/Low follow-up recorded
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5490,6 +5501,27 @@ changing these security-sensitive areas.</p>
 close the separate Medium/Low and numerical-correctness findings as a group.
 Those items require their own source review and regression evidence. No
 independent cryptographic audit or formal certification is claimed.</p>
+<h3 id="mediumlow-follow-up-recorded">Medium/Low follow-up recorded<a class="headerlink" href="#mediumlow-follow-up-recorded" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Remediation commit(s)</th>
+<th>Recorded change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-26</td>
+<td><code>01c4e6148d</code>, <code>fda839831e</code></td>
+<td>Return owning tensor clones from variable data/gradient accessors and add lifetime regression tests for NumPy views that outlive tape storage.</td>
+</tr>
+</tbody>
+</table>
+<p>The follow-up commits address the reported ownership risk. The targeted tests
+are in <code>tests/python/test_c_tape.py</code>. That file is not part of the default
+CPU-only CI test selection, so this ledger records a code and test follow-up,
+not a fresh CI execution or independent memory-safety certification.</p>
 <hr />
 <h2 id="original-audit-snapshot">Original audit snapshot<a class="headerlink" href="#original-audit-snapshot" title="Permanent link">&para;</a></h2>
 <h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
