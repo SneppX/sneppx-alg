@@ -13,19 +13,20 @@ extern "C"
 #define SPHINCS_SECRETKEYBYTES 64
 #define SPHINCS_SIGBYTES 14592
     /*
-     * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures
+     * SNEPPX - Experimental round-3 SPHINCS+ (SLH-DSA lineage)
      *
      * WHAT
-     *   SPHINCS+ Stateless Hash-Based Signatures.
+     *   Experimental round-3 SPHINCS+ stateless hash-based signatures.
      *
      * CONCEPT
-     *   SPHINCS+ hash-based signature scheme for FIPS 205 quantum-safe signatures.
+     *   Hash-based signatures using round-3 parameter sets; not byte-compatible
+     *   with finalized FIPS 205 SLH-DSA.
      *
      * ROLE
-     *   Layer S0 post-quantum crypto for long-lived signatures.
+     *   Experimental Layer S0 post-quantum crypto for long-lived signatures.
      *
      * REFERENCES
-     *   FIPS 205 (SPHINCS+), NIST PQC Round 3 finalist.
+     *   NIST PQC Round 3 SPHINCS+ finalist. No FIPS validation is claimed.
      */
 
     /**

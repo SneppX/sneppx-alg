@@ -1,4 +1,7 @@
-"""Key-encapsulation mechanism (KEM) bindings — Kyber (ML-KEM), X25519.
+"""Key-encapsulation bindings — experimental round-3 Kyber and X25519.
+
+The Kyber implementation follows round-3 parameters and is not byte-compatible
+with finalized FIPS 203 (ML-KEM); it is not FIPS-validated.
 
 Wraps the C implementations in ``security/crypto/c/`` with pure-Python
 fallback via the ``cryptography`` package.
@@ -15,7 +18,8 @@ _LIB, _HAS_C = load_library("neural_security_c")
 def _require_kyber_backend() -> None:
     """Refuse to fabricate ML-KEM keys/ciphertexts/shared secrets.
 
-    The pure-Python bindings do not expose a validated ML-KEM implementation.
+    The pure-Python bindings do not expose a FIPS-validated ML-KEM implementation.
+    The bundled round-3 Kyber code is experimental and not FIPS interoperable.
     Returning random bytes here used to make both peers derive unrelated
     secrets while reporting success, so callers must get an explicit error.
     """
@@ -25,12 +29,13 @@ def _require_kyber_backend() -> None:
     )
 
 
-# ---- Kyber (ML-KEM, FIPS 203) -------------------------------------------
+# ---- Experimental round-3 Kyber (ML-KEM lineage) -------------------------
 
 
 class KyberKEM:
-    """CRYSTALS-Kyber post-quantum KEM.
+    """Experimental CRYSTALS-Kyber round-3 post-quantum KEM.
 
+    Not byte-compatible with finalized FIPS 203 ML-KEM; not FIPS-validated.
     Security levels: 512 (≈ AES-128), 768 (≈ AES-192), 1024 (≈ AES-256).
     """
 

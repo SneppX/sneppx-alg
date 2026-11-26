@@ -1,4 +1,7 @@
-"""Digital signature bindings — Ed25519, Dilithium (ML-DSA), SPHINCS+ (SLH-DSA).
+"""Digital signature bindings — Ed25519 and experimental round-3 PQ schemes.
+
+Dilithium and SPHINCS+ use round-3 parameter sets and are not byte-compatible
+with finalized FIPS 204/205; neither implementation is FIPS-validated.
 
 The real implementations live in ``security/crypto/c/`` and are exposed to
 Python through the pybind11 extension ``_SNEPPX_c`` (submodule ``crypto``).
@@ -113,13 +116,14 @@ class Ed25519:
             return False
 
 
-# ---- Dilithium (ML-DSA, FIPS 204) ---------------------------------------
+# ---- Experimental round-3 Dilithium (ML-DSA lineage) ---------------------
 
 
 class Dilithium:
-    """CRYSTALS-Dilithium post-quantum signature scheme.
+    """Experimental CRYSTALS-Dilithium round-3 signature scheme.
 
-    Security levels: 2 (128-bit), 3 (192-bit), 5 (256-bit).  The C
+    Not byte-compatible with finalized FIPS 204 ML-DSA; not FIPS-validated.
+    Security levels: 2 (128-bit), 3 (192-bit), 5 (256-bit). The C
     implementation uses pk = 32 + k*320 and sk = 96 + k*608, with
     k = 4 / 6 / 8 for modes 2 / 3 / 5 respectively.
     """
@@ -157,12 +161,13 @@ class Dilithium:
         return False
 
 
-# ---- SPHINCS+ (SLH-DSA, FIPS 205) ---------------------------------------
+# ---- Experimental round-3 SPHINCS+ (SLH-DSA lineage) ---------------------
 
 
 class SphincsPlus:
-    """SPHINCS+ stateless-hash post-quantum signature scheme.
+    """Experimental round-3 SPHINCS+ stateless-hash signature scheme.
 
+    Not byte-compatible with finalized FIPS 205 SLH-DSA; not FIPS-validated.
     The C implementation uses a single fixed parameter set
     (pk = 32, sk = 64, sig = 14592); the ``variant`` argument is accepted
     for API compatibility but is currently ignored by the backend.

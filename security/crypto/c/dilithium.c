@@ -18,13 +18,14 @@
  *   Dilithium ML-DSA (Post-Quantum Digital Signatures).
  *
  * CONCEPT
- *   Module-lattice-based digital signature scheme for FIPS 204 quantum-safe signatures.
+ *   Experimental round-3 Dilithium signatures; not byte-compatible with
+ *   finalized FIPS 204 ML-DSA.
  *
  * ROLE
  *   Layer S0 post-quantum crypto of the S0-S9 security stack for quantum-safe signing.
  *
  * REFERENCES
- *   FIPS 204 (Dilithium / ML-DSA), NIST PQC Round 3 finalist.
+ *   NIST PQC Round 3 Dilithium finalist. No FIPS validation is claimed.
  */
 
 /* Fixed 256-entry NTT twiddle table (bit-reversed order).
@@ -153,7 +154,7 @@ static void dilithium_poly_mul(int32_t r[256], const int32_t a[256], const int32
     memcpy(r, ta, sizeof(ta));
 }
 
-/* Compressed w1 encoding (FIPS 204 polyw1_pack):
+/* Round-3 Dilithium compressed w1 encoding (polyw1_pack):
  *   gamma2 == (Q-1)/32  -> w1 in [0,15], 4 coeffs per 2 bytes (128 bytes/poly)
  *   gamma2 == (Q-1)/88  -> w1 in [0,43], 4 coeffs per 3 bytes (192 bytes/poly) */
 static void dilithium_poly_w1_pack(uint8_t* out, const int32_t w1[256], int32_t gamma2)
@@ -384,7 +385,7 @@ static int32_t dilithium_decompose_scalar(int32_t* a0, int32_t a, int32_t gamma2
         r0 -= alpha;
     int32_t r1 = (r - r0) / alpha; /* HighBits (r - r0 is a multiple of alpha) */
     if (r - r0 == DILITHIUM_Q - 1)
-    { /* FIPS 204 Decompose special case */
+    { /* Round-3 Dilithium Decompose special case */
         r1 = 0;
         r0 = r0 - 1;
     }

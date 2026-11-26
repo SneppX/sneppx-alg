@@ -21,7 +21,8 @@
  *   Kyber.
  *
  * CONCEPT
- *   Provides Kyber post-quantum KEM (FIPS 203).
+ *   Provides experimental round-3 Kyber KEM (ML-KEM lineage); not byte-
+ *   compatible with finalized FIPS 203.
  *
  * ROLE
  *   SNEPPX-Algo core component. See docs/COMMENTING.md for the
@@ -33,7 +34,7 @@ static int16_t zetas[128];
 static int init_ntt = 0;
 
 /* Kyber NTT twiddles: zetas[i] = 2^16 * 17^brv7(i) mod q, i = 0..127
- * (the canonical FIPS 203 / pqcrystals reference table). The original
+ * (the round-3 pqcrystals reference table). The original
  * table here was 336 entries and corrupted after index 63, which
  * silently broke poly_mul and made decapsulation fail. */
 static const int16_t zetas_rom[128] = {
@@ -87,7 +88,7 @@ static int16_t fqmul(int16_t a, int16_t b)
     return mont_reduce((int32_t) a * b);
 }
 
-/* Forward NTT (FIPS 203 / pqcrystals reference layout). Consumes
+/* Forward NTT (round-3 pqcrystals reference layout). Consumes
  * zetas[1..127], one twiddle per 256/len block, then Barrett-reduces
  * every coefficient. */
 static void ntt(int16_t r[256])
@@ -269,7 +270,7 @@ static void poly_tomsg(uint8_t msg[32], const int16_t a[256])
     }
 }
 
-/* Centered-binomial-distribution noise sampling (FIPS 203 §4.1), eta=2.
+/* Round-3 Kyber centered-binomial-distribution noise sampling, eta=2.
  * Draws 2*eta bits per coefficient (popcount(a) - popcount(b)) so the
  * error stays small ([-2, 2]) and decapsulation noise stays well below
  * the compress/decompress rounding threshold. */

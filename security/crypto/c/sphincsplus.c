@@ -9,8 +9,8 @@
  * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures
  *
  * WHAT
- *   Deterministic stateless hash-based signature scheme in the SPHINCS+
- *   family (FIPS 205 style). Hypertree of Merkle trees over WOTS+ one-time
+ *   Experimental round-3 SPHINCS+ parameter set, not byte-compatible with
+ *   finalized FIPS 205 SLH-DSA. Hypertree of Merkle trees over WOTS+ one-time
  *   signatures, message digest committed via a FORS forest.
  *
  * CONCEPT
@@ -23,7 +23,7 @@
  *   manifests, release signing).
  *
  * REFERENCES
- *   FIPS 205 (SLH-DSA / SPHINCS+), NIST PQC Round 3 finalist.
+ *   NIST PQC Round 3 SPHINCS+ finalist. No FIPS validation is claimed.
  *
  * STRUCTURE
  *   Keys:   pk = pub_seed(16) || top-root(16);  sk = sk_seed(16) || sk_prf(16) || pub_seed(16)

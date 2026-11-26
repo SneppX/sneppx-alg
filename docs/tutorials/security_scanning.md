@@ -44,12 +44,15 @@ Flags: `--format c,h,cu,cpp`, `--fail-on <info|low|medium|high|critical>`,
 > The scanner is **static only** — it never executes the analyzed code, so it
 > is safe on untrusted sources.
 
-## 2. Dilithium post-quantum signing (S0)
+## 2. Experimental round-3 Dilithium signing (S0)
+
+> This implementation is not byte-compatible with finalized FIPS 204 (ML-DSA)
+> and is not FIPS-validated.
 
 ```python
 if HAS_C:
     msg = b"SNEPPX-Algo release v1.2.0"
-    dil = Dilithium(level=3)          # FIPS 204 ML-DSA-87
+    dil = Dilithium(level=3)          # experimental round-3 Dilithium
     sig = dil.sign(msg)
     assert dil.verify(msg, sig), "signature invalid"
     print("Dilithium-3 OK, sig len:", len(sig))
@@ -57,11 +60,14 @@ else:
     print("C backend required for S0 crypto (build neural_security_c)")
 ```
 
-## 3. Kyber key encapsulation (S0)
+## 3. Experimental round-3 Kyber key encapsulation (S0)
+
+> This implementation is not byte-compatible with finalized FIPS 203 (ML-KEM)
+> and is not FIPS-validated.
 
 ```python
 if HAS_C:
-    kem  = KyberKEM(k=768)            # ML-KEM-768
+    kem  = KyberKEM(k=768)            # experimental round-3 Kyber
     ct, sk = kem.encapsulate()
     ss = kem.decapsulate(ct)
     assert ss == sk, "KEM mismatch"

@@ -19,19 +19,20 @@ extern "C"
 #define KYBER_VARIANT_768 3
 #define KYBER_VARIANT_1024 4
     /*
-     * SNEPPX - Kyber ML-KEM (Post-Quantum Key Encapsulation)
+     * SNEPPX - Experimental round-3 Kyber (ML-KEM lineage)
      *
      * WHAT
-     *   Kyber ML-KEM (Post-Quantum Key Encapsulation).
+     *   Experimental round-3 Kyber post-quantum key encapsulation.
      *
      * CONCEPT
-     *   Module-lattice (ML-KEM) key generation, encapsulation, and decapsulation for FIPS 203 Kyber-512/768/1024.
+     *   Module-lattice key generation, encapsulation, and decapsulation using
+     *   round-3 Kyber parameter sets; not byte-compatible with finalized FIPS 203.
      *
      * ROLE
-     *   Layer S0 post-quantum crypto of the S0-S9 security stack.
+     *   Experimental Layer S0 post-quantum crypto.
      *
      * REFERENCES
-     *   FIPS 203 (Kyber), NIST PQC Round 3 finalist.
+     *   NIST PQC Round 3 Kyber finalist. No FIPS validation is claimed.
      */
 
     /**

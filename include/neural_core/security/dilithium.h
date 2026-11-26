@@ -13,19 +13,20 @@ extern "C"
 #define DILITHIUM_SECRETKEYBYTES 2560
 #define DILITHIUM_SIGBYTES 3368
     /*
-     * SNEPPX - Dilithium ML-DSA (Post-Quantum Digital Signatures)
+     * SNEPPX - Experimental round-3 Dilithium (ML-DSA lineage)
      *
      * WHAT
-     *   Dilithium ML-DSA (Post-Quantum Digital Signatures).
+     *   Experimental round-3 Dilithium post-quantum digital signatures.
      *
      * CONCEPT
-     *   Module-lattice-based digital signature scheme for FIPS 204 quantum-safe signatures.
+     *   Module-lattice signatures using round-3 parameter sets; not
+     *   byte-compatible with finalized FIPS 204 ML-DSA.
      *
      * ROLE
-     *   Layer S0 post-quantum crypto of the S0-S9 security stack.
+     *   Experimental Layer S0 post-quantum crypto.
      *
      * REFERENCES
-     *   FIPS 204 (Dilithium / ML-DSA), NIST PQC Round 3 finalist.
+     *   NIST PQC Round 3 Dilithium finalist. No FIPS validation is claimed.
      */
 
     /**

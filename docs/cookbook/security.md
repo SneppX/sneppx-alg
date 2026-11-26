@@ -18,13 +18,13 @@ executables. CPU-safe.
 
 ## 2. Ed25519 / Dilithium signing
 
-**Intent:** Post-quantum authentication of payloads.
+**Intent:** Experimental post-quantum authentication using the repository's round-3 Dilithium variant. This implementation is not byte-compatible with finalized FIPS 204 (ML-DSA) and is not FIPS-validated.
 
 ```python
 from SneppX_ALG import Ed25519, Dilithium           # S0 bindings
 
 msg = b"model checkpoint v1.2.0"
-sig = Dilithium(level=3).sign(msg)          # PQ (NIST FIPS 204)
+sig = Dilithium(level=3).sign(msg)          # experimental round-3 Dilithium
 assert Dilithium(level=3).verify(msg, sig)
 
 sig2 = Ed25519().sign(msg)                  # classical (RFC 8032)
@@ -41,7 +41,7 @@ suite. Python bindings are thin wrappers over `security/crypto/c/`.
 ```python
 from SneppX_ALG import KyberKEM
 
-kem = KyberKEM(k=768)                       # Kyber-768 (ML-KEM)
+kem = KyberKEM(k=768)                       # experimental round-3 Kyber
 ct, session_key = kem.encapsulate()         # sender
 shared = kem.decapsulate(ct)                # receiver
 assert shared == session_key
