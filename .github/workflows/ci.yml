@@ -89,6 +89,8 @@ jobs:
             tests/python/test_quantization.py \
             tests/python/test_differential_privacy.py \
             tests/python/test_continuous_batching.py \
+            tests/python/test_audit_backend_hardening.py \
+            tests/python/test_blake3_pure.py \
             -q -p no:cacheprovider
 
   native-build-smoke:

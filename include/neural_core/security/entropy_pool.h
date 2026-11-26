@@ -19,10 +19,12 @@ extern "C"
      *   Entropy Pool.
      *
      * CONCEPT
-     *   Collects entropy from OS sources into a pool for the CSPRNG.
+     *   Legacy entropy-mixing utility. Its custom SipHash counter-mode output
+     *   is not a standardized DRBG and is not a production CSPRNG.
      *
      * ROLE
-     *   Foundation for the random number subsystem feeding the DRBG.
+     *   Retained for compatibility/testing only. Production keys, nonces, and
+     *   tokens must use SNEPPX_random_bytes() backed by the operating system.
      *
      * REFERENCES
      *   None (internal utility).

@@ -51,6 +51,12 @@ class SchedulerConfig:
     max_queue_size: int = 1024
     schedule_strategy: str = "fcfs"
 
+    def __post_init__(self):
+        for name in ("max_batch_size", "max_total_tokens", "max_queue_size"):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ValueError(f"{name} must be a positive integer")
+
 
 @dataclass
 class BatchResult:
@@ -81,6 +87,10 @@ class ContinuousBatchScheduler:
         top_k: int = 0,
         top_p: float = 1.0,
     ) -> str:
+        if isinstance(max_new_tokens, bool) or not isinstance(max_new_tokens, int) or max_new_tokens <= 0:
+            raise ValueError("max_new_tokens must be a positive integer")
+        if len(prompt_tokens) + max_new_tokens > self.config.max_total_tokens:
+            raise ValueError("request exceeds max_total_tokens and can never fit in a batch")
         with self._lock:
             if len(self._pending) >= self.config.max_queue_size:
                 raise RuntimeError("continuous batching queue is full")
@@ -108,7 +118,7 @@ class ContinuousBatchScheduler:
                 if self.config.schedule_strategy != "fcfs":
                     candidates = sorted(candidates, key=lambda r: -r.priority)
                 used_tokens = sum(
-                    len(req.prompt_tokens) + len(req.generated_tokens) for req in active
+                    len(req.prompt_tokens) + req.max_new_tokens for req in active
                 )
                 batch = []
                 deferred = []

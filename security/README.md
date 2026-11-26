@@ -120,9 +120,9 @@ Classical and post-quantum cryptographic primitives in `crypto/c/` with MASM x86
 
 | Primitive | Type | Standard |
 |-----------|------|----------|
-| **Kyber** (ML-KEM) | Key Encapsulation | FIPS 203 (draft) |
-| **Dilithium** (ML-DSA) | Digital Signature | FIPS 204 (draft) |
-| **SPHINCS+** | Hash-based Signature | FIPS 205 (draft) |
+| **Kyber** (round-3; ML-KEM lineage) | Key Encapsulation | Experimental; not byte-compatible with FIPS 203 |
+| **Dilithium** (round-3; ML-DSA lineage) | Digital Signature | Experimental; not byte-compatible with FIPS 204 |
+| **SPHINCS+** (round-3; SLH-DSA lineage) | Hash-based Signature | Experimental; not byte-compatible with FIPS 205 |
 | **X25519** | Key Exchange | RFC 7748 |
 | **Ed25519** | Digital Signature | RFC 8032 |
 | **AES-256-GCM** | Symmetric Encryption | FIPS 197 |

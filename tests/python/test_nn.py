@@ -88,7 +88,9 @@ def test_dropout_eval():
 
 def test_layernorm():
     ln = LayerNorm(4)
-    x = Tensor.randn((2, 4))
+    x = Tensor.from_numpy(
+        np.array([[1.0, 2.0, 3.0, 4.0], [-2.0, -1.0, 1.0, 2.0]], dtype=np.float32)
+    )
     out = ln(x)
     assert out.shape == (2, 4)
     mean = out.data.mean(axis=-1)

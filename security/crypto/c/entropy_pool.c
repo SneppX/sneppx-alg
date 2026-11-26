@@ -17,14 +17,15 @@
  * SNEPPX - Entropy Pool
  *
  * WHAT
- *   Entropy Pool.
+ *   Legacy entropy pool retained for compatibility/testing.
  *
  * CONCEPT
- *   Provides entropy collection.
+ *   Uses a custom SipHash-based mixer; this is not a standardized DRBG or a
+ *   production cryptographic random generator.
  *
  * ROLE
- *   SNEPPX-Algo core component. See docs/COMMENTING.md for the
- *   four-layer commenting standard used across this codebase.
+ *   Do not use this output for keys, nonces, tokens, or other security
+ *   decisions. Production randomness must come from SNEPPX_random_bytes().
  *
  */
 

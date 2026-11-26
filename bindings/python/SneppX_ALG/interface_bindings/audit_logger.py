@@ -20,6 +20,9 @@ import time
 import tempfile
 import hashlib
 import hmac
+import ipaddress
+import http.client
+import socket
 import re
 import threading
 import logging
@@ -32,7 +35,6 @@ from urllib.parse import urlparse
 import urllib.request
 from abc import ABC, abstractmethod
 from collections import deque
-import queue
 import gzip
 import shutil
 
@@ -483,26 +485,37 @@ class SyslogAuditBackend(AuditBackend):
 
 
 def _validate_audit_endpoint(endpoint: str) -> str:
-    """Allow only HTTPS (or explicit loopback HTTP) audit endpoints.
-
-    The Bearer token is attached to this URL, so redirects or credential
-    bearing URLs must never be accepted.
-    """
+    """Validate an audit URL before attaching its bearer credential."""
+    if not isinstance(endpoint, str) or not endpoint:
+        raise ValueError("audit endpoint must be a non-empty URL")
     parsed = urlparse(endpoint)
-    host = parsed.hostname or ""
-    loopback = host in {"localhost", "127.0.0.1", "::1"}
-    if parsed.scheme != "https" and not (parsed.scheme == "http" and loopback):
-        raise ValueError("audit endpoint must be HTTPS or loopback HTTP")
-    if (
-        not host
-        or parsed.username
-        or parsed.password
-        or parsed.query
-        or parsed.fragment
-    ):
-        raise ValueError(
-            "audit endpoint must not contain credentials, query, or fragment"
-        )
+    try:
+        parsed.port
+    except ValueError as exc:
+        raise ValueError("audit endpoint has an invalid port") from exc
+    host = (parsed.hostname or "").rstrip(".").lower()
+    if not host or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ValueError("audit endpoint must not contain credentials, query, or fragment")
+    if parsed.scheme not in {"https", "http"}:
+        raise ValueError("audit endpoint must use HTTPS or loopback HTTP")
+    if parsed.scheme == "http":
+        try:
+            loopback = ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            loopback = host == "localhost"
+        if not loopback:
+            raise ValueError("HTTP audit endpoints must use loopback")
+    else:
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            if host == "localhost" or host.endswith(
+                (".localhost", ".local", ".internal", ".lan", ".home.arpa", ".test", ".invalid")
+            ):
+                raise ValueError("HTTPS audit endpoint must not use a local hostname")
+        else:
+            if not address.is_global:
+                raise ValueError("HTTPS audit endpoint must use a public IP address")
     return endpoint
 
 
@@ -511,6 +524,63 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
+
+
+def _resolve_public_audit_addresses(endpoint: str):
+    parsed = urlparse(endpoint)
+    host = parsed.hostname
+    port = parsed.port or 443
+    records = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+    addresses = []
+    seen = set()
+    for family, socktype, proto, _canonname, sockaddr in records:
+        if not ipaddress.ip_address(sockaddr[0]).is_global:
+            raise ValueError("HTTPS audit hostname resolved to a non-public address")
+        key = (family, socktype, proto, sockaddr)
+        if key not in seen:
+            seen.add(key)
+            addresses.append((family, socktype, proto, sockaddr))
+    if not addresses:
+        raise OSError("HTTPS audit hostname did not resolve to an address")
+    return addresses
+
+
+class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+    def __init__(self, host, port=None, *, addresses, **kwargs):
+        self._addresses = addresses
+        super().__init__(host, port, **kwargs)
+
+    def connect(self):
+        last_error = None
+        for _family, _socktype, _proto, sockaddr in self._addresses:
+            sock = None
+            try:
+                sock = socket.create_connection(
+                    sockaddr, timeout=self.timeout, source_address=self.source_address
+                )
+                self.sock = self._context.wrap_socket(sock, server_hostname=self.host)
+                return
+            except OSError as exc:
+                last_error = exc
+                if sock is not None:
+                    sock.close()
+        if last_error is not None:
+            raise last_error
+        raise OSError("no validated HTTPS audit address is available")
+
+
+class _PinnedHTTPSHandler(urllib.request.HTTPSHandler):
+    def __init__(self, addresses):
+        super().__init__()
+        self._addresses = addresses
+
+    def https_open(self, req):
+        factory = lambda host, **kwargs: _PinnedHTTPSConnection(
+            host, addresses=self._addresses, **kwargs
+        )
+        return self.do_open(
+            factory, req, context=self._context, check_hostname=self._check_hostname
+        )
 
 
 class RemoteAPIAuditBackend(AuditBackend):
@@ -526,6 +596,8 @@ class RemoteAPIAuditBackend(AuditBackend):
         hmac_key: Optional[bytes] = None,
         max_buffer: int = 10000,
     ):
+        if timeout <= 0 or batch_size <= 0 or flush_interval <= 0 or max_buffer <= 0:
+            raise ValueError("timeout, batch_size, flush_interval, and max_buffer must be positive")
         self._hmac_key = _resolve_audit_key(hmac_key)
         self.endpoint = _validate_audit_endpoint(endpoint)
         self.api_key = api_key
@@ -533,63 +605,68 @@ class RemoteAPIAuditBackend(AuditBackend):
         self.batch_size = batch_size
         self.flush_interval = flush_interval
         self.max_buffer = max_buffer
-
-        self._queue: queue.Queue = queue.Queue()
         self._buffer: List[AuditEvent] = []
         self._lock = threading.Lock()
+        self._flush_lock = threading.Lock()
+        self._inflight_count = 0
         self._prev_hash = "0" * 64
         self._running = True
+        self._stop_event = threading.Event()
         self._worker = threading.Thread(target=self._flush_worker, daemon=True)
         self._worker.start()
 
     def _flush_worker(self):
-        import urllib.request
-        import urllib.error
-
-        while self._running:
-            time.sleep(self.flush_interval)
+        while not self._stop_event.wait(self.flush_interval):
             self._flush_batch()
 
-    def _flush_batch(self):
-        with self._lock:
-            if not self._buffer:
-                return
-            batch = self._buffer[: self.batch_size]
-            self._buffer = self._buffer[self.batch_size :]
-
-        try:
-            import urllib.request
-
-            data = json.dumps([e.to_dict() for e in batch]).encode()
-            req = urllib.request.Request(
-                self.endpoint,
-                data=data,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.api_key}",
-                },
-            )
-            opener = urllib.request.build_opener(_NoRedirectHandler())
-            opener.open(req, timeout=self.timeout)
-        except Exception:
-            # Re-queue on failure
+    def _flush_batch(self) -> bool:
+        """Send one batch without holding the buffer lock during network I/O."""
+        with self._flush_lock:
             with self._lock:
-                self._buffer = batch + self._buffer
-
-    def write(self, event: AuditEvent) -> bool:
-        event.prev_hash = self._prev_hash
-        event.hash = _event_digest(event.to_dict(), self._hmac_key)
-        self._prev_hash = event.hash
-
-        with self._lock:
-            if len(self._buffer) >= self.max_buffer:
+                if not self._buffer:
+                    return False
+                batch = self._buffer[: self.batch_size]
+                del self._buffer[: len(batch)]
+                self._inflight_count += len(batch)
+            try:
+                data = json.dumps([event.to_dict() for event in batch]).encode()
+                req = urllib.request.Request(
+                    self.endpoint, data=data,
+                    headers={"Content-Type": "application/json",
+                             "Authorization": f"Bearer {self.api_key}"},
+                )
+                handlers = [urllib.request.ProxyHandler({}), _NoRedirectHandler()]
+                if urlparse(self.endpoint).scheme == "https":
+                    handlers.append(_PinnedHTTPSHandler(_resolve_public_audit_addresses(self.endpoint)))
+                response = urllib.request.build_opener(*handlers).open(req, timeout=self.timeout)
+                if response is not None and hasattr(response, "close"):
+                    response.close()
+            except Exception as exc:
+                with self._lock:
+                    self._inflight_count -= len(batch)
+                    self._buffer = batch + self._buffer
                 logging.getLogger(__name__).warning(
-                    "audit event dropped: remote backend buffer is full"
+                    "remote audit flush failed; batch retained (%s)", type(exc).__name__
                 )
                 return False
+            with self._lock:
+                self._inflight_count -= len(batch)
+            return True
+
+    def write(self, event: AuditEvent) -> bool:
+        with self._lock:
+            if len(self._buffer) + self._inflight_count >= self.max_buffer:
+                logging.getLogger(__name__).warning(
+                    "audit event rejected: remote backend buffer is full"
+                )
+                return False
+            event.prev_hash = self._prev_hash
+            event.hash = _event_digest(event.to_dict(), self._hmac_key)
+            self._prev_hash = event.hash
             self._buffer.append(event)
-            if len(self._buffer) >= self.batch_size:
-                self._flush_batch()
+            should_flush = len(self._buffer) >= self.batch_size
+        if should_flush:
+            self._flush_batch()
         return True
 
     def query(self, **kwargs) -> List[AuditEvent]:
@@ -597,7 +674,14 @@ class RemoteAPIAuditBackend(AuditBackend):
 
     def close(self):
         self._running = False
-        self._flush_batch()
+        self._stop_event.set()
+        if self._worker.is_alive():
+            self._worker.join(timeout=self.timeout + 1)
+        while True:
+            with self._lock:
+                pending = bool(self._buffer)
+            if not pending or not self._flush_batch():
+                break
 
 
 def _validate_sql_identifier(name: str) -> str:
@@ -1183,7 +1267,7 @@ def get_audit_logger(
         if db_path:
             backends.append(DatabaseAuditBackend(db_path))
 
-        _global_audit_logger = AuditLogger(backends)
+        _global_audit_logger = AuditLogger(backends, strict=True)
     return _global_audit_logger
 
 

@@ -86,8 +86,10 @@ class PrivacyBudget:
     """
 
     def __init__(self, epsilon: float, delta: float = 1e-5):
-        if epsilon <= 0:
-            raise ValueError(f"epsilon must be > 0, got {epsilon}")
+        if not math.isfinite(epsilon) or epsilon <= 0:
+            raise ValueError(f"epsilon must be finite and > 0, got {epsilon}")
+        if not math.isfinite(delta) or not 0 < delta < 1:
+            raise ValueError(f"delta must be finite and in (0, 1), got {delta}")
         self._total_epsilon = epsilon
         self._total_delta = delta
         self._spent_epsilon = 0.0
@@ -149,7 +151,7 @@ class RDPAccountant:
 
     Supports:
     - Gaussian mechanism (per-step RDP = alpha / (2 * sigma^2))
-    - Poisson subsampling amplification (approximate: rdp *= q^2)
+    - A conservative full-Gaussian bound without subsampling amplification
     - RDP -> (epsilon, delta) conversion via optimal order selection
     """
 
@@ -182,36 +184,24 @@ class RDPAccountant:
         Args:
             noise_multiplier: sigma / max_grad_norm ratio.
             batch_size: number of samples in this step.
-            num_samples: total dataset size (needed for amplification).
+            num_samples: optional dataset size, validated but not used for amplification.
         """
-        if noise_multiplier <= 0:
+        if not math.isfinite(noise_multiplier) or noise_multiplier < 0:
+            raise ValueError("noise_multiplier must be finite and non-negative")
+        if not isinstance(batch_size, int) or batch_size <= 0:
+            raise ValueError("batch_size must be a positive integer")
+        if num_samples is not None and (
+            not isinstance(num_samples, int) or num_samples <= 0 or batch_size > num_samples
+        ):
+            raise ValueError("num_samples must be positive and at least batch_size")
+        if noise_multiplier == 0:
             return
 
-        q = batch_size / num_samples if (num_samples and num_samples > 0) else 1.0
-
+        # The previous q^2 heuristic was not a proven subsampled-Gaussian
+        # bound. Use the full Gaussian mechanism bound at every sampling rate.
         for i, alpha in enumerate(self._orders):
-            if alpha <= 1:
-                continue
-            # RDP for Gaussian: alpha / (2 * sigma^2)
-            # sigma = noise_multiplier * 1.0 (sensitivity = 1 for clipped gradient)
-            step_rdp = alpha / (2.0 * noise_multiplier * noise_multiplier)
-
-            # Subsampling amplification (Poisson, dominant-term approx)
-            if q < 1.0:
-                # E[ (q * N(0,sigma^2) + (1-q))^alpha ] approximation
-                step_rdp = math.log(
-                    1.0
-                    + q
-                    * q
-                    * alpha
-                    * (alpha - 1)
-                    / (2.0 * noise_multiplier * noise_multiplier)
-                ) / (alpha - 1)
-                if step_rdp < 0:
-                    step_rdp = 0.0
-
-            self._rdp[i] += step_rdp
-
+            if alpha > 1:
+                self._rdp[i] += alpha / (2.0 * noise_multiplier * noise_multiplier)
         self._steps += 1
 
     def get_epsilon(self, delta: Optional[float] = None) -> float:
@@ -225,6 +215,8 @@ class RDPAccountant:
         if self._steps == 0:
             return float("inf")
         target_delta = delta if delta is not None else self._delta
+        if not math.isfinite(target_delta) or not 0 < target_delta < 1:
+            raise ValueError("delta must be finite and in (0, 1)")
         epsilons = []
         for i, alpha in enumerate(self._orders):
             if alpha <= 1:
@@ -279,6 +271,18 @@ class DPSGD:
         delta: float = 1e-5,
         budget: Optional[PrivacyBudget] = None,
     ):
+        if not math.isfinite(noise_multiplier) or noise_multiplier < 0:
+            raise ValueError("noise_multiplier must be finite and non-negative")
+        if not math.isfinite(max_grad_norm) or max_grad_norm <= 0:
+            raise ValueError("max_grad_norm must be finite and positive")
+        if epsilon is not None and (not math.isfinite(epsilon) or epsilon <= 0):
+            raise ValueError("epsilon must be finite and positive")
+        if not math.isfinite(delta) or not 0 < delta < 1:
+            raise ValueError("delta must be finite and in (0, 1)")
+        if num_samples is not None and (
+            not isinstance(num_samples, int) or num_samples <= 0
+        ):
+            raise ValueError("num_samples must be a positive integer")
         self._opt = optimizer
         self._params = optimizer.params
         self._noise_mult = noise_multiplier
@@ -286,19 +290,16 @@ class DPSGD:
         self._num_samples = num_samples
         self._steps = 0
         self._epsilon = epsilon
-        self._delta = delta
-
+        self._budget = budget
+        self._delta = budget._total_delta if budget is not None else delta
         if accountant is not None:
             self._accountant = accountant
-        elif epsilon is not None:
-            self._accountant = RDPAccountant(delta=delta)
+        elif epsilon is not None or budget is not None:
+            self._accountant = RDPAccountant(delta=self._delta)
         else:
             self._accountant = None
-
-        # M-7: accept epsilon?/delta? as an ENFORCED budget, not decoration.
-        self._budget = budget
         if self._budget is None and epsilon is not None:
-            self._budget = PrivacyBudget(epsilon, delta)
+            self._budget = PrivacyBudget(epsilon, self._delta)
 
     @property
     def lr(self):
@@ -316,18 +317,25 @@ class DPSGD:
         self._opt.zero_grad()
 
     def _check_budget(self, batch_size: int):
-        """Reject a step that would exceed the configured epsilon budget."""
-        if self._epsilon is None or self._accountant is None or self._noise_mult <= 0:
-            return
+        """Return a preflight accountant state or reject before model updates."""
+        if self._accountant is None or self._noise_mult <= 0:
+            return None
         import copy
 
         trial = copy.deepcopy(self._accountant)
         trial.step(self._noise_mult, batch_size, self._num_samples)
         projected = trial.get_epsilon(self._delta)
-        if projected > self._epsilon:
+        limits = []
+        if self._epsilon is not None:
+            limits.append(self._epsilon)
+        if self._budget is not None:
+            limits.append(self._budget._total_epsilon)
+        if limits and projected > min(limits):
+            limit = min(limits)
             raise ValueError(
-                f"epsilon budget exhausted: step would spend {projected:.4f} > {self._epsilon:.4f}"
+                f"epsilon budget exhausted: step would spend {projected:.4f} > {limit:.4f}"
             )
+        return trial
 
     def step(self, per_sample_losses):
         """Take a DP-SGD step using per-sample losses.
@@ -338,14 +346,7 @@ class DPSGD:
         batch_size = len(per_sample_losses)
         if batch_size == 0:
             return
-        self._check_budget(batch_size)
-
-        # M-7: refuse to spend past an exhausted privacy budget.
-        if self._budget is not None and self._noise_mult > 0:
-            if self._budget.remaining[0] <= 0:
-                raise ValueError(
-                    "Privacy budget exhausted: refusing additional DP-SGD step"
-                )
+        next_accountant = self._check_budget(batch_size)
 
         # Accumulate clipped per-sample gradients
         accumulated = [np.zeros_like(p.data, dtype=np.float64) for p in self._params]
@@ -388,25 +389,13 @@ class DPSGD:
             )
 
         self._opt.step()
-
         self._steps += 1
-        if self._accountant is not None:
-            self._accountant.step(
-                noise_multiplier=self._noise_mult,
-                batch_size=batch_size,
-                num_samples=self._num_samples,
-            )
-            if self._budget is not None and self._noise_mult > 0:
-                # RDP->DP conversion has a delta term and optimal-alpha
-                # selection, so epsilon is NOT additive; track the accountant's
-                # actual cumulative value rather than summing step deltas.
-                epsilon_after = self._accountant.get_epsilon()
-                self._budget._spent_epsilon = epsilon_after
-                if epsilon_after > self._budget._total_epsilon:
-                    raise ValueError(
-                        "Privacy budget exhausted: "
-                        f"epsilon {epsilon_after:.4f} > {self._budget._total_epsilon:.4f}"
-                    )
+        if next_accountant is not None:
+            self._accountant = next_accountant
+            if self._budget is not None:
+                self._budget._spent_epsilon = next_accountant.get_epsilon(
+                    self._delta
+                )
 
     def privacy_spent(self) -> Dict[str, float]:
         """Return (epsilon, delta) privacy cost so far."""
@@ -423,6 +412,9 @@ class DPSGD:
             "max_grad_norm": self._max_grad_norm,
             "steps": self._steps,
             "num_samples": self._num_samples,
+            "epsilon": self._epsilon,
+            "delta": self._delta,
+            "budget": self._budget.to_dict() if self._budget else None,
             "accountant": self._accountant.to_dict() if self._accountant else None,
             "opt_state": self._opt.state_dict(),
         }
@@ -432,7 +424,12 @@ class DPSGD:
         self._max_grad_norm = state_dict.get("max_grad_norm", self._max_grad_norm)
         self._steps = state_dict.get("steps", 0)
         self._num_samples = state_dict.get("num_samples", self._num_samples)
-        if self._accountant and state_dict.get("accountant"):
+        self._epsilon = state_dict.get("epsilon", self._epsilon)
+        self._delta = state_dict.get("delta", self._delta)
+        if "budget" in state_dict:
+            budget_state = state_dict["budget"]
+            self._budget = PrivacyBudget.from_dict(budget_state) if budget_state else None
+        if state_dict.get("accountant"):
             self._accountant = RDPAccountant.from_dict(state_dict["accountant"])
         if state_dict.get("opt_state"):
             self._opt.load_state_dict(state_dict["opt_state"])

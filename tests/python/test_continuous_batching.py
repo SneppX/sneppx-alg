@@ -3,6 +3,7 @@
 import time
 import threading
 import numpy as np
+import pytest
 from SneppX_ALG.interface_bindings.continuous_batching import (
     ContinuousBatchScheduler,
     SchedulerConfig,
@@ -121,6 +122,27 @@ def test_pending_queue_is_bounded():
     assert s.get_stats()["pending"] == 2
 
 
+def test_oversized_request_is_rejected_immediately():
+    scheduler = ContinuousBatchScheduler(SchedulerConfig(max_total_tokens=5))
+    with pytest.raises(ValueError, match="can never fit"):
+        scheduler.submit("too long", [1, 2, 3], max_new_tokens=3)
+    assert scheduler.get_stats()["pending"] == 0
+
+
+def test_running_requests_reserve_their_remaining_token_allowance():
+    scheduler = ContinuousBatchScheduler(
+        SchedulerConfig(max_batch_size=4, max_total_tokens=6)
+    )
+    first = scheduler.submit("first", [1, 2], max_new_tokens=2)
+    assert [request.id for request in scheduler.get_batch()] == [first]
+    scheduler._running[first].generated_tokens.append(3)
+    second = scheduler.submit("second", [4], max_new_tokens=2)
+    batch = scheduler.get_batch()
+    assert [request.id for request in batch] == [first]
+    assert scheduler.get_stats()["pending"] == 1
+    assert scheduler._pending[0].id == second
+
+
 def test_get_batch_respects_max_total_tokens():
     cfg = SchedulerConfig(max_batch_size=4, max_total_tokens=6)
     s = ContinuousBatchScheduler(cfg)
@@ -148,5 +170,7 @@ if __name__ == "__main__":
     test_stats_after_complete()
     test_concurrent_submit_uses_unique_ids()
     test_pending_queue_is_bounded()
+    test_oversized_request_is_rejected_immediately()
+    test_running_requests_reserve_their_remaining_token_allowance()
     test_get_batch_respects_max_total_tokens()
     print("ALL continuous_batching TESTS PASS")

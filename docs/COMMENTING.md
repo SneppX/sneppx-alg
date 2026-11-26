@@ -48,7 +48,8 @@ Example from the security domain:
  *
  * WHAT
  *   Module-lattice (ML-KEM) key generation, encapsulation, and decapsulation
- *   for the FIPS 203 Kyber-512/768/1024 parameter sets.
+ *   for the round-3 Kyber-512/768/1024 parameter sets; not byte-compatible
+ *   with the finalized FIPS 203 ML-KEM encoding.
  *
  * CONCEPT
  *   Kyber is a post-quantum KEM whose security rests on the Module-LWE
@@ -63,7 +64,8 @@ Example from the security domain:
  *   secret that cannot be broken by a quantum adversary.
  *
  * REFERENCES
- *   FIPS 203 (Kyber), NIST PQC Round 3 finalist.
+ *   NIST PQC Round 3 Kyber finalist; implementation is experimental and not
+ *   FIPS 203 interoperable.
  */
 ```
 

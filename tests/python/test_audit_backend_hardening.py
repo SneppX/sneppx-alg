@@ -1,7 +1,9 @@
 """Hardening tests for audit logging backends."""
 
 import time
+import socket
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -16,7 +18,9 @@ from SneppX_ALG.interface_bindings.audit_logger import (
     AuditSeverity,
     RemoteAPIAuditBackend,
     _NoRedirectHandler,
+    _PinnedHTTPSHandler,
 )
+from SneppX_ALG.interface_bindings import audit_logger as audit_module
 
 
 def _event():
@@ -75,6 +79,16 @@ def test_remote_endpoint_allows_https():
         backend.close()
 
 
+@pytest.mark.parametrize(
+    "endpoint",
+    ["https://127.0.0.1/events", "https://10.0.0.8/events",
+     "https://[::1]/events", "https://localhost/events", "https://audit.internal/events"],
+)
+def test_remote_endpoint_rejects_private_hosts(endpoint):
+    with pytest.raises(ValueError):
+        RemoteAPIAuditBackend(endpoint=endpoint, api_key="key", flush_interval=1000)
+
+
 def test_remote_buffer_is_bounded():
     backend = RemoteAPIAuditBackend(
         endpoint="https://audit.example.com/events",
@@ -89,6 +103,74 @@ def test_remote_buffer_is_bounded():
         assert backend.write(_event()) is False
         assert len(backend._buffer) == 2
     finally:
+        backend._flush_batch = lambda: False
+        backend.close()
+
+
+def test_remote_write_flushes_at_batch_threshold(monkeypatch):
+    calls, observed = [], []
+
+    def public_dns(host, port, type=0):
+        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("1.1.1.1", port))]
+
+    class FakeOpener:
+        def open(self, req, timeout):
+            calls.append((req, timeout))
+            return None
+
+    def fake_build_opener(*handlers):
+        observed.extend(handlers)
+        return FakeOpener()
+
+    monkeypatch.setattr(socket, "getaddrinfo", public_dns)
+    monkeypatch.setattr(urllib.request, "build_opener", fake_build_opener)
+    backend = RemoteAPIAuditBackend(
+        endpoint="https://audit.example.com/events", api_key="key",
+        batch_size=1, flush_interval=1000,
+    )
+    try:
+        assert backend.write(_event()) is True
+        assert len(calls) == 1
+        assert backend._buffer == []
+        assert any(isinstance(h, _NoRedirectHandler) for h in observed)
+        assert any(isinstance(h, _PinnedHTTPSHandler) for h in observed)
+    finally:
+        backend.close()
+
+
+def test_remote_dns_resolution_rejects_private_addresses(monkeypatch):
+    def private_dns(host, port, type=0):
+        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("10.0.0.8", port))]
+
+    monkeypatch.setattr(socket, "getaddrinfo", private_dns)
+    backend = RemoteAPIAuditBackend(
+        endpoint="https://audit.example.com/events", api_key="key",
+        batch_size=1, flush_interval=1000,
+    )
+    try:
+        assert backend.write(_event()) is True
+        assert len(backend._buffer) == 1
+    finally:
+        backend.close()
+
+
+def test_remote_write_hash_chain_is_serialized():
+    backend = RemoteAPIAuditBackend(
+        endpoint="https://audit.example.com/events", api_key="key",
+        batch_size=1000, max_buffer=1000, flush_interval=1000,
+    )
+    try:
+        def write_one(_):
+            assert backend.write(_event()) is True
+        with ThreadPoolExecutor(max_workers=12) as pool:
+            list(pool.map(write_one, range(96)))
+        queued = backend._buffer
+        assert len(queued) == 96
+        assert queued[0].prev_hash == "0" * 64
+        for previous, current in zip(queued, queued[1:]):
+            assert current.prev_hash == previous.hash
+    finally:
+        backend._flush_batch = lambda: False
         backend.close()
 
 
@@ -104,10 +186,14 @@ def test_remote_flush_refuses_redirects(monkeypatch):
         def open(self, req, timeout):
             calls.append((req, timeout))
 
+    def public_dns(host, port, type=0):
+        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("1.1.1.1", port))]
+
     def fake_build_opener(*handlers):
         assert any(isinstance(h, _NoRedirectHandler) for h in handlers)
         return FakeOpener()
 
+    monkeypatch.setattr(socket, "getaddrinfo", public_dns)
     monkeypatch.setattr(urllib.request, "build_opener", fake_build_opener)
     try:
         backend.write(_event())
@@ -156,6 +242,15 @@ def test_default_mode_still_swallows_backend_failure():
     # Non-strict behaviour is unchanged: failures must not block the caller.
     event = logger.log(action=AuditAction.LOGIN, actor="alice")
     assert event.actor == "alice"
+
+
+def test_global_audit_logger_factory_is_strict(tmp_path, monkeypatch):
+    monkeypatch.setattr(audit_module, "_global_audit_logger", None)
+    logger = audit_module.get_audit_logger(log_dir=str(tmp_path))
+    try:
+        assert logger.strict is True
+    finally:
+        logger.close()
 
 
 def test_strict_mode_allows_successful_writes():

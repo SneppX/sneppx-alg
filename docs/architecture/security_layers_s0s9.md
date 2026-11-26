@@ -1,8 +1,13 @@
 # Security Layers Deep Dive (S0–S9)
 
-SNEPPX-Algo applies a **defense-in-depth** model: ten stacked, independently
-auditable security layers. Each layer has a distinct *mission* and a small,
-formally-named surface of `SNEPPX_*` C functions exposed through Python
+> Post-quantum code in this repository is experimental. The Kyber, Dilithium,
+> and SPHINCS+ implementations follow round-3 parameter sets and are not
+> FIPS-validated or byte-compatible with the finalized FIPS 203/204/205 formats.
+
+SNEPPX-Algo applies a **defense-in-depth** model across ten security
+areas. Implementation maturity varies by layer; this document does not claim
+independent certification or audit. Each layer has a distinct *mission* and a
+small, formally-named surface of `SNEPPX_*` C functions exposed through Python
 bindings.
 
 ```
@@ -32,9 +37,9 @@ S7–S9 protect the supply chain and verify the whole stack.
 | Primitive | Algorithm | Source |
 |-----------|-----------|--------|
 | Signatures | Ed25519 (RFC 8032) | `security/crypto/c/ed25519/` |
-| Signatures | **Dilithium-2/3/5** (FIPS 204 ML-DSA) | `security/crypto/c/dilithium/` |
-| Signatures | **SPHINCS+-128/192/256** (FIPS 205 SLH-DSA) | `security/crypto/c/sphincs+/` |
-| KEM | **Kyber-512/768/1024** (FIPS 203 ML-KEM) | `security/crypto/c/kyber/` |
+| Signatures | **Dilithium-2/3/5** (round-3; ML-DSA lineage) | `security/crypto/c/dilithium/` |
+| Signatures | **SPHINCS+-128/192/256** (round-3; SLH-DSA lineage) | `security/crypto/c/sphincs+/` |
+| KEM | **Kyber-512/768/1024** (round-3; ML-KEM lineage) | `security/crypto/c/kyber/` |
 | KEM | X25519 (RFC 7748) | `security/crypto/c/x25519/` |
 | AEAD | ChaCha20-Poly1305 (RFC 8439) | `security/crypto/c/chacha/` |
 | AEAD | AES-GCM + AES-NI | `security/crypto/c/aes/` + `asm/` |
@@ -45,7 +50,7 @@ S7–S9 protect the supply chain and verify the whole stack.
 
 All crypto lives in `security/crypto/c/` with x86-64 MASM acceleration in
 `security/crypto/asm/x86_64/` (AES-NI, SHA-NI, AVX2, SSE2). The S0 layer is
-**post-quantum ready** — Kyber/Dilithium/SPHINCS+ are built and unit-tested
+**Experimental post-quantum implementations** — Kyber/Dilithium/SPHINCS+ are not FIPS-validated or byte-compatible with the finalized NIST standards; see [the KAT limitations](../pqc_kat.md).
 alongside the classical suite.
 
 ```python

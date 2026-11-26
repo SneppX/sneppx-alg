@@ -14,9 +14,9 @@
 - BLAKE3: Fast hashing
 - Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation
 - Secure Random: OS CPRNG (Windows CNG / Linux getrandom)
-- Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation
-- Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures
-- SPHINCS+-128/192/256 (FIPS 205 SLH-DSA): Stateless PQ signatures
+- Kyber-512/768/1024 (round-3 Kyber; ML-KEM lineage): experimental PQ key encapsulation, not FIPS 203 byte-compatible
+- Dilithium-2/3/5 (round-3 Dilithium; ML-DSA lineage): experimental PQ signatures, not FIPS 204 byte-compatible
+- SPHINCS+-128/192/256 (round-3 SPHINCS+; SLH-DSA lineage): experimental PQ signatures, not FIPS 205 byte-compatible
 
 **Files:** `security/crypto/c/`
 

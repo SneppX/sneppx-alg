@@ -90,6 +90,49 @@ def test_dpsgd_allows_step_within_budget():
     assert dpsgd._epsilon == 1000.0
 
 
+def test_dpsgd_budget_only_configuration_enforces_and_tracks_budget():
+    linear = Linear(2, 1)
+    budget = PrivacyBudget(epsilon=1000.0, delta=1e-5)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.01),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        budget=budget,
+    )
+    x = Tensor.randn((4, 2))
+    targets = Tensor.ones((4, 1))
+    outputs = linear(x)
+    losses = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(4)]
+    dpsgd.step(losses)
+    assert math.isfinite(dpsgd.privacy_spent()["epsilon"])
+    assert budget.spent[0] > 0
+    assert budget.remaining[0] < 1000.0
+
+
+def test_dpsgd_preflights_the_tightest_budget_before_parameter_update():
+    linear = Linear(2, 1)
+    before = [parameter.data.copy() for parameter in linear.parameters()]
+    budget = PrivacyBudget(epsilon=1e-6, delta=1e-5)
+    dpsgd = DPSGD(
+        SGD(linear.parameters(), lr=0.1),
+        noise_multiplier=1.0,
+        max_grad_norm=1.0,
+        num_samples=100,
+        epsilon=1000.0,
+        budget=budget,
+    )
+    x = Tensor.randn((4, 2))
+    targets = Tensor.ones((4, 1))
+    outputs = linear(x)
+    losses = [outputs[i : i + 1].mse_loss(targets[i : i + 1]) for i in range(4)]
+    with pytest.raises(ValueError, match="epsilon budget exhausted"):
+        dpsgd.step(losses)
+    for parameter, original in zip(linear.parameters(), before):
+        assert np.array_equal(parameter.data, original)
+    assert dpsgd._steps == 0
+
+
 # ===========================================================================
 #  PrivacyBudget
 # ===========================================================================
@@ -149,17 +192,13 @@ def test_rdp_accountant_eps_monotonic():
     print("  test_rdp_accountant_eps_monotonic PASS")
 
 
-def test_rdp_subsampling_amplification():
-    acc_no_subsample = RDPAccountant(delta=1e-5)
-    acc_subsample = RDPAccountant(delta=1e-5)
-    np.random.seed(42)
-    for _ in range(100):
-        acc_no_subsample.step(noise_multiplier=1.0, batch_size=50000, num_samples=50000)
-        acc_subsample.step(noise_multiplier=1.0, batch_size=256, num_samples=50000)
-    eps_no = acc_no_subsample.get_epsilon()
-    eps_sub = acc_subsample.get_epsilon()
-    assert eps_sub < eps_no, f"Subsampling should reduce epsilon: {eps_sub} >= {eps_no}"
-    print("  test_rdp_subsampling_amplification PASS")
+def test_rdp_subsampling_uses_conservative_full_gaussian_bound():
+    acc_full = RDPAccountant(delta=1e-5)
+    acc_sampled = RDPAccountant(delta=1e-5)
+    for _ in range(10):
+        acc_full.step(noise_multiplier=1.0, batch_size=50000, num_samples=50000)
+        acc_sampled.step(noise_multiplier=1.0, batch_size=256, num_samples=50000)
+    assert acc_sampled.get_epsilon() == acc_full.get_epsilon()
 
 
 def test_rdp_to_dp_conversion():

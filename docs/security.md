@@ -42,9 +42,9 @@ All crypto source files follow the four-layer commenting standard in [COMMENTING
 | BLAKE3    | Reference | Fast hashing | Reference test vectors |
 | Argon2id  | RFC 9106 | Secure KDF | Test vectors + timing defense |
 | Secure Random | OS CPRG | Entropy | Windows CNG / Linux getrandom |
-| Kyber-512/768/1024 | FIPS 203 (ML-KEM) | PQ key encapsulation | Partial ACVP checks; see report |
-| Dilithium-2/3/5 | FIPS 204 (ML-DSA) | PQ digital signatures | Experimental; valid-vector interoperability incomplete |
-| SPHINCS+-128/192/256 | FIPS 205 (SLH-DSA) | Stateless PQ signatures | Experimental; valid-vector interoperability incomplete |
+| Kyber-512/768/1024 | Round-3 Kyber (ML-KEM lineage) | PQ key encapsulation | Experimental; not byte-compatible with FIPS 203; see report |
+| Dilithium-2/3/5 | Round-3 Dilithium (ML-DSA lineage) | PQ digital signatures | Experimental; not byte-compatible with FIPS 204 |
+| SPHINCS+-128/192/256 | Round-3 SPHINCS+ (SLH-DSA lineage) | Stateless PQ signatures | Experimental; not byte-compatible with FIPS 205 |
 
 > **PQC validation limitations.** The repository includes official NIST ACVP
 > sample vectors and a harness, but this does not establish FIPS validation or
@@ -258,7 +258,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 
 ### Implemented
 
-- Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking
+- Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. The global `get_audit_logger()` factory uses strict mode and fails closed when a backend rejects a write; directly constructed `AuditLogger` instances remain best-effort by default for compatibility, so security-sensitive callers must pass `strict=True`.
 - Key vault: in-memory encrypted key store with PIN-protected access
 - Dashboard: (see `docs/api/c.md` for C API or `bindings/python/` for Python bindings)
 
