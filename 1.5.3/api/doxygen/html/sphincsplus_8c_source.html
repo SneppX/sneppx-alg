@@ -103,8 +103,8 @@ $(function(){initNavTree('sphincsplus_8c_source.html','',''); });
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> * WHAT</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> *   Deterministic stateless hash-based signature scheme in the SPHINCS+</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> *   family (FIPS 205 style). Hypertree of Merkle trees over WOTS+ one-time</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> *   Experimental round-3 SPHINCS+ parameter set, not byte-compatible with</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> *   finalized FIPS 205 SLH-DSA. Hypertree of Merkle trees over WOTS+ one-time</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> *   signatures, message digest committed via a FORS forest.</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * CONCEPT</span></div>
@@ -117,7 +117,7 @@ $(function(){initNavTree('sphincsplus_8c_source.html','',''); });
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> *   manifests, release signing).</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> * REFERENCES</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *   FIPS 205 (SLH-DSA / SPHINCS+), NIST PQC Round 3 finalist.</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *   NIST PQC Round 3 SPHINCS+ finalist. No FIPS validation is claimed.</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> * STRUCTURE</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> *   Keys:   pk = pub_seed(16) || top-root(16);  sk = sk_seed(16) || sk_prf(16) || pub_seed(16)</span></div>

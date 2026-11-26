@@ -5122,11 +5122,11 @@ crypto-misuse patterns.</p>
 <p><strong>Notes:</strong> :material-alert-decagram: Runs purely static AST analysis — no
 executables. CPU-safe.</p>
 <h2 id="2-ed25519-dilithium-signing">2. Ed25519 / Dilithium signing<a class="headerlink" href="#2-ed25519-dilithium-signing" title="Permanent link">&para;</a></h2>
-<p><strong>Intent:</strong> Post-quantum authentication of payloads.</p>
+<p><strong>Intent:</strong> Experimental post-quantum authentication using the repository's round-3 Dilithium variant. This implementation is not byte-compatible with finalized FIPS 204 (ML-DSA) and is not FIPS-validated.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ed25519</span><span class="p">,</span> <span class="n">Dilithium</span>           <span class="c1"># S0 bindings</span>
 
 <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"model checkpoint v1.2.0"</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Dilithium</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>          <span class="c1"># PQ (NIST FIPS 204)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">Dilithium</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>          <span class="c1"># experimental round-3 Dilithium</span>
 <span class="k">assert</span> <span class="n">Dilithium</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 
 <span class="n">sig2</span> <span class="o">=</span> <span class="n">Ed25519</span><span class="p">()</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>                  <span class="c1"># classical (RFC 8032)</span>
@@ -5138,7 +5138,7 @@ suite. Python bindings are thin wrappers over <code>security/crypto/c/</code>.</
 <p><strong>Intent:</strong> PQ key exchange for secure serving.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">KyberKEM</span>
 
-<span class="n">kem</span> <span class="o">=</span> <span class="n">KyberKEM</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>                       <span class="c1"># Kyber-768 (ML-KEM)</span>
+<span class="n">kem</span> <span class="o">=</span> <span class="n">KyberKEM</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>                       <span class="c1"># experimental round-3 Kyber</span>
 <span class="n">ct</span><span class="p">,</span> <span class="n">session_key</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">encapsulate</span><span class="p">()</span>         <span class="c1"># sender</span>
 <span class="n">shared</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">decapsulate</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span>                <span class="c1"># receiver</span>
 <span class="k">assert</span> <span class="n">shared</span> <span class="o">==</span> <span class="n">session_key</span>

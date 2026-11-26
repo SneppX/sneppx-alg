@@ -107,31 +107,32 @@ $(function(){initNavTree('sphincsplus_8h_source.html','',''); });
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="sphincsplus_8h.html#ad21bc5e5c66a0c16582a00cf697dcfd5">   13</a></span><span class="preprocessor">#define SPHINCS_SECRETKEYBYTES 64</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="sphincsplus_8h.html#a65d5d506d63ba0add073302f245c34bc">   14</a></span><span class="preprocessor">#define SPHINCS_SIGBYTES 14592</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="comment">/*</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">     * SNEPPX - SPHINCS+ Stateless Hash-Based Signatures</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">     * SNEPPX - Experimental round-3 SPHINCS+ (SLH-DSA lineage)</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">     *</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">     * WHAT</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">     *   SPHINCS+ Stateless Hash-Based Signatures.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">     *   Experimental round-3 SPHINCS+ stateless hash-based signatures.</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">     *</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">     * CONCEPT</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">     *   SPHINCS+ hash-based signature scheme for FIPS 205 quantum-safe signatures.</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">     *</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">     * ROLE</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">     *   Layer S0 post-quantum crypto for long-lived signatures.</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">     *</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">     * REFERENCES</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">     *   FIPS 205 (SPHINCS+), NIST PQC Round 3 finalist.</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">     */</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#aa8322da28dedd392f705b10ae8a65fd9">SNEPPX_sphincs_keygen</a>(uint8_t* pk, uint8_t* sk, <span class="keywordtype">int</span> variant);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#a2c331bc854f68512d32b07430abc956d">SNEPPX_sphincs_sign</a>(uint8_t* sig, <span class="keywordtype">size_t</span>* siglen, <span class="keyword">const</span> uint8_t* m, <span class="keywordtype">size_t</span> mlen, <span class="keyword">const</span> uint8_t* sk,</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                            <span class="keywordtype">int</span> variant);</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#a70b1ef44e12c08d9b2764c5185c196e7">SNEPPX_sphincs_verify</a>(<span class="keyword">const</span> uint8_t* sig, <span class="keywordtype">size_t</span> siglen, <span class="keyword">const</span> uint8_t* m, <span class="keywordtype">size_t</span> mlen, <span class="keyword">const</span> uint8_t* pk,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                              <span class="keywordtype">int</span> variant);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">     *   Hash-based signatures using round-3 parameter sets; not byte-compatible</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">     *   with finalized FIPS 205 SLH-DSA.</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">     * ROLE</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">     *   Experimental Layer S0 post-quantum crypto for long-lived signatures.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">     *</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">     * REFERENCES</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">     *   NIST PQC Round 3 SPHINCS+ finalist. No FIPS validation is claimed.</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">     */</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#aa8322da28dedd392f705b10ae8a65fd9">SNEPPX_sphincs_keygen</a>(uint8_t* pk, uint8_t* sk, <span class="keywordtype">int</span> variant);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#a2c331bc854f68512d32b07430abc956d">SNEPPX_sphincs_sign</a>(uint8_t* sig, <span class="keywordtype">size_t</span>* siglen, <span class="keyword">const</span> uint8_t* m, <span class="keywordtype">size_t</span> mlen, <span class="keyword">const</span> uint8_t* sk,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                            <span class="keywordtype">int</span> variant);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="sphincsplus_8h.html#a70b1ef44e12c08d9b2764c5185c196e7">SNEPPX_sphincs_verify</a>(<span class="keyword">const</span> uint8_t* sig, <span class="keywordtype">size_t</span> siglen, <span class="keyword">const</span> uint8_t* m, <span class="keywordtype">size_t</span> mlen, <span class="keyword">const</span> uint8_t* pk,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                              <span class="keywordtype">int</span> variant);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="asphincsplus_8h_html_a2c331bc854f68512d32b07430abc956d"><div class="ttname"><a href="sphincsplus_8h.html#a2c331bc854f68512d32b07430abc956d">SNEPPX_sphincs_sign</a></div><div class="ttdeci">int SNEPPX_sphincs_sign(uint8_t *sig, size_t *siglen, const uint8_t *m, size_t mlen, const uint8_t *sk, int variant)</div><div class="ttdoc">Sign Sphincs.</div><div class="ttdef"><b>Definition</b> <a href="sphincsplus_8c_source.html#l00335">sphincsplus.c:335</a></div></div>
 <div class="ttc" id="asphincsplus_8h_html_a70b1ef44e12c08d9b2764c5185c196e7"><div class="ttname"><a href="sphincsplus_8h.html#a70b1ef44e12c08d9b2764c5185c196e7">SNEPPX_sphincs_verify</a></div><div class="ttdeci">int SNEPPX_sphincs_verify(const uint8_t *sig, size_t siglen, const uint8_t *m, size_t mlen, const uint8_t *pk, int variant)</div><div class="ttdoc">Verify Sphincs.</div><div class="ttdef"><b>Definition</b> <a href="sphincsplus_8c_source.html#l00377">sphincsplus.c:377</a></div></div>
 <div class="ttc" id="asphincsplus_8h_html_aa8322da28dedd392f705b10ae8a65fd9"><div class="ttname"><a href="sphincsplus_8h.html#aa8322da28dedd392f705b10ae8a65fd9">SNEPPX_sphincs_keygen</a></div><div class="ttdeci">int SNEPPX_sphincs_keygen(uint8_t *pk, uint8_t *sk, int variant)</div><div class="ttdoc">Generate Sphincs.</div><div class="ttdef"><b>Definition</b> <a href="sphincsplus_8c_source.html#l00305">sphincsplus.c:305</a></div></div>

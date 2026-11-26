@@ -1566,10 +1566,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-dilithium-post-quantum-signing-s0" class="md-nav__link">
+  <a href="#2-experimental-round-3-dilithium-signing-s0" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Dilithium post-quantum signing (S0)
+        2. Experimental round-3 Dilithium signing (S0)
       
     </span>
   </a>
@@ -1577,10 +1577,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-kyber-key-encapsulation-s0" class="md-nav__link">
+  <a href="#3-experimental-round-3-kyber-key-encapsulation-s0" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Kyber key encapsulation (S0)
+        3. Experimental round-3 Kyber key encapsulation (S0)
       
     </span>
   </a>
@@ -5042,10 +5042,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-dilithium-post-quantum-signing-s0" class="md-nav__link">
+  <a href="#2-experimental-round-3-dilithium-signing-s0" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Dilithium post-quantum signing (S0)
+        2. Experimental round-3 Dilithium signing (S0)
       
     </span>
   </a>
@@ -5053,10 +5053,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-kyber-key-encapsulation-s0" class="md-nav__link">
+  <a href="#3-experimental-round-3-kyber-key-encapsulation-s0" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Kyber key encapsulation (S0)
+        3. Experimental round-3 Kyber key encapsulation (S0)
       
     </span>
   </a>
@@ -5210,19 +5210,27 @@ bindings (Dilithium signing, Kyber KEM) from Python.</p>
 <p>The scanner is <strong>static only</strong> — it never executes the analyzed code, so it
 is safe on untrusted sources.</p>
 </blockquote>
-<h2 id="2-dilithium-post-quantum-signing-s0">2. Dilithium post-quantum signing (S0)<a class="headerlink" href="#2-dilithium-post-quantum-signing-s0" title="Permanent link">&para;</a></h2>
+<h2 id="2-experimental-round-3-dilithium-signing-s0">2. Experimental round-3 Dilithium signing (S0)<a class="headerlink" href="#2-experimental-round-3-dilithium-signing-s0" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>This implementation is not byte-compatible with finalized FIPS 204 (ML-DSA)
+and is not FIPS-validated.</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">HAS_C</span><span class="p">:</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"SNEPPX-Algo release v1.2.0"</span>
-    <span class="n">dil</span> <span class="o">=</span> <span class="n">Dilithium</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>          <span class="c1"># FIPS 204 ML-DSA-87</span>
+    <span class="n">dil</span> <span class="o">=</span> <span class="n">Dilithium</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>          <span class="c1"># experimental round-3 Dilithium</span>
     <span class="n">sig</span> <span class="o">=</span> <span class="n">dil</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dil</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">sig</span><span class="p">),</span> <span class="s2">"signature invalid"</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"Dilithium-3 OK, sig len:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="p">))</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"C backend required for S0 crypto (build neural_security_c)"</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="3-kyber-key-encapsulation-s0">3. Kyber key encapsulation (S0)<a class="headerlink" href="#3-kyber-key-encapsulation-s0" title="Permanent link">&para;</a></h2>
+<h2 id="3-experimental-round-3-kyber-key-encapsulation-s0">3. Experimental round-3 Kyber key encapsulation (S0)<a class="headerlink" href="#3-experimental-round-3-kyber-key-encapsulation-s0" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>This implementation is not byte-compatible with finalized FIPS 203 (ML-KEM)
+and is not FIPS-validated.</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">HAS_C</span><span class="p">:</span>
-    <span class="n">kem</span>  <span class="o">=</span> <span class="n">KyberKEM</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>            <span class="c1"># ML-KEM-768</span>
+    <span class="n">kem</span>  <span class="o">=</span> <span class="n">KyberKEM</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>            <span class="c1"># experimental round-3 Kyber</span>
     <span class="n">ct</span><span class="p">,</span> <span class="n">sk</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">encapsulate</span><span class="p">()</span>
     <span class="n">ss</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">decapsulate</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ss</span> <span class="o">==</span> <span class="n">sk</span><span class="p">,</span> <span class="s2">"KEM mismatch"</span>
