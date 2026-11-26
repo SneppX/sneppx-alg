@@ -2,7 +2,8 @@
 
 import pytest
 
-from SneppX_ALG.interface_bindings import distributed, nccl
+from SneppX_ALG.interface_bindings import Linear, distributed, nccl
+from SneppX_ALG.interface_bindings.fsdp import FullyShardedDataParallel
 
 
 @pytest.mark.parametrize(
@@ -66,3 +67,12 @@ def test_empty_dataset_has_empty_shards():
         sampler = sampler_type([], num_replicas=4, rank=3, shuffle=False)
         assert len(sampler) == 0
         assert list(sampler) == []
+
+
+def test_fsdp_rejects_unsupported_multi_rank_backend(monkeypatch):
+    monkeypatch.setenv("WORLD_SIZE", "2")
+    monkeypatch.setenv("RANK", "0")
+    monkeypatch.setenv("LOCAL_RANK", "0")
+
+    with pytest.raises(RuntimeError, match="Multi-rank FSDP is not supported"):
+        FullyShardedDataParallel(Linear(4, 3))

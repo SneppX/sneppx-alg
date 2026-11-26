@@ -110,14 +110,11 @@ class FullyShardedDataParallel(Module):
     def _try_init_dist(self):
         if self._initialized:
             return
-        try:
-            from .distributed import get_world_size, get_rank
+        from .distributed import DistributedContext
 
-            self._world_size = get_world_size()
-            self._rank = get_rank()
-        except Exception:
-            self._world_size = 1
-            self._rank = 0
+        context = DistributedContext()
+        self._world_size = context.world_size
+        self._rank = context.rank
         self._initialized = True
 
     def _should_shard(self, name: str, param: Tensor) -> bool:

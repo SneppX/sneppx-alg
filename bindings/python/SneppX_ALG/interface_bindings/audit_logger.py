@@ -1,13 +1,17 @@
-"""Audit Logger — Security event audit logging with tamper-evident chains.
+"""Audit Logger — structured security event logging with hash-chain checks.
 
-Provides structured, tamper-evident audit logging with:
-- Cryptographic hash chaining (hash of each entry includes previous hash)
+A configured out-of-log HMAC key is required to detect deliberate rewriting of
+persisted events. Without that key, the legacy unkeyed SHA-256 chain can detect
+accidental corruption but is forgeable by anyone who can rewrite the log.
+
+Provides structured audit logging with:
+- Cryptographic hash chaining (HMAC-SHA256 when a key is configured)
 - Structured event schema with severity, actor, action, resource, result
 - Multiple output backends (file, syslog, remote API, database)
 - Query and filtering capabilities
 - Log rotation and retention policies
 - Integration with KeyVault for signing/verification
-- Compliance reporting (SOC2, HIPAA, GDPR, PCI-DSS)
+- Compliance-oriented reporting helpers; no compliance certification is implied
 """
 
 import os
@@ -50,10 +54,10 @@ def _resolve_audit_key(hmac_key: Optional[bytes] = None) -> Optional[bytes]:
 
 
 def _event_digest(event_data: Dict[str, Any], hmac_key: Optional[bytes] = None) -> str:
-    """Hash an audit entry with HMAC-SHA256 when a secret key is configured.
+    """Hash an entry with HMAC-SHA256 when an out-of-log key is configured.
 
-    Unkeyed SHA-256 is retained only for backwards compatibility with logs
-    written before the key was configured.
+    Without a key, the legacy SHA-256 digest detects accidental corruption but
+    cannot prevent deliberate rewriting of the log and its complete hash chain.
     """
     payload = {k: v for k, v in event_data.items() if k != "hash"}
     data = json.dumps(
@@ -1054,7 +1058,7 @@ class AuditLogger:
                 pass
 
     def verify_chain(self) -> Tuple[bool, List[str]]:
-        """Verify hash chain integrity across all backends."""
+        """Check chain consistency; authenticity requires a configured HMAC key."""
         errors = []
         # Verify every persisted entry, not just the newest 10,000.
         all_events = self.query(limit=None)
