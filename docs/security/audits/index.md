@@ -20,8 +20,12 @@ show specific follow-up work; they are not an independent audit or a blanket
 closure of all findings.
 
 The original Medium/Low and numerical-correctness items still need individual
-verification against current source and tests. Do not rely on this historical
-snapshot as proof of current vulnerability status.
+verification against current source and tests. M-26 has targeted follow-up
+commits for owning data/gradient copies and lifetime regression tests, but
+`tests/python/test_c_tape.py` is not part of the default CPU-only CI selection
+and must be run with the native Python extension before treating the finding
+as independently verified. Do not rely on this historical snapshot as proof
+of current vulnerability status.
 
 ## Current security posture
 
