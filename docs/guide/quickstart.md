@@ -1,7 +1,12 @@
+---
+description: "Build SneppX-ALG from source, install its Python bindings, and run a single-process tensor example with documented limitations."
+---
+
 # Quick Start
 
-Build SNEPPX-Alg from source, run a core demo, then train and serve a model in
-three minutes. Everything here runs on CPU — no GPU required for this path.
+Build SneppX-ALG from source, install the Python bindings, and run a small
+single-process example. This guide demonstrates the basic CPU path; optional
+native and accelerator components require their own build and validation.
 
 ## 1. Build the core
 
@@ -104,15 +109,13 @@ c = SNEPPXClient("http://127.0.0.1:8000", api_key="...")
 c.generate("Explain the S0-S9 security stack in two sentences.", max_tokens=64)
 ```
 
-## 6. Go distributed (2 GPUs/CPU ranks)
+## 6. Distributed support status
 
-```python
-from SneppX_ALG.interface_bindings.distributed import init_distributed
-from SneppX_ALG import Trainer
-init_distributed(backend="nccl")        # or "gloo" / "mpi" on CPU
-Trainer(...).fit(train_loader, epochs=3, parallel={"tp":2, "dp":1})
-```
+The current Python backend does not provide validated multi-rank training.
+Multi-rank process groups, collectives, DDP synchronization, FSDP/ZeRO training,
+and multi-node execution fail closed. The `DistributedSampler` can partition
+dataset indices locally, but it does not communicate between processes.
 
-See `docs/tutorials/` for full notebooks on classification, generation, RLHF
-fine-tuning, quantization+serving, MoE routing, security scanning, profiling,
-data pipelines, and model conversion.
+See the [distributed support matrix](../distributed-guide.md) before using
+any distributed API. Written tutorials and notebooks are available under
+`docs/tutorials/`; each page describes its current prerequisites and limits.

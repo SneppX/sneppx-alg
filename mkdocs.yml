@@ -1,8 +1,9 @@
-site_name: SneppX-ALG
+site_name: SneppX-ALG — Native C/C++ Machine-Learning Framework
 site_description: >
-  Documentation for the SneppX-ALG C/C++ project and its Python bindings.
-  Includes installation, API references, architecture notes, security
-  limitations, and development guides.
+  SneppX-ALG is an experimental open-source machine-learning framework with a
+  native C/C++ codebase and Python APIs for tensor operations, automatic
+  differentiation, and neural-network components. Distributed and security
+  subsystems have explicit implementation and validation limits.
 site_author: Ammar [SNEPPX]
 site_url: https://sneppx.github.io/sneppx-alg/
 
@@ -113,145 +114,147 @@ markdown_extensions:
       base_path: docs
   - toc:
       permalink: true
-      separator: "&#702;"
+      separator: "-"
 
 nav:
-  - Home: index.md
-  - Repository: code-browser/index.md
-  - Playground: playground.md
-  - Cookbook:
-      - Overview: cookbook.md
-      - Cookbook Index: cookbook/index.md
-      - Tensors: cookbook/tensors.md
-      - Models & Layers: cookbook/models_layers.md
-      - Training: cookbook/training.md
-      - Optimizers: cookbook/optimizers.md
-      - Quantization: cookbook/quantization.md
-      - Distributed: cookbook/distributed.md
-      - Serving & Inference: cookbook/serving.md
-      - Data & Tokenization: cookbook/data_tokenization.md
-      - Security: cookbook/security.md
-      - Profiling: cookbook/profiling.md
-      - Checkpointing: cookbook/checkpointing.md
-      - Conversion/Plugins: cookbook/conversion.md
-      - Generation: cookbook/generation.md
-  - Keyboard Shortcuts: keyboard-shortcuts.md
-  - Your Progress: progress.md
-  - Project Scope and Limitations: why-sneppx-alg.md
-  - Getting Started: getting-started.md
-  - Autograd Guide: autograd-guide.md
-  - Autograd Visualizer: autograd-visualizer.md
-  - Matmul Visualizer: matmul-visualizer.md
-  - Conv2d Visualizer: conv-visualizer.md
-  - Optimizer Race: optimizer-race.md
-  - Loss Gallery: loss-gallery.md
-  - Distributed Guide: distributed-guide.md
-  - Sparse Tensors: sparse-tensors.md
-  - Higher-Order AD: higher-order-ad.md
-  - API Explorer: api-explorer.md
-  - Model Zoo Browser: model-zoo-browser.md
-  - Contributing: contributing.md
-  - Quick Start: guide/quickstart.md
-  - Architecture:
-      - Pipeline Overview: architecture/5-pipeline-architecture.md
-      - Security Layers (S0-S9): architecture/security_layers_s0s9.md
-      - Distributed Training: architecture/distributed_training.md
-      - Code Walkthroughs:
+  - Get started:
+      - Project overview: index.md
+      - Getting started: getting-started.md
+      - Source build quick start: guide/quickstart.md
+      - Project scope and limitations: why-sneppx-alg.md
+      - Framework roadmap: roadmap/tensorflow-pytorch-parity.md
+      - FAQ: FAQ.md
+  - Guides and examples:
+      - Autograd guide: autograd-guide.md
+      - Higher-order differentiation: higher-order-ad.md
+      - Distributed support: distributed-guide.md
+      - Sparse tensors: sparse-tensors.md
+      - Benchmarks: benchmarks.md
+      - Cookbook:
+          - Index: cookbook/index.md
+          - Tensors: cookbook/tensors.md
+          - Models and layers: cookbook/models_layers.md
+          - Training: cookbook/training.md
+          - Optimizers: cookbook/optimizers.md
+          - Quantization: cookbook/quantization.md
+          - Distributed utilities: cookbook/distributed.md
+          - Serving and inference: cookbook/serving.md
+          - Data and tokenization: cookbook/data_tokenization.md
+          - Security: cookbook/security.md
+          - Profiling: cookbook/profiling.md
+          - Checkpointing: cookbook/checkpointing.md
+          - Conversion: cookbook/conversion.md
+          - Generation: cookbook/generation.md
+      - Tutorials:
+          - Tutorial index: tutorials/index.md
+          - Classification: tutorials/classification.md
+          - Text generation: tutorials/generation.md
+          - RLHF fine-tuning: tutorials/fine_tuning_rlhf.md
+          - Quantization and serving: tutorials/quantization_serving.md
+          - Distributed training status: tutorials/distributed_training.md
+          - MoE expert routing: tutorials/moe_ser_routing.md
+          - Security scanning: tutorials/security_scanning.md
+          - Profiling and benchmarks: tutorials/profiling_benchmarks.md
+          - Data pipeline: tutorials/data_pipeline.md
+          - Model conversion: tutorials/model_conversion.md
+  - Interactive tools:
+      - Browser repository: code-browser/index.md
+      - Python playground: playground.md
+      - Autograd visualizer: autograd-visualizer.md
+      - Matrix multiplication visualizer: matmul-visualizer.md
+      - Convolution visualizer: conv-visualizer.md
+      - Optimizer comparison: optimizer-race.md
+      - Loss gallery: loss-gallery.md
+      - API explorer: api-explorer.md
+      - Model zoo browser: model-zoo-browser.md
+      - Keyboard shortcuts: keyboard-shortcuts.md
+      - Learning progress: progress.md
+  - Security:
+      - Security overview: security.md
+      - Security layers and limitations: security_layers.md
+      - PQC interoperability report: pqc_kat.md
+      - Security architecture: architecture/security_architecture_overview.md
+      - Obfuscation audit: security/obf_audit.md
+      - Threat modeling: security/threat_modeling_overview.md
+      - Compliance status: compliance/compliance_overview.md
+      - Incident response: incident_response/ir_framework_overview.md
+      - Historical audit archive: security/audits/index.md
+      - Security layer architecture: architecture/security_layers_s0s9.md
+  - API and architecture:
+      - Python API: api/python.md
+      - Python API reference: api/autodoc.md
+      - C API: api/c.md
+      - Doxygen reference: api/index.md
+      - Architecture overview: ARCHITECTURE.md
+      - Pipeline architecture: architecture/5-pipeline-architecture.md
+      - Distributed architecture: architecture/distributed_training.md
+      - Code walkthroughs:
           - HSS: walkthrough-hss.md
           - SER: walkthrough-ser.md
           - ARC: walkthrough-arc.md
           - NPE: walkthrough-npe.md
           - FM: walkthrough-fm.md
-  - Security:
-      - Security Overview: security.md
-      - Security Layers (S0-S9): security_layers.md
-      - PQC Interoperability: pqc_kat.md
-      - Security Architecture: architecture/security_architecture_overview.md
-      - Obfuscation Audit: security/obf_audit.md
-      - Threat Modeling: security/threat_modeling_overview.md
-      - Compliance: compliance/compliance_overview.md
-      - Incident Response: incident_response/ir_framework_overview.md
-  - Framework Roadmap: roadmap/tensorflow-pytorch-parity.md
-  - Tutorials:
-      - Tutorial Index: tutorials/index.md
-      - Classification: tutorials/classification.md
-      - Text Generation: tutorials/generation.md
-      - RLHF Fine-Tuning: tutorials/fine_tuning_rlhf.md
-      - Quantization + Serving: tutorials/quantization_serving.md
-      - Distributed Training: tutorials/distributed_training.md
-      - MoE Expert Routing: tutorials/moe_ser_routing.md
-      - Security Scanning: tutorials/security_scanning.md
-      - Profiling & Benchmarks: tutorials/profiling_benchmarks.md
-      - Benchmarks: benchmarks.md
-      - Data Pipeline: tutorials/data_pipeline.md
-      - Model Conversion: tutorials/model_conversion.md
-  - API Reference:
-      - Python API: api/python.md
-      - Python API (auto): api/autodoc.md
-      - C API: api/c.md
-      - Doxygen (C/C++): api/index.md
-
-  - Release Notes:
-      - v1.5.2: release_notes/v1.5.2.md
-      - v1.5.0: release_notes/v1.5.0.md
-      - v1.1.1: release_notes/v1.1.1.md
-      - v1.1.0: release_notes/v1.1.0.md
-      - v1.0.0: release_notes/v1.0.0.md
-      - v0.9.7.890e: release_notes/v0.9.7.890e.md
-  - Migration:
-      - v0.9.x to v1.0.0: migration/v0.9.x-to-v1.0.0.md
-      - v0.9.7.890e: migration/v0.9.7.890e.md
-      - From PyTorch: migration/from_pytorch.md
-      - From TensorFlow: migration/from_tensorflow.md
-      - From JAX: migration/from_jax.md
-  - CTM Tooling:
-      - CTM Overview: ctm_tools/README.md
-      - Extended CTM Tools: ctm_tools/EXTENDED.md
-      - CTM Tool Reference: tools/ctm-tools.md
+      - Reference material:
+          - API index: API_REFERENCE.md
+          - Python features: python_features.md
+          - API quick reference: api_quickref.md
+          - Coverage: COVERAGE.md
+          - Glossary: GLOSSARY.md
+          - Design: DESIGN.md
+          - Vision: VISION.md
+          - Roadmap: ROADMAP.md
+          - Framework comparison: comparison/ml_framework_feature_gap_analysis.md
+          - Learning paths: LEARNING_PATHS.md
+          - Legacy API: API.md
+          - Style guide: STYLE_GUIDE.md
+  - Community:
+      - Community hub: community/index.md
+      - Contributing: contributing.md
+      - Video series: learn/videos.md
   - Development:
-      - Development Workflow: DEVELOPMENT.md
-      - Python Packaging & Release: dev/python-packaging.md
+      - Development workflow: DEVELOPMENT.md
+      - Python packaging and release: dev/python-packaging.md
       - Testing: TESTING.md
-      - Build System: build.md
-      - Code Walkthrough: code-walkthrough.md
-      - Commenting Standard: COMMENTING.md
-      - Code Review Guide: CODE_REVIEW_GUIDE.md
-      - Contributor Tiers: CONTRIBUTOR_TIERS.md
-      - Good First Issues: GOOD_FIRST_ISSUES.md
-      - Branching Strategy: BRANCHING_STRATEGY.md
-      - HSS Training: hss_training.md
-  - Guides:
-      - SneppX Console: guides/sneppx_console.md
-      - Guides Index: guide/index.md
-      - Model Hub: guide/model_hub.md
-      - Model Zoo: guide/model_zoo.md
-      - Serving: guide/serving.md
-      - ONNX: guide/onnx.md
-      - MHA Forward Pass: guide/mha_forward_pass.md
-      - 128K Context: guide/128k_context_extension.md
-      - Testing Framework: guide/testing_framework.md
-      - Installation: installation.md
-  - Reference:
-      - Architecture Overview: ARCHITECTURE.md
-      - API Index: API_REFERENCE.md
-      - Python Features: python_features.md
-      - API Quick Reference: api_quickref.md
-      - Coverage: COVERAGE.md
-      - Glossary: GLOSSARY.md
-      - Design: DESIGN.md
-      - Vision: VISION.md
-      - Roadmap: ROADMAP.md
-      - Framework Comparison: comparison/ml_framework_feature_gap_analysis.md
-      - Learning Paths: LEARNING_PATHS.md
-      - Legacy API: API.md
-      - Style Guide: STYLE_GUIDE.md
-  - Community: community/index.md
-  - Learn:
-      - Video Series: learn/videos.md
-  - Changelog: changelog/index.md
-  - FAQ: FAQ.md
-  - Dev:
-      - GitHub Pages Deployment: dev/pages-deploy.md
-      - Doxygen Setup: doxygen/README.md
-      - PR Template: PR_TEMPLATE.md
-      - Upstream README: README_upstream.md
+      - Build system: build.md
+      - Code walkthrough: code-walkthrough.md
+      - Commenting standard: COMMENTING.md
+      - Code review guide: CODE_REVIEW_GUIDE.md
+      - Contributor tiers: CONTRIBUTOR_TIERS.md
+      - Good first issues: GOOD_FIRST_ISSUES.md
+      - Branching strategy: BRANCHING_STRATEGY.md
+      - HSS training: hss_training.md
+      - Guides:
+          - SneppX Console: guides/sneppx_console.md
+          - Guides index: guide/index.md
+          - Model Hub: guide/model_hub.md
+          - Model Zoo: guide/model_zoo.md
+          - Serving: guide/serving.md
+          - ONNX: guide/onnx.md
+          - MHA forward pass: guide/mha_forward_pass.md
+          - 128K context: guide/128k_context_extension.md
+          - Testing framework: guide/testing_framework.md
+          - Installation: installation.md
+      - CTM tooling:
+          - CTM overview: ctm_tools/README.md
+          - Extended CTM tools: ctm_tools/EXTENDED.md
+          - CTM reference: tools/ctm-tools.md
+      - Site deployment:
+          - GitHub Pages deployment: dev/pages-deploy.md
+          - Doxygen setup: doxygen/README.md
+          - Pull request template: PR_TEMPLATE.md
+          - Upstream README: README_upstream.md
+  - Releases and migration:
+      - Changelog: changelog/index.md
+      - Release notes:
+          - v1.5.2: release_notes/v1.5.2.md
+          - v1.5.0: release_notes/v1.5.0.md
+          - v1.1.1: release_notes/v1.1.1.md
+          - v1.1.0: release_notes/v1.1.0.md
+          - v1.0.0: release_notes/v1.0.0.md
+          - v0.9.7.890e: release_notes/v0.9.7.890e.md
+      - Migration:
+          - v0.9.x to v1.0.0: migration/v0.9.x-to-v1.0.0.md
+          - v0.9.7.890e: migration/v0.9.7.890e.md
+          - From PyTorch: migration/from_pytorch.md
+          - From TensorFlow: migration/from_tensorflow.md
+          - From JAX: migration/from_jax.md

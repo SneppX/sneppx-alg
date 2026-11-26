@@ -112,7 +112,43 @@ jobs:
           printf '%s\n' 'User-agent: *' 'Allow: /' '' 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' > robots.txt
           grep -Fqx 'User-agent: *' robots.txt
           grep -Fqx 'Sitemap: https://sneppx.github.io/sneppx-alg/sitemap.xml' robots.txt
-          git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js javascripts/git-browser.js stylesheets/git-browser.css git-browser-data
+          test -s "$VERSION/llms.txt"
+          cp "$VERSION/llms.txt" llms.txt
+          cat > index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>SneppX-ALG | Native C/C++ Machine-Learning Framework</title>
+            <meta name="description" content="SneppX-ALG is an experimental native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs.">
+            <meta name="robots" content="index,follow">
+            <link rel="canonical" href="https://sneppx.github.io/sneppx-alg/">
+          </head>
+          <body>
+            <main>
+              <h1>SneppX-ALG</h1>
+              <p>SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components.</p>
+              <p><strong>Project maturity: Alpha.</strong> API coverage and validation vary by component and backend. SneppX-ALG is not a drop-in replacement for PyTorch or TensorFlow.</p>
+              <h2>Project status</h2>
+              <p>The Python distributed backend supports single-process execution and local sampler utilities. Validated multi-rank process groups, collectives, FSDP/ZeRO training, and multi-node execution are not currently available.</p>
+              <p>Security components are experimental and are not independently certified. Post-quantum implementations have documented interoperability gaps and are not FIPS validated.</p>
+              <h2>Explore the project</h2>
+              <ul>
+                <li><a href="/sneppx-alg/$VERSION/">Documentation and guides</a></li>
+                <li><a href="/sneppx-alg/$VERSION/getting-started/">Getting started</a></li>
+                <li><a href="/sneppx-alg/$VERSION/api/python/">Python API reference</a></li>
+                <li><a href="/sneppx-alg/$VERSION/security/">Security architecture and limitations</a></li>
+                <li><a href="/sneppx-alg/$VERSION/roadmap/tensorflow-pytorch-parity/">Framework roadmap</a></li>
+                <li><a href="/sneppx-alg/llms.txt">Project summary for AI assistants</a></li>
+                <li><a href="https://github.com/SneppX/sneppx-alg">Source repository</a></li>
+                <li><a href="https://pypi.org/project/sneppx-alg/">Python package on PyPI</a></li>
+              </ul>
+            </main>
+          </body>
+          </html>
+          EOF
+          git add robots.txt sitemap.xml 404.html javascripts/git-browser-highlighter.js javascripts/git-browser.js stylesheets/git-browser.css git-browser-data index.html llms.txt
           if ! git diff --cached --quiet; then
             git commit -m "docs: publish current sitemap and robots.txt"
             git push origin gh-pages

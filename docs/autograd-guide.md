@@ -1,6 +1,9 @@
 # Autograd Guide
 
-SNEPPX-Alg provides a full autograd engine with higher-order differentiation.
+SneppX-ALG provides reverse-mode automatic differentiation and selected
+higher-order differentiation paths. Operator and backend coverage is still
+evolving; the presence of an API does not imply parity with PyTorch or a
+guarantee that every gradient path is validated.
 
 !!! tip "See it happen"
     New to autograd? Start with the [Autograd visualizer](autograd-visualizer.md) —
@@ -62,8 +65,13 @@ def heavy(x):
 out = checkpoint(heavy, x)
 ```
 
-## Supported ops with create_graph
+## Higher-order differentiation coverage
 
-All 40+ ops support `create_graph=True`, including:
-Conv1d, Conv2d, Conv3d, Linear, LayerNorm, RMSNorm, BatchNorm, Embedding,
-all losses (MSE, CrossEntropy, BCE, etc.), all activations, MatMul, and more.
+Higher-order differentiation is implemented for a growing set of operations.
+Coverage differs by operation, dtype, and backend. Consult the current tests
+and the [framework parity roadmap](roadmap/tensorflow-pytorch-parity.md)
+before relying on a specific higher-order gradient. Do not infer complete
+coverage from the existence of a class or function.
+
+The `jvp` API is also under active correctness work; verify its behavior for
+your operation and backend before using it in a production numerical pipeline.

@@ -1,126 +1,54 @@
-# Cookbook — Distributed
+---
+description: "Single-process training examples and current limitations of SneppX-ALG distributed utilities."
+---
 
-## 1. Initialize a process group
+# Distributed Cookbook
 
-**Intent:** Set up NCCL communication across ranks.
+The Python distributed API is currently limited to single-process execution
+and local sampler utilities. Multi-rank process groups and collectives fail
+closed; do not use the examples below as a recipe for distributed training.
 
-```python
-from SneppX_ALG import init_process_group, destroy_process_group, get_world_size, get_rank
-
-init_process_group(backend="nccl")      # reads WORLD_SIZE/RANK env vars
-print(get_rank(), "/", get_world_size())
-# ... train ...
-destroy_process_group()
-```
-
-**Notes:** With `WORLD_SIZE=1`, `init_process_group` is a no-op. Needs
-`libnccl` on `PATH`/`LD_LIBRARY_PATH`. CPU-safe as a pass-through.
-
-## 2. Launch multi-GPU from a single script
-
-**Intent:** One process per GPU, no `torchrun`.
+## Partition dataset indices for local testing
 
 ```python
-from SneppX_ALG import launch
+from SneppX_ALG import DistributedSampler
 
-def main():
-    # your training function
-    ...
+dataset = list(range(10))
+rank_zero = list(DistributedSampler(dataset, num_replicas=2, rank=0, shuffle=False))
+rank_one = list(DistributedSampler(dataset, num_replicas=2, rank=1, shuffle=False))
 
-if __name__ == "__main__":
-    launch(main, num_nodes=1, num_gpus=2)
+assert rank_zero == [0, 2, 4, 6, 8]
+assert rank_one == [1, 3, 5, 7, 9]
 ```
 
-**Notes:** `launch` spawns `torch.distributed.run` under the hood when
-`num_nodes * num_gpus > 1`; otherwise it calls `main()` directly.
+This demonstrates deterministic index partitioning only. It does not perform
+inter-process communication.
 
-## 3. Wrap a model for DDP
-
-**Intent:** Gradient-sync data parallelism.
+## Single-process training
 
 ```python
-from SneppX_ALG import Transformer, DistributedWrapper
+from SneppX_ALG import Tensor
+from SneppX_ALG.interface_bindings import nn, optim
 
-model = Transformer(vocab_size=1000, dim=256, num_heads=4, num_layers=4, ffn_dim=1024, max_seq_len=128)
-model = DistributedWrapper(model, device="cuda", sync_bn=False)
-for x, y in loader:
-    loss = model(x)
-    loss.backward()
-    model.sync_gradients()      # all-reduce grads / world_size
-    opt.step()
+model = nn.Linear(4, 2)
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+x = Tensor.randn((8, 4))
+target = Tensor.randn((8, 2))
+loss = nn.functional.mse_loss(model(x), target)
+
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
 ```
 
-**Notes:** `DistributedWrapper` keeps the inner `.module` accessible.
-CPU-safe: `sync_gradients` is a no-op when `world_size <= 1`.
+## Explicitly unsupported APIs
 
-## 4. Shard data with DistributedSampler
+The following operations raise an error when configured for multiple ranks:
+init_process_group, all_reduce, all_gather, reduce_scatter, and barrier.
+launch(..., num_gpus=2) and multi-rank FSDP construction also raise. This
+prevents silent local-only execution from being mistaken for synchronized
+training.
 
-**Intent:** Each rank sees a disjoint slice of the dataset.
-
-```python
-from SneppX_ALG import TensorDataset, DistributedSampler
-from SneppX_ALG.interface_bindings.data_loader import DataLoader
-
-sampler = DistributedSampler(dataset, num_replicas=get_world_size(), rank=get_rank(), shuffle=True)
-loader  = DataLoader(dataset, batch_size=32, sampler=sampler)
-sampler.set_epoch(epoch)      # re-shuffle each epoch
-```
-
-**Notes:** `DataLoader` itself is in `interface_bindings.data_loader` (not
-re-exported via `*`). CPU-safe.
-
-## 5. ZeRO with FSDP (shard optimizer + grad + params)
-
-**Intent:** Fit a 7B model on 4× GPUs by sharding everything.
-
-```python
-from SneppX_ALG import FullyShardedDataParallel, FSDPConfig, ShardingStrategy, MixedPrecision
-
-cfg  = FSDPConfig(
-    sharding=ShardingStrategy.FULL_SHARD,           # ZeRO-3 equivalent
-    mixed_precision=MixedPrecision(param="bf16", reduce="fp32"),
-)
-model = FullyShardedDataParallel(base_transformer, cfg)
-```
-
-**Notes:** `ShardingStrategy` options: `FULL_SHARD` (ZeRO-3), `SHARD_GRAD_OS`
-(ZeRO-2), `NO_SHARD` (ZeRO-0). The C core mirror is `kernel/distributed/zero.c`.
-
-## 6. Barrier + all-reduce
-
-**Intent:** Synchronize or reduce across ranks.
-
-```python
-from SneppX_ALG import barrier, all_reduce, Tensor
-
-barrier()                                   # all ranks rendezvous
-acc = all_reduce(loss_tensor, op="sum")    # sum across ranks
-```
-
-## 7. Expert parallelism (MoE dispatch)
-
-**Intent:** Route tokens to experts across devices.
-
-```python
-from SneppX_ALG import SERModel, SERConfig
-
-cfg = SERConfig(); cfg.num_experts = 32; cfg.num_active = 2
-# With EP, experts are sharded across the expert-parallel group; see
-# algorithms/ser/core/ + net/distributed/nccl.c for the all-to-all dispatch.
-moe = SERModel(cfg, seed=0, num_layers=1)
-```
-
-**Notes:** EP size is derived as `num_experts / tp_size`. The all-to-all is
-handled by `SNEPPX_alltoall` in the NCCL layer. GPU + NCCL required.
-
-## 8. Elastic training (node joins/leaves)
-
-**Intent:** Elastic fault tolerance.
-
-```python
-from SneppX_ALG import ElasticTrainer
-
-trainer = ElasticTrainer(max_restarts=3, restart_delay=5)
-trainer.fit(train_fn, num_nodes=2, num_gpus=4)
-# on a node failure: ranks re-shard, checkpoints roll forward
-```
+See the [distributed support matrix](../distributed-guide.md) for the current
+implementation boundary and roadmap.

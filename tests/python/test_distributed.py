@@ -103,6 +103,45 @@ def test_context_env_override():
     print("  test_context_env_override PASS")
 
 
+def test_multi_rank_context_fails_closed(monkeypatch):
+    monkeypatch.setenv("WORLD_SIZE", "2")
+    monkeypatch.setenv("RANK", "0")
+    monkeypatch.setenv("LOCAL_RANK", "0")
+    ctx = DistributedContext()
+    try:
+        ctx.init_process_group(backend="nccl")
+    except RuntimeError as exc:
+        assert "not implemented" in str(exc)
+        assert ctx.initialized is False
+    else:
+        raise AssertionError("multi-rank init must fail until collectives are real")
+
+    tensor = Tensor.ones((2,))
+    for operation in (
+        lambda: ctx.all_reduce(tensor),
+        lambda: ctx.all_gather(tensor),
+        lambda: ctx.reduce_scatter(tensor),
+        ctx.barrier,
+    ):
+        try:
+            operation()
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("multi-rank communication must fail closed")
+
+
+def test_multi_process_launch_fails_closed():
+    from SneppX_ALG.interface_bindings.distributed import launch
+
+    try:
+        launch(lambda: None, num_nodes=1, num_gpus=2)
+    except RuntimeError as exc:
+        assert "not supported" in str(exc)
+    else:
+        raise AssertionError("multi-process launch must not claim to work")
+
+
 if __name__ == "__main__":
     test_distributed_context_defaults()
     test_init_process_group_single()

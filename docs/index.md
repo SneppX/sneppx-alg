@@ -1,8 +1,8 @@
 ---
-description: "SneppX-ALG documentation for the native C/C++ project and Python bindings, including installation, tensor operations, autograd, architecture, APIs, and project limitations."
+description: "Experimental native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs, including installation guides and implementation limits."
 ---
 
-# SneppX-ALG documentation
+# SneppX-ALG — Native C/C++ Machine-Learning Framework
 
 SneppX-ALG is an open-source AI and machine-learning project with a native C/C++ codebase and Python bindings. This documentation explains how to install and build the available components, use the documented APIs, understand the repository, and verify implementation status.
 
