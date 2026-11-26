@@ -6170,7 +6170,7 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <strong>Source</strong>: <code>security/ui/</code></p>
 <h3 id="implemented_4">Implemented<a class="headerlink" href="#implemented_4" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. <code>AuditLogger</code> and the global <code>get_audit_logger()</code> factory fail closed by default when a backend rejects a write. Best-effort logging is an explicit opt-in via <code>strict=False</code>.</li>
+<li>Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. <code>AuditLogger</code> and the global <code>get_audit_logger()</code> factory fail closed by default when a backend rejects a write or fails during shutdown. Best-effort logging is an explicit opt-in via <code>strict=False</code>. The remote backend uses a bounded buffer, rejects private-network HTTPS destinations, pins validated public DNS results, and raises on close if buffered events cannot be delivered.</li>
 <li>Key vault: in-memory encrypted key store with PIN-protected access</li>
 <li>Dashboard: (see <code>docs/api/c.md</code> for C API or <code>bindings/python/</code> for Python bindings)</li>
 </ul>
