@@ -5,13 +5,17 @@
 [![CI](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](LICENSE)
 
-SneppX-ALG is an open-source AI framework engineered for performance, composability, and security from the ground up. A native C/C++ core powers a full tensor and automatic-differentiation engine, while Python bindings keep research and production workflows approachable. Neural-network building blocks, distributed-training primitives, quantization, and a layered post-quantum security stack make SneppX-ALG a serious foundation for next-generation AI systems.
+SneppX-ALG is an experimental, open-source machine-learning framework with a native C/C++ core and Python bindings. It focuses on tensor operations, automatic differentiation, and neural-network building blocks, with supporting work in quantization, model tooling, and runtime security research.
 
-**Project maturity: Alpha.** Core paths are tested and evolving; coverage varies across components and optional backends. Check the relevant documentation and tests before depending on a specific feature. SneppX-ALG is not yet a drop-in replacement for TensorFlow or PyTorch.
+**Project maturity: Alpha.** APIs and implementation coverage vary by subsystem and backend. SneppX-ALG is not a drop-in replacement for PyTorch, TensorFlow, or JAX. Review the implementation status and tests for the exact feature you plan to use.
+
+## Release status
+
+The latest package published on PyPI is **1.5.2**. The current `main` branch contains the **1.5.3-rc.1** release candidate; it has not been published to PyPI. Source-tree behavior may therefore differ from the published package. See the [packaging and release policy](docs/dev/python-packaging.md) before choosing an installation path.
 
 ## Install
 
-Install the Python package from PyPI:
+Install the currently published Python package:
 
 ```bash
 python -m pip install sneppx-alg
@@ -23,16 +27,16 @@ For a source checkout, install the bindings from the repository:
 python -m pip install ./bindings/python
 ```
 
-## Features
+## What is in the project?
 
-- A full tensor engine with reverse- and forward-mode automatic differentiation, higher-order gradients, and a PyTorch-familiar `F.*` functional namespace.
-- Neural-network layers, losses, optimizers, transformer blocks, and model utilities with `from_pretrained()` helpers.
-- Distributed training: ZeRO stages 1–3, pipeline, tensor, and expert parallelism, FSDP, and elastic scheduling.
-- Quantization paths for INT8, INT4, and FP8, including AWQ and GPTQ workflows.
-- Security by design: ten S0–S9 layers spanning post-quantum cryptography, memory hardening, signed updates, monitoring, and formal-verification tooling.
-- A native C/C++ core with optional accelerator backends, pip-installable Python bindings, CLI tools, and live documentation.
+- **Tensor and autograd APIs:** tensor operations and reverse-mode automatic differentiation, exposed through Python bindings. Gradient coverage and optional native acceleration vary by operation.
+- **Neural-network components:** layers, losses, optimizers, and transformer-related utilities, with compatibility and test coverage varying across modules.
+- **Model and quantization tools:** configuration presets, conversion, quantization, and serving-related utilities. End-to-end pretrained-weight loading and some integrations remain in progress.
+- **Native implementation:** C/C++ components and a Python/NumPy path for development on CPU-only systems.
+- **Security research:** experimental S0–S9 components. These are not a security certification, not independently audited as a complete system, and not a basis for FIPS-compliance claims.
+- **Distributed training:** experimental API and native-code work only. The current Python multi-rank process-group and collective APIs fail closed; DDP/FSDP/ZeRO should not be treated as working multi-rank training.
 
-See the [TensorFlow and PyTorch parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md) for current gaps and compatibility goals.
+See the [framework parity roadmap](docs/roadmap/tensorflow-pytorch-parity.md), [distributed-training status](docs/distributed-guide.md), and [security documentation](docs/security.md) for current limitations.
 
 ## Build from source
 
@@ -44,36 +48,33 @@ cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-CUDA and other optional backends are not required for a basic CPU build. See the [build guide](docs/build.md) for configuration options.
+CUDA and other optional backends are not required for basic CPU development. See the [build guide](docs/build.md) for configuration options.
 
 ## Documentation
 
-- [Live documentation](https://sneppx.github.io/sneppx-alg/)
+- [Documentation home](https://sneppx.github.io/sneppx-alg/latest/)
 - [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
 - [Python API reference](https://sneppx.github.io/sneppx-alg/latest/api/python/)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Security implementation notes](docs/security_layers.md)
+- [Architecture overview](docs/ARCHITECTURE.md)
+- [Security status and audit history](docs/security.md)
 - [Development guide](docs/DEVELOPMENT.md)
 
-The [SneppX-OV project website](https://sneppx.github.io/sneppxov/) provides source-linked catalogues and a project overview.
+The [SneppX project organization](https://github.com/SneppX) hosts related open-source work.
 
 ## Codebase telemetry
 
-The repository ships a dependency-free codebase telemetry & metrics (CTM) CLI:
+The repository includes a dependency-free codebase telemetry (CTM) CLI:
 
 ```bash
 sneppx-ctm .
 sneppx-ctm . --format json --output ctm-report.json
 ```
 
-It reports per-language LOC/bytes, skips generated and binary content, and
-exposes console scripts such as `sneppx-ctm-functions`, `sneppx-ctm-large`, and
-`sneppx-ctm-todo`. See the [CTM tools documentation](docs/tools/ctm-tools.md)
-and the [CTM guide](ctm_tools/README.md) for the full surface.
+It reports per-language LOC and bytes, skips generated and binary content, and exposes additional console scripts. See the [CTM tools documentation](docs/tools/ctm-tools.md).
 
 ## Security
 
-Security-related components have different implementation and validation levels. They have not all received independent security audits or certification. Review the [security documentation](docs/security_layers.md) and the relevant tests before deployment.
+Security-related components have different implementation and validation levels. Several areas remain experimental, partial, or incomplete; no complete-system independent audit or certification is claimed. Do not rely on these components as security boundaries without reviewing the [security status](docs/security.md), [historical self-audit](docs/security/audits/index.md), and relevant tests.
 
 To report a suspected vulnerability, follow the [security policy](SECURITY.md) and use private disclosure.
 

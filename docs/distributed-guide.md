@@ -1,76 +1,31 @@
-# Distributed Training Guide
+---
+description: "Current implementation status and limitations of SneppX-ALG distributed training, process groups, collectives, DDP, FSDP, and ZeRO."
+---
 
-SNEPPX-Alg provides production-grade distributed training primitives with NCCL hardware acceleration and deterministic CPU fallbacks.
+# Distributed Training — Current Status
 
-## Architecture Overview
+> **Status: experimental; multi-rank Python training is not currently supported.** The Python distributed API deliberately fails closed when `WORLD_SIZE` is greater than 1. Do not treat the DDP, FSDP, ZeRO, or NCCL interfaces as a working distributed-training stack.
 
-```mermaid
-flowchart TD
-    DDP["Data Parallel (DDP)"] --> Collectives["AllReduce Gradients"]
-    ZeRO1["ZeRO-1"] --> OptState["Shard Optimizer States"]
-    ZeRO2["ZeRO-2"] --> OptGrad["Shard States + Gradients"]
-    ZeRO3["ZeRO-3"] --> OptParam["Shard States + Gradients + Weights"]
-    TP["Tensor Parallel"] --> ColSplit["Matrix Col/Row Partitioning"]
-    PP["Pipeline Parallel"] --> StageSplit["Sequential Layer Partitioning"]
-```
+## What the current Python API does
 
-## DDP (Distributed Data Parallel)
+The Python package exposes distributed-related types and helpers, but it does not currently integrate a validated multi-rank collective backend. In particular:
 
-DDP replicates model weights on every rank while feeding independent data mini-batches:
+- `init_process_group()` raises when `WORLD_SIZE > 1`; it does not report a successful multi-rank initialization.
+- `all_reduce()`, `all_gather()`, `reduce_scatter()`, and `barrier()` raise for multi-rank contexts instead of returning local data or pretending ranks synchronized.
+- `DistributedSampler` can partition a local dataset's indices. It does not transfer data or synchronize workers.
+- DDP/FSDP and ZeRO code is experimental and is not a substitute for validated inter-process communication.
 
-```python
-from SneppX_ALG.interface_bindings import distributed
-from SneppX_ALG import Tensor, F, nn, optim
+A single-process run (`WORLD_SIZE=1`) can use ordinary model training and local data utilities. That is not distributed training.
 
-# Initialize process group (CPU fallback or NCCL)
-pg = distributed.init_process_group(world_size=4, rank=0, backend="gloo")
+## Why the examples are limited
 
-model = nn.Linear(64, 16)
-opt = optim.Adam(model.parameters(), lr=1e-3)
+The repository contains native distributed code and API surfaces intended for future backend integration. The presence of NCCL symbols, process launch helpers, sharding classes, or architecture diagrams does not establish that a complete multi-rank training job is operational. Collective correctness, rank coordination, optimizer-state consistency, failure recovery, and multi-node interoperability require dedicated tests on real multi-process hardware.
 
-# Inside training loop: all-reduce gradients before optimizer step
-x = Tensor.randn((8, 64))
-loss = model(x).sum()
-loss.backward()
+## How to track progress
 
-for p in model.parameters():
-    if p.grad is not None:
-        distributed.all_reduce(p.grad, op="mean")
+- [Framework parity roadmap](roadmap/tensorflow-pytorch-parity.md)
+- [Distributed architecture notes](architecture/distributed_training.md)
+- [Distributed cookbook status](cookbook/distributed.md)
+- [Distributed tutorial status](tutorials/distributed_training.md)
 
-opt.step()
-opt.zero_grad()
-```
-
-## ZeRO (Zero Redundancy Optimizer) Stages
-
-| Stage | What is Sharded | Memory Reduction | Communication Volume |
-|---|---|---|---|
-| **ZeRO-1** | Optimizer States ($m, v$) | $4\times$ reduction | Identical to standard DDP |
-| **ZeRO-2** | Optimizer States + Gradients | $8\times$ reduction | Identical to standard DDP |
-| **ZeRO-3** | Optimizer States + Gradients + Parameters | Linear with rank count | $+50\%$ communication overhead |
-
-### Enabling ZeRO in Training Configuration
-
-```yaml
-# config/training/distributed.yaml
-distributed:
-  backend: nccl
-  world_size: 8
-  zero_stage: 2
-  gradient_accumulation_steps: 4
-  all_reduce_bucket_size_mb: 25
-```
-
-## Multi-Node Launching via CLI
-
-```powershell
-# Single-node multi-process
-sneppx-train --config config/training/distributed.yaml --world-size 4 --rank 0
-
-# Multi-node launcher invocation
-sneppx-train --config config/training/distributed.yaml --master-addr 10.0.0.1 --master-port 29500 --world-size 16 --rank 0
-```
-
-## CPU Fallback for Local Development
-
-When running without multiple GPUs or NCCL drivers, all collective operations (`all_reduce`, `broadcast`, `all_gather`) seamlessly execute as local identity operations, guaranteeing that code developed on a laptop runs unchanged on high-performance compute clusters.
+Until the backend and end-to-end tests are complete, do not use these APIs for production training or publish performance claims based on multi-rank execution.

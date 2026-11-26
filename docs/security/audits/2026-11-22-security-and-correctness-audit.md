@@ -1,3 +1,7 @@
+> **Historical audit record — not a current-main assessment.** This report records findings from the audit of commit `db256e27` on 2026-11-22 and its follow-up addenda dated 2026-11-23 and 2026-11-24. The addenda state that the seven initial Critical findings were resolved and that several misleading stubs were made to fail closed or were relabeled. They do **not** state that all 67 findings were fixed. The High, Medium/Low, and correctness findings require fresh verification against current `main`. This was an internal self-audit, not an independent security review or certification. See the [audit status index](index.md) and [security architecture](../../security.md).
+
+---
+
 # SneppX-ALG — Security & Correctness Audit (2026-11-22)
 
 ## Metadata

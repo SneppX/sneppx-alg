@@ -1,4 +1,4 @@
-"""Fully Sharded Data Parallel (FSDP) — ZeRO-3 style sharding."""
+"""Experimental FSDP API; validated multi-rank sharding is not available."""
 
 from typing import Dict, List, Optional, Tuple, Union, Callable, Set
 from enum import Enum
@@ -99,18 +99,21 @@ class FullyShardedDataParallel(Module):
         self._sharded_params: Dict[str, _ShardedParam] = {}
         self._flat_param_names: List[str] = []
         self._param_name_to_shard: Dict[str, str] = {}
+        self._try_init_dist()
 
     def _try_init_dist(self):
         if self._initialized:
             return
-        try:
-            from .distributed import get_world_size, get_rank
+        from .distributed import DistributedContext
 
-            self._world_size = get_world_size()
-            self._rank = get_rank()
-        except Exception:
-            self._world_size = 1
-            self._rank = 0
+        context = DistributedContext()
+        self._world_size = context.world_size
+        self._rank = context.rank
+        if self._world_size > 1:
+            raise RuntimeError(
+                "Multi-rank FSDP is not supported: the Python package does not "
+                "have a validated collective backend, so parameters will not be sharded"
+            )
         self._initialized = True
 
     def _should_shard(self, name: str, param: Tensor) -> bool:
@@ -149,11 +152,8 @@ class FullyShardedDataParallel(Module):
 
         for name, sp in self._sharded_params.items():
             shard_t = sp.shard
-            try:
-                gathered_tensors = dist_all_gather(shard_t)
-                full_np = np.concatenate([t.data for t in gathered_tensors])
-            except Exception:
-                full_np = sp.shard.data.copy()
+            gathered_tensors = dist_all_gather(shard_t)
+            full_np = np.concatenate([t.data for t in gathered_tensors])
             sp.full = full_np.reshape(sp.full_shape).astype(np.float32).copy()
             gathered.add(name)
         for name, param in self._module.named_parameters():
@@ -170,11 +170,8 @@ class FullyShardedDataParallel(Module):
             for p_name, param in self._module.named_parameters():
                 if p_name == name and hasattr(param, "grad") and param.grad is not None:
                     grad_shard = _shard_tensor(param.grad, self._rank, self._world_size)
-                    try:
-                        reduced = dist_all_reduce(grad_shard, op="sum")
-                        grad_data = reduced.data / self._world_size
-                    except Exception:
-                        grad_data = grad_shard.data
+                    reduced = dist_all_reduce(grad_shard, op="sum")
+                    grad_data = reduced.data / self._world_size
                     sp.grad_shard = grad_data
                     # The optimizer steps on the local shard, so it needs the
                     # reduced gradient for that shard — not a cleared grad.
@@ -235,13 +232,10 @@ class FullyShardedDataParallel(Module):
         from .distributed import all_gather as dist_all_gather
 
         for name, sp in self._sharded_params.items():
-            try:
-                gathered_tensors = dist_all_gather(sp.shard)
-                all_shards = [t.data for t in gathered_tensors]
-                full = np.concatenate(all_shards)
-                sd[name] = full.reshape(sp.full_shape)
-            except Exception:
-                sd[name] = sp.shard.data.reshape(sp.full_shape)
+            gathered_tensors = dist_all_gather(sp.shard)
+            all_shards = [t.data for t in gathered_tensors]
+            full = np.concatenate(all_shards)
+            sd[name] = full.reshape(sp.full_shape)
         return sd
 
     def load_state_dict(self, state_dict: dict):

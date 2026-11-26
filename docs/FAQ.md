@@ -1,3 +1,7 @@
+---
+description: "Frequently asked questions about SneppX-ALG installation, Python APIs, CPU support, project maturity, distributed training, and security."
+---
+
 # Frequently Asked Questions
 
 ## General & Environment
@@ -8,7 +12,7 @@ SNEPPX-Alg requires **Python 3.9+** (tested on Python 3.9, 3.10, 3.11, and 3.12)
 
 ### "Does SNEPPX-Alg require a GPU or CUDA?"
 
-**No.** All core tensor operations, autograd, optimizers, neural layers, and quantization algorithms run on pure CPU with the NumPy-backed engine. GPU acceleration (CUDA, ROCm, Vulkan) is strictly opt-in.
+**No GPU is required for the documented NumPy-backed CPU path.** It covers the supported tensor/autograd operations and selected neural-network components. Optional native acceleration, model serving, and other subsystems have separate requirements and varying implementation coverage.
 
 ### "How do I run tests safely on a local CPU machine?"
 
@@ -32,7 +36,7 @@ from SneppX_ALG import F
 
 ### "Can I migrate models from PyTorch?"
 
-Yes. SNEPPX-Alg supports `state_dict` weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See [`migration/from_pytorch.md`](migration/from_pytorch.md).
+There are PyTorch-inspired APIs and limited migration utilities, but full model and ecosystem compatibility is not guaranteed. Check the [PyTorch migration notes](migration/from_pytorch.md) for supported formats and verify every converted model and operation against your own tests.
 
 ## Installation & Build
 
@@ -95,15 +99,9 @@ Ensure the quantizer and dequantizer specify the exact `n` (total element count)
 
 ## Distributed Training
 
-### "Training hangs after init_process_group"
+### "Can I run multi-rank distributed training?"
 
-On CPU machines without NCCL, verify that every rank specifies matching `MASTER_ADDR` and `MASTER_PORT`:
-
-```powershell
-$env:MASTER_ADDR="127.0.0.1"; $env:MASTER_PORT="29500"
-$env:WORLD_SIZE=2; $env:RANK=0; $env:LOCAL_RANK=0
-```
-
+Not with the current Python distributed API. When `WORLD_SIZE` is greater than 1, process-group initialization and collectives fail explicitly because a validated multi-rank backend is not integrated. `DistributedSampler` can partition indices locally, but it does not communicate between workers. DDP, FSDP, and ZeRO should be treated as experimental API work, not functioning multi-rank training. See the [distributed-training status](distributed-guide.md).
 ## Security
 
 ### "How do I report a security vulnerability?"

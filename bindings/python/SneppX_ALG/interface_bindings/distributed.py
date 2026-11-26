@@ -56,19 +56,22 @@ class DistributedContext:
     def init_process_group(self, backend="nccl"):
         if self.initialized:
             return
-        if self.world_size <= 1:
-            return
-        if backend == "nccl":
-            global _nccl
-            _nccl._load()
+        if self.world_size > 1:
+            raise RuntimeError(
+                "Multi-rank process groups are not supported by the Python backend yet; "
+                "refusing to report initialization without a validated collective backend"
+            )
         self.initialized = True
-        print(f"[Distributed] Rank {self.rank}/{self.world_size} initialized")
 
     def destroy_process_group(self):
         self.initialized = False
 
     def barrier(self):
-        pass
+        if self.world_size > 1:
+            raise RuntimeError(
+                "A multi-rank barrier is unavailable because no validated Python "
+                "collective backend is integrated"
+            )
 
     def all_reduce(self, tensor: Tensor, op="sum") -> Tensor:
         if self.world_size <= 1:

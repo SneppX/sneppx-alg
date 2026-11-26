@@ -1,6 +1,10 @@
+---
+description: "Guide to SneppX-ALG tensor autograd, reverse-mode differentiation, gradient tracking, and the current limits of higher-order and forward-mode support."
+---
+
 # Autograd Guide
 
-SNEPPX-Alg provides a full autograd engine with higher-order differentiation.
+SneppX-ALG provides a tensor API with reverse-mode automatic differentiation and growing higher-order support. Gradient behavior is operation-specific; check the relevant regression tests before relying on less common operations.
 
 !!! tip "See it happen"
     New to autograd? Start with the [Autograd visualizer](autograd-visualizer.md) —
@@ -38,7 +42,7 @@ g2 = (x.grad * x.grad).sum()
 g2.backward()
 ```
 
-## Forward-mode (jvp) and reverse-mode (vjp)
+## Forward-mode and reverse-mode APIs
 
 ```python
 from SneppX_ALG.interface_bindings.autograd import jvp, vjp
@@ -62,8 +66,6 @@ def heavy(x):
 out = checkpoint(heavy, x)
 ```
 
-## Supported ops with create_graph
+## Higher-order differentiation coverage
 
-All 40+ ops support `create_graph=True`, including:
-Conv1d, Conv2d, Conv3d, Linear, LayerNorm, RMSNorm, BatchNorm, Embedding,
-all losses (MSE, CrossEntropy, BCE, etc.), all activations, MatMul, and more.
+Higher-order differentiation is not implemented or validated uniformly across every operation. Treat `create_graph=True` support as operation-specific and confirm the relevant tests for the exact operation and dtype you use. Forward-mode JVP coverage is still under development; the presence of a helper function is not a guarantee of complete forward-mode support.

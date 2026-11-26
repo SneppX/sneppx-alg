@@ -8,7 +8,7 @@ description: "Architecture and implementation status of SneppX-ALG security comp
 
 SneppX-ALG organizes its security work into ten phases (S0-S9), covering cryptography, memory hardening, obfuscation, runtime monitoring, network security, AI sanitization, key management, secure updates, formal verification, and penetration-testing infrastructure. Implementation maturity varies by component: some areas are experimental, partial, or scaffolded. This document describes the intended architecture and current implementation evidence; it is not a security certification or a claim that every control is production-ready.
 
-Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.
+The phase names describe the project's security workstreams, not a claim that the controls form a complete or independently validated security boundary.
 
 ```
 S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
@@ -17,6 +17,10 @@ Crypto Memory Obfusc Monitor Network AI    UI    Update Formal Pentest
 Core  Secure Engine  Engine  Sec   San    Sec   Sec    Verif  Report
       Mem
 ```
+
+## Audit history and current assurance
+
+The repository maintains a [historical security and correctness self-audit](audits/index.md). Its addenda record remediation of the seven initial Critical findings and closure of several false-assurance stubs; they do not mean every High, Medium, Low, or correctness finding was resolved. This is an internal engineering record, not an independent security review or certification.
 
 ## S0 — Cryptographic Core (experimental)
 

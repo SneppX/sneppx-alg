@@ -2,6 +2,7 @@
 
 import os
 import numpy as np
+from SneppX_ALG.interface_bindings.fsdp import FullyShardedDataParallel
 from SneppX_ALG.interface_bindings import (
     Tensor,
     Linear,
@@ -103,6 +104,43 @@ def test_context_env_override():
     print("  test_context_env_override PASS")
 
 
+def test_multi_rank_apis_fail_closed():
+    names = ("WORLD_SIZE", "RANK", "LOCAL_RANK")
+    previous = {name: os.environ.get(name) for name in names}
+    os.environ["WORLD_SIZE"] = "2"
+    os.environ["RANK"] = "0"
+    os.environ["LOCAL_RANK"] = "0"
+    try:
+        ctx = DistributedContext()
+        checks = (
+            ("init_process_group", lambda: ctx.init_process_group("nccl")),
+            ("barrier", ctx.barrier),
+            ("all_reduce", lambda: ctx.all_reduce(Tensor.ones((1,)))),
+            ("all_gather", lambda: ctx.all_gather(Tensor.ones((1,)))),
+            ("reduce_scatter", lambda: ctx.reduce_scatter(Tensor.ones((1,)))),
+        )
+        for name, operation in checks:
+            try:
+                operation()
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError(f"{name} must fail for unsupported multi-rank execution")
+
+        try:
+            FullyShardedDataParallel(Linear(4, 3))
+        except RuntimeError as exc:
+            assert "multi-rank fsdp is not supported" in str(exc).lower()
+        else:
+            raise AssertionError("FSDP must not silently run without a multi-rank backend")
+    finally:
+        for name, value in previous.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
 if __name__ == "__main__":
     test_distributed_context_defaults()
     test_init_process_group_single()
@@ -112,4 +150,5 @@ if __name__ == "__main__":
     test_distributed_sampler_shuffle()
     test_ddp_wrapper()
     test_context_env_override()
+    test_multi_rank_apis_fail_closed()
     print("\nAll distributed tests passed!")

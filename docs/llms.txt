@@ -1,0 +1,33 @@
+# SneppX-ALG
+
+> SneppX-ALG is an experimental, open-source machine-learning framework with a native C/C++ core and Python bindings. It focuses on tensor operations, reverse-mode automatic differentiation, and neural-network components.
+
+## Project status
+
+- Maturity: Alpha.
+- The latest PyPI package is 1.5.2.
+- The current main branch identifies itself as 1.5.3-rc.1; this release candidate is not published to PyPI.
+- SneppX-ALG is not a drop-in replacement for PyTorch, TensorFlow, or JAX.
+- Multi-rank Python distributed training is not currently supported. The process-group and collective APIs fail closed when WORLD_SIZE is greater than 1.
+- DDP, FSDP, ZeRO, and NCCL-related surfaces must be treated as experimental unless a specific end-to-end test demonstrates otherwise.
+- Security components are experimental, partial, or incomplete. No complete-system independent audit, FIPS validation, or certification is claimed.
+- Some model-zoo entries provide architecture configuration presets only; end-to-end pretrained-weight loading is in progress.
+
+## Key documentation
+
+- [Documentation home](https://sneppx.github.io/sneppx-alg/latest/)
+- [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
+- [Python API](https://sneppx.github.io/sneppx-alg/latest/api/python/)
+- [Architecture](https://sneppx.github.io/sneppx-alg/latest/ARCHITECTURE/)
+- [Framework parity roadmap](https://sneppx.github.io/sneppx-alg/latest/roadmap/tensorflow-pytorch-parity/)
+- [Distributed-training status](https://sneppx.github.io/sneppx-alg/latest/distributed-guide/)
+- [Security architecture](https://sneppx.github.io/sneppx-alg/latest/security/)
+- [Security audit history](https://sneppx.github.io/sneppx-alg/latest/security/audits/)
+- [Release and packaging policy](https://sneppx.github.io/sneppx-alg/latest/dev/python-packaging/)
+
+## Source and community
+
+- [GitHub repository](https://github.com/SneppX/sneppx-alg)
+- [Issues](https://github.com/SneppX/sneppx-alg/issues)
+- [Discussions](https://github.com/SneppX/sneppx-alg/discussions)
+- License: MIT

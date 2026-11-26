@@ -1,7 +1,10 @@
+---
+description: "Build SneppX-ALG from source, install its Python bindings, and try a small CPU tensor and autograd example."
+---
+
 # Quick Start
 
-Build SNEPPX-Alg from source, run a core demo, then train and serve a model in
-three minutes. Everything here runs on CPU — no GPU required for this path.
+Build SneppX-ALG from source, install the Python bindings, and try a small CPU tensor example. Optional model, serving, and native-backend workflows have additional requirements and varying maturity.
 
 ## 1. Build the core
 
@@ -104,15 +107,6 @@ c = SNEPPXClient("http://127.0.0.1:8000", api_key="...")
 c.generate("Explain the S0-S9 security stack in two sentences.", max_tokens=64)
 ```
 
-## 6. Go distributed (2 GPUs/CPU ranks)
+## 6. Distributed training status
 
-```python
-from SneppX_ALG.interface_bindings.distributed import init_distributed
-from SneppX_ALG import Trainer
-init_distributed(backend="nccl")        # or "gloo" / "mpi" on CPU
-Trainer(...).fit(train_loader, epochs=3, parallel={"tp":2, "dp":1})
-```
-
-See `docs/tutorials/` for full notebooks on classification, generation, RLHF
-fine-tuning, quantization+serving, MoE routing, security scanning, profiling,
-data pipelines, and model conversion.
+Multi-rank distributed training is not currently supported by the Python API. Process-group initialization, collectives, DDP synchronization, and FSDP sharding must not be assumed to work across processes or devices. The current Python API fails closed when `WORLD_SIZE` is greater than 1. See the [distributed-training status page](../distributed-guide.md) and [framework roadmap](../roadmap/tensorflow-pytorch-parity.md) for the current implementation boundary.
