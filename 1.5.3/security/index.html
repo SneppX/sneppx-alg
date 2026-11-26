@@ -6170,7 +6170,7 @@ timing/alignment concerns and IAT concurrency findings remain open.</p>
 <strong>Source</strong>: <code>security/ui/</code></p>
 <h3 id="implemented_4">Implemented<a class="headerlink" href="#implemented_4" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. The global <code>get_audit_logger()</code> factory uses strict mode and fails closed when a backend rejects a write; directly constructed <code>AuditLogger</code> instances remain best-effort by default for compatibility, so security-sensitive callers must pass <code>strict=True</code>.</li>
+<li>Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. <code>AuditLogger</code> and the global <code>get_audit_logger()</code> factory fail closed by default when a backend rejects a write. Best-effort logging is an explicit opt-in via <code>strict=False</code>.</li>
 <li>Key vault: in-memory encrypted key store with PIN-protected access</li>
 <li>Dashboard: (see <code>docs/api/c.md</code> for C API or <code>bindings/python/</code> for Python bindings)</li>
 </ul>
