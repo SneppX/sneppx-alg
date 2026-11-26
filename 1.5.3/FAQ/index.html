@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+        <meta name="description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 ">
       
       
@@ -16,10 +16,10 @@
         <link rel="canonical" href="https://sneppx.github.io/sneppx-alg/1.5.3/FAQ/">
       
       
-        <link rel="prev" href="../changelog/">
+        <link rel="prev" href="../roadmap/tensorflow-pytorch-parity/">
       
       
-        <link rel="next" href="../dev/pages-deploy/">
+        <link rel="next" href="../autograd-guide/">
       
       
         
@@ -33,7 +33,7 @@
     
     
       
-        <title>FAQ - SneppX-ALG</title>
+        <title>FAQ - SneppX-ALG — Native C/C++ Machine-Learning Framework</title>
       
     
     
@@ -122,8 +122,8 @@ bindings." />
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="FAQ - SneppX-ALG" />
-<meta property="og:description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+<meta property="og:title" content="FAQ - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="og:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 " />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/FAQ.png" />
 <meta property="og:image:type" content="image/png" />
@@ -131,8 +131,8 @@ bindings." />
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/FAQ/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="FAQ - SneppX-ALG" />
-<meta property="twitter:description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+<meta property="twitter:title" content="FAQ - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="twitter:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 " />
 <meta property="twitter:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/FAQ.png" />
 </head>
@@ -154,7 +154,7 @@ bindings." />
     <div data-md-component="skip">
       
         
-        <a href="#frequently&#702;asked&#702;questions" class="md-skip">
+        <a href="#frequently-asked-questions" class="md-skip">
           Skip to content
         </a>
       
@@ -170,7 +170,7 @@ bindings." />
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SneppX-ALG" class="md-header__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
+    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-header__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
@@ -183,7 +183,7 @@ bindings." />
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SneppX-ALG
+            SneppX-ALG — Native C/C++ Machine-Learning Framework
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -298,12 +298,12 @@ bindings." />
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SneppX-ALG" class="md-nav__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
+    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-nav__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
     </a>
-    SneppX-ALG
+    SneppX-ALG — Native C/C++ Machine-Learning Framework
   </label>
   
     <div class="md-nav__source">
@@ -324,6 +324,60 @@ bindings." />
       
   
   
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -334,7 +388,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Home
+    Project overview
   
 
     
@@ -346,22 +400,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../code-browser/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Repository
+    Getting started
   
 
     
@@ -373,22 +428,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../playground/" class="md-nav__link">
+      <a href="../guide/quickstart/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Playground
+    Source build quick start
   
 
     
@@ -397,6 +453,423 @@ bindings." />
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../why-sneppx-alg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project scope and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/tensorflow-pytorch-parity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General &amp; Environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General &amp; Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-python-version-is-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "What Python version is required?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#does-sneppx-alg-require-a-gpu-or-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Does SNEPPX-Alg require a GPU or CUDA?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-i-run-tests-safely-on-a-local-cpu-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "How do I run tests safely on a local CPU machine?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-sxfunctional-and-f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "What is the difference between sx.functional and F?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#can-i-migrate-models-from-pytorch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Can I migrate models from PyTorch?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation &amp; Build
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation &amp; Build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocs-build-fails-doxygen-command-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "mkdocs build fails — doxygen: command not found"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cmake-cannot-find-a-cc-compiler-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "CMake cannot find a C/C++ compiler on Windows"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ninjaexe-crashes-with-heap-corruption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "ninja.exe crashes with heap corruption"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importerror-cannot-import-name-x-from-sneppx_alg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "ImportError: cannot import name 'X' from 'SneppX_ALG'"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtimeerror-c-backend-not-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "RuntimeError: C backend not available"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cuda-not-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "CUDA not available"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quantization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quantization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quantize-oom-runs-forever-on-a-7b-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "quantize OOM / runs forever on a 7B model"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#int4-weights-decode-incorrectly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "INT4 weights decode incorrectly"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distributed-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributed Training
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distributed Training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#can-i-run-multi-gpu-or-multi-node-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Can I run multi-GPU or multi-node training?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-do-i-report-a-security-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "How do I report a security vulnerability?"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#still-stuck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Still stuck?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -423,10 +896,201 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides and examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides and examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autograd-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../higher-order-ad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Higher-order differentiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../distributed-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sparse-tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sparse tensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
             
   
   
@@ -444,8 +1108,8 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -469,35 +1133,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookbook/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cookbook Index
+    Index
   
 
     
@@ -553,7 +1189,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Models & Layers
+    Models and layers
   
 
     
@@ -665,7 +1301,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Distributed
+    Distributed utilities
   
 
     
@@ -693,7 +1329,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Serving & Inference
+    Serving and inference
   
 
     
@@ -721,7 +1357,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Data & Tokenization
+    Data and tokenization
   
 
     
@@ -833,7 +1469,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Conversion/Plugins
+    Conversion
   
 
     
@@ -881,22 +1517,74 @@ bindings." />
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
     
       
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../keyboard-shortcuts/" class="md-nav__link">
+      <a href="../tutorials/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Keyboard Shortcuts
+    Tutorial index
   
 
     
@@ -908,22 +1596,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../progress/" class="md-nav__link">
+      <a href="../tutorials/classification/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Your Progress
+    Classification
   
 
     
@@ -935,22 +1624,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../why-sneppx-alg/" class="md-nav__link">
+      <a href="../tutorials/generation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Project Scope and Limitations
+    Text generation
   
 
     
@@ -962,22 +1652,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Getting Started
+    RLHF fine-tuning
   
 
     
@@ -989,22 +1680,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../autograd-guide/" class="md-nav__link">
+      <a href="../tutorials/quantization_serving/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Autograd Guide
+    Quantization and serving
   
 
     
@@ -1016,22 +1708,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../autograd-visualizer/" class="md-nav__link">
+      <a href="../tutorials/distributed_training/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Autograd Visualizer
+    Distributed training status
   
 
     
@@ -1043,22 +1736,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../matmul-visualizer/" class="md-nav__link">
+      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Matmul Visualizer
+    MoE expert routing
   
 
     
@@ -1070,22 +1764,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../conv-visualizer/" class="md-nav__link">
+      <a href="../tutorials/security_scanning/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Conv2d Visualizer
+    Security scanning
   
 
     
@@ -1097,22 +1792,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../optimizer-race/" class="md-nav__link">
+      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Optimizer Race
+    Profiling and benchmarks
   
 
     
@@ -1124,22 +1820,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../loss-gallery/" class="md-nav__link">
+      <a href="../tutorials/data_pipeline/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Loss Gallery
+    Data pipeline
   
 
     
@@ -1151,22 +1848,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../distributed-guide/" class="md-nav__link">
+      <a href="../tutorials/model_conversion/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Distributed Guide
+    Model conversion
   
 
     
@@ -1178,165 +1876,19 @@ bindings." />
     </li>
   
 
-    
+              
+            
+          </ul>
+        </nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sparse-tensors/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Sparse Tensors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
-    
+              
+            
+          </ul>
+        </nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../higher-order-ad/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Higher-Order AD
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api-explorer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Explorer
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../model-zoo-browser/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Zoo Browser
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/quickstart/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Start
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1363,17 +1915,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_22" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_22" id="__nav_22_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Interactive tools
   
 
     
@@ -1384,12 +1936,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_22_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_22">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
+    Interactive tools
   
 
           </label>
@@ -1402,14 +1954,607 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+      <a href="../code-browser/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Pipeline Overview
+    Browser repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autograd-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matmul-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix multiplication visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conv-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convolution visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizer-race/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizer comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loss-gallery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loss gallery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-explorer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-zoo-browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model zoo browser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyboard-shortcuts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security layers and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pqc_kat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PQC interoperability report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/obf_audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obfuscation audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compliance status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/audits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical audit archive
   
 
     
@@ -1437,7 +2582,236 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Security Layers (S0-S9)
+    Security layer architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API and architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/autodoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline architecture
   
 
     
@@ -1465,7 +2839,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Distributed Training
+    Distributed architecture
   
 
     
@@ -1498,17 +2872,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_22_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
         
           
-          <label class="md-nav__link" for="__nav_22_4" id="__nav_22_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Code Walkthroughs
+    Code walkthroughs
   
 
     
@@ -1519,12 +2893,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_22_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_22_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Code Walkthroughs
+    Code walkthroughs
   
 
           </label>
@@ -1678,15 +3052,8 @@ bindings." />
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
+              
+                
   
   
   
@@ -1696,28 +3063,25 @@ bindings." />
     
     
       
-        
-        
-      
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Security
+    Reference material
   
 
     
@@ -1728,12 +3092,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Security
+    Reference material
   
 
           </label>
@@ -1746,14 +3110,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
+      <a href="../API_REFERENCE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Overview
+    API index
   
 
     
@@ -1774,14 +3138,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security_layers/" class="md-nav__link">
+      <a href="../python_features/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Layers (S0-S9)
+    Python features
   
 
     
@@ -1802,14 +3166,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../pqc_kat/" class="md-nav__link">
+      <a href="../api_quickref/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PQC Interoperability
+    API quick reference
   
 
     
@@ -1830,14 +3194,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+      <a href="../COVERAGE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Architecture
+    Coverage
   
 
     
@@ -1858,14 +3222,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security/obf_audit/" class="md-nav__link">
+      <a href="../GLOSSARY/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Obfuscation Audit
+    Glossary
   
 
     
@@ -1886,14 +3250,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security/threat_modeling_overview/" class="md-nav__link">
+      <a href="../DESIGN/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Threat Modeling
+    Design
   
 
     
@@ -1914,14 +3278,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../compliance/compliance_overview/" class="md-nav__link">
+      <a href="../VISION/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Compliance
+    Vision
   
 
     
@@ -1942,14 +3306,126 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+      <a href="../ROADMAP/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Incident Response
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Style guide
   
 
     
@@ -1969,30 +3445,11 @@ bindings." />
     </li>
   
 
-    
+              
+            
+          </ul>
+        </nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../roadmap/tensorflow-pytorch-parity/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Framework Roadmap
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -2019,17 +3476,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_25" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Tutorials
+    Community
   
 
     
@@ -2040,12 +3497,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_25">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Tutorials
+    Community
   
 
           </label>
@@ -2058,14 +3515,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/" class="md-nav__link">
+      <a href="../community/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Tutorial Index
+    Community hub
   
 
     
@@ -2086,14 +3543,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/classification/" class="md-nav__link">
+      <a href="../contributing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Classification
+    Contributing
   
 
     
@@ -2114,266 +3571,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/generation/" class="md-nav__link">
+      <a href="../learn/videos/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Text Generation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    RLHF Fine-Tuning
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/quantization_serving/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quantization + Serving
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/distributed_training/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Distributed Training
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MoE Expert Routing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/security_scanning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Security Scanning
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Profiling & Benchmarks
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Benchmarks
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/data_pipeline/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Pipeline
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/model_conversion/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Conversion
+    Video series
   
 
     
@@ -2416,17 +3621,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_26" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    API Reference
+    Development
   
 
     
@@ -2437,12 +3642,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_26">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    API Reference
+    Development
   
 
           </label>
@@ -2455,14 +3660,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/python/" class="md-nav__link">
+      <a href="../DEVELOPMENT/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Python API
+    Development workflow
   
 
     
@@ -2483,14 +3688,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/autodoc/" class="md-nav__link">
+      <a href="../dev/python-packaging/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Python API (auto)
+    Python packaging and release
   
 
     
@@ -2511,14 +3716,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/c/" class="md-nav__link">
+      <a href="../TESTING/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    C API
+    Testing
   
 
     
@@ -2539,14 +3744,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../build/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Doxygen (C/C++)
+    Build system
   
 
     
@@ -2555,6 +3760,855 @@ bindings." />
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMMENTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commenting standard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code review guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor tiers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GOOD_FIRST_ISSUES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Good first issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branching strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hss_training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HSS training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_12" id="__nav_7_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SneppX Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_hub/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/model_zoo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Zoo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/serving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/onnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONNX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MHA forward pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    128K context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/testing_framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CTM tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ctm_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ctm_tools/EXTENDED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended CTM tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/ctm-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Site deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Site deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Pages deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doxygen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pull request template
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_upstream/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upstream README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2589,17 +4643,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Release Notes
+    Releases and migration
   
 
     
@@ -2610,12 +4664,91 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_27">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Release Notes
+    Releases and migration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release notes
   
 
           </label>
@@ -2795,9 +4928,10 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
@@ -2807,21 +4941,18 @@ bindings." />
     
     
       
-        
-        
-      
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2839,8 +4970,8 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_28">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2996,1946 +5127,6 @@ bindings." />
     </li>
   
 
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
-        
-          
-          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Tooling
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_29">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    CTM Tooling
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ctm_tools/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ctm_tools/EXTENDED/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Extended CTM Tools
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/ctm-tools/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Tool Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
-        
-          
-          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Development
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_30">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Development
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DEVELOPMENT/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Development Workflow
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dev/python-packaging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Python Packaging & Release
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TESTING/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Testing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../build/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Build System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../code-walkthrough/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code Walkthrough
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../COMMENTING/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Commenting Standard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code Review Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributor Tiers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../GOOD_FIRST_ISSUES/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Good First Issues
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Branching Strategy
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../hss_training/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    HSS Training
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
-        
-          
-          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_31">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guides/sneppx_console/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SneppX Console
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides Index
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/model_hub/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Hub
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/model_zoo/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Zoo
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/serving/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Serving
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/onnx/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ONNX
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/mha_forward_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MHA Forward Pass
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/128k_context_extension/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    128K Context
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/testing_framework/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Testing Framework
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_32" >
-        
-          
-          <label class="md-nav__link" for="__nav_32" id="__nav_32_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_32_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_32">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Reference
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ARCHITECTURE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Index
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../python_features/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Python Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api_quickref/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../COVERAGE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coverage
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../GLOSSARY/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Glossary
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DESIGN/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Design
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../VISION/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Vision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ROADMAP/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Roadmap
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Framework Comparison
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../LEARNING_PATHS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Learning Paths
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../API/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Legacy API
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../STYLE_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Style Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../community/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Community
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_34" >
-        
-          
-          <label class="md-nav__link" for="__nav_34" id="__nav_34_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Learn
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_34_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_34">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Learn
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../learn/videos/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Video Series
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#general&#702;environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        General &amp; Environment
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="General &amp; Environment">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what&#702;python&#702;version&#702;is&#702;required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "What Python version is required?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "Does SNEPPX-Alg require a GPU or CUDA?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "How do I run tests safely on a local CPU machine?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "What is the difference between sx.functional and F?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "Can I migrate models from PyTorch?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation&#702;build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation &amp; Build
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation &amp; Build">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mkdocs&#702;build&#702;fails&#702;doxygen&#702;command&#702;not&#702;found" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "mkdocs build fails — doxygen: command not found"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cmake&#702;cannot&#702;find&#702;a&#702;cc&#702;compiler&#702;on&#702;windows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "CMake cannot find a C/C++ compiler on Windows"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ninjaexe&#702;crashes&#702;with&#702;heap&#702;corruption" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "ninja.exe crashes with heap corruption"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#python&#702;api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Python API
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Python API">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#importerror&#702;cannot&#702;import&#702;name&#702;x&#702;from&#702;sneppx_alg" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "ImportError: cannot import name 'X' from 'SneppX_ALG'"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#runtimeerror&#702;c&#702;backend&#702;not&#702;available" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "RuntimeError: C backend not available"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cuda&#702;not&#702;available" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "CUDA not available"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quantization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quantization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#quantize&#702;oom&#702;runs&#702;forever&#702;on&#702;a&#702;b&#702;model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "quantize OOM / runs forever on a 7B model"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#int4&#702;weights&#702;decode&#702;incorrectly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "INT4 weights decode incorrectly"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#distributed&#702;training" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Distributed Training
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Distributed Training">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#training&#702;hangs&#702;after&#702;initprocessgroup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "Training hangs after initprocessgroup"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Security">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "How do I report a security vulnerability?"
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#still&#702;stuck" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Still stuck?
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_37" >
-        
-          
-          <label class="md-nav__link" for="__nav_37" id="__nav_37_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Dev
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_37_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_37">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Dev
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dev/pages-deploy/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    GitHub Pages Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../doxygen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Doxygen Setup
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../PR_TEMPLATE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PR Template
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../README_upstream/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Upstream README
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
           </ul>
@@ -4972,7 +5163,7 @@ bindings." />
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#general&#702;environment" class="md-nav__link">
+  <a href="#general-environment" class="md-nav__link">
     <span class="md-ellipsis">
       
         General &amp; Environment
@@ -4984,7 +5175,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what&#702;python&#702;version&#702;is&#702;required" class="md-nav__link">
+  <a href="#what-python-version-is-required" class="md-nav__link">
     <span class="md-ellipsis">
       
         "What Python version is required?"
@@ -4995,7 +5186,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda" class="md-nav__link">
+  <a href="#does-sneppx-alg-require-a-gpu-or-cuda" class="md-nav__link">
     <span class="md-ellipsis">
       
         "Does SNEPPX-Alg require a GPU or CUDA?"
@@ -5006,7 +5197,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine" class="md-nav__link">
+  <a href="#how-do-i-run-tests-safely-on-a-local-cpu-machine" class="md-nav__link">
     <span class="md-ellipsis">
       
         "How do I run tests safely on a local CPU machine?"
@@ -5017,7 +5208,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f" class="md-nav__link">
+  <a href="#what-is-the-difference-between-sxfunctional-and-f" class="md-nav__link">
     <span class="md-ellipsis">
       
         "What is the difference between sx.functional and F?"
@@ -5028,7 +5219,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch" class="md-nav__link">
+  <a href="#can-i-migrate-models-from-pytorch" class="md-nav__link">
     <span class="md-ellipsis">
       
         "Can I migrate models from PyTorch?"
@@ -5044,7 +5235,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation&#702;build" class="md-nav__link">
+  <a href="#installation-build" class="md-nav__link">
     <span class="md-ellipsis">
       
         Installation &amp; Build
@@ -5056,7 +5247,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mkdocs&#702;build&#702;fails&#702;doxygen&#702;command&#702;not&#702;found" class="md-nav__link">
+  <a href="#mkdocs-build-fails-doxygen-command-not-found" class="md-nav__link">
     <span class="md-ellipsis">
       
         "mkdocs build fails — doxygen: command not found"
@@ -5067,7 +5258,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#cmake&#702;cannot&#702;find&#702;a&#702;cc&#702;compiler&#702;on&#702;windows" class="md-nav__link">
+  <a href="#cmake-cannot-find-a-cc-compiler-on-windows" class="md-nav__link">
     <span class="md-ellipsis">
       
         "CMake cannot find a C/C++ compiler on Windows"
@@ -5078,7 +5269,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#ninjaexe&#702;crashes&#702;with&#702;heap&#702;corruption" class="md-nav__link">
+  <a href="#ninjaexe-crashes-with-heap-corruption" class="md-nav__link">
     <span class="md-ellipsis">
       
         "ninja.exe crashes with heap corruption"
@@ -5094,7 +5285,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#python&#702;api" class="md-nav__link">
+  <a href="#python-api" class="md-nav__link">
     <span class="md-ellipsis">
       
         Python API
@@ -5106,7 +5297,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#importerror&#702;cannot&#702;import&#702;name&#702;x&#702;from&#702;sneppx_alg" class="md-nav__link">
+  <a href="#importerror-cannot-import-name-x-from-sneppx_alg" class="md-nav__link">
     <span class="md-ellipsis">
       
         "ImportError: cannot import name 'X' from 'SneppX_ALG'"
@@ -5117,7 +5308,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#runtimeerror&#702;c&#702;backend&#702;not&#702;available" class="md-nav__link">
+  <a href="#runtimeerror-c-backend-not-available" class="md-nav__link">
     <span class="md-ellipsis">
       
         "RuntimeError: C backend not available"
@@ -5128,7 +5319,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#cuda&#702;not&#702;available" class="md-nav__link">
+  <a href="#cuda-not-available" class="md-nav__link">
     <span class="md-ellipsis">
       
         "CUDA not available"
@@ -5156,7 +5347,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#quantize&#702;oom&#702;runs&#702;forever&#702;on&#702;a&#702;b&#702;model" class="md-nav__link">
+  <a href="#quantize-oom-runs-forever-on-a-7b-model" class="md-nav__link">
     <span class="md-ellipsis">
       
         "quantize OOM / runs forever on a 7B model"
@@ -5167,7 +5358,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#int4&#702;weights&#702;decode&#702;incorrectly" class="md-nav__link">
+  <a href="#int4-weights-decode-incorrectly" class="md-nav__link">
     <span class="md-ellipsis">
       
         "INT4 weights decode incorrectly"
@@ -5183,7 +5374,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#distributed&#702;training" class="md-nav__link">
+  <a href="#distributed-training" class="md-nav__link">
     <span class="md-ellipsis">
       
         Distributed Training
@@ -5195,10 +5386,10 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#training&#702;hangs&#702;after&#702;initprocessgroup" class="md-nav__link">
+  <a href="#can-i-run-multi-gpu-or-multi-node-training" class="md-nav__link">
     <span class="md-ellipsis">
       
-        "Training hangs after initprocessgroup"
+        "Can I run multi-GPU or multi-node training?"
       
     </span>
   </a>
@@ -5223,7 +5414,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability" class="md-nav__link">
+  <a href="#how-do-i-report-a-security-vulnerability" class="md-nav__link">
     <span class="md-ellipsis">
       
         "How do I report a security vulnerability?"
@@ -5239,7 +5430,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#still&#702;stuck" class="md-nav__link">
+  <a href="#still-stuck" class="md-nav__link">
     <span class="md-ellipsis">
       
         Still stuck?
@@ -5264,8 +5455,6 @@ bindings." />
 
 
 
-  
-
 
               
               <article class="md-content__inner md-typeset">
@@ -5277,38 +5466,41 @@ bindings." />
   
 
 
-<h1 id="frequently&#702;asked&#702;questions">Frequently Asked Questions<a class="headerlink" href="#frequently&#702;asked&#702;questions" title="Permanent link">&para;</a></h1>
-<h2 id="general&#702;environment">General &amp; Environment<a class="headerlink" href="#general&#702;environment" title="Permanent link">&para;</a></h2>
-<h3 id="what&#702;python&#702;version&#702;is&#702;required">"What Python version is required?"<a class="headerlink" href="#what&#702;python&#702;version&#702;is&#702;required" title="Permanent link">&para;</a></h3>
+<h1 id="frequently-asked-questions">Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permanent link">&para;</a></h1>
+<h2 id="general-environment">General &amp; Environment<a class="headerlink" href="#general-environment" title="Permanent link">&para;</a></h2>
+<h3 id="what-python-version-is-required">"What Python version is required?"<a class="headerlink" href="#what-python-version-is-required" title="Permanent link">&para;</a></h3>
 <p>SNEPPX-Alg requires <strong>Python 3.9+</strong> (tested on Python 3.9, 3.10, 3.11, and 3.12).</p>
-<h3 id="does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda">"Does SNEPPX-Alg require a GPU or CUDA?"<a class="headerlink" href="#does&#702;sneppx-alg&#702;require&#702;a&#702;gpu&#702;or&#702;cuda" title="Permanent link">&para;</a></h3>
+<h3 id="does-sneppx-alg-require-a-gpu-or-cuda">"Does SNEPPX-Alg require a GPU or CUDA?"<a class="headerlink" href="#does-sneppx-alg-require-a-gpu-or-cuda" title="Permanent link">&para;</a></h3>
 <p><strong>No.</strong> All core tensor operations, autograd, optimizers, neural layers, and quantization algorithms run on pure CPU with the NumPy-backed engine. GPU acceleration (CUDA, ROCm, Vulkan) is strictly opt-in.</p>
-<h3 id="how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine">"How do I run tests safely on a local CPU machine?"<a class="headerlink" href="#how&#702;do&#702;i&#702;run&#702;tests&#702;safely&#702;on&#702;a&#702;local&#702;cpu&#702;machine" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-run-tests-safely-on-a-local-cpu-machine">"How do I run tests safely on a local CPU machine?"<a class="headerlink" href="#how-do-i-run-tests-safely-on-a-local-cpu-machine" title="Permanent link">&para;</a></h3>
 <p>Run tests <strong>per-file</strong> using <code>pytest</code> without cache provider:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">/</span><span class="n">python</span><span class="p">/</span><span class="n">test_tensor</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span> <span class="n">-p</span> <span class="n">no</span><span class="p">:</span><span class="n">cacheprovider</span>
 </code></pre></div>
 <p>Never execute the entire <code>tests/</code> directory in a single command on memory-constrained machines, and skip GPU/LLM tests (<code>test_llama_models.py</code>, <code>test_cuda.py</code>).</p>
-<h3 id="what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f">"What is the difference between <code>sx.functional</code> and <code>F</code>?"<a class="headerlink" href="#what&#702;is&#702;the&#702;difference&#702;between&#702;sxfunctional&#702;and&#702;f" title="Permanent link">&para;</a></h3>
+<h3 id="what-is-the-difference-between-sxfunctional-and-f">"What is the difference between <code>sx.functional</code> and <code>F</code>?"<a class="headerlink" href="#what-is-the-difference-between-sxfunctional-and-f" title="Permanent link">&para;</a></h3>
 <p><code>sx.functional</code> is reserved by the core autograd engine for forward/reverse mode derivatives (<code>jvp</code>, <code>vjp</code>). For neural network activations and loss functions, import <code>F</code> instead:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">F</span>
 <span class="c1"># F.relu, F.mse_loss, F.cross_entropy, F.layer_norm</span>
 </code></pre></div>
-<h3 id="can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch">"Can I migrate models from PyTorch?"<a class="headerlink" href="#can&#702;i&#702;migrate&#702;models&#702;from&#702;pytorch" title="Permanent link">&para;</a></h3>
-<p>Yes. SNEPPX-Alg supports <code>state_dict</code> weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See <a href="../migration/from_pytorch/"><code>migration/from_pytorch.md</code></a>.</p>
-<h2 id="installation&#702;build">Installation &amp; Build<a class="headerlink" href="#installation&#702;build" title="Permanent link">&para;</a></h2>
-<h3 id="mkdocs&#702;build&#702;fails&#702;doxygen&#702;command&#702;not&#702;found">"mkdocs build fails — <code>doxygen: command not found</code>"<a class="headerlink" href="#mkdocs&#702;build&#702;fails&#702;doxygen&#702;command&#702;not&#702;found" title="Permanent link">&para;</a></h3>
+<h3 id="can-i-migrate-models-from-pytorch">"Can I migrate models from PyTorch?"<a class="headerlink" href="#can-i-migrate-models-from-pytorch" title="Permanent link">&para;</a></h3>
+<p>SneppX-ALG has selected PyTorch-like APIs and state-dict utilities, but it is
+not a drop-in replacement and does not guarantee compatibility for arbitrary
+models. Check the migration guide and test each layer, tensor operation,
+gradient, dtype, and checkpoint format you depend on.</p>
+<h2 id="installation-build">Installation &amp; Build<a class="headerlink" href="#installation-build" title="Permanent link">&para;</a></h2>
+<h3 id="mkdocs-build-fails-doxygen-command-not-found">"mkdocs build fails — <code>doxygen: command not found</code>"<a class="headerlink" href="#mkdocs-build-fails-doxygen-command-not-found" title="Permanent link">&para;</a></h3>
 <p>Install Doxygen 1.9+ (see <a href="../api/"><code>docs/api/index.md</code></a>). On Windows: <code>vcpkg install doxygen</code>; on Linux: <code>sudo apt-get install doxygen graphviz</code>.</p>
-<h3 id="cmake&#702;cannot&#702;find&#702;a&#702;cc&#702;compiler&#702;on&#702;windows">"CMake cannot find a C/C++ compiler on Windows"<a class="headerlink" href="#cmake&#702;cannot&#702;find&#702;a&#702;cc&#702;compiler&#702;on&#702;windows" title="Permanent link">&para;</a></h3>
+<h3 id="cmake-cannot-find-a-cc-compiler-on-windows">"CMake cannot find a C/C++ compiler on Windows"<a class="headerlink" href="#cmake-cannot-find-a-cc-compiler-on-windows" title="Permanent link">&para;</a></h3>
 <p>Install <strong>Visual Studio 2022</strong> with the <em>Desktop development with C++</em> workload (includes MSVC 19.44 and MASM), or run from Developer PowerShell so <code>cl.exe</code>/<code>ml64</code> are on <code>PATH</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="n">cmake</span> <span class="n">-B</span> <span class="n">build</span> <span class="n">-G</span> <span class="s2">"Visual Studio 17 2022"</span> <span class="n">-DCMAKE_BUILD_TYPE</span><span class="p">=</span><span class="n">Release</span>
 <span class="n">cmake</span> <span class="p">-</span><span class="n">-build</span> <span class="n">build</span> <span class="p">-</span><span class="n">-config</span> <span class="n">Release</span>
 <span class="nb">cd </span><span class="n">build</span> <span class="p">&amp;&amp;</span> <span class="n">ctest</span> <span class="n">-C</span> <span class="n">Release</span> <span class="p">-</span><span class="n">-output-on-failure</span>
 </code></pre></div>
-<h3 id="ninjaexe&#702;crashes&#702;with&#702;heap&#702;corruption">"ninja.exe crashes with heap corruption"<a class="headerlink" href="#ninjaexe&#702;crashes&#702;with&#702;heap&#702;corruption" title="Permanent link">&para;</a></h3>
+<h3 id="ninjaexe-crashes-with-heap-corruption">"ninja.exe crashes with heap corruption"<a class="headerlink" href="#ninjaexe-crashes-with-heap-corruption" title="Permanent link">&para;</a></h3>
 <p>The Kitware dev-build Ninja in some environments can be unstable. Use the repo-root <code>ninja.exe</code> (Ninja ≥ 1.12), or fall back to the Visual Studio generator: <code>cmake -B build -G "Visual Studio 17 2022"</code>.</p>
-<h2 id="python&#702;api">Python API<a class="headerlink" href="#python&#702;api" title="Permanent link">&para;</a></h2>
-<h3 id="importerror&#702;cannot&#702;import&#702;name&#702;x&#702;from&#702;sneppx_alg">"ImportError: cannot import name 'X' from 'SneppX_ALG'"<a class="headerlink" href="#importerror&#702;cannot&#702;import&#702;name&#702;x&#702;from&#702;sneppx_alg" title="Permanent link">&para;</a></h3>
+<h2 id="python-api">Python API<a class="headerlink" href="#python-api" title="Permanent link">&para;</a></h2>
+<h3 id="importerror-cannot-import-name-x-from-sneppx_alg">"ImportError: cannot import name 'X' from 'SneppX_ALG'"<a class="headerlink" href="#importerror-cannot-import-name-x-from-sneppx_alg" title="Permanent link">&para;</a></h3>
 <p>Top-level <code>from SneppX_ALG import *</code> re-exports primary symbols (<code>Tensor</code>, <code>F</code>, <code>nn</code>, <code>optim</code>). Other tools live under <code>interface_bindings</code> and require setting <code>PYTHONPATH</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">from</span> <span class="n">SneppX_ALG</span> <span class="n">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">AdamW</span>
@@ -5316,32 +5508,35 @@ bindings." />
 <span class="n">from</span> <span class="n">SneppX_ALG</span><span class="p">.</span><span class="n">interface_bindings</span><span class="p">.</span><span class="n">data_loader</span> <span class="n">import</span> <span class="n">DataLoader</span>
 <span class="n">from</span> <span class="n">SneppX_ALG</span><span class="p">.</span><span class="n">interface_bindings</span><span class="p">.</span><span class="n">generation</span> <span class="n">import</span> <span class="n">GenerationConfig</span><span class="p">,</span> <span class="n">generate</span>
 </code></pre></div>
-<h3 id="runtimeerror&#702;c&#702;backend&#702;not&#702;available">"RuntimeError: C backend not available"<a class="headerlink" href="#runtimeerror&#702;c&#702;backend&#702;not&#702;available" title="Permanent link">&para;</a></h3>
+<h3 id="runtimeerror-c-backend-not-available">"RuntimeError: C backend not available"<a class="headerlink" href="#runtimeerror-c-backend-not-available" title="Permanent link">&para;</a></h3>
 <p>This indicates compiled extension binaries (<code>_SNEPPX_c*.pyd</code> or <code>.so</code>) were not linked. The pure-Python/NumPy fallback handles tensors and basic modules seamlessly without needing C compilation:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">s</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_HAS_C_BACKEND</span><span class="p">)</span>   <span class="c1"># False = Pure-Python mode; True = Native C acceleration</span>
 </code></pre></div>
-<h3 id="cuda&#702;not&#702;available">"CUDA not available"<a class="headerlink" href="#cuda&#702;not&#702;available" title="Permanent link">&para;</a></h3>
+<h3 id="cuda-not-available">"CUDA not available"<a class="headerlink" href="#cuda-not-available" title="Permanent link">&para;</a></h3>
 <p>If you do not have an NVIDIA GPU, keep <code>SNEPPX_BUILD_CUDA=OFF</code> (the default). The engine operates natively in CPU mode.</p>
 <h2 id="quantization">Quantization<a class="headerlink" href="#quantization" title="Permanent link">&para;</a></h2>
-<h3 id="quantize&#702;oom&#702;runs&#702;forever&#702;on&#702;a&#702;b&#702;model">"quantize OOM / runs forever on a 7B model"<a class="headerlink" href="#quantize&#702;oom&#702;runs&#702;forever&#702;on&#702;a&#702;b&#702;model" title="Permanent link">&para;</a></h3>
+<h3 id="quantize-oom-runs-forever-on-a-7b-model">"quantize OOM / runs forever on a 7B model"<a class="headerlink" href="#quantize-oom-runs-forever-on-a-7b-model" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Use <strong>per-channel</strong> or <strong>per-group</strong> INT8 (<code>QuantGranularity.PER_CHANNEL</code>, group size 128).</li>
 <li>For weights-only quantization (W8A16), prefer <code>QuantizedLinear.from_float</code> over whole-tensor paths.</li>
 <li>On CPU, wrap the loop in <code>quantize_model_weights(...)</code> which skips <code>lm_head</code>/<code>embed_tokens</code> by default.</li>
 </ul>
-<h3 id="int4&#702;weights&#702;decode&#702;incorrectly">"INT4 weights decode incorrectly"<a class="headerlink" href="#int4&#702;weights&#702;decode&#702;incorrectly" title="Permanent link">&para;</a></h3>
+<h3 id="int4-weights-decode-incorrectly">"INT4 weights decode incorrectly"<a class="headerlink" href="#int4-weights-decode-incorrectly" title="Permanent link">&para;</a></h3>
 <p>Ensure the quantizer and dequantizer specify the exact <code>n</code> (total element count): <code>dequantize_int4_sym(qw, scale, n)</code> requires the original element count rather than packed byte size.</p>
-<h2 id="distributed&#702;training">Distributed Training<a class="headerlink" href="#distributed&#702;training" title="Permanent link">&para;</a></h2>
-<h3 id="training&#702;hangs&#702;after&#702;initprocessgroup">"Training hangs after init<em>process</em>group"<a class="headerlink" href="#training&#702;hangs&#702;after&#702;initprocessgroup" title="Permanent link">&para;</a></h3>
-<p>On CPU machines without NCCL, verify that every rank specifies matching <code>MASTER_ADDR</code> and <code>MASTER_PORT</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">$env:MASTER_ADDR</span><span class="p">=</span><span class="s2">"127.0.0.1"</span><span class="p">;</span> <span class="nv">$env:MASTER_PORT</span><span class="p">=</span><span class="s2">"29500"</span>
-<span class="nv">$env:WORLD_SIZE</span><span class="p">=</span><span class="n">2</span><span class="p">;</span> <span class="nv">$env:RANK</span><span class="p">=</span><span class="n">0</span><span class="p">;</span> <span class="nv">$env:LOCAL_RANK</span><span class="p">=</span><span class="n">0</span>
-</code></pre></div>
+<h2 id="distributed-training">Distributed Training<a class="headerlink" href="#distributed-training" title="Permanent link">&para;</a></h2>
+<h3 id="can-i-run-multi-gpu-or-multi-node-training">"Can I run multi-GPU or multi-node training?"<a class="headerlink" href="#can-i-run-multi-gpu-or-multi-node-training" title="Permanent link">&para;</a></h3>
+<p>Not with the current Python backend. Single-process training and the local
+<code>DistributedSampler</code> index-partitioning utility are available, but multi-rank
+process-group initialization, collectives, DDP synchronization, FSDP/ZeRO
+training, and multi-node execution are not implemented as validated end-to-end
+features. Multi-rank entry points now raise an explicit error rather than
+silently running without synchronized gradients. See the
+<a href="../distributed-guide/">distributed support matrix</a>.</p>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
-<h3 id="how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability">"How do I report a security vulnerability?"<a class="headerlink" href="#how&#702;do&#702;i&#702;report&#702;a&#702;security&#702;vulnerability" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-report-a-security-vulnerability">"How do I report a security vulnerability?"<a class="headerlink" href="#how-do-i-report-a-security-vulnerability" title="Permanent link">&para;</a></h3>
 <p>See <a href="https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md">repository security policy</a>. Do <strong>not</strong> open public issues for security vulnerabilities — report them privately via GitHub Security Advisories or email <code>algoSNEPPX@gmail.com</code>.</p>
-<h2 id="still&#702;stuck">Still stuck?<a class="headerlink" href="#still&#702;stuck" title="Permanent link">&para;</a></h2>
+<h2 id="still-stuck">Still stuck?<a class="headerlink" href="#still-stuck" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Read <a href="../getting-started/">Getting Started</a> for quick setup.</li>
 <li>Read <a href="../installation/">Installation Guide</a> for deep build notes.</li>

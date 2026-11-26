@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+        <meta name="description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 ">
       
       
@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://sneppx.github.io/sneppx-alg/1.5.3/API_REFERENCE/">
       
       
-        <link rel="prev" href="../ARCHITECTURE/">
+        <link rel="prev" href="../walkthrough-fm/">
       
       
         <link rel="next" href="../python_features/">
@@ -33,7 +33,7 @@
     
     
       
-        <title>API Index - SneppX-ALG</title>
+        <title>API index - SneppX-ALG — Native C/C++ Machine-Learning Framework</title>
       
     
     
@@ -88,7 +88,7 @@
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="SneppX-ALG" />
-<meta property="og:title" content="API Index |
+<meta property="og:title" content="API index |
 SneppX-ALG" />
 <meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
 bindings." />
@@ -99,7 +99,7 @@ bindings." />
 <meta property="og:image:height" content="640" />
 <meta property="og:image:alt" content="SneppX-ALG documentation" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="API Index |
+<meta name="twitter:title" content="API index |
 SneppX-ALG" />
 <meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
 bindings." />
@@ -122,8 +122,8 @@ bindings." />
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="API Index - SneppX-ALG" />
-<meta property="og:description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+<meta property="og:title" content="API index - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="og:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 " />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/API_REFERENCE.png" />
 <meta property="og:image:type" content="image/png" />
@@ -131,8 +131,8 @@ bindings." />
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/API_REFERENCE/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="API Index - SneppX-ALG" />
-<meta property="twitter:description" content="Documentation for the SneppX-ALG C/C++ project and its Python bindings. Includes installation, API references, architecture notes, security limitations, and development guides.
+<meta property="twitter:title" content="API index - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="twitter:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
 " />
 <meta property="twitter:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/API_REFERENCE.png" />
 </head>
@@ -154,7 +154,7 @@ bindings." />
     <div data-md-component="skip">
       
         
-        <a href="#sneppx&#702;api&#702;reference" class="md-skip">
+        <a href="#sneppx-api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -170,7 +170,7 @@ bindings." />
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SneppX-ALG" class="md-header__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
+    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-header__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
@@ -183,13 +183,13 @@ bindings." />
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SneppX-ALG
+            SneppX-ALG — Native C/C++ Machine-Learning Framework
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Index
+              API index
             
           </span>
         </div>
@@ -298,12 +298,12 @@ bindings." />
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SneppX-ALG" class="md-nav__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
+    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-nav__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
     </a>
-    SneppX-ALG
+    SneppX-ALG — Native C/C++ Machine-Learning Framework
   </label>
   
     <div class="md-nav__source">
@@ -326,6 +326,60 @@ bindings." />
   
   
   
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href=".." class="md-nav__link">
         
@@ -334,7 +388,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Home
+    Project overview
   
 
     
@@ -346,22 +400,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../code-browser/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Repository
+    Getting started
   
 
     
@@ -373,22 +428,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../playground/" class="md-nav__link">
+      <a href="../guide/quickstart/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Playground
+    Source build quick start
   
 
     
@@ -397,6 +453,98 @@ bindings." />
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../why-sneppx-alg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project scope and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/tensorflow-pytorch-parity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -423,10 +571,201 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides and examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides and examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autograd-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../higher-order-ad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Higher-order differentiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../distributed-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sparse-tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sparse tensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
             
   
   
@@ -444,8 +783,8 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -469,35 +808,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cookbook/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cookbook Index
+    Index
   
 
     
@@ -553,7 +864,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Models & Layers
+    Models and layers
   
 
     
@@ -665,7 +976,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Distributed
+    Distributed utilities
   
 
     
@@ -693,7 +1004,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Serving & Inference
+    Serving and inference
   
 
     
@@ -721,7 +1032,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Data & Tokenization
+    Data and tokenization
   
 
     
@@ -833,7 +1144,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Conversion/Plugins
+    Conversion
   
 
     
@@ -881,22 +1192,74 @@ bindings." />
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
     
       
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../keyboard-shortcuts/" class="md-nav__link">
+      <a href="../tutorials/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Keyboard Shortcuts
+    Tutorial index
   
 
     
@@ -908,22 +1271,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../progress/" class="md-nav__link">
+      <a href="../tutorials/classification/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Your Progress
+    Classification
   
 
     
@@ -935,22 +1299,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../why-sneppx-alg/" class="md-nav__link">
+      <a href="../tutorials/generation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Project Scope and Limitations
+    Text generation
   
 
     
@@ -962,22 +1327,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Getting Started
+    RLHF fine-tuning
   
 
     
@@ -989,22 +1355,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../autograd-guide/" class="md-nav__link">
+      <a href="../tutorials/quantization_serving/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Autograd Guide
+    Quantization and serving
   
 
     
@@ -1016,22 +1383,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../autograd-visualizer/" class="md-nav__link">
+      <a href="../tutorials/distributed_training/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Autograd Visualizer
+    Distributed training status
   
 
     
@@ -1043,22 +1411,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../matmul-visualizer/" class="md-nav__link">
+      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Matmul Visualizer
+    MoE expert routing
   
 
     
@@ -1070,22 +1439,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../conv-visualizer/" class="md-nav__link">
+      <a href="../tutorials/security_scanning/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Conv2d Visualizer
+    Security scanning
   
 
     
@@ -1097,22 +1467,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../optimizer-race/" class="md-nav__link">
+      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Optimizer Race
+    Profiling and benchmarks
   
 
     
@@ -1124,22 +1495,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../loss-gallery/" class="md-nav__link">
+      <a href="../tutorials/data_pipeline/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Loss Gallery
+    Data pipeline
   
 
     
@@ -1151,22 +1523,23 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../distributed-guide/" class="md-nav__link">
+      <a href="../tutorials/model_conversion/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Distributed Guide
+    Model conversion
   
 
     
@@ -1178,165 +1551,19 @@ bindings." />
     </li>
   
 
-    
+              
+            
+          </ul>
+        </nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sparse-tensors/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Sparse Tensors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
-    
+              
+            
+          </ul>
+        </nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../higher-order-ad/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Higher-Order AD
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api-explorer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Explorer
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../model-zoo-browser/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Zoo Browser
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/quickstart/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Start
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1363,17 +1590,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_22" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_22" id="__nav_22_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Interactive tools
   
 
     
@@ -1384,12 +1611,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_22_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_22">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
+    Interactive tools
   
 
           </label>
@@ -1402,14 +1629,607 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+      <a href="../code-browser/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Pipeline Overview
+    Browser repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autograd-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matmul-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix multiplication visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conv-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convolution visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizer-race/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizer comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loss-gallery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loss gallery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-explorer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-zoo-browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model zoo browser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keyboard-shortcuts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security layers and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pqc_kat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PQC interoperability report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/obf_audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obfuscation audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat_modeling_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compliance status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/audits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical audit archive
   
 
     
@@ -1437,7 +2257,236 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Security Layers (S0-S9)
+    Security layer architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API and architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/autodoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline architecture
   
 
     
@@ -1465,7 +2514,7 @@ bindings." />
   <span class="md-ellipsis">
     
   
-    Distributed Training
+    Distributed architecture
   
 
     
@@ -1498,17 +2547,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_22_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
         
           
-          <label class="md-nav__link" for="__nav_22_4" id="__nav_22_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Code Walkthroughs
+    Code walkthroughs
   
 
     
@@ -1519,12 +2568,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_22_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_22_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Code Walkthroughs
+    Code walkthroughs
   
 
           </label>
@@ -1678,6 +2727,937 @@ bindings." />
 
               
             
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference material
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference material
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API index
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#header-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Responses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Health">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1modelsmodel_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/models/{model_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#text-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Text Generation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Text Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-v1generate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/generate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1generatebatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/generate/batch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1generatestream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/generate/stream
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1generatecontinuous-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/generate/continuous-batch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chat-completions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chat Completions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chat Completions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-v1chatcompletions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/chat/completions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quantization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quantization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-v1modelsquantize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/models/quantize
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-authentication-public-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Authentication (Public Gateway)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Authentication (Public Gateway)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-v1authregister" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/auth/register
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1authlogin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/auth/login
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-service-key-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Service Key Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Self-Service Key Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-v1keyskey_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DELETE /v1/keys/{key_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admin API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1adminkeys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/admin/keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1adminkeys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/admin/keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1adminkeyskey_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/admin/keys/{key_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-v1adminkeyskey_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DELETE /v1/admin/keys/{key_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patch-v1adminkeyskey_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PATCH /v1/admin/keys/{key_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1adminkeyskey_idusage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/admin/keys/{key_id}/usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tier-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-http-server-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C HTTP Server API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C HTTP Server API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handler Signature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auth-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auth Middleware
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-level-rest-api-http_apih" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-Level REST API (http_api.h)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_quickref/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API quick reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COVERAGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VISION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Style guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1707,17 +3687,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_23" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_23" id="__nav_23_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Security
+    Community
   
 
     
@@ -1728,12 +3708,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_23">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Security
+    Community
   
 
           </label>
@@ -1746,14 +3726,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
+      <a href="../community/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Overview
+    Community hub
   
 
     
@@ -1774,14 +3754,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../security_layers/" class="md-nav__link">
+      <a href="../contributing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Layers (S0-S9)
+    Contributing
   
 
     
@@ -1802,154 +3782,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../pqc_kat/" class="md-nav__link">
+      <a href="../learn/videos/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PQC Interoperability
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../architecture/security_architecture_overview/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Security Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../security/obf_audit/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Obfuscation Audit
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../security/threat_modeling_overview/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Threat Modeling
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../compliance/compliance_overview/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Compliance
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../incident_response/ir_framework_overview/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incident Response
+    Video series
   
 
     
@@ -1976,33 +3816,6 @@ bindings." />
   
   
   
-    <li class="md-nav__item">
-      <a href="../roadmap/tensorflow-pytorch-parity/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Framework Roadmap
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -2019,17 +3832,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_25" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_25" id="__nav_25_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Tutorials
+    Development
   
 
     
@@ -2040,12 +3853,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_25_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_25">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Tutorials
+    Development
   
 
           </label>
@@ -2058,14 +3871,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/" class="md-nav__link">
+      <a href="../DEVELOPMENT/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Tutorial Index
+    Development workflow
   
 
     
@@ -2086,14 +3899,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/classification/" class="md-nav__link">
+      <a href="../dev/python-packaging/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Classification
+    Python packaging and release
   
 
     
@@ -2114,14 +3927,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/generation/" class="md-nav__link">
+      <a href="../TESTING/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Text Generation
+    Testing
   
 
     
@@ -2142,14 +3955,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+      <a href="../build/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    RLHF Fine-Tuning
+    Build system
   
 
     
@@ -2170,14 +3983,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/quantization_serving/" class="md-nav__link">
+      <a href="../code-walkthrough/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Quantization + Serving
+    Code walkthrough
   
 
     
@@ -2198,14 +4011,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/distributed_training/" class="md-nav__link">
+      <a href="../COMMENTING/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Distributed Training
+    Commenting standard
   
 
     
@@ -2226,14 +4039,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/moe_ser_routing/" class="md-nav__link">
+      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MoE Expert Routing
+    Code review guide
   
 
     
@@ -2254,14 +4067,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/security_scanning/" class="md-nav__link">
+      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security Scanning
+    Contributor tiers
   
 
     
@@ -2282,14 +4095,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/profiling_benchmarks/" class="md-nav__link">
+      <a href="../GOOD_FIRST_ISSUES/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Profiling & Benchmarks
+    Good first issues
   
 
     
@@ -2310,14 +4123,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
+      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Benchmarks
+    Branching strategy
   
 
     
@@ -2338,14 +4151,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/data_pipeline/" class="md-nav__link">
+      <a href="../hss_training/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Data Pipeline
+    HSS training
   
 
     
@@ -2361,41 +4174,6 @@ bindings." />
             
               
                 
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/model_conversion/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Conversion
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
   
   
   
@@ -2405,28 +4183,25 @@ bindings." />
     
     
       
-        
-        
-      
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_26" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_12" >
         
           
-          <label class="md-nav__link" for="__nav_26" id="__nav_26_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7_12" id="__nav_7_12_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    API Reference
+    Guides
   
 
     
@@ -2437,12 +4212,12 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_26_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_26">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_12">
             <span class="md-nav__icon md-icon"></span>
             
   
-    API Reference
+    Guides
   
 
           </label>
@@ -2455,14 +4230,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/python/" class="md-nav__link">
+      <a href="../guides/sneppx_console/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Python API
+    SneppX Console
   
 
     
@@ -2483,14 +4258,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/autodoc/" class="md-nav__link">
+      <a href="../guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Python API (auto)
+    Guides index
   
 
     
@@ -2511,14 +4286,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/c/" class="md-nav__link">
+      <a href="../guide/model_hub/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    C API
+    Model Hub
   
 
     
@@ -2539,14 +4314,14 @@ bindings." />
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../guide/model_zoo/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Doxygen (C/C++)
+    Model Zoo
   
 
     
@@ -2555,6 +4330,496 @@ bindings." />
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/serving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/onnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONNX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MHA forward pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    128K context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guide/testing_framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CTM tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ctm_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ctm_tools/EXTENDED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended CTM tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/ctm-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Site deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Site deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Pages deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doxygen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pull request template
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_upstream/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upstream README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2589,17 +4854,17 @@ bindings." />
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_27" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_27" id="__nav_27_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Release Notes
+    Releases and migration
   
 
     
@@ -2610,12 +4875,91 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_27_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_27">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Release Notes
+    Releases and migration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release notes
   
 
           </label>
@@ -2795,9 +5139,10 @@ bindings." />
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
@@ -2807,21 +5152,18 @@ bindings." />
     
     
       
-        
-        
-      
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_28" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_28" id="__nav_28_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2839,8 +5181,8 @@ bindings." />
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_28_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_28">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2996,2157 +5338,6 @@ bindings." />
     </li>
   
 
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_29" >
-        
-          
-          <label class="md-nav__link" for="__nav_29" id="__nav_29_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Tooling
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_29_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_29">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    CTM Tooling
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ctm_tools/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ctm_tools/EXTENDED/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Extended CTM Tools
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/ctm-tools/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CTM Tool Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_30" >
-        
-          
-          <label class="md-nav__link" for="__nav_30" id="__nav_30_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Development
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_30_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_30">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Development
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DEVELOPMENT/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Development Workflow
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dev/python-packaging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Python Packaging & Release
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TESTING/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Testing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../build/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Build System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../code-walkthrough/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code Walkthrough
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../COMMENTING/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Commenting Standard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CODE_REVIEW_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code Review Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CONTRIBUTOR_TIERS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributor Tiers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../GOOD_FIRST_ISSUES/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Good First Issues
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../BRANCHING_STRATEGY/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Branching Strategy
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../hss_training/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    HSS Training
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_31" >
-        
-          
-          <label class="md-nav__link" for="__nav_31" id="__nav_31_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_31_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_31">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guides/sneppx_console/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SneppX Console
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides Index
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/model_hub/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Hub
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/model_zoo/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model Zoo
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/serving/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Serving
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/onnx/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ONNX
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/mha_forward_pass/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MHA Forward Pass
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/128k_context_extension/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    128K Context
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guide/testing_framework/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Testing Framework
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_32" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_32" id="__nav_32_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_32_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_32">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Reference
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ARCHITECTURE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Index
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Index
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#authentication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authentication
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Authentication">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#header&#702;parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Header Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error&#702;responses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Error Responses
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#health" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Health
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Health">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1health" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/health
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Models
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Models">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/models
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1modelsmodel_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/models/{model_id}
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#text&#702;generation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Text Generation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Text Generation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1generate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/generate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1generatebatch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/generate/batch
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1generatestream" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/generate/stream
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1generatecontinuous-batch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/generate/continuous-batch
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#chat&#702;completions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Chat Completions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Chat Completions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1chatcompletions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/chat/completions
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quantization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quantization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1modelsquantize" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/models/quantize
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#user&#702;authentication&#702;public&#702;gateway" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        User Authentication (Public Gateway)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="User Authentication (Public Gateway)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1authregister" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/auth/register
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1authlogin" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/auth/login
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#self-service&#702;key&#702;management" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Self-Service Key Management
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Self-Service Key Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delete&#702;v1keyskey_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DELETE /v1/keys/{key_id}
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#admin&#702;api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Admin API
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Admin API">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/admin/keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#post&#702;v1adminkeys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POST /v1/admin/keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeyskey_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/admin/keys/{key_id}
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delete&#702;v1adminkeyskey_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DELETE /v1/admin/keys/{key_id}
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#patch&#702;v1adminkeyskey_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PATCH /v1/admin/keys/{key_id}
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeyskey_idusage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        GET /v1/admin/keys/{key_id}/usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tier&#702;comparison" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tier Comparison
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#c&#702;http&#702;server&#702;api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        C HTTP Server API
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="C HTTP Server API">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lifecycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#handler&#702;signature" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Handler Signature
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#auth&#702;middleware" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Auth Middleware
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#high-level&#702;rest&#702;api&#702;http_apih" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        High-Level REST API (http_api.h)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick&#702;reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../python_features/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Python Features
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api_quickref/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../COVERAGE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coverage
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../GLOSSARY/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Glossary
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DESIGN/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Design
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../VISION/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Vision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ROADMAP/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Roadmap
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Framework Comparison
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../LEARNING_PATHS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Learning Paths
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../API/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Legacy API
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../STYLE_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Style Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../community/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Community
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_34" >
-        
-          
-          <label class="md-nav__link" for="__nav_34" id="__nav_34_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Learn
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_34_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_34">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Learn
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../learn/videos/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Video Series
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../FAQ/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_37" >
-        
-          
-          <label class="md-nav__link" for="__nav_37" id="__nav_37_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Dev
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_37_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_37">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Dev
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dev/pages-deploy/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    GitHub Pages Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../doxygen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Doxygen Setup
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../PR_TEMPLATE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PR Template
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../README_upstream/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Upstream README
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
           </ul>
@@ -5195,7 +5386,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#header&#702;parameters" class="md-nav__link">
+  <a href="#header-parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
         Header Parameters
@@ -5211,7 +5402,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#error&#702;responses" class="md-nav__link">
+  <a href="#error-responses" class="md-nav__link">
     <span class="md-ellipsis">
       
         Error Responses
@@ -5234,7 +5425,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1health" class="md-nav__link">
+  <a href="#get-v1health" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/health
@@ -5262,7 +5453,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1models" class="md-nav__link">
+  <a href="#get-v1models" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/models
@@ -5273,7 +5464,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1modelsmodel_id" class="md-nav__link">
+  <a href="#get-v1modelsmodel_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/models/{model_id}
@@ -5289,7 +5480,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#text&#702;generation" class="md-nav__link">
+  <a href="#text-generation" class="md-nav__link">
     <span class="md-ellipsis">
       
         Text Generation
@@ -5301,7 +5492,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1generate" class="md-nav__link">
+  <a href="#post-v1generate" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/generate
@@ -5312,7 +5503,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1generatebatch" class="md-nav__link">
+  <a href="#post-v1generatebatch" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/generate/batch
@@ -5323,7 +5514,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1generatestream" class="md-nav__link">
+  <a href="#post-v1generatestream" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/generate/stream
@@ -5334,7 +5525,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1generatecontinuous-batch" class="md-nav__link">
+  <a href="#post-v1generatecontinuous-batch" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/generate/continuous-batch
@@ -5350,7 +5541,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#chat&#702;completions" class="md-nav__link">
+  <a href="#chat-completions" class="md-nav__link">
     <span class="md-ellipsis">
       
         Chat Completions
@@ -5362,7 +5553,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1chatcompletions" class="md-nav__link">
+  <a href="#post-v1chatcompletions" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/chat/completions
@@ -5390,7 +5581,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1modelsquantize" class="md-nav__link">
+  <a href="#post-v1modelsquantize" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/models/quantize
@@ -5406,7 +5597,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#user&#702;authentication&#702;public&#702;gateway" class="md-nav__link">
+  <a href="#user-authentication-public-gateway" class="md-nav__link">
     <span class="md-ellipsis">
       
         User Authentication (Public Gateway)
@@ -5418,7 +5609,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1authregister" class="md-nav__link">
+  <a href="#post-v1authregister" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/auth/register
@@ -5429,7 +5620,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1authlogin" class="md-nav__link">
+  <a href="#post-v1authlogin" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/auth/login
@@ -5445,7 +5636,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#self-service&#702;key&#702;management" class="md-nav__link">
+  <a href="#self-service-key-management" class="md-nav__link">
     <span class="md-ellipsis">
       
         Self-Service Key Management
@@ -5457,7 +5648,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1keys" class="md-nav__link">
+  <a href="#get-v1keys" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/keys
@@ -5468,7 +5659,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1keys" class="md-nav__link">
+  <a href="#post-v1keys" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/keys
@@ -5479,7 +5670,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#delete&#702;v1keyskey_id" class="md-nav__link">
+  <a href="#delete-v1keyskey_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         DELETE /v1/keys/{key_id}
@@ -5490,7 +5681,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1usage" class="md-nav__link">
+  <a href="#get-v1usage" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/usage
@@ -5506,7 +5697,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#admin&#702;api" class="md-nav__link">
+  <a href="#admin-api" class="md-nav__link">
     <span class="md-ellipsis">
       
         Admin API
@@ -5518,7 +5709,7 @@ bindings." />
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeys" class="md-nav__link">
+  <a href="#get-v1adminkeys" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/admin/keys
@@ -5529,7 +5720,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#post&#702;v1adminkeys" class="md-nav__link">
+  <a href="#post-v1adminkeys" class="md-nav__link">
     <span class="md-ellipsis">
       
         POST /v1/admin/keys
@@ -5540,7 +5731,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeyskey_id" class="md-nav__link">
+  <a href="#get-v1adminkeyskey_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/admin/keys/{key_id}
@@ -5551,7 +5742,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#delete&#702;v1adminkeyskey_id" class="md-nav__link">
+  <a href="#delete-v1adminkeyskey_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         DELETE /v1/admin/keys/{key_id}
@@ -5562,7 +5753,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#patch&#702;v1adminkeyskey_id" class="md-nav__link">
+  <a href="#patch-v1adminkeyskey_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         PATCH /v1/admin/keys/{key_id}
@@ -5573,7 +5764,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#get&#702;v1adminkeyskey_idusage" class="md-nav__link">
+  <a href="#get-v1adminkeyskey_idusage" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /v1/admin/keys/{key_id}/usage
@@ -5589,7 +5780,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#tier&#702;comparison" class="md-nav__link">
+  <a href="#tier-comparison" class="md-nav__link">
     <span class="md-ellipsis">
       
         Tier Comparison
@@ -5600,7 +5791,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#c&#702;http&#702;server&#702;api" class="md-nav__link">
+  <a href="#c-http-server-api" class="md-nav__link">
     <span class="md-ellipsis">
       
         C HTTP Server API
@@ -5623,7 +5814,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#handler&#702;signature" class="md-nav__link">
+  <a href="#handler-signature" class="md-nav__link">
     <span class="md-ellipsis">
       
         Handler Signature
@@ -5634,7 +5825,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#auth&#702;middleware" class="md-nav__link">
+  <a href="#auth-middleware" class="md-nav__link">
     <span class="md-ellipsis">
       
         Auth Middleware
@@ -5645,7 +5836,7 @@ bindings." />
 </li>
         
           <li class="md-nav__item">
-  <a href="#high-level&#702;rest&#702;api&#702;http_apih" class="md-nav__link">
+  <a href="#high-level-rest-api-http_apih" class="md-nav__link">
     <span class="md-ellipsis">
       
         High-Level REST API (http_api.h)
@@ -5661,7 +5852,7 @@ bindings." />
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick&#702;reference" class="md-nav__link">
+  <a href="#quick-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
         Quick Reference
@@ -5686,26 +5877,9 @@ bindings." />
 
 
 
-  
-
 
   <nav class="md-path" aria-label="Navigation" >
     <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href=".." class="md-path__link">
-        
-  <span class="md-ellipsis">
-    Home
-  </span>
-
-      </a>
-    </li>
-  
-
       
       
         
@@ -5714,10 +5888,28 @@ bindings." />
     
     
       <li class="md-path__item">
-        <a href="../ARCHITECTURE/" class="md-path__link">
+        <a href="../api/python/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Reference
+    API and architecture
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Reference material
   </span>
 
         </a>
@@ -5739,7 +5931,7 @@ bindings." />
   
 
 
-<h1 id="sneppx&#702;api&#702;reference">SneppX API Reference<a class="headerlink" href="#sneppx&#702;api&#702;reference" title="Permanent link">&para;</a></h1>
+<h1 id="sneppx-api-reference">SneppX API Reference<a class="headerlink" href="#sneppx-api-reference" title="Permanent link">&para;</a></h1>
 <p><strong>Version:</strong> 1.1.1
 <strong>Base URL:</strong> <code>http://localhost:8080</code>
 <strong>OpenAPI:</strong> Auto-generated at <code>/docs</code> (Swagger UI) when FastAPI server is running.</p>
@@ -5749,7 +5941,7 @@ bindings." />
 <div class="highlight"><pre><span></span><code>Authorization: Bearer sk-sneppx-&lt;hex&gt;
 </code></pre></div>
 <p>API keys are generated with the <code>sk-sneppx-</code> prefix. Keys are hashed (SHA-256) at rest; only the first 18 characters (<code>sk-sneppx-</code> + 8 hex) are displayed in list responses.</p>
-<h3 id="header&#702;parameters">Header Parameters<a class="headerlink" href="#header&#702;parameters" title="Permanent link">&para;</a></h3>
+<h3 id="header-parameters">Header Parameters<a class="headerlink" href="#header-parameters" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -5772,7 +5964,7 @@ bindings." />
 </tbody>
 </table>
 <hr />
-<h2 id="error&#702;responses">Error Responses<a class="headerlink" href="#error&#702;responses" title="Permanent link">&para;</a></h2>
+<h2 id="error-responses">Error Responses<a class="headerlink" href="#error-responses" title="Permanent link">&para;</a></h2>
 <p>All errors return JSON with the same structure:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Human-readable error message"</span>
@@ -5819,7 +6011,7 @@ bindings." />
 </table>
 <hr />
 <h2 id="health">Health<a class="headerlink" href="#health" title="Permanent link">&para;</a></h2>
-<h3 id="get&#702;v1health"><code>GET /v1/health</code><a class="headerlink" href="#get&#702;v1health" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1health"><code>GET /v1/health</code><a class="headerlink" href="#get-v1health" title="Permanent link">&para;</a></h3>
 <p>Check server status.</p>
 <p><strong>Auth:</strong> None</p>
 <p><strong>Response:</strong></p>
@@ -5835,7 +6027,7 @@ bindings." />
 </code></pre></div>
 <hr />
 <h2 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h2>
-<h3 id="get&#702;v1models"><code>GET /v1/models</code><a class="headerlink" href="#get&#702;v1models" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1models"><code>GET /v1/models</code><a class="headerlink" href="#get-v1models" title="Permanent link">&para;</a></h3>
 <p>List all registered models.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Response:</strong></p>
@@ -5857,7 +6049,7 @@ bindings." />
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h3 id="get&#702;v1modelsmodel_id"><code>GET /v1/models/{model_id}</code><a class="headerlink" href="#get&#702;v1modelsmodel_id" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1modelsmodel_id"><code>GET /v1/models/{model_id}</code><a class="headerlink" href="#get-v1modelsmodel_id" title="Permanent link">&para;</a></h3>
 <p>Get details for a specific model.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Path Parameters:</strong></p>
@@ -5882,8 +6074,8 @@ bindings." />
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h2 id="text&#702;generation">Text Generation<a class="headerlink" href="#text&#702;generation" title="Permanent link">&para;</a></h2>
-<h3 id="post&#702;v1generate"><code>POST /v1/generate</code><a class="headerlink" href="#post&#702;v1generate" title="Permanent link">&para;</a></h3>
+<h2 id="text-generation">Text Generation<a class="headerlink" href="#text-generation" title="Permanent link">&para;</a></h2>
+<h3 id="post-v1generate"><code>POST /v1/generate</code><a class="headerlink" href="#post-v1generate" title="Permanent link">&para;</a></h3>
 <p>Generate text from a prompt.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong></p>
@@ -5991,7 +6183,7 @@ bindings." />
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"prompt": "Hello, world!", "max_new_tokens": 100}'</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1generatebatch"><code>POST /v1/generate/batch</code><a class="headerlink" href="#post&#702;v1generatebatch" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1generatebatch"><code>POST /v1/generate/batch</code><a class="headerlink" href="#post-v1generatebatch" title="Permanent link">&para;</a></h3>
 <p>Generate text for multiple prompts in a single request.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong></p>
@@ -6014,7 +6206,7 @@ bindings." />
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"prompts": ["Hello", "World"]}'</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1generatestream"><code>POST /v1/generate/stream</code><a class="headerlink" href="#post&#702;v1generatestream" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1generatestream"><code>POST /v1/generate/stream</code><a class="headerlink" href="#post-v1generatestream" title="Permanent link">&para;</a></h3>
 <p>Stream generated tokens via Server-Sent Events (SSE).</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong> Same as <code>POST /v1/generate</code>.</p>
@@ -6032,7 +6224,7 @@ data: [DONE]
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"prompt": "Tell me a story", "max_new_tokens": 50}'</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1generatecontinuous-batch"><code>POST /v1/generate/continuous-batch</code><a class="headerlink" href="#post&#702;v1generatecontinuous-batch" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1generatecontinuous-batch"><code>POST /v1/generate/continuous-batch</code><a class="headerlink" href="#post-v1generatecontinuous-batch" title="Permanent link">&para;</a></h3>
 <p>Submit prompts to the continuous batching scheduler. Supports dynamic request queue with priority scheduling.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong> Same as <code>POST /v1/generate/batch</code>.</p>
@@ -6043,8 +6235,8 @@ data: [DONE]
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"prompts": ["Explain quantum computing"]}'</span>
 </code></pre></div>
 <hr />
-<h2 id="chat&#702;completions">Chat Completions<a class="headerlink" href="#chat&#702;completions" title="Permanent link">&para;</a></h2>
-<h3 id="post&#702;v1chatcompletions"><code>POST /v1/chat/completions</code><a class="headerlink" href="#post&#702;v1chatcompletions" title="Permanent link">&para;</a></h3>
+<h2 id="chat-completions">Chat Completions<a class="headerlink" href="#chat-completions" title="Permanent link">&para;</a></h2>
+<h3 id="post-v1chatcompletions"><code>POST /v1/chat/completions</code><a class="headerlink" href="#post-v1chatcompletions" title="Permanent link">&para;</a></h3>
 <p>OpenAI-compatible chat completions endpoint.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong></p>
@@ -6155,7 +6347,7 @@ data: [DONE]
 </code></pre></div>
 <hr />
 <h2 id="quantization">Quantization<a class="headerlink" href="#quantization" title="Permanent link">&para;</a></h2>
-<h3 id="post&#702;v1modelsquantize"><code>POST /v1/models/quantize</code><a class="headerlink" href="#post&#702;v1modelsquantize" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1modelsquantize"><code>POST /v1/models/quantize</code><a class="headerlink" href="#post-v1modelsquantize" title="Permanent link">&para;</a></h3>
 <p>Quantize a loaded model to reduce memory footprint.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Query Parameters:</strong></p>
@@ -6197,8 +6389,8 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h2 id="user&#702;authentication&#702;public&#702;gateway">User Authentication (Public Gateway)<a class="headerlink" href="#user&#702;authentication&#702;public&#702;gateway" title="Permanent link">&para;</a></h2>
-<h3 id="post&#702;v1authregister"><code>POST /v1/auth/register</code><a class="headerlink" href="#post&#702;v1authregister" title="Permanent link">&para;</a></h3>
+<h2 id="user-authentication-public-gateway">User Authentication (Public Gateway)<a class="headerlink" href="#user-authentication-public-gateway" title="Permanent link">&para;</a></h2>
+<h3 id="post-v1authregister"><code>POST /v1/auth/register</code><a class="headerlink" href="#post-v1authregister" title="Permanent link">&para;</a></h3>
 <p>Register a new user account. Automatically creates a free-tier API key.</p>
 <p><strong>Auth:</strong> None</p>
 <p><strong>Request Body:</strong></p>
@@ -6242,7 +6434,7 @@ data: [DONE]
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"email": "alice@example.com", "password": "my-strong-pw-123"}'</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1authlogin"><code>POST /v1/auth/login</code><a class="headerlink" href="#post&#702;v1authlogin" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1authlogin"><code>POST /v1/auth/login</code><a class="headerlink" href="#post-v1authlogin" title="Permanent link">&para;</a></h3>
 <p>Authenticate with email and password.</p>
 <p><strong>Auth:</strong> None</p>
 <p><strong>Request Body:</strong></p>
@@ -6265,8 +6457,8 @@ data: [DONE]
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"email": "alice@example.com", "password": "my-strong-pw-123"}'</span>
 </code></pre></div>
 <hr />
-<h2 id="self-service&#702;key&#702;management">Self-Service Key Management<a class="headerlink" href="#self-service&#702;key&#702;management" title="Permanent link">&para;</a></h2>
-<h3 id="get&#702;v1keys"><code>GET /v1/keys</code><a class="headerlink" href="#get&#702;v1keys" title="Permanent link">&para;</a></h3>
+<h2 id="self-service-key-management">Self-Service Key Management<a class="headerlink" href="#self-service-key-management" title="Permanent link">&para;</a></h2>
+<h3 id="get-v1keys"><code>GET /v1/keys</code><a class="headerlink" href="#get-v1keys" title="Permanent link">&para;</a></h3>
 <p>List all API keys belonging to the authenticated user.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Response:</strong></p>
@@ -6289,7 +6481,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1keys"><code>POST /v1/keys</code><a class="headerlink" href="#post&#702;v1keys" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1keys"><code>POST /v1/keys</code><a class="headerlink" href="#post-v1keys" title="Permanent link">&para;</a></h3>
 <p>Create a new API key for the authenticated user.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Request Body:</strong></p>
@@ -6368,7 +6560,7 @@ data: [DONE]
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"name": "dev-key", "expires_in_days": 30}'</span>
 </code></pre></div>
 <hr />
-<h3 id="delete&#702;v1keyskey_id"><code>DELETE /v1/keys/{key_id}</code><a class="headerlink" href="#delete&#702;v1keyskey_id" title="Permanent link">&para;</a></h3>
+<h3 id="delete-v1keyskey_id"><code>DELETE /v1/keys/{key_id}</code><a class="headerlink" href="#delete-v1keyskey_id" title="Permanent link">&para;</a></h3>
 <p>Revoke (delete) one of the authenticated user's API keys.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Path Parameters:</strong></p>
@@ -6399,7 +6591,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h3 id="get&#702;v1usage"><code>GET /v1/usage</code><a class="headerlink" href="#get&#702;v1usage" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1usage"><code>GET /v1/usage</code><a class="headerlink" href="#get-v1usage" title="Permanent link">&para;</a></h3>
 <p>Get aggregated usage statistics for the authenticated user's keys.</p>
 <p><strong>Auth:</strong> API key (Bearer token)</p>
 <p><strong>Query Parameters:</strong></p>
@@ -6434,9 +6626,9 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer sk-sneppx-a1b2c3d4e5f6g7h8"</span>
 </code></pre></div>
 <hr />
-<h2 id="admin&#702;api">Admin API<a class="headerlink" href="#admin&#702;api" title="Permanent link">&para;</a></h2>
+<h2 id="admin-api">Admin API<a class="headerlink" href="#admin-api" title="Permanent link">&para;</a></h2>
 <p>All admin endpoints require the admin key set at server startup (<code>--admin-key &lt;key&gt;</code>). Pass it in the <code>Authorization</code> header.</p>
-<h3 id="get&#702;v1adminkeys"><code>GET /v1/admin/keys</code><a class="headerlink" href="#get&#702;v1adminkeys" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1adminkeys"><code>GET /v1/admin/keys</code><a class="headerlink" href="#get-v1adminkeys" title="Permanent link">&para;</a></h3>
 <p>List all API keys in the system.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Response:</strong></p>
@@ -6461,7 +6653,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h3 id="post&#702;v1adminkeys"><code>POST /v1/admin/keys</code><a class="headerlink" href="#post&#702;v1adminkeys" title="Permanent link">&para;</a></h3>
+<h3 id="post-v1adminkeys"><code>POST /v1/admin/keys</code><a class="headerlink" href="#post-v1adminkeys" title="Permanent link">&para;</a></h3>
 <p>Create an API key for any user or tier.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Query Parameters:</strong></p>
@@ -6506,7 +6698,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h3 id="get&#702;v1adminkeyskey_id"><code>GET /v1/admin/keys/{key_id}</code><a class="headerlink" href="#get&#702;v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1adminkeyskey_id"><code>GET /v1/admin/keys/{key_id}</code><a class="headerlink" href="#get-v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
 <p>Get details for a specific key.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Example:</strong></p>
@@ -6514,7 +6706,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h3 id="delete&#702;v1adminkeyskey_id"><code>DELETE /v1/admin/keys/{key_id}</code><a class="headerlink" href="#delete&#702;v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
+<h3 id="delete-v1adminkeyskey_id"><code>DELETE /v1/admin/keys/{key_id}</code><a class="headerlink" href="#delete-v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
 <p>Revoke any key.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Example:</strong></p>
@@ -6522,7 +6714,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h3 id="patch&#702;v1adminkeyskey_id"><code>PATCH /v1/admin/keys/{key_id}</code><a class="headerlink" href="#patch&#702;v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
+<h3 id="patch-v1adminkeyskey_id"><code>PATCH /v1/admin/keys/{key_id}</code><a class="headerlink" href="#patch-v1adminkeyskey_id" title="Permanent link">&para;</a></h3>
 <p>Update key properties.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Query Parameters:</strong></p>
@@ -6562,7 +6754,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h3 id="get&#702;v1adminkeyskey_idusage"><code>GET /v1/admin/keys/{key_id}/usage</code><a class="headerlink" href="#get&#702;v1adminkeyskey_idusage" title="Permanent link">&para;</a></h3>
+<h3 id="get-v1adminkeyskey_idusage"><code>GET /v1/admin/keys/{key_id}/usage</code><a class="headerlink" href="#get-v1adminkeyskey_idusage" title="Permanent link">&para;</a></h3>
 <p>Get usage statistics for a specific key.</p>
 <p><strong>Auth:</strong> Admin key (Bearer token)</p>
 <p><strong>Query Parameters:</strong></p>
@@ -6599,7 +6791,7 @@ data: [DONE]
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer my-admin-key"</span>
 </code></pre></div>
 <hr />
-<h2 id="tier&#702;comparison">Tier Comparison<a class="headerlink" href="#tier&#702;comparison" title="Permanent link">&para;</a></h2>
+<h2 id="tier-comparison">Tier Comparison<a class="headerlink" href="#tier-comparison" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -6649,7 +6841,7 @@ data: [DONE]
 </tbody>
 </table>
 <hr />
-<h2 id="c&#702;http&#702;server&#702;api">C HTTP Server API<a class="headerlink" href="#c&#702;http&#702;server&#702;api" title="Permanent link">&para;</a></h2>
+<h2 id="c-http-server-api">C HTTP Server API<a class="headerlink" href="#c-http-server-api" title="Permanent link">&para;</a></h2>
 <p>For C/C++ applications that embed SneppX directly, the <code>net/http/</code> module provides a lightweight HTTP server.</p>
 <h3 id="lifecycle">Lifecycle<a class="headerlink" href="#lifecycle" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">"net/http/http_server.h"</span>
@@ -6677,11 +6869,11 @@ data: [DONE]
 <span class="n">SNEPPX_http_auth_destroy</span><span class="p">(</span><span class="n">auth</span><span class="p">);</span>
 <span class="n">SNEPPX_http_server_destroy</span><span class="p">(</span><span class="n">srv</span><span class="p">);</span>
 </code></pre></div>
-<h3 id="handler&#702;signature">Handler Signature<a class="headerlink" href="#handler&#702;signature" title="Permanent link">&para;</a></h3>
+<h3 id="handler-signature">Handler Signature<a class="headerlink" href="#handler-signature" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">SNEPPX_HttpRequest</span><span class="o">*</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">SNEPPX_HttpResponse</span><span class="o">*</span><span class="w"> </span><span class="n">resp</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">userdata</span><span class="p">);</span>
 </code></pre></div>
 <p>Return 0 on success. Use the accessor/setter functions from <code>http_server.h</code>.</p>
-<h3 id="auth&#702;middleware">Auth Middleware<a class="headerlink" href="#auth&#702;middleware" title="Permanent link">&para;</a></h3>
+<h3 id="auth-middleware">Auth Middleware<a class="headerlink" href="#auth-middleware" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="cm">/* Create auth state */</span>
 <span class="n">SNEPPX_HttpAuth</span><span class="o">*</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SNEPPX_http_auth_create</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
 <span class="n">SNEPPX_http_auth_add_key</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span><span class="w"> </span><span class="n">getenv</span><span class="p">(</span><span class="s">"SNEPPX_HTTP_API_KEY"</span><span class="p">));</span>
@@ -6697,7 +6889,7 @@ data: [DONE]
 <span class="n">SNEPPX_http_server_add_middleware</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span><span class="w"> </span><span class="n">mw</span><span class="p">,</span><span class="w"> </span><span class="n">auth</span><span class="p">);</span>
 </code></pre></div>
 <p>In stub mode (no SQLite), any key with the <code>sk-sneppx-</code> prefix is accepted for development.</p>
-<h3 id="high-level&#702;rest&#702;api&#702;http_apih">High-Level REST API (<code>http_api.h</code>)<a class="headerlink" href="#high-level&#702;rest&#702;api&#702;http_apih" title="Permanent link">&para;</a></h3>
+<h3 id="high-level-rest-api-http_apih">High-Level REST API (<code>http_api.h</code>)<a class="headerlink" href="#high-level-rest-api-http_apih" title="Permanent link">&para;</a></h3>
 <p>The <code>net/http/http_api.h</code> module registers the standard serving endpoints on a server
 in one call. It mirrors the Python <code>inference_server.py</code> surface for the core routes.</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">"net/http/http_api.h"</span>
@@ -6767,7 +6959,7 @@ produces a deterministic continuation; responses include <code>generated_text</c
 <p>Routes may also use <code>{param}</code> patterns; captured values are read with
 <code>SNEPPX_http_request_param(req, "name")</code>.</p>
 <hr />
-<h2 id="quick&#702;reference">Quick Reference<a class="headerlink" href="#quick&#702;reference" title="Permanent link">&para;</a></h2>
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code># Public (no auth)
 GET  /v1/health                                    Health check
 POST /v1/auth/register                             Register account

@@ -1,0 +1,6304 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Historical security and correctness audit snapshot from November 22, 2026, with follow-up remediation notes and links to relevant fixes.">
+      
+      
+        <meta name="author" content="Ammar [SNEPPX]">
+      
+      
+        <link rel="canonical" href="https://sneppx.github.io/sneppx-alg/1.5.3/security/audits/2026-11-22/">
+      
+      
+      
+      
+        
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../logo.jpeg">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>SneppX-ALG — Security & Correctness Audit (2026-11-22) - SneppX-ALG — Native C/C++ Machine-Learning Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/run-snippet.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/command-palette.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/shortcuts.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/visualizers.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/progress.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+     
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="SneppX-ALG changelog"
+  href="../../../feed_rss_updated.xml"
+/>
+
+    
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SneppX-ALG" />
+<meta property="og:title" content="SneppX-ALG — Security &amp; Correctness Audit (2026-11-22) |
+SneppX-ALG" />
+<meta property="og:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/audits/2026-11-22/" />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:image:alt" content="SneppX-ALG documentation" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SneppX-ALG — Security &amp; Correctness Audit (2026-11-22) |
+SneppX-ALG" />
+<meta name="twitter:description" content="Documentation for the SneppX-ALG native C/C++ project and Python
+bindings." />
+<meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
+<meta name="twitter:image:alt" content="SneppX-ALG documentation" />
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "SneppX-ALG",
+    "description": "Open-source AI and machine-learning framework with a native C/C++ codebase and Python bindings.",
+    "codeRepository": "https://github.com/SneppX/sneppx-alg",
+    "url": "https://sneppx.github.io/sneppx-alg/",
+    "programmingLanguage": ["C", "C++", "Python"],
+    "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
+    "inLanguage": "en"
+  }
+</script>
+
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="SneppX-ALG — Security &amp; Correctness Audit (2026-11-22) - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="og:description" content="Historical security and correctness audit snapshot from November 22, 2026, with follow-up remediation notes and links to relevant fixes." />
+<meta property="og:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/security/audits/2026-11-22.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/security/audits/2026-11-22/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="SneppX-ALG — Security &amp; Correctness Audit (2026-11-22) - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
+<meta property="twitter:description" content="Historical security and correctness audit snapshot from November 22, 2026, with follow-up remediation notes and links to relevant fixes." />
+<meta property="twitter:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/security/audits/2026-11-22.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sneppx-alg-security-correctness-audit-2026-11-22" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-header__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
+      
+  <img src="../../../logo.jpeg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SneppX-ALG — Native C/C++ Machine-Learning Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SneppX-ALG — Security &amp; Correctness Audit (2026-11-22)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-nav__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
+      
+  <img src="../../../logo.jpeg" alt="logo">
+
+    </a>
+    SneppX-ALG — Native C/C++ Machine-Learning Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SneppX/sneppx-alg" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SneppX/sneppx-alg
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source build quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../why-sneppx-alg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project scope and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/tensorflow-pytorch-parity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides and examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides and examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../autograd-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../higher-order-ad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Higher-order differentiation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../distributed-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sparse-tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sparse tensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cookbook
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cookbook
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/models_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models and layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/optimizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/quantization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quantization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/distributed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/serving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serving and inference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/data_tokenization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data and tokenization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/profiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/checkpointing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checkpointing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/conversion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cookbook/generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/fine_tuning_rlhf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RLHF fine-tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/quantization_serving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quantization and serving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/distributed_training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed training status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/moe_ser_routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MoE expert routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/security_scanning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security scanning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/profiling_benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiling and benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/data_pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/model_conversion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model conversion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interactive tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../code-browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../autograd-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autograd visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../matmul-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix multiplication visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../conv-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convolution visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../optimizer-race/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizer comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../loss-gallery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loss gallery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api-explorer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../model-zoo-browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model zoo browser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../keyboard-shortcuts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../progress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning progress
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security layers and limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pqc_kat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PQC interoperability report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/security_architecture_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../obf_audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Obfuscation audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat_modeling_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../compliance/compliance_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compliance status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../incident_response/ir_framework_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Historical audit archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/security_layers_s0s9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security layer architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API and architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/autodoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/5-pipeline-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/distributed_training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code walkthroughs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Code walkthroughs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../walkthrough-hss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HSS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../walkthrough-ser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../walkthrough-arc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ARC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../walkthrough-npe/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NPE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../walkthrough-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference material
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference material
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../python_features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_quickref/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API quick reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../COVERAGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../VISION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../comparison/ml_framework_feature_gap_analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../STYLE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Style guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../learn/videos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Video series
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/python-packaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python packaging and release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build system
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../code-walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code walkthrough
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../COMMENTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commenting standard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_REVIEW_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code review guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTOR_TIERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributor tiers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../GOOD_FIRST_ISSUES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Good first issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../BRANCHING_STRATEGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branching strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../hss_training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HSS training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_12" id="__nav_7_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/sneppx_console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SneppX Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/model_hub/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/model_zoo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Zoo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/serving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/onnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONNX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/mha_forward_pass/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MHA forward pass
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/128k_context_extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    128K context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/testing_framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CTM tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ctm_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ctm_tools/EXTENDED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extended CTM tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tools/ctm-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTM reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Site deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Site deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/pages-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Pages deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doxygen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Doxygen setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PR_TEMPLATE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pull request template
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../README_upstream/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upstream README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases and migration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases and migration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v1.5.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v1.5.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.5.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v1.1.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release_notes/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.9.7.890e
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Migration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../migration/v0.9.x-to-v1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.9.x to v1.0.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../migration/v0.9.7.890e/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.9.7.890e
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../migration/from_pytorch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From PyTorch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../migration/from_tensorflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From TensorFlow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../migration/from_jax/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From JAX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-references-verified-in-repository-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation references verified in repository history
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remediation references verified in repository history">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-findings-c-1-through-c-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical findings C-1 through C-7
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-findings-h-1-through-h-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High findings H-1 through H-16
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#original-audit-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Original audit snapshot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-critical-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Critical findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Critical findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c-1-container-image-signature-verification-ignores-the-public-key-and-accepts-an-empty-signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-1 — Container image signature verification ignores the public key and accepts an empty signature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-2-python-update-manager-stages-and-installs-unsigned-images-verified-flag-is-never-enforced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-2 — Python update manager stages and installs unsigned images; verified flag is never enforced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-3-model-hub-adminadmin-by-default-public-bind-raw-admin-key-printed-to-stdout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-3 — Model Hub: admin/admin by default, public bind, raw admin key printed to stdout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-4-kyber-kem-and-x25519-fallback-fabricate-keys-and-shared-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-4 — Kyber KEM and X25519 fallback fabricate keys and shared secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-5-aes-gcm-chacha20-poly1305-fallbacks-emit-unencrypted-data-and-skip-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-5 — AES-GCM / ChaCha20-Poly1305 fallbacks emit unencrypted data and skip authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-6-inference-api-authentication-fails-open-lifespan-never-registered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-6 — Inference API authentication fails open: lifespan never registered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-7-aes-gcm-transport-mode-is-a-repeating-key-xor-stream-with-no-mac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-7 — "AES-GCM" transport mode is a repeating-key XOR stream with no MAC
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-high-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. High findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. High findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h-1-sbom-json-export-size_t-underflow-out-of-bounds-write-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-1 — SBOM JSON export: size_t underflow → out-of-bounds write [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-2-sbom-component-hash-oob-stack-read-and-null-dereference-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-2 — SBOM component hash: OOB stack read and NULL dereference [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-3-model-metadata-controls-client-filesystem-paths-and-honors-file-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-3 — Model metadata controls client filesystem paths and honors file:// [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-4-rekey-desynchronizes-peers-after-1000-messages-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-4 — Rekey desynchronizes peers after 1000 messages [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-5-encrypt_with_aad-produces-undecryptable-output-and-can-dereference-null-aad-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-5 — encrypt_with_aad produces undecryptable output and can dereference NULL AAD [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-6-privacy-defenses-use-fixed-seed-noise-that-is-trivially-removable-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-6 — "Privacy defenses" use fixed-seed noise that is trivially removable [A]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-7-s5-native-library-loaded-from-environmentcwd-at-import-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-7 — S5 native library loaded from environment/CWD at import [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-8-argon2-silently-downgrades-to-300-iteration-pbkdf2-active-here-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-8 — Argon2 silently downgrades to 300-iteration PBKDF2 (active here) [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-9-tamper-evident-audit-chains-are-forgeable-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-9 — Tamper-evident audit chains are forgeable [A]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-10-unsafe-deserialization-at-checkpointmodel-boundaries-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-10 — Unsafe deserialization at checkpoint/model boundaries [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-11-model-hub-api-key-lifecycle-broken-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-11 — Model Hub API key lifecycle broken [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-12-sneppx_update_verifier_check-return-convention-contradicts-its-header-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-12 — SNEPPX_update_verifier_check return convention contradicts its header [R]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-13-scheduler-lr-changes-never-reach-optimizer-parameter-groups-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-13 — Scheduler LR changes never reach optimizer parameter groups [R+]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-14-distributed-collectives-are-no-ops-for-world_size-1-a-reproduced-by-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-14 — Distributed collectives are no-ops for world_size &gt; 1 [A, reproduced by agent]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-15-fsdp-reduce_gradients-discards-the-live-gradient-a-reproduced-by-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-15 — FSDP reduce_gradients() discards the live gradient [A, reproduced by agent]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-16-nccl-backend-uses-a-zeroed-unique-id-and-reports-success-without-communicating-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-16 — NCCL backend uses a zeroed unique ID and reports success without communicating [A]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-medium-and-low-security-assurance-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Medium and low security / assurance findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-correctness-bugs-wrong-results-silent-training-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Correctness bugs (wrong results, silent training failures)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-deliberate-stubs-no-ops-do-not-rely-on-these-as-security-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Deliberate stubs / no-ops — do not rely on these as security controls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verified-ok-negative-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verified OK / negative results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-recommended-fix-order-micro-commit-friendly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Recommended fix order (micro-commit friendly)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-limitations-verification-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Limitations / verification notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-resolution-addendum-2026-11-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Resolution addendum (2026-11-23)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-section-5-false-assurance-closure-2026-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Section 5 false-assurance closure (2026-11-24)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sneppx-alg-security-correctness-audit-2026-11-22">SneppX-ALG — Security &amp; Correctness Audit (2026-11-22)<a class="headerlink" href="#sneppx-alg-security-correctness-audit-2026-11-22" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Historical snapshot, not a current vulnerability count.</strong> This read-only
+audit examined commit <code>db256e27</code> on November 22, 2026. It recorded 67
+findings at that point in time: 7 Critical, 16 High, 25 Medium/Low, and 19
+correctness bugs. Follow-up commits in the repository address the Critical
+findings and many High findings. The original addenda and findings are
+preserved below; do not interpret the original severities as proof that the
+same issues remain exploitable on current <code>main</code>.</p>
+</blockquote>
+<h2 id="remediation-references-verified-in-repository-history">Remediation references verified in repository history<a class="headerlink" href="#remediation-references-verified-in-repository-history" title="Permanent link">&para;</a></h2>
+<p>The commit references below identify remediation work found in the repository
+history. They are evidence of implementation changes, not a third-party
+security review or a guarantee that every affected subsystem is now production
+ready. Commit references are short Git object IDs and can be opened at
+<code>https://github.com/SneppX/sneppx-alg/commit/&lt;sha&gt;</code>.</p>
+<h3 id="critical-findings-c-1-through-c-7">Critical findings C-1 through C-7<a class="headerlink" href="#critical-findings-c-1-through-c-7" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Remediation commit(s)</th>
+<th>Recorded change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C-1</td>
+<td><code>b5552807fd</code></td>
+<td>Verify container image signatures with Ed25519</td>
+</tr>
+<tr>
+<td>C-2</td>
+<td><code>4cc4d7a20d</code></td>
+<td>Reject unsigned updates and verify staged bytes</td>
+</tr>
+<tr>
+<td>C-3</td>
+<td><code>f20180548e</code></td>
+<td>Require an explicit admin password and default Model Hub to loopback</td>
+</tr>
+<tr>
+<td>C-4</td>
+<td><code>7b03712be6</code></td>
+<td>Fail closed when KEM backends are unavailable; correct X25519 exchange</td>
+</tr>
+<tr>
+<td>C-5</td>
+<td><code>832da59930</code>, <code>b26630569b</code></td>
+<td>Fail closed on missing AEAD backend; implement RFC 8439 Poly1305</td>
+</tr>
+<tr>
+<td>C-6</td>
+<td><code>471fe588bc</code></td>
+<td>Fail closed when inference security is not initialized</td>
+</tr>
+<tr>
+<td>C-7</td>
+<td><code>df2ffe1241</code></td>
+<td>Disable unsupported fake AES-GCM transport mode</td>
+</tr>
+</tbody>
+</table>
+<p>The November 23 addendum below records the Critical section as closed. The
+source-level follow-up and component tests should still be checked when
+changing these security-sensitive areas.</p>
+<h3 id="high-findings-h-1-through-h-16">High findings H-1 through H-16<a class="headerlink" href="#high-findings-h-1-through-h-16" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Remediation commit(s)</th>
+<th>Recorded change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H-1</td>
+<td><code>c6c8bf6157</code></td>
+<td>Bound SBOM JSON writes to the caller's output buffer</td>
+</tr>
+<tr>
+<td>H-2</td>
+<td><code>0c27400535</code></td>
+<td>Validate SBOM hash input length and null-safe fields</td>
+</tr>
+<tr>
+<td>H-3</td>
+<td><code>4f0ec8af81</code></td>
+<td>Contain model-storage paths and validate card filenames</td>
+</tr>
+<tr>
+<td>H-4</td>
+<td><code>e202a0802a</code></td>
+<td>Track transport message sequences</td>
+</tr>
+<tr>
+<td>H-5</td>
+<td><code>7973c7d038</code></td>
+<td>Authenticate transport AAD messages and pair encrypt/decrypt</td>
+</tr>
+<tr>
+<td>H-6</td>
+<td><code>b8c51b3537</code></td>
+<td>Use fresh OS-seeded randomness in S5 privacy helpers</td>
+</tr>
+<tr>
+<td>H-7</td>
+<td><code>ecd6acf172</code></td>
+<td>Load S5 native library only from an explicit absolute path</td>
+</tr>
+<tr>
+<td>H-8</td>
+<td><code>d74c8f9490</code></td>
+<td>Fail closed instead of silently downgrading Argon2</td>
+</tr>
+<tr>
+<td>H-9</td>
+<td><code>04775e2f76</code>, <code>f92e1bce31</code>, <code>4d5968d097</code></td>
+<td>HMAC-protect and verify the complete audit chain; persist its head</td>
+</tr>
+<tr>
+<td>H-10</td>
+<td><code>d8a363946a</code></td>
+<td>Require explicit opt-in for unsafe pickle checkpoint loading</td>
+</tr>
+<tr>
+<td>H-11</td>
+<td><code>4bac96fd0e</code>, <code>c84fcc09b3</code></td>
+<td>Store API-key hashes, enforce expiry/revocation and scopes</td>
+</tr>
+<tr>
+<td>H-12</td>
+<td><code>e1114b1d8a</code></td>
+<td>Align signed-update verification return semantics with the header</td>
+</tr>
+<tr>
+<td>H-13</td>
+<td><code>7ff208fcb7</code></td>
+<td>Propagate scheduler learning rates to optimizer parameter groups</td>
+</tr>
+<tr>
+<td>H-14</td>
+<td><code>530002d1ab</code></td>
+<td>Fail closed for unimplemented multi-rank Python collectives</td>
+</tr>
+<tr>
+<td>H-15</td>
+<td><code>12e64eda47</code></td>
+<td>Retain reduced FSDP shard gradients for optimizer use</td>
+</tr>
+<tr>
+<td>H-16</td>
+<td><code>3cc148cc4f</code></td>
+<td>Validate NCCL symbols and reject simulated collectives</td>
+</tr>
+</tbody>
+</table>
+<p>These references establish that targeted remediation commits exist. They do not
+close the separate Medium/Low and numerical-correctness findings as a group.
+Those items require their own source review and regression evidence. No
+independent cryptographic audit or formal certification is claimed.</p>
+<hr />
+<h2 id="original-audit-snapshot">Original audit snapshot<a class="headerlink" href="#original-audit-snapshot" title="Permanent link">&para;</a></h2>
+<h2 id="metadata">Metadata<a class="headerlink" href="#metadata" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository</td>
+<td><code>SneppX/sneppx-alg</code></td>
+</tr>
+<tr>
+<td>Commit audited</td>
+<td><code>db256e272273bf0f56a6af436ef1f51ebdce1379</code> (<code>db256e27</code>, merge of PR #40 "repo-wide formatting")</td>
+</tr>
+<tr>
+<td>Worktree at start/end</td>
+<td>Clean except pre-existing untracked <code>.vs/</code> — <strong>no source files were modified</strong></td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>Read-only audit. No fixes applied, no commits, no pushes</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>5 independent specialist passes (Python security, HTTP/API, C/C++ memory safety, Python core correctness, secrets/CI) + independent re-verification of every high-impact claim by direct file reads and CPU-only Python reproducers</td>
+</tr>
+<tr>
+<td>Evidence status legend</td>
+<td><strong>[R]</strong> = re-read directly at this HEAD · <strong>[R+]</strong> = re-read <strong>and reproduced</strong> with a CPU-only one-liner · <strong>[A]</strong> = specialist pass with file:line + (where noted) reproducer; not independently re-run by the lead auditor</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Important context.</strong> The README labels this project <strong>Alpha</strong> and states not all security components have been audited or certified. That disclaimer does not excuse the findings below: the problem is not that features are immature, it is that several immature/fake primitives are <strong>named, documented, and exported as if they were real security controls</strong>, and several training paths <strong>silently produce wrong results instead of failing</strong>. Fix the fail-open and fake-primitive issues first.</p>
+</blockquote>
+<hr />
+<h2 id="0-executive-summary">0. Executive summary<a class="headerlink" href="#0-executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>67 findings: 7 Critical, 16 High, 25 Medium/Low, 19 correctness bugs.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Theme</th>
+<th>What is actually happening</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Fake / simulation-grade crypto presented as real</strong></td>
+<td>Kyber KEM returns unrelated random secrets; AEAD fallbacks return zero-filled ciphertext with a random tag; <code>Poly1305</code> is truncated SHA-256; C container "signature verify" ignores the public key and accepts zero-length signatures; "AES-GCM" transport is a repeating-key XOR with no MAC.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Fail-open authentication and update installation</strong></td>
+<td>Inference <code>FastAPI</code> app never runs its own <code>lifespan</code> (so security is <code>None</code> and <code>require_auth</code> allows everyone); Model Hub boots with <code>admin</code>/<code>admin</code>, binds <code>0.0.0.0</code>, and prints the admin key; Python <code>install_update()</code> never checks the <code>verified</code> flag.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Memory-safety bugs inside the security layer itself</strong></td>
+<td>C SBOM JSON export underflows <code>out_len - pos</code> and writes out of bounds; SBOM hashing reads past a 256-byte stack buffer; manifest parser uses <code>strncmp</code> on a length-bounded buffer; secure allocator loses tracking records permanently and has unchecked size arithmetic.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Silent numerical corruption in training</strong></td>
+<td>Scheduler LRs never reach <code>param_groups</code>; distributed collectives are no-ops; FSDP nulls live gradients; <code>checkpoint_sequential</code> runs layers in the wrong order; <code>DataLoader(num_workers&gt;0)</code> ignores <code>batch_size</code>; several optimizers have wrong update math.</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Assurance documentation contradicts reality</strong></td>
+<td><code>docs/ARCHITECTURE.md</code> marks all ten S0–S9 layers <code>Status: Complete</code> while <code>SECURITY.md</code> calls them experimental/partial/not verified/not audited. PQC code is labelled FIPS 203/204/205 despite the repo's own note that it is not interoperable.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Highest-priority single fixes:</strong> C-1 (C container verify), C-2 (Python unsigned update install), C-3 (hub default admin), C-4/C-5 (fake KEM/AEAD), C-6 (inference auth fail-open), C-7 (XOR "AES-GCM").</p>
+<hr />
+<h2 id="1-critical-findings">1. Critical findings<a class="headerlink" href="#1-critical-findings" title="Permanent link">&para;</a></h2>
+<h3 id="c-1-container-image-signature-verification-ignores-the-public-key-and-accepts-an-empty-signature">C-1 — Container image signature verification ignores the public key and accepts an empty signature<a class="headerlink" href="#c-1-container-image-signature-verification-ignores-the-public-key-and-accepts-an-empty-signature" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>security/updates/container_security.c:77-84</code> (declared <code>include/neural_core/security/container_security.h:88</code>)</p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">SNEPPX_container_verify_image</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">manifest</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">manifest_len</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">signature</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">sig_len</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pubkey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">manifest</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">signature</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">pubkey</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">hash</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<span class="w">    </span><span class="n">SNEPPX_sha256</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">manifest</span><span class="p">,</span><span class="w"> </span><span class="n">manifest_len</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sig_len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">signature</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">hash</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> <code>pubkey</code> is never used. The "signature" is compared directly to the manifest's SHA-256 digest, so no private key is involved. Worse, the loop bound <code>i &lt; sig_len</code> means <code>sig_len == 0</code> executes zero comparisons and returns <code>0</code> (success). <code>sig_len</code> between 1 and 31 accepts a matching prefix. The header documents <code>0 on success, -1 on error</code>, but the implementation returns <code>1</code> for mismatch, so the error convention is inconsistent too.</p>
+<p><strong>Scenario:</strong> Replace an image manifest, set <code>signature = SHA256(manifest)</code> (or pass <code>sig_len = 0</code>) with any non-NULL <code>pubkey</code> → verification returns success and a malicious image is trusted.</p>
+<p><strong>Suggested fix:</strong> Require <code>sig_len == SNEPPX_ED25519_SIGNATURE_LEN</code>, hash with domain separation, call <code>SNEPPX_ed25519_verify(pubkey, digest, 32, sig)</code>, and use a single documented convention (<code>0</code> valid, <code>-1</code> invalid arg, <code>1</code> invalid signature). Add tests for empty/truncated/wrong-key signatures.</p>
+<hr />
+<h3 id="c-2-python-update-manager-stages-and-installs-unsigned-images-verified-flag-is-never-enforced">C-2 — Python update manager stages and installs unsigned images; <code>verified</code> flag is never enforced<a class="headerlink" href="#c-2-python-update-manager-stages-and-installs-unsigned-images-verified-flag-is-never-enforced" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>bindings/python/SneppX_ALG/interface_bindings/container_security.py:713-747</code>, <code>749-797</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># stage_update()</span>
+<span class="k">if</span> <span class="n">signature_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_signature</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dest</span><span class="p">),</span> <span class="n">signature_path</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="s2">"verified"</span><span class="p">:</span> <span class="n">signature_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+<span class="o">...</span>
+<span class="c1"># install_update() — meta["verified"] is never read</span>
+<span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"dd"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"if=</span><span class="si">{</span><span class="n">update_file</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"of=</span><span class="si">{</span><span class="n">part_path</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"bs=4M"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> <code>signature_path</code> defaults to <code>None</code>; when omitted, verification is skipped and staging reports success. <code>meta["verified"] = False</code> is written but no code path reads it. <code>install_update()</code> writes whatever bytes are staged to the inactive rootfs partition with <code>dd</code> and switches the boot slot. A caller (or an attacker able to replace staged content) gets unsigned code execution on next boot. The class is presented as "Signed update management with rollback support".</p>
+<p><strong>Related:</strong> <code>update_id</code> is interpolated into <code>update_dir / "staged" / update_id</code> and later into a <code>shutil.move</code> destination without validation (<code>:721</code>, <code>:754</code>, <code>:793</code>) → directory-level path traversal (see M-5).</p>
+<p><strong>Suggested fix:</strong> Fail staging when no signature/trusted key is configured; re-verify the staged bytes immediately before <code>dd</code>; reject <code>meta.get("verified") is not True</code>; validate <code>update_id</code> against <code>^[A-Za-z0-9_.-]+$</code>.</p>
+<hr />
+<h3 id="c-3-model-hub-adminadmin-by-default-public-bind-raw-admin-key-printed-to-stdout">C-3 — Model Hub: <code>admin</code>/<code>admin</code> by default, public bind, raw admin key printed to stdout<a class="headerlink" href="#c-3-model-hub-adminadmin-by-default-public-bind-raw-admin-key-printed-to-stdout" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] (hub API) / [A] (CLI bind) · <strong>Location:</strong> <code>model_hub/api/main.py:263-288</code>, <code>:351-358</code>; <code>model_hub/cli/main.py:575-576</code>, <code>:605-607</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SNEPPX_HUB_ADMIN_USER"</span><span class="p">,</span> <span class="s2">"admin"</span><span class="p">)</span>
+<span class="n">admin_pass</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SNEPPX_HUB_ADMIN_PASSWORD"</span><span class="p">,</span> <span class="s2">"admin"</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">fresh_key</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">bootstrap_admin</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">fresh_key</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[sneppx-hub] Created default admin user + API key: </span><span class="si">{</span><span class="n">fresh_key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">p_srv</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--host"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"0.0.0.0"</span><span class="p">)</span>
+<span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workers</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> Startup automatically creates an admin account with a publicly known password and logs a fully privileged API key in cleartext. Combined with the <code>0.0.0.0</code> default, anyone who can reach the port can authenticate; anyone with log access gets the key. With multiple workers, the JSON store has no cross-process lock, so bootstrap can race.</p>
+<p><strong>Suggested fix:</strong> Refuse to start if <code>SNEPPX_HUB_ADMIN_PASSWORD</code> is unset (or generate a CSPRNG password written to a <code>0600</code> file); default <code>--host</code> to <code>127.0.0.1</code>; never print raw keys (print a fingerprint only).</p>
+<hr />
+<h3 id="c-4-kyber-kem-and-x25519-fallback-fabricate-keys-and-shared-secrets">C-4 — Kyber KEM and X25519 fallback fabricate keys and shared secrets<a class="headerlink" href="#c-4-kyber-kem-and-x25519-fallback-fabricate-keys-and-shared-secrets" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>bindings/python/SneppX_ALG/interface_bindings/crypto_kem.py:38-52</code>, <code>:60-90</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">encapsulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">ct_size</span><span class="p">);</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span> <span class="k">return</span> <span class="n">ct</span><span class="p">,</span> <span class="n">ss</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">decapsulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sk</span><span class="p">,</span> <span class="n">ct</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">sk</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">if</span> <span class="n">private</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">private</span>
+    <span class="n">pk</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>          <span class="c1"># unrelated to sk</span>
+<span class="o">...</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>        <span class="c1"># dh() ignores both inputs</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> No C backend is called despite the "wraps the C implementations" docstring. Encapsulation and decapsulation produce independent random values, so two parties can never agree on a key. The X25519 fallback generates a public key unrelated to its private key. This is worse than an error: code that derives keys from one side's output silently gets <strong>no</strong> confidentiality. (<code>crypto_sign.py</code> demonstrates the correct fail-closed pattern — use it as the model.)</p>
+<p><strong>Suggested fix:</strong> Call the real binding, or <code>raise RuntimeError</code> when unavailable. Never synthesize keys/ciphertexts/secrets with <code>os.urandom</code>.</p>
+<hr />
+<h3 id="c-5-aes-gcm-chacha20-poly1305-fallbacks-emit-unencrypted-data-and-skip-authentication">C-5 — AES-GCM / ChaCha20-Poly1305 fallbacks emit unencrypted data and skip authentication<a class="headerlink" href="#c-5-aes-gcm-chacha20-poly1305-fallbacks-emit-unencrypted-data-and-skip-authentication" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>bindings/python/SneppX_ALG/interface_bindings/crypto_symmetric.py:33-51</code>, <code>:65-83</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">plaintext</span><span class="p">))</span>   <span class="c1"># zeros — plaintext never encrypted</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">iv</span> <span class="o">+</span> <span class="n">ct</span> <span class="o">+</span> <span class="n">tag</span>
+<span class="o">...</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ciphertext</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="o">-</span><span class="mi">16</span><span class="p">]</span>    <span class="c1"># no tag verification at all</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> The documented AEAD guarantee is confidentiality <strong>and</strong> integrity. The fallback writes zero bytes, appends a random tag, and <code>decrypt()</code> returns caller-supplied bytes unchanged with no MAC check. There is no error signal: a caller cannot tell it was not authenticated. <code>cryptography</code> is currently a hard dependency so this is latent in a normal install, but it is reachable in degraded/partial environments and is exported as a security primitive. Caller-supplied <code>nonce</code> (<code>nonce or os.urandom(12)</code>) also permits nonce reuse.</p>
+<p><strong>Suggested fix:</strong> Delete both fallbacks (or raise). Enforce unique nonces and verify tags in all paths.</p>
+<hr />
+<h3 id="c-6-inference-api-authentication-fails-open-lifespan-never-registered">C-6 — Inference API authentication fails open: <code>lifespan</code> never registered<a class="headerlink" href="#c-6-inference-api-authentication-fails-open-lifespan-never-registered" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>bindings/python/SneppX_ALG/interface_bindings/inference_server.py:315-323</code>, <code>:391-420</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">require_auth</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">get_security</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">sec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>          <span class="c1"># &lt;-- request allowed</span>
+<span class="o">...</span>
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>   <span class="c1"># defines initialization of _security</span>
+    <span class="o">...</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"SneppX Inference API"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.5.3"</span><span class="p">)</span>  <span class="c1"># no lifespan=</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> A grep for <code>lifespan</code> in the whole file returns only the function definition at line 392. The hook is never attached, so <code>_security</code> stays <code>None</code> for any process that imports <code>app</code> directly (e.g. <code>uvicorn ...:app</code>). <code>require_auth</code> then returns <code>None</code> without rejecting, and <code>FirewallASGIMiddleware</code>'s body/header limits are bypassed by the same <code>security_getter() is None</code> path. <code>serve_cli.py</code> configures security in the parent process, but <code>--reload</code> / <code>--workers &gt; 1</code> reimport the module in children and lose it ([A]).</p>
+<p><strong>Suggested fix:</strong> Pass <code>lifespan=lifespan</code> to <code>FastAPI(...)</code>; make <code>require_auth</code> raise <code>503</code> (not allow) when <code>_security is None</code>; initialize auth from environment at import as a fallback; use an app factory so workers inherit configuration.</p>
+<hr />
+<h3 id="c-7-aes-gcm-transport-mode-is-a-repeating-key-xor-stream-with-no-mac">C-7 — "AES-GCM" transport mode is a repeating-key XOR stream with no MAC<a class="headerlink" href="#c-7-aes-gcm-transport-mode-is-a-repeating-key-xor-stream-with-no-mac" title="Permanent link">&para;</a></h3>
+<p><strong>Severity:</strong> Critical · <strong>Status:</strong> [R] · <strong>Location:</strong> <code>security/network/transport_security.c:157-159</code>, <code>:201-203</code>, <code>:342-350</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">use_aes_gcm</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">ciphertext</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plaintext</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="n">s</span><span class="o">-&gt;</span><span class="n">session_key</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">SNEPPX_TLS_KEY_LEN</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why broken:</strong> No AES, no nonce, no authentication tag. The keystream repeats every 32 bytes. Ciphertext is malleable (flip one byte → flip one plaintext bit with no integrity failure) and leaks plaintext relationships (<code>C1 xor C2 == P1 xor P2</code>). <code>SNEPPX_transport_set_cipher_type(1)</code> enables it. Default mode uses real ChaCha20, and the setter is not in the public header with no in-tree callers — so reachability is latent, but it is compiled and callable via an external declaration.</p>
+<p><strong>Suggested fix:</strong> Remove the XOR path; implement AES-GCM/ChaCha20-Poly1305 with unique nonce, AAD, and tag verification; otherwise <code>return -1</code> when the AEAD backend is unavailable.</p>
+<hr />
+<h2 id="2-high-findings">2. High findings<a class="headerlink" href="#2-high-findings" title="Permanent link">&para;</a></h2>
+<h3 id="h-1-sbom-json-export-size_t-underflow-out-of-bounds-write-r">H-1 — SBOM JSON export: <code>size_t</code> underflow → out-of-bounds write [R]<a class="headerlink" href="#h-1-sbom-json-export-size_t-underflow-out-of-bounds-write-r" title="Permanent link">&para;</a></h3>
+<p><code>security/updates/container_security.c:212-227</code>. <code>snprintf</code> returns the <strong>required</strong> length, not bytes written. After <code>pos += snprintf(...)</code>, a long formatted string makes <code>pos &gt; out_len</code>; the next call gets <code>out_len - pos</code>, which wraps to near <code>SIZE_MAX</code>, and writes the full JSON past the caller's buffer. <code>pos &lt; out_len</code> in the loop does not protect the trailing <code>"  ]\n}\n"</code> write. Call <code>SNEPPX_sbom_export_json(doc, buf, 16)</code> → heap/stack corruption.
+<strong>Fix:</strong> track <code>remaining</code>, bail with <code>-1</code> when <code>need &gt;= remaining</code>, advance <code>pos</code> only by bytes actually written.</p>
+<h3 id="h-2-sbom-component-hash-oob-stack-read-and-null-dereference-r">H-2 — SBOM component hash: OOB stack read and NULL dereference [R]<a class="headerlink" href="#h-2-sbom-component-hash-oob-stack-read-and-null-dereference-r" title="Permanent link">&para;</a></h3>
+<p><code>security/updates/container_security.c:180-182</code>. <code>hlen = snprintf(hash_input, 256, "%s:%s:%s", name, version, type)</code>; if the formatted length exceeds 255, <code>SNEPPX_sha256</code> reads past the 256-byte buffer. <code>version</code>/<code>type</code> are passed raw here although the copies above default them for NULL, so NULL inputs fault.
+<strong>Fix:</strong> reject <code>hlen &gt;= 256</code>, or hash incrementally; use the defaulted pointers in the format call.</p>
+<h3 id="h-3-model-metadata-controls-client-filesystem-paths-and-honors-file-r">H-3 — Model metadata controls client filesystem paths and honors <code>file://</code> [R]<a class="headerlink" href="#h-3-model-metadata-controls-client-filesystem-paths-and-honors-file-r" title="Permanent link">&para;</a></h3>
+<p><code>model_hub/storage/backend.py:125-129</code>, <code>:166-173</code>; <code>model_hub/api/main.py:438-504</code>; <code>model_hub/api/models.py:127-135</code>. <code>_full_path()</code> does <code>normpath(key).lstrip("/")</code> then <code>join(base, clean)</code> — no containment check, and <code>download_file()</code> explicitly allows <code>key.startswith("file://")</code> to set <code>src</code> to an arbitrary host path. A malicious model-card <code>files[].url</code> / <code>files[].filename</code> (no validation on <code>ModelFile</code>) makes a downloading victim copy e.g. <code>/etc/passwd</code> to an attacker-chosen <code>../../</code> destination. SHA checking limits overwrites to known-content files but does not stop disclosure.
+<strong>Fix:</strong> basename-only filenames, resolve-and-verify containment, reject <code>file://</code> and non-storage keys, validate card entries server-side.</p>
+<h3 id="h-4-rekey-desynchronizes-peers-after-1000-messages-r">H-4 — Rekey desynchronizes peers after 1000 messages [R]<a class="headerlink" href="#h-4-rekey-desynchronizes-peers-after-1000-messages-r" title="Permanent link">&para;</a></h3>
+<p><code>security/network/transport_security.c:167-175</code> vs <code>:189-213</code>. Encrypt increments <code>session_rekey_counter</code> and rotates the session key; decrypt never counts or rotates. On message 1001 the receiver still has the old key → all subsequent traffic is garbage, permanently.
+<strong>Fix:</strong> derive per-message keys from a sequence number tracked on both sides and authenticate the sequence.</p>
+<h3 id="h-5-encrypt_with_aad-produces-undecryptable-output-and-can-dereference-null-aad-r">H-5 — <code>encrypt_with_aad</code> produces undecryptable output and can dereference NULL AAD [R]<a class="headerlink" href="#h-5-encrypt_with_aad-produces-undecryptable-output-and-can-dereference-null-aad-r" title="Permanent link">&para;</a></h3>
+<p><code>security/network/transport_security.c:366-396</code>. The ChaCha20 nonce is XORed with AAD bytes, but the normal decrypt path reinitializes with the original nonce and there is no decrypt-with-AAD counterpart → garbage. <code>aad</code> is not checked before <code>memcpy(session_aad_keys[...], aad, ...)</code> → crash for <code>aad == NULL</code>.
+<strong>Fix:</strong> paired decrypt-with-AAD using the same derived nonce, real MAC over AAD, validate <code>aad != NULL || aad_len == 0</code>.</p>
+<h3 id="h-6-privacy-defenses-use-fixed-seed-noise-that-is-trivially-removable-a">H-6 — "Privacy defenses" use fixed-seed noise that is trivially removable [A]<a class="headerlink" href="#h-6-privacy-defenses-use-fixed-seed-noise-that-is-trivially-removable-a" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/s5_safety.py:193-210</code>, <code>:569-602</code>. <code>np.random.RandomState(0)</code> is recreated inside every call, so the same noise vector is applied every time; identical inputs give identical outputs. An adversary who reads the public code subtracts the exact noise and recovers original gradients/logits. Confirmed by agent probe with <code>_HAS_C_S5 == False</code>.
+<strong>Fix:</strong> OS-seeded <code>np.random.default_rng()</code> or caller-supplied CSPRNG; verify the C path does not repeat the design.</p>
+<h3 id="h-7-s5-native-library-loaded-from-environmentcwd-at-import-r">H-7 — S5 native library loaded from environment/CWD at import [R]<a class="headerlink" href="#h-7-s5-native-library-loaded-from-environmentcwd-at-import-r" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/s5_safety.py:29-61</code>. <code>search_dirs</code> includes <code>os.environ["SNEPPX_SECURITY_LIB"]</code> and <code>"."</code>, with bare-name <code>ctypes.CDLL(name)</code> fallback. Library initializers execute with process privileges at import time → env manipulation or CWD DLL planting = code execution.
+<strong>Fix:</strong> only accept an explicit admin-configured absolute path, validate containment, drop <code>"."</code> and bare-name fallback.</p>
+<h3 id="h-8-argon2-silently-downgrades-to-300-iteration-pbkdf2-active-here-r">H-8 — Argon2 silently downgrades to 300-iteration PBKDF2 (active here) [R]<a class="headerlink" href="#h-8-argon2-silently-downgrades-to-300-iteration-pbkdf2-active-here-r" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/crypto_kdf.py:91-106</code>; <code>argon2</code> is not a dependency and is absent. Every <code>Argon2.hash()</code> call is actually PBKDF2-HMAC-SHA256 with <code>time_cost*100 = 300</code> iterations, ignoring <code>mem_cost</code> and <code>parallelism</code>. The same module's <code>PBKDF2.derive</code> defaults to 600,000 iterations. Offline attacks are trivial and callers get no indication.
+<strong>Fix:</strong> raise when the real backend is missing, or expose an explicitly-named <code>pbkdf2_sha256_300</code> with a stored algorithm identifier and strong parameters.</p>
+<h3 id="h-9-tamper-evident-audit-chains-are-forgeable-a">H-9 — Tamper-evident audit chains are forgeable [A]<a class="headerlink" href="#h-9-tamper-evident-audit-chains-are-forgeable-a" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/audit_logger.py:287-303</code>, <code>:883-905</code>; <code>key_vault.py:60-65</code>. Hash chain uses unkeyed SHA-256 over fields stored next to the digest → anyone who can edit the log can recompute the chain. <code>key_vault.AuditLogger.verify_chain()</code> only compares <code>prev_hash</code> linkage and never recomputes hashes or re-reads the persisted file. <code>audit_logger</code> only checks <code>query(limit=10000)</code> so older tampering can be outside the check.
+<strong>Fix:</strong> HMAC with a key held outside the log (or external append-only anchoring), recompute every digest, page through the full chain.</p>
+<h3 id="h-10-unsafe-deserialization-at-checkpointmodel-boundaries-r">H-10 — Unsafe deserialization at checkpoint/model boundaries [R]<a class="headerlink" href="#h-10-unsafe-deserialization-at-checkpointmodel-boundaries-r" title="Permanent link">&para;</a></h3>
+<p><code>checkpoint_manager.py:168-190</code> (<code>pickle.load</code>, <code>pickle.loads</code>), <code>trainer_v2.py:456</code>, <code>fsdp.py:282</code>, <code>model.py:92</code>, <code>model_hub/converters/pytorch.py:20</code>, <code>model_hub/converters/huggingface.py:40,171</code> (<code>torch.load(..., weights_only=False)</code>). Loading an untrusted artifact executes arbitrary code via pickle reduction. Model-hub download flows make untrusted artifacts realistic inputs. Not a remote unauth RCE by itself (no endpoint confirmed auto-converting downloads), but a real code-execution primitive.
+<strong>Fix:</strong> default to safetensors/native format; make pickle opt-in (<code>allow_unsafe=True</code>) with prominent warnings; <code>weights_only=True</code> unless legacy formats require otherwise; signature-verify artifacts before loading.</p>
+<h3 id="h-11-model-hub-api-key-lifecycle-broken-r">H-11 — Model Hub API key lifecycle broken [R]<a class="headerlink" href="#h-11-model-hub-api-key-lifecycle-broken-r" title="Permanent link">&para;</a></h3>
+<p><code>model_hub/api/main.py:252-261</code>, <code>:290-299</code>; <code>model_hub/api/models.py:344-378</code>. Raw keys persisted (<code>key_dict["raw_key"] = _raw</code>). <code>verify_api_key()</code> checks only the hash: ignores <code>is_active</code>, <code>expires_at</code>, and <code>scopes</code>; no route enforces scopes. Revoked/expired keys keep working and a nominal <code>read</code> key can upload/delete.
+<strong>Fix:</strong> store only prefix + hash; reject inactive/expired keys; enforce scopes in dependencies; return raw key once at creation.</p>
+<h3 id="h-12-sneppx_update_verifier_check-return-convention-contradicts-its-header-r">H-12 — <code>SNEPPX_update_verifier_check</code> return convention contradicts its header [R]<a class="headerlink" href="#h-12-sneppx_update_verifier_check-return-convention-contradicts-its-header-r" title="Permanent link">&para;</a></h3>
+<p><code>security/updates/signed_update.c:157-166</code> returns <code>1</code> for a valid signature and <code>0</code> for disabled/missing-key/invalid; <code>include/neural_core/security/signed_update.h:95-97</code> documents <code>0 on success, -1 on error</code>. In-tree callers use <code>== 1</code>, so an external client following the header (<code>if (check(...) == 0) install(u);</code>) installs unsigned/tampered updates.
+<strong>Fix:</strong> rename to <code>..._is_valid</code> returning a boolean, or change to <code>0</code>/<code>-1</code> consistently and update docs/tests.</p>
+<h3 id="h-13-scheduler-lr-changes-never-reach-optimizer-parameter-groups-r">H-13 — Scheduler LR changes never reach optimizer parameter groups [R+]<a class="headerlink" href="#h-13-scheduler-lr-changes-never-reach-optimizer-parameter-groups-r" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/schedulers.py:39-50</code>. <code>step()</code> updates <code>optimizer.lr</code> and optional <code>set_lr</code>, but <code>Optimizer.step()</code> reads <code>group.get("lr", self.lr)</code>. Reproduced: <code>opt.lr = 0.01</code>, <code>opt.param_groups[0]["lr"] = 0.1</code>. All training silently uses the initial LR.
+<strong>Fix:</strong> assign <code>group["lr"] = lr</code> for every <code>param_groups</code> entry; keep the scalar only for compatibility.</p>
+<h3 id="h-14-distributed-collectives-are-no-ops-for-world_size-1-a-reproduced-by-agent">H-14 — Distributed collectives are no-ops for <code>world_size &gt; 1</code> [A, reproduced by agent]<a class="headerlink" href="#h-14-distributed-collectives-are-no-ops-for-world_size-1-a-reproduced-by-agent" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/distributed.py:73-84</code>. <code>all_reduce</code> returns its input, <code>all_gather</code> returns <code>world_size</code> copies of the local tensor, <code>reduce_scatter</code> returns the input. With <code>WORLD_SIZE=2</code>, <code>all_reduce([1,2]) → [1,2]</code> instead of <code>[2,4]</code>. Training runs with unreduced gradients and reports success.
+<strong>Fix:</strong> route to the NCCL/MPI backend or implement a real CPU fallback; fail loudly if unsupported.</p>
+<h3 id="h-15-fsdp-reduce_gradients-discards-the-live-gradient-a-reproduced-by-agent">H-15 — FSDP <code>reduce_gradients()</code> discards the live gradient [A, reproduced by agent]<a class="headerlink" href="#h-15-fsdp-reduce_gradients-discards-the-live-gradient-a-reproduced-by-agent" title="Permanent link">&para;</a></h3>
+<p><code>bindings/python/SneppX_ALG/interface_bindings/fsdp.py:153-167</code>. Stores a reduced shard in <code>sp.grad_shard</code> then executes <code>param.grad = None</code> with no restore path. Observed <code>param_grad None</code>, <code>grad_shard [0.5, 0.5]</code>. The optimizer steps on a parameter with no gradient.
+<strong>Fix:</strong> keep or restore <code>param.grad</code> before the optimizer step.</p>
+<h3 id="h-16-nccl-backend-uses-a-zeroed-unique-id-and-reports-success-without-communicating-a">H-16 — NCCL backend uses a zeroed unique ID and reports success without communicating [A]<a class="headerlink" href="#h-16-nccl-backend-uses-a-zeroed-unique-id-and-reports-success-without-communicating-a" title="Permanent link">&para;</a></h3>
+<p><code>net/distributed/nccl.c:120</code>, <code>:167-170</code>, <code>:204-227</code>, <code>:273-315</code>, <code>:337-367</code>. <code>ncclGetUniqueId</code> is loaded but never called; rank 0 never broadcasts a real ID; <code>loaded = 1</code> is set even when all <code>dlsym</code> results are NULL. CPU "fallbacks" copy local data or return <code>0</code> without sending. Allocation <code>count * sizeof(float)</code> is unchecked. Multi-rank jobs silently train on unreduced gradients.
+<strong>Fix:</strong> real unique-ID broadcast, validate symbols, return <code>-1</code> for unsupported collectives, checked arithmetic.</p>
+<hr />
+<h2 id="3-medium-and-low-security-assurance-findings">3. Medium and low security / assurance findings<a class="headerlink" href="#3-medium-and-low-security-assurance-findings" title="Permanent link">&para;</a></h2>
+<p>Location/line numbers for <strong>[A]</strong> items are as reported by the specialist pass; re-confirm before editing.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Sev</th>
+<th>Status</th>
+<th>Location</th>
+<th>Finding → minimal fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-1</td>
+<td>Medium</td>
+<td>[R]</td>
+<td><code>crypto_symmetric.py:97-103</code></td>
+<td><code>Poly1305.mac</code> is truncated SHA-256, not RFC 8439; <code>verify</code> is non-constant-time. → use real Poly1305/<code>compare_digest</code>.</td>
+</tr>
+<tr>
+<td>M-2</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>crypto_asm.py:129-144</code></td>
+<td>Poly1305ASM clamps <code>r</code> with <code>...FFFF...</code> instead of RFC 8439 <code>...C...C...7</code>; forgeries possible. → correct mask + KAT.</td>
+</tr>
+<tr>
+<td>M-3</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>api_key_manager.py:82-134</code>; <code>security_middleware.py:52-65</code></td>
+<td>60 s cache ignores <code>expires_at</code>; auth mode defaults to <code>"none"</code> → anonymous; static keys compared with <code>in</code>. → re-check expiry, fail closed, <code>compare_digest</code>.</td>
+</tr>
+<tr>
+<td>M-4</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>s5_safety.py:372-602</code></td>
+<td>Several ctypes S5 calls ignore C return codes / <code>out_len</code>, returning buffers as valid defense output. → check every status, fail closed.</td>
+</tr>
+<tr>
+<td>M-5</td>
+<td>Medium</td>
+<td>[R]</td>
+<td><code>container_security.py:721,754,793</code></td>
+<td><code>update_id</code> used as a path component without validation → traversal in staging/install. → allowlist chars / resolve-and-contain.</td>
+</tr>
+<tr>
+<td>M-6</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>audit_logger.py:390-464</code>, <code>:472-521</code>, <code>:571-595</code></td>
+<td>Configurable endpoint gets Bearer token and follows redirects (SSRF + key exfil); retry buffer unbounded; <code>table_name</code> interpolated into SQL. → allowlist HTTPS endpoint, disable redirects, bound queue, validate identifier.</td>
+</tr>
+<tr>
+<td>M-7</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>differential_privacy.py:25-49</code>, <code>:236-344</code></td>
+<td>DP noise from legacy global NumPy MT19937; <code>DPSGD</code> accepts <code>epsilon</code> but never spends/checks the budget → DP guarantee unenforced. → CSPRNG + enforce budget per step.</td>
+</tr>
+<tr>
+<td>M-8</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>crypto_hash.py:53-70</code>; <code>secure_updates.py:5,36-65,106-108</code></td>
+<td>"BLAKE3" is silently SHA-256 in this install (<code>blake3</code> not a dependency); keyed hash/derive ignore the key. Signed digest algorithm changes silently if <code>blake3</code> is installed. → declare dependency or rename API.</td>
+</tr>
+<tr>
+<td>M-9</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>key_vault.py:129-139</code>; <code>audit_logger.py:257-285,763-769</code></td>
+<td><code>wrap_key()</code> is unauthenticated XOR; missing key silently XORs with fresh random (unrecoverable). <code>audit_logger.log()</code> swallows all backend failures; file rotation breaks chain continuity. → AEAD wrapping, surface write errors, persist chain head.</td>
+</tr>
+<tr>
+<td>M-10</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>s4_extensions.c:161,249,403,1131,1703</code>; <code>differential_privacy.c:45,60</code>; <code>s6_extensions.c:313,595,661</code>; <code>memory_hardening.c:225,341</code>; <code>side_channel_shield.c:90</code></td>
+<td>Security-sensitive values (ClientHello random, "WireGuard key", gRPC token, DP noise, "HSM RNG") generated with <code>rand()</code>. → <code>SNEPPX_random_bytes</code>, fail closed.</td>
+</tr>
+<tr>
+<td>M-11</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>security/crypto/c/entropy_pool.c:142,166-179</code></td>
+<td>OS entropy failure silently seeds <code>rand()</code> with <code>time()</code> and labels it OS; extraction cycles 8 SipHash bytes and substitutes TSC → predictable, no forward secrecy. → real DRBG, fail on OS error.</td>
+</tr>
+<tr>
+<td>M-12</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>security/memory/secure_allocator.c:111,156-161,360,409,446-484</code></td>
+<td>Tracking-table full after 1024 allocations → <code>add_record</code> failure ignored, frees no longer scrub/free; <code>g_record_count</code> never decremented; <code>bytes + overhead</code> unchecked. → fail on add_record, reuse records, checked arithmetic.</td>
+</tr>
+<tr>
+<td>M-13</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>continuous_batching.py:64-86,106-179</code>; <code>inference_server.py:639-695</code></td>
+<td>Global scheduler shared across requests; <code>_next_id</code> incremented outside lock; <code>max_total_tokens</code> unused; queues unbounded; endpoint discards results with <code>pass</code> so <code>_completed</code> is never drained. → isolate per request, bound queues, lock IDs, drain results.</td>
+</tr>
+<tr>
+<td>M-14</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>inference_server.py:68-99,551-636,727-823</code></td>
+<td><code>async def</code> endpoints call blocking <code>generate()</code>; <code>BatchGenerateRequest.max_new_tokens</code> unbounded; no prompt length cap; <code>"too_long"</code> filter result ignored. → bounds + worker pool + reject <code>"too_long"</code>.</td>
+</tr>
+<tr>
+<td>M-15</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>serving_engine.py:648-756</code>, <code>:49-57</code></td>
+<td>Stdlib server exposes deploy/traffic/generate with no auth; <code>_body()</code> trusts <code>Content-Length</code>; unguarded <code>json.loads</code>/<code>int()</code>. Loopback default limits exposure. → auth, body cap, validation.</td>
+</tr>
+<tr>
+<td>M-16</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>net_bindings.py:96-190</code></td>
+<td><code>SocketComm.bind()</code> hardcodes <code>0.0.0.0</code>; framing length up to <code>0xFFFFFFFF</code> accepted with no cap/timeout/auth; <code>recv_tensor</code> multiplies <code>rows*cols</code> before validation. → loopback default, size caps, timeouts, peer auth.</td>
+</tr>
+<tr>
+<td>M-17</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>model_hub/api/main.py:370-377</code></td>
+<td><code>CORSMiddleware(allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])</code>. APIs use Authorization headers so not standalone ATO, but over-permissive. → explicit allowlist.</td>
+</tr>
+<tr>
+<td>M-18</td>
+<td>Medium</td>
+<td>[R]</td>
+<td><code>docs/ARCHITECTURE.md:425,446,461,468,475,482,489,496,503,510</code> vs <code>SECURITY.md:40-49</code></td>
+<td>All ten layers marked <code>Status: Complete</code>; <code>SECURITY.md</code> says experimental/partial/incomplete/not verified/not audited. Materially overstates assurance. → sync statuses, add Alpha banner.</td>
+</tr>
+<tr>
+<td>M-19</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>.gitignore:91-92</code>; <code>.pre-commit-config.yaml</code>; <code>scripts/pre-commit.sh:27-34</code></td>
+<td>No general secret scanner in pre-commit or CI; <code>.env</code>, <code>*.pem</code>, <code>*.key</code> are explicitly <strong>not</strong> ignored. Only PEM headers + AWS IDs + <code>password=</code> detected locally. → add ignore patterns + gitleaks hook + CI full-history scan.</td>
+</tr>
+<tr>
+<td>M-20</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>docs/ARCHITECTURE.md:440-442</code> vs <code>docs/api/autodoc.md:10-12</code></td>
+<td>PQC labelled FIPS 203/204/205 though repo says implementations are experimental and not interoperable; KAT docs confirm byte incompatibility. → relabel as round-3 with caveat.</td>
+</tr>
+<tr>
+<td>M-21</td>
+<td>Low</td>
+<td>[R]</td>
+<td><code>Dockerfile</code> (whole file); <code>docker-compose.yml:42-53</code></td>
+<td>No <code>USER</code> directive → runtime images run as root (sibling <code>Dockerfile.cpu</code> does it correctly). → add non-root user.</td>
+</tr>
+<tr>
+<td>M-22</td>
+<td>Low</td>
+<td>[A]</td>
+<td><code>security.txt:1-9</code></td>
+<td>PEM-style <code>BEGIN SECURITY CONTACT</code> markers are non-standard for RFC 9116; may break researcher parsers. → plain <code>Field: value</code>, publish at <code>.well-known/security.txt</code>.</td>
+</tr>
+<tr>
+<td>M-23</td>
+<td>Low</td>
+<td>[A]</td>
+<td><code>Dockerfile:7,43,72,98,126</code>; <code>docker-compose.yml:53</code></td>
+<td>Floating base-image tags, <code>pip install uvicorn</code> at container start with no version/hash, no Dependabot config. → digest pins, pinned deps at build, Dependabot.</td>
+</tr>
+<tr>
+<td>M-24</td>
+<td>Medium</td>
+<td>[R]</td>
+<td><code>security/updates/container_security.c:94-117</code></td>
+<td><code>strncmp(p, "\"config\":", 9)</code> on a length-bounded, possibly non-NUL-terminated buffer → OOB read; manifest digest is 64 random hex chars from <code>rand()</code> (<code>:114</code>). → length checks with <code>memcmp</code>, content-derived digest.</td>
+</tr>
+<tr>
+<td>M-25</td>
+<td>Low</td>
+<td>[A]</td>
+<td><code>net/http/vizmon.c:713-724</code>, <code>:1273-1283</code></td>
+<td><code>json_escape</code> does not escape <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, U+2028/9; snapshot injected into inline <code>&lt;script&gt;</code> → possible <code>&lt;/script&gt;</code> breakout if tags are attacker-influenced. → escape for script context + CSP.</td>
+</tr>
+<tr>
+<td>M-26</td>
+<td>Low</td>
+<td>[A]</td>
+<td><code>bindings/python/bindings/autograd_bindings.cpp:65-66</code>; <code>tensor_bindings.cpp:139-158</code></td>
+<td><code>PyVariable::get_data/get_grad</code> return non-owning <code>PyTensor</code> views; NumPy view keeps wrapper alive but not the tape/variable owning the memory → potential use-after-free. <strong>Needs review</strong> (no compiler here). → owning copies or <code>keep_alive</code> tied to the actual owner.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-correctness-bugs-wrong-results-silent-training-failures">4. Correctness bugs (wrong results, silent training failures)<a class="headerlink" href="#4-correctness-bugs-wrong-results-silent-training-failures" title="Permanent link">&para;</a></h2>
+<p>All were reproduced with small CPU-only scripts by the specialist pass; items marked [R]/[R+] were independently confirmed here.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Sev</th>
+<th>Status</th>
+<th>Location</th>
+<th>Observed vs expected → fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B-1</td>
+<td>High</td>
+<td>[R+]</td>
+<td><code>grad_checkpoint.py:75,83-85</code></td>
+<td><code>checkpoint_sequential([f0,f1,f2,f3], segments=2)</code> → <code>40.0</code>, expected <code>28.0</code>. <code>functions[i::segments]</code> interleaves layers. → contiguous slices.</td>
+</tr>
+<tr>
+<td>B-2</td>
+<td>High</td>
+<td>[R+]</td>
+<td><code>data_loader.py:249-267</code>, <code>:160-167</code></td>
+<td><code>DataLoader(range(6), batch_size=3, num_workers=2)</code> → six batches of size 1. Multi-worker path collates single samples. → batch indices before dispatch.</td>
+</tr>
+<tr>
+<td>B-3</td>
+<td>High</td>
+<td>[R]</td>
+<td><code>data_loader.py:64-85</code></td>
+<td><code>dtype="int16"</code> sets <code>itemsize=2</code> but <code>np.frombuffer(buf, dtype=np.int32)</code> reinterprets pairs → shape <code>(2,) int32</code> instead of <code>(4,) int16</code>. → single dtype map.</td>
+</tr>
+<tr>
+<td>B-4</td>
+<td>Medium</td>
+<td>[R+]</td>
+<td><code>nn.py:239-265</code></td>
+<td><code>state_dict()</code> omits non-persistent buffers but <code>load_state_dict(strict=True)</code> includes them → <code>RuntimeError Missing key(s): ['tmp']</code>. → <code>named_buffers(persistent=True)</code> in loader.</td>
+</tr>
+<tr>
+<td>B-5</td>
+<td>High</td>
+<td>[R+]</td>
+<td><code>nn_functional.py:343-355</code></td>
+<td><code>F.embedding(..., padding_idx=0)</code> neither zeros the padding row nor attaches a graph (<code>grad is None</code>). → extend <code>EmbeddingFn</code> with padding<em>idx/max</em>norm.</td>
+</tr>
+<tr>
+<td>B-6</td>
+<td>High</td>
+<td>[A]</td>
+<td><code>optim.py:323-337</code></td>
+<td><code>Adamax</code> omits bias correction: first step moves by <code>0.1·lr·g</code> instead of <code>lr·g</code>. → <code>m_hat = m/(1-beta1**step)</code>.</td>
+</tr>
+<tr>
+<td>B-7</td>
+<td>High</td>
+<td>[A]</td>
+<td><code>optim.py:487-514</code></td>
+<td><code>ASGD(average_pars=True)</code> zeroes parameters on the first step (<code>5.0 → 0.0</code>, expected <code>≈4.9</code>). → seed <code>ax</code> from initial parameters.</td>
+</tr>
+<tr>
+<td>B-8</td>
+<td>High</td>
+<td>[A]</td>
+<td><code>optim_extra.py:84-109</code></td>
+<td><code>LAMB._t()</code> called twice per parameter per step → identical params with identical grads get different updates. → compute <code>t</code> once per step.</td>
+</tr>
+<tr>
+<td>B-9</td>
+<td>High</td>
+<td>[A]</td>
+<td><code>optim_extra.py:328-349</code></td>
+<td><code>Sophia.estimate_hessian</code> uses scalar <code>(loss+ - loss-)/(2eps)</code>, which is <code>∇f·z</code>, not <code>Hz</code>, and ignores the <code>grads</code> argument → wrong Hessian (observed <code>[-5,5]</code>, expected <code>[1,4]</code>). → differentiate gradients.</td>
+</tr>
+<tr>
+<td>B-10</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>checkpoint_manager.py:106-113,133-139</code>; <code>amp.py:70-72</code></td>
+<td>Manager assumes PyTorch-style writable <code>gradScaler.scale/growth_factor</code>; shipped <code>GradScaler</code> has read-only <code>scale</code> and <code>_growth_factor</code> → save/restore raises <code>AttributeError</code>. → use backing fields or add setters.</td>
+</tr>
+<tr>
+<td>B-11</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>optim.py:83-104</code></td>
+<td><code>state_dict()</code> omits param-groups; after restore, group LRs stay at corrupted values (<code>[999,999]</code>). → serialize/restore group hyperparameters.</td>
+</tr>
+<tr>
+<td>B-12</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>nn_functional.py:993-1012</code></td>
+<td><code>F.pad_sequence()</code> builds a raw NumPy array → <code>grad is None</code>. → differentiable padding/<code>Function</code>.</td>
+</tr>
+<tr>
+<td>B-13</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>advanced_ops.py:320-370</code></td>
+<td><code>avg_pool2d(count_include_pad=False)</code> infers padding from <code>window != 0</code>, so genuine zero activations are excluded from the denominator (<code>3.0</code> instead of <code>1.5</code>). → padding mask by position.</td>
+</tr>
+<tr>
+<td>B-14</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>advanced_ops.py:629-640</code></td>
+<td><code>cross_entropy()</code> returns per-sample losses while documenting mean reduction (<code>[0.313, 0.0486]</code> instead of <code>[0.1809]</code>). → add <code>reduction</code> arg or return mean.</td>
+</tr>
+<tr>
+<td>B-15</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>init.py:108-111</code></td>
+<td><code>xavier_uniform_</code> bound <code>sqrt(3/(fan_in+fan_out))</code> instead of <code>sqrt(6/(...))</code> → ~0.707× intended variance. → change <code>3.0</code> to <code>6.0</code>.</td>
+</tr>
+<tr>
+<td>B-16</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>autograd_ops.py:4747-4784</code></td>
+<td><code>TripletMarginLoss</code> accepts <code>p</code> but always computes L2; <code>p=1</code> gives <code>2.586</code> instead of <code>2.0</code>. → save/use <code>p</code> in forward and backward.</td>
+</tr>
+<tr>
+<td>B-17</td>
+<td>Medium</td>
+<td>[A]</td>
+<td><code>functional.py:17-22</code></td>
+<td><code>_as_tensor([1,2])</code> raises <code>NameError: _resolve_dtype is not defined</code>. → import/define dtype resolver.</td>
+</tr>
+<tr>
+<td>B-18</td>
+<td>Low</td>
+<td>[A]</td>
+<td><code>rng.py:19</code></td>
+<td><code>set_global_seed()</code> writes <code>SNEAPX_SEED</code> (typo) instead of <code>SNEPPX_SEED</code>. → fix key (keep old temporarily).</td>
+</tr>
+<tr>
+<td>B-19</td>
+<td>High</td>
+<td>[A]</td>
+<td><code>quantization.py:54-64,435-453</code></td>
+<td><code>quantize_int8_asym</code> clips <code>vmax</code> for all-positive ranges (<code>4.0 → 3.0</code>); <code>QuantizedLinear.forward</code> ignores <code>self.mode</code>/zero-point (asym <code>[[3,6]]</code> vs <code>[[3,7]]</code>) and feeds packed INT4 weights to INT8 dequantization (output <code>[95.4]</code> vs <code>[[3,7]]</code>). → joint scale/zero-point selection, store zero-point/shape, dispatch on mode.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-deliberate-stubs-no-ops-do-not-rely-on-these-as-security-controls">5. Deliberate stubs / no-ops — do not rely on these as security controls<a class="headerlink" href="#5-deliberate-stubs-no-ops-do-not-rely-on-these-as-security-controls" title="Permanent link">&para;</a></h2>
+<p>These are not "exploitable bugs" in themselves, but several are exported under security-sounding names and will produce false assurance.</p>
+<ul>
+<li><code>crypto_kem.py</code> — Kyber KEM and X25519 fallbacks (see C-4).</li>
+<li><code>crypto_symmetric.py</code> — AEAD fallbacks and <code>Poly1305</code> (see C-5, M-1).</li>
+<li><code>crypto_asm.py</code> — <code>Ed25519ASM.sign</code> produces <code>R_y || s</code> without the RFC 8032 sign bit and has no verifier; <code>AESNI</code> ignores rounds/round-key semantics.</li>
+<li><code>secure_memory.py:85-106</code> — <code>w_xor_x()</code> always <code>True</code>, <code>guard_page()</code> returns a random int, <code>seccomp_filter()</code> always <code>False</code> (docstring says no-ops).</li>
+<li><code>ai_safety_ext.py:41-59</code> — <code>check_factuality()</code> always <code>0.8</code>, <code>detect_semantic_injection()</code> and <code>detect_membership_inference()</code> always <code>0.0</code>.</li>
+<li><code>s5_safety.py:416-419</code> — <code>S5PromptFilter.sanitize()</code> returns text unchanged (detection-only).</li>
+<li><code>formal_verify.py:85-144</code> — <code>ModelChecker</code> reduces any formula containing "always"/<code>[]</code>/<code>g</code> to "is error state reachable"; reports success for properties it never evaluated.</li>
+<li><code>security/network/transport_security.c:225-241</code> — Noise handshake is 48 random bytes XORed with a fixed-key-derived value; no DH, transcript, or authentication.</li>
+<li><code>security/network/s4_extensions.c:841-851</code> — <code>SNEPPX_mtls_verify_chain</code> compares at most 8 bytes at fixed 32-byte strides (also an unchecked OOB read for long chains).</li>
+<li><code>security/hardware/side_channel_shield.c:76-81</code> — <code>SNEPPX_hsm_verify_measurement</code> always returns 0.</li>
+<li><code>bindings/python/SneppX_ALG/interface_bindings/nccl.py:78-103,138-153</code> and <code>net_bindings.py:193-311</code> — collectives/RDMA/NCCL send/recv are CPU fallbacks or no-ops.</li>
+<li><code>acvp_kat.py:86-95</code> — <code>load_kat(name)</code> joins unchecked <code>name</code> → arbitrary JSON read in the test harness (low severity).</li>
+</ul>
+<hr />
+<h2 id="6-verified-ok-negative-results">6. Verified OK / negative results<a class="headerlink" href="#6-verified-ok-negative-results" title="Permanent link">&para;</a></h2>
+<p>Worth recording so later fix work does not "fix" non-problems:</p>
+<ul>
+<li>No live hardcoded credentials, API keys, tokens, AWS keys, or PEM private keys in tracked files. Matches found are documented placeholders or detector fixtures.</li>
+<li>CI workflows are unusually well hardened: <code>contents: read</code> on test/lint/package, third-party actions pinned to 40-char SHAs, <code>persist-credentials: false</code>, no <code>pull_request_target</code>, no <code>self-hosted</code>, no <code>id-token: write</code>, no shell injection via <code>${{ }}</code>.</li>
+<li><code>.dockerignore</code> excludes key/credential patterns; no <code>privileged</code>, host network, or <code>docker.sock</code> mounts.</li>
+<li><code>security/crypto/c/ed25519.c</code> is a real Edwards-curve implementation with point validation, canonical-S checks, and constant-time comparison; SHA-512 and <code>random.c</code> look sound.</li>
+<li><code>crypto_sign.py</code> fails closed when its native backend is missing — the pattern the other crypto modules should copy.</li>
+<li><code>api_key_store.py</code> hashes keys at rest; <code>api_key_manager.py</code> uses <code>compare_digest</code> and invalidates its cache on revoke/update; <code>model_hub/api/client.py</code> and <code>serving_client.py</code> refuse to send keys over non-local plain HTTP.</li>
+<li><code>serve_cli.py</code> blocks <code>--auth-mode none</code> on non-loopback binds.</li>
+<li><code>yaml.safe_load</code> used for config; SQLite value queries are parameterized.</li>
+<li>SQL injection: none found; command injection via <code>shell=True</code>: none found in the audited Python security paths.</li>
+<li><code>TripletMarginLoss</code> p=2 gradients match finite differences; <code>ReduceLROnPlateau</code> itself reduces its internal base LRs correctly (the bug is only propagation, H-13).</li>
+<li>Working tree unchanged after the audit; no commits or pushes made.</li>
+</ul>
+<hr />
+<h2 id="7-recommended-fix-order-micro-commit-friendly">7. Recommended fix order (micro-commit friendly)<a class="headerlink" href="#7-recommended-fix-order-micro-commit-friendly" title="Permanent link">&para;</a></h2>
+<p>Each line is a candidate self-contained commit with its own per-file test. Re-run the affected test file before committing/pushing.</p>
+<p><strong>Wave 1 — fail-open and fake primitives (code execution / authentication):</strong></p>
+<ol>
+<li>C-1 container verify: require Ed25519, reject empty signature (+ C test).</li>
+<li>C-2 Python update install: enforce <code>verified</code>, reject missing signature (+ test).</li>
+<li>C-3 hub admin: remove default password, loopback bind, no raw key logging (+ test).</li>
+<li>C-6 inference server: wire <code>lifespan</code>, fail closed on <code>_security is None</code> (+ test).</li>
+<li>C-4/C-5/C-8: make fake KEM/AEAD/Argon2 raise instead of fabricating (+ tests).</li>
+<li>C-7 transport XOR: remove or fail closed (+ test).</li>
+<li>H-10: <code>weights_only=True</code> default / pickle opt-in (+ test).</li>
+</ol>
+<p><strong>Wave 2 — memory safety in C:</strong>
+8. H-1 SBOM export capacity check (+ C regression with tiny buffer).
+9. H-2 SBOM hash length/NULL checks (+ regression).
+10. M-24 manifest length checks and real digest.
+11. M-12 secure allocator checked arithmetic and record reuse.
+12. H-4/H-5 transport rekey symmetry and AAD NULL paired decrypt.</p>
+<p><strong>Wave 3 — silent training corruption:</strong>
+13. H-13 scheduler → <code>param_groups</code> (+ regression).
+14. B-1 checkpoint chunking, B-2 multi-worker batching, B-3 int16 dtype.
+15. H-14/H-15/H-16 distributed/FSDP/NCCL honesty.
+16. B-6–B-19 optimizer/init/functional/loss correctness, one commit each.</p>
+<p><strong>Wave 4 — assurance and hygiene:</strong>
+17. M-18/M-20 docs statuses and PQC labels.
+18. M-19 secret scanner + ignore patterns.
+19. M-21 non-root Docker user; M-22/M-23 security.txt and pins.</p>
+<hr />
+<h2 id="8-limitations-verification-notes">8. Limitations / verification notes<a class="headerlink" href="#8-limitations-verification-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>No C compiler is available locally</strong> (<code>gcc</code>/<code>cl</code>/<code>clang</code> all empty), so C findings were verified by source inspection only. They are straightforward control-flow/arithmetic defects, but cannot be compiled or executed here. The pybind lifetime item (M-26) is explicitly <strong>Needs review</strong>.</li>
+<li><strong>Full pytest suite hangs</strong> in this environment; only per-file / direct one-liner verification was used. Suggested regression tests must be run per file with <code>PYTHONPATH=bindings/python</code>, <code>PYTEST_DISABLE_PLUGIN_AUTOLOAD=1</code>, <code>PYTHONDONTWRITEBYTECODE=1</code>.</li>
+<li>No LLM/CUDA/inference-server tests were run (machine constraints in repo <code>AGENTS.md</code>).</li>
+<li>A full <strong>git-history</strong> secret scan was not completed (too slow on this history). Working tree is clean; run <code>gitleaks detect</code> / <code>trufflehog git file://.</code> once as a one-off compensating control.</li>
+<li><code>[A]</code> findings carry specialist-pass line numbers; confirm against the current HEAD before editing because the repo recently went through a repo-wide formatting pass.</li>
+</ul>
+<hr />
+<p><strong>Bottom line:</strong> The repo's most dangerous problem is not missing features — it is <strong>security primitives that silently pretend to work</strong> and <strong>training paths that silently compute the wrong thing</strong>. Both classes are worse than an explicit error because callers have no signal. Fix Wave 1 before adding any new capability.</p>
+<hr />
+<h2 id="9-resolution-addendum-2026-11-23">9. Resolution addendum (2026-11-23)<a class="headerlink" href="#9-resolution-addendum-2026-11-23" title="Permanent link">&para;</a></h2>
+<p><strong>Status: RESOLVED — no Critical findings remain open at the current HEAD.</strong></p>
+<ol>
+<li><strong>All seven Critical findings (C-1 through C-7) verified fixed</strong> at the current
+   HEAD during this follow-up program; the Critical section is closed and no new
+   Critical findings were introduced by the CTM hardening wave.</li>
+<li><strong>CTM tooling wave completed:</strong></li>
+<li>Replaced all shebang-only stub tools in <code>ctm_tools/py/</code> with working
+     implementations, each covered by per-file regression tests and CLI smoke
+     tests: <code>ctm_count_functions</code>, <code>ctm_count_headers</code>, <code>ctm_diff_loc</code>,
+     <code>ctm_list_large_files</code>, <code>ctm_recent_files</code>.</li>
+<li>Added nine new tools: <code>ctm_todo_scan</code>, <code>ctm_doc_links</code>, <code>ctm_duplicate_files</code>,
+     <code>ctm_churn</code>, <code>ctm_license_inventory</code>, <code>ctm_schema_check</code>, <code>ctm_encoding_report</code>,
+     <code>ctm_ignore_audit</code>, <code>ctm_trend</code>.</li>
+<li>Added shared scanner helpers: <code>ctm.text_files</code>, <code>ctm.iter_files</code>,
+     <code>ctm.is_link</code> (Windows junction-aware).</li>
+<li>Registered <code>sneppx-ctm*</code> console scripts via <code>[project.scripts]</code> and shipped
+     the tools through the <code>ctm_tools.py</code> package (<code>ctm_tools/py/__init__.py</code>
+     aliases).</li>
+<li>Hardened the HTML dashboard with a per-language bar chart and a
+     skipped-file breakdown; scan reports now include <code>skipped_by_reason</code>.</li>
+<li>Fixed the Windows junction leak (reparse points were followed because
+     <code>Path.is_symlink()</code> is false for junctions); added junction test coverage.</li>
+<li>Repaired docs: C-tool claims corrected, corrupted code fences restored,
+     new tool surface documented in <code>README.md</code>, <code>ctm_tools/README.md</code>, and
+     <code>docs/tools/ctm-tools.md</code>.</li>
+<li><strong>Legacy script unification (in progress):</strong> simple legacy counters that
+   duplicated scanner logic have been moved onto the shared helpers
+   (<code>ctm_count_total_loc</code>, <code>ctm_summary_report</code>, <code>ctm_count_total_files</code> are now
+   unified; the remaining focused scripts are being migrated or explicitly
+   deprecated in favor of the unified scanner).</li>
+<li><strong>Open non-blocking work:</strong> finishing legacy script migration,
+   <code>docs</code>/<code>gh-pages</code> drift cleanup, and the true forward-mode JVP engine
+   (reverse-of-reverse remains acceptable).</li>
+</ol>
+<h2 id="10-section-5-false-assurance-closure-2026-11-24">10. Section 5 false-assurance closure (2026-11-24)<a class="headerlink" href="#10-section-5-false-assurance-closure-2026-11-24" title="Permanent link">&para;</a></h2>
+<p>Every stub listed in section 5 now either fails closed or documents its
+non-security status explicitly:</p>
+<ul>
+<li><code>crypto_kem.py</code> / <code>crypto_symmetric.py</code>: fake KEM, AEAD and Poly1305 paths
+  raise <code>RuntimeError</code> instead of fabricating successful primitives.</li>
+<li><code>crypto_asm.py</code>: <code>Ed25519ASM.sign</code> now emits real RFC 8032 signatures and
+  has a matching verifier; <code>AESNI.encrypt_block</code> validates round count and key
+  length instead of silently ignoring them.</li>
+<li><code>secure_memory.py</code>: <code>w_xor_x()</code> returns <code>False</code>; the other hardening helpers
+  are documented as no-ops and no longer imply protection.</li>
+<li><code>ai_safety_ext.py</code>: constant RLHF scores replaced with advisory heuristics
+  that state they are not a safety control.</li>
+<li><code>s5_safety.py</code>: <code>S5PromptFilter.sanitize()</code> documents that it is
+  detection-only and returns text unchanged.</li>
+<li><code>formal_verify.py</code>: unsupported LTL fragments fail closed; only the
+  implemented safety/liveness fragments can report a pass.</li>
+<li><code>security/network/transport_security.c</code>: the fake Noise handshake fails
+  closed; real Noise lives in <code>noise_protocol_extended.{h,c}</code>.</li>
+<li><code>security/network/s4_extensions.c</code>: <code>SNEPPX_mtls_verify_chain</code> fails closed
+  instead of comparing 8 bytes at fixed strides (also removing the OOB read).</li>
+<li><code>security/hardware/side_channel_shield.c</code>:
+  <code>SNEPPX_hsm_verify_measurement</code> fails closed.</li>
+<li><code>nccl.py</code> / <code>net_bindings.py</code>: collectives and point-to-point transfers are
+  documented as single-process fallbacks; multi-rank <code>send</code>/<code>recv</code> fail closed.</li>
+<li><code>acvp_kat.py</code>: <code>load_kat(name)</code> accepts only a bare vendored <code>*.json</code> name,
+  so it can no longer read arbitrary JSON files in the test harness.</li>
+</ul>
+<p>Legacy CTM script unification also resumed: <code>ctm_largest_files</code> now delegates
+to <code>ctm_find_large_files</code>, and <code>ctm_count_empty_files</code> uses the shared
+<code>ctm.iter_files</code> filters, each with per-file regression coverage.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      SneppX-ALG contributors. See the repository license for terms.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/SneppX/sneppx-alg" target="_blank" rel="noopener" title="SNEPPX-Alg on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://sneppx.github.io/sneppx-alg/latest/feed_rss_updated.xml" target="_blank" rel="noopener" title="RSS feed" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M0 64c0-17.7 14.3-32 32-32 229.8 0 416 186.2 416 416 0 17.7-14.3 32-32 32s-32-14.3-32-32C384 253.6 226.4 96 32 96 14.3 96 0 81.7 0 64m0 352a64 64 0 1 1 128 0 64 64 0 1 1-128 0m32-256c159.1 0 288 128.9 288 288 0 17.7-14.3 32-32 32s-32-14.3-32-32c0-123.7-100.3-224-224-224-17.7 0-32-14.3-32-32s14.3-32 32-32"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.expand", "navigation.sections", "navigation.tracking", "navigation.keyboard", "search.suggest", "search.highlight", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.path", "navigation.top", "search.share", "back-to-top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+        <script src="../../../javascripts/playground.js"></script>
+      
+        <script src="../../../javascripts/run-snippet.js"></script>
+      
+        <script src="../../../javascripts/command-palette.js"></script>
+      
+        <script src="../../../javascripts/shortcuts.js"></script>
+      
+        <script src="../../../javascripts/autograd-core.js"></script>
+      
+        <script src="../../../javascripts/autograd-graph.js"></script>
+      
+        <script src="../../../javascripts/matmul-viz.js"></script>
+      
+        <script src="../../../javascripts/conv-viz.js"></script>
+      
+        <script src="../../../javascripts/optimizer-race.js"></script>
+      
+        <script src="../../../javascripts/loss-gallery.js"></script>
+      
+        <script src="../../../javascripts/progress.js"></script>
+      
+        <script src="../../../javascripts/git-browser-highlighter.js"></script>
+      
+        <script src="../../../javascripts/git-browser.js"></script>
+      
+    
+  </body>
+</html>
