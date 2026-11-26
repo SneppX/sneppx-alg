@@ -1,3 +1,7 @@
+---
+description: "Explore SneppX-ALG inference and model-serving examples, API setup, batching, authentication, and operational limitations."
+---
+
 # Cookbook — Serving & Inference
 
 ## 1. Start the FastAPI inference server

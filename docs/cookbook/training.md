@@ -1,3 +1,7 @@
+---
+description: "Single-process SneppX-ALG training examples covering loss functions, backward passes, optimizer steps, and checkpoints."
+---
+
 # Cookbook — Training
 
 ## 1. Minimal training loop (manual)

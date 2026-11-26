@@ -1,3 +1,7 @@
+---
+description: "Answers about SneppX-ALG installation, Python APIs, native builds, quantization, distributed support, and security limitations."
+---
+
 # Frequently Asked Questions
 
 ## General & Environment

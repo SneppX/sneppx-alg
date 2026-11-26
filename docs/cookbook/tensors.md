@@ -1,3 +1,7 @@
+---
+description: "Practical SneppX-ALG tensor recipes for creation, indexing, arithmetic, reshaping, broadcasting, and automatic differentiation."
+---
+
 # Cookbook — Tensors
 
 ## 1. Create a tensor from a list, numpy array, or scalar

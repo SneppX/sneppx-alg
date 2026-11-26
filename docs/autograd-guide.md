@@ -1,3 +1,7 @@
+---
+description: "Learn reverse-mode automatic differentiation, selected higher-order derivatives, and current operator coverage limits in SneppX-ALG."
+---
+
 # Autograd Guide
 
 SneppX-ALG provides reverse-mode automatic differentiation and selected

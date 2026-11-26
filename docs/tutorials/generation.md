@@ -1,3 +1,7 @@
+---
+description: "Explore autoregressive text-generation utilities, sampling strategies, configuration, and model-loading limits in SneppX-ALG."
+---
+
 # Tutorial — Text Generation
 
 **Notebook:** [`generation.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/generation.ipynb)

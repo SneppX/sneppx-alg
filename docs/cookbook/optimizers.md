@@ -1,3 +1,7 @@
+---
+description: "Use SneppX-ALG optimizers and learning-rate schedulers with documented examples and backend limitations."
+---
+
 # Cookbook — Optimizers
 
 ## 1. AdamW (the default)

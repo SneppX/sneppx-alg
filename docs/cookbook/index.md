@@ -1,3 +1,7 @@
+---
+description: "Browse SneppX-ALG Python recipes for tensors, neural-network modules, training, optimizers, quantization, serving, and utilities."
+---
+
 # SNEPPX-Algo Cookbook
 
 Copy-paste recipes for exploring **SneppX-ALG**. The snippets show documented

@@ -1,3 +1,7 @@
+---
+description: "Build and train a small classifier with SneppX-ALG tensors, neural-network layers, loss functions, and optimizers."
+---
+
 # Tutorial — Image Classification with SNEPPX
 
 **Notebook:** [`classification.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/classification.ipynb)

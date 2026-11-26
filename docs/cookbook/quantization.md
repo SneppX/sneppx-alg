@@ -1,3 +1,7 @@
+---
+description: "Explore SneppX-ALG quantization utilities, supported formats, conversion workflows, and hardware-dependent constraints."
+---
+
 # Cookbook — Quantization
 
 ## 1. Symmetric INT8 (per-tensor)

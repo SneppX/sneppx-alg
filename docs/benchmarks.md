@@ -1,3 +1,7 @@
+---
+description: "Review SneppX-ALG benchmark methodology, measured workloads, hardware context, and performance limitations."
+---
+
 # Benchmarks
 
 SNEPPX-Alg ships a small C benchmark harness (`tests/benchmark/`) that measures

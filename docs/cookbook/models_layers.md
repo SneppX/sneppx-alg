@@ -1,3 +1,7 @@
+---
+description: "Examples for building neural networks with SneppX-ALG modules, layers, normalization, convolution, and activation functions."
+---
+
 # Cookbook — Models & Layers
 
 ## 1. Build a feed-forward network with Sequential

@@ -1,3 +1,7 @@
+---
+description: "Prepare datasets and text inputs with SneppX-ALG data-loading, batching, and tokenization utilities."
+---
+
 # Cookbook — Data & Tokenization
 
 ## 1. TensorDataset + DataLoader

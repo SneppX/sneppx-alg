@@ -1,3 +1,7 @@
+---
+description: "Explore higher-order automatic differentiation in SneppX-ALG, including create_graph behavior, supported operations, and testing guidance."
+---
+
 # Higher-Order Autodiff
 
 SNEPPX-Alg supports higher-order differentiation via `create_graph=True`.

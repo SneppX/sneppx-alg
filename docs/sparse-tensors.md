@@ -1,3 +1,7 @@
+---
+description: "Create and use sparse COO, CSR, CSC, and BSR tensors with SneppX-ALG's Python sparse-tensor APIs."
+---
+
 # Sparse Tensors
 
 SNEPPX-Alg supports sparse tensors in COO, CSR, CSC, and BSR formats.
