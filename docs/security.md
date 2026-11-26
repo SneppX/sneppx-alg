@@ -258,7 +258,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 
 ### Implemented
 
-- Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. The global `get_audit_logger()` factory uses strict mode and fails closed when a backend rejects a write; directly constructed `AuditLogger` instances remain best-effort by default for compatibility, so security-sensitive callers must pass `strict=True`.
+- Audit logging: structured JSON log entries with severity levels, timestamps, and source tracking. `AuditLogger` and the global `get_audit_logger()` factory fail closed by default when a backend rejects a write. Best-effort logging is an explicit opt-in via `strict=False`.
 - Key vault: in-memory encrypted key store with PIN-protected access
 - Dashboard: (see `docs/api/c.md` for C API or `bindings/python/` for Python bindings)
 

@@ -109,7 +109,8 @@ def test_remote_buffer_is_bounded():
         assert len(backend._buffer) == 2
     finally:
         backend._flush_batch = lambda: False
-        backend.close()
+        with pytest.raises(OSError, match="2 buffered events"):
+            backend.close()
 
 
 def test_remote_write_flushes_at_batch_threshold(monkeypatch):
@@ -176,7 +177,8 @@ def test_remote_dns_resolution_rejects_private_addresses(monkeypatch):
         assert backend.write(_event()) is True
         assert len(backend._buffer) == 1
     finally:
-        backend.close()
+        with pytest.raises(OSError, match="1 buffered events"):
+            backend.close()
 
 
 def test_remote_write_hash_chain_is_serialized():
@@ -201,7 +203,18 @@ def test_remote_write_hash_chain_is_serialized():
             assert current.prev_hash == previous.hash
     finally:
         backend._flush_batch = lambda: False
-        backend.close()
+        with pytest.raises(OSError, match="96 buffered events"):
+            backend.close()
+
+
+def test_remote_backend_rejects_writes_after_close():
+    backend = RemoteAPIAuditBackend(
+        endpoint="http://127.0.0.1/events",
+        api_key="key",
+        flush_interval=1000,
+    )
+    backend.close()
+    assert backend.write(_event()) is False
 
 
 def test_remote_flush_refuses_redirects(monkeypatch):
@@ -275,11 +288,47 @@ def test_strict_mode_surfaces_false_return():
         logger.log(action=AuditAction.LOGIN, actor="alice")
 
 
-def test_default_mode_still_swallows_backend_failure():
-    logger = AuditLogger(backends=[_FailingBackend()])
-    # Non-strict behaviour is unchanged: failures must not block the caller.
+def test_audit_logger_defaults_to_strict():
+    assert AuditLogger().strict is True
+
+
+def test_explicit_non_strict_mode_swallows_backend_failure():
+    logger = AuditLogger(backends=[_FailingBackend()], strict=False)
     event = logger.log(action=AuditAction.LOGIN, actor="alice")
     assert event.actor == "alice"
+
+
+class _FailingCloseBackend:
+    def __init__(self):
+        self.closed = False
+
+    def write(self, event):
+        return True
+
+    def close(self):
+        self.closed = True
+        raise OSError("remote flush failed")
+
+
+class _TrackingCloseBackend:
+    def __init__(self):
+        self.closed = False
+
+    def write(self, event):
+        return True
+
+    def close(self):
+        self.closed = True
+
+
+def test_strict_close_surfaces_backend_failures_and_closes_all_backends():
+    failing = _FailingCloseBackend()
+    tracking = _TrackingCloseBackend()
+    logger = AuditLogger(backends=[failing, tracking])
+    with pytest.raises(AuditWriteError, match="_FailingCloseBackend"):
+        logger.close()
+    assert failing.closed is True
+    assert tracking.closed is True
 
 
 def test_global_audit_logger_factory_is_strict(tmp_path, monkeypatch):

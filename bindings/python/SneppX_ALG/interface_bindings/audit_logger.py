@@ -169,7 +169,7 @@ class AuditResult(Enum):
 
 
 class AuditWriteError(RuntimeError):
-    """Raised in strict mode when one or more audit backends reject an event.
+    """Raised in strict mode when audit writes or backend shutdown fail.
 
     Attributes:
         failures: ``(backend, error)`` pairs describing each failed backend.
@@ -682,6 +682,8 @@ class RemoteAPIAuditBackend(AuditBackend):
 
     def write(self, event: AuditEvent) -> bool:
         with self._lock:
+            if not self._running:
+                return False
             if len(self._buffer) + self._inflight_count >= self.max_buffer:
                 logging.getLogger(__name__).warning(
                     "audit event rejected: remote backend buffer is full"
@@ -700,15 +702,23 @@ class RemoteAPIAuditBackend(AuditBackend):
         return []
 
     def close(self):
-        self._running = False
+        with self._lock:
+            self._running = False
         self._stop_event.set()
         if self._worker.is_alive():
             self._worker.join(timeout=self.timeout + 1)
         while True:
             with self._lock:
-                pending = bool(self._buffer)
-            if not pending or not self._flush_batch():
+                pending = len(self._buffer)
+            if not pending:
                 break
+            if not self._flush_batch():
+                with self._lock:
+                    pending = len(self._buffer)
+                if pending:
+                    raise OSError(
+                        f"remote audit flush failed with {pending} buffered events"
+                    )
 
 
 def _validate_sql_identifier(name: str) -> str:
@@ -899,7 +909,7 @@ class DatabaseAuditBackend(AuditBackend):
 
 
 class AuditLogger:
-    """Main audit logger with multi-backend support."""
+    """Multi-backend audit logger; backend failures raise by default."""
 
     def __init__(
         self,
@@ -907,7 +917,7 @@ class AuditLogger:
         default_severity: AuditSeverity = AuditSeverity.INFO,
         default_result: AuditResult = AuditResult.SUCCESS,
         hmac_key: Optional[bytes] = None,
-        strict: bool = False,
+        strict: bool = True,
     ):
         self._hmac_key = _resolve_audit_key(hmac_key)
         self.backends = backends or []
@@ -1258,11 +1268,14 @@ class AuditLogger:
             raise ValueError(f"Unknown format: {format}")
 
     def close(self):
+        failures = []
         for backend in self.backends:
             try:
                 backend.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                failures.append((backend, exc))
+        if failures and self.strict:
+            raise AuditWriteError(failures)
 
 
 # Global instance
