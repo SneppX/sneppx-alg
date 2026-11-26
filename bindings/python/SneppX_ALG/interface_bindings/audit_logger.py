@@ -494,8 +494,16 @@ def _validate_audit_endpoint(endpoint: str) -> str:
     except ValueError as exc:
         raise ValueError("audit endpoint has an invalid port") from exc
     host = (parsed.hostname or "").rstrip(".").lower()
-    if not host or parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("audit endpoint must not contain credentials, query, or fragment")
+    if (
+        not host
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError(
+            "audit endpoint must not contain credentials, query, or fragment"
+        )
     if parsed.scheme not in {"https", "http"}:
         raise ValueError("audit endpoint must use HTTPS or loopback HTTP")
     if parsed.scheme == "http":
@@ -510,7 +518,15 @@ def _validate_audit_endpoint(endpoint: str) -> str:
             address = ipaddress.ip_address(host)
         except ValueError:
             if host == "localhost" or host.endswith(
-                (".localhost", ".local", ".internal", ".lan", ".home.arpa", ".test", ".invalid")
+                (
+                    ".localhost",
+                    ".local",
+                    ".internal",
+                    ".lan",
+                    ".home.arpa",
+                    ".test",
+                    ".invalid",
+                )
             ):
                 raise ValueError("HTTPS audit endpoint must not use a local hostname")
         else:
@@ -597,7 +613,9 @@ class RemoteAPIAuditBackend(AuditBackend):
         max_buffer: int = 10000,
     ):
         if timeout <= 0 or batch_size <= 0 or flush_interval <= 0 or max_buffer <= 0:
-            raise ValueError("timeout, batch_size, flush_interval, and max_buffer must be positive")
+            raise ValueError(
+                "timeout, batch_size, flush_interval, and max_buffer must be positive"
+            )
         self._hmac_key = _resolve_audit_key(hmac_key)
         self.endpoint = _validate_audit_endpoint(endpoint)
         self.api_key = api_key
@@ -631,14 +649,23 @@ class RemoteAPIAuditBackend(AuditBackend):
             try:
                 data = json.dumps([event.to_dict() for event in batch]).encode()
                 req = urllib.request.Request(
-                    self.endpoint, data=data,
-                    headers={"Content-Type": "application/json",
-                             "Authorization": f"Bearer {self.api_key}"},
+                    self.endpoint,
+                    data=data,
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {self.api_key}",
+                    },
                 )
                 handlers = [urllib.request.ProxyHandler({}), _NoRedirectHandler()]
                 if urlparse(self.endpoint).scheme == "https":
-                    handlers.append(_PinnedHTTPSHandler(_resolve_public_audit_addresses(self.endpoint)))
-                response = urllib.request.build_opener(*handlers).open(req, timeout=self.timeout)
+                    handlers.append(
+                        _PinnedHTTPSHandler(
+                            _resolve_public_audit_addresses(self.endpoint)
+                        )
+                    )
+                response = urllib.request.build_opener(*handlers).open(
+                    req, timeout=self.timeout
+                )
                 if response is not None and hasattr(response, "close"):
                     response.close()
             except Exception as exc:

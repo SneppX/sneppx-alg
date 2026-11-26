@@ -81,8 +81,13 @@ def test_remote_endpoint_allows_https():
 
 @pytest.mark.parametrize(
     "endpoint",
-    ["https://127.0.0.1/events", "https://10.0.0.8/events",
-     "https://[::1]/events", "https://localhost/events", "https://audit.internal/events"],
+    [
+        "https://127.0.0.1/events",
+        "https://10.0.0.8/events",
+        "https://[::1]/events",
+        "https://localhost/events",
+        "https://audit.internal/events",
+    ],
 )
 def test_remote_endpoint_rejects_private_hosts(endpoint):
     with pytest.raises(ValueError):
@@ -111,7 +116,15 @@ def test_remote_write_flushes_at_batch_threshold(monkeypatch):
     calls, observed = [], []
 
     def public_dns(host, port, type=0):
-        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("1.1.1.1", port))]
+        return [
+            (
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                ("1.1.1.1", port),
+            )
+        ]
 
     class FakeOpener:
         def open(self, req, timeout):
@@ -125,8 +138,10 @@ def test_remote_write_flushes_at_batch_threshold(monkeypatch):
     monkeypatch.setattr(socket, "getaddrinfo", public_dns)
     monkeypatch.setattr(urllib.request, "build_opener", fake_build_opener)
     backend = RemoteAPIAuditBackend(
-        endpoint="https://audit.example.com/events", api_key="key",
-        batch_size=1, flush_interval=1000,
+        endpoint="https://audit.example.com/events",
+        api_key="key",
+        batch_size=1,
+        flush_interval=1000,
     )
     try:
         assert backend.write(_event()) is True
@@ -140,12 +155,22 @@ def test_remote_write_flushes_at_batch_threshold(monkeypatch):
 
 def test_remote_dns_resolution_rejects_private_addresses(monkeypatch):
     def private_dns(host, port, type=0):
-        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("10.0.0.8", port))]
+        return [
+            (
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                ("10.0.0.8", port),
+            )
+        ]
 
     monkeypatch.setattr(socket, "getaddrinfo", private_dns)
     backend = RemoteAPIAuditBackend(
-        endpoint="https://audit.example.com/events", api_key="key",
-        batch_size=1, flush_interval=1000,
+        endpoint="https://audit.example.com/events",
+        api_key="key",
+        batch_size=1,
+        flush_interval=1000,
     )
     try:
         assert backend.write(_event()) is True
@@ -156,12 +181,17 @@ def test_remote_dns_resolution_rejects_private_addresses(monkeypatch):
 
 def test_remote_write_hash_chain_is_serialized():
     backend = RemoteAPIAuditBackend(
-        endpoint="https://audit.example.com/events", api_key="key",
-        batch_size=1000, max_buffer=1000, flush_interval=1000,
+        endpoint="https://audit.example.com/events",
+        api_key="key",
+        batch_size=1000,
+        max_buffer=1000,
+        flush_interval=1000,
     )
     try:
+
         def write_one(_):
             assert backend.write(_event()) is True
+
         with ThreadPoolExecutor(max_workers=12) as pool:
             list(pool.map(write_one, range(96)))
         queued = backend._buffer
@@ -187,7 +217,15 @@ def test_remote_flush_refuses_redirects(monkeypatch):
             calls.append((req, timeout))
 
     def public_dns(host, port, type=0):
-        return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("1.1.1.1", port))]
+        return [
+            (
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                ("1.1.1.1", port),
+            )
+        ]
 
     def fake_build_opener(*handlers):
         assert any(isinstance(h, _NoRedirectHandler) for h in handlers)

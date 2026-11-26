@@ -299,6 +299,8 @@ def test_dpsgd_wrapping_optimizer():
         noise_multiplier=0.5,
         max_grad_norm=1.0,
         num_samples=32,
+        epsilon=1000.0,
+        delta=1e-5,
     )
     x = Tensor.randn((8, 4))
     targets = Tensor.randn((8, 2))

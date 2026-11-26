@@ -46,7 +46,6 @@ repos:
       # Formatting is enforced here; legacy lint diagnostics are tracked in
       # AUDIT-2026-11-22.md and must not block the formatter promotion bot.
       - id: ruff-format
-        args: [--diff]
         exclude: "(^|/)(third_party|vendor|external|generated|build|dist)/"
 
   # Prettier owns consistent formatting for web sources, JSON, and YAML.

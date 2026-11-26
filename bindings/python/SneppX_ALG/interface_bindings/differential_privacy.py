@@ -191,7 +191,9 @@ class RDPAccountant:
         if not isinstance(batch_size, int) or batch_size <= 0:
             raise ValueError("batch_size must be a positive integer")
         if num_samples is not None and (
-            not isinstance(num_samples, int) or num_samples <= 0 or batch_size > num_samples
+            not isinstance(num_samples, int)
+            or num_samples <= 0
+            or batch_size > num_samples
         ):
             raise ValueError("num_samples must be positive and at least batch_size")
         if noise_multiplier == 0:
@@ -453,7 +455,9 @@ class DPSGD:
         self._delta = state_dict.get("delta", self._delta)
         if "budget" in state_dict:
             budget_state = state_dict["budget"]
-            self._budget = PrivacyBudget.from_dict(budget_state) if budget_state else None
+            self._budget = (
+                PrivacyBudget.from_dict(budget_state) if budget_state else None
+            )
         if state_dict.get("accountant"):
             self._accountant = RDPAccountant.from_dict(state_dict["accountant"])
         self._budget_base_spent = state_dict.get(

@@ -87,10 +87,16 @@ class ContinuousBatchScheduler:
         top_k: int = 0,
         top_p: float = 1.0,
     ) -> str:
-        if isinstance(max_new_tokens, bool) or not isinstance(max_new_tokens, int) or max_new_tokens <= 0:
+        if (
+            isinstance(max_new_tokens, bool)
+            or not isinstance(max_new_tokens, int)
+            or max_new_tokens <= 0
+        ):
             raise ValueError("max_new_tokens must be a positive integer")
         if len(prompt_tokens) + max_new_tokens > self.config.max_total_tokens:
-            raise ValueError("request exceeds max_total_tokens and can never fit in a batch")
+            raise ValueError(
+                "request exceeds max_total_tokens and can never fit in a batch"
+            )
         with self._lock:
             if len(self._pending) >= self.config.max_queue_size:
                 raise RuntimeError("continuous batching queue is full")
