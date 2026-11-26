@@ -5108,7 +5108,8 @@ It must answer:</p>
 <span class="cm"> *</span>
 <span class="cm"> * WHAT</span>
 <span class="cm"> *   Module-lattice (ML-KEM) key generation, encapsulation, and decapsulation</span>
-<span class="cm"> *   for the FIPS 203 Kyber-512/768/1024 parameter sets.</span>
+<span class="cm"> *   for the round-3 Kyber-512/768/1024 parameter sets; not byte-compatible</span>
+<span class="cm"> *   with the finalized FIPS 203 ML-KEM encoding.</span>
 <span class="cm"> *</span>
 <span class="cm"> * CONCEPT</span>
 <span class="cm"> *   Kyber is a post-quantum KEM whose security rests on the Module-LWE</span>
@@ -5123,7 +5124,8 @@ It must answer:</p>
 <span class="cm"> *   secret that cannot be broken by a quantum adversary.</span>
 <span class="cm"> *</span>
 <span class="cm"> * REFERENCES</span>
-<span class="cm"> *   FIPS 203 (Kyber), NIST PQC Round 3 finalist.</span>
+<span class="cm"> *   NIST PQC Round 3 Kyber finalist; implementation is experimental and not</span>
+<span class="cm"> *   FIPS 203 interoperable.</span>
 <span class="cm"> */</span>
 </code></pre></div>
 <h2 id="layer-2-concept-blocks-before-non-obvious-algorithms">Layer 2 — Concept blocks before non-obvious algorithms<a class="headerlink" href="#layer-2-concept-blocks-before-non-obvious-algorithms" title="Permanent link">&para;</a></h2>

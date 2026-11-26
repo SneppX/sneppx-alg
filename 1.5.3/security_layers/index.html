@@ -5190,9 +5190,9 @@
 <li>BLAKE3: Fast hashing</li>
 <li>Argon2id (RFC 9106): KDF implementation; historical timing tests reported platform-dependent variation</li>
 <li>Secure Random: OS CPRNG (Windows CNG / Linux getrandom)</li>
-<li>Kyber-512/768/1024 (FIPS 203 ML-KEM): PQ key encapsulation</li>
-<li>Dilithium-2/3/5 (FIPS 204 ML-DSA): PQ digital signatures</li>
-<li>SPHINCS+-128/192/256 (FIPS 205 SLH-DSA): Stateless PQ signatures</li>
+<li>Kyber-512/768/1024 (round-3 Kyber; ML-KEM lineage): experimental PQ key encapsulation, not FIPS 203 byte-compatible</li>
+<li>Dilithium-2/3/5 (round-3 Dilithium; ML-DSA lineage): experimental PQ signatures, not FIPS 204 byte-compatible</li>
+<li>SPHINCS+-128/192/256 (round-3 SPHINCS+; SLH-DSA lineage): experimental PQ signatures, not FIPS 205 byte-compatible</li>
 </ul>
 <p><strong>Files:</strong> <code>security/crypto/c/</code></p>
 <p><strong>PQC ACVP status:</strong> Official NIST ACVP sample vectors are vendored under

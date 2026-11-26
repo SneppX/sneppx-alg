@@ -5200,9 +5200,15 @@
 
 
 <h1 id="security-layers-deep-dive-s0s9">Security Layers Deep Dive (S0–S9)<a class="headerlink" href="#security-layers-deep-dive-s0s9" title="Permanent link">&para;</a></h1>
-<p>SNEPPX-Algo applies a <strong>defense-in-depth</strong> model: ten stacked, independently
-auditable security layers. Each layer has a distinct <em>mission</em> and a small,
-formally-named surface of <code>SNEPPX_*</code> C functions exposed through Python
+<blockquote>
+<p>Post-quantum code in this repository is experimental. The Kyber, Dilithium,
+and SPHINCS+ implementations follow round-3 parameter sets and are not
+FIPS-validated or byte-compatible with the finalized FIPS 203/204/205 formats.</p>
+</blockquote>
+<p>SNEPPX-Algo applies a <strong>defense-in-depth</strong> model across ten security
+areas. Implementation maturity varies by layer; this document does not claim
+independent certification or audit. Each layer has a distinct <em>mission</em> and a
+small, formally-named surface of <code>SNEPPX_*</code> C functions exposed through Python
 bindings.</p>
 <div class="highlight"><pre><span></span><code> S0  Cryptographic Core         (sign, encrypt, hash, PQ-KEM)
  S1  Secure Memory              (guard pages, canaries, mlock, leak detect)
@@ -5238,17 +5244,17 @@ S7–S9 protect the supply chain and verify the whole stack.</p>
 </tr>
 <tr>
 <td>Signatures</td>
-<td><strong>Dilithium-2/3/5</strong> (FIPS 204 ML-DSA)</td>
+<td><strong>Dilithium-2/3/5</strong> (round-3; ML-DSA lineage)</td>
 <td><code>security/crypto/c/dilithium/</code></td>
 </tr>
 <tr>
 <td>Signatures</td>
-<td><strong>SPHINCS+-128/192/256</strong> (FIPS 205 SLH-DSA)</td>
+<td><strong>SPHINCS+-128/192/256</strong> (round-3; SLH-DSA lineage)</td>
 <td><code>security/crypto/c/sphincs+/</code></td>
 </tr>
 <tr>
 <td>KEM</td>
-<td><strong>Kyber-512/768/1024</strong> (FIPS 203 ML-KEM)</td>
+<td><strong>Kyber-512/768/1024</strong> (round-3; ML-KEM lineage)</td>
 <td><code>security/crypto/c/kyber/</code></td>
 </tr>
 <tr>
@@ -5290,7 +5296,7 @@ S7–S9 protect the supply chain and verify the whole stack.</p>
 </table>
 <p>All crypto lives in <code>security/crypto/c/</code> with x86-64 MASM acceleration in
 <code>security/crypto/asm/x86_64/</code> (AES-NI, SHA-NI, AVX2, SSE2). The S0 layer is
-<strong>post-quantum ready</strong> — Kyber/Dilithium/SPHINCS+ are built and unit-tested
+<strong>Experimental post-quantum implementations</strong> — Kyber/Dilithium/SPHINCS+ are not FIPS-validated or byte-compatible with the finalized NIST standards; see <a href="../../pqc_kat/">the KAT limitations</a>.
 alongside the classical suite.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">SneppX_ALG</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ed25519</span><span class="p">,</span> <span class="n">Dilithium</span><span class="p">,</span> <span class="n">KyberKEM</span><span class="p">,</span> <span class="n">sha256</span>
 
