@@ -300,6 +300,10 @@ class DPSGD:
             self._accountant = None
         if self._budget is None and epsilon is not None:
             self._budget = PrivacyBudget(epsilon, self._delta)
+        self._budget_base_spent = (
+            self._budget._spent_epsilon if self._budget is not None else 0.0
+        )
+        self._accountant_spent_epsilon = 0.0
 
     @property
     def lr(self):
@@ -325,16 +329,24 @@ class DPSGD:
         trial = copy.deepcopy(self._accountant)
         trial.step(self._noise_mult, batch_size, self._num_samples)
         projected = trial.get_epsilon(self._delta)
-        limits = []
-        if self._epsilon is not None:
-            limits.append(self._epsilon)
-        if self._budget is not None:
-            limits.append(self._budget._total_epsilon)
-        if limits and projected > min(limits):
-            limit = min(limits)
+        if self._epsilon is not None and projected > self._epsilon:
             raise ValueError(
-                f"epsilon budget exhausted: step would spend {projected:.4f} > {limit:.4f}"
+                f"epsilon budget exhausted: step would spend {projected:.4f} > {self._epsilon:.4f}"
             )
+        if self._budget is not None:
+            manual_spent = max(
+                0.0,
+                self._budget._spent_epsilon
+                - self._budget_base_spent
+                - self._accountant_spent_epsilon,
+            )
+            projected_total = self._budget_base_spent + manual_spent + projected
+            if projected_total > self._budget._total_epsilon:
+                raise ValueError(
+                    "epsilon budget exhausted: "
+                    f"step would spend {projected_total:.4f} > "
+                    f"{self._budget._total_epsilon:.4f}"
+                )
         return trial
 
     def step(self, per_sample_losses):
@@ -393,8 +405,19 @@ class DPSGD:
         if next_accountant is not None:
             self._accountant = next_accountant
             if self._budget is not None:
-                self._budget._spent_epsilon = next_accountant.get_epsilon(
+                manual_spent = max(
+                    0.0,
+                    self._budget._spent_epsilon
+                    - self._budget_base_spent
+                    - self._accountant_spent_epsilon,
+                )
+                self._accountant_spent_epsilon = next_accountant.get_epsilon(
                     self._delta
+                )
+                self._budget._spent_epsilon = (
+                    self._budget_base_spent
+                    + manual_spent
+                    + self._accountant_spent_epsilon
                 )
 
     def privacy_spent(self) -> Dict[str, float]:
@@ -415,6 +438,8 @@ class DPSGD:
             "epsilon": self._epsilon,
             "delta": self._delta,
             "budget": self._budget.to_dict() if self._budget else None,
+            "budget_base_spent": self._budget_base_spent,
+            "accountant_spent_epsilon": self._accountant_spent_epsilon,
             "accountant": self._accountant.to_dict() if self._accountant else None,
             "opt_state": self._opt.state_dict(),
         }
@@ -431,6 +456,16 @@ class DPSGD:
             self._budget = PrivacyBudget.from_dict(budget_state) if budget_state else None
         if state_dict.get("accountant"):
             self._accountant = RDPAccountant.from_dict(state_dict["accountant"])
+        self._budget_base_spent = state_dict.get(
+            "budget_base_spent",
+            self._budget._spent_epsilon if self._budget is not None else 0.0,
+        )
+        self._accountant_spent_epsilon = state_dict.get(
+            "accountant_spent_epsilon",
+            self._accountant.get_epsilon(self._delta)
+            if self._accountant is not None and self._accountant._steps > 0
+            else 0.0,
+        )
         if state_dict.get("opt_state"):
             self._opt.load_state_dict(state_dict["opt_state"])
 

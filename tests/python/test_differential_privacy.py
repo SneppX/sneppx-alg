@@ -267,8 +267,6 @@ def test_dpsgd_noise_std():
         noise_multiplier=noise_mult,
         max_grad_norm=max_norm,
         num_samples=100,
-        epsilon=8.0,
-        delta=1e-5,
     )
     x = Tensor.ones((batch_size, 2))
     targets = Tensor.zeros((batch_size, 1))
@@ -301,8 +299,6 @@ def test_dpsgd_wrapping_optimizer():
         noise_multiplier=0.5,
         max_grad_norm=1.0,
         num_samples=32,
-        epsilon=8.0,
-        delta=1e-5,
     )
     x = Tensor.randn((8, 4))
     targets = Tensor.randn((8, 2))
