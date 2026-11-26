@@ -1,76 +1,86 @@
-# Distributed Training Guide
+---
+description: "Current support boundaries for SneppX-ALG distributed training, process groups, collectives, and sampler utilities."
+---
 
-SNEPPX-Alg provides production-grade distributed training primitives with NCCL hardware acceleration and deterministic CPU fallbacks.
+# Distributed Training
 
-## Architecture Overview
+SneppX-ALG includes distributed-training API foundations and a deterministic
+DistributedSampler. **Validated multi-process training is not available in the
+current Python backend.** Process-group initialization, gradient collectives,
+FSDP sharding, and multi-node orchestration must not be treated as working
+features.
 
-```mermaid
-flowchart TD
-    DDP["Data Parallel (DDP)"] --> Collectives["AllReduce Gradients"]
-    ZeRO1["ZeRO-1"] --> OptState["Shard Optimizer States"]
-    ZeRO2["ZeRO-2"] --> OptGrad["Shard States + Gradients"]
-    ZeRO3["ZeRO-3"] --> OptParam["Shard States + Gradients + Weights"]
-    TP["Tensor Parallel"] --> ColSplit["Matrix Col/Row Partitioning"]
-    PP["Pipeline Parallel"] --> StageSplit["Sequential Layer Partitioning"]
-```
+The Python API now fails explicitly when WORLD_SIZE is greater than one. This
+is intentional: a job that appears to train while gradients are not synchronized
+is worse than an explicit unsupported-operation error.
 
-## DDP (Distributed Data Parallel)
+## What works today
 
-DDP replicates model weights on every rank while feeding independent data mini-batches:
+- Single-process training with the ordinary tensor, module, optimizer, and
+  trainer APIs.
+- DistributedSampler index partitioning when used as a local utility. It
+  divides indices deterministically; it does not communicate between ranks.
+- Single-process calls to all_reduce, all_gather, and reduce_scatter return the
+  input unchanged because there is only one participant.
+
+## What is not supported
+
+| Capability | Current status |
+|---|---|
+| Multi-rank process-group initialization | Unsupported; fails closed |
+| NCCL-backed Python collectives | Not implemented in the Python adapter |
+| DDP gradient synchronization | Unsupported for multiple ranks |
+| FSDP parameter/gradient sharding | Experimental wrapper; multi-rank construction is rejected |
+| ZeRO stages 1–3 | Not supported as end-to-end distributed training |
+| Pipeline, tensor, and expert parallelism | Not validated end to end |
+| Elastic multi-node training | Not supported |
+
+The presence of C/CUDA/NCCL source files or API names does not establish a
+working distributed runtime. A capability will be promoted to supported only
+after communicator setup, data movement, synchronization, error handling, and
+multi-process integration tests pass on the advertised hardware.
+
+## Single-process example
 
 ```python
-from SneppX_ALG.interface_bindings import distributed
-from SneppX_ALG import Tensor, F, nn, optim
+from SneppX_ALG import Tensor
+from SneppX_ALG.interface_bindings import nn, optim
 
-# Initialize process group (CPU fallback or NCCL)
-pg = distributed.init_process_group(world_size=4, rank=0, backend="gloo")
+model = nn.Linear(4, 2)
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-model = nn.Linear(64, 16)
-opt = optim.Adam(model.parameters(), lr=1e-3)
+inputs = Tensor.randn((8, 4))
+targets = Tensor.randn((8, 2))
 
-# Inside training loop: all-reduce gradients before optimizer step
-x = Tensor.randn((8, 64))
-loss = model(x).sum()
+predictions = model(inputs)
+loss = nn.functional.mse_loss(predictions, targets)
+optimizer.zero_grad()
 loss.backward()
-
-for p in model.parameters():
-    if p.grad is not None:
-        distributed.all_reduce(p.grad, op="mean")
-
-opt.step()
-opt.zero_grad()
+optimizer.step()
 ```
 
-## ZeRO (Zero Redundancy Optimizer) Stages
+## Sampler utility example
 
-| Stage | What is Sharded | Memory Reduction | Communication Volume |
-|---|---|---|---|
-| **ZeRO-1** | Optimizer States ($m, v$) | $4\times$ reduction | Identical to standard DDP |
-| **ZeRO-2** | Optimizer States + Gradients | $8\times$ reduction | Identical to standard DDP |
-| **ZeRO-3** | Optimizer States + Gradients + Parameters | Linear with rank count | $+50\%$ communication overhead |
+```python
+from SneppX_ALG import DistributedSampler
 
-### Enabling ZeRO in Training Configuration
-
-```yaml
-# config/training/distributed.yaml
-distributed:
-  backend: nccl
-  world_size: 8
-  zero_stage: 2
-  gradient_accumulation_steps: 4
-  all_reduce_bucket_size_mb: 25
+dataset = list(range(10))
+rank_zero_indices = list(
+    DistributedSampler(dataset, num_replicas=2, rank=0, shuffle=False)
+)
+rank_one_indices = list(
+    DistributedSampler(dataset, num_replicas=2, rank=1, shuffle=False)
+)
+assert rank_zero_indices == [0, 2, 4, 6, 8]
+assert rank_one_indices == [1, 3, 5, 7, 9]
 ```
 
-## Multi-Node Launching via CLI
+These index partitions are useful for testing input sharding logic locally, but
+they do not make a multi-rank training loop valid.
 
-```powershell
-# Single-node multi-process
-sneppx-train --config config/training/distributed.yaml --world-size 4 --rank 0
+## Roadmap
 
-# Multi-node launcher invocation
-sneppx-train --config config/training/distributed.yaml --master-addr 10.0.0.1 --master-port 29500 --world-size 16 --rank 0
-```
-
-## CPU Fallback for Local Development
-
-When running without multiple GPUs or NCCL drivers, all collective operations (`all_reduce`, `broadcast`, `all_gather`) seamlessly execute as local identity operations, guaranteeing that code developed on a laptop runs unchanged on high-performance compute clusters.
+The implementation order is: establish a real process-group lifecycle, add
+validated CPU collectives, integrate NCCL communicator creation and unique-ID
+exchange, then test DDP gradient synchronization. FSDP/ZeRO and pipeline,
+tensor, and expert parallelism depend on those foundations.

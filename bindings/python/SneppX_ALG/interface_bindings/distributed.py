@@ -34,11 +34,11 @@ class _NCCLBackend:
 
     def all_reduce(self, data, op="sum"):
         self._load()
-        return data
+        raise RuntimeError("The Python NCCL adapter does not implement collectives")
 
     def broadcast(self, data, root=0):
         self._load()
-        return data
+        raise RuntimeError("The Python NCCL adapter does not implement broadcast")
 
 
 _nccl = _NCCLBackend()
@@ -56,19 +56,27 @@ class DistributedContext:
     def init_process_group(self, backend="nccl"):
         if self.initialized:
             return
+        if backend not in {"nccl", "gloo", "mpi"}:
+            raise ValueError(f"Unsupported distributed backend: {backend}")
         if self.world_size <= 1:
+            self.initialized = True
             return
-        if backend == "nccl":
-            global _nccl
-            _nccl._load()
-        self.initialized = True
-        print(f"[Distributed] Rank {self.rank}/{self.world_size} initialized")
+        raise RuntimeError(
+            "Multi-rank process groups are not implemented in the Python backend. "
+            "The NCCL adapter currently loads a library but does not create a "
+            "communicator or perform communication; refusing to start a training "
+            "job that could silently use unsynchronized gradients."
+        )
 
     def destroy_process_group(self):
         self.initialized = False
 
     def barrier(self):
-        pass
+        if self.world_size > 1:
+            raise RuntimeError(
+                "Multi-rank barrier is unavailable because no validated "
+                "process-group backend is implemented"
+            )
 
     def all_reduce(self, tensor: Tensor, op="sum") -> Tensor:
         if self.world_size <= 1:
@@ -202,18 +210,12 @@ class DistributedDataParallel(Module):
 
 
 def launch(train_fn: Callable, num_nodes: int = 1, num_gpus: int = 1):
-    if num_nodes * num_gpus <= 1:
-        train_fn()
-        return
-    import subprocess
-    import sys
-
-    cmd = [
-        sys.executable,
-        "-m",
-        "torch.distributed.run",
-        f"--nproc_per_node={num_gpus}",
-        f"--nnodes={num_nodes}",
-        sys.argv[0],
-    ] + sys.argv[1:]
-    subprocess.run(cmd)
+    if num_nodes < 1 or num_gpus < 1:
+        raise ValueError("num_nodes and num_gpus must both be >= 1")
+    if num_nodes * num_gpus > 1:
+        raise RuntimeError(
+            "Multi-process launch is not supported yet. SneppX-ALG's Python "
+            "distributed backend does not currently implement process-group "
+            "initialization or validated collectives. Run with one process."
+        )
+    train_fn()
