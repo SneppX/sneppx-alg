@@ -57,7 +57,7 @@ repos:
         # same files in opposite directions and makes the promotion bot loop.
         types_or: [javascript, jsx, ts, tsx, json, yaml, html, css]
         args: [--tab-width, "2", --print-width, "120"]
-        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/|^benchmarks/baseline\.json$|^\.clang-tidy$|^tests/data/acvp/slhdsa_keygen_kat\.json$|^conda-forge-recipe/meta\.yaml$|^\.github/workflows/'
+        exclude: '(^|/)(third_party|vendor|external|generated|build|dist|node_modules|docs/api/doxygen)/|^benchmarks/baseline\.json$|^\.clang-tidy$|^overrides/main\.html$|^tests/data/acvp/slhdsa_keygen_kat\.json$|^conda-forge-recipe/meta\.yaml$|^\.github/workflows/'
 
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
