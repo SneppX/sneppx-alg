@@ -1,20 +1,24 @@
-name: Repository-wide formatting audit
+name: Repository-wide formatting
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "23 2 * * 1"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  actions: write
+  contents: write
 
 concurrency:
-  group: repository-formatting-audit
+  group: repository-formatting
   cancel-in-progress: false
 
 jobs:
-  formatting-audit:
-    name: Detect repository formatting drift
+  format-and-validate:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[format-bot]')
+    name: Format on a dedicated branch and validate the exact commit
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -23,7 +27,8 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
+          token: ${{ github.token }}
 
       - name: Set up Python
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
@@ -44,15 +49,129 @@ jobs:
       - name: Install pre-commit
         run: python -m pip install --disable-pip-version-check pre-commit==4.2.0
 
-      - name: Check every tracked source file without committing or creating branches
+      - name: Format tracked source files and create a uniquely named branch commit
+        id: format
         shell: bash
         run: |
           set -euo pipefail
+          BASE_SHA="$(git rev-parse HEAD)"
+          BRANCH="automation/format-${GITHUB_RUN_ID}"
+          git switch --create "$BRANCH" "$BASE_SHA"
+
           if ! SKIP=sneppx-docs pre-commit run --all-files; then
-            echo "::error::Formatting hooks failed or modified files. Run the configured pre-commit hooks locally and commit the resulting changes."
-            git status --short
-            git diff --check
-            exit 1
+            SKIP=sneppx-docs pre-commit run --all-files
           fi
+
           git diff --check
-          git diff --exit-code
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No formatting changes are required."
+            exit 0
+          fi
+
+          git add -u
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No tracked formatting changes are available to commit."
+            exit 0
+          fi
+
+          mapfile -t scopes < <(
+            git diff --cached --name-only |
+              while IFS= read -r path; do
+                case "$path" in
+                  bindings/python/*) echo python ;;
+                  src/*|include/*|native/*|tests/c/*|tests/cpp/*) echo native ;;
+                  docs/*|*.md) echo docs ;;
+                  security/*) echo security ;;
+                  ctm_tools/*) echo ctm ;;
+                  .github/*) echo ci ;;
+                  *.yml|*.yaml|*.toml|*.json) echo config ;;
+                  *) echo core ;;
+                esac
+              done | sort -u
+          )
+          scope="$(IFS=,; echo "${scopes[*]}")"
+          MESSAGE="style(${scope}): apply automated formatting [format-${GITHUB_RUN_ID}]"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "$MESSAGE"
+          CANDIDATE_SHA="$(git rev-parse HEAD)"
+          git push origin "HEAD:refs/heads/$BRANCH"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          echo "commit_message=$MESSAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch required checks for the formatter commit
+        if: steps.format.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.format.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for workflow in ci.yml lint-docs.yml package-validation.yml format-check.yml secret-scan.yml; do
+            gh workflow run "$workflow" --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          done
+
+      - name: Wait for every required check on the exact formatter SHA
+        if: steps.format.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.format.outputs.branch }}
+          CANDIDATE_SHA: ${{ steps.format.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for workflow in ci.yml lint-docs.yml package-validation.yml format-check.yml secret-scan.yml; do
+            echo "Waiting for $workflow on $CANDIDATE_SHA"
+            run_id=""
+            for attempt in $(seq 1 120); do
+              run_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" --branch "$BRANCH" --limit 30 --json databaseId,headSha --jq ".[] | select(.headSha == \"$CANDIDATE_SHA\") | .databaseId" | head -n 1)"
+              if [ -n "$run_id" ]; then
+                break
+              fi
+              sleep 10
+            done
+            if [ -z "$run_id" ]; then
+              echo "No run for $workflow appeared on $CANDIDATE_SHA"
+              exit 1
+            fi
+
+            status=""
+            conclusion=""
+            for attempt in $(seq 1 180); do
+              state="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json status,conclusion,headSha --jq '[.status, (.conclusion // ""), .headSha] | @tsv')"
+              status="$(cut -f1 <<< "$state")"
+              conclusion="$(cut -f2 <<< "$state")"
+              run_sha="$(cut -f3 <<< "$state")"
+              if [ "$run_sha" != "$CANDIDATE_SHA" ]; then
+                echo "$workflow returned unexpected SHA $run_sha"
+                exit 1
+              fi
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" != "success" ]; then
+                  echo "$workflow completed with conclusion: $conclusion"
+                  exit 1
+                fi
+                break
+              fi
+              sleep 20
+            done
+            if [ "$status" != "completed" ] || [ "$conclusion" != "success" ]; then
+              echo "Timed out waiting for $workflow"
+              exit 1
+            fi
+          done
+
+      - name: Report the validated formatter branch without merging it
+        if: steps.format.outputs.changed == 'true'
+        run: |
+          echo "Validated branch: ${{ steps.format.outputs.branch }}"
+          echo "Validated commit: ${{ steps.format.outputs.candidate_sha }}"
+          echo "Commit message: ${{ steps.format.outputs.commit_message }}"
+          echo "The branch is intentionally retained for review; main is never modified by this workflow."
