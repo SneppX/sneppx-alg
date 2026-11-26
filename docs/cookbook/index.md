@@ -1,9 +1,9 @@
 # SNEPPX-Algo Cookbook
 
-Copy-paste recipes for getting things done with **SNEPPX-Algo**. Every snippet
-uses the **verified** Python API (import paths confirmed against
-`SneppX_ALG`). Recipes are grouped by category; each has an **intent**, a
-**snippet**, and **notes** (gotchas, C-backend requirements).
+Copy-paste recipes for exploring **SneppX-ALG**. The snippets show documented
+API usage, but availability and correctness vary by backend and operation.
+Check each recipe's notes and run the relevant tests before relying on it.
+Recipes are grouped by category and include intent, examples, and caveats.
 
 > Set your path once per session:
 >
@@ -20,7 +20,7 @@ uses the **verified** Python API (import paths confirmed against
 | [Training](training.md) | 6 | Loops, loss, checkpoints, `Trainer` |
 | [Optimizers](optimizers.md) | 5 | SGD/AdamW/Lion/LAMB + schedulers |
 | [Quantization](quantization.md) | 8 | INT8/INT4/FP8/AWQ/GPTQ, serving |
-| [Distributed](distributed.md) | 5 | ZeRO, DDP, `launch`, sampler |
+| [Distributed](distributed.md) | 2 | Local sampler utility and single-process training |
 | [Serving & Inference](serving.md) | 4 | `sneppx-serve`, FastAPI, batching |
 | [Data & Tokenization](data_tokenization.md) | 5 | `Dataset`, `DataLoader`, `Tokenizer` |
 | [Security](../security.md) | 5 | Scan, PQ crypto, key vault, attestation |
@@ -29,7 +29,7 @@ uses the **verified** Python API (import paths confirmed against
 | [Conversion](conversion.md) | 3 | HF ↔ SNEPPX, safetensors, ONNX |
 | [Generation](generation.md) | 4 | `generate`, sampling, beam search, streaming |
 
-**Total: 71 recipes.** Last updated by the docs maintainer.
+The listed counts describe the current recipe index; they are not feature-completeness or conformance claims.
 
 ## Legend
 

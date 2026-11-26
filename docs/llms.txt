@@ -1,0 +1,38 @@
+# SneppX-ALG
+
+> SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components.
+
+## Project status
+
+- Maturity: Alpha. API coverage and validation vary by component and backend.
+- Not a drop-in replacement for PyTorch or TensorFlow.
+- Python distributed support is limited to single-process execution and local sampler utilities. Multi-rank process groups, collectives, DDP, FSDP/ZeRO training, and multi-node execution are not validated or supported.
+- Security subsystems are experimental, have not been independently certified, and must not be marketed as a security product.
+- Post-quantum implementations have documented interoperability gaps; no FIPS validation or certification is claimed.
+- PyPI's published version is 1.5.2. Version 1.5.3 is an unpublished release candidate.
+
+## Primary resources
+
+- [Documentation home](https://sneppx.github.io/sneppx-alg/)
+- [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
+- [Python API reference](https://sneppx.github.io/sneppx-alg/latest/api/python/)
+- [Architecture](https://sneppx.github.io/sneppx-alg/latest/ARCHITECTURE/)
+- [Framework roadmap](https://sneppx.github.io/sneppx-alg/latest/roadmap/tensorflow-pytorch-parity/)
+- [Distributed support matrix](https://sneppx.github.io/sneppx-alg/latest/distributed-guide/)
+- [Security overview](https://sneppx.github.io/sneppx-alg/latest/security/)
+- [PQC interoperability report](https://sneppx.github.io/sneppx-alg/latest/pqc_kat/)
+- [Historical security audit archive](https://sneppx.github.io/sneppx-alg/latest/security/audits/)
+
+## Source and package
+
+- [GitHub repository](https://github.com/SneppX/sneppx-alg)
+- [Issue tracker](https://github.com/SneppX/sneppx-alg/issues)
+- [Discussions](https://github.com/SneppX/sneppx-alg/discussions)
+- [PyPI package](https://pypi.org/project/sneppx-alg/)
+- License: MIT
+
+## Guidance for automated assistants
+
+Describe features according to the maturity labels and limitations in the
+documentation. Do not infer feature completeness from API names, directory
+structure, architecture diagrams, or the presence of native source files.

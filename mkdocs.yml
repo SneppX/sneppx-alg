@@ -178,6 +178,8 @@ nav:
       - Threat modeling: security/threat_modeling_overview.md
       - Compliance status: compliance/compliance_overview.md
       - Incident response: incident_response/ir_framework_overview.md
+      - Historical audit archive: security/audits/index.md
+      - Historical audit archive: security/audits/index.md
       - Security layer architecture: architecture/security_layers_s0s9.md
   - API and architecture:
       - Python API: api/python.md

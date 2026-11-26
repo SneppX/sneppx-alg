@@ -1,60 +1,37 @@
-# Community Showcase
+---
+description: "How to contribute SneppX-ALG projects and request maintainer verification; no external community showcase entries are currently listed."
+---
 
-Real projects built on **SNEPPX-Alg**. Each entry is submitted by the
-community and carries a **verification badge** indicating how far the SNEPPX
-team has validated it.
+# SneppX-ALG Community
 
-## Verification badge scheme
+The community gallery is open to projects that use SneppX-ALG. No external
+community submissions are currently listed. We prefer an empty, accurate
+gallery over examples with placeholder links or unverifiable claims.
 
-| Badge | Meaning |
-|-------|---------|
-| :material-check-decagram:{ .verified } **Verified** | The SNEPPX maintainers ran the demo end-to-end on the current release and confirmed it reproduces. |
-| :material-shield-check:{ .self-verified } **Self-verified** | The author asserts it runs; source is inspected but not reproduced by maintainers. |
-| :material-eye:{ .community } **Community** | Submitted by a user; listed as-is with no formal verification. |
-| :material-alert-octagon:{ .needs-review } **Needs review** | Submitted but not yet audited (may include unverified claims). |
+## Verification labels
 
-> Badges are **not** security attestations. "Verified" only means "it ran when
-> we tried it" — see [`docs/api/index.md`](../api/index.md) for formal
-> verification (S8) of the core itself.
+| Label | Meaning |
+|---|---|
+| **Maintainer verified** | A maintainer reproduced the submitted project using the documented steps and recorded the tested commit and environment |
+| **Self-reported** | The author reports that the project works; maintainers have not reproduced it |
+| **Community submission** | The entry is listed as submitted and has not been technically reviewed |
 
-## Submit your project
+These labels describe reproduction status only. They are not security
+attestations, endorsements, or guarantees of safety or correctness.
 
-1. Fork `ammar49-cyber/sneppx-alg`.
-2. Add a row to the table below (alphabetical by title) under the appropriate
-   badge level, keeping the same column order.
-3. Open a pull request with the subject `community: add "<title>"`.
+## Submit a project
 
-Your PR must include a short `README`-style blurb (≤ 120 words) and a link to
-public source. Maintainers will re-run the demo and **upgrade** the badge to
-**Verified** if it reproduces without changes. If it does not reproduce, the
-entry is marked **Needs review** and the author is pinged.
+1. Fork [`SneppX/sneppx-alg`](https://github.com/SneppX/sneppx-alg).
+2. Add a short entry to this page with the project name, author, source
+   repository, purpose, tested version/commit, and exact reproduction steps.
+3. Open a pull request titled `community: add "<project name>"`.
 
-## Gallery
-
-| Title | Author | Badge | What it does | Source |
-|-------|--------|-------|--------------|--------|
-| HSS speech command classifier | @ammar49-cyber | :material-check-decagram:{ .verified } | 16-class keyword spotting with a 4-layer HSS encoder | [demo/hss_speech](https://github.com/SneppX/sneppx-alg/tree/main/examples) |
-| SER MoE load-balancing vis | @contrib-ai | :material-eye:{ .community } | Live top-k routing heatmap for 8-expert SER | [github.com/contrib-ai/ser-viz](https://example.com) |
-| ARC adversarial robustness benchmark | @sec-lab | :material-shield-check:{ .self-verified } | FGSM/PGD attack sweep + certified accuracy | [github.com/sec-lab/arc-bench](https://example.com) |
-| NPE bytecode compiler playground | @npe-hacker | :material-check-decagram:{ .verified } | Browser JIT playground compiling Python-like DSL to NPE bytecode | [sneppx.dev/npe-play](https://example.com) |
-| FM federated chat (2-node) | @dist-team | :material-eye:{ .community } | Differentially-private federated chat with DP-FM sync | [github.com/dist-team/fm-chat](https://example.com) |
-| Quantized LLaMA-2 serving (INT4) | @model-perf | :material-shield-check:{ .self-verified } | 4-bit AWQ + kv-cache serving via `sneppx-serve` | [github.com/model-perf/sneppx-llama](https://example.com) |
-
-## Starter template
-
-Use this front-matter block when proposing a new entry (paste into a PR
-description):
-
-```
-- Title: <short title>
-  Author: <@github>
-  Badge: Community
-  What: <one-line description>
-  Source: <https://github.com/...>
-  Repro: <optional shell one-liner to reproduce>
-```
+Do not claim maintainer verification. The maintainers will update the label
+only after reproducing the submitted steps. Projects with incomplete,
+unavailable, or placeholder source links will not be listed.
 
 ## Code of conduct
 
-Community projects must follow the [SNEPPX Code of Conduct](https://github.com/SneppX/sneppx-alg/blob/main/../CODE_OF_CONDUCT.md).
+Community contributions must follow the
+[repository Code of Conduct](https://github.com/SneppX/sneppx-alg/blob/main/CODE_OF_CONDUCT.md).
 Do not submit models trained on licensed data without attribution.

@@ -10,6 +10,16 @@ SneppX-ALG organizes its security work into ten phases (S0-S9), covering cryptog
 
 Each phase builds on the previous. The architecture is designed so that security is not a bolt-on layer but a property of the entire system.
 
+For a time-stamped review of historical security and correctness findings,
+see the [November 22, 2026 audit archive](security/audits/index.md). That audit
+records findings at its audited commit and includes a remediation-commit
+ledger; its original counts are not a statement of current open vulnerabilities.
+
+For a time-stamped review of historical security and correctness findings,
+see the [November 22, 2026 audit archive](security/audits/index.md). That audit
+records findings at its audited commit and includes a remediation-commit
+ledger; its original counts are not a statement of current open vulnerabilities.
+
 ```
 S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
 │     │     │     │     │     │     │     │     │     │

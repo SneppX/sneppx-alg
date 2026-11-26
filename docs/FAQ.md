@@ -32,7 +32,10 @@ from SneppX_ALG import F
 
 ### "Can I migrate models from PyTorch?"
 
-Yes. SNEPPX-Alg supports `state_dict` weight loading and provides functional and module APIs deliberately aligned with standard deep learning semantics. See [`migration/from_pytorch.md`](migration/from_pytorch.md).
+SneppX-ALG has selected PyTorch-like APIs and state-dict utilities, but it is
+not a drop-in replacement and does not guarantee compatibility for arbitrary
+models. Check the migration guide and test each layer, tensor operation,
+gradient, dtype, and checkpoint format you depend on.
 
 ## Installation & Build
 
@@ -95,14 +98,15 @@ Ensure the quantizer and dequantizer specify the exact `n` (total element count)
 
 ## Distributed Training
 
-### "Training hangs after init_process_group"
+### "Can I run multi-GPU or multi-node training?"
 
-On CPU machines without NCCL, verify that every rank specifies matching `MASTER_ADDR` and `MASTER_PORT`:
-
-```powershell
-$env:MASTER_ADDR="127.0.0.1"; $env:MASTER_PORT="29500"
-$env:WORLD_SIZE=2; $env:RANK=0; $env:LOCAL_RANK=0
-```
+Not with the current Python backend. Single-process training and the local
+`DistributedSampler` index-partitioning utility are available, but multi-rank
+process-group initialization, collectives, DDP synchronization, FSDP/ZeRO
+training, and multi-node execution are not implemented as validated end-to-end
+features. Multi-rank entry points now raise an explicit error rather than
+silently running without synchronized gradients. See the
+[distributed support matrix](distributed-guide.md).
 
 ## Security
 
