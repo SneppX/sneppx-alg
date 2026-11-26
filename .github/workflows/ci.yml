@@ -77,6 +77,18 @@ jobs:
             tests/python/test_session_authentication.py \
             tests/python/test_api_gateway_security.py \
             tests/python/test_security_runtime_hardening.py \
+            tests/python/test_grad_checkpoint.py \
+            tests/python/test_functional_ns.py \
+            tests/python/test_optimizers.py \
+            tests/python/test_optim_extra.py \
+            tests/python/test_checkpoint_manager.py \
+            tests/python/test_advanced_ops.py \
+            tests/python/test_autograd_ops3.py \
+            tests/python/test_functional.py \
+            tests/python/test_rng.py \
+            tests/python/test_quantization.py \
+            tests/python/test_differential_privacy.py \
+            tests/python/test_continuous_batching.py \
             -q -p no:cacheprovider
 
   native-build-smoke:
@@ -91,18 +103,26 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake build-essential
-      - name: Configure native build
-        run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_CUDA=OFF
-      - name: Build native targets
-        run: cmake --build build/ci --config Release -j 2
-      - name: Run complete native test suite
-        run: ctest --test-dir build/ci -C Release --output-on-failure --timeout 120
-      - name: Set up Python for HTTP integration tests
+      - name: Set up Python for native bindings and integration tests
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
           python-version: "3.11"
-      - name: Install HTTP integration test dependencies
-        run: python -m pip install --disable-pip-version-check pytest
+      - name: Install native Python build and test dependencies
+        run: python -m pip install --disable-pip-version-check numpy pytest pybind11
+      - name: Configure native build
+        run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_HTTP=ON -DSNEPPX_BUILD_PYTHON=ON -DSNEPPX_BUILD_CUDA=OFF -DCMAKE_PREFIX_PATH="$(python -m pybind11 --cmakedir)"
+      - name: Build native targets
+        run: cmake --build build/ci --config Release -j 2
+      - name: Verify native Python extension
+        env:
+          PYTHONPATH: bindings/python
+        run: python -c "from SneppX_ALG import _neural_engine_bridge as ext; assert hasattr(ext, '_Tape'); assert hasattr(ext, '_Variable')"
+      - name: Run native Python tape ownership regressions
+        env:
+          PYTHONPATH: bindings/python
+        run: python -m pytest tests/python/test_c_tape.py -q -p no:cacheprovider
+      - name: Run complete native test suite
+        run: ctest --test-dir build/ci -C Release --output-on-failure --timeout 120
       - name: Run C HTTP server integration tests
         env:
           PYTHONPATH: bindings/python
