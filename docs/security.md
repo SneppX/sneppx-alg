@@ -15,11 +15,6 @@ see the [November 22, 2026 audit archive](security/audits/index.md). That audit
 records findings at its audited commit and includes a remediation-commit
 ledger; its original counts are not a statement of current open vulnerabilities.
 
-For a time-stamped review of historical security and correctness findings,
-see the [November 22, 2026 audit archive](security/audits/index.md). That audit
-records findings at its audited commit and includes a remediation-commit
-ledger; its original counts are not a statement of current open vulnerabilities.
-
 ```
 S0 ── S1 ── S2 ── S3 ── S4 ── S5 ── S6 ── S7 ── S8 ── S9
 │     │     │     │     │     │     │     │     │     │
@@ -291,7 +286,7 @@ int is_poisoned = SNEPPX_poison_detect_is_anomalous(&pd);
 - Applying an already-current version is rejected to prevent same-version replay. Downgrade rejection still depends on the verifier's rollback-protection setting and its in-memory state.
 - The integrity-verification helper requires exactly a 32-byte Ed25519 public key and a 64-byte signature; truncated or trailing key/signature bytes are rejected.
 - Signed update bundles: Ed25519-signed update payloads with version rolling
-- Rollback protection: monotonic version counter preventing downgrade attacks
+- Rollback rejection: process-local version/history checks; state is not durable across restarts or backed by a hardware monotonic counter
 - Staged rollout: gradual update distribution with health-check gating
 
 ### API
@@ -370,28 +365,30 @@ SNEPPX_fuzzer_run(&fz, duration_sec, &report);
 
 ## Threat Model
 
+The controls below are implementation areas, not guarantees that the corresponding threat is fully mitigated. Validation varies by component; see the known issues and phase status above.
+
 ### Assumptions
 
 - The hardware is trusted (no side-channel attacks on CPU)
 - The OS is trusted (no kernel-level compromise)
 - The network is untrusted
 - Other AI models are untrusted and potentially adversarial
-- Supply chain is trusted (verified commits, signed releases)
+- Supply-chain integrity must be verified by the deployment process; repository commits are not guaranteed to be signed
 
 ### Defenses
 
-| Threat | Defense | Status |
-|--------|---------|--------|
-| Signature forgery | Ed25519 | ✅ |
-| Data breach at rest | ChaCha20-Poly1305 | ✅ |
-| Side-channel timing | Constant-time ops | ✅ |
-| Memory scraping | Locked memory + guard pages | ✅ |
-| Swap forensic | mlock/VirtualLock | ✅ |
-| Reverse engineering | CF flattening + string encryption | ⚠️ Partial |
-| Runtime tampering | Behavioral monitor | ⚠️ Partial |
-| Adversarial input | ARC input guard | ✅ |
-| Gradient leakage | ARC gradient obfuscation | ✅ |
-| Model inversion | ARC output verifier | ✅ |
+| Threat | Defense area | Status |
+|--------|--------------|--------|
+| Signature forgery | Ed25519 verification and trusted-key configuration | Partial; caller and key-management paths require validation |
+| Data breach at rest | ChaCha20-Poly1305 authenticated encryption | Partial; backend availability and integration must be checked |
+| Side-channel timing | Constant-time primitives | Not fully verified; timing concerns remain |
+| Memory scraping | Locked memory and guard pages | Platform-dependent; independent validation required |
+| Swap forensics | mlock / VirtualLock | Platform-dependent; OS permissions and limits apply |
+| Reverse engineering | Control-flow flattening and string obfuscation | Partial |
+| Runtime tampering | Behavioral monitor | Partial |
+| Adversarial input | ARC input guard | Partial; not a complete policy boundary |
+| Gradient leakage | ARC gradient obfuscation | Experimental; efficacy not independently evaluated |
+| Model inversion | ARC output verifier | Experimental; not independently validated |
 
 ## Reporting Vulnerabilities
 

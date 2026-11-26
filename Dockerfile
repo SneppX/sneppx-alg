@@ -160,8 +160,10 @@ USER sneppx
 FROM cuda-runtime AS default
 
 LABEL org.opencontainers.image.title="SNEPPX-ALG"
-LABEL org.opencontainers.image.description="Next-generation AI architecture with security built into the foundation"
-LABEL org.opencontainers.image.version="1.1.0"
+LABEL org.opencontainers.image.description="Experimental native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs"
+ARG SNEPPX_VERSION=1.5.3
+LABEL org.opencontainers.image.version="${SNEPPX_VERSION}"
 LABEL org.opencontainers.image.authors="Ammar [SNEPPX] <algoSNEPPX@gmail.com>"
-LABEL org.opencontainers.image.source="https://github.com/ammar49-cyber/sneppx-alg"
+LABEL org.opencontainers.image.source="https://github.com/SneppX/sneppx-alg"
+LABEL org.opencontainers.image.documentation="https://sneppx.github.io/sneppx-alg/"
 LABEL org.opencontainers.image.licenses="MIT"
