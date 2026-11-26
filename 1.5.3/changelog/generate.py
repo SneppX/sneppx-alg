@@ -23,7 +23,7 @@ The emitted markdown is written to ``docs/changelog/index.md`` and also echoed
 to stdout when ``--print`` is passed.
 
 Usage:
-    python docs/changelog/generate.py [--repo ammar49-cyber/sneppx-alg] [--print]
+    python docs/changelog/generate.py [--repo SneppX/sneppx-alg] [--print]
 """
 
 from __future__ import annotations
@@ -243,7 +243,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--repo",
-        default="ammar49-cyber/sneppx-alg",
+        default="SneppX/sneppx-alg",
         help="GitHub owner/repo for compare links",
     )
     parser.add_argument(

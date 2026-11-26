@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "ARIX-Algo", "index.html", [
+  [ "SneppX-ALG", "index.html", [
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

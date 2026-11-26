@@ -4237,10 +4237,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-fails-ed25519-verify-or-argon2-timing" class="md-nav__link">
+  <a href="#cryptographic-validation-warnings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test fails: "Ed25519 verify" or "Argon2 timing"
+        Cryptographic validation warnings
       
     </span>
   </a>
@@ -4248,10 +4248,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cmake-4x-version-error" class="md-nav__link">
+  <a href="#cmake-preset-version-is-unsupported" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CMake 4.x version error
+        CMake preset version is unsupported
       
     </span>
   </a>
@@ -5371,10 +5371,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-fails-ed25519-verify-or-argon2-timing" class="md-nav__link">
+  <a href="#cryptographic-validation-warnings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test fails: "Ed25519 verify" or "Argon2 timing"
+        Cryptographic validation warnings
       
     </span>
   </a>
@@ -5382,10 +5382,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cmake-4x-version-error" class="md-nav__link">
+  <a href="#cmake-preset-version-is-unsupported" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CMake 4.x version error
+        CMake preset version is unsupported
       
     </span>
   </a>
@@ -5501,8 +5501,8 @@
 <tbody>
 <tr>
 <td>CMake</td>
-<td>3.24</td>
-<td>Build system (4.x recommended for CUDA)</td>
+<td>3.16+ direct builds; 3.25+ presets</td>
+<td>CMakePresets.json uses schema version 6</td>
 </tr>
 <tr>
 <td>C compiler</td>
@@ -5512,7 +5512,7 @@
 <tr>
 <td>C++ compiler</td>
 <td>C++20</td>
-<td>Only needed for S2 obfuscation engine</td>
+<td>Required by the native C++ components</td>
 </tr>
 <tr>
 <td>Python</td>
@@ -5672,10 +5672,18 @@ python<span class="w"> </span>tests/python/test_algo_wrappers.py
 <p>MSVC parallel build issue. The CMakeLists.txt includes <code>/FS</code> flag. If still failing:</p>
 <div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </span>--config<span class="w"> </span>Release<span class="w"> </span>-j1
 </code></pre></div>
-<h3 id="test-fails-ed25519-verify-or-argon2-timing">Test fails: "Ed25519 verify" or "Argon2 timing"<a class="headerlink" href="#test-fails-ed25519-verify-or-argon2-timing" title="Permanent link">&para;</a></h3>
-<p>Pre-existing S0 edge case failures (2/306 Ed25519 vectors, 1/4 Argon2 timing). Not security vulnerabilities.</p>
-<h3 id="cmake-4x-version-error">CMake 4.x version error<a class="headerlink" href="#cmake-4x-version-error" title="Permanent link">&para;</a></h3>
-<p>If CMake fails with <code>invalid version string</code>, ensure you have the v1.0.0 tag checked out.</p>
+<h3 id="cryptographic-validation-warnings">Cryptographic validation warnings<a class="headerlink" href="#cryptographic-validation-warnings" title="Permanent link">&para;</a></h3>
+<p>The historical security audit recorded incomplete Ed25519 vector coverage
+(304/306) and platform-dependent Argon2 timing. These are cryptographic
+conformance and side-channel validation limitations; do not dismiss them as
+benign or treat the affected primitives as independently validated. Review
+<a href="../security/">the security overview</a> and <a href="../pqc_kat/">PQC interoperability report</a>
+before relying on these components.</p>
+<h3 id="cmake-preset-version-is-unsupported">CMake preset version is unsupported<a class="headerlink" href="#cmake-preset-version-is-unsupported" title="Permanent link">&para;</a></h3>
+<p><code>CMakePresets.json</code> uses preset schema version 6, which requires CMake 3.25
+or newer. For CMake 3.16–3.24, configure directly with
+<code>cmake -S . -B build -DCMAKE_BUILD_TYPE=Release</code> instead of using
+<code>cmake --preset</code>.</p>
 <h3 id="python-import-fails">Python import fails<a class="headerlink" href="#python-import-fails" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">"bindings/python"</span>
 <span class="n">python</span> <span class="n">-c</span> <span class="s2">"import SneppX_ALG; print(SneppX_ALG.__file__)"</span>
