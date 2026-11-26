@@ -49,10 +49,16 @@ class SchedulerConfig:
     max_waiting_ms: float = 10.0
     max_total_tokens: int = 4096
     max_queue_size: int = 1024
+    max_completed_size: int = 1024
     schedule_strategy: str = "fcfs"
 
     def __post_init__(self):
-        for name in ("max_batch_size", "max_total_tokens", "max_queue_size"):
+        for name in (
+            "max_batch_size",
+            "max_total_tokens",
+            "max_queue_size",
+            "max_completed_size",
+        ):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
@@ -118,7 +124,12 @@ class ContinuousBatchScheduler:
     def get_batch(self) -> List[ScheduledRequest]:
         with self._lock:
             active = list(self._running.values())
-            slots_left = self.config.max_batch_size - len(active)
+            result_slots = (
+                self.config.max_completed_size - len(self._completed) - len(active)
+            )
+            slots_left = max(
+                0, min(self.config.max_batch_size - len(active), result_slots)
+            )
             if slots_left > 0 and self._pending:
                 candidates = self._pending
                 if self.config.schedule_strategy != "fcfs":
@@ -147,9 +158,16 @@ class ContinuousBatchScheduler:
 
     def complete(self, req_id: str, generated_tokens: List[int], generated_text: str):
         with self._lock:
-            req = self._running.pop(req_id, None)
+            req = self._running.get(req_id)
             if req is None:
                 return
+            if len(generated_tokens) > req.max_new_tokens:
+                raise ValueError("generated token count exceeds max_new_tokens")
+            if len(self._completed) >= self.config.max_completed_size:
+                raise RuntimeError(
+                    "completed result queue is full; drain results before completing more requests"
+                )
+            self._running.pop(req_id)
             req.status = RequestStatus.COMPLETED
             req.end_time = time.time()
             total_ms = (req.end_time - req.start_time) * 1000
@@ -183,6 +201,7 @@ class ContinuousBatchScheduler:
                 "running": len(self._running),
                 "completed": len(self._completed),
                 "max_batch_size": self.config.max_batch_size,
+                "max_completed_size": self.config.max_completed_size,
             }
 
 

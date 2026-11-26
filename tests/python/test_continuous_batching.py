@@ -143,6 +143,41 @@ def test_running_requests_reserve_their_remaining_token_allowance():
     assert scheduler._pending[0].id == second
 
 
+def test_completed_results_are_bounded_and_backpressure_admission():
+    scheduler = ContinuousBatchScheduler(
+        SchedulerConfig(
+            max_batch_size=4,
+            max_total_tokens=8,
+            max_completed_size=1,
+        )
+    )
+    first = scheduler.submit("first", [1], max_new_tokens=2)
+    second = scheduler.submit("second", [2], max_new_tokens=2)
+
+    assert [request.id for request in scheduler.get_batch()] == [first]
+    scheduler.complete(first, [3], "done")
+
+    assert scheduler.get_batch() == []
+    assert scheduler.get_stats()["completed"] == 1
+    assert scheduler.get_stats()["pending"] == 1
+
+    results = scheduler.get_results()
+    assert [result.request_id for result in results] == [first]
+    assert [request.id for request in scheduler.get_batch()] == [second]
+
+
+def test_complete_rejects_more_tokens_than_reserved():
+    scheduler = ContinuousBatchScheduler(
+        SchedulerConfig(max_total_tokens=8, max_completed_size=1)
+    )
+    request_id = scheduler.submit("bounded", [1], max_new_tokens=1)
+    scheduler.get_batch()
+    with pytest.raises(ValueError, match="exceeds max_new_tokens"):
+        scheduler.complete(request_id, [2, 3], "too many")
+    assert scheduler.get_stats()["running"] == 1
+    assert scheduler.get_stats()["completed"] == 0
+
+
 def test_get_batch_respects_max_total_tokens():
     cfg = SchedulerConfig(max_batch_size=4, max_total_tokens=6)
     s = ContinuousBatchScheduler(cfg)
@@ -172,5 +207,7 @@ if __name__ == "__main__":
     test_pending_queue_is_bounded()
     test_oversized_request_is_rejected_immediately()
     test_running_requests_reserve_their_remaining_token_allowance()
+    test_completed_results_are_bounded_and_backpressure_admission()
+    test_complete_rejects_more_tokens_than_reserved()
     test_get_batch_respects_max_total_tokens()
     print("ALL continuous_batching TESTS PASS")
