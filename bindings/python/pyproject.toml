@@ -38,7 +38,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
-dependencies = ["numpy>=1.21.0", "pyyaml>=5.1", "cryptography>=40.0.0"]
+dependencies = ["numpy>=2.2.6", "pyyaml>=5.1", "cryptography>=40.0.0"]
 
 [project.urls]
 Homepage = "https://sneppx.github.io/sneppx-alg/"
