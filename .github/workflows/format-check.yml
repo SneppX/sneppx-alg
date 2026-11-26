@@ -46,5 +46,10 @@ jobs:
       - name: Verify all configured formatters and linters
         run: SKIP=sneppx-docs pre-commit run --all-files
 
+      - name: Show formatter changes on failure
+        if: failure()
+        run: |
+          git --no-pager diff --stat
+          git --no-pager diff -- README.md mkdocs.yml overrides/main.html pyproject.toml bindings/python/pyproject.toml docs/index.md docs/security.md docs/FAQ.md docs/autograd-guide.md docs/guide/quickstart.md docs/distributed-guide.md docs/cookbook/distributed.md docs/tutorials/distributed_training.md bindings/python/SneppX_ALG/interface_bindings/distributed.py bindings/python/SneppX_ALG/interface_bindings/fsdp.py tests/python/test_distributed.py docs/security/audits/index.md docs/security/audits/2026-11-22-security-and-correctness-audit.md docs/llms.txt
       - name: Reject formatter changes in CI
         run: git diff --exit-code
