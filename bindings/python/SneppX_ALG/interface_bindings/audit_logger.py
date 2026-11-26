@@ -178,7 +178,7 @@ class AuditWriteError(RuntimeError):
     def __init__(self, failures: List[Tuple[Any, BaseException]]):
         self.failures = list(failures)
         names = ", ".join(type(backend).__name__ for backend, _ in self.failures)
-        super().__init__(f"audit backend write failed: {names}")
+        super().__init__(f"audit backend operation failed: {names}")
 
 
 @dataclass
@@ -1047,9 +1047,9 @@ class AuditLogger:
             except Exception:
                 pass
 
-        # Write to all backends. By default backend failures are swallowed so
-        # logging never blocks the caller; in strict mode they are surfaced so
-        # a failed security audit cannot silently pass.
+        # Attempt every backend so one failure does not prevent other
+        # destinations from receiving the event. Strict mode reports all
+        # failures after every backend has been attempted.
         failures: List[Tuple[AuditBackend, BaseException]] = []
         for backend in self.backends:
             try:
