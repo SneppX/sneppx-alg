@@ -22,12 +22,12 @@ Quick Install
        cmake --build build --config Release --parallel
 
   4. Run tests:
-       ctest --test-dir build -C Release --output-on-failure
+       cd build && ctest -C Release --output-on-failure
 
   5. To explicitly enable tests and benchmarks:
        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DSNEPPX_BUILD_TESTS=ON -DSNEPPX_BUILD_BENCHMARKS=ON
        cmake --build build --config Release --parallel
-       ctest --test-dir build -C Release --output-on-failure
+       cd build && ctest -C Release --output-on-failure
 
 Platform Notes
   Linux

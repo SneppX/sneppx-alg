@@ -392,7 +392,7 @@ The controls below are implementation areas, not guarantees that the correspondi
 
 ## Reporting Vulnerabilities
 
-See [SECURITY.md](https://github.com/SneppX/sneppx-alg/blob/main/../SECURITY.md)
+See [SECURITY.md](../SECURITY.md)
 
 ## Security Best Practices
 

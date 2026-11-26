@@ -1,5 +1,6 @@
-# Conda-forge recipe for sneppx-alg
-# This goes in a separate conda-forge feedstock repository
+# Reference Conda recipe template for sneppx-alg.
+# Not a published feedstock: validate the version, source hash, and build
+# variants in the dedicated feedstock repository before using it.
 
 {% set version = "1.0.0" %}
 
@@ -62,16 +63,14 @@ about:
   home: https://github.com/SneppX/sneppx-alg
   license: MIT
   license_file: LICENSE
-  summary: "Next-generation AI architecture with security built into the foundation"
+  summary: "Experimental native C/C++ machine-learning framework with Python tensor and autograd APIs"
   description: |
-    SNEPPX-ALG is a next-generation AI architecture implementing:
-    - Core tensor operations with CPU/CUDA backends
-    - Neural network modules (Linear, Attention, Normalization, etc.)
-    - Optimizers (AdamW, Lion, LAMB, Sophia, etc.)
-    - Advanced models (ViT, DeiT, Swin, MAE)
-    - Quantization (INT8, FP8, AWQ, GPTQ)
-    - Distributed training (ZeRO, Pipeline, Tensor Parallel)
-    - Security features (S0-S9 layers)
+    SneppX-ALG is Alpha-stage software with a native C/C++ codebase and Python
+    APIs for tensor operations, automatic differentiation, and neural-network
+    components. API coverage and validation vary by subsystem and backend.
+    Multi-rank distributed training, FSDP, and ZeRO are not validated as
+    end-to-end features. Security components are experimental and are not
+    independently certified; no FIPS validation or certification is claimed.
   doc_url: https://github.com/SneppX/sneppx-alg
   dev_url: https://github.com/SneppX/sneppx-alg
 

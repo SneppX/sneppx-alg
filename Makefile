@@ -1,5 +1,5 @@
 # ============================================================================
-# ARIX-Algo Makefile — convenience targets (cross-platform: Windows + Unix)
+# SneppX-ALG Makefile — convenience targets (cross-platform: Windows + Unix)
 # ============================================================================
 .PHONY: all build test clean format lint python-build python-test bench \
         coverage docs stats help install
