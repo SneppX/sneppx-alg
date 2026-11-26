@@ -57,7 +57,7 @@ sneppx-rlhf = "SneppX_ALG.interface_bindings.rlhf_cli:main"
 sneppx-onnx = "SneppX_ALG.interface_bindings.onnx_cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "scipy>=1.7"]
+dev = ["pytest>=7.0", "scipy>=1.15.3"]
 hf = ["huggingface_hub>=0.16.0"]
 serve = ["uvicorn>=0.22.0"]
 docs = [
