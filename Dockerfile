@@ -4,7 +4,7 @@
 # =====================================================================
 # BASE BUILDER - Full development environment
 # =====================================================================
-FROM nvidia/cuda:12.2.2-devel-ubuntu22.04@sha256:ae8a022c02aec945c4f8c52f65deaf535de7abb58e840350d19391ec683f4980 AS builder
+FROM nvidia/cuda:13.5.0-devel-ubuntu22.04@sha256:b44fc069ef34cf454cdeabadf6a4e8b1d093b973b7d08ac2768bbc99fba2f013 AS builder
 
 ARG PYTHON_SITE=python3.11
 
@@ -40,7 +40,7 @@ RUN pip3 install --no-cache-dir ./bindings/python
 # =====================================================================
 # CUDA RUNTIME IMAGE
 # =====================================================================
-FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04@sha256:94c1577b2cd9dd6c0312dc04dff9cb2fdce2b268018abc3d7c2dbcacf1155000 AS cuda-runtime
+FROM nvidia/cuda:13.5.0-runtime-ubuntu22.04@sha256:a69a11a11011db340c0c4572e7decb923f4bbbcd129f2b3cae878d48eeb4536a AS cuda-runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -103,7 +103,7 @@ USER sneppx
 # =====================================================================
 # DEVELOPMENT IMAGE (Full CUDA + dev tools)
 # =====================================================================
-FROM nvidia/cuda:12.2.2-devel-ubuntu22.04@sha256:ae8a022c02aec945c4f8c52f65deaf535de7abb58e840350d19391ec683f4980 AS dev
+FROM nvidia/cuda:13.5.0-devel-ubuntu22.04@sha256:b44fc069ef34cf454cdeabadf6a4e8b1d093b973b7d08ac2768bbc99fba2f013 AS dev
 
 ARG DEBIAN_FRONTEND=noninteractive
 
