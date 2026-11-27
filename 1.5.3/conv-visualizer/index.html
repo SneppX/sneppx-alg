@@ -6,8 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
-">
+        <meta name="description" content="Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size.">
       
       
         <meta name="author" content="Ammar [SNEPPX]">
@@ -31,11 +30,9 @@
       <link rel="icon" href="../logo.jpeg">
       <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.7">
     
-    
-      
-        <title>Convolution visualizer - SneppX-ALG — Native C/C++ Machine-Learning Framework</title>
-      
-    
+     
+<title>Convolution visualizer | SneppX-ALG</title>
+ 
     
       <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
@@ -89,7 +86,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="SneppX-ALG" />
 <meta property="og:title" content="Convolution visualizer | SneppX-ALG" />
-<meta property="og:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits." />
+<meta property="og:description" content="Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size." />
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/conv-visualizer/" />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
 <meta property="og:image:type" content="image/png" />
@@ -98,7 +95,7 @@
 <meta property="og:image:alt" content="SneppX-ALG project and documentation" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Convolution visualizer | SneppX-ALG" />
-<meta name="twitter:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits." />
+<meta name="twitter:description" content="Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size." />
 <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
 <meta name="twitter:image:alt" content="SneppX-ALG project and documentation" />
 
@@ -147,18 +144,16 @@
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Convolution visualizer - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
-<meta property="og:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
-" />
+<meta property="og:title" content="Convolution visualizer - SneppX-ALG" />
+<meta property="og:description" content="Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size." />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/conv-visualizer.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/conv-visualizer/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="Convolution visualizer - SneppX-ALG — Native C/C++ Machine-Learning Framework" />
-<meta property="twitter:description" content="SneppX-ALG is an experimental open-source machine-learning framework with a native C/C++ codebase and Python APIs for tensor operations, automatic differentiation, and neural-network components. Distributed and security subsystems have explicit implementation and validation limits.
-" />
+<meta property="twitter:title" content="Convolution visualizer - SneppX-ALG" />
+<meta property="twitter:description" content="Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size." />
 <meta property="twitter:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/conv-visualizer.png" />
 </head>
   
@@ -195,7 +190,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-header__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
+    <a href=".." title="SneppX-ALG" class="md-header__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
@@ -208,7 +203,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            SneppX-ALG — Native C/C++ Machine-Learning Framework
+            SneppX-ALG
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -323,12 +318,12 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="SneppX-ALG — Native C/C++ Machine-Learning Framework" class="md-nav__button md-logo" aria-label="SneppX-ALG — Native C/C++ Machine-Learning Framework" data-md-component="logo">
+    <a href=".." title="SneppX-ALG" class="md-nav__button md-logo" aria-label="SneppX-ALG" data-md-component="logo">
       
   <img src="../logo.jpeg" alt="logo">
 
     </a>
-    SneppX-ALG — Native C/C++ Machine-Learning Framework
+    SneppX-ALG
   </label>
   
     <div class="md-nav__source">
@@ -1830,6 +1825,17 @@
     <span class="md-ellipsis">
       
         The output-size formula
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-size-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output size formula
       
     </span>
   </a>
@@ -4384,6 +4390,35 @@
   
   
   
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
   
     
     
@@ -4401,10 +4436,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
             
   
   
@@ -4422,8 +4457,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4480,10 +4515,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_2" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_2" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
             
   
   
@@ -4501,8 +4536,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4707,10 +4742,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_3" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_3" >
         
           
-          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_3" id="__nav_9_3_label" tabindex="0">
             
   
   
@@ -4728,8 +4763,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4931,6 +4966,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#output-size-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output size formula
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5033,6 +5079,20 @@ in <code>tests/python/test_conv2d_autograd.py</code>).</p>
 <span class="n">x</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>   <span class="c1"># (1, 4, 7, 7)</span>
 </code></pre></div>
+<h2 id="output-size-formula">Output size formula<a class="headerlink" href="#output-size-formula" title="Permanent link">&para;</a></h2>
+<p>For an input of height <code>H</code>, kernel size <code>K</code>, padding <code>P</code>, stride <code>S</code> and
+dilation <code>D</code>, the output height is:</p>
+<div class="highlight"><pre><span></span><code>H_out = floor((H + 2·P − D·(K − 1) − 1) / S) + 1
+</code></pre></div>
+<p>The same formula applies to width. Two common settings are worth memorising:</p>
+<ul>
+<li><code>K=3, P=1, S=1</code> keeps the spatial size unchanged ("same" padding).</li>
+<li><code>S=2</code> roughly halves the spatial size, which is how many networks downsample
+  without a separate pooling layer.</li>
+</ul>
+<p>Each output channel has its own kernel that spans every input channel, so a
+<code>Conv2d(C_in, C_out, K)</code> layer holds <code>C_out · C_in · K · K</code> weights plus
+<code>C_out</code> biases.</p>
 <p>See also: <a href="../matmul-visualizer/">Matmul visualizer</a> ·
 <a href="../autograd-visualizer/">Autograd visualizer</a>.</p>
 
@@ -5041,6 +5101,9 @@ in <code>tests/python/test_conv2d_autograd.py</code>).</p>
 
 
 
+
+  
+  
 
 
 
