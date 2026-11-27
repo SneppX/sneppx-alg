@@ -87,6 +87,7 @@ Saved snippets stay in local browser storage. Share links encode code in the URL
 ## Accessibility and boundaries
 
 Outside the editor, **Tab** and **Shift + Tab** move through interactive controls.
+
 - **Enter** or **Space** activates a focused link or button.
 - Browser and operating-system shortcuts may take precedence. The site does not intentionally remap zoom, tab switching, browser history or screen-reader commands.
 - Reduced-motion preferences disable smooth scrolling.

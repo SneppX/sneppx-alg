@@ -37,11 +37,11 @@ def test_root_404_deployment_includes_both_browser_assets():
     ) < DEPLOY.index('javascripts/git-browser.js" defer')
 
 
-def test_theme_is_dark_only():
-    assert "scheme: slate" in THEME
+def test_theme_keeps_dark_default_and_supports_light_mode():
+    assert THEME.index("scheme: slate") < THEME.index("scheme: default")
+    assert "Switch to light mode" in THEME
+    assert "Switch to dark mode" in THEME
     assert "prefers-color-scheme: light" not in THEME
-    assert "Switch to light mode" not in THEME
-    assert "scheme: default" not in THEME
 
 
 def test_pages_workflow_copies_highlighter_from_checked_out_source():

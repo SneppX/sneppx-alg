@@ -46,5 +46,11 @@ jobs:
       - name: Verify all configured formatters and linters
         run: SKIP=sneppx-docs pre-commit run --all-files
 
+      - name: Show formatter diff when validation fails
+        if: failure()
+        run: |
+          git status --short
+          git diff --color=never -- overrides/main.html docs/keyboard-shortcuts.md shortcutsforsite.md
+
       - name: Reject formatter changes in CI
         run: git diff --exit-code

@@ -65,8 +65,8 @@ Press **g**, then the destination key within approximately 1.1 seconds.
 ## Playground editor
 
 - **Ctrl/Cmd + Enter** — execute the current Python snippet.
-- **Tab** — insert four spaces at the cursor.
-- **Shift + Tab** — remove one indentation level from selected lines.
+- **Tab** — indent the current line or selected lines with four spaces.
+- **Shift + Tab** — outdent the current line or selected lines by one indentation level.
 - **Ctrl/Cmd + S** — save code in local browser storage.
 - **Ctrl/Cmd + Shift + S** — copy a share link containing the code.
 - **Ctrl/Cmd + Shift + Backspace** — clear the output panel.
@@ -86,14 +86,15 @@ Search every MkDocs navigation page and these commands:
 ## Accessibility and limits
 
 Outside the editor, **Tab** moves forward; **Shift + Tab** moves backwards through interactive controls.
+
 - **Enter** or **Space** activates the focused link or button.
-- Shortcuts do not intercept typing in inputs, textareas, selects or content-editable regions.
-- Browser-reserved shortcuts, zoom, tab switching, browser history and screen-reader commands are not overridden.
-- Reduced-motion preferences are respected.
+- Single-key shortcuts do not intercept typing in inputs, textareas, selects or content-editable regions. Ctrl/Cmd + K intentionally opens the command palette.
+- Browser and operating-system shortcuts may take precedence. The site does not intentionally remap zoom, tab switching, browser history or screen-reader commands.
+- Reduced-motion preferences disable smooth scrolling.
 - The browser playground runs in WebAssembly locally. Share links encode source in the URL and must not contain credentials or private information.
 
 Published guide: [Keyboard-first guide](https://sneppx.github.io/sneppx-alg/latest/keyboard-shortcuts/).
 
 ## Python code blocks
 
-Every Python code block on the documentation site has a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.
+Eligible Python code blocks (up to 4,000 characters) have a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.
