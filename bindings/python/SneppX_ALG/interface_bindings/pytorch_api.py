@@ -332,7 +332,10 @@ class Embedding(Module):
         )
 
     def forward(self, indices: Union[list, np.ndarray, Tensor]) -> Tensor:
-        idx_arr = indices.numpy() if isinstance(indices, Tensor) else np.array(indices)
+        if isinstance(indices, Tensor):
+            idx_arr = indices.data.astype(np.int64)
+        else:
+            idx_arr = np.array(indices, dtype=np.int64)
         out_data = self.weight.data[idx_arr]
         return Tensor(out_data, requires_grad=self.weight.requires_grad)
 

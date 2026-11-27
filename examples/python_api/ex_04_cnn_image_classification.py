@@ -48,8 +48,14 @@ class SimpleCNN(Module):
 def loss_fn(preds, targets):
     exps = np.exp(preds.data - np.max(preds.data, axis=-1, keepdims=True))
     probs = exps / np.sum(exps, axis=-1, keepdims=True)
-    n = len(targets)
-    targets_arr = np.array(targets)
+    # Handle Tensor or numpy targets
+    if hasattr(targets, 'data'):
+        targets_arr = targets.data.astype(np.int64)
+    elif hasattr(targets, 'numpy'):
+        targets_arr = targets.numpy().astype(np.int64)
+    else:
+        targets_arr = np.array(targets).astype(np.int64)
+    n = targets_arr.shape[0] if hasattr(targets_arr, 'shape') else len(targets_arr)
     loss = -np.mean(np.log(probs[np.arange(n), targets_arr] + 1e-7))
     return Tensor(loss, requires_grad=True)
 
