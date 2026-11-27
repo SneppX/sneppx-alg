@@ -1,4 +1,5 @@
 /* SneppX-ALG local Python playground powered by Pyodide. */
+// prettier-ignore
 (function () {
   "use strict";
 
