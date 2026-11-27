@@ -1,4 +1,5 @@
 /* SneppX-ALG keyboard-first navigation and shortcut help. */
+// prettier-ignore
 (function () {
   "use strict";
 
