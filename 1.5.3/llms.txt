@@ -24,6 +24,8 @@
 - [Historical security audit archive](https://sneppx.github.io/sneppx-alg/latest/security/audits/)
 - [Engineering blog](https://sneppx.github.io/sneppx-alg/latest/blog/)
 - [Interactive autograd visualizer](https://sneppx.github.io/sneppx-alg/latest/autograd-visualizer/)
+- [Python playground](https://sneppx.github.io/sneppx-alg/latest/playground/)
+- [Keyboard-first guide](https://sneppx.github.io/sneppx-alg/latest/keyboard-shortcuts/)
 
 ## Source and package
 

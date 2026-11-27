@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits.">
+        <meta name="description" content="Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly.">
       
       
         <meta name="author" content="Ammar [SNEPPX]">
@@ -86,7 +86,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="SneppX-ALG" />
 <meta property="og:title" content="Python playground | SneppX-ALG" />
-<meta property="og:description" content="Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits." />
+<meta property="og:description" content="Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly." />
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/playground/" />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
 <meta property="og:image:type" content="image/png" />
@@ -95,7 +95,7 @@
 <meta property="og:image:alt" content="SneppX-ALG project and documentation" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Python playground | SneppX-ALG" />
-<meta name="twitter:description" content="Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits." />
+<meta name="twitter:description" content="Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly." />
 <meta name="twitter:image" content="https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" />
 <meta name="twitter:image:alt" content="SneppX-ALG project and documentation" />
 
@@ -145,7 +145,7 @@
   
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Python playground - SneppX-ALG" />
-<meta property="og:description" content="Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits." />
+<meta property="og:description" content="Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly." />
 <meta property="og:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/playground.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
@@ -153,7 +153,7 @@
 <meta property="og:url" content="https://sneppx.github.io/sneppx-alg/1.5.3/playground/" />
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:title" content="Python playground - SneppX-ALG" />
-<meta property="twitter:description" content="Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits." />
+<meta property="twitter:description" content="Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly." />
 <meta property="twitter:image" content="https://sneppx.github.io/sneppx-alg/1.5.3/assets/images/social/playground.png" />
 </head>
   
@@ -174,7 +174,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#in-browser-playground" class="md-skip">
+        <a href="#in-browser-python-playground" class="md-skip">
           Skip to content
         </a>
       
@@ -1737,10 +1737,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-runs-in-the-sandbox" class="md-nav__link">
+  <a href="#runtime-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What runs in the sandbox?
+        Runtime limits
       
     </span>
   </a>
@@ -4945,10 +4945,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-runs-in-the-sandbox" class="md-nav__link">
+  <a href="#runtime-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What runs in the sandbox?
+        Runtime limits
       
     </span>
   </a>
@@ -4981,54 +4981,45 @@
   
 
 
-<h1 id="in-browser-playground">In-browser Playground<a class="headerlink" href="#in-browser-playground" title="Permanent link">&para;</a></h1>
-<p>Run <strong>real SneppX-Alg Python</strong> directly in your browser — powered by
-<a href="https://pyodide.org">Pyodide</a> (CPython compiled to WebAssembly). No install,
-no server; everything executes on your machine.</p>
-<blockquote>
-<p>First run downloads the Python runtime (~10&nbsp;s). The NumPy-backed
-<code>SneppX_ALG</code> package is fetched from this site and imported inside the WASM
-sandbox. Heavy optional dependencies (CUDA, ONNX, HF) are <strong>not</strong> available
-in the browser — pure-Python tensor / autograd / <code>nn</code> code is.</p>
-</blockquote>
+<h1 id="in-browser-python-playground">In-browser Python playground<a class="headerlink" href="#in-browser-python-playground" title="Permanent link">&para;</a></h1>
+<p>Run SneppX-ALG Python code locally in your browser with Pyodide. The first run downloads the Python runtime and NumPy, then loads the pure-Python package archive.</p>
 <div id="sx-playground" class="sx-playground" data-zip="../assets/sneppx_py.zip">
 <div class="sx-pg-toolbar">
-<button class="sx-pg-run" type="button">&#9654;&nbsp;Run</button>
-<span class="sx-pg-status">Initialising&hellip;</span>
+<button class="sx-pg-run" type="button">▶ Run</button>
+<button class="sx-pg-save" type="button">Save</button>
+<button class="sx-pg-share" type="button">Copy share link</button>
+<button class="sx-pg-clear" type="button">Clear output</button>
+<span class="sx-pg-status" role="status" aria-live="polite">Ready.</span>
 </div>
-<textarea class="sx-pg-editor" spellcheck="false" rows="14">
-import SneppX_ALG as sx
+<div class="sx-pg-controls">
+<span>Examples:</span>
+<button class="sx-pg-example" type="button" data-example="starter">Starter</button>
+<button class="sx-pg-example" type="button" data-example="autograd">Autograd</button>
+<button class="sx-pg-example" type="button" data-example="linear">Linear layer</button>
+<button class="sx-pg-example" type="button" data-example="sparse">Sparse tensor</button>
+</div>
+<label for="sx-pg-editor">Python editor</label>
+<textarea id="sx-pg-editor" class="sx-pg-editor" spellcheck="false" rows="18">
+import numpy as np
 from SneppX_ALG import Tensor
-
-# Two tensors that track gradients
-
 a = Tensor([[1.0, 2.0], [3.0, 4.0]], requires_grad=True)
 b = Tensor([[5.0, 6.0], [7.0, 8.0]], requires_grad=True)
-
-# Forward: matrix product, then reduce to a scalar
-
 loss = (a @ b).sum()
-
-# Reverse-mode autodiff
-
 loss.backward()
-
-print("loss   =", loss.data.tolist())
+print("loss =", loss.data.tolist())
 print("grad a =", a.grad.data.tolist())
 print("grad b =", b.grad.data.tolist())
-
-# A tiny neural-net layer built from the nn namespace
-
 from SneppX_ALG.interface_bindings import nn
 layer = nn.Linear(2, 3)
 x = Tensor([[1.0, 0.0]])
 y = layer(x)
-print("linear out shape:", y.data.shape)
+print("linear output shape:", y.data.shape)
 </textarea>
-<pre class="sx-pg-output">(output appears here)</pre>
+<pre class="sx-pg-output" aria-label="Python output" aria-live="polite">(output appears here)</pre>
+<p>Ctrl/⌘+Enter run · Tab indent · Shift+Tab outdent · Ctrl/⌘+S save · ? help</p>
 </div>
 
-<h2 id="what-runs-in-the-sandbox">What runs in the sandbox?<a class="headerlink" href="#what-runs-in-the-sandbox" title="Permanent link">&para;</a></h2>
+<h2 id="runtime-limits">Runtime limits<a class="headerlink" href="#runtime-limits" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -5038,25 +5029,24 @@ print("linear out shape:", y.data.shape)
 </thead>
 <tbody>
 <tr>
-<td><code>Tensor</code>, autograd, <code>backward()</code></td>
+<td>Pure-Python tensor operations and autograd</td>
 <td>CUDA / GPU kernels</td>
 </tr>
 <tr>
-<td><code>nn</code> modules &amp; functional <code>F.*</code></td>
-<td>native <code>_SNEPPX_c</code> extension</td>
+<td>Included neural-network modules</td>
+<td>Native <em>SNEPPX</em>c extension</td>
 </tr>
 <tr>
-<td>optimizers, init, sparse tensors</td>
-<td>model weight downloads</td>
+<td>Supported optimizers, initialization and sparse utilities</td>
+<td>Large model downloads</td>
 </tr>
 <tr>
-<td>the 14 extra Python packages</td>
-<td>anything needing SciPy/ONNX/HF</td>
+<td>NumPy and bundled pure-Python dependencies</td>
+<td>SciPy, ONNX, Hugging Face and external native libraries</td>
 </tr>
 </tbody>
 </table>
-<p>Edit the code above and press <strong>Run</strong> again — the runtime stays warm between
-runs.</p>
+<p>Choose an example, edit code and press <strong>Run</strong>. Save stores code in this browser. Share links encode source in the URL fragment; never include credentials or private data. See the <a href="../keyboard-shortcuts/">keyboard guide</a> for all shortcuts.</p>
 
 
 

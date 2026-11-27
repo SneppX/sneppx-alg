@@ -1,51 +1,23 @@
-/* SNEPPX-Alg — keyboard shortcuts overlay (press ?) */
-(function () {
-  "use strict";
-  var shortcuts = [
-    ["/", "Focus search"],
-    ["Ctrl/Cmd + K", "Open command palette"],
-    ["?", "Show this shortcuts overlay"],
-    ["Esc", "Close search / palette / overlay"],
-    ["↑ ↓", "Navigate palette results"],
-    ["Enter", "Open selected result"],
-  ];
-  var overlay = null;
-  function build() {
-    if (overlay) return;
-    overlay = document.createElement("div");
-    overlay.className = "sx-shortcuts";
-    var rows = shortcuts
-      .map(function (s) {
-        return "<tr><td><kbd>" + s[0] + "</kbd></td><td>" + s[1] + "</td></tr>";
-      })
-      .join("");
-    overlay.innerHTML =
-      '<div class="sx-shortcuts__box">' +
-      "  <h3>Keyboard shortcuts</h3>" +
-      "  <table>" +
-      rows +
-      "</table>" +
-      '  <p class="sx-shortcuts__hint">Press ? or Esc to close.</p>' +
-      "</div>";
-    document.body.appendChild(overlay);
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) close();
-    });
-  }
-  function open() {
-    build();
-    overlay.classList.add("sx-shortcuts--open");
-  }
-  function close() {
-    if (overlay) overlay.classList.remove("sx-shortcuts--open");
-  }
-  document.addEventListener("keydown", function (e) {
-    var active = document.activeElement;
-    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
-    if (e.key === "?") {
-      e.preventDefault();
-      open();
-    }
-    if (e.key === "Escape") close();
-  });
+(function(){
+"use strict";
+var logo=document.querySelector('[data-md-component="logo"]'),base=logo&&logo.getAttribute("href")?new URL(logo.getAttribute("href"),location.href):new URL("/",location.href);
+var routes={h:"",p:"playground/",a:"api/python/",c:"cookbook/",t:"tutorials/",s:"security/",b:"blog/",r:"roadmap/tensorflow-pytorch-parity/",m:"matmul-visualizer/",v:"conv-visualizer/",o:"optimizer-race/",l:"loss-gallery/",i:"installation/",q:"guide/quickstart/",d:"distributed-guide/",x:"code-browser/",k:"keyboard-shortcuts/",f:"FAQ/",n:"progress/",w:"code-walkthrough/",u:"autograd-guide/",e:"api-explorer/"};
+var rows=[["?","Open shortcut help"],["Ctrl/Cmd+K","Open command palette"],["/","Focus search"],["Esc","Close overlays"],["g→h","Home"],["g→g","Top"],["g→p","Playground"],["g→a","Python API"],["g→c","Cookbook"],["g→t","Tutorials"],["g→s","Security"],["g→b","Blog"],["g→r","Roadmap"],["g→m","Matrix visualizer"],["g→v","Convolution visualizer"],["g→o","Optimizer comparison"],["g→l","Loss gallery"],["g→i","Installation"],["g→q","Quick start"],["g→d","Distributed guide"],["g→x","Repository browser"],["g→k","Keyboard guide"],["g→f","FAQ"],["g→n","Learning progress"],["g→w","Code walkthrough"],["g→u","Autograd guide"],["g→e","API explorer"],["j/k","Scroll down/up"],["d/u","Scroll half-screen"],["n/Shift+N","Next/previous heading"],["[/]","Previous/next page"],["Home/End","Top/bottom"],["Alt+Shift+←/→","Previous/next page"],["Alt+Shift+↑/↓","Previous/next heading"],["Alt+Shift+H","Home"],["Alt+Shift+P","Playground"],["Alt+Shift+A","Python API"],["Alt+Shift+S","Search"],["Alt+Shift+K","Shortcut help"],["Alt+Shift+T","Toggle TOC"],["Alt+Shift+N","Toggle navigation"],["Ctrl/Cmd+Shift+L","Copy page URL"],["Ctrl/Cmd+Shift+F","Focus search"],["Alt+Shift+0/9","Top/bottom"],["Ctrl/Cmd+Enter","Run playground"],["Tab","Indent"],["Shift+Tab","Outdent"],["Ctrl/Cmd+S","Save locally"],["Ctrl/Cmd+Shift+S","Copy share link"],["Ctrl/Cmd+Shift+Backspace","Clear output"],["Ctrl/Cmd+Shift+R","Restore starter"],["↑/↓","Move palette selection"],["Enter","Open selection"],["Tab/Shift+Tab","Move focus"],["Enter/Space","Activate control"]];
+var sequence="",timer=null,overlay=null,toast=null;
+function typing(t){var tag=(t&&t.tagName||"").toLowerCase();return !!(t&&(t.isContentEditable||tag==="input"||tag==="textarea"||tag==="select"));}
+function go(p){location.href=new URL(p,base).href;}
+function search(){var t=document.querySelector('[data-md-toggle="search"]');if(t&&!t.checked){t.checked=true;t.dispatchEvent(new Event("change",{bubbles:true}));}var i=document.querySelector(".md-search__input");if(i){i.focus();if(i.select)i.select();}}
+function scroll(n){window.scrollBy({top:n*Math.max(240,innerHeight*.42),behavior:"smooth"});}
+function heading(n){var a=Array.from(document.querySelectorAll(".md-content__inner h1,.md-content__inner h2,.md-content__inner h3,.md-content__inner h4")).filter(function(x){return x.getClientRects().length;});if(!a.length)return;var y=scrollY+130,x=null;if(n>0)x=a.find(function(h){return h.getBoundingClientRect().top+scrollY>y;})||a[a.length-1];else{for(var i=a.length-1;i>=0;i--)if(a[i].getBoundingClientRect().top+scrollY<y-20){x=a[i];break;}x=x||a[0];}x.tabIndex=-1;x.focus({preventScroll:true});x.scrollIntoView({behavior:"smooth",block:"start"});}
+function page(n){var a=Array.from(document.querySelectorAll(".md-nav--primary a.md-nav__link"));if(!a.length)return;var i=a.findIndex(function(x){return x.classList.contains("md-nav__link--active");});if(i<0)i=0;var x=a[Math.max(0,Math.min(a.length-1,i+n))];if(x&&x.href)location.href=x.href;}
+function say(s){if(!toast){toast=document.createElement("div");toast.className="sx-shortcuts-toast";toast.setAttribute("role","status");toast.setAttribute("aria-live","polite");document.body.appendChild(toast);}toast.textContent=s;toast.classList.add("is-visible");clearTimeout(toast._timer);toast._timer=setTimeout(function(){toast.classList.remove("is-visible");},1400);}
+function close(){if(overlay)overlay.classList.remove("sx-shortcuts--open");}
+function open(){if(!overlay){overlay=document.createElement("div");overlay.className="sx-shortcuts";var box=document.createElement("section");box.className="sx-shortcuts__box";box.setAttribute("role","dialog");box.setAttribute("aria-modal","true");box.setAttribute("aria-label","Keyboard shortcuts");var title=document.createElement("h2");title.textContent="Keyboard shortcuts";var filter=document.createElement("input");filter.type="search";filter.placeholder="Filter shortcuts…";filter.setAttribute("aria-label","Filter shortcuts");var table=document.createElement("table"),body=document.createElement("tbody");table.appendChild(body);box.append(title,filter,table);overlay.appendChild(box);document.body.appendChild(overlay);function render(){body.replaceChildren();var q=filter.value.toLowerCase().trim(),found=rows.filter(function(r){return !q||r.join(" ").toLowerCase().includes(q);});found.forEach(function(r){var tr=document.createElement("tr"),a=document.createElement("td"),b=document.createElement("td"),k=document.createElement("kbd");k.textContent=r[0];a.appendChild(k);b.textContent=r[1];tr.append(a,b);body.appendChild(tr);});}filter.addEventListener("input",render);overlay.addEventListener("click",function(e){if(e.target===overlay)close();});overlay._filter=filter;render();}overlay.classList.add("sx-shortcuts--open");overlay._filter.value="";overlay._filter.dispatchEvent(new Event("input"));overlay._filter.focus();}
+function seq(k){if(!sequence){if(k.toLowerCase()==="g"){sequence="g";clearTimeout(timer);timer=setTimeout(function(){sequence="";},1100);say("Go to…");return true;}return false;}clearTimeout(timer);sequence="";if(k.toLowerCase()==="g"){scrollTo({top:0,behavior:"smooth"});return true;}if(routes[k.toLowerCase()]!==undefined){go(routes[k.toLowerCase()]);return true;}return false;}
+document.addEventListener("keydown",function(e){var t=e.target||document.activeElement;if(e.key==="Escape"){if(overlay&&overlay.classList.contains("sx-shortcuts--open")){close();return;}var p=document.querySelector(".sx-palette--open");if(p){p.classList.remove("sx-palette--open");return;}var s=document.querySelector('[data-md-toggle="search"]');if(s&&s.checked){s.checked=false;s.dispatchEvent(new Event("change",{bubbles:true}));return;}}if(typing(t))return;
+if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&seq(e.key)){e.preventDefault();return;}if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&e.key==="?"){e.preventDefault();open();return;}
+if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="l"){e.preventDefault();if(navigator.clipboard)navigator.clipboard.writeText(location.href).then(function(){say("Link copied");});return;}if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==="f"){e.preventDefault();search();return;}
+if(e.altKey&&e.shiftKey){var k=e.key.toLowerCase(),r={h:"",p:"playground/",a:"api/python/"};if(Object.prototype.hasOwnProperty.call(r,k)){e.preventDefault();go(r[k]);return;}if(k==="s"){e.preventDefault();search();return;}if(k==="k"){e.preventDefault();open();return;}if(k==="t"){e.preventDefault();var toc=document.querySelector('[data-md-toggle="toc"]');if(toc)toc.click();return;}if(k==="n"){e.preventDefault();var nav=document.querySelector('[data-md-toggle="navigation"]');if(nav)nav.click();return;}if(k==="arrowleft"){e.preventDefault();page(-1);return;}if(k==="arrowright"){e.preventDefault();page(1);return;}if(k==="arrowup"){e.preventDefault();heading(-1);return;}if(k==="arrowdown"){e.preventDefault();heading(1);return;}if(k==="0"){e.preventDefault();scrollTo({top:0,behavior:"smooth"});return;}if(k==="9"){e.preventDefault();scrollTo({top:document.documentElement.scrollHeight,behavior:"smooth"});return;}}
+if(e.key==="/"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();search();return;}if(e.key==="["){e.preventDefault();page(-1);return;}if(e.key==="]"){e.preventDefault();page(1);return;}if(e.key==="j"){e.preventDefault();scroll(1);return;}if(e.key==="k"){e.preventDefault();scroll(-1);return;}if(e.key==="d"){e.preventDefault();scroll(1.5);return;}if(e.key==="u"){e.preventDefault();scroll(-1.5);return;}if(e.key==="n"){e.preventDefault();heading(1);return;}if(e.key==="N"){e.preventDefault();heading(-1);return;}if(e.key==="Home"){e.preventDefault();scrollTo({top:0,behavior:"smooth"});return;}if(e.key==="End"){e.preventDefault();scrollTo({top:document.documentElement.scrollHeight,behavior:"smooth"});return;}
+},true);window.SxShortcuts={open:open,close:close,routes:routes,count:rows.length};
 })();
