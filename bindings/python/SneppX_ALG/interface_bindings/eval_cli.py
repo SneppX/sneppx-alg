@@ -1,5 +1,10 @@
 """CLI launcher for LM evaluation harness (MMLU, GSM8K, HumanEval)."""
 
+# Guard: not implemented in default build
+if not $env:SNEPPX_BUILD_EVAL:
+    import sys
+    sys.exit('sneppx-eval not implemented; build with SNEPPX_BUILD_EVAL=1')
+
 import argparse
 import logging
 

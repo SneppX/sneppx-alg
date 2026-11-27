@@ -12,6 +12,11 @@ import ipaddress
 DEFAULT_AUTH_MODE = "bearer"
 
 
+# Guard: not implemented in default build
+if not $env:SNEPPX_BUILD_HTTP:
+    import sys
+    sys.exit('sneppx-serve not implemented; build with SNEPPX_BUILD_HTTP=1')
+
 def _is_loopback_host(host):
     """Return whether a bind host is explicitly loopback-only."""
     normalized = host.strip().strip("[]").lower().split("%", 1)[0]
