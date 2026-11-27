@@ -1,3 +1,7 @@
+---
+description: "Interactive Conv2d visualizer: see how a convolution kernel slides over an input and how stride and padding change the output size."
+---
+
 # Conv2d visualizer
 
 A convolution slides a small **kernel** over the input. Hover any output cell
@@ -58,6 +62,25 @@ conv = nn.Conv2d(1, 4, kernel_size=3, stride=1, padding=1)
 x = Tensor(np.random.randn(1, 1, 7, 7).astype(np.float32))
 print(conv(x).shape)   # (1, 4, 7, 7)
 ```
+
+## Output size formula
+
+For an input of height `H`, kernel size `K`, padding `P`, stride `S` and
+dilation `D`, the output height is:
+
+```text
+H_out = floor((H + 2·P − D·(K − 1) − 1) / S) + 1
+```
+
+The same formula applies to width. Two common settings are worth memorising:
+
+- `K=3, P=1, S=1` keeps the spatial size unchanged ("same" padding).
+- `S=2` roughly halves the spatial size, which is how many networks downsample
+  without a separate pooling layer.
+
+Each output channel has its own kernel that spans every input channel, so a
+`Conv2d(C_in, C_out, K)` layer holds `C_out · C_in · K · K` weights plus
+`C_out` biases.
 
 See also: [Matmul visualizer](matmul-visualizer.md) ·
 [Autograd visualizer](autograd-visualizer.md).

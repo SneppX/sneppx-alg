@@ -1,4 +1,15 @@
+---
+description: "The long-term vision for SneppX-ALG: verifiable, inspectable AI execution with integrity checks built into the framework design."
+---
+
 # Vision & Thesis
+
+<div class="admonition note" markdown>
+<p class="admonition-title">Long-term vision, not current capability</p>
+
+This page describes where SneppX-ALG is heading. It is not a description of what ships today. Capabilities such as per-inference integrity proofs and self-protecting execution are research goals; check [Project scope and limitations](why-sneppx-alg.md) and the [security overview](security.md) for what is implemented and tested now.
+
+</div>
 
 ## Elevator Pitch
 

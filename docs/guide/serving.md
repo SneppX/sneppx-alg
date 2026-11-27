@@ -1,4 +1,15 @@
+---
+description: "Serve models with SneppX-ALG: batching, KV cache, quantized execution and REST endpoints, with the current limits of each."
+---
+
 # SNEPPX Model Serving Guide
+
+<div class="admonition warning" markdown>
+<p class="admonition-title">Reference implementation</p>
+
+The serving components are reference implementations for experimentation. The native C HTTP `/v1/generate` and `/v1/completions` endpoints are a reference scaffold that does not load model weights. Review authentication and network settings before exposing any server beyond localhost.
+
+</div>
 
 ## Overview
 

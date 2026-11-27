@@ -1,3 +1,7 @@
+---
+description: "Interactive optimizer race: watch SGD with momentum, Adam, AdamW and NAdam descend the same loss surface from the same start."
+---
+
 # Optimizer race
 
 Four optimizers, same starting point, same loss surface. Press **Start** and
@@ -48,6 +52,24 @@ for name, cls in [("SGD", optim.SGD), ("Adam", optim.Adam),
     opt.zero_grad()
     print(name, "ok")
 ```
+
+## The update rules
+
+With gradient `g`, learning rate `lr` and parameters `θ`, one step of each
+optimizer is:
+
+```text
+SGD + momentum:  v = μ·v + g                    θ = θ − lr·v
+Adam:            m = β1·m + (1−β1)·g            v = β2·v + (1−β2)·g²
+                 θ = θ − lr · m̂ / (√v̂ + ε)      (m̂, v̂ are bias-corrected)
+AdamW:           Adam step, then θ = θ − lr·λ·θ (decoupled weight decay)
+NAdam:           Adam with a Nesterov look-ahead on the momentum term
+```
+
+Adam-family optimizers scale each parameter's step by its own gradient
+history, so they handle badly scaled loss surfaces better than plain SGD. SGD
+with momentum is simpler, uses less memory, and is still common for vision
+models.
 
 See also: [Autograd visualizer](autograd-visualizer.md) ·
 [Loss gallery](loss-gallery.md).
