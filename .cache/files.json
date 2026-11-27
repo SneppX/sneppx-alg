@@ -1,6 +1,0 @@
-{
- "__init__.py": {
-  "defs": {
-   "__getattr__": 57
-  },
-  "imports": 
