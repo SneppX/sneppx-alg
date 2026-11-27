@@ -49,6 +49,13 @@ def normal_(tensor: Tensor, mean: float = 0.0, std: float = 1.0) -> Tensor:
 
 def _calculate_fan_in_and_fan_out(tensor: Tensor):
     arr = _np(tensor)
+    if len(arr.shape) == 0:
+        return 1, 1
+    if len(arr.shape) == 1:
+        return arr.shape[0], arr.shape[0]
+    if len(arr.shape) == 2:
+        return arr.shape[1], arr.shape[0]
+    # Convolution-like: shape = (out_channels, in_channels, *spatial)
     receptive_field_size = 1
     for d in arr.shape[2:]:
         receptive_field_size *= d
@@ -59,10 +66,9 @@ def _calculate_fan_in_and_fan_out(tensor: Tensor):
 
 def xavier_uniform_(tensor: Tensor, gain: float = 1.0) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
-    std = gain * math.sqrt(2.0 / (fan_in + fan_out))
-    a = math.sqrt(3.0) * std
+    bound = gain * math.sqrt(6.0 / (fan_in + fan_out))
     arr = _np(tensor)
-    _write(tensor, np.random.uniform(-a, a, size=arr.shape))
+    _write(tensor, np.random.uniform(-bound, bound, size=arr.shape))
     return tensor
 
 
@@ -82,9 +88,8 @@ def kaiming_uniform_(
 ) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
     fan = fan_in if mode == "fan_in" else fan_out
-    gain = math.sqrt(2.0 / (1 + a * a)) if nonlinearity == "leaky_relu" else 1.0
-    std = gain / math.sqrt(fan)
-    bound = math.sqrt(3.0) * std
+    gain = calculate_gain(nonlinearity, a)
+    bound = gain * math.sqrt(3.0 / max(fan, 1))
     arr = _np(tensor)
     _write(tensor, np.random.uniform(-bound, bound, size=arr.shape))
     return tensor
@@ -98,8 +103,8 @@ def kaiming_normal_(
 ) -> Tensor:
     fan_in, fan_out = _calculate_fan_in_and_fan_out(tensor)
     fan = fan_in if mode == "fan_in" else fan_out
-    gain = math.sqrt(2.0 / (1 + a * a)) if nonlinearity == "leaky_relu" else 1.0
-    std = gain / math.sqrt(fan)
+    gain = calculate_gain(nonlinearity, a)
+    std = gain / math.sqrt(max(fan, 1))
     arr = _np(tensor)
     _write(tensor, np.random.normal(0.0, std, size=arr.shape))
     return tensor
