@@ -3,7 +3,11 @@
 [![PyPI version](https://img.shields.io/pypi/v/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
 [![Python versions](https://img.shields.io/pypi/pyversions/sneppx-alg)](https://pypi.org/project/sneppx-alg/)
 [![CI](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SneppX/sneppx-alg/actions/workflows/ci.yml)
-[![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](LICENSE)
+[![MIT License](https://img.shields.io/github/license/SneppX/sneppx-alg)](https://github.com/SneppX/sneppx-alg/blob/main/LICENSE)
+
+**A machine-learning framework you can read end to end: a native C/C++ core,
+Python tensor and autograd APIs, and interactive docs that show how each piece
+works.**
 
 SneppX-ALG is an experimental open-source machine-learning framework with a
 native C/C++ codebase and Python APIs for tensor operations, automatic
@@ -29,6 +33,36 @@ python -m pip install ./bindings/python
 
 The latest published PyPI release is 1.5.2. Version 1.5.3 is an unpublished
 release candidate and remains subject to the project's release checks.
+
+## Quick example
+
+Build a tiny computation, run the backward pass, and read the gradients:
+
+```python
+import numpy as np
+from SneppX_ALG import Tensor
+
+x = Tensor(np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32), requires_grad=True)
+w = Tensor(np.array([[1.0], [0.5]], dtype=np.float32), requires_grad=True)
+
+loss = (x @ w).relu().sum()   # forward pass
+loss.backward()               # reverse-mode autodiff
+
+print(loss.item())            # 7.0
+print(w.grad.numpy().ravel()) # [4. 6.]
+```
+
+The [Getting started guide](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
+covers modules, losses, optimizers, and a full training loop.
+
+## See how it works
+
+The documentation includes interactive tools that run in your browser:
+
+- [Autograd visualizer](https://sneppx.github.io/sneppx-alg/latest/autograd-visualizer/): type an expression and watch reverse-mode differentiation step through the graph.
+- [Matrix multiplication visualizer](https://sneppx.github.io/sneppx-alg/latest/matmul-visualizer/) and [Conv2d visualizer](https://sneppx.github.io/sneppx-alg/latest/conv-visualizer/): hover any output to see exactly what produced it.
+- [Optimizer race](https://sneppx.github.io/sneppx-alg/latest/optimizer-race/) and [Loss gallery](https://sneppx.github.io/sneppx-alg/latest/loss-gallery/): compare SGD, Adam, AdamW, and NAdam, and the gradients of common losses.
+- [Python playground](https://sneppx.github.io/sneppx-alg/latest/playground/): run SneppX-ALG Python code in the browser with no install.
 
 ## What is in the repository?
 
@@ -76,10 +110,10 @@ the [build guide](https://sneppx.github.io/sneppx-alg/latest/build/).
 - [Documentation home](https://sneppx.github.io/sneppx-alg/)
 - [Getting started](https://sneppx.github.io/sneppx-alg/latest/getting-started/)
 - [Python API](https://sneppx.github.io/sneppx-alg/latest/api/python/)
-- [Architecture and implementation status](docs/ARCHITECTURE.md)
-- [Security limitations](docs/security_layers.md)
-- [Framework roadmap](docs/roadmap/tensorflow-pytorch-parity.md)
-- [Development guide](docs/DEVELOPMENT.md)
+- [Architecture and implementation status](https://sneppx.github.io/sneppx-alg/latest/ARCHITECTURE/)
+- [Security limitations](https://sneppx.github.io/sneppx-alg/latest/security_layers/)
+- [Framework roadmap](https://sneppx.github.io/sneppx-alg/latest/roadmap/tensorflow-pytorch-parity/)
+- [Development guide](https://sneppx.github.io/sneppx-alg/latest/DEVELOPMENT/)
 
 ## Codebase telemetry
 
@@ -90,7 +124,7 @@ sneppx-ctm .
 sneppx-ctm . --format json --output ctm-report.json
 ```
 
-See the [CTM documentation](ctm_tools/README.md).
+See the [CTM documentation](https://sneppx.github.io/sneppx-alg/latest/ctm_tools/).
 
 ## Security
 
@@ -99,13 +133,13 @@ Do not rely on experimental components as security boundaries or for
 compliance requirements. Review the security documentation and tests before
 using these components.
 
-To report a suspected vulnerability, follow [SECURITY.md](SECURITY.md) and use
+To report a suspected vulnerability, follow [SECURITY.md](https://github.com/SneppX/sneppx-alg/blob/main/SECURITY.md) and use
 private disclosure.
 
 ## Contributing
 
 Bug reports, feature requests, and contributions are welcome. Read
-[CONTRIBUTING.md](CONTRIBUTING.md) and the [development guide](docs/DEVELOPMENT.md)
+[CONTRIBUTING.md](https://github.com/SneppX/sneppx-alg/blob/main/CONTRIBUTING.md) and the [development guide](https://sneppx.github.io/sneppx-alg/latest/DEVELOPMENT/)
 before making changes.
 
 - [Issues](https://github.com/SneppX/sneppx-alg/issues)
@@ -114,4 +148,4 @@ before making changes.
 
 ## License
 
-SneppX-ALG is released under the [MIT License](LICENSE).
+SneppX-ALG is released under the [MIT License](https://github.com/SneppX/sneppx-alg/blob/main/LICENSE).
