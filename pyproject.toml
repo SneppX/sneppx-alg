@@ -75,6 +75,7 @@ sneppx-ctm-trend = "ctm_tools.py.ctm_trend:main"
 dev = ["pytest>=7.0", "scipy>=1.7"]
 hf = ["huggingface_hub>=0.16.0"]
 serve = ["uvicorn>=0.22.0"]
+inference = ["sneppx-serve = \"SneppX_ALG.interface_bindings.serve_cli:main\""]
 docs = [
   "mkdocs>=1.6,<2",
   "mkdocs-material[imaging]==9.7.7",
