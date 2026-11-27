@@ -11,9 +11,9 @@ import argparse
 import json
 
 # Guard: not implemented in default build
-# if not os.environ.get("SNEPPX_BUILD_TRAIN"):
-#     import sys
-#     sys.exit('sneppx-train not implemented; build with SNEPPX_BUILD_TRAIN=1')
+if not $env:SNEPPX_BUILD_TRAIN:
+    import sys
+    sys.exit('sneppx-train not implemented; build with SNEPPX_BUILD_TRAIN=1')
 
 from .trainer_v3 import Trainer, TrainConfig
 
