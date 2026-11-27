@@ -1,88 +1,94 @@
 # SneppX-ALG Website Keyboard Shortcuts
 
-Press **?** for the live searchable shortcut overlay. Press **Ctrl+K** on Windows/Linux or **⌘+K** on macOS for the command palette.
+This file is the repository-level reference for the keyboard-first documentation site. Press **?** for the live searchable overlay. Press **Ctrl+K** on Windows/Linux or **⌘+K** on macOS for the command palette.
 
-## Global
+## Global controls
 
-| Keys | Use |
-|---|---|
-| **?** | Open shortcut help |
-| **Ctrl/Cmd+K** | Open command palette |
-| **/** | Focus documentation search |
-| **Esc** | Close active overlay, palette or search |
-| **Ctrl/Cmd+Shift+L** | Copy current page URL |
-| **Ctrl/Cmd+Shift+F** | Focus documentation search |
-| **↑ / ↓** | Move command-palette selection |
-| **Enter** | Open selected page or action |
+- **?** — open searchable shortcut help.
+- **Ctrl/Cmd + K** — open or close the command palette.
+- **/** — focus documentation search.
+- **Esc** — close the active shortcut overlay, palette or search.
+- **Ctrl/Cmd + Shift + L** — copy the current page URL.
+- **Ctrl/Cmd + Shift + F** — focus documentation search.
+- **Up / Down** — move the selected command-palette result.
+- **Enter** — open the selected page or run the selected command.
 
 ## Quick navigation sequences
 
-Press **g**, then the second key within about 1.1 seconds.
+Press **g**, then the destination key within approximately 1.1 seconds.
 
-| Keys | Destination |
-|---|---|
-| **g,h** | Home |
-| **g,g** | Top of current page |
-| **g,p** | Python playground |
-| **g,a** | Python API |
-| **g,c** | Cookbook |
-| **g,t** | Tutorials |
-| **g,s** | Security overview |
-| **g,b** | Engineering blog |
-| **g,r** | Roadmap |
-| **g,m** | Matrix visualizer |
-| **g,v** | Convolution visualizer |
-| **g,o** | Optimizer comparison |
-| **g,l** | Loss gallery |
-| **g,i** | Installation |
-| **g,q** | Quick start |
-| **g,d** | Distributed guide |
-| **g,x** | Repository browser |
-| **g,k** | Keyboard guide |
-| **g,f** | FAQ |
-| **g,n** | Learning progress |
-| **g,w** | Code walkthrough |
-| **g,u** | Autograd guide |
-| **g,e** | API explorer |
+- **g, h** — documentation home.
+- **g, g** — current page top.
+- **g, p** — Python playground.
+- **g, a** — Python API.
+- **g, c** — cookbook.
+- **g, t** — tutorials.
+- **g, s** — security overview.
+- **g, b** — engineering blog.
+- **g, r** — roadmap.
+- **g, m** — matrix multiplication visualizer.
+- **g, v** — convolution visualizer.
+- **g, o** — optimizer comparison.
+- **g, l** — loss gallery.
+- **g, i** — installation.
+- **g, q** — quick start.
+- **g, d** — distributed guide.
+- **g, x** — repository browser.
+- **g, k** — keyboard guide.
+- **g, f** — FAQ.
+- **g, n** — learning progress.
+- **g, w** — code walkthrough.
+- **g, u** — autograd guide.
+- **g, e** — API explorer.
 
-## Reading and navigation
+## Reading and page movement
 
-| Keys | Use |
-|---|---|
-| **j / k** | Scroll down / up |
-| **d / u** | Scroll about half a viewport |
-| **n / Shift+N** | Next / previous heading |
-| **[ / ]** | Previous / next navigation page |
-| **Home / End** | Top / bottom of page |
-| **Alt+Shift+← / →** | Previous / next navigation page |
-| **Alt+Shift+↑ / ↓** | Previous / next heading |
-| **Alt+Shift+0 / 9** | Top / bottom |
-| **Alt+Shift+H** | Home |
-| **Alt+Shift+P** | Playground |
-| **Alt+Shift+A** | Python API |
-| **Alt+Shift+S** | Search |
-| **Alt+Shift+K** | Shortcut help |
-| **Alt+Shift+T** | Toggle table of contents |
-| **Alt+Shift+N** | Toggle primary navigation |
+- **j / k** — scroll down / up.
+- **d / u** — scroll about half a viewport.
+- **n / Shift + N** — next / previous heading.
+- **[ / ]** — previous / next primary-navigation entry.
+- **Home / End** — top / bottom of page.
+- **Alt + Shift + Left / Right** — previous / next navigation page.
+- **Alt + Shift + Up / Down** — previous / next heading.
+- **Alt + Shift + 0 / 9** — top / bottom of page.
+
+## Site navigation and layout
+
+- **Alt + Shift + H** — documentation home.
+- **Alt + Shift + P** — Python playground.
+- **Alt + Shift + A** — Python API.
+- **Alt + Shift + S** — focus search.
+- **Alt + Shift + K** — open keyboard help.
+- **Alt + Shift + T** — toggle table of contents.
+- **Alt + Shift + N** — toggle primary navigation.
 
 ## Playground editor
 
-| Keys | Use |
-|---|---|
-| **Ctrl/Cmd+Enter** | Run current Python code |
-| **Tab** | Indent four spaces |
-| **Shift+Tab** | Outdent selected lines |
-| **Ctrl/Cmd+S** | Save locally in this browser |
-| **Ctrl/Cmd+Shift+S** | Copy share link |
-| **Ctrl/Cmd+Shift+Backspace** | Clear output |
-| **Ctrl/Cmd+Shift+R** | Restore starter code |
+- **Ctrl/Cmd + Enter** — execute the current Python snippet.
+- **Tab** — insert four spaces at the cursor.
+- **Shift + Tab** — remove one indentation level from selected lines.
+- **Ctrl/Cmd + S** — save code in local browser storage.
+- **Ctrl/Cmd + Shift + S** — copy a share link containing the code.
+- **Ctrl/Cmd + Shift + Backspace** — clear the output panel.
+- **Ctrl/Cmd + Shift + R** — restore the starter snippet.
 
-## Command palette
+## Command palette actions
 
-Search every MkDocs navigation page and these actions: home, playground, Python API, keyboard guide, repository browser, focus search, shortcut help, theme toggle, table-of-contents toggle, primary-navigation toggle, scroll top/bottom, next/previous heading, print, copy URL, GitHub repository and issue tracker.
+Search every MkDocs navigation page and these commands:
+
+- Open home, playground, Python API, keyboard guide or repository browser.
+- Focus search, open keyboard help, toggle theme, table of contents or primary navigation.
+- Scroll to top or bottom; jump to the next or previous heading.
+- Print the page or copy its URL.
+- Open the GitHub repository or issue tracker.
 
 ## Accessibility and limits
 
-Tab and Shift+Tab move focus; Enter and Space activate focused links/buttons. Shortcuts pause while typing in fields. Browser-reserved shortcuts, zoom, tab management, browser history and screen-reader commands remain untouched. Playground code runs in WebAssembly locally in the visitor's browser. Share links encode code in the URL and must not contain secrets.
+- **Tab** moves forward; **Shift + Tab** moves backwards through interactive controls.
+- **Enter** or **Space** activates the focused link or button.
+- Shortcuts do not intercept typing in inputs, textareas, selects or content-editable regions.
+- Browser-reserved shortcuts, zoom, tab switching, browser history and screen-reader commands are not overridden.
+- Reduced-motion preferences are respected.
+- The browser playground runs in WebAssembly locally. Share links encode source in the URL and must not contain credentials or private information.
 
 Published guide: https://sneppx.github.io/sneppx-alg/latest/keyboard-shortcuts/

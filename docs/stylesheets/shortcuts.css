@@ -2,40 +2,115 @@
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.45);
+  z-index: 10000;
+  padding: 1rem;
+  background: rgba(8, 12, 24, 0.72);
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(5px);
 }
 .sx-shortcuts--open {
   display: flex;
 }
 .sx-shortcuts__box {
-  background: var(--md-default-bg-color, #fff);
-  padding: 1.2rem 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: min(900px, 100%);
+  max-height: 85vh;
+  overflow: hidden;
+  padding: 1.25rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 14px;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
 }
-.sx-shortcuts__box h3 {
-  margin-top: 0;
+.sx-shortcuts__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
-.sx-shortcuts__box table {
+.sx-shortcuts__header h2 {
+  margin: 0;
+}
+.sx-shortcuts__close,
+.sx-shortcuts__filter {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 7px;
+  color: inherit;
+  background: var(--md-code-bg-color);
+}
+.sx-shortcuts__close {
+  cursor: pointer;
+}
+.sx-shortcuts__filter {
   width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+}
+.sx-shortcuts__table {
+  display: block;
+  width: 100%;
+  overflow: auto;
   border-collapse: collapse;
 }
-.sx-shortcuts__box td {
-  padding: 0.35rem 0.5rem;
+.sx-shortcuts__table tbody {
+  display: table;
+  width: 100%;
 }
-.sx-shortcuts__box kbd {
-  background: rgba(127, 127, 127, 0.15);
-  border: 1px solid rgba(127, 127, 127, 0.3);
-  border-radius: 4px;
+.sx-shortcuts__table td {
+  padding: 0.45rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-shortcuts__table td:first-child {
+  width: 1%;
+  white-space: nowrap;
+}
+.sx-shortcuts__table kbd {
   padding: 0.1rem 0.4rem;
-  font-size: 0.8rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 4px;
+  background: var(--md-code-bg-color);
 }
 .sx-shortcuts__hint {
+  margin: 0;
   font-size: 0.75rem;
-  opacity: 0.6;
-  margin-bottom: 0;
+  opacity: 0.65;
+}
+.sx-shortcuts-toast {
+  position: fixed;
+  z-index: 10001;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .sx-shortcuts {
+    padding: 0.4rem;
+  }
+  .sx-shortcuts__box {
+    max-height: 90vh;
+    padding: 0.8rem;
+  }
+  .sx-shortcuts__table td {
+    padding: 0.3rem;
+    font-size: 0.78rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-shortcuts-toast {
+    transition: none;
+  }
 }

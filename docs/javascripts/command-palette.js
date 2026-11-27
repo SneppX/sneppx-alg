@@ -26,8 +26,7 @@
       title: "Toggle dark / light theme",
       kind: "action",
       run: function () {
-        var toggle =
-          document.querySelector("[data-md-color-scheme]") || document.querySelector(".md-header__button--theme");
+        var toggle = document.querySelector('label[for^="__palette_"]');
         if (toggle) toggle.click();
       },
     },
@@ -35,7 +34,9 @@
       title: "Open playground",
       kind: "action",
       run: function () {
-        window.location.href = "playground/";
+        var logo = document.querySelector('[data-md-component="logo"]');
+        var root = new URL(logo ? logo.getAttribute("href") : "/", window.location.href);
+        window.location.href = new URL("playground/", root).href;
       },
     },
     {
