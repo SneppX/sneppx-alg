@@ -1,0 +1,2 @@
+# Jinja control-flow templates are not safely parsed by Prettier's HTML parser.
+overrides/main.html
