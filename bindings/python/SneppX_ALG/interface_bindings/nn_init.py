@@ -131,3 +131,34 @@ def calculate_gain(nonlinearity: str, param: Optional[float] = None) -> float:
     if nonlinearity == "sigmoid":
         return 1.0
     return linear
+
+
+def eye_(tensor: Tensor) -> Tensor:
+    """Fill the 2D tensor with the identity matrix."""
+    arr = _np(tensor)
+    if len(arr.shape) != 2:
+        raise ValueError("eye_ expects a 2D tensor")
+    _write(tensor, np.eye(arr.shape[0], arr.shape[1]))
+    return tensor
+
+
+def orthogonal_(tensor: Tensor, gain: float = 1.0) -> Tensor:
+    """Fill the tensor with an (approximately) orthogonal matrix.
+
+    For 2D tensors a QR decomposition of a random Gaussian matrix is used;
+    for higher-order tensors the first two dimensions are orthogonalised.
+    """
+    arr = _np(tensor)
+    rows = arr.shape[0]
+    cols = arr.shape[1] if len(arr.shape) >= 2 else 1
+    flat = np.random.normal(0.0, 1.0, size=(rows, cols)).astype(arr.dtype)
+    q, r = np.linalg.qr(flat)
+    # Enforce a deterministic sign convention
+    q *= np.sign(np.diag(r))
+    q = q * gain
+    if len(arr.shape) == 1:
+        out = q.reshape(arr.shape)
+    else:
+        out = q.reshape((rows, cols) + tuple(arr.shape[2:]))
+    _write(tensor, out.astype(arr.dtype))
+    return tensor

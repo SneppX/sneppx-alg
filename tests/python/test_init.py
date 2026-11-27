@@ -6,7 +6,7 @@ sys.path.insert(
     0, os.path.join(os.path.dirname(__file__), "..", "..", "bindings", "python")
 )
 
-import SneppX_ALG.interface_bindings.init as init
+import SneppX_ALG.interface_bindings.nn_init as init
 from SneppX_ALG.interface_bindings.tensor import Tensor
 
 
