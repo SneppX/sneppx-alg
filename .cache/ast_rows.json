@@ -1,0 +1,1923 @@
+{
+ "rows": [
+  {
+   "file": "callbacks\\base.py",
+   "line": 16,
+   "kind": "PASS_ONLY",
+   "name": "on_train_begin",
+   "detail": "pass",
+   "endline": 17
+  },
+  {
+   "file": "callbacks\\base.py",
+   "line": 19,
+   "kind": "PASS_ONLY",
+   "name": "on_epoch_begin",
+   "detail": "pass",
+   "endline": 20
+  },
+  {
+   "file": "callbacks\\base.py",
+   "line": 22,
+   "kind": "PASS_ONLY",
+   "name": "on_epoch_end",
+   "detail": "pass",
+   "endline": 23
+  },
+  {
+   "file": "callbacks\\base.py",
+   "line": 25,
+   "kind": "PASS_ONLY",
+   "name": "on_train_end",
+   "detail": "pass",
+   "endline": 26
+  },
+  {
+   "file": "interface_bindings\\acvp_kat.py",
+   "line": 240,
+   "kind": "CONST_RETURN",
+   "name": "run_slhdsa_keygen",
+   "detail": "returns None",
+   "endline": 247
+  },
+  {
+   "file": "interface_bindings\\adversarial.py",
+   "line": 77,
+   "kind": "RAISE_NIE",
+   "name": "generate",
+   "detail": "raise NotImplementedError",
+   "endline": 84
+  },
+  {
+   "file": "interface_bindings\\audit_logger.py",
+   "line": 268,
+   "kind": "PASS_ONLY",
+   "name": "write",
+   "detail": "pass",
+   "endline": 269
+  },
+  {
+   "file": "interface_bindings\\audit_logger.py",
+   "line": 272,
+   "kind": "PASS_ONLY",
+   "name": "query",
+   "detail": "pass",
+   "endline": 281
+  },
+  {
+   "file": "interface_bindings\\audit_logger.py",
+   "line": 284,
+   "kind": "PASS_ONLY",
+   "name": "close",
+   "detail": "pass",
+   "endline": 285
+  },
+  {
+   "file": "interface_bindings\\audit_logger.py",
+   "line": 541,
+   "kind": "CONST_RETURN",
+   "name": "redirect_request",
+   "detail": "returns None",
+   "endline": 542
+  },
+  {
+   "file": "interface_bindings\\autograd.py",
+   "line": 145,
+   "kind": "RAISE_NIE",
+   "name": "forward",
+   "detail": "raise NotImplementedError",
+   "endline": 146
+  },
+  {
+   "file": "interface_bindings\\autograd.py",
+   "line": 149,
+   "kind": "RAISE_NIE",
+   "name": "backward",
+   "detail": "raise NotImplementedError",
+   "endline": 150
+  },
+  {
+   "file": "interface_bindings\\cuda_device.py",
+   "line": 195,
+   "kind": "PASS_ONLY",
+   "name": "synchronize",
+   "detail": "pass",
+   "endline": 196
+  },
+  {
+   "file": "interface_bindings\\cuda_kernels.py",
+   "line": 70,
+   "kind": "PASS_ONLY",
+   "name": "synchronize",
+   "detail": "pass",
+   "endline": 72
+  },
+  {
+   "file": "interface_bindings\\cuda_kernels.py",
+   "line": 93,
+   "kind": "PASS_ONLY",
+   "name": "synchronize",
+   "detail": "pass",
+   "endline": 94
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 108,
+   "kind": "CONST_RETURN",
+   "name": "is_available",
+   "detail": "returns False",
+   "endline": 109
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 113,
+   "kind": "CONST_RETURN",
+   "name": "get_device_count",
+   "detail": "returns 0",
+   "endline": 114
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 131,
+   "kind": "PASS_ONLY",
+   "name": "destroy_context",
+   "detail": "pass",
+   "endline": 132
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 142,
+   "kind": "PASS_ONLY",
+   "name": "stream_destroy",
+   "detail": "pass",
+   "endline": 143
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 145,
+   "kind": "CONST_RETURN",
+   "name": "stream_synchronize",
+   "detail": "returns 0",
+   "endline": 146
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 151,
+   "kind": "PASS_ONLY",
+   "name": "event_destroy",
+   "detail": "pass",
+   "endline": 152
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 154,
+   "kind": "CONST_RETURN",
+   "name": "event_record",
+   "detail": "returns 0",
+   "endline": 155
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 157,
+   "kind": "CONST_RETURN",
+   "name": "event_synchronize",
+   "detail": "returns 0",
+   "endline": 158
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 160,
+   "kind": "CONST_RETURN",
+   "name": "event_elapsed_ms",
+   "detail": "returns 0.0",
+   "endline": 161
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 203,
+   "kind": "CONST_RETURN",
+   "name": "launch_kernel",
+   "detail": "returns 0",
+   "endline": 211
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 215,
+   "kind": "CONST_RETURN",
+   "name": "tc_gemm",
+   "detail": "returns 0",
+   "endline": 226
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 237,
+   "kind": "CONST_RETURN",
+   "name": "is_available",
+   "detail": "returns False",
+   "endline": 238
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 240,
+   "kind": "CONST_RETURN",
+   "name": "get_device_count",
+   "detail": "returns 0",
+   "endline": 241
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 260,
+   "kind": "PASS_ONLY",
+   "name": "destroy_context",
+   "detail": "pass",
+   "endline": 261
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 266,
+   "kind": "PASS_ONLY",
+   "name": "stream_destroy",
+   "detail": "pass",
+   "endline": 267
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 269,
+   "kind": "CONST_RETURN",
+   "name": "stream_synchronize",
+   "detail": "returns 0",
+   "endline": 270
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 275,
+   "kind": "PASS_ONLY",
+   "name": "event_destroy",
+   "detail": "pass",
+   "endline": 276
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 278,
+   "kind": "CONST_RETURN",
+   "name": "event_record",
+   "detail": "returns 0",
+   "endline": 279
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 281,
+   "kind": "CONST_RETURN",
+   "name": "event_synchronize",
+   "detail": "returns 0",
+   "endline": 282
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 313,
+   "kind": "CONST_RETURN",
+   "name": "launch_kernel",
+   "detail": "returns 0",
+   "endline": 320
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 331,
+   "kind": "CONST_RETURN",
+   "name": "is_available",
+   "detail": "returns False",
+   "endline": 332
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 334,
+   "kind": "CONST_RETURN",
+   "name": "get_device_count",
+   "detail": "returns 0",
+   "endline": 335
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 349,
+   "kind": "PASS_ONLY",
+   "name": "destroy_context",
+   "detail": "pass",
+   "endline": 350
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 380,
+   "kind": "PASS_ONLY",
+   "name": "executable_destroy",
+   "detail": "pass",
+   "endline": 381
+  },
+  {
+   "file": "interface_bindings\\driver_bindings.py",
+   "line": 383,
+   "kind": "CONST_RETURN",
+   "name": "execute",
+   "detail": "returns 0",
+   "endline": 386
+  },
+  {
+   "file": "interface_bindings\\edge_runtime.py",
+   "line": 86,
+   "kind": "CONST_RETURN",
+   "name": "supports_int8",
+   "detail": "returns True",
+   "endline": 87
+  },
+  {
+   "file": "interface_bindings\\edge_runtime.py",
+   "line": 190,
+   "kind": "RAISE_NIE",
+   "name": "supports",
+   "detail": "raise NotImplementedError",
+   "endline": 191
+  },
+  {
+   "file": "interface_bindings\\edge_runtime.py",
+   "line": 193,
+   "kind": "RAISE_NIE",
+   "name": "run",
+   "detail": "raise NotImplementedError",
+   "endline": 196
+  },
+  {
+   "file": "interface_bindings\\edge_runtime.py",
+   "line": 291,
+   "kind": "CONST_RETURN",
+   "name": "supports",
+   "detail": "returns True",
+   "endline": 292
+  },
+  {
+   "file": "interface_bindings\\eval_harness.py",
+   "line": 31,
+   "kind": "RAISE_NIE",
+   "name": "load",
+   "detail": "raise NotImplementedError",
+   "endline": 32
+  },
+  {
+   "file": "interface_bindings\\eval_harness.py",
+   "line": 34,
+   "kind": "RAISE_NIE",
+   "name": "evaluate",
+   "detail": "raise NotImplementedError",
+   "endline": 35
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 120,
+   "kind": "PASS_ONLY",
+   "name": "start_run",
+   "detail": "pass",
+   "endline": 128
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 130,
+   "kind": "PASS_ONLY",
+   "name": "log_metric",
+   "detail": "pass",
+   "endline": 131
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 137,
+   "kind": "PASS_ONLY",
+   "name": "log_param",
+   "detail": "pass",
+   "endline": 138
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 144,
+   "kind": "PASS_ONLY",
+   "name": "log_artifact",
+   "detail": "pass",
+   "endline": 145
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 147,
+   "kind": "PASS_ONLY",
+   "name": "set_tag",
+   "detail": "pass",
+   "endline": 148
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 150,
+   "kind": "PASS_ONLY",
+   "name": "set_status",
+   "detail": "pass",
+   "endline": 151
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 153,
+   "kind": "PASS_ONLY",
+   "name": "end_run",
+   "detail": "pass",
+   "endline": 154
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 160,
+   "kind": "LOG_OR_PASS_ONLY",
+   "name": "start_run",
+   "detail": "Expr",
+   "endline": 170
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 176,
+   "kind": "LOG_OR_PASS_ONLY",
+   "name": "end_run",
+   "detail": "Expr",
+   "endline": 177
+  },
+  {
+   "file": "interface_bindings\\experiment_tracker.py",
+   "line": 326,
+   "kind": "PASS_ONLY",
+   "name": "set_status",
+   "detail": "pass",
+   "endline": 327
+  },
+  {
+   "file": "interface_bindings\\generation.py",
+   "line": 142,
+   "kind": "PASS_ONLY",
+   "name": "put",
+   "detail": "pass",
+   "endline": 143
+  },
+  {
+   "file": "interface_bindings\\generation.py",
+   "line": 145,
+   "kind": "PASS_ONLY",
+   "name": "put_text",
+   "detail": "pass",
+   "endline": 146
+  },
+  {
+   "file": "interface_bindings\\generation.py",
+   "line": 148,
+   "kind": "PASS_ONLY",
+   "name": "end",
+   "detail": "pass",
+   "endline": 149
+  },
+  {
+   "file": "interface_bindings\\generation.py",
+   "line": 189,
+   "kind": "PASS_ONLY",
+   "name": "end",
+   "detail": "pass",
+   "endline": 190
+  },
+  {
+   "file": "interface_bindings\\graph_optimizer.py",
+   "line": 96,
+   "kind": "PASS_ONLY",
+   "name": "trace",
+   "detail": "pass",
+   "endline": 106
+  },
+  {
+   "file": "interface_bindings\\graph_optimizer.py",
+   "line": 53,
+   "kind": "PASS_ONLY",
+   "name": "dead_code_elimination",
+   "detail": "pass",
+   "endline": 57
+  },
+  {
+   "file": "interface_bindings\\graph_optimizer.py",
+   "line": 59,
+   "kind": "PASS_ONLY",
+   "name": "memory_planning",
+   "detail": "pass",
+   "endline": 62
+  },
+  {
+   "file": "interface_bindings\\hparams.py",
+   "line": 28,
+   "kind": "RAISE_NIE",
+   "name": "_sample",
+   "detail": "raise NotImplementedError",
+   "endline": 29
+  },
+  {
+   "file": "interface_bindings\\hparams.py",
+   "line": 31,
+   "kind": "RAISE_NIE",
+   "name": "grid",
+   "detail": "raise NotImplementedError",
+   "endline": 32
+  },
+  {
+   "file": "interface_bindings\\hparams.py",
+   "line": 180,
+   "kind": "RAISE_NIE",
+   "name": "sample",
+   "detail": "raise NotImplementedError",
+   "endline": 181
+  },
+  {
+   "file": "interface_bindings\\hparams.py",
+   "line": 183,
+   "kind": "CONST_RETURN",
+   "name": "total_trials",
+   "detail": "returns None",
+   "endline": 184
+  },
+  {
+   "file": "interface_bindings\\hpo.py",
+   "line": 245,
+   "kind": "RAISE_NIE",
+   "name": "suggest",
+   "detail": "raise NotImplementedError",
+   "endline": 246
+  },
+  {
+   "file": "interface_bindings\\hpo.py",
+   "line": 248,
+   "kind": "PASS_ONLY",
+   "name": "observe",
+   "detail": "pass",
+   "endline": 249
+  },
+  {
+   "file": "interface_bindings\\hw_backends.py",
+   "line": 229,
+   "kind": "CONST_RETURN",
+   "name": "available",
+   "detail": "returns True",
+   "endline": 230
+  },
+  {
+   "file": "interface_bindings\\hw_backends.py",
+   "line": 278,
+   "kind": "CONST_RETURN",
+   "name": "available",
+   "detail": "returns True",
+   "endline": 279
+  },
+  {
+   "file": "interface_bindings\\hw_backends.py",
+   "line": 287,
+   "kind": "CONST_RETURN",
+   "name": "available",
+   "detail": "returns True",
+   "endline": 288
+  },
+  {
+   "file": "interface_bindings\\hw_backends.py",
+   "line": 418,
+   "kind": "CONST_RETURN",
+   "name": "available",
+   "detail": "returns True",
+   "endline": 419
+  },
+  {
+   "file": "interface_bindings\\inference_server.py",
+   "line": 22,
+   "kind": "CONST_RETURN",
+   "name": "Field",
+   "detail": "returns None",
+   "endline": 23
+  },
+  {
+   "file": "interface_bindings\\inference_server.py",
+   "line": 856,
+   "kind": "PASS_ONLY",
+   "name": "put_text",
+   "detail": "pass",
+   "endline": 857
+  },
+  {
+   "file": "interface_bindings\\inference_server.py",
+   "line": 859,
+   "kind": "PASS_ONLY",
+   "name": "end",
+   "detail": "pass",
+   "endline": 860
+  },
+  {
+   "file": "interface_bindings\\inference_server.py",
+   "line": 971,
+   "kind": "PASS_ONLY",
+   "name": "put_text",
+   "detail": "pass",
+   "endline": 972
+  },
+  {
+   "file": "interface_bindings\\inference_server.py",
+   "line": 974,
+   "kind": "PASS_ONLY",
+   "name": "end",
+   "detail": "pass",
+   "endline": 975
+  },
+  {
+   "file": "interface_bindings\\keras_api.py",
+   "line": 403,
+   "kind": "RAISE_NIE",
+   "name": "step",
+   "detail": "raise NotImplementedError",
+   "endline": 404
+  },
+  {
+   "file": "interface_bindings\\lora.py",
+   "line": 489,
+   "kind": "PASS_ONLY",
+   "name": "__enter__",
+   "detail": "pass",
+   "endline": 490
+  },
+  {
+   "file": "interface_bindings\\lora.py",
+   "line": 492,
+   "kind": "PASS_ONLY",
+   "name": "__exit__",
+   "detail": "pass",
+   "endline": 493
+  },
+  {
+   "file": "interface_bindings\\model_implementations.py",
+   "line": 1702,
+   "kind": "CONST_RETURN",
+   "name": "get_model_flops",
+   "detail": "returns 0.0",
+   "endline": 1705
+  },
+  {
+   "file": "interface_bindings\\nccl.py",
+   "line": 107,
+   "kind": "EMPTY_DOCSTRING_ONLY",
+   "name": "send",
+   "detail": "body is only docstring",
+   "endline": 108
+  },
+  {
+   "file": "interface_bindings\\nccl.py",
+   "line": 110,
+   "kind": "EMPTY_DOCSTRING_ONLY",
+   "name": "recv",
+   "detail": "body is only docstring",
+   "endline": 111
+  },
+  {
+   "file": "interface_bindings\\nccl.py",
+   "line": 163,
+   "kind": "PASS_ONLY",
+   "name": "barrier",
+   "detail": "pass",
+   "endline": 165
+  },
+  {
+   "file": "interface_bindings\\net_bindings.py",
+   "line": 385,
+   "kind": "CONST_RETURN",
+   "name": "read",
+   "detail": "returns 0",
+   "endline": 386
+  },
+  {
+   "file": "interface_bindings\\net_bindings.py",
+   "line": 388,
+   "kind": "CONST_RETURN",
+   "name": "write",
+   "detail": "returns 0",
+   "endline": 389
+  },
+  {
+   "file": "interface_bindings\\net_bindings.py",
+   "line": 451,
+   "kind": "CONST_RETURN",
+   "name": "comm_destroy",
+   "detail": "returns 0",
+   "endline": 452
+  },
+  {
+   "file": "interface_bindings\\net_bindings.py",
+   "line": 473,
+   "kind": "CONST_RETURN",
+   "name": "broadcast",
+   "detail": "returns 0",
+   "endline": 475
+  },
+  {
+   "file": "interface_bindings\\net_bindings.py",
+   "line": 509,
+   "kind": "CONST_RETURN",
+   "name": "barrier",
+   "detail": "returns 0",
+   "endline": 510
+  },
+  {
+   "file": "interface_bindings\\nn.py",
+   "line": 143,
+   "kind": "RAISE_NIE",
+   "name": "forward",
+   "detail": "raise NotImplementedError",
+   "endline": 144
+  },
+  {
+   "file": "interface_bindings\\nn.py",
+   "line": 1047,
+   "kind": "RAISE_NIE",
+   "name": "forward",
+   "detail": "raise NotImplementedError",
+   "endline": 1050
+  },
+  {
+   "file": "interface_bindings\\onnx_export.py",
+   "line": 1012,
+   "kind": "PASS_ONLY",
+   "name": "export_torch",
+   "detail": "pass",
+   "endline": 1015
+  },
+  {
+   "file": "interface_bindings\\onnx_export.py",
+   "line": 1018,
+   "kind": "PASS_ONLY",
+   "name": "import_torch",
+   "detail": "pass",
+   "endline": 1020
+  },
+  {
+   "file": "interface_bindings\\onnx_export.py",
+   "line": 1001,
+   "kind": "PASS_ONLY",
+   "name": "export",
+   "detail": "pass",
+   "endline": 1004
+  },
+  {
+   "file": "interface_bindings\\onnx_export.py",
+   "line": 1006,
+   "kind": "PASS_ONLY",
+   "name": "build_engine",
+   "detail": "pass",
+   "endline": 1008
+  },
+  {
+   "file": "interface_bindings\\optim.py",
+   "line": 86,
+   "kind": "RAISE_NIE",
+   "name": "step",
+   "detail": "raise NotImplementedError",
+   "endline": 87
+  },
+  {
+   "file": "interface_bindings\\pruning.py",
+   "line": 231,
+   "kind": "RAISE_NIE",
+   "name": "get_sparsity",
+   "detail": "raise NotImplementedError",
+   "endline": 232
+  },
+  {
+   "file": "interface_bindings\\pytorch_api.py",
+   "line": 243,
+   "kind": "RAISE_NIE",
+   "name": "forward",
+   "detail": "raise NotImplementedError",
+   "endline": 244
+  },
+  {
+   "file": "interface_bindings\\pytorch_api.py",
+   "line": 426,
+   "kind": "RAISE_NIE",
+   "name": "step",
+   "detail": "raise NotImplementedError",
+   "endline": 427
+  },
+  {
+   "file": "interface_bindings\\pytorch_api.py",
+   "line": 520,
+   "kind": "RAISE_NIE",
+   "name": "__len__",
+   "detail": "raise NotImplementedError",
+   "endline": 521
+  },
+  {
+   "file": "interface_bindings\\pytorch_api.py",
+   "line": 523,
+   "kind": "RAISE_NIE",
+   "name": "__getitem__",
+   "detail": "raise NotImplementedError",
+   "endline": 524
+  },
+  {
+   "file": "interface_bindings\\runtime_monitor.py",
+   "line": 103,
+   "kind": "CONST_RETURN",
+   "name": "detect_anomaly",
+   "detail": "returns 0.0",
+   "endline": 104
+  },
+  {
+   "file": "interface_bindings\\s4_network.py",
+   "line": 111,
+   "kind": "CONST_RETURN",
+   "name": "verify_certificate",
+   "detail": "returns True",
+   "endline": 112
+  },
+  {
+   "file": "interface_bindings\\secure_memory.py",
+   "line": 99,
+   "kind": "CONST_RETURN",
+   "name": "w_xor_x",
+   "detail": "returns False",
+   "endline": 105
+  },
+  {
+   "file": "interface_bindings\\secure_memory.py",
+   "line": 120,
+   "kind": "CONST_RETURN",
+   "name": "seccomp_filter",
+   "detail": "returns False",
+   "endline": 125
+  },
+  {
+   "file": "interface_bindings\\serving_engine.py",
+   "line": 286,
+   "kind": "CONST_RETURN",
+   "name": "max_batch_size_for",
+   "detail": "returns 0",
+   "endline": 287
+  },
+  {
+   "file": "interface_bindings\\serving_engine.py",
+   "line": 977,
+   "kind": "PASS_ONLY",
+   "name": "log_message",
+   "detail": "pass",
+   "endline": 978
+  },
+  {
+   "file": "interface_bindings\\sparse.py",
+   "line": 156,
+   "kind": "CONST_RETURN",
+   "name": "is_sparse",
+   "detail": "returns True",
+   "endline": 157
+  },
+  {
+   "file": "interface_bindings\\train.py",
+   "line": 162,
+   "kind": "PASS_ONLY",
+   "name": "step",
+   "detail": "pass",
+   "endline": 163
+  },
+  {
+   "file": "interface_bindings\\train.py",
+   "line": 270,
+   "kind": "RAISE_NIE",
+   "name": "__len__",
+   "detail": "raise NotImplementedError",
+   "endline": 271
+  },
+  {
+   "file": "interface_bindings\\train.py",
+   "line": 273,
+   "kind": "RAISE_NIE",
+   "name": "__getitem__",
+   "detail": "raise NotImplementedError",
+   "endline": 274
+  },
+  {
+   "file": "interface_bindings\\trainer_v2.py",
+   "line": 470,
+   "kind": "CONST_RETURN",
+   "name": "__exit__",
+   "detail": "returns False",
+   "endline": 471
+  },
+  {
+   "file": "interface_bindings\\dispatch\\infra_dispatch.py",
+   "line": 57,
+   "kind": "CONST_RETURN",
+   "name": "socket_recv",
+   "detail": "returns b''",
+   "endline": 58
+  },
+  {
+   "file": "interface_bindings\\dispatch\\infra_dispatch.py",
+   "line": 63,
+   "kind": "CONST_RETURN",
+   "name": "rdma_connect",
+   "detail": "returns 0",
+   "endline": 64
+  },
+  {
+   "file": "interface_bindings\\dispatch\\infra_dispatch.py",
+   "line": 67,
+   "kind": "PASS_ONLY",
+   "name": "rdma_disconnect",
+   "detail": "pass",
+   "endline": 68
+  },
+  {
+   "file": "interface_bindings\\dispatch\\infra_dispatch.py",
+   "line": 73,
+   "kind": "CONST_RETURN",
+   "name": "rocm_is_available",
+   "detail": "returns False",
+   "endline": 74
+  },
+  {
+   "file": "interface_bindings\\dispatch\\infra_dispatch.py",
+   "line": 77,
+   "kind": "CONST_RETURN",
+   "name": "tpu_is_available",
+   "detail": "returns False",
+   "endline": 78
+  },
+  {
+   "file": "interface_bindings\\dispatch\\kernel_dispatch.py",
+   "line": 69,
+   "kind": "PASS_ONLY",
+   "name": "memory_free",
+   "detail": "pass",
+   "endline": 70
+  },
+  {
+   "file": "interface_bindings\\dispatch\\kernel_dispatch.py",
+   "line": 82,
+   "kind": "LOG_OR_PASS_ONLY",
+   "name": "log",
+   "detail": "Expr",
+   "endline": 83
+  },
+  {
+   "file": "speculative\\decoding.py",
+   "line": 12,
+   "kind": "ELLIPSIS_ONLY",
+   "name": "draft",
+   "detail": "...",
+   "endline": 12
+  },
+  {
+   "file": "speculative\\decoding.py",
+   "line": 16,
+   "kind": "ELLIPSIS_ONLY",
+   "name": "sample",
+   "detail": "...",
+   "endline": 16
+  },
+  {
+   "file": "speculative\\decoding.py",
+   "line": 18,
+   "kind": "ELLIPSIS_ONLY",
+   "name": "log_probs",
+   "detail": "...",
+   "endline": 18
+  },
+  {
+   "file": "speculative\\decoding.py",
+   "line": 22,
+   "kind": "ELLIPSIS_ONLY",
+   "name": "sample",
+   "detail": "...",
+   "endline": 22
+  },
+  {
+   "file": "structured_output\\constrain.py",
+   "line": 35,
+   "kind": "RAISE_NIE",
+   "name": "allowed",
+   "detail": "raise NotImplementedError",
+   "endline": 37
+  },
+  {
+   "file": "structured_output\\constrain.py",
+   "line": 39,
+   "kind": "RAISE_NIE",
+   "name": "advance",
+   "detail": "raise NotImplementedError",
+   "endline": 40
+  },
+  {
+   "file": "structured_output\\constrain.py",
+   "line": 42,
+   "kind": "RAISE_NIE",
+   "name": "is_complete",
+   "detail": "raise NotImplementedError",
+   "endline": 43
+  }
+ ],
+ "per_file": {
+  "__init__.py": [
+   76,
+   1
+  ],
+  "agents\\__init__.py": [
+   40,
+   0
+  ],
+  "agents\\agent.py": [
+   77,
+   3
+  ],
+  "agents\\memory.py": [
+   46,
+   7
+  ],
+  "agents\\messages.py": [
+   52,
+   9
+  ],
+  "agents\\parsing.py": [
+   51,
+   5
+  ],
+  "agents\\tools.py": [
+   68,
+   14
+  ],
+  "callbacks\\__init__.py": [
+   38,
+   0
+  ],
+  "callbacks\\base.py": [
+   63,
+   15
+  ],
+  "callbacks\\checkpoint.py": [
+   68,
+   4
+  ],
+  "callbacks\\logger.py": [
+   70,
+   9
+  ],
+  "callbacks\\lr_scheduler.py": [
+   74,
+   4
+  ],
+  "callbacks\\progress.py": [
+   49,
+   5
+  ],
+  "datasets\\__init__.py": [
+   58,
+   0
+  ],
+  "datasets\\loader.py": [
+   74,
+   3
+  ],
+  "datasets\\tabular.py": [
+   79,
+   8
+  ],
+  "datasets\\text.py": [
+   130,
+   16
+  ],
+  "datasets\\transforms.py": [
+   105,
+   13
+  ],
+  "datasets\\utils.py": [
+   133,
+   7
+  ],
+  "graph\\__init__.py": [
+   57,
+   0
+  ],
+  "graph\\base.py": [
+   103,
+   18
+  ],
+  "graph\\centrality.py": [
+   107,
+   4
+  ],
+  "graph\\shortest_path.py": [
+   101,
+   4
+  ],
+  "graph\\spanning.py": [
+   85,
+   7
+  ],
+  "graph\\traversal.py": [
+   102,
+   5
+  ],
+  "interface_bindings\\__init__.py": [
+   2358,
+   6
+  ],
+  "interface_bindings\\_blake3_pure.py": [
+   221,
+   14
+  ],
+  "interface_bindings\\acvp_kat.py": [
+   480,
+   27
+  ],
+  "interface_bindings\\advanced_ops.py": [
+   1730,
+   116
+  ],
+  "interface_bindings\\adversarial.py": [
+   373,
+   19
+  ],
+  "interface_bindings\\ai_safety_ext.py": [
+   306,
+   26
+  ],
+  "interface_bindings\\algo_arc.py": [
+   143,
+   17
+  ],
+  "interface_bindings\\algo_fm.py": [
+   121,
+   18
+  ],
+  "interface_bindings\\algo_hss.py": [
+   108,
+   11
+  ],
+  "interface_bindings\\algo_npe.py": [
+   152,
+   16
+  ],
+  "interface_bindings\\algo_ser.py": [
+   116,
+   12
+  ],
+  "interface_bindings\\amp.py": [
+   170,
+   16
+  ],
+  "interface_bindings\\api_gateway.py": [
+   248,
+   8
+  ],
+  "interface_bindings\\api_key_manager.py": [
+   185,
+   14
+  ],
+  "interface_bindings\\api_key_store.py": [
+   252,
+   12
+  ],
+  "interface_bindings\\artifact_integrity.py": [
+   88,
+   6
+  ],
+  "interface_bindings\\asm_bridge.py": [
+   154,
+   18
+  ],
+  "interface_bindings\\audit_logger.py": [
+   1403,
+   67
+  ],
+  "interface_bindings\\augmentation.py": [
+   712,
+   39
+  ],
+  "interface_bindings\\autograd.py": [
+   524,
+   34
+  ],
+  "interface_bindings\\autograd_ops.py": [
+   6239,
+   241
+  ],
+  "interface_bindings\\benchmark.py": [
+   537,
+   20
+  ],
+  "interface_bindings\\benchmarking.py": [
+   761,
+   29
+  ],
+  "interface_bindings\\benchmarks.py": [
+   659,
+   28
+  ],
+  "interface_bindings\\c_arch.py": [
+   81,
+   6
+  ],
+  "interface_bindings\\c_attention.py": [
+   80,
+   6
+  ],
+  "interface_bindings\\c_loader.py": [
+   128,
+   2
+  ],
+  "interface_bindings\\c_logger.py": [
+   93,
+   11
+  ],
+  "interface_bindings\\c_memory.py": [
+   84,
+   12
+  ],
+  "interface_bindings\\c_simd_gemm.py": [
+   106,
+   5
+  ],
+  "interface_bindings\\c_tensor_bridge.py": [
+   197,
+   9
+  ],
+  "interface_bindings\\c_tensor_expr.py": [
+   111,
+   13
+  ],
+  "interface_bindings\\c_thread.py": [
+   123,
+   13
+  ],
+  "interface_bindings\\c_types.py": [
+   74,
+   3
+  ],
+  "interface_bindings\\checkpoint.py": [
+   663,
+   42
+  ],
+  "interface_bindings\\checkpoint_manager.py": [
+   364,
+   24
+  ],
+  "interface_bindings\\container_security.py": [
+   1049,
+   47
+  ],
+  "interface_bindings\\continuous_batching.py": [
+   247,
+   9
+  ],
+  "interface_bindings\\crypto_asm.py": [
+   284,
+   26
+  ],
+  "interface_bindings\\crypto_hash.py": [
+   153,
+   15
+  ],
+  "interface_bindings\\crypto_kdf.py": [
+   152,
+   13
+  ],
+  "interface_bindings\\crypto_kem.py": [
+   109,
+   9
+  ],
+  "interface_bindings\\crypto_sign.py": [
+   208,
+   13
+  ],
+  "interface_bindings\\crypto_symmetric.py": [
+   169,
+   13
+  ],
+  "interface_bindings\\crypto_util.py": [
+   186,
+   24
+  ],
+  "interface_bindings\\cuda_device.py": [
+   212,
+   28
+  ],
+  "interface_bindings\\cuda_kernels.py": [
+   645,
+   29
+  ],
+  "interface_bindings\\data.py": [
+   122,
+   19
+  ],
+  "interface_bindings\\data_loader.py": [
+   324,
+   32
+  ],
+  "interface_bindings\\ddos_mitigation.py": [
+   502,
+   41
+  ],
+  "interface_bindings\\differential_privacy.py": [
+   484,
+   29
+  ],
+  "interface_bindings\\distillation.py": [
+   651,
+   18
+  ],
+  "interface_bindings\\distributed.py": [
+   222,
+   29
+  ],
+  "interface_bindings\\distributed_wrapper.py": [
+   98,
+   12
+  ],
+  "interface_bindings\\driver_bindings.py": [
+   398,
+   65
+  ],
+  "interface_bindings\\edge_runtime.py": [
+   508,
+   32
+  ],
+  "interface_bindings\\eval_cli.py": [
+   51,
+   2
+  ],
+  "interface_bindings\\eval_harness.py": [
+   369,
+   27
+  ],
+  "interface_bindings\\experiment.py": [
+   263,
+   33
+  ],
+  "interface_bindings\\experiment_cli.py": [
+   138,
+   1
+  ],
+  "interface_bindings\\experiment_tracker.py": [
+   468,
+   68
+  ],
+  "interface_bindings\\firewall.py": [
+   279,
+   14
+  ],
+  "interface_bindings\\firewall_application.py": [
+   340,
+   16
+  ],
+  "interface_bindings\\firewall_asgi.py": [
+   165,
+   4
+  ],
+  "interface_bindings\\firewall_network.py": [
+   340,
+   19
+  ],
+  "interface_bindings\\firewall_transport.py": [
+   159,
+   8
+  ],
+  "interface_bindings\\formal_verify.py": [
+   239,
+   20
+  ],
+  "interface_bindings\\forward_ad.py": [
+   412,
+   52
+  ],
+  "interface_bindings\\fsdp.py": [
+   308,
+   25
+  ],
+  "interface_bindings\\functional.py": [
+   154,
+   8
+  ],
+  "interface_bindings\\generation.py": [
+   604,
+   22
+  ],
+  "interface_bindings\\grad_checkpoint.py": [
+   127,
+   8
+  ],
+  "interface_bindings\\graph_compiler.py": [
+   643,
+   51
+  ],
+  "interface_bindings\\graph_optimizer.py": [
+   130,
+   11
+  ],
+  "interface_bindings\\hf_integration.py": [
+   332,
+   10
+  ],
+  "interface_bindings\\hparams.py": [
+   462,
+   47
+  ],
+  "interface_bindings\\hpo.py": [
+   598,
+   50
+  ],
+  "interface_bindings\\hw_backends.py": [
+   511,
+   42
+  ],
+  "interface_bindings\\inference_server.py": [
+   1103,
+   58
+  ],
+  "interface_bindings\\init.py": [
+   190,
+   14
+  ],
+  "interface_bindings\\jit.py": [
+   805,
+   61
+  ],
+  "interface_bindings\\keras_api.py": [
+   821,
+   62
+  ],
+  "interface_bindings\\key_vault.py": [
+   225,
+   16
+  ],
+  "interface_bindings\\llama_models.py": [
+   974,
+   44
+  ],
+  "interface_bindings\\lora.py": [
+   494,
+   24
+  ],
+  "interface_bindings\\mlflow_like.py": [
+   877,
+   86
+  ],
+  "interface_bindings\\model.py": [
+   647,
+   122
+  ],
+  "interface_bindings\\model_implementations.py": [
+   1745,
+   81
+  ],
+  "interface_bindings\\model_zoo.py": [
+   1586,
+   47
+  ],
+  "interface_bindings\\mx_formats.py": [
+   244,
+   7
+  ],
+  "interface_bindings\\native_tensor_ops.py": [
+   71,
+   15
+  ],
+  "interface_bindings\\nccl.py": [
+   343,
+   33
+  ],
+  "interface_bindings\\net_bindings.py": [
+   516,
+   55
+  ],
+  "interface_bindings\\nn.py": [
+   3007,
+   268
+  ],
+  "interface_bindings\\nn_functional.py": [
+   1081,
+   91
+  ],
+  "interface_bindings\\nn_init.py": [
+   134,
+   14
+  ],
+  "interface_bindings\\obfuscation_bridge.py": [
+   148,
+   14
+  ],
+  "interface_bindings\\onnx_check.py": [
+   658,
+   30
+  ],
+  "interface_bindings\\onnx_cli.py": [
+   36,
+   2
+  ],
+  "interface_bindings\\onnx_export.py": [
+   1280,
+   100
+  ],
+  "interface_bindings\\optim.py": [
+   673,
+   40
+  ],
+  "interface_bindings\\optim_advanced.py": [
+   693,
+   22
+  ],
+  "interface_bindings\\optim_extra.py": [
+   659,
+   38
+  ],
+  "interface_bindings\\paged_attention.py": [
+   444,
+   35
+  ],
+  "interface_bindings\\pen_testing.py": [
+   129,
+   12
+  ],
+  "interface_bindings\\profiler.py": [
+   193,
+   25
+  ],
+  "interface_bindings\\pruning.py": [
+   546,
+   29
+  ],
+  "interface_bindings\\pytorch_api.py": [
+   834,
+   75
+  ],
+  "interface_bindings\\quantization.py": [
+   549,
+   28
+  ],
+  "interface_bindings\\quantize_cli.py": [
+   92,
+   1
+  ],
+  "interface_bindings\\quantized_serve.py": [
+   82,
+   4
+  ],
+  "interface_bindings\\rlhf_cli.py": [
+   79,
+   1
+  ],
+  "interface_bindings\\rng.py": [
+   29,
+   2
+  ],
+  "interface_bindings\\runtime_monitor.py": [
+   125,
+   16
+  ],
+  "interface_bindings\\s4_network.py": [
+   121,
+   16
+  ],
+  "interface_bindings\\s5_safety.py": [
+   693,
+   58
+  ],
+  "interface_bindings\\safe_pickle.py": [
+   39,
+   2
+  ],
+  "interface_bindings\\schedulers.py": [
+   465,
+   39
+  ],
+  "interface_bindings\\secrets_redact.py": [
+   88,
+   3
+  ],
+  "interface_bindings\\secure_memory.py": [
+   153,
+   20
+  ],
+  "interface_bindings\\secure_updates.py": [
+   176,
+   16
+  ],
+  "interface_bindings\\security_middleware.py": [
+   617,
+   45
+  ],
+  "interface_bindings\\serve_cli.py": [
+   404,
+   7
+  ],
+  "interface_bindings\\serving_client.py": [
+   178,
+   13
+  ],
+  "interface_bindings\\serving_engine.py": [
+   1096,
+   70
+  ],
+  "interface_bindings\\sparse.py": [
+   583,
+   43
+  ],
+  "interface_bindings\\tensor.py": [
+   1237,
+   170
+  ],
+  "interface_bindings\\tokenizer.py": [
+   186,
+   16
+  ],
+  "interface_bindings\\train.py": [
+   407,
+   51
+  ],
+  "interface_bindings\\train_cli.py": [
+   143,
+   6
+  ],
+  "interface_bindings\\trainer_v2.py": [
+   472,
+   23
+  ],
+  "interface_bindings\\trainer_v3.py": [
+   727,
+   31
+  ],
+  "interface_bindings\\usage_tracker.py": [
+   148,
+   8
+  ],
+  "interface_bindings\\user_store.py": [
+   261,
+   16
+  ],
+  "interface_bindings\\vision_transformers.py": [
+   966,
+   37
+  ],
+  "interface_bindings\\vizmon.py": [
+   360,
+   21
+  ],
+  "interface_bindings\\watermark.py": [
+   231,
+   14
+  ],
+  "interface_bindings\\dispatch\\__init__.py": [
+   78,
+   5
+  ],
+  "interface_bindings\\dispatch\\algo_dispatch.py": [
+   95,
+   9
+  ],
+  "interface_bindings\\dispatch\\dispatch_cpu.py": [
+   162,
+   31
+  ],
+  "interface_bindings\\dispatch\\dispatch_cuda.py": [
+   104,
+   10
+  ],
+  "interface_bindings\\dispatch\\infra_dispatch.py": [
+   125,
+   18
+  ],
+  "interface_bindings\\dispatch\\kernel_dispatch.py": [
+   87,
+   9
+  ],
+  "interface_bindings\\dispatch\\security_dispatch.py": [
+   93,
+   9
+  ],
+  "interface_bindings\\tests\\test_integration.py": [
+   348,
+   15
+  ],
+  "interface_bindings\\tests\\test_model_config.py": [
+   310,
+   12
+  ],
+  "linalg\\__init__.py": [
+   70,
+   0
+  ],
+  "linalg\\decompositions.py": [
+   61,
+   6
+  ],
+  "linalg\\norms.py": [
+   40,
+   7
+  ],
+  "linalg\\solvers.py": [
+   53,
+   6
+  ],
+  "linalg\\utils.py": [
+   65,
+   10
+  ],
+  "metrics\\__init__.py": [
+   146,
+   0
+  ],
+  "metrics\\classification.py": [
+   228,
+   14
+  ],
+  "metrics\\detection.py": [
+   133,
+   6
+  ],
+  "metrics\\ranking.py": [
+   78,
+   11
+  ],
+  "metrics\\regression.py": [
+   82,
+   12
+  ],
+  "metrics\\segmentation.py": [
+   68,
+   7
+  ],
+  "metrics\\seq2seq.py": [
+   166,
+   12
+  ],
+  "observability\\__init__.py": [
+   25,
+   0
+  ],
+  "observability\\events.py": [
+   39,
+   7
+  ],
+  "observability\\logging.py": [
+   63,
+   9
+  ],
+  "observability\\registry.py": [
+   52,
+   7
+  ],
+  "observability\\timing.py": [
+   43,
+   7
+  ],
+  "observability\\tracing.py": [
+   88,
+   10
+  ],
+  "rag\\__init__.py": [
+   39,
+   0
+  ],
+  "rag\\bm25.py": [
+   70,
+   6
+  ],
+  "rag\\chunking.py": [
+   89,
+   4
+  ],
+  "rag\\embeddings.py": [
+   62,
+   5
+  ],
+  "rag\\retriever.py": [
+   53,
+   3
+  ],
+  "rag\\text.py": [
+   53,
+   4
+  ],
+  "regularization\\__init__.py": [
+   65,
+   0
+  ],
+  "regularization\\early_stopping.py": [
+   79,
+   6
+  ],
+  "regularization\\label_smoothing.py": [
+   34,
+   4
+  ],
+  "regularization\\mixup.py": [
+   61,
+   3
+  ],
+  "regularization\\penalties.py": [
+   57,
+   8
+  ],
+  "regularization\\spectral.py": [
+   55,
+   4
+  ],
+  "regularization\\weight_decay.py": [
+   36,
+   4
+  ],
+  "sampling\\__init__.py": [
+   60,
+   0
+  ],
+  "sampling\\beam.py": [
+   57,
+   2
+  ],
+  "sampling\\gumbel.py": [
+   56,
+   5
+  ],
+  "sampling\\logits.py": [
+   105,
+   8
+  ],
+  "sampling\\samplers.py": [
+   72,
+   7
+  ],
+  "signal\\__init__.py": [
+   82,
+   0
+  ],
+  "signal\\fft.py": [
+   66,
+   11
+  ],
+  "signal\\filtering.py": [
+   85,
+   7
+  ],
+  "signal\\resampling.py": [
+   49,
+   3
+  ],
+  "signal\\spectral.py": [
+   113,
+   4
+  ],
+  "signal\\windows.py": [
+   64,
+   9
+  ],
+  "speculative\\__init__.py": [
+   33,
+   0
+  ],
+  "speculative\\decoding.py": [
+   99,
+   8
+  ],
+  "speculative\\draft.py": [
+   67,
+   6
+  ],
+  "speculative\\verify.py": [
+   59,
+   4
+  ],
+  "stats\\__init__.py": [
+   92,
+   0
+  ],
+  "stats\\descriptive.py": [
+   102,
+   15
+  ],
+  "stats\\distributions.py": [
+   86,
+   12
+  ],
+  "stats\\inference.py": [
+   295,
+   17
+  ],
+  "structured_output\\__init__.py": [
+   37,
+   0
+  ],
+  "structured_output\\constrain.py": [
+   77,
+   10
+  ],
+  "structured_output\\json_utils.py": [
+   95,
+   5
+  ],
+  "structured_output\\schema.py": [
+   153,
+   4
+  ]
+ },
+ "total_lines": 73387
+}

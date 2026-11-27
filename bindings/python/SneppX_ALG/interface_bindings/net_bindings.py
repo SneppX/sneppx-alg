@@ -383,10 +383,10 @@ class RDMA:
                 self._ctx["regions"].pop(idx)
 
     def read(self, remote_addr: int, local: np.ndarray, length: int) -> int:
-        return 0
+        raise RuntimeError("RDMA read is a no-op in this fallback; use a real RDMA backend")
 
     def write(self, remote_addr: int, local: np.ndarray, length: int) -> int:
-        return 0
+        raise RuntimeError("RDMA write is a no-op in this fallback; use a real RDMA backend")
 
 
 class GRPCService:

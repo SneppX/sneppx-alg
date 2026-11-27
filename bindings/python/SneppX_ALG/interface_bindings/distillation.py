@@ -636,6 +636,7 @@ __all__ = [
     "correlation_congruence_loss",
     "hint_loss",
     "crd_loss",
+    "self_distillation_loss",
     # Multi-teacher
     "multi_teacher_distillation_loss",
     "ensemble_teacher_distillation",
@@ -643,7 +644,6 @@ __all__ = [
     "OnlineDistillation",
     # Pruning + distillation
     "DistillationPruner",
-    "distillation_loss",
     # Architecture-specific
     "distill_bert",
     "distill_gpt",

@@ -55,7 +55,7 @@ class InfraBackend:
 
     @staticmethod
     def socket_recv(addr: str, port: int, n: int) -> bytes:
-        return b""
+        raise RuntimeError("socket_recv is a no-op in this fallback; use real network I/O")
 
     # ---- RDMA ------------------------------------------------------
 

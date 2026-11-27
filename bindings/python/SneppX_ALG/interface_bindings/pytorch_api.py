@@ -729,7 +729,13 @@ class DataLoader:
             ):
                 raise ValueError("all tuple samples must have the same structure")
             zipped = list(zip(*batch))
-            return tuple(Tensor(np.array(values)) for values in zipped)
+            # Handle both Tensor and raw numpy/list values in samples
+            collated = []
+            for values in zipped:
+                # Extract underlying data from Tensor objects if present
+                raw = [v.data if isinstance(v, Tensor) else v for v in values]
+                collated.append(Tensor(np.array(raw)))
+            return tuple(collated)
         return Tensor(np.array(batch))
 
     def __len__(self) -> int:

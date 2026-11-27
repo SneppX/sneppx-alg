@@ -108,7 +108,10 @@ class LocalBackend:
 
 
 class Tracker:
-    """Base experiment tracker. All methods are no-ops by default."""
+    """Base experiment tracker. Methods raise NotImplementedError by default.
+
+    Use LogTracker, MLflowTracker, or a custom subclass for real tracking.
+    """
 
     def __init__(self):
         self._run: Optional[ExperimentRun] = None
@@ -125,33 +128,33 @@ class Tracker:
         config: Optional[Dict[str, Any]] = None,
         tags: Optional[Dict[str, str]] = None,
     ):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def log_metric(self, key: str, value: float, step: int = 0):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def log_metrics(self, metrics: Dict[str, float], step: int = 0):
         for k, v in metrics.items():
             self.log_metric(k, v, step)
 
     def log_param(self, key: str, value: Any):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def log_params(self, params: Dict[str, Any]):
         for k, v in params.items():
             self.log_param(k, v)
 
     def log_artifact(self, path: str):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def set_tag(self, key: str, value: str):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def set_status(self, status: str):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
     def end_run(self):
-        pass
+        raise NotImplementedError("Use LogTracker or MLflowTracker, or subclass Tracker")
 
 
 class LogTracker(Tracker):

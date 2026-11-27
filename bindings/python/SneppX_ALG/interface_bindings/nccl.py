@@ -147,18 +147,28 @@ class ProcessGroup:
         """Return ``tensor`` unchanged; no real multi-rank reduction occurs.
 
         For ``world_size > 1`` this is an identity fallback, not a reduction.
-        Use :mod:`distributed` for a backend that fails closed rather than
-        silently returning an un-reduced value.
+        Raises RuntimeError to prevent silent wrong results.
         """
         if self.world_size <= 1:
             return tensor
-        return tensor
+        raise RuntimeError(
+            "nccl.all_reduce is a no-op for world_size>1 in the reference "
+            "fallback; use distributed.py (which fails closed) or wire up "
+            "a real NCCL backend."
+        )
 
     def broadcast(self, tensor: Tensor, root: int = 0) -> Tensor:
-        """Return ``tensor`` unchanged; no real multi-rank broadcast occurs."""
+        """Return ``tensor`` unchanged; no real multi-rank broadcast occurs.
+
+        Raises RuntimeError for world_size > 1 to prevent silent wrong results.
+        """
         if self.world_size <= 1:
             return tensor
-        return tensor
+        raise RuntimeError(
+            "nccl.broadcast is a no-op for world_size>1 in the reference "
+            "fallback; use distributed.py (which fails closed) or wire up "
+            "a real NCCL backend."
+        )
 
     def barrier(self):
         """No-op barrier: no cross-rank synchronisation is performed."""

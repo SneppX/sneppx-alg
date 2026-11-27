@@ -101,7 +101,32 @@ class AdvancedMonitor:
 
     @staticmethod
     def detect_anomaly(metrics: dict) -> float:
-        return 0.0
+        """Compute anomaly score from metrics dict.
+        
+        In this fallback, we implement a simple statistical anomaly detector
+        based on z-score of numeric metrics against running baselines.
+        Returns score in [0, 1], where >0.5 is anomalous.
+        
+        Note: Without persistent state, this is a per-call heuristic.
+        For production, use the C backend or supply baselines.
+        """
+        if not metrics:
+            return 0.0
+        # Extract numeric values
+        numeric = [float(v) for v in metrics.values() if isinstance(v, (int, float))]
+        if len(numeric) < 2:
+            return 0.0
+        # Simple: z-score of max deviation from mean
+        mean = sum(numeric) / len(numeric)
+        if mean == 0:
+            return 0.0
+        var = sum((x - mean) ** 2 for x in numeric) / len(numeric)
+        if var == 0:
+            return 0.0
+        std = var ** 0.5
+        max_z = max(abs(x - mean) / std for x in numeric)
+        # Sigmoid-ish squashing to [0, 1]
+        return min(1.0, max_z / 5.0)
 
     def raise_alert(self, severity: str, message: str, source: str = "") -> None:
         alert = {

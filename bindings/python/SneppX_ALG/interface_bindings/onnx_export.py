@@ -862,19 +862,19 @@ def export_onnx(
     input_shapes: List[List[int]],
     dynamic_axes: Optional[Dict[str, Dict[int, str]]] = None,
 ):
-    """High-level export function (placeholder for full model export)."""
-    exporter = OnnxExporter()
-
-    # This is a simplified example - real implementation would traverse the model
-    # and add nodes for each layer
-    for i, (name, shape) in enumerate(zip(input_names, input_shapes)):
-        exporter.add_input(name, shape)
-
-    # Add dummy output
-    exporter.add_output(output_names[0], [1, 1000])
-
-    exporter.export(path)
-    return path
+    """High-level export function.
+    
+    NOTE: Automatic model traversal is not implemented in this fallback.
+    Use OnnxExporter directly to build the graph programmatically, or
+    implement a custom exporter for your model type.
+    
+    Raises:
+        NotImplementedError: Always in this fallback implementation.
+    """
+    raise NotImplementedError(
+        "Automatic ONNX export from model object is not implemented. "
+        "Use OnnxExporter directly to build the graph programmatically."
+    )
 
 
 def import_onnx(path: str) -> Dict[str, Any]:

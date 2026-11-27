@@ -109,7 +109,17 @@ class TransportSecurity:
         return None
 
     def verify_certificate(self, cert_pem: str, expected_cn: str) -> bool:
-        return True
+        """Verify a PEM-encoded certificate against expected CN.
+        
+        In this fallback, we cannot perform real X.509 validation.
+        Fails closed: returns False unless both inputs are non-empty
+        and the CN is present in the certificate (best-effort substring check).
+        """
+        if not cert_pem or not expected_cn:
+            return False
+        # Best-effort: check that the expected CN appears in the cert
+        # Real validation requires cryptography.x509 or native backend
+        return expected_cn in cert_pem
 
     @property
     def min_version(self) -> str:

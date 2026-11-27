@@ -1,10 +1,5 @@
 """CLI for listing, viewing, and comparing experiment runs."""
 
-# Guard: not implemented in default build
-if not $env:SNEPPX_BUILD_EXPERIMENT:
-    import sys
-    sys.exit('sneppx-experiment not implemented; build with SNEPPX_BUILD_EXPERIMENT=1')
-
 import os
 import sys
 import json

@@ -1,10 +1,7 @@
 """CLI launcher for model quantization (FP8/INT4/AWQ/GPTQ)."""
 
-# Guard: not implemented in default build
-if not $env:SNEPPX_BUILD_QUANTIZE:
-    import sys
-    sys.exit('sneppx-quantize not implemented; build with SNEPPX_BUILD_QUANTIZE=1')
-
+import os
+import sys
 import argparse
 import json
 import logging
