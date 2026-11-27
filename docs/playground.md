@@ -1,63 +1,53 @@
 ---
-description: "Run SneppX-ALG tensor and autograd examples locally in a browser using Pyodide and WebAssembly, with documented runtime and dependency limits."
+description: "Run SneppX-ALG Python tensor and autograd examples in the browser using Pyodide and WebAssembly."
 ---
+# In-browser Python playground
 
-# In-browser Playground
-
-Run **real SneppX-Alg Python** directly in your browser — powered by
-[Pyodide](https://pyodide.org) (CPython compiled to WebAssembly). No install,
-no server; everything executes on your machine.
-
-> First run downloads the Python runtime (~10&nbsp;s). The NumPy-backed
-> `SneppX_ALG` package is fetched from this site and imported inside the WASM
-> sandbox. Heavy optional dependencies (CUDA, ONNX, HF) are **not** available
-> in the browser — pure-Python tensor / autograd / `nn` code is.
+Run SneppX-ALG Python code locally in your browser with Pyodide. The first run downloads the Python runtime and NumPy, then loads the pure-Python package archive.
 
 <div id="sx-playground" class="sx-playground" data-zip="../assets/sneppx_py.zip">
 <div class="sx-pg-toolbar">
-<button class="sx-pg-run" type="button">&#9654;&nbsp;Run</button>
-<span class="sx-pg-status">Initialising&hellip;</span>
+<button class="sx-pg-run" type="button">▶ Run</button>
+<button class="sx-pg-save" type="button">Save</button>
+<button class="sx-pg-share" type="button">Copy share link</button>
+<button class="sx-pg-clear" type="button">Clear output</button>
+<span class="sx-pg-status" role="status" aria-live="polite">Ready.</span>
 </div>
-<textarea class="sx-pg-editor" spellcheck="false" rows="14">
-import SneppX_ALG as sx
+<div class="sx-pg-controls">
+<span>Examples:</span>
+<button class="sx-pg-example" type="button" data-example="starter">Starter</button>
+<button class="sx-pg-example" type="button" data-example="autograd">Autograd</button>
+<button class="sx-pg-example" type="button" data-example="linear">Linear layer</button>
+<button class="sx-pg-example" type="button" data-example="sparse">Sparse tensor</button>
+</div>
+<label for="sx-pg-editor">Python editor</label>
+<textarea id="sx-pg-editor" class="sx-pg-editor" spellcheck="false" rows="18">
+import numpy as np
 from SneppX_ALG import Tensor
-
-# Two tensors that track gradients
-
 a = Tensor([[1.0, 2.0], [3.0, 4.0]], requires_grad=True)
 b = Tensor([[5.0, 6.0], [7.0, 8.0]], requires_grad=True)
-
-# Forward: matrix product, then reduce to a scalar
-
 loss = (a @ b).sum()
-
-# Reverse-mode autodiff
-
 loss.backward()
-
-print("loss   =", loss.data.tolist())
+print("loss =", loss.data.tolist())
 print("grad a =", a.grad.data.tolist())
 print("grad b =", b.grad.data.tolist())
-
-# A tiny neural-net layer built from the nn namespace
-
 from SneppX_ALG.interface_bindings import nn
 layer = nn.Linear(2, 3)
 x = Tensor([[1.0, 0.0]])
 y = layer(x)
-print("linear out shape:", y.data.shape)
+print("linear output shape:", y.data.shape)
 </textarea>
-<pre class="sx-pg-output">(output appears here)</pre>
+<pre class="sx-pg-output" aria-label="Python output" aria-live="polite">(output appears here)</pre>
+<p>Ctrl/⌘+Enter run · Tab indent · Shift+Tab outdent · Ctrl/⌘+S save · ? help</p>
 </div>
 
-## What runs in the sandbox?
+## Runtime limits
 
 | Available | Not available |
-|-----------|---------------|
-| `Tensor`, autograd, `backward()` | CUDA / GPU kernels |
-| `nn` modules & functional `F.*` | native `_SNEPPX_c` extension |
-| optimizers, init, sparse tensors | model weight downloads |
-| the 14 extra Python packages | anything needing SciPy/ONNX/HF |
+|---|---|
+| Pure-Python tensor operations and autograd | CUDA / GPU kernels |
+| Included neural-network modules | Native _SNEPPX_c extension |
+| Supported optimizers, initialization and sparse utilities | Large model downloads |
+| NumPy and bundled pure-Python dependencies | SciPy, ONNX, Hugging Face and external native libraries |
 
-Edit the code above and press **Run** again — the runtime stays warm between
-runs.
+Choose an example, edit code and press **Run**. Save stores code in this browser. Share links encode source in the URL fragment; never include credentials or private data. See the [keyboard guide](keyboard-shortcuts.md) for all shortcuts.
