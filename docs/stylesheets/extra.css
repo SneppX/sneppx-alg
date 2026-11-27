@@ -528,3 +528,42 @@ h3 .word {
     transform: none !important;
   }
 }
+
+/* Playground controls and output state. */
+.sx-pg-toolbar {
+  flex-wrap: wrap;
+}
+.sx-pg-toolbar button:not(.sx-pg-run),
+.sx-pg-controls button {
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.35rem;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  font-size: 0.78rem;
+}
+.sx-pg-toolbar button:disabled,
+.sx-pg-controls button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.sx-pg-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.sx-pg-output:not(.sx-pg-output--visible) {
+  display: none;
+}
+.sx-pg-output--visible {
+  display: block;
+}
+@media (max-width: 640px) {
+  .sx-pg-status {
+    flex-basis: 100%;
+  }
+}

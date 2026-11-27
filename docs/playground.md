@@ -4,7 +4,7 @@ description: "Run SneppX-ALG Python tensor, autograd and neural-network examples
 
 # In-browser Python playground
 
-Run SneppX-ALG Python code locally in your browser with Pyodide. The first run downloads the Python runtime and NumPy, then loads the pure-Python package archive.
+Run SneppX-ALG Python code locally in your browser with [Pyodide](https://pyodide.org). The first run downloads the Python runtime and NumPy, then loads the pure-Python package archive.
 
 <div id="sx-playground" class="sx-playground" data-zip="../assets/sneppx_py.zip">
 
@@ -21,6 +21,7 @@ Run SneppX-ALG Python code locally in your browser with Pyodide. The first run d
   <button class="sx-pg-example" type="button" data-example="starter">Starter</button>
   <button class="sx-pg-example" type="button" data-example="autograd">Autograd</button>
   <button class="sx-pg-example" type="button" data-example="linear">Linear layer</button>
+  <button class="sx-pg-example" type="button" data-example="mlp">Train an MLP</button>
   <button class="sx-pg-example" type="button" data-example="sparse">Sparse tensor</button>
 </div>
 
@@ -46,7 +47,7 @@ print("linear output shape:", y.data.shape)
 </textarea>
 
 <pre class="sx-pg-output" aria-label="Python output" aria-live="polite">(output appears here)</pre>
-<p>Ctrl/⌘ + Enter runs · Tab indents · Shift + Tab outdents · Ctrl/⌘ + S saves · ? opens site shortcuts.</p>
+<p>Ctrl/⌘ + Enter runs · Tab indents · Shift + Tab outdents · Esc blurs the editor · Ctrl/⌘ + S saves · ? opens site shortcuts.</p>
 </div>
 
 ## Runtime limits

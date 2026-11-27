@@ -93,3 +93,7 @@ Saved snippets stay in local browser storage. Share links encode code in the URL
 - The Python playground runs in browser WebAssembly. It does not provide CUDA, native extension modules or server-side execution.
 
 See the repository-level [shortcutsforsite.md](https://github.com/SneppX/sneppx-alg/blob/main/shortcutsforsite.md) for the complete inventory.
+
+## Python code blocks
+
+Every Python code block on the documentation site has a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.

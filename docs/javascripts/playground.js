@@ -224,6 +224,31 @@
       "print('output shape:', y.data.shape)",
       "print('output:', y.data)",
     ].join("\n"),
+    mlp: [
+      "from SneppX_ALG import Tensor",
+      "from SneppX_ALG.interface_bindings import nn, optim, F",
+      "",
+      "class MLP(nn.Module):",
+      "    def __init__(self):",
+      "        super().__init__()",
+      "        self.hidden = nn.Linear(2, 16)",
+      "        self.output = nn.Linear(16, 1)",
+      "",
+      "    def forward(self, x):",
+      "        return self.output(F.relu(self.hidden(x)))",
+      "",
+      "model = MLP()",
+      "optimizer = optim.Adam(model.parameters(), lr=0.01)",
+      "x = Tensor([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])",
+      "target = Tensor([[0.0], [1.0], [1.0], [0.0]])",
+      "criterion = nn.MSELoss()",
+      "for step in range(25):",
+      "    optimizer.zero_grad()",
+      "    loss = criterion(model(x), target)",
+      "    loss.backward()",
+      "    optimizer.step()",
+      "print('training loss:', loss.data)",
+    ].join("\\n"),
     sparse: [
       "import numpy as np",
       "from SneppX_ALG.interface_bindings.sparse import sparse_coo_tensor",
@@ -265,6 +290,10 @@
       editor.value = decodeURIComponent(escape(atob(match[1])));
     } else {
       var saved = localStorage.getItem(storageKey);
+      if (!saved) {
+        saved = localStorage.getItem("sx-pg-code");
+        if (saved) localStorage.setItem(storageKey, saved);
+      }
       if (saved) editor.value = saved;
     }
   } catch (error) {
@@ -313,6 +342,8 @@
         editor.value = examples.starter;
         save();
         setStatus("Starter example restored.");
+      } else if (event.key === "Escape") {
+        editor.blur();
       } else if (event.key === "Tab") {
         event.preventDefault();
         indentSelection(event.shiftKey);

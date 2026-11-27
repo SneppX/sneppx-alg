@@ -91,4 +91,8 @@ Search every MkDocs navigation page and these commands:
 - Reduced-motion preferences are respected.
 - The browser playground runs in WebAssembly locally. Share links encode source in the URL and must not contain credentials or private information.
 
-Published guide: https://sneppx.github.io/sneppx-alg/latest/keyboard-shortcuts/
+Published guide: [Keyboard-first guide](https://sneppx.github.io/sneppx-alg/latest/keyboard-shortcuts/).
+
+## Python code blocks
+
+Every Python code block on the documentation site has a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.
