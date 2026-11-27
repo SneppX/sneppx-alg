@@ -79,8 +79,8 @@
     { keys: "Ctrl/Cmd + Shift + F", action: "Focus documentation search" },
     { keys: "Alt + Shift + 0 / 9", action: "Go to top / bottom of page" },
     { keys: "Ctrl/Cmd + Enter", action: "Run playground snippet" },
-    { keys: "Tab", action: "Indent four spaces in playground" },
-    { keys: "Shift + Tab", action: "Outdent selected playground lines" },
+    { keys: "Tab", action: "Indent the current line or selected lines in the playground" },
+    { keys: "Shift + Tab", action: "Outdent the current line or selected playground lines" },
     { keys: "Ctrl/Cmd + S", action: "Save playground code locally" },
     { keys: "Ctrl/Cmd + Shift + S", action: "Copy playground share link" },
     { keys: "Ctrl/Cmd + Shift + Backspace", action: "Clear playground output" },
@@ -96,6 +96,9 @@
   var overlay = null;
   var toast = null;
   var returnFocus = null;
+  var reduceMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function isTyping(target) {
     if (!target) return false;
@@ -129,7 +132,7 @@
   function scrollByViewport(amount) {
     window.scrollBy({
       top: amount * Math.max(240, window.innerHeight * 0.42),
-      behavior: "smooth",
+      behavior: reduceMotion ? "auto" : "smooth",
     });
   }
 
@@ -169,7 +172,7 @@
 
     target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
   }
 
   function moveNavigationPage(direction) {
@@ -342,7 +345,7 @@
     sequence = "";
 
     if (key.toLowerCase() === "g") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
       return true;
     }
 
@@ -453,14 +456,14 @@
         }
         if (key === "t") {
           event.preventDefault();
-          var toc = document.querySelector('[data-md-toggle="toc"]');
-          if (toc) toc.click();
+          var tocLabel = document.querySelector('label[for="__toc"]');
+          if (tocLabel) tocLabel.click();
           return;
         }
         if (key === "n") {
           event.preventDefault();
-          var nav = document.querySelector('[data-md-toggle="navigation"]');
-          if (nav) nav.click();
+          var navLabel = document.querySelector('label[for="__drawer"]');
+          if (navLabel) navLabel.click();
           return;
         }
         if (key === "arrowleft") {
@@ -485,14 +488,14 @@
         }
         if (key === "0") {
           event.preventDefault();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
           return;
         }
         if (key === "9") {
           event.preventDefault();
           window.scrollTo({
             top: document.documentElement.scrollHeight,
-            behavior: "smooth",
+            behavior: reduceMotion ? "auto" : "smooth",
           });
           return;
         }
@@ -550,14 +553,14 @@
       }
       if (event.key === "Home") {
         event.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
         return;
       }
       if (event.key === "End") {
         event.preventDefault();
         window.scrollTo({
           top: document.documentElement.scrollHeight,
-          behavior: "smooth",
+          behavior: reduceMotion ? "auto" : "smooth",
         });
       }
     },
