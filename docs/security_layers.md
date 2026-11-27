@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG security layers S0 to S9 explained, with the implementation status and known limitations of each area."
+---
+
 # Security Layers Deep Dive (S0–S9)
 
 ## S0 — Cryptographic Core

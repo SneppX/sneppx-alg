@@ -1,3 +1,7 @@
+---
+description: "Migrate from JAX to SneppX-ALG: how jit, grad, vmap, jacobian and hessian map to SneppX-ALG functional transforms."
+---
+
 # Migrating from JAX to SNEPPX-Algo
 
 JAX developers will recognize the SNEPPX functional transforms API

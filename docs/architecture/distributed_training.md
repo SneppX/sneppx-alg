@@ -1,4 +1,15 @@
+---
+description: "Architecture notes for distributed training in SneppX-ALG: data, pipeline, tensor and expert parallelism designs and their current status."
+---
+
 # Distributed Training
+
+<div class="admonition warning" markdown>
+<p class="admonition-title">Design notes; multi-process training is not validated</p>
+
+This page documents the distributed-training architecture in `kernel/distributed/`. The current Python backend supports single-process execution only and fails explicitly when `WORLD_SIZE` is greater than one. See the [distributed support matrix](../distributed-guide.md) for what works today.
+
+</div>
 
 SNEPPX-Algo ships a **full distributed-training stack** in
 `kernel/distributed/`: data parallelism (ZeRO-1/2/3), pipeline parallelism

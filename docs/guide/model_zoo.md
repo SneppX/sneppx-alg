@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG Model Zoo: preset configurations and weight management for the supported model families."
+---
+
 # Model Zoo
 
 **Introduced:** v1.0.0

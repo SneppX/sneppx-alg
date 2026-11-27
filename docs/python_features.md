@@ -1,3 +1,7 @@
+---
+description: "Recent SneppX-ALG Python framework capabilities: higher-order autograd coverage, nn modules, losses and functional ops."
+---
+
 # Python Framework Capabilities (recent)
 
 ## Higher-order autograd

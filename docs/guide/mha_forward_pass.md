@@ -1,3 +1,7 @@
+---
+description: "How SneppX-ALG implements a multi-head attention forward pass: projections, RoPE, scaled dot-product attention and output."
+---
+
 # Multi-Head Attention Forward Pass
 
 **Introduced:** v1.0.0

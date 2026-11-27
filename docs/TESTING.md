@@ -1,3 +1,7 @@
+---
+description: "How to write and run SneppX-ALG tests: C unit tests with the shared harness, CTest discovery, and safe per-file Python test runs."
+---
+
 # Testing
 
 ## Running Tests

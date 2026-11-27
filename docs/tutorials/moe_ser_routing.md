@@ -1,3 +1,7 @@
+---
+description: "Tutorial: build a sparse Mixture-of-Experts layer with SneppX-ALG SER routing, load balancing and routing inspection."
+---
+
 # Tutorial — MoE SER Expert Routing
 
 **Notebook:** [`moe_ser_routing.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/moe_ser_routing.ipynb)

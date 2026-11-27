@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG incident response framework: how security issues are detected, triaged, fixed and disclosed."
+---
+
 # Incident Response Framework
 
 ## Overview

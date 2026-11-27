@@ -1,3 +1,7 @@
+---
+description: "Post-quantum cryptography known-answer test status for SneppX-ALG: NIST ACVP vectors, results and documented interoperability gaps."
+---
+
 # Post-Quantum Crypto Known-Answer Testing (PQC KAT) — status and write-up
 
  > 2026-11-13 update. Companion to issue **#16** (official NIST ACVP vector

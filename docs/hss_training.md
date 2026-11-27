@@ -1,3 +1,7 @@
+---
+description: "End-to-end guide to building and training a Hierarchical State Space (HSS) model with SneppX-ALG on CPU."
+---
+
 # HSS training guide
 
 This guide explains how to build, run, and train a **Hierarchical State Space

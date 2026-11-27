@@ -1,3 +1,7 @@
+---
+description: "Historical audit of the SneppX-ALG S2 obfuscation layer, with notes on which findings the current source has since changed."
+---
+
 # S2 Obfuscation Layer Security Audit
 
 **Original audit date:** 2026-08-16

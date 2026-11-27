@@ -1,4 +1,15 @@
+---
+description: "How SneppX-ALG documentation maps to common compliance frameworks, and what has and has not been independently assessed."
+---
+
 # Compliance Overview
+
+<div class="admonition warning" markdown>
+<p class="admonition-title">No certification or independent assessment</p>
+
+SneppX-ALG has not been certified against, or independently assessed for, any of the frameworks below. The table records design intentions and planned work, not compliance status. Do not rely on this page for regulatory purposes.
+
+</div>
 
 ## Standards Coverage
 

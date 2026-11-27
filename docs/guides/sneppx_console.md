@@ -1,3 +1,7 @@
+---
+description: "sneppx-console: an interactive, tab-completing REPL for exploring the SneppX-ALG Python API without writing a script."
+---
+
 # SneppX Console
 
 `sneppx-console` is the interactive, tab-autocompleted REPL for exploring the

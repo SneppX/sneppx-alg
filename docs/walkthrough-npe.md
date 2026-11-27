@@ -1,3 +1,7 @@
+---
+description: "Code walkthrough of NPE, the SneppX-ALG neural programming engine that runs programs on a small virtual machine."
+---
+
 # Code Walkthrough — NPE (Neural Programming Engine)
 
 NPE is the fourth stage of the SNEPPX-Alg pipeline. Unlike the other stages

@@ -1,3 +1,7 @@
+---
+description: "Start here to read the SneppX-ALG source: a map of the five pipeline stages to their directories, header APIs and walkthroughs."
+---
+
 # Code Walkthrough — The SNEPPX-Alg Pipeline
 
 This is the entry point for reading the SNEPPX-Alg source. It maps the five

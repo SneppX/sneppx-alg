@@ -1,3 +1,7 @@
+---
+description: "Tutorial: scan C source with the sneppx-analyze static analyzer and try the SneppX-ALG post-quantum crypto bindings."
+---
+
 # Tutorial — Security Scanning
 
 **Notebook:** [`security_scanning.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/security_scanning.ipynb)

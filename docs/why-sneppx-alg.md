@@ -1,4 +1,5 @@
 ---
+description: "What SneppX-ALG is and is not: project scope, what the repository contains, and the known limitations of each component."
 hide:
   - toc
 ---

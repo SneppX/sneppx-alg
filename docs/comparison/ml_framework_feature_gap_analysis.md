@@ -1,3 +1,7 @@
+---
+description: "Honest feature gap analysis comparing SneppX-ALG with the capabilities mainstream ML frameworks such as PyTorch and TensorFlow ship."
+---
+
 # Machine-Learning Framework Feature Gap Analysis
 
 > Status: living analysis. "Implemented" means shipped in `SNEPPX.Algo` (C/C++/ASM core

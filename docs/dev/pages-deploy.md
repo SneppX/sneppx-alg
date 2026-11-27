@@ -1,3 +1,7 @@
+---
+description: "How the SneppX-ALG documentation site is built, validated and published to GitHub Pages with MkDocs Material and mike."
+---
+
 # Documentation Site: Build, Validate, and Publish
 
 The public documentation is a Material for MkDocs site configured by

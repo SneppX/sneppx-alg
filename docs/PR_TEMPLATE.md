@@ -1,3 +1,7 @@
+---
+description: "The pull request template for SneppX-ALG: summary, linked issues, test evidence and the checklist every change should complete."
+---
+
 # Pull Request Template
 
 Use this template when submitting a PR to SNEPPX-Algo.

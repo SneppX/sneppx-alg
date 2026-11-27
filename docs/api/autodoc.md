@@ -1,3 +1,7 @@
+---
+description: "Auto-generated SneppX-ALG Python API reference built from source docstrings with mkdocstrings, covering tensors, autograd and nn modules."
+---
+
 # Python API — Auto-generated Reference
 
 This page is produced automatically from the `SneppX_ALG` source by

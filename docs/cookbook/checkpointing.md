@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG cookbook recipes for saving and loading model checkpoints, state dicts and training state in Python."
+---
+
 # Cookbook — Checkpointing
 
 ## 1. Save and load model state (simple)

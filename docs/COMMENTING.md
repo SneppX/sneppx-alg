@@ -1,3 +1,7 @@
+---
+description: "The four-layer commenting standard for SneppX-ALG C/C++ and Python sources: file headers, section notes, inline comments and API docs."
+---
+
 # SNEPPX-Algo Commenting Conventions
 
 This document defines the commenting standard for SNEPPX-Algo. It exists because

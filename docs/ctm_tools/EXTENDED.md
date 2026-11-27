@@ -1,3 +1,7 @@
+---
+description: "Extended CTM scripts for focused codebase reports: function counts, large files, churn, duplicates, licenses and more."
+---
+
 # CTM Extended Tools
 
 The legacy scripts in `ctm_tools/py/` remain available for focused reports:

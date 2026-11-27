@@ -1,4 +1,4 @@
-site_name: SneppX-ALG — Native C/C++ Machine-Learning Framework
+site_name: SneppX-ALG
 site_description: >
   SneppX-ALG is an experimental open-source machine-learning framework with a
   native C/C++ codebase and Python APIs for tensor operations, automatic
@@ -75,6 +75,12 @@ extra:
       name: RSS feed
 plugins:
   - search
+  - blog:
+      blog_dir: blog
+      post_url_format: "{slug}"
+      post_excerpt: required
+      archive: true
+      categories: true
   - social:
       cards: true
       cache_dir: .cache
@@ -243,6 +249,7 @@ nav:
           - Doxygen setup: doxygen/README.md
           - Pull request template: PR_TEMPLATE.md
           - Upstream README: README_upstream.md
+  - Blog: blog/index.md
   - Releases and migration:
       - Changelog: changelog/index.md
       - Release notes:

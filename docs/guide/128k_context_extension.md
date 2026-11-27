@@ -1,3 +1,7 @@
+---
+description: "Extend a model's context window to 128K tokens in SneppX-ALG with NTK-aware RoPE scaling and YaRN interpolation."
+---
+
 # 128K Context Extension
 
 **Introduced:** v1.0.0

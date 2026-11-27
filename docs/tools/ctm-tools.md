@@ -1,3 +1,7 @@
+---
+description: "Reference for the CTM tools in SneppX-ALG: the unified repository scanner and its sneppx-ctm command-line utilities."
+---
+
 # CTM Tools
 
 CTM (Codebase Telemetry & Metrics) provides a standard-library repository

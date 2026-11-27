@@ -1,3 +1,7 @@
+---
+description: "Tutorial: profile a forward and backward pass, track peak memory and run regression benchmarks with SneppX-ALG."
+---
+
 # Tutorial — Profiling & Benchmarks
 
 **Notebook:** [`profiling_benchmarks.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/profiling_benchmarks.ipynb)
@@ -106,4 +110,4 @@ print(f"fwd {dt*1000:.2f} ms")
 
 - Profile the quantized model — see
   [Quantization & Serving](quantization_serving.md).
-- Read `docs/PROGRESS_TENSOR.md` and `docs/BENCHMARKS.md` for full perf tables.
+- See [Benchmarks](../benchmarks.md) for full performance tables.

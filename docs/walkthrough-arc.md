@@ -1,3 +1,7 @@
+---
+description: "Code walkthrough of ARC, the SneppX-ALG adversarial robustness stage: input guard, gradient obfuscation and certification."
+---
+
 # Code Walkthrough — ARC (Adversarial Robustness Certification)
 
 ARC is the third stage of the SNEPPX-Alg pipeline. It hardens the model

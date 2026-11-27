@@ -1,3 +1,7 @@
+---
+description: "Import, export, validate and optimize ONNX models with the NumPy-only ONNX toolkit that ships with SneppX-ALG."
+---
+
 # ONNX import/export — Guide
 
 The standalone `onnx` package is a numpy-only ONNX toolkit shipped with SNEPPX-Algo.

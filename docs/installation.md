@@ -1,3 +1,7 @@
+---
+description: "Install SneppX-ALG: pip install from PyPI, install the Python bindings from source, or build the native C/C++ core."
+---
+
 # Installation Guide
 
 ## Prerequisites

@@ -1,3 +1,7 @@
+---
+description: "Approachable, well-scoped tasks for first-time SneppX-ALG contributors, each labelled good first issue with pointers to the relevant code."
+---
+
 # Good First Issues — sneppx-alg
 
 New to the codebase? This page lists approachable, well-scoped tasks that are a

@@ -1,3 +1,7 @@
+---
+description: "Index of SneppX-ALG feature guides: model hub, model zoo, serving, ONNX, attention internals, long context and testing."
+---
+
 # SneppX-ALG Feature Guides
 
 | Guide | Description |

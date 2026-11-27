@@ -1,3 +1,7 @@
+---
+description: "Build SneppX-ALG from source with CMake presets and Ninja: configure, compile and test the native C/C++ core on Linux, macOS and Windows."
+---
+
 # Build Instructions
 
 ## 1. Prerequisites

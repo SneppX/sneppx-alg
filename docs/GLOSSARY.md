@@ -1,3 +1,7 @@
+---
+description: "Glossary of SneppX-ALG terms and acronyms, including the HSS, SER, ARC, NPE and FM pipeline stages and the S0–S9 security areas."
+---
+
 # Glossary
 
 | Term | Definition |

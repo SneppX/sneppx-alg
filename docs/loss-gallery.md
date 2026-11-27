@@ -1,3 +1,7 @@
+---
+description: "Interactive loss function gallery: compare the value and gradient of MSE, cross-entropy, Huber and other losses side by side."
+---
+
 # Loss gallery
 
 Pick a loss function and see both its **value** and its **gradient**. The

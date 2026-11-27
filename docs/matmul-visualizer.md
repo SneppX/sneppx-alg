@@ -1,3 +1,7 @@
+---
+description: "Interactive matrix multiplication visualizer: hover any output cell to see the row, column and dot product that produced it."
+---
+
 # Matmul visualizer
 
 Matrix multiplication is a sum of row · column dot products. Hover any cell
@@ -34,6 +38,28 @@ x = Tensor(np.random.randn(2, 3).astype(np.float32))
 w = Tensor(np.random.randn(3, 4).astype(np.float32))
 print((x @ w).shape)          # (2, 4) — batch dimension preserved
 ```
+
+## How matrix multiplication works
+
+For `A` of shape `(m, k)` and `B` of shape `(k, n)`, each output entry is a dot
+product:
+
+```text
+C[i][j] = A[i][0]·B[0][j] + A[i][1]·B[1][j] + ... + A[i][k-1]·B[k-1][j]
+```
+
+Three rules follow from that formula:
+
+- **Shape rule.** The inner dimensions must match (`k` and `k`), and the result
+  takes the outer dimensions: `(m, k) @ (k, n) → (m, n)`.
+- **Cost.** Every one of the `m·n` outputs needs `k` multiply-adds, so a matmul
+  costs `m·n·k` operations. This is why matmuls dominate the run time of
+  Transformers and other dense networks.
+- **Not commutative.** `A @ B` and `B @ A` are generally different, and often
+  only one of them has valid shapes.
+
+In backpropagation, the gradients of `C = A @ B` are themselves matmuls:
+`∂L/∂A = ∂L/∂C @ Bᵀ` and `∂L/∂B = Aᵀ @ ∂L/∂C`.
 
 See also: [Autograd visualizer](autograd-visualizer.md) ·
 [Conv2d visualizer](conv-visualizer.md) ·

@@ -1,4 +1,15 @@
+---
+description: "SneppX-ALG development roadmap: completed phases, current priorities, and the work still open before components are production-ready."
+---
+
 # Roadmap
+
+<div class="admonition info" markdown>
+<p class="admonition-title">Status of this roadmap</p>
+
+The **Done** markers record when each milestone was first delivered. Some of those areas have since been re-scoped after review. Multi-process distributed training (ZeRO, FSDP, multi-node) is not validated in the current Python backend, and the S0–S9 security areas are experimental and not independently certified. See [Project scope and limitations](why-sneppx-alg.md) and the [distributed support matrix](distributed-guide.md) for current status.
+
+</div>
 
 ## v1.0.0 — Stable Release (2026-07-25)
 

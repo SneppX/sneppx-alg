@@ -1,3 +1,7 @@
+---
+description: "One-page SneppX-ALG API quick reference: the most-used C tensor operations and Python calls with their signatures."
+---
+
 # SneppX-ALG API Quick Reference
 
 ## C API (Core Engine)

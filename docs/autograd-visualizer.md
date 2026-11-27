@@ -37,6 +37,25 @@ this runs entirely in your browser.
 - `relu` has a subgradient of 0 for negative inputs — that's why a gradient
   can vanish at a node.
 
+## How reverse-mode autodiff works
+
+Automatic differentiation applies the chain rule to the graph above. The
+forward pass computes and stores each node's value. The backward pass starts at
+the output with gradient `1` and walks the graph in reverse. At each node it
+multiplies the incoming gradient by the node's local derivative and adds the
+result to each input's gradient.
+
+Two details explain most of what you see in the visualizer:
+
+- **Gradients add up.** When a variable feeds several nodes, its gradient is
+  the sum of the contributions from every path.
+- **One backward pass gives every gradient.** Reverse mode computes `∂f/∂x`
+  for all inputs at once, which is why it is the standard choice for training
+  networks with millions of parameters and a single scalar loss.
+
+SneppX-ALG's tensor engine uses the same tape-based approach and also supports
+higher-order gradients; see [Higher-order AD](higher-order-ad.md).
+
 ## Supported syntax
 
 | Element | Examples |

@@ -1,3 +1,7 @@
+---
+description: "Migrate from TensorFlow and Keras to SneppX-ALG using its small Keras-compatible layer API, with known differences."
+---
+
 # Migrating from TensorFlow / Keras to SNEPPX-Algo
 
 SNEPPX-Algo provides a small **Keras-compatible** layer API
