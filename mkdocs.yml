@@ -1,9 +1,7 @@
 site_name: SneppX-ALG
 site_description: >
-  SneppX-ALG is an experimental open-source machine-learning framework with a
-  native C/C++ codebase and Python APIs for tensor operations, automatic
-  differentiation, and neural-network components. Distributed and security
-  subsystems have explicit implementation and validation limits.
+  Experimental open-source C/C++ machine-learning framework with Python tensor,
+  autograd and neural-network APIs. Explore guides, examples and API references.
 site_author: Ammar [SNEPPX]
 site_url: https://sneppx.github.io/sneppx-alg/
 
@@ -27,6 +25,15 @@ theme:
     - scheme: slate
       primary: indigo
       accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
   features:
     - navigation.expand
     - navigation.sections

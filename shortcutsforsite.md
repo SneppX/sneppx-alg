@@ -76,15 +76,16 @@ Press **g**, then the destination key within approximately 1.1 seconds.
 
 Search every MkDocs navigation page and these commands:
 
-- Open home, playground, Python API, keyboard guide or repository browser.
-- Focus search, open keyboard help, toggle theme, table of contents or primary navigation.
+- Open home, playground, Python API, API explorer, FAQ, installation, getting started, cookbook, tutorials, security overview, roadmap, blog, repository browser or autograd guide.
+- Focus search, open keyboard help, toggle light/dark theme, table of contents or primary navigation.
 - Scroll to top or bottom; jump to the next or previous heading.
-- Print the page or copy its URL.
-- Open the GitHub repository or issue tracker.
+- Print the current page or copy its URL.
+- Open the GitHub repository, issue tracker, discussions or changelog RSS feed.
+- Search and open every page listed in the documentation navigation.
 
 ## Accessibility and limits
 
-- **Tab** moves forward; **Shift + Tab** moves backwards through interactive controls.
+Outside the editor, **Tab** moves forward; **Shift + Tab** moves backwards through interactive controls.
 - **Enter** or **Space** activates the focused link or button.
 - Shortcuts do not intercept typing in inputs, textareas, selects or content-editable regions.
 - Browser-reserved shortcuts, zoom, tab switching, browser history and screen-reader commands are not overridden.

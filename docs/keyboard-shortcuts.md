@@ -15,7 +15,7 @@ Use **Ctrl/Cmd + K** to search all documentation pages and available commands. P
 - **Ctrl/Cmd + Shift + L** — copy the current page URL.
 - **Ctrl/Cmd + Shift + F** — focus documentation search.
 
-Shortcuts are paused while an input, textarea, select or content-editable element has focus.
+Single-key navigation shortcuts pause while an input, textarea, select or content-editable element has focus. Ctrl/Cmd + K remains available to open the command palette.
 
 ## Quick navigation sequences
 
@@ -70,13 +70,13 @@ Press **g**, then the destination key within about one second.
 
 Press **Ctrl/Cmd + K**, type a page title or action, move with **Up / Down**, and press **Enter**. Press **Esc** to close.
 
-The palette searches every page in the MkDocs navigation. Its quick actions include home, playground, Python API, keyboard help, search, theme, navigation and table-of-contents controls, page scrolling, heading navigation, printing, copying the current URL, the GitHub repository and issue tracker.
+The palette searches every page in the MkDocs navigation. Its quick actions include home, playground, Python API, API explorer, FAQ, installation, getting started, cookbook, tutorials, security overview, roadmap, blog, repository browser, autograd guide, keyboard help, search, theme, navigation and table-of-contents controls, page scrolling, heading navigation, printing, copying the current URL, the GitHub repository, issue tracker, discussions and changelog RSS feed.
 
 ## Playground editor
 
 - **Ctrl/Cmd + Enter** — run the current Python snippet.
-- **Tab** — insert four spaces.
-- **Shift + Tab** — remove one indentation level from selected lines.
+- **Tab** — indent the current line or selected lines with four spaces.
+- **Shift + Tab** — outdent the current line or selected lines by one indentation level.
 - **Ctrl/Cmd + S** — save the snippet in this browser.
 - **Ctrl/Cmd + Shift + S** — copy a shareable link containing the code.
 - **Ctrl/Cmd + Shift + Backspace** — clear the output panel.
@@ -86,14 +86,14 @@ Saved snippets stay in local browser storage. Share links encode code in the URL
 
 ## Accessibility and boundaries
 
-- **Tab** and **Shift + Tab** move through interactive controls.
+Outside the editor, **Tab** and **Shift + Tab** move through interactive controls.
 - **Enter** or **Space** activates a focused link or button.
-- Browser-reserved shortcuts are not overridden.
-- The site respects the operating system's reduced-motion preference.
+- Browser and operating-system shortcuts may take precedence. The site does not intentionally remap zoom, tab switching, browser history or screen-reader commands.
+- Reduced-motion preferences disable smooth scrolling.
 - The Python playground runs in browser WebAssembly. It does not provide CUDA, native extension modules or server-side execution.
 
 See the repository-level [shortcutsforsite.md](https://github.com/SneppX/sneppx-alg/blob/main/shortcutsforsite.md) for the complete inventory.
 
 ## Python code blocks
 
-Every Python code block on the documentation site has a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.
+Eligible Python code blocks (up to 4,000 characters) have a **Run** button. Activate it to execute that snippet in the shared browser-based Pyodide runtime. Output appears below the code block; the playground and code-block runner share the same loaded Python kernel.

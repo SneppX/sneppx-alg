@@ -4,6 +4,7 @@
  * in a collapsible panel below the block. Falls back to "open in
  * playground" if Pyodide cannot be loaded.
  */
+// prettier-ignore
 (function () {
   "use strict";
 
@@ -29,18 +30,27 @@
       var py = await window.loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/" });
       await py.loadPackage("numpy");
       // Reuse the playground's zip-fetch if available; otherwise fetch package.
-      var zipUrl = (document.getElementById("sx-playground") || {}).getAttribute
-        ? document.getElementById("sx-playground").getAttribute("data-zip")
-        : null;
-      zipUrl = zipUrl || "../assets/sneppx_py.zip";
+      var playground = document.getElementById("sx-playground");
+      var logo = document.querySelector('[data-md-component="logo"]');
+      var siteRoot = logo
+        ? new URL(logo.getAttribute("href"), window.location.href)
+        : new URL("./", window.location.href);
+      var zipUrl = playground
+        ? new URL(playground.getAttribute("data-zip") || "../assets/sneppx_py.zip", window.location.href).href
+        : new URL("assets/sneppx_py.zip", siteRoot).href;
       await py.runPythonAsync(
         [
           "import sys, io, zipfile, os",
           "from pyodide.http import pyfetch",
           "resp = await pyfetch(" + JSON.stringify(zipUrl) + ")",
+          "if not resp.ok: raise RuntimeError('Package download failed: HTTP ' + str(resp.status))",
           "data = await resp.bytes()",
           "os.makedirs('/sneppx', exist_ok=True)",
           "with zipfile.ZipFile(io.BytesIO(data)) as z:",
+          "    for member in z.infolist():",
+          "        target = os.path.realpath(os.path.join('/sneppx', member.filename))",
+          "        if os.path.commonpath(['/sneppx', target]) != '/sneppx':",
+          "            raise RuntimeError('Unsafe path in SneppX-ALG package archive')",
           "    z.extractall('/sneppx')",
           "if '/sneppx' not in sys.path:",
           "    sys.path.insert(0, '/sneppx')",

@@ -1,6 +1,7 @@
 /* SNEPPX-Alg — Ctrl/Cmd+K command palette.
  * Fuzzy-ish search over nav pages + quick actions. No dependencies.
  */
+// prettier-ignore
 (function () {
   "use strict";
 
@@ -21,54 +22,148 @@
     return out;
   }
 
+  function siteRoot() {
+    var logo = document.querySelector('[data-md-component="logo"]');
+    return new URL(logo ? logo.getAttribute("href") : "/", window.location.href);
+  }
+
+  function navigate(path) {
+    window.location.href = new URL(path, siteRoot()).href;
+  }
+
+  function toggleControl(id) {
+    var label = document.querySelector('label[for="' + id + '"]');
+    if (label) label.click();
+  }
+
+  function focusSearch() {
+    var toggle = document.querySelector('[data-md-toggle="search"]');
+    if (toggle && !toggle.checked) {
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    var input = document.querySelector(".md-search__input");
+    if (input) {
+      input.focus();
+      if (input.select) input.select();
+    }
+  }
+
+  function moveHeading(direction) {
+    var headings = Array.prototype.slice.call(
+      document.querySelectorAll(".md-content__inner h1, .md-content__inner h2, .md-content__inner h3, .md-content__inner h4"),
+    ).filter(function (heading) {
+      return heading.getClientRects().length > 0;
+    });
+    if (!headings.length) return;
+    var threshold = window.scrollY + 130;
+    var target = null;
+    if (direction > 0) {
+      target = headings.find(function (heading) {
+        return heading.getBoundingClientRect().top + window.scrollY > threshold;
+      }) || headings[headings.length - 1];
+    } else {
+      for (var i = headings.length - 1; i >= 0; i--) {
+        if (headings[i].getBoundingClientRect().top + window.scrollY < threshold - 20) {
+          target = headings[i];
+          break;
+        }
+      }
+      target = target || headings[0];
+    }
+    target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }
+
+  function copyPageUrl() {
+    var url = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).catch(function () {
+        window.prompt("Copy this page URL:", url);
+      });
+    } else {
+      window.prompt("Copy this page URL:", url);
+    }
+  }
+
   var actions = [
     {
       title: "Toggle dark / light theme",
       kind: "action",
       run: function () {
-        var toggle = document.querySelector('label[for^="__palette_"]');
-        if (toggle) toggle.click();
+        var current = document.body.getAttribute("data-md-color-scheme");
+        var nextScheme = current === "slate" ? "default" : "slate";
+        var option = document.querySelector(
+          'input[data-md-color-scheme="' + nextScheme + '"]',
+        );
+        if (option) toggleControl(option.id);
       },
     },
     {
       title: "Open playground",
       kind: "action",
       run: function () {
-        var logo = document.querySelector('[data-md-component="logo"]');
-        var root = new URL(logo ? logo.getAttribute("href") : "/", window.location.href);
-        window.location.href = new URL("playground/", root).href;
+        navigate("playground/");
       },
     },
     {
       title: "Go to home",
       kind: "action",
       run: function () {
-        window.location.href = (document.querySelector('[data-md-component="logo"]') || {}).getAttribute("href") || "/";
+        navigate("");
       },
     },
     {
       title: "Focus search",
       kind: "action",
       run: function () {
-        var t = document.querySelector('[data-md-toggle="search"]');
-        if (t && !t.checked) {
-          t.checked = true;
-          t.dispatchEvent(new Event("change"));
-        }
-        var i = document.querySelector(".md-search__input");
-        if (i) {
-          i.focus();
-          i.select && i.select();
-        }
+        focusSearch();
       },
     },
     {
       title: "Scroll to top",
       kind: "action",
       run: function () {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
       },
     },
+    { title: "Scroll to bottom", kind: "action", run: function () {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: reduced ? "auto" : "smooth" });
+    } },
+    { title: "Next heading", kind: "action", run: function () { moveHeading(1); } },
+    { title: "Previous heading", kind: "action", run: function () { moveHeading(-1); } },
+    { title: "Toggle table of contents", kind: "action", run: function () { toggleControl("__toc"); } },
+    { title: "Toggle primary navigation", kind: "action", run: function () { toggleControl("__drawer"); } },
+    { title: "Open keyboard shortcuts", kind: "action", run: function () {
+      if (window.SxShortcuts) window.SxShortcuts.open();
+    } },
+    { title: "Open Python API", kind: "action", run: function () { navigate("api/python/"); } },
+    { title: "Open API explorer", kind: "action", run: function () { navigate("api-explorer/"); } },
+    { title: "Open FAQ", kind: "action", run: function () { navigate("FAQ/"); } },
+    { title: "Open installation guide", kind: "action", run: function () { navigate("installation/"); } },
+    { title: "Open getting started", kind: "action", run: function () { navigate("getting-started/"); } },
+    { title: "Open cookbook", kind: "action", run: function () { navigate("cookbook/"); } },
+    { title: "Open tutorials", kind: "action", run: function () { navigate("tutorials/"); } },
+    { title: "Open security overview", kind: "action", run: function () { navigate("security/"); } },
+    { title: "Open roadmap", kind: "action", run: function () { navigate("roadmap/tensorflow-pytorch-parity/"); } },
+    { title: "Open engineering blog", kind: "action", run: function () { navigate("blog/"); } },
+    { title: "Open repository browser", kind: "action", run: function () { navigate("code-browser/"); } },
+    { title: "Open autograd guide", kind: "action", run: function () { navigate("autograd-guide/"); } },
+    { title: "Copy current page URL", kind: "action", run: copyPageUrl },
+    { title: "Print current page", kind: "action", run: function () { window.print(); } },
+    { title: "Open GitHub repository", kind: "action", run: function () {
+      window.location.href = "https://github.com/SneppX/sneppx-alg";
+    } },
+    { title: "Open issue tracker", kind: "action", run: function () {
+      window.location.href = "https://github.com/SneppX/sneppx-alg/issues";
+    } },
+    { title: "Open discussions", kind: "action", run: function () {
+      window.location.href = "https://github.com/SneppX/sneppx-alg/discussions";
+    } },
+    { title: "Open changelog RSS feed", kind: "action", run: function () {
+      navigate("feed_rss_updated.xml");
+    } },
   ];
 
   function score(q, item) {
@@ -92,12 +187,16 @@
     pages = [];
   var selected = 0;
   var current = [];
+  var returnFocus = null;
 
   function build() {
     if (overlay) return;
     pages = collectPages();
     overlay = document.createElement("div");
     overlay.className = "sx-palette";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Command palette");
     overlay.innerHTML =
       '<div class="sx-palette__box">' +
       '  <input class="sx-palette__input" type="text" placeholder="Search pages, actions…" autocomplete="off" />' +
@@ -106,16 +205,28 @@
       "</div>";
     document.body.appendChild(overlay);
     input = overlay.querySelector(".sx-palette__input");
+    input.setAttribute("aria-label", "Search documentation pages and actions");
+    input.setAttribute("aria-controls", "sx-palette-results");
     list = overlay.querySelector(".sx-palette__list");
+    list.id = "sx-palette-results";
+    list.setAttribute("role", "listbox");
+    list.setAttribute("aria-label", "Command palette results");
     input.addEventListener("input", render);
     input.addEventListener("keydown", onKey);
     overlay.addEventListener("click", function (e) {
       if (e.target === overlay) close();
     });
+    overlay.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        input.focus();
+      }
+    });
     render();
   }
 
   function open() {
+    returnFocus = document.activeElement;
     build();
     overlay.classList.add("sx-palette--open");
     input.value = "";
@@ -127,6 +238,7 @@
   }
   function close() {
     if (overlay) overlay.classList.remove("sx-palette--open");
+    if (returnFocus && returnFocus.focus) returnFocus.focus();
   }
 
   function render() {
@@ -159,6 +271,8 @@
     current.forEach(function (it, i) {
       var li = document.createElement("li");
       li.className = "sx-palette__item" + (i === selected ? " sx-palette__item--active" : "");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", String(i === selected));
       li.innerHTML =
         '<span class="sx-palette__kind">' +
         it.kind +
@@ -187,6 +301,7 @@
     var lis = list.querySelectorAll(".sx-palette__item");
     lis.forEach(function (li, i) {
       li.classList.toggle("sx-palette__item--active", i === selected);
+      li.setAttribute("aria-selected", String(i === selected));
     });
   }
   function activate(i) {

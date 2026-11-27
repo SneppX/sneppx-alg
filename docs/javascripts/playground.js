@@ -10,7 +10,10 @@
   var editor = root.querySelector(".sx-pg-editor");
   var output = root.querySelector(".sx-pg-output");
   var runButton = root.querySelector(".sx-pg-run");
-  var zipUrl = root.getAttribute("data-zip") || "../assets/sneppx_py.zip";
+  var zipUrl = new URL(
+    root.getAttribute("data-zip") || "../assets/sneppx_py.zip",
+    window.location.href,
+  ).href;
   var storageKey = "sx-pg-code-v2";
   var running = false;
   var starterCode = editor ? editor.value : "";
@@ -60,6 +63,10 @@
         "archive = await response.bytes()",
         "os.makedirs('/sneppx', exist_ok=True)",
         "with zipfile.ZipFile(io.BytesIO(archive)) as package_zip:",
+        "    for member in package_zip.infolist():",
+        "        target = os.path.realpath(os.path.join('/sneppx', member.filename))",
+        "        if os.path.commonpath(['/sneppx', target]) != '/sneppx':",
+        "            raise RuntimeError('Unsafe path in SneppX-ALG package archive')",
         "    package_zip.extractall('/sneppx')",
         "if '/sneppx' not in sys.path: sys.path.insert(0, '/sneppx')",
         "import SneppX_ALG",
@@ -170,36 +177,49 @@
     var start = editor.selectionStart;
     var end = editor.selectionEnd;
     var value = editor.value;
+    var lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    var selectedEnd =
+      end > start && value.charAt(end - 1) === "\n" ? end - 1 : end;
+    var lastLineStart =
+      selectedEnd > lineStart
+        ? value.lastIndexOf("\n", selectedEnd - 1) + 1
+        : lineStart;
+    var lineEnd = value.indexOf("\n", lastLineStart);
+    if (lineEnd === -1) lineEnd = value.length;
 
+    var lines = value.slice(lineStart, lineEnd).split("\n");
     if (!outdent) {
-      editor.value = value.slice(0, start) + "    " + value.slice(end);
-      editor.selectionStart = editor.selectionEnd = start + 4;
+      lines = lines.map(function (line) {
+        return "    " + line;
+      });
+      editor.value =
+        value.slice(0, lineStart) + lines.join("\n") + value.slice(lineEnd);
+      editor.selectionStart = start + 4;
+      editor.selectionEnd = end + lines.length * 4;
       return;
     }
 
-    var lineStart = value.lastIndexOf("\n", start - 1) + 1;
-    var lines = value.slice(lineStart, end).split("\n");
-    var removed = 0;
-
-    lines = lines.map(function (line) {
+    var removedFirstLine = 0;
+    var removedTotal = 0;
+    lines = lines.map(function (line, index) {
+      var removed = 0;
       if (line.slice(0, 4) === "    ") {
-        removed += 4;
-        return line.slice(4);
+        removed = 4;
+      } else if (line.charAt(0) === "\t") {
+        removed = 1;
       }
-      if (line.charAt(0) === "\t") {
-        removed += 1;
-        return line.slice(1);
-      }
-      return line;
+      if (index === 0) removedFirstLine = removed;
+      removedTotal += removed;
+      return line.slice(removed);
     });
 
     editor.value =
-      value.slice(0, lineStart) + lines.join("\n") + value.slice(end);
+      value.slice(0, lineStart) + lines.join("\n") + value.slice(lineEnd);
     editor.selectionStart = Math.max(
       lineStart,
-      start - Math.min(4, start - lineStart),
+      start - Math.min(removedFirstLine, start - lineStart),
     );
-    editor.selectionEnd = Math.max(editor.selectionStart, end - removed);
+    editor.selectionEnd = Math.max(editor.selectionStart, end - removedTotal);
   }
 
   var examples = {
@@ -248,7 +268,7 @@
       "    loss.backward()",
       "    optimizer.step()",
       "print('training loss:', loss.data)",
-    ].join("\\n"),
+    ].join("\n"),
     sparse: [
       "import numpy as np",
       "from SneppX_ALG.interface_bindings.sparse import sparse_coo_tensor",

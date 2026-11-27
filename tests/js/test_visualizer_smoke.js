@@ -111,9 +111,10 @@ require("../../docs/javascripts/loss-gallery.js");
 require("../../docs/javascripts/progress.js");
 require("../../docs/javascripts/autograd-graph.js");
 require("../../docs/javascripts/run-snippet.js");
+require("../../docs/javascripts/playground.js");
 require("../../docs/javascripts/command-palette.js");
 require("../../docs/javascripts/shortcuts.js");
 
 // With no host element present every module should be a harmless no-op.
-console.log("visualizer smoke: 9 scripts loaded, no host -> no crash");
+console.log("site and visualizer smoke: 10 scripts loaded, no host -> no crash");
 process.exit(0);

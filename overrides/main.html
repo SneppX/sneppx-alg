@@ -1,81 +1,78 @@
-{% extends "base.html" %} {% block htmltitle %} {% if page and (page.is_homepage or page.file.src_uri == 'index.md') %}
-<title>SneppX-ALG | Native C/C++ Machine-Learning Framework</title>
-{% elif page and page.meta and page.meta.title %}
-<title>{{ page.meta.title }} | {{ config.site_name }}</title>
-{% elif page and page.title %}
-<title>{{ page.title | striptags }} | {{ config.site_name }}</title>
-{% else %}
-<title>{{ config.site_name }}</title>
-{% endif %} {% endblock %} {% block extrahead %} {{ super() }}
-<link
-  rel="alternate"
-  type="application/rss+xml"
-  title="SneppX-ALG changelog"
-  href="{{ base_url }}/feed_rss_updated.xml"
-/>
+{% extends "base.html" %}
 
-{% set sx_card = "https://sneppx.github.io/sneppx-alg/latest/assets/social-preview.png" %} {% if page and
-(page.is_homepage or page.file.src_uri == 'index.md') %} {% set sx_title = "SneppX-ALG | Native C/C++ Machine-Learning
-Framework" %} {% set sx_desc = config.site_description %} {% elif page and page.title %} {% set sx_title = page.title ~
-" | SneppX-ALG" %} {% set sx_desc = page.meta.description or config.site_description %} {% else %} {% set sx_title =
-"SneppX-ALG | Native C/C++ Machine-Learning Framework" %} {% set sx_desc = config.site_description %} {% endif %}
+{% block htmltitle %}
+  {% if page and (page.is_homepage or page.file.src_uri == 'index.md') %}
+    <title>SneppX-ALG | Native C/C++ Machine-Learning Framework</title>
+  {% elif page and page.meta and page.meta.title %}
+    <title>{{ page.meta.title }} | {{ config.site_name }}</title>
+  {% elif page and page.title %}
+    <title>{{ page.title | striptags }} | {{ config.site_name }}</title>
+  {% else %}
+    <title>{{ config.site_name }}</title>
+  {% endif %}
+{% endblock %}
 
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="SneppX-ALG" />
-<meta property="og:title" content="{{ sx_title | trim }}" />
-<meta property="og:description" content="{{ sx_desc | trim }}" />
-{% if page %}<meta property="og:url" content="{{ page.canonical_url }}" />{% endif %}
-<meta property="og:image" content="{{ sx_card }}" />
-<meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:image:alt" content="SneppX-ALG project and documentation" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{{ sx_title | trim }}" />
-<meta name="twitter:description" content="{{ sx_desc | trim }}" />
-<meta name="twitter:image" content="{{ sx_card }}" />
-<meta name="twitter:image:alt" content="SneppX-ALG project and documentation" />
+{% block extrahead %}
+  {{ super() }}
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="SneppX-ALG changelog"
+    href="{{ base_url }}/feed_rss_updated.xml"
+  />
 
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareSourceCode",
-    "name": "SneppX-ALG",
-    "description": "Experimental open-source native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs. Alpha maturity; feature support varies by component and backend.",
-    "codeRepository": "https://github.com/SneppX/sneppx-alg",
-    "url": "https://sneppx.github.io/sneppx-alg/",
-    "programmingLanguage": ["C", "C++", "Python"],
-    "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
-    "inLanguage": "en"
-  }
-</script>
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://github.com/SneppX#organization",
-    "name": "SneppX",
-    "url": "https://github.com/SneppX",
-    "sameAs": ["https://github.com/SneppX"]
-  }
-</script>
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SneppX-ALG",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": ["Windows", "macOS", "Linux"],
-    "softwareVersion": "1.5.2",
-    "softwareRequirements": "Python 3.9 or later",
-    "url": "https://pypi.org/project/sneppx-alg/",
-    "license": "https://opensource.org/license/mit/",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "author": { "@id": "https://github.com/SneppX#organization" }
-  }
-</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "name": "SneppX-ALG",
+      "description": "Experimental open-source native C/C++ machine-learning framework with Python tensor, autograd, and neural-network APIs. Alpha maturity; feature support varies by component and backend.",
+      "codeRepository": "https://github.com/SneppX/sneppx-alg",
+      "url": "https://sneppx.github.io/sneppx-alg/",
+      "programmingLanguage": ["C", "C++", "Python"],
+      "license": "https://github.com/SneppX/sneppx-alg/blob/main/LICENSE",
+      "isAccessibleForFree": true,
+      "inLanguage": "en"
+    }
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://github.com/SneppX#organization",
+      "name": "SneppX",
+      "url": "https://github.com/SneppX",
+      "sameAs": ["https://github.com/SneppX"]
+    }
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://sneppx.github.io/sneppx-alg/#website",
+      "name": "SneppX-ALG documentation",
+      "url": "https://sneppx.github.io/sneppx-alg/",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://github.com/SneppX#organization" }
+    }
+  </script>
+
+  {% if page and page.canonical_url and page.file.src_uri != 'index.md' %}
+    {% set sx_description = page.meta.description if page.meta and page.meta.description else config.site_description %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": {{ page.title | striptags | tojson }},
+        "description": {{ sx_description | striptags | tojson }},
+        "url": {{ page.canonical_url | tojson }},
+        "inLanguage": "en",
+        "author": { "@id": "https://github.com/SneppX#organization" },
+        "publisher": { "@id": "https://github.com/SneppX#organization" },
+        "isPartOf": { "@id": "https://sneppx.github.io/sneppx-alg/#website" }
+      }
+    </script>
+  {% endif %}
 {% endblock %}
