@@ -22,6 +22,8 @@
 - [Security overview](https://sneppx.github.io/sneppx-alg/latest/security/)
 - [PQC interoperability report](https://sneppx.github.io/sneppx-alg/latest/pqc_kat/)
 - [Historical security audit archive](https://sneppx.github.io/sneppx-alg/latest/security/audits/)
+- [Engineering blog](https://sneppx.github.io/sneppx-alg/latest/blog/)
+- [Interactive autograd visualizer](https://sneppx.github.io/sneppx-alg/latest/autograd-visualizer/)
 
 ## Source and package
 
