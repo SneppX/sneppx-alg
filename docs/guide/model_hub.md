@@ -1,3 +1,7 @@
+---
+description: "Guide to the SneppX-ALG Model Hub: model registry, versioning, search, leaderboards and the sneppx-hub command-line client."
+---
+
 # SNEPPX Model Hub Guide
 
 ## Overview

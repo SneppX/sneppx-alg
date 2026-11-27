@@ -1,3 +1,7 @@
+---
+description: "The SneppX-ALG test framework: CTest via CMake, the shared C test harness macros, and how tests are organised by component."
+---
+
 # Testing Framework
 
 ## Overview

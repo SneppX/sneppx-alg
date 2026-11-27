@@ -1,3 +1,7 @@
+---
+description: "Code walkthrough of SER, the SneppX-ALG sparse expert routing stage that implements a Mixture-of-Experts layer."
+---
+
 # Code Walkthrough — SER (Sparse Expert Routing)
 
 SER is the second stage of the SNEPPX-Alg pipeline. It implements a

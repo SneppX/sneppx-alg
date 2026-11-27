@@ -1,3 +1,7 @@
+---
+description: "The track-based Git Flow branching model SneppX-ALG uses, how branch types map to contributor tiers, and which checks run on each branch."
+---
+
 # Branching Strategy
 
 SneppX-ALG follows a **track-based Git Flow** model adapted for security-first development. Every branch type maps to a contributor tier. Pushes and pull requests are checked by the CI workflow in `.github/workflows/ci.yml`.

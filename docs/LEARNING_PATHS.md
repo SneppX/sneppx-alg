@@ -1,3 +1,7 @@
+---
+description: "Month-by-month learning paths for SneppX-ALG contributors, from first exploration of the codebase to senior contributor responsibilities."
+---
+
 # Learning Paths
 
 Track-specific roadmaps for progressing from Explorer to Senior Contributor. Each path is organized by month with concrete goals.

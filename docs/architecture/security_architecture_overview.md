@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG security architecture overview: the defense-in-depth layout, trust boundaries and how each security area is meant to work."
+---
+
 # Security Architecture Overview
 
 ## Defense-in-Depth Layers

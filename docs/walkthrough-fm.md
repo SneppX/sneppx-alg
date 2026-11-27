@@ -1,3 +1,7 @@
+---
+description: "Code walkthrough of FM, the SneppX-ALG fractal memory stage: per-node memory banks and periodic synchronisation."
+---
+
 # Code Walkthrough — FM (Fractal Memory Orchestrator)
 
 FM is the fifth and final stage of the SNEPPX-Alg pipeline. It manages

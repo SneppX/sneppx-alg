@@ -1,3 +1,7 @@
+---
+description: "Design principles behind SneppX-ALG: security-first layering, explicit trust boundaries, and a native core with Python ergonomics."
+---
+
 # Design
 
 ## Principles

@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG cookbook recipes for model configuration and conversion: load preset configs and estimate parameters and memory."
+---
+
 # Cookbook — Conversion
 
 ## 1. Inspect an HF config → SNEPPX param estimate

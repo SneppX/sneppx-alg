@@ -1,3 +1,7 @@
+---
+description: "CTM codebase telemetry and metrics toolkit: count lines of code by language, skip generated files, and export JSON or HTML reports."
+---
+
 # CTM Tooling
 
 CTM (Codebase Telemetry & Metrics) is the repository's metrics toolkit.

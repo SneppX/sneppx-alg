@@ -1,3 +1,7 @@
+---
+description: "Migrate from PyTorch to SneppX-ALG: a side-by-side mapping of common torch APIs to their SneppX-ALG equivalents and gaps."
+---
+
 # Migrating from PyTorch to SNEPPX-Algo
 
 A side-by-side mapping from common `torch` APIs to `SneppX_ALG` equivalents.

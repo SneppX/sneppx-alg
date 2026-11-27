@@ -1,3 +1,7 @@
+---
+description: "Tutorial: build a data pipeline in SneppX-ALG, from training a tokenizer to batching with DataLoader and feeding a model."
+---
+
 # Tutorial — Data Pipeline
 
 **Notebook:** [`data_pipeline.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/data_pipeline.ipynb)

@@ -1,3 +1,7 @@
+---
+description: "Tutorial: quantize a small Transformer to INT4 with AWQ and to FP8 in SneppX-ALG, measure error, and serve it."
+---
+
 # Tutorial — Quantization & Serving
 
 **Notebook:** [`quantization_serving.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/quantization_serving.ipynb)

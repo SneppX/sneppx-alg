@@ -1,3 +1,7 @@
+---
+description: "Threat modeling for SneppX-ALG: assets, trust boundaries, attacker models and the artifacts used to analyse risk."
+---
+
 # Threat Modeling Overview
 
 This directory contains threat modeling artifacts for the SNEPPX-ALG platform.

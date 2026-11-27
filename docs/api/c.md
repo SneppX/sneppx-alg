@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG C API reference: tensor, autograd, kernel and security functions with their SNEPPX_ signatures and return conventions."
+---
+
 # C API Reference
 
 Full C API for all SNEPPX-Algo components.

@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG HTTP API endpoint index: authentication headers, request and response formats, and the routes exposed by the reference servers."
+---
+
 # SneppX API Reference
 
 **Version:** 1.1.1

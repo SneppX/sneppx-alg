@@ -1,3 +1,7 @@
+---
+description: "Legacy SneppX-ALG C API listing for the autodiff tape, tensors and core kernels, kept for reference alongside the current C and Python API pages."
+---
+
 # API Reference
 
 ## C API

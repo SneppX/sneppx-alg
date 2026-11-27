@@ -1,3 +1,7 @@
+---
+description: "Track which SneppX-ALG documentation pages you have read. Progress is stored only in your browser; nothing is uploaded."
+---
+
 # Your progress
 
 This page tracks how far you have explored the docs. Everything is stored in

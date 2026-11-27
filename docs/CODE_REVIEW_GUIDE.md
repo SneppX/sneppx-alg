@@ -1,3 +1,7 @@
+---
+description: "How pull requests are reviewed in SneppX-ALG: what reviewers check for correctness, security, tests and documentation before approving."
+---
+
 # Code Review Guide
 
 A guide to reviewing code in SNEPPX-Algo. All Senior+ contributors are expected to follow this guide when reviewing PRs.

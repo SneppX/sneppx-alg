@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG coding style guide for C and C++: naming with the SNEPPX_ prefix, struct layout, error returns and formatting rules."
+---
+
 # SNEPPX-Algo Style Guide
 
 ## C Style

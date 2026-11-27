@@ -1,3 +1,7 @@
+---
+description: "Tutorial: parameter-efficient RLHF fine-tuning in SneppX-ALG with LoRA adapters and Direct Preference Optimization."
+---
+
 # Tutorial — RLHF Fine-Tuning with LoRA + DPO
 
 **Notebook:** [`fine_tuning_rlhf.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/fine_tuning_rlhf.ipynb)

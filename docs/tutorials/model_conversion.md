@@ -1,3 +1,7 @@
+---
+description: "Tutorial: convert a Hugging Face safetensors model into a SneppX-ALG checkpoint and inspect the weight mapping."
+---
+
 # Tutorial — Model Conversion (HF → SNEPPX)
 
 **Notebook:** [`model_conversion.ipynb`](https://github.com/SneppX/sneppx-alg/blob/main/notebooks/model_conversion.ipynb)

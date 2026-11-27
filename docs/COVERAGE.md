@@ -1,3 +1,7 @@
+---
+description: "How to measure code coverage for the SneppX-ALG native C/C++ code with GCC and lcov, the coverage targets, and the current state of coverage reporting."
+---
+
 # Code Coverage
 
 ## Generating Reports

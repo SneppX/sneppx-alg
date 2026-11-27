@@ -1,3 +1,7 @@
+---
+description: "Keyboard shortcuts for navigating the SneppX-ALG documentation: search, page navigation and the command palette."
+---
+
 # Keyboard shortcuts
 
 SneppX-Alg docs are fully keyboard-navigable. Press **`?`** anywhere to see

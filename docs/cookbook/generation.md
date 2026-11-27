@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG cookbook recipes for text generation with a Transformer: greedy decoding, sampling and generation configs."
+---
+
 # Cookbook — Generation
 
 ## 1. Greedy generation (deterministic)

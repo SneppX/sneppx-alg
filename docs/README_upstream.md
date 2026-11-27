@@ -1,3 +1,7 @@
+---
+description: "Upstream documentation index for SneppX-ALG, kept for reference: links to architecture notes, guides and contributor material."
+---
+
 # SNEPPX-Algo Documentation Index
 
 | Document | Description | Updated |

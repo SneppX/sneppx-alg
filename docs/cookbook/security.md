@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG cookbook recipes for the security tooling: static analysis with sneppx-analyze, SARIF output and crypto bindings."
+---
+
 # Cookbook — Security
 
 ## 1. Scan source for vulnerabilities

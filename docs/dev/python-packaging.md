@@ -1,3 +1,7 @@
+---
+description: "Python packaging and release process for SneppX-ALG: the canonical project configuration, building wheels and publishing to PyPI."
+---
+
 # Python Packaging and Release
 
 This repository has two Python project configurations. They serve different workflows and must not be treated as interchangeable release roots.

@@ -1,3 +1,7 @@
+---
+description: "Generate the SneppX-ALG C/C++ HTML API documentation from source comments with Doxygen and Graphviz."
+---
+
 # Doxygen API Documentation
 
 Generate HTML documentation from C/C++ code comments:

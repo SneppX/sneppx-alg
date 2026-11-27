@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG changelog generated from git tags and commit history, listing changes by release."
+---
+
 # Changelog
 
 Auto-generated from git tags + commit history. Regenerate with `python docs/changelog/generate.py`. No CI writes this file.

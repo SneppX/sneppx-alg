@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG cookbook recipes for profiling forward and backward passes with the Profiler and Timer utilities."
+---
+
 # Cookbook — Profiling
 
 ## 1. Time a region with the Profiler

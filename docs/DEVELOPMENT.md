@@ -1,3 +1,7 @@
+---
+description: "Development workflow for SneppX-ALG: environment setup, the track-based Git Flow, running safe CPU-only tests, and submitting changes."
+---
+
 # Development
 
 ## Prerequisites

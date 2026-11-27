@@ -1,3 +1,7 @@
+---
+description: "Code walkthrough of HSS, the SneppX-ALG hierarchical state space stage that maps sequences to a latent state."
+---
+
 # Code Walkthrough — HSS (Hierarchical State Space)
 
 HSS is the first stage of the SNEPPX-Alg pipeline. It maps input sequences to a

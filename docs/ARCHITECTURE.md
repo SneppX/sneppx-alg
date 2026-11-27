@@ -1,3 +1,7 @@
+---
+description: "SneppX-ALG architecture overview: how the native C/C++ core, Python bindings, five pipeline stages and S0–S9 security areas fit together."
+---
+
 # SneppX-ALG Architecture
 
 > [!WARNING]

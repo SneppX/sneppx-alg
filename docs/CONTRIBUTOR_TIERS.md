@@ -1,3 +1,7 @@
+---
+description: "The five-tier contributor ladder for SneppX-ALG, with the prerequisites, review gates and repository privileges at each tier."
+---
+
 # SNEPPX-Algo Contributor Tiers
 
 > *Security-first AI infrastructure requires trust, not just code. Every contributor earns their access through demonstrated competence.*

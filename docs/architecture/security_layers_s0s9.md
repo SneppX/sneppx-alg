@@ -1,3 +1,7 @@
+---
+description: "Deep dive into the ten SneppX-ALG security areas, S0 to S9, with what each layer implements today and where maturity varies."
+---
+
 # Security Layers Deep Dive (S0–S9)
 
 > Post-quantum code in this repository is experimental. The Kyber, Dilithium,
